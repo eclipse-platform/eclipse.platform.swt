@@ -134,18 +134,15 @@ static int getDesktop(final Display display) {
 				desktop = DESKTOP_GNOME;
 				long /*int*/ icon_theme = GNOME.gnome_icon_theme_new();
 				display.setData(ICON_THEME_DATA, new LONG(icon_theme));
-				display.addListener(SWT.Dispose, new Listener() {
-					@Override
-					public void handleEvent(Event event) {
-						LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
-						if (gnomeIconTheme == null) return;
-						display.setData(ICON_THEME_DATA, null);
-						/*
-						 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
-						 * data it returns. Use g_object_unref to free the pointer it returns.
-						 */
-						if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
-					}
+				display.addListener(SWT.Dispose, event -> {
+					LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
+					if (gnomeIconTheme == null) return;
+					display.setData(ICON_THEME_DATA, null);
+					/*
+					 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
+					 * data it returns. Use g_object_unref to free the pointer it returns.
+					 */
+					if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
 				});
 			}
 		}

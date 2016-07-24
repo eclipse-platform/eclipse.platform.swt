@@ -12,10 +12,10 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The CCombo class represents a selectable user interface object
@@ -100,55 +100,46 @@ public CCombo (Composite parent, int style) {
 	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
 	arrow = new Button (this, arrowStyle);
 
-	listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (isDisposed ()) return;
-			if (popup == event.widget) {
-				popupEvent (event);
-				return;
-			}
-			if (text == event.widget) {
-				textEvent (event);
-				return;
-			}
-			if (list == event.widget) {
-				listEvent (event);
-				return;
-			}
-			if (arrow == event.widget) {
-				arrowEvent (event);
-				return;
-			}
-			if (CCombo.this == event.widget) {
-				comboEvent (event);
-				return;
-			}
-			if (getShell () == event.widget) {
-				getDisplay().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						if (isDisposed ()) return;
-						handleFocus (SWT.FocusOut);
-					}
-				});
-			}
+	listener = event -> {
+		if (isDisposed ()) return;
+		if (popup == event.widget) {
+			popupEvent (event);
+			return;
+		}
+		if (text == event.widget) {
+			textEvent (event);
+			return;
+		}
+		if (list == event.widget) {
+			listEvent (event);
+			return;
+		}
+		if (arrow == event.widget) {
+			arrowEvent (event);
+			return;
+		}
+		if (CCombo.this == event.widget) {
+			comboEvent (event);
+			return;
+		}
+		if (getShell () == event.widget) {
+			getDisplay().asyncExec(() -> {
+				if (isDisposed ()) return;
+				handleFocus (SWT.FocusOut);
+			});
 		}
 	};
-	filter = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (isDisposed ()) return;
-			if (event.type == SWT.Selection) {
-				if (event.widget instanceof ScrollBar) {
-					handleScroll(event);
-				}
-				return;
+	filter = event -> {
+		if (isDisposed ()) return;
+		if (event.type == SWT.Selection) {
+			if (event.widget instanceof ScrollBar) {
+				handleScroll(event);
 			}
-			Shell shell = ((Control)event.widget).getShell ();
-			if (shell == CCombo.this.getShell ()) {
-				handleFocus (SWT.FocusOut);
-			}
+			return;
+		}
+		Shell shell = ((Control)event.widget).getShell ();
+		if (shell == CCombo.this.getShell ()) {
+			handleFocus (SWT.FocusOut);
 		}
 	};
 

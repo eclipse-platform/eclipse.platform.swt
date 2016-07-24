@@ -13,9 +13,9 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -165,22 +165,14 @@ public DropTarget(Control control, int style) {
 	drag_drop_handler = OS.g_signal_connect(control.handle, OS.drag_drop, Drag_Drop.getAddress(), 0);
 
 	// Dispose listeners
-	controlListener = new Listener(){
-		@Override
-		public void handleEvent(Event event){
-			if (!DropTarget.this.isDisposed()){
-				DropTarget.this.dispose();
-			}
+	controlListener = event -> {
+		if (!DropTarget.this.isDisposed()){
+			DropTarget.this.dispose();
 		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
 
-	this.addListener(SWT.Dispose, new Listener(){
-		@Override
-		public void handleEvent(Event event){
-			onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, event -> onDispose());
 
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {
@@ -191,55 +183,52 @@ public DropTarget(Control control, int style) {
 		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
-	dragOverHeartbeat = new Runnable() {
-		@Override
-		public void run() {
-			Control control = DropTarget.this.control;
-			if (control == null || control.isDisposed() || dragOverStart == 0) return;
-			long time = System.currentTimeMillis();
-			int delay = DRAGOVER_HYSTERESIS;
-			if (time < dragOverStart) {
-				delay = (int)(dragOverStart - time);
-			} else {
-				dragOverEvent.time += DRAGOVER_HYSTERESIS;
-				int allowedOperations = dragOverEvent.operations;
-				TransferData[] allowedTypes = dragOverEvent.dataTypes;
-				//pass a copy of data types in to listeners in case application modifies it
-				TransferData[] dataTypes = new TransferData[allowedTypes.length];
-				System.arraycopy(allowedTypes, 0, dataTypes, 0, dataTypes.length);
+	dragOverHeartbeat = () -> {
+		Control control1 = DropTarget.this.control;
+		if (control1 == null || control1.isDisposed() || dragOverStart == 0) return;
+		long time = System.currentTimeMillis();
+		int delay = DRAGOVER_HYSTERESIS;
+		if (time < dragOverStart) {
+			delay = (int)(dragOverStart - time);
+		} else {
+			dragOverEvent.time += DRAGOVER_HYSTERESIS;
+			int allowedOperations = dragOverEvent.operations;
+			TransferData[] allowedTypes = dragOverEvent.dataTypes;
+			//pass a copy of data types in to listeners in case application modifies it
+			TransferData[] dataTypes = new TransferData[allowedTypes.length];
+			System.arraycopy(allowedTypes, 0, dataTypes, 0, dataTypes.length);
 
-				DNDEvent event = new DNDEvent();
-				event.widget = dragOverEvent.widget;
-				event.x = dragOverEvent.x;
-				event.y = dragOverEvent.y;
-				event.time = dragOverEvent.time;
-				event.feedback = DND.FEEDBACK_SELECT;
-				event.dataTypes = dataTypes;
-				event.dataType = selectedDataType;
-				event.operations = dragOverEvent.operations;
-				event.detail  = selectedOperation;
-				if (dropEffect != null) {
-					event.item = dropEffect.getItem(dragOverEvent.x, dragOverEvent.y);
-				}
-				selectedDataType = null;
-				selectedOperation = DND.DROP_NONE;
-				notifyListeners(DND.DragOver, event);
-				if (event.dataType != null) {
-					for (int i = 0; i < allowedTypes.length; i++) {
-						if (allowedTypes[i].type == event.dataType.type) {
-							selectedDataType = event.dataType;
-							break;
-						}
+			DNDEvent event = new DNDEvent();
+			event.widget = dragOverEvent.widget;
+			event.x = dragOverEvent.x;
+			event.y = dragOverEvent.y;
+			event.time = dragOverEvent.time;
+			event.feedback = DND.FEEDBACK_SELECT;
+			event.dataTypes = dataTypes;
+			event.dataType = selectedDataType;
+			event.operations = dragOverEvent.operations;
+			event.detail  = selectedOperation;
+			if (dropEffect != null) {
+				event.item = dropEffect.getItem(dragOverEvent.x, dragOverEvent.y);
+			}
+			selectedDataType = null;
+			selectedOperation = DND.DROP_NONE;
+			notifyListeners(DND.DragOver, event);
+			if (event.dataType != null) {
+				for (int i = 0; i < allowedTypes.length; i++) {
+					if (allowedTypes[i].type == event.dataType.type) {
+						selectedDataType = event.dataType;
+						break;
 					}
 				}
-				if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
-					selectedOperation = event.detail;
-				}
 			}
-			control = DropTarget.this.control;
-			if (control == null || control.isDisposed()) return;
-			control.getDisplay().timerExec(delay, dragOverHeartbeat);
+			if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
+				selectedOperation = event.detail;
+			}
 		}
+		control1 = DropTarget.this.control;
+		if (control1 == null || control1.isDisposed()) return;
+		control1.getDisplay().timerExec(delay, dragOverHeartbeat);
 	};
 }
 

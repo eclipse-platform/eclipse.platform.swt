@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
@@ -260,19 +260,16 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 		aNativeTarget.dispose ();
 	}
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.widget == cancel) {
-				shell.close ();
-			}
-			if (helperAppLauncher != null) {
-				helperAppLauncher.Cancel ();
-				helperAppLauncher.Release ();
-			}
-			shell = null;
-			helperAppLauncher = null;
+	Listener listener = event -> {
+		if (event.widget == cancel) {
+			shell.close ();
 		}
+		if (helperAppLauncher != null) {
+			helperAppLauncher.Cancel ();
+			helperAppLauncher.Release ();
+		}
+		shell = null;
+		helperAppLauncher = null;
 	};
 	shell = new Shell (SWT.DIALOG_TRIM);
 	String msg = Compatibility.getMessage ("SWT_Download_File", new Object[] {filename}); //$NON-NLS-1$

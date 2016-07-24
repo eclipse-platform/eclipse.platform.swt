@@ -120,22 +120,12 @@ public class ControlEditor {
 public ControlEditor (Composite parent) {
 	this.parent = parent;
 
-	controlListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			layout ();
-		}
-	};
+	controlListener = e -> layout ();
 	for (int i=0; i<EVENTS.length; i++) {
 		parent.addListener (EVENTS [i], controlListener);
 	}
 
-	scrollbarListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			scroll (e);
-		}
-	};
+	scrollbarListener = e -> scroll (e);
 	ScrollBar hBar = parent.getHorizontalBar ();
 	if (hBar != null) hBar.addListener (SWT.Selection, scrollbarListener);
 	ScrollBar vBar = parent.getVerticalBar ();

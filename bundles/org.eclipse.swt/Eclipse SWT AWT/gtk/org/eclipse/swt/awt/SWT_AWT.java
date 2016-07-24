@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 
 
 /**
@@ -177,106 +176,70 @@ public static Frame new_Frame (final Composite parent) {
 		Method method = clazz.getMethod("registerListeners");
 		if (method != null) method.invoke(value);
 	} catch (Throwable e) {}
-	final AWTEventListener awtListener = new AWTEventListener() {
-		@Override
-		public void eventDispatched(AWTEvent event) {
-			if (event.getID() == WindowEvent.WINDOW_OPENED) {
-				final Window window = (Window) event.getSource();
-				if (window.getParent() == frame) {
-					parent.getDisplay().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							if (parent.isDisposed()) return;
-							Shell shell = parent.getShell();
-							loadLibrary();
-							long /*int*/ awtHandle = getAWTHandle(window);
-							if (awtHandle == 0) return;
-							long /*int*/ xWindow;
-							if (OS.GTK3) {
-								xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shell.handle));
-							} else {
-								xWindow = OS.gdk_x11_drawable_get_xid(OS.gtk_widget_get_window(OS.gtk_widget_get_toplevel(shell.handle)));
-							}
-							OS.XSetTransientForHint(OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), awtHandle, xWindow);
-						}
-					});
-				}
+	final AWTEventListener awtListener = event -> {
+		if (event.getID() == WindowEvent.WINDOW_OPENED) {
+			final Window window = (Window) event.getSource();
+			if (window.getParent() == frame) {
+				parent.getDisplay().asyncExec(() -> {
+					if (parent.isDisposed()) return;
+					Shell shell = parent.getShell();
+					loadLibrary();
+					long /*int*/ awtHandle = getAWTHandle(window);
+					if (awtHandle == 0) return;
+					long /*int*/ xWindow;
+					if (OS.GTK3) {
+						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shell.handle));
+					} else {
+						xWindow = OS.gdk_x11_drawable_get_xid(OS.gtk_widget_get_window(OS.gtk_widget_get_toplevel(shell.handle)));
+					}
+					OS.XSetTransientForHint(OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), awtHandle, xWindow);
+				});
 			}
 		}
 	};
 	frame.getToolkit().addAWTEventListener(awtListener, AWTEvent.WINDOW_EVENT_MASK);
-	final Listener shellListener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Deiconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
-						}
-					});
-					break;
-				case SWT.Iconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
-						}
-					});
-					break;
-			}
+	final Listener shellListener = e -> {
+		switch (e.type) {
+			case SWT.Deiconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED)));
+				break;
+			case SWT.Iconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED)));
+				break;
 		}
 	};
 	Shell shell = parent.getShell ();
 	shell.addListener (SWT.Deiconify, shellListener);
 	shell.addListener (SWT.Iconify, shellListener);
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Dispose:
-					Shell shell = parent.getShell ();
-					shell.removeListener (SWT.Deiconify, shellListener);
-					shell.removeListener (SWT.Iconify, shellListener);
-					parent.setVisible(false);
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.getToolkit().removeAWTEventListener(awtListener);
-							frame.dispose ();
-						}
-					});
-					break;
-				case SWT.Resize:
-					final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.setSize (clientArea.width, clientArea.height);
-						}
-					});
-					break;
-			}
+	Listener listener = e -> {
+		switch (e.type) {
+			case SWT.Dispose:
+				Shell shell1 = parent.getShell ();
+				shell1.removeListener (SWT.Deiconify, shellListener);
+				shell1.removeListener (SWT.Iconify, shellListener);
+				parent.setVisible(false);
+				EventQueue.invokeLater(() -> {
+					frame.getToolkit().removeAWTEventListener(awtListener);
+					frame.dispose ();
+				});
+				break;
+			case SWT.Resize:
+				final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+				EventQueue.invokeLater(() -> frame.setSize (clientArea.width, clientArea.height));
+				break;
 		}
 	};
 	parent.addListener (SWT.Dispose, listener);
 	parent.addListener (SWT.Resize, listener);
 
-	parent.getDisplay().asyncExec(new Runnable() {
-		@Override
-		public void run () {
-			if (parent.isDisposed()) return;
-			final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
-			EventQueue.invokeLater(new Runnable () {
-				@Override
-				public void run () {
-					frame.setSize (clientArea.width, clientArea.height);
-					frame.validate ();
-				}
-			});
-		}
+	parent.getDisplay().asyncExec(() -> {
+		if (parent.isDisposed()) return;
+		final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
+		EventQueue.invokeLater(() -> {
+			frame.setSize (clientArea.width, clientArea.height);
+			frame.validate ();
+		});
 	});
 	return frame;
 }
@@ -313,23 +276,15 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	final ComponentListener listener = new ComponentAdapter () {
 		@Override
 		public void componentResized (ComponentEvent e) {
-			display.syncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (shell.isDisposed()) return;
-					Dimension dim = parent.getSize ();
-					shell.setSize (DPIUtil.autoScaleDown(new Point(dim.width, dim.height)));
-				}
+			display.syncExec (() -> {
+				if (shell.isDisposed()) return;
+				Dimension dim = parent.getSize ();
+				shell.setSize (DPIUtil.autoScaleDown(new Point(dim.width, dim.height)));
 			});
 		}
 	};
 	parent.addComponentListener(listener);
-	shell.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			parent.removeComponentListener(listener);
-		}
-	});
+	shell.addListener(SWT.Dispose, event -> parent.removeComponentListener(listener));
 	shell.setVisible (true);
 	return shell;
 }

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
@@ -292,19 +292,16 @@ int Init (long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName,
 	int separator = filename.lastIndexOf (System.getProperty ("file.separator"));	//$NON-NLS-1$
 	filename = filename.substring (separator + 1);
 
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.widget == cancel) {
-				shell.close ();
-			}
-			if (cancelable != null) {
-				int rc = cancelable.Cancel (XPCOM.NS_BINDING_ABORTED);
-				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-			}
-			shell = null;
-			cancelable = null;
+	Listener listener = event -> {
+		if (event.widget == cancel) {
+			shell.close ();
 		}
+		if (cancelable != null) {
+			int rc1 = cancelable.Cancel (XPCOM.NS_BINDING_ABORTED);
+			if (rc1 != XPCOM.NS_OK) Mozilla.error (rc1);
+		}
+		shell = null;
+		cancelable = null;
 	};
 	shell = new Shell (SWT.DIALOG_TRIM);
 	String msg = Compatibility.getMessage ("SWT_Download_File", new Object[] {filename}); //$NON-NLS-1$

@@ -12,8 +12,8 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The SashForm is a composite control that lays out its children in a
@@ -85,12 +85,7 @@ public SashForm(Composite parent, int style) {
 	sashStyle = ((style & SWT.VERTICAL) != 0) ? SWT.HORIZONTAL : SWT.VERTICAL;
 	if ((style & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
 	if ((style & SWT.SMOOTH) != 0) sashStyle |= SWT.SMOOTH;
-	sashListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			onDragSash(e);
-		}
-	};
+	sashListener = e -> onDragSash(e);
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;

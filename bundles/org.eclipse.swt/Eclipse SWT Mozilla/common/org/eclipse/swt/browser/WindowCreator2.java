@@ -191,12 +191,7 @@ int CreateChromeWindow2 (long /*int*/ parent, int chromeFlags, int contextFlags,
 				shell.open ();
 			}
 		});
-		browser.addCloseWindowListener (new CloseWindowListener () {
-			@Override
-			public void close (WindowEvent event) {
-				shell.close ();
-			}
-		});
+		browser.addCloseWindowListener (event -> shell.close ());
 		if (uri != 0) {
 			nsIURI location = new nsIURI (uri);
 			long /*int*/ aSpec = XPCOM.nsEmbedCString_new ();

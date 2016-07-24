@@ -78,56 +78,53 @@ public TreeCursor(Tree parent, int style) {
 	setBackground(null);
 	setForeground(null);
 
-	listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (row != null) {
-				/*
-				 * Detect cases where the cursor position has become invalid and fix it.
-				 * The typical cause of this is programmatic tree changes, such as
-				 * expanding/collapsing and item and creating/disposing items.
-				 */
-				if (row.isDisposed()) {
-					unhookRowColumnListeners();
-					_resize();
-					tree.setFocus();
-					return;
-				}
-				TreeItem current = row;
-				TreeItem parentItem = row.getParentItem();
-				while (parentItem != null && !parentItem.getExpanded()) {
-					current = parentItem;
-					parentItem = current.getParentItem();
-				}
-				if (current != row) {
-					setRowColumn(current, column, false);
-				}
+	listener = event -> {
+		if (row != null) {
+			/*
+			 * Detect cases where the cursor position has become invalid and fix it.
+			 * The typical cause of this is programmatic tree changes, such as
+			 * expanding/collapsing and item and creating/disposing items.
+			 */
+			if (row.isDisposed()) {
+				unhookRowColumnListeners();
+				_resize();
+				tree.setFocus();
+				return;
 			}
-			switch (event.type) {
-				case SWT.Dispose:
-					onDispose(event);
-					break;
-				case SWT.FocusIn:
-				case SWT.FocusOut:
-					redraw();
-					break;
-				case SWT.KeyDown:
-					keyDown(event);
-					break;
-				case SWT.Paint:
-					paint(event);
-					break;
-				case SWT.Traverse:
-					event.doit = true;
-					switch (event.detail) {
-						case SWT.TRAVERSE_ARROW_NEXT:
-						case SWT.TRAVERSE_ARROW_PREVIOUS:
-						case SWT.TRAVERSE_RETURN:
-							event.doit = false;
-							break;
-					}
-					break;
+			TreeItem current = row;
+			TreeItem parentItem = row.getParentItem();
+			while (parentItem != null && !parentItem.getExpanded()) {
+				current = parentItem;
+				parentItem = current.getParentItem();
 			}
+			if (current != row) {
+				setRowColumn(current, column, false);
+			}
+		}
+		switch (event.type) {
+			case SWT.Dispose:
+				onDispose(event);
+				break;
+			case SWT.FocusIn:
+			case SWT.FocusOut:
+				redraw();
+				break;
+			case SWT.KeyDown:
+				keyDown(event);
+				break;
+			case SWT.Paint:
+				paint(event);
+				break;
+			case SWT.Traverse:
+				event.doit = true;
+				switch (event.detail) {
+					case SWT.TRAVERSE_ARROW_NEXT:
+					case SWT.TRAVERSE_ARROW_PREVIOUS:
+					case SWT.TRAVERSE_RETURN:
+						event.doit = false;
+						break;
+				}
+				break;
 		}
 	};
 	int[] events = new int[] { SWT.Dispose, SWT.FocusIn, SWT.FocusOut, SWT.KeyDown, SWT.Paint, SWT.Traverse };
@@ -135,23 +132,20 @@ public TreeCursor(Tree parent, int style) {
 		addListener(events[i], listener);
 	}
 
-	treeListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Collapse:
-					treeCollapse(event);
-					break;
-				case SWT.Expand:
-					treeExpand(event);
-					break;
-				case SWT.FocusIn:
-					treeFocusIn(event);
-					break;
-				case SWT.MouseDown:
-					treeMouseDown(event);
-					break;
-			}
+	treeListener = event -> {
+		switch (event.type) {
+			case SWT.Collapse:
+				treeCollapse(event);
+				break;
+			case SWT.Expand:
+				treeExpand(event);
+				break;
+			case SWT.FocusIn:
+				treeFocusIn(event);
+				break;
+			case SWT.MouseDown:
+				treeMouseDown(event);
+				break;
 		}
 	};
 	tree.addListener(SWT.Collapse, treeListener);
@@ -159,78 +153,67 @@ public TreeCursor(Tree parent, int style) {
 	tree.addListener(SWT.FocusIn, treeListener);
 	tree.addListener(SWT.MouseDown, treeListener);
 
-	disposeItemListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			TreeItem currentItem = row;
-			while (currentItem != null) {
-				currentItem.removeListener(SWT.Dispose, disposeItemListener);
-				currentItem = currentItem.getParentItem();
-			}
-			TreeItem disposedItem = (TreeItem)event.widget;
-			TreeItem parentItem = disposedItem.getParentItem();
-			if (parentItem != null) {
-				setRowColumn(parentItem, column, true);
+	disposeItemListener = event -> {
+		TreeItem currentItem = row;
+		while (currentItem != null) {
+			currentItem.removeListener(SWT.Dispose, disposeItemListener);
+			currentItem = currentItem.getParentItem();
+		}
+		TreeItem disposedItem = (TreeItem)event.widget;
+		TreeItem parentItem = disposedItem.getParentItem();
+		if (parentItem != null) {
+			setRowColumn(parentItem, column, true);
+		} else {
+			if (tree.getItemCount() == 1) {
+				unhookRowColumnListeners();
 			} else {
-				if (tree.getItemCount() == 1) {
+				TreeItem newFocus = null;
+				int rowIndex = tree.indexOf(disposedItem);
+				if (rowIndex != 0) {
+					TreeItem previousItem = tree.getItem(rowIndex - 1);
+					if (!previousItem.isDisposed()) {
+						newFocus = previousItem;
+					}
+				}
+				if (newFocus == null && rowIndex + 1 < tree.getItemCount()) {
+					TreeItem nextItem = tree.getItem(rowIndex + 1);
+					if (!nextItem.isDisposed()) {
+						newFocus = nextItem;
+					}
+				}
+				if (newFocus != null) {
+					setRowColumn(newFocus, column, true);
+				} else {
 					unhookRowColumnListeners();
-				} else {
-					TreeItem newFocus = null;
-					int rowIndex = tree.indexOf(disposedItem);
-					if (rowIndex != 0) {
-						TreeItem previousItem = tree.getItem(rowIndex - 1);
-						if (!previousItem.isDisposed()) {
-							newFocus = previousItem;
-						}
-					}
-					if (newFocus == null && rowIndex + 1 < tree.getItemCount()) {
-						TreeItem nextItem = tree.getItem(rowIndex + 1);
-						if (!nextItem.isDisposed()) {
-							newFocus = nextItem;
-						}
-					}
-					if (newFocus != null) {
-						setRowColumn(newFocus, column, true);
-					} else {
-						unhookRowColumnListeners();
-					}
 				}
 			}
-			_resize();
 		}
+		_resize();
 	};
-	disposeColumnListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (column != null) {
-				if (tree.getColumnCount() == 1) {
-					column = null;
-				} else {
-					int columnIndex = tree.indexOf(column);
-					int positionIndex = columnIndex;
-					int[] columnOrder = tree.getColumnOrder();
-					for (int i = 0; i < columnOrder.length; i++) {
-						if (columnOrder[i] == columnIndex) {
-							positionIndex = i;
-							break;
-						}
-					}
-					if (positionIndex == columnOrder.length - 1) {
-						setRowColumn(row, tree.getColumn(columnOrder[positionIndex - 1]), true);
-					} else {
-						setRowColumn(row, tree.getColumn(columnOrder[positionIndex + 1]), true);
+	disposeColumnListener = event -> {
+		if (column != null) {
+			if (tree.getColumnCount() == 1) {
+				column = null;
+			} else {
+				int columnIndex = tree.indexOf(column);
+				int positionIndex = columnIndex;
+				int[] columnOrder = tree.getColumnOrder();
+				for (int i = 0; i < columnOrder.length; i++) {
+					if (columnOrder[i] == columnIndex) {
+						positionIndex = i;
+						break;
 					}
 				}
+				if (positionIndex == columnOrder.length - 1) {
+					setRowColumn(row, tree.getColumn(columnOrder[positionIndex - 1]), true);
+				} else {
+					setRowColumn(row, tree.getColumn(columnOrder[positionIndex + 1]), true);
+				}
 			}
-			_resize();
 		}
+		_resize();
 	};
-	resizeListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			_resize();
-		}
-	};
+	resizeListener = event -> _resize();
 	ScrollBar hBar = tree.getHorizontalBar();
 	if (hBar != null) {
 		hBar.addListener(SWT.Selection, resizeListener);
@@ -889,22 +872,16 @@ void treeCollapse(Event event) {
 		parentItem = parentItem.getParentItem();
 	}
 
-	getDisplay().asyncExec(new Runnable() {
-		@Override
-		public void run() {
-			if (isDisposed()) return;
-			setRowColumn(row, column, true);
-		}
+	getDisplay().asyncExec(() -> {
+		if (isDisposed()) return;
+		setRowColumn(row, column, true);
 	});
 }
 
 void treeExpand(Event event) {
-	getDisplay().asyncExec(new Runnable() {
-		@Override
-		public void run() {
-			if (isDisposed()) return;
-			setRowColumn(row, column, true);
-		}
+	getDisplay().asyncExec(() -> {
+		if (isDisposed()) return;
+		setRowColumn(row, column, true);
 	});
 }
 

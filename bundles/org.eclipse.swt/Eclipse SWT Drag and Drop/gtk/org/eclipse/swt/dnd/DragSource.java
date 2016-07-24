@@ -170,18 +170,15 @@ public DragSource(Control control, int style) {
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
 
-	controlListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.type == SWT.Dispose) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.dispose();
-				}
+	controlListener = event -> {
+		if (event.type == SWT.Dispose) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.dispose();
 			}
-			if (event.type == SWT.DragDetect) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag(event);
-				}
+		}
+		if (event.type == SWT.DragDetect) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.drag(event);
 			}
 		}
 	};
@@ -197,12 +194,7 @@ public DragSource(Control control, int style) {
 		dragEffect = new TableDragSourceEffect((Table) control);
 	}
 
-	this.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, e -> onDispose());
 }
 
 static int checkStyle (int style) {

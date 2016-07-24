@@ -143,22 +143,14 @@ public DropTarget(Control control, int style) {
 	if (COM.RegisterDragDrop( control.handle, iDropTarget.getAddress()) != COM.S_OK)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 
-	controlListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (!DropTarget.this.isDisposed()){
-				DropTarget.this.dispose();
-			}
+	controlListener = event -> {
+		if (!DropTarget.this.isDisposed()){
+			DropTarget.this.dispose();
 		}
 	};
 	control.addListener (SWT.Dispose, controlListener);
 
-	this.addListener(SWT.Dispose, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, event -> onDispose());
 
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {

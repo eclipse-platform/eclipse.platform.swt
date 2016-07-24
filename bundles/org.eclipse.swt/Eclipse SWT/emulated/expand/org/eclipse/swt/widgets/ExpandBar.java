@@ -11,8 +11,8 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -85,20 +85,17 @@ public ExpandBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	items = new ExpandItem [4];
 
-	listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Dispose:		onDispose (event);        	break;
-				case SWT.MouseDown:		onMouseDown (event);   		break;
-				case SWT.MouseUp:		onMouseUp (event);   		break;
-				case SWT.Paint:			onPaint (event);     		break;
-				case SWT.Resize:		onResize ();     			break;
-				case SWT.KeyDown:		onKeyDown (event);    		break;
-				case SWT.FocusIn:		onFocus ();     			break;
-				case SWT.FocusOut:		onFocus ();     			break;
-				case SWT.Traverse:		onTraverse (event);   		break;
-			}
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose:		onDispose (event);        	break;
+			case SWT.MouseDown:		onMouseDown (event);   		break;
+			case SWT.MouseUp:		onMouseUp (event);   		break;
+			case SWT.Paint:			onPaint (event);     		break;
+			case SWT.Resize:		onResize ();     			break;
+			case SWT.KeyDown:		onKeyDown (event);    		break;
+			case SWT.FocusIn:		onFocus ();     			break;
+			case SWT.FocusOut:		onFocus ();     			break;
+			case SWT.Traverse:		onTraverse (event);   		break;
 		}
 	};
 	addListener (SWT.Dispose, listener);
@@ -113,12 +110,7 @@ public ExpandBar (Composite parent, int style) {
 
 	ScrollBar verticalBar = getVerticalBar ();
 	if (verticalBar != null) {
-		verticalBar.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				onScroll (event);
-			}
-		});
+		verticalBar.addListener (SWT.Selection, event -> onScroll (event));
 	}
 }
 

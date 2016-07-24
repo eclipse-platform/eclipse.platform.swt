@@ -161,30 +161,22 @@ public DragSource(Control control, int style) {
 	createCOMInterfaces();
 	this.AddRef();
 
-	controlListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (event.type == SWT.Dispose) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.dispose();
-				}
+	controlListener = event -> {
+		if (event.type == SWT.Dispose) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.dispose();
 			}
-			if (event.type == SWT.DragDetect) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag(event);
-				}
+		}
+		if (event.type == SWT.DragDetect) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.drag(event);
 			}
 		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
 
-	this.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			DragSource.this.onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, e -> DragSource.this.onDispose());
 
 	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
 	if (effect instanceof DragSourceEffect) {

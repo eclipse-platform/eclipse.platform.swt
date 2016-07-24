@@ -174,23 +174,13 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int scaledHeight = Math.round ((float) height * scaleFactor);
 	switch (autoScaleMethod) {
 	case SMOOTH:
-		Image original = new Image (device, new ImageDataProvider () {
-			@Override
-			public ImageData getImageData (int zoom) {
-				return imageData;
-			}
-		});
+		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
 
 		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 		resultData.alphaData = new byte [scaledWidth * scaledHeight];
 
-		Image resultImage = new Image (device, new ImageDataProvider () {
-			@Override
-			public ImageData getImageData (int zoom) {
-				return resultData;
-			}
-		});
+		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
 		GC gc = new GC (resultImage);
 		gc.setAntialias (SWT.ON);
 		gc.drawImage (original, 0, 0, DPIUtil.autoScaleDown (width), DPIUtil.autoScaleDown (height),

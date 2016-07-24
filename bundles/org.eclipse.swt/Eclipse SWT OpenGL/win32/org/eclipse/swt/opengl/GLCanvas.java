@@ -11,9 +11,9 @@
 package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.opengl.win32.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
@@ -93,14 +93,11 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		WGL.wglShareLists (data.shareContext.context, context);
 	}
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Dispose:
-					WGL.wglDeleteContext (context);
-					break;
-			}
+	Listener listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose:
+				WGL.wglDeleteContext (context);
+				break;
 		}
 	};
 	addListener (SWT.Dispose, listener);

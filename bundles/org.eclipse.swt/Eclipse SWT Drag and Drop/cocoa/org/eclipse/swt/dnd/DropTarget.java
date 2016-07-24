@@ -393,22 +393,14 @@ public DropTarget(Control control, int style) {
 
 	control.setData(DND.DROP_TARGET_KEY, this);
 
-	controlListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (!DropTarget.this.isDisposed()) {
-				DropTarget.this.dispose();
-			}
+	controlListener = event -> {
+		if (!DropTarget.this.isDisposed()) {
+			DropTarget.this.dispose();
 		}
 	};
 	control.addListener (SWT.Dispose, controlListener);
 
-	this.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, event -> onDispose());
 
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {

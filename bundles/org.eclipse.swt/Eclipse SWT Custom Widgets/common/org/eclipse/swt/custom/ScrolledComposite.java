@@ -11,7 +11,6 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -148,58 +147,39 @@ public ScrolledComposite(Composite parent, int style) {
 	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) {
 		hBar.setVisible(false);
-		hBar.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				hScroll();
-			}
-		});
+		hBar.addListener (SWT.Selection, e -> hScroll());
 	}
 
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null) {
 		vBar.setVisible(false);
-		vBar.addListener (SWT.Selection, new Listener () {
-			@Override
-			public void handleEvent (Event e) {
-				vScroll();
-			}
-		});
+		vBar.addListener (SWT.Selection, e -> vScroll());
 	}
 
-	contentListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (e.type != SWT.Resize) return;
-			layout(false);
-		}
+	contentListener = e -> {
+		if (e.type != SWT.Resize) return;
+		layout(false);
 	};
 
-	filter = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (event.type == SWT.FocusIn) {
-				if (!showNextFocusedControl) {
-					showNextFocusedControl = true;
-				} else if (event.widget instanceof Control) {
-					Control control = (Control) event.widget;
-					if (contains(control)) showControl(control);
-				}
-			} else {
-				Widget w = event.widget;
-				if (w instanceof Control) {
-					showNextFocusedControl = w.getDisplay().getActiveShell() == ((Control) w).getShell();
-				}
+	filter = event -> {
+		if (event.type == SWT.FocusIn) {
+			if (!showNextFocusedControl) {
+				showNextFocusedControl = true;
+			} else if (event.widget instanceof Control) {
+				Control control = (Control) event.widget;
+				if (contains(control)) showControl(control);
+			}
+		} else {
+			Widget w = event.widget;
+			if (w instanceof Control) {
+				showNextFocusedControl = w.getDisplay().getActiveShell() == ((Control) w).getShell();
 			}
 		}
 	};
 
-	addDisposeListener(new DisposeListener() {
-		@Override
-		public void widgetDisposed(DisposeEvent e) {
-			getDisplay().removeFilter(SWT.FocusIn, filter);
-			getDisplay().removeFilter(SWT.FocusOut, filter);
-		}
+	addDisposeListener(e -> {
+		getDisplay().removeFilter(SWT.FocusIn, filter);
+		getDisplay().removeFilter(SWT.FocusOut, filter);
 	});
 }
 

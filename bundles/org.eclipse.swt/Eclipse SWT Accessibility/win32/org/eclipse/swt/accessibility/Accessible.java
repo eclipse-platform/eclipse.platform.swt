@@ -2344,14 +2344,11 @@ public class Accessible {
 					osAccessible = new Accessible(this, addr[0]);
 					osAccessible.item = item;
 					if (!found) {
-						item.addListener(SWT.Dispose, new Listener() {
-							@Override
-							public void handleEvent(Event e) {
-								for (int i = 0; i < children.size(); i++) {
-									Accessible accChild = children.get(i);
-									if (accChild.item == item) {
-										accChild.dispose();
-									}
+						item.addListener(SWT.Dispose, e -> {
+							for (int i = 0; i < children.size(); i++) {
+								Accessible accChild = children.get(i);
+								if (accChild.item == item) {
+									accChild.dispose();
 								}
 							}
 						});

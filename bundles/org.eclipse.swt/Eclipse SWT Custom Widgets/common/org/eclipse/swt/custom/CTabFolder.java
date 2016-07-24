@@ -319,28 +319,25 @@ void init(int style) {
 	updateTabHeight(false);
 
 	// Add all listeners
-	listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Dispose:          onDispose(event); break;
-				case SWT.DragDetect:       onDragDetect(event); break;
-				case SWT.FocusIn:          onFocus(event);	break;
-				case SWT.FocusOut:         onFocus(event);	break;
-				case SWT.KeyDown:          onKeyDown(event); break;
-				case SWT.MenuDetect:       onMenuDetect(event); break;
-				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
-				case SWT.MouseDown:        onMouse(event);	break;
-				case SWT.MouseEnter:       onMouse(event);	break;
-				case SWT.MouseExit:        onMouse(event);	break;
-				case SWT.MouseHover:	   onMouse(event); break;
-				case SWT.MouseMove:        onMouse(event); break;
-				case SWT.MouseUp:          onMouse(event); break;
-				case SWT.Paint:            onPaint(event);	break;
-				case SWT.Resize:           onResize(event);	break;
-				case SWT.Traverse:         onTraverse(event); break;
-				case SWT.Selection:        onSelection(event); break;
-			}
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose:          onDispose(event); break;
+			case SWT.DragDetect:       onDragDetect(event); break;
+			case SWT.FocusIn:          onFocus(event);	break;
+			case SWT.FocusOut:         onFocus(event);	break;
+			case SWT.KeyDown:          onKeyDown(event); break;
+			case SWT.MenuDetect:       onMenuDetect(event); break;
+			case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
+			case SWT.MouseDown:        onMouse(event);	break;
+			case SWT.MouseEnter:       onMouse(event);	break;
+			case SWT.MouseExit:        onMouse(event);	break;
+			case SWT.MouseHover:	   onMouse(event); break;
+			case SWT.MouseMove:        onMouse(event); break;
+			case SWT.MouseUp:          onMouse(event); break;
+			case SWT.Paint:            onPaint(event);	break;
+			case SWT.Resize:           onResize(event);	break;
+			case SWT.Traverse:         onTraverse(event); break;
+			case SWT.Selection:        onSelection(event); break;
 		}
 	};
 
@@ -1519,27 +1516,21 @@ void initAccessible() {
 		}
 	});
 
-	addListener(SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (isFocusControl()) {
-				if (selectedIndex == -1) {
-					accessible.setFocus(ACC.CHILDID_SELF);
-				} else {
-					accessible.setFocus(selectedIndex);
-				}
-			}
-		}
-	});
-
-	addListener(SWT.FocusIn, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
+	addListener(SWT.Selection, event -> {
+		if (isFocusControl()) {
 			if (selectedIndex == -1) {
 				accessible.setFocus(ACC.CHILDID_SELF);
 			} else {
 				accessible.setFocus(selectedIndex);
 			}
+		}
+	});
+
+	addListener(SWT.FocusIn, event -> {
+		if (selectedIndex == -1) {
+			accessible.setFocus(ACC.CHILDID_SELF);
+		} else {
+			accessible.setFocus(selectedIndex);
 		}
 	});
 }
@@ -3795,13 +3786,10 @@ boolean updateTabHeight(boolean force){
 void updateFolder (int flags) {
 	updateFlags |= flags;
 	if (updateRun != null) return;
-	updateRun = new Runnable() {
-		@Override
-		public void run() {
-			updateRun = null;
-			if (isDisposed()) return;
-			runUpdate();
-		}
+	updateRun = () -> {
+		updateRun = null;
+		if (isDisposed()) return;
+		runUpdate();
 	};
 	getDisplay().asyncExec(updateRun);
 }

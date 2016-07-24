@@ -308,14 +308,11 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[2];
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			user[0] = userText.getText ();
-			password[0] = passwordText.getText ();
-			result[0] = event.widget == buttons[1];
-			shell.close ();
-		}
+	Listener listener = event -> {
+		user[0] = userText.getText ();
+		password[0] = passwordText.getText ();
+		result[0] = event.widget == buttons[1];
+		shell.close ();
 	};
 
 	Composite composite = new Composite (shell, SWT.NONE);

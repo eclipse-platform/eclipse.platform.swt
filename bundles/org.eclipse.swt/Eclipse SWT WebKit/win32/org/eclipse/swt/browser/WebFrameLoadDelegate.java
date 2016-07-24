@@ -583,15 +583,12 @@ boolean showCertificateDialog (long /*int*/ webView, final String failingUrlStri
 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[3];
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.widget == buttons[2]) {
-				showCertificate (shell, certificate);
-			} else {
-				result[0] = event.widget == buttons[0];
-				shell.close();
-			}
+	Listener listener = event -> {
+		if (event.widget == buttons[2]) {
+			showCertificate (shell, certificate);
+		} else {
+			result[0] = event.widget == buttons[0];
+			shell.close();
 		}
 	};
 

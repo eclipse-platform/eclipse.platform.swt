@@ -100,21 +100,13 @@ public TreeEditor (Tree tree) {
 			layout();
 		}
 	};
-	timer = new Runnable () {
-		@Override
-		public void run() {
-			layout ();
-		}
-	};
+	timer = () -> layout ();
 	treeListener = new TreeListener () {
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				if (editor == null || editor.isDisposed()) return;
-				if (TreeEditor.this.tree.isDisposed()) return;
-				layout();
-				editor.setVisible(true);
-			}
+		final Runnable runnable = () -> {
+			if (editor == null || editor.isDisposed()) return;
+			if (TreeEditor.this.tree.isDisposed()) return;
+			layout();
+			editor.setVisible(true);
 		};
 		@Override
 		public void treeCollapsed(TreeEvent e) {

@@ -222,47 +222,35 @@ void createPopupShell(int year, int month, int day) {
 	if (font != null) popupCalendar.setFont (font);
 
 	if (clickListener == null) {
-		clickListener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (event.widget instanceof Control && event.widget != DateTime.this) {
-					Control c = (Control)event.widget;
-					if (c.getShell() != popupShell) {
-						hideCalendar();
-					}
+		clickListener = event -> {
+			if (event.widget instanceof Control && event.widget != DateTime.this) {
+				Control c = (Control)event.widget;
+				if (c.getShell() != popupShell) {
+					hideCalendar();
 				}
 			}
 		};
 	}
 
-	popupCalendar.addListener (SWT.Selection, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			int year = popupCalendar.getYear ();
-			int month = popupCalendar.getMonth ();
-			int day = popupCalendar.getDay ();
-			setDate(year, month, day);
-			Event e = new Event ();
-			e.time = event.time;
-			notifyListeners (SWT.Selection, e);
-			hideCalendar();
-		}
+	popupCalendar.addListener (SWT.Selection, event -> {
+		int year1 = popupCalendar.getYear ();
+		int month1 = popupCalendar.getMonth ();
+		int day1 = popupCalendar.getDay ();
+		setDate(year1, month1, day1);
+		Event e = new Event ();
+		e.time = event.time;
+		notifyListeners (SWT.Selection, e);
+		hideCalendar();
 	});
 
-	addListener (SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			if (popupShell != null && !popupShell.isDisposed ()) {
-				disposePopupShell();
-			}
+	addListener (SWT.Dispose, event -> {
+		if (popupShell != null && !popupShell.isDisposed ()) {
+			disposePopupShell();
 		}
 	});
-	addListener(SWT.FocusOut, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			hideCalendar();
-			display.removeFilter(SWT.MouseDown, clickListener);
-		}
+	addListener(SWT.FocusOut, event -> {
+		hideCalendar();
+		display.removeFilter(SWT.MouseDown, clickListener);
 	});
 	if (year != -1) popupCalendar.setDate(year, month, day);
 }

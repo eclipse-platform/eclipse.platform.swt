@@ -333,191 +333,182 @@ class Mozilla extends WebBrowser {
 			}
 		};
 
-		MozillaClearSessions = new Runnable () {
-			@Override
-			public void run () {
-				if (!Initialized) return;
-				long /*int*/[] result = new long /*int*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-				result[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieManager.class), result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-				serviceManager.Release ();
+		MozillaClearSessions = () -> {
+			if (!Initialized) return;
+			long /*int*/[] result = new long /*int*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+			result[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieManager.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			serviceManager.Release ();
 
-				nsICookieManager manager = new nsICookieManager (result[0]);
-				result[0] = 0;
-				rc = manager.GetEnumerator (result);
-				if (rc != XPCOM.NS_OK) error (rc);
+			nsICookieManager manager = new nsICookieManager (result[0]);
+			result[0] = 0;
+			rc = manager.GetEnumerator (result);
+			if (rc != XPCOM.NS_OK) error (rc);
 
-				nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result[0]);
-				int[] moreElements = new int[1]; /* PRBool */
+			nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result[0]);
+			int[] moreElements = new int[1]; /* PRBool */
+			rc = enumerator.HasMoreElements (moreElements);
+			if (rc != XPCOM.NS_OK) error (rc);
+			while (moreElements[0] != 0) {
+				result[0] = 0;
+				rc = enumerator.GetNext (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				nsICookie cookie = new nsICookie (result[0]);
+				long[] expires = new long[1];
+				rc = cookie.GetExpires (expires);
+				if (expires[0] == 0) {
+					/* indicates a session cookie */
+					long /*int*/ domain = XPCOM.nsEmbedCString_new ();
+					long /*int*/ name = XPCOM.nsEmbedCString_new ();
+					long /*int*/ path = XPCOM.nsEmbedCString_new ();
+					cookie.GetHost (domain);
+					cookie.GetName (name);
+					cookie.GetPath (path);
+					rc = manager.Remove (domain, name, path, 0);
+					XPCOM.nsEmbedCString_delete (domain);
+					XPCOM.nsEmbedCString_delete (name);
+					XPCOM.nsEmbedCString_delete (path);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+				cookie.Release ();
 				rc = enumerator.HasMoreElements (moreElements);
 				if (rc != XPCOM.NS_OK) error (rc);
-				while (moreElements[0] != 0) {
-					result[0] = 0;
-					rc = enumerator.GetNext (result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					nsICookie cookie = new nsICookie (result[0]);
-					long[] expires = new long[1];
-					rc = cookie.GetExpires (expires);
-					if (expires[0] == 0) {
-						/* indicates a session cookie */
-						long /*int*/ domain = XPCOM.nsEmbedCString_new ();
-						long /*int*/ name = XPCOM.nsEmbedCString_new ();
-						long /*int*/ path = XPCOM.nsEmbedCString_new ();
-						cookie.GetHost (domain);
-						cookie.GetName (name);
-						cookie.GetPath (path);
-						rc = manager.Remove (domain, name, path, 0);
-						XPCOM.nsEmbedCString_delete (domain);
-						XPCOM.nsEmbedCString_delete (name);
-						XPCOM.nsEmbedCString_delete (path);
-						if (rc != XPCOM.NS_OK) error (rc);
-					}
-					cookie.Release ();
-					rc = enumerator.HasMoreElements (moreElements);
-					if (rc != XPCOM.NS_OK) error (rc);
-				}
-				enumerator.Release ();
-				manager.Release ();
 			}
+			enumerator.Release ();
+			manager.Release ();
 		};
 
-		MozillaGetCookie = new Runnable() {
-			@Override
-			public void run() {
-				if (!Initialized) return;
+		MozillaGetCookie = () -> {
+			if (!Initialized) return;
 
-				long /*int*/[] result = new long /*int*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			long /*int*/[] result = new long /*int*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+			result[0] = 0;
+			rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-				nsIIOService ioService = new nsIIOService (result[0]);
-				result[0] = 0;
-				byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
-				long /*int*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
-				rc = ioService.NewURI (aSpec, null, 0, result);
-				XPCOM.nsEmbedCString_delete (aSpec);
-				ioService.Release ();
-				if (rc != XPCOM.NS_OK) {
-					serviceManager.Release ();
-					return;
-				}
-				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			nsIIOService ioService = new nsIIOService (result[0]);
+			result[0] = 0;
+			byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
+			long /*int*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
+			rc = ioService.NewURI (aSpec, null, 0, result);
+			XPCOM.nsEmbedCString_delete (aSpec);
+			ioService.Release ();
+			if (rc != XPCOM.NS_OK) {
+				serviceManager.Release ();
+				return;
+			}
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
 
-				nsIURI aURI = new nsIURI (result[0]);
-				result[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			nsIURI aURI = new nsIURI (result[0]);
+			result[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-				nsICookieService cookieService = new nsICookieService (result[0]);
-				result[0] = 0;
-				rc = cookieService.GetCookieString (aURI.getAddress(), 0, result);
-				cookieService.Release ();
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) {
-					aURI.Release ();
-					serviceManager.Release ();
-					return;
-				}
-				long /*int*/ cookieString = result[0];
-				result[0] = 0;
+			nsICookieService cookieService = new nsICookieService (result[0]);
+			result[0] = 0;
+			rc = cookieService.GetCookieString (aURI.getAddress(), 0, result);
+			cookieService.Release ();
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) {
 				aURI.Release ();
 				serviceManager.Release ();
+				return;
+			}
+			long /*int*/ cookieString = result[0];
+			result[0] = 0;
+			aURI.Release ();
+			serviceManager.Release ();
 
-				int length = C.strlen (cookieString);
-				bytes = new byte[length];
-				XPCOM.memmove (bytes, cookieString, length);
+			int length = C.strlen (cookieString);
+			bytes = new byte[length];
+			XPCOM.memmove (bytes, cookieString, length);
 
-				/*
-				 * NS_Free was introduced in mozilla 1.8, prior to this the standard free() call
-				 * was to be used.  Try to free the cookie string with NS_Free first, and if it fails
-				 * then assume that an older mozilla is being used, and use C's free() instead.
-				 */
-				if (pathBytes_NSFree == null) {
-					String mozillaPath = getMozillaPath ();
-					mozillaPath += MozillaDelegate.getLibraryName (mozillaPath) + '\0';
-					pathBytes_NSFree = mozillaPath.getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-				}
-				if (!XPCOM.NS_Free (pathBytes_NSFree, cookieString)) {
-					C.free (cookieString);
-				}
+			/*
+			 * NS_Free was introduced in mozilla 1.8, prior to this the standard free() call
+			 * was to be used.  Try to free the cookie string with NS_Free first, and if it fails
+			 * then assume that an older mozilla is being used, and use C's free() instead.
+			 */
+			if (pathBytes_NSFree == null) {
+				String mozillaPath = getMozillaPath ();
+				mozillaPath += MozillaDelegate.getLibraryName (mozillaPath) + '\0';
+				pathBytes_NSFree = mozillaPath.getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
+			}
+			if (!XPCOM.NS_Free (pathBytes_NSFree, cookieString)) {
+				C.free (cookieString);
+			}
 
-				String allCookies = new String (MozillaDelegate.mbcsToWcs (null, bytes));
-				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
-				while (tokenizer.hasMoreTokens ()) {
-					String cookie = tokenizer.nextToken ();
-					int index = cookie.indexOf ('=');
-					if (index != -1) {
-						String name = cookie.substring (0, index).trim ();
-						if (name.equals (CookieName)) {
-							CookieValue = cookie.substring (index + 1).trim ();
-							return;
-						}
+			String allCookies = new String (MozillaDelegate.mbcsToWcs (null, bytes));
+			StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+			while (tokenizer.hasMoreTokens ()) {
+				String cookie = tokenizer.nextToken ();
+				int index = cookie.indexOf ('=');
+				if (index != -1) {
+					String name = cookie.substring (0, index).trim ();
+					if (name.equals (CookieName)) {
+						CookieValue = cookie.substring (index + 1).trim ();
+						return;
 					}
 				}
 			}
 		};
 
-		MozillaSetCookie = new Runnable() {
-			@Override
-			public void run() {
-				if (!Initialized) return;
+		MozillaSetCookie = () -> {
+			if (!Initialized) return;
 
-				long /*int*/[] result = new long /*int*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			long /*int*/[] result = new long /*int*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-				result[0] = 0;
-				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+			result[0] = 0;
+			rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, IIDStore.GetIID (nsIIOService.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-				nsIIOService ioService = new nsIIOService (result[0]);
-				result[0] = 0;
-				byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
-				long /*int*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
-				rc = ioService.NewURI (aSpec, null, 0, result);
-				XPCOM.nsEmbedCString_delete (aSpec);
-				ioService.Release ();
-				if (rc != XPCOM.NS_OK) {
-					serviceManager.Release ();
-					return;
-				}
-				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
-
-				nsIURI aURI = new nsIURI(result[0]);
-				result[0] = 0;
-				byte[] aCookie = MozillaDelegate.wcsToMbcs (null, CookieValue, true);
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-				nsICookieService cookieService = new nsICookieService (result[0]);
-				result[0] = 0;
-				rc = cookieService.SetCookieString (aURI.getAddress(), 0, aCookie, 0);
-				cookieService.Release ();
-				aURI.Release ();
+			nsIIOService ioService = new nsIIOService (result[0]);
+			result[0] = 0;
+			byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
+			long /*int*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
+			rc = ioService.NewURI (aSpec, null, 0, result);
+			XPCOM.nsEmbedCString_delete (aSpec);
+			ioService.Release ();
+			if (rc != XPCOM.NS_OK) {
 				serviceManager.Release ();
-				CookieResult = rc == 0;
+				return;
 			}
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+
+			nsIURI aURI = new nsIURI(result[0]);
+			result[0] = 0;
+			byte[] aCookie = MozillaDelegate.wcsToMbcs (null, CookieValue, true);
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICookieService.class), result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+			nsICookieService cookieService = new nsICookieService (result[0]);
+			result[0] = 0;
+			rc = cookieService.SetCookieString (aURI.getAddress(), 0, aCookie, 0);
+			cookieService.Release ();
+			aURI.Release ();
+			serviceManager.Release ();
+			CookieResult = rc == 0;
 		};
 	}
 
@@ -940,95 +931,89 @@ public void create (Composite parent, int style) {
 
 	delegate.init ();
 
-	listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Dispose: {
-					/* make this handler run after other dispose listeners */
-					if (ignoreDispose) {
-						ignoreDispose = false;
-						break;
-					}
-					ignoreDispose = true;
-					browser.notifyListeners (event.type, event);
-					event.type = SWT.NONE;
-					onDispose (event.display);
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose: {
+				/* make this handler run after other dispose listeners */
+				if (ignoreDispose) {
+					ignoreDispose = false;
 					break;
 				}
-				case SWT.Resize: onResize (); break;
-				case SWT.FocusIn: {
-					Activate ();
+				ignoreDispose = true;
+				browser.notifyListeners (event.type, event);
+				event.type = SWT.NONE;
+				onDispose (event.display);
+				break;
+			}
+			case SWT.Resize: onResize (); break;
+			case SWT.FocusIn: {
+				Activate ();
 
-					/* if tabbing onto a page for the first time then full-Browser focus ring should be shown */
+				/* if tabbing onto a page for the first time then full-Browser focus ring should be shown */
 
-					long /*int*/[] result = new long /*int*/[1];
-					int rc = XPCOM.NS_GetServiceManager (result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-					result[0] = 0;
-					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class), result);
-					serviceManager.Release ();
+				long /*int*/[] result1 = new long /*int*/[1];
+				int rc1 = XPCOM.NS_GetServiceManager (result1);
+				if (rc1 != XPCOM.NS_OK) error (rc1);
+				if (result1[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				nsIServiceManager serviceManager = new nsIServiceManager (result1[0]);
+				result1[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+				rc1 = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class), result1);
+				serviceManager.Release ();
 
-					if (rc == XPCOM.NS_OK && result[0] != 0) {
-						nsIFocusManager focusManager = new nsIFocusManager (result[0]);
-						result[0] = 0;
-						rc = focusManager.GetFocusedElement (result);
-						if (rc == XPCOM.NS_OK) {
-							if (result[0] != 0) {
-								new nsISupports (result[0]).Release ();
-								result[0] = 0;
-							} else {
-								/* show full browser focus ring */
-								rc = webBrowser.GetContentDOMWindow (result);
-								if (rc == XPCOM.NS_OK && result[0] != 0) {
-									nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
-									result[0] = 0;
-									rc = domWindow.GetDocument (result);
-									domWindow.Release ();
-									if (rc == XPCOM.NS_OK && result[0] != 0) {
-										nsIDOMDocument domDocument = new nsIDOMDocument (result[0]);
-										result[0] = 0;
-										rc = domDocument.GetDocumentElement (result);
-										domDocument.Release ();
-										if (rc == XPCOM.NS_OK && result[0] != 0) {
-											rc = focusManager.SetFocus (result[0], nsIFocusManager.FLAG_BYKEY);
-											new nsISupports(result[0]).Release ();
-											result[0] = 0;
-										}
+				if (rc1 == XPCOM.NS_OK && result1[0] != 0) {
+					nsIFocusManager focusManager = new nsIFocusManager (result1[0]);
+					result1[0] = 0;
+					rc1 = focusManager.GetFocusedElement (result1);
+					if (rc1 == XPCOM.NS_OK) {
+						if (result1[0] != 0) {
+							new nsISupports (result1[0]).Release ();
+							result1[0] = 0;
+						} else {
+							/* show full browser focus ring */
+							rc1 = webBrowser.GetContentDOMWindow (result1);
+							if (rc1 == XPCOM.NS_OK && result1[0] != 0) {
+								nsIDOMWindow domWindow = new nsIDOMWindow (result1[0]);
+								result1[0] = 0;
+								rc1 = domWindow.GetDocument (result1);
+								domWindow.Release ();
+								if (rc1 == XPCOM.NS_OK && result1[0] != 0) {
+									nsIDOMDocument domDocument = new nsIDOMDocument (result1[0]);
+									result1[0] = 0;
+									rc1 = domDocument.GetDocumentElement (result1);
+									domDocument.Release ();
+									if (rc1 == XPCOM.NS_OK && result1[0] != 0) {
+										rc1 = focusManager.SetFocus (result1[0], nsIFocusManager.FLAG_BYKEY);
+										new nsISupports(result1[0]).Release ();
+										result1[0] = 0;
 									}
 								}
 							}
 						}
-						focusManager.Release ();
 					}
-					break;
+					focusManager.Release ();
 				}
-				case SWT.Activate: Activate (); break;
-				case SWT.Deactivate: {
-					Display display = event.display;
-					if (Mozilla.this.browser == display.getFocusControl ()) Deactivate ();
-					break;
-				}
-				case SWT.Show: {
-					/*
-					* Feature in GTK Mozilla.  Mozilla does not show up when
-					* its container (a GTK fixed handle) is made visible
-					* after having been hidden.  The workaround is to reset
-					* its size after the container has been made visible.
-					*/
-					Display display = event.display;
-					display.asyncExec(new Runnable () {
-						@Override
-						public void run() {
-							if (browser.isDisposed ()) return;
-							onResize ();
-						}
-					});
-					break;
-				}
+				break;
+			}
+			case SWT.Activate: Activate (); break;
+			case SWT.Deactivate: {
+				Display display1 = event.display;
+				if (Mozilla.this.browser == display1.getFocusControl ()) Deactivate ();
+				break;
+			}
+			case SWT.Show: {
+				/*
+				* Feature in GTK Mozilla.  Mozilla does not show up when
+				* its container (a GTK fixed handle) is made visible
+				* after having been hidden.  The workaround is to reset
+				* its size after the container has been made visible.
+				*/
+				Display display2 = event.display;
+				display2.asyncExec(() -> {
+					if (browser.isDisposed ()) return;
+					onResize ();
+				});
+				break;
 			}
 		}
 	};
@@ -4149,13 +4134,10 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			final ProgressEvent event2 = new ProgressEvent (browser);
 			event2.display = display;
 			event2.widget = browser;
-			Runnable runnable = new Runnable () {
-				@Override
-				public void run () {
-					if (browser.isDisposed ()) return;
-					for (int i = 0; i < progressListeners.length; i++) {
-						progressListeners[i].completed (event2);
-					}
+			Runnable runnable = () -> {
+				if (browser.isDisposed ()) return;
+				for (int i = 0; i < progressListeners.length; i++) {
+					progressListeners[i].completed (event2);
 				}
 			};
 			if (deferCompleted) {
@@ -4623,12 +4605,9 @@ int FocusNextElement () {
 	* with the Mozilla application TestGtkEmbed.  The workaround is to
 	* send the traversal notification after this callback returns.
 	*/
-	browser.getDisplay ().asyncExec (new Runnable () {
-		@Override
-		public void run () {
-			if (browser.isDisposed ()) return;
-			browser.traverse (SWT.TRAVERSE_TAB_NEXT);
-		}
+	browser.getDisplay ().asyncExec (() -> {
+		if (browser.isDisposed ()) return;
+		browser.traverse (SWT.TRAVERSE_TAB_NEXT);
 	});
 	return XPCOM.NS_OK;
 }
@@ -4640,12 +4619,9 @@ int FocusPrevElement () {
 	* with the Mozilla application TestGtkEmbed.  The workaround is to
 	* send the traversal notification after this callback returns.
 	*/
-	browser.getDisplay ().asyncExec (new Runnable () {
-		@Override
-		public void run () {
-			if (browser.isDisposed ()) return;
-			browser.traverse (SWT.TRAVERSE_TAB_PREVIOUS);
-		}
+	browser.getDisplay ().asyncExec (() -> {
+		if (browser.isDisposed ()) return;
+		browser.traverse (SWT.TRAVERSE_TAB_PREVIOUS);
 	});
 	return XPCOM.NS_OK;
 }
@@ -5294,41 +5270,38 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 	final String[] finalProblems = new String[problemCount];
 	System.arraycopy (problems, 0, finalProblems, 0, problemCount);
 	final String url = lastNavigateURL;
-	browser.getDisplay().asyncExec(new Runnable() {
-		@Override
-		public void run() {
-			if (browser.isDisposed ()) return;
-			if (url.equals (lastNavigateURL)) {
-				String message = Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {urlPort}); //$NON-NLS-1$
-				if (new PromptDialog (browser.getShell ()).invalidCert (browser, message, finalProblems, cert)) {
-					long /*int*/[] result = new long /*int*/[1];
-					int rc = XPCOM.NS_GetServiceManager (result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	browser.getDisplay().asyncExec(() -> {
+		if (browser.isDisposed ()) return;
+		if (url.equals (lastNavigateURL)) {
+			String message = Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {urlPort}); //$NON-NLS-1$
+			if (new PromptDialog (browser.getShell ()).invalidCert (browser, message, finalProblems, cert)) {
+				long /*int*/[] result1 = new long /*int*/[1];
+				int rc1 = XPCOM.NS_GetServiceManager (result1);
+				if (rc1 != XPCOM.NS_OK) error (rc1);
+				if (result1[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-					result[0] = 0;
-					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICertOverrideService.class), result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-					serviceManager.Release ();
+				nsIServiceManager serviceManager = new nsIServiceManager (result1[0]);
+				result1[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
+				rc1 = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICertOverrideService.class), result1);
+				if (rc1 != XPCOM.NS_OK) error (rc1);
+				if (result1[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
 
-					nsICertOverrideService overrideService = new nsICertOverrideService (result[0]);
-					result[0] = 0;
-					byte[] hostBytes = MozillaDelegate.wcsToMbcs (null, host, false);
-					long /*int*/ hostString = XPCOM.nsEmbedCString_new (hostBytes, hostBytes.length);
-					rc = overrideService.RememberValidityOverride (hostString, port, cert.getAddress (), finalFlags, 1);
-					navigate (badCertRequest);
-					XPCOM.nsEmbedCString_delete (hostString);
-					overrideService.Release ();
-				}
-				isRetrievingBadCert = false;
+				nsICertOverrideService overrideService = new nsICertOverrideService (result1[0]);
+				result1[0] = 0;
+				byte[] hostBytes = MozillaDelegate.wcsToMbcs (null, host, false);
+				long /*int*/ hostString = XPCOM.nsEmbedCString_new (hostBytes, hostBytes.length);
+				rc1 = overrideService.RememberValidityOverride (hostString, port, cert.getAddress (), finalFlags, 1);
+				navigate (badCertRequest);
+				XPCOM.nsEmbedCString_delete (hostString);
+				overrideService.Release ();
 			}
-			cert.Release ();
-			new nsISupports (badCertRequest).Release ();
-			badCertRequest = 0;
+			isRetrievingBadCert = false;
 		}
+		cert.Release ();
+		new nsISupports (badCertRequest).Release ();
+		badCertRequest = 0;
 	});
 
 	XPCOM.memmove (_suppressError, new boolean[] {true});

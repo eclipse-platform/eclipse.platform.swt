@@ -143,135 +143,126 @@ static {
 		JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
 		if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		NativeClearSessions = new Runnable () {
-			@Override
-			public void run () {
-				long /*int*/[] result = new long /*int*/[1];
-				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-				if (hr != COM.S_OK || result[0] == 0) {
-					return;
-				}
-				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-				long /*int*/[] storage = new long /*int*/[1];
-				hr = cookieManager.cookieStorage (storage);
-				cookieManager.Release ();
-				if (hr != COM.S_OK || storage[0] == 0) {
-					return;
-				}
-				long /*int*/ cookies = WebKit_win32.CFHTTPCookieStorageCopyCookies (storage[0]);
-				if (cookies != 0) {
-					int count = WebKit_win32.CFArrayGetCount (cookies);
-					for (int i = 0; i < count; i++) {
-						long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, i);
-						long /*int*/ flags = WebKit_win32.CFHTTPCookieGetFlags (cookie);
-						if ((flags & WebKit_win32.CFHTTPCookieSessionOnlyFlag) != 0) {
-							WebKit_win32.CFHTTPCookieStorageDeleteCookie (storage[0], cookie);
-						}
-					}
-					WebKit_win32.CFRelease (cookies);
-				}
-				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
+		NativeClearSessions = () -> {
+			long /*int*/[] result = new long /*int*/[1];
+			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+			if (hr != COM.S_OK || result[0] == 0) {
+				return;
 			}
+			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+			long /*int*/[] storage = new long /*int*/[1];
+			hr = cookieManager.cookieStorage (storage);
+			cookieManager.Release ();
+			if (hr != COM.S_OK || storage[0] == 0) {
+				return;
+			}
+			long /*int*/ cookies = WebKit_win32.CFHTTPCookieStorageCopyCookies (storage[0]);
+			if (cookies != 0) {
+				int count = WebKit_win32.CFArrayGetCount (cookies);
+				for (int i = 0; i < count; i++) {
+					long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, i);
+					long /*int*/ flags = WebKit_win32.CFHTTPCookieGetFlags (cookie);
+					if ((flags & WebKit_win32.CFHTTPCookieSessionOnlyFlag) != 0) {
+						WebKit_win32.CFHTTPCookieStorageDeleteCookie (storage[0], cookie);
+					}
+				}
+				WebKit_win32.CFRelease (cookies);
+			}
+			// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 		};
 
-		NativeGetCookie = new Runnable () {
-			@Override
-			public void run () {
-				long /*int*/[] result = new long /*int*/[1];
-				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-				if (hr != COM.S_OK || result[0] == 0) {
-					return;
-				}
-				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-				long /*int*/[] storage = new long /*int*/[1];
-				hr = cookieManager.cookieStorage (storage);
-				cookieManager.Release ();
-				if (hr != COM.S_OK || storage[0] == 0) {
-					return;
-				}
-				char[] chars = CookieUrl.toCharArray ();
-				long /*int*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
-				if (string != 0) {
-					long /*int*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
-					if (cfUrl != 0) {
-						boolean secure = CookieUrl.startsWith (PROTOCOL_HTTPS);
-						long /*int*/ cookiesArray = WebKit_win32.CFHTTPCookieStorageCopyCookiesForURL (storage[0], cfUrl, secure);
-						if (cookiesArray != 0) {
-							int count = WebKit_win32.CFArrayGetCount (cookiesArray);
-							for (int i = 0; i < count; i++) {
-								long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookiesArray, i);
-								if (cookie != 0) {
-									long /*int*/ cookieName = WebKit_win32.CFHTTPCookieGetName (cookie);
-									if (cookieName != 0) {
-										String name = stringFromCFString (cookieName);
-										if (CookieName.equals (name)) {
-											long /*int*/ value = WebKit_win32.CFHTTPCookieGetValue (cookie);
-											if (value != 0) CookieValue = stringFromCFString (value);
-											break;
-										}
+		NativeGetCookie = () -> {
+			long /*int*/[] result = new long /*int*/[1];
+			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+			if (hr != COM.S_OK || result[0] == 0) {
+				return;
+			}
+			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+			long /*int*/[] storage = new long /*int*/[1];
+			hr = cookieManager.cookieStorage (storage);
+			cookieManager.Release ();
+			if (hr != COM.S_OK || storage[0] == 0) {
+				return;
+			}
+			char[] chars = CookieUrl.toCharArray ();
+			long /*int*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+			if (string != 0) {
+				long /*int*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
+				if (cfUrl != 0) {
+					boolean secure = CookieUrl.startsWith (PROTOCOL_HTTPS);
+					long /*int*/ cookiesArray = WebKit_win32.CFHTTPCookieStorageCopyCookiesForURL (storage[0], cfUrl, secure);
+					if (cookiesArray != 0) {
+						int count = WebKit_win32.CFArrayGetCount (cookiesArray);
+						for (int i = 0; i < count; i++) {
+							long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookiesArray, i);
+							if (cookie != 0) {
+								long /*int*/ cookieName = WebKit_win32.CFHTTPCookieGetName (cookie);
+								if (cookieName != 0) {
+									String name = stringFromCFString (cookieName);
+									if (CookieName.equals (name)) {
+										long /*int*/ value = WebKit_win32.CFHTTPCookieGetValue (cookie);
+										if (value != 0) CookieValue = stringFromCFString (value);
+										break;
 									}
 								}
 							}
-							WebKit_win32.CFRelease (cookiesArray);
 						}
-						WebKit_win32.CFRelease (cfUrl);
+						WebKit_win32.CFRelease (cookiesArray);
 					}
-					WebKit_win32.CFRelease (string);
+					WebKit_win32.CFRelease (cfUrl);
 				}
-				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
+				WebKit_win32.CFRelease (string);
 			}
+			// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 		};
 
-		NativeSetCookie = new Runnable () {
-			@Override
-			public void run () {
-				long /*int*/[] result = new long /*int*/[1];
-				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-				if (hr != COM.S_OK || result[0] == 0) {
-					return;
-				}
-				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-				long /*int*/[] storage = new long /*int*/[1];
-				hr = cookieManager.cookieStorage (storage);
-				cookieManager.Release ();
-				if (hr != COM.S_OK || storage[0] == 0) {
-					return;
-				}
-
-				char[] chars = CookieUrl.toCharArray ();
-				long /*int*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
-				if (string != 0) {
-					long /*int*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
-					if (cfUrl != 0) {
-						chars = CookieValue.toCharArray ();
-						long /*int*/ value = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
-						if (value != 0) {
-							chars = HEADER_SETCOOKIE.toCharArray ();
-							long /*int*/ key = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
-							if (key != 0) {
-								long /*int*/ headers = WebKit_win32.CFDictionaryCreate (0, new long /*int*/[] {key}, new long /*int*/[] {value}, 1, WebKit_win32.kCFCopyStringDictionaryKeyCallBacks (), WebKit_win32.kCFTypeDictionaryValueCallBacks ());
-								if (headers != 0) {
-									long /*int*/ cookies = WebKit_win32.CFHTTPCookieCreateWithResponseHeaderFields (0, headers, cfUrl);
-									if (cookies != 0) {
-										long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, 0);
-										if (cookie != 0) {
-											WebKit_win32.CFHTTPCookieStorageSetCookie (storage[0], cookie);
-											CookieResult = true;
-										}
-										WebKit_win32.CFRelease (cookies);
-									}
-									WebKit_win32.CFRelease (headers);
-								}
-								WebKit_win32.CFRelease (key);
-							}
-							WebKit_win32.CFRelease (value);
-						}
-						WebKit_win32.CFRelease (cfUrl);
-					}
-					WebKit_win32.CFRelease (string);
-				}
-				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
+		NativeSetCookie = () -> {
+			long /*int*/[] result = new long /*int*/[1];
+			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+			if (hr != COM.S_OK || result[0] == 0) {
+				return;
 			}
+			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+			long /*int*/[] storage = new long /*int*/[1];
+			hr = cookieManager.cookieStorage (storage);
+			cookieManager.Release ();
+			if (hr != COM.S_OK || storage[0] == 0) {
+				return;
+			}
+
+			char[] chars = CookieUrl.toCharArray ();
+			long /*int*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+			if (string != 0) {
+				long /*int*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
+				if (cfUrl != 0) {
+					chars = CookieValue.toCharArray ();
+					long /*int*/ value = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+					if (value != 0) {
+						chars = HEADER_SETCOOKIE.toCharArray ();
+						long /*int*/ key = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+						if (key != 0) {
+							long /*int*/ headers = WebKit_win32.CFDictionaryCreate (0, new long /*int*/[] {key}, new long /*int*/[] {value}, 1, WebKit_win32.kCFCopyStringDictionaryKeyCallBacks (), WebKit_win32.kCFTypeDictionaryValueCallBacks ());
+							if (headers != 0) {
+								long /*int*/ cookies = WebKit_win32.CFHTTPCookieCreateWithResponseHeaderFields (0, headers, cfUrl);
+								if (cookies != 0) {
+									long /*int*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, 0);
+									if (cookie != 0) {
+										WebKit_win32.CFHTTPCookieStorageSetCookie (storage[0], cookie);
+										CookieResult = true;
+									}
+									WebKit_win32.CFRelease (cookies);
+								}
+								WebKit_win32.CFRelease (headers);
+							}
+							WebKit_win32.CFRelease (key);
+						}
+						WebKit_win32.CFRelease (value);
+					}
+					WebKit_win32.CFRelease (cfUrl);
+				}
+				WebKit_win32.CFRelease (string);
+			}
+			// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 		};
 
 		if (NativePendingCookies != null) {
@@ -613,40 +604,37 @@ public void create (Composite parent, int style) {
 
 	initializeWebViewPreferences ();
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Dispose: {
-					/* make this handler run after other dispose listeners */
-					if (ignoreDispose) {
-						ignoreDispose = false;
-						break;
-					}
-					ignoreDispose = true;
-					browser.notifyListeners (e.type, e);
-					e.type = SWT.NONE;
-					onDispose ();
+	Listener listener = e -> {
+		switch (e.type) {
+			case SWT.Dispose: {
+				/* make this handler run after other dispose listeners */
+				if (ignoreDispose) {
+					ignoreDispose = false;
 					break;
 				}
-				case SWT.FocusIn: {
-					OS.SetFocus (webViewWindowHandle);
-					break;
+				ignoreDispose = true;
+				browser.notifyListeners (e.type, e);
+				e.type = SWT.NONE;
+				onDispose ();
+				break;
+			}
+			case SWT.FocusIn: {
+				OS.SetFocus (webViewWindowHandle);
+				break;
+			}
+			case SWT.Resize: {
+				Rectangle bounds = DPIUtil.autoScaleUp(browser.getClientArea ()); // To Pixels
+				OS.SetWindowPos (webViewWindowHandle, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.SWP_DRAWFRAME);
+				break;
+			}
+			case SWT.Traverse: {
+				if (traverseOut) {
+					e.doit = true;
+					traverseOut = false;
+				} else {
+					e.doit = false;
 				}
-				case SWT.Resize: {
-					Rectangle bounds = DPIUtil.autoScaleUp(browser.getClientArea ()); // To Pixels
-					OS.SetWindowPos (webViewWindowHandle, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.SWP_DRAWFRAME);
-					break;
-				}
-				case SWT.Traverse: {
-					if (traverseOut) {
-						e.doit = true;
-						traverseOut = false;
-					} else {
-						e.doit = false;
-					}
-					break;
-				}
+				break;
 			}
 		}
 	};

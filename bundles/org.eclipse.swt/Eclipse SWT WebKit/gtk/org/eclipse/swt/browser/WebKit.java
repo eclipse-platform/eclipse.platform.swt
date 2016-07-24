@@ -135,91 +135,82 @@ class WebKit extends WebBrowser {
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
 			if (JSDOMEventProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-			NativeClearSessions = new Runnable () {
-				@Override
-				public void run () {
-					if (!LibraryLoaded) return;
-					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
-					long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
-					long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) return;
-					long /*int*/ cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
-					int length = OS.g_slist_length (cookies);
-					long /*int*/ current = cookies;
-					for (int i = 0; i < length; i++) {
-						long /*int*/ cookie = OS.g_slist_data (current);
-						long /*int*/ expires = WebKitGTK.SoupCookie_expires (cookie);
-						if (expires == 0) {
-							/* indicates a session cookie */
-							WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
-						}
-						WebKitGTK.soup_cookie_free (cookie);
-						current = OS.g_slist_next (current);
+			NativeClearSessions = () -> {
+				if (!LibraryLoaded) return;
+				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
+				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
+				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
+				if (jar == 0) return;
+				long /*int*/ cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
+				int length = OS.g_slist_length (cookies);
+				long /*int*/ current = cookies;
+				for (int i = 0; i < length; i++) {
+					long /*int*/ cookie = OS.g_slist_data (current);
+					long /*int*/ expires = WebKitGTK.SoupCookie_expires (cookie);
+					if (expires == 0) {
+						/* indicates a session cookie */
+						WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
 					}
-					OS.g_slist_free (cookies);
+					WebKitGTK.soup_cookie_free (cookie);
+					current = OS.g_slist_next (current);
 				}
+				OS.g_slist_free (cookies);
 			};
 
-			NativeGetCookie = new Runnable () {
-				@Override
-				public void run () {
-					if (!LibraryLoaded) return;
-					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
-					long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
-					long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) return;
-					byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
-					long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
-					if (uri == 0) return;
-					long /*int*/ cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
-					WebKitGTK.soup_uri_free (uri);
-					if (cookies == 0) return;
-					int length = OS.strlen (cookies);
-					bytes = new byte[length];
-					C.memmove (bytes, cookies, length);
-					OS.g_free (cookies);
-					String allCookies = new String (Converter.mbcsToWcs (null, bytes));
-					StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
-					while (tokenizer.hasMoreTokens ()) {
-						String cookie = tokenizer.nextToken ();
-						int index = cookie.indexOf ('=');
-						if (index != -1) {
-							String name = cookie.substring (0, index).trim ();
-							if (name.equals (CookieName)) {
-								CookieValue = cookie.substring (index + 1).trim ();
-								return;
-							}
+			NativeGetCookie = () -> {
+				if (!LibraryLoaded) return;
+				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
+				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
+				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
+				if (jar == 0) return;
+				byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
+				long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
+				if (uri == 0) return;
+				long /*int*/ cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
+				WebKitGTK.soup_uri_free (uri);
+				if (cookies == 0) return;
+				int length = OS.strlen (cookies);
+				bytes = new byte[length];
+				C.memmove (bytes, cookies, length);
+				OS.g_free (cookies);
+				String allCookies = new String (Converter.mbcsToWcs (null, bytes));
+				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+				while (tokenizer.hasMoreTokens ()) {
+					String cookie = tokenizer.nextToken ();
+					int index = cookie.indexOf ('=');
+					if (index != -1) {
+						String name = cookie.substring (0, index).trim ();
+						if (name.equals (CookieName)) {
+							CookieValue = cookie.substring (index + 1).trim ();
+							return;
 						}
 					}
 				}
 			};
 
-			NativeSetCookie = new Runnable () {
-				@Override
-				public void run () {
-					if (!LibraryLoaded) return;
-					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
-					long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
-					long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) {
-						/* this happens if a navigation has not occurred yet */
-						WebKitGTK.soup_session_add_feature_by_type (session, type);
-						jar = WebKitGTK.soup_session_get_feature (session, type);
-					}
-					if (jar == 0) return;
-					byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
-					long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
-					if (uri == 0) return;
-					bytes = Converter.wcsToMbcs (null, CookieValue, true);
-					long /*int*/ cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
-					if (cookie != 0) {
-						WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
-						// the following line is intentionally commented
-						// WebKitGTK.soup_cookie_free (cookie);
-						CookieResult = true;
-					}
-					WebKitGTK.soup_uri_free (uri);
+			NativeSetCookie = () -> {
+				if (!LibraryLoaded) return;
+				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
+				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
+				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
+				if (jar == 0) {
+					/* this happens if a navigation has not occurred yet */
+					WebKitGTK.soup_session_add_feature_by_type (session, type);
+					jar = WebKitGTK.soup_session_get_feature (session, type);
 				}
+				if (jar == 0) return;
+				byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
+				long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
+				if (uri == 0) return;
+				bytes = Converter.wcsToMbcs (null, CookieValue, true);
+				long /*int*/ cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
+				if (cookie != 0) {
+					WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
+					// the following line is intentionally commented
+					// WebKitGTK.soup_cookie_free (cookie);
+					CookieResult = true;
+				}
+				WebKitGTK.soup_uri_free (uri);
 			};
 
 			if (NativePendingCookies != null) {
@@ -332,14 +323,11 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 								case OS.GDK_ISO_Left_Tab:
 								case OS.GDK_Tab: {
 									if ((gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
-										browser.getDisplay ().asyncExec (new Runnable () {
-											@Override
-											public void run () {
-												if (browser.isDisposed ()) return;
-												if (browser.getDisplay ().getFocusControl () == null) {
-													int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-													browser.traverse (traversal);
-												}
+										browser.getDisplay ().asyncExec (() -> {
+											if (browser.isDisposed ()) return;
+											if (browser.getDisplay ().getFocusControl () == null) {
+												int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+												browser.traverse (traversal);
 											}
 										});
 									}
@@ -679,30 +667,27 @@ public void create (Composite parent, int style) {
 		OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
 	}
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Dispose: {
-					/* make this handler run after other dispose listeners */
-					if (ignoreDispose) {
-						ignoreDispose = false;
-						break;
-					}
-					ignoreDispose = true;
-					browser.notifyListeners (event.type, event);
-					event.type = SWT.NONE;
-					onDispose (event);
+	Listener listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose: {
+				/* make this handler run after other dispose listeners */
+				if (ignoreDispose) {
+					ignoreDispose = false;
 					break;
 				}
-				case SWT.FocusIn: {
-					OS.gtk_widget_grab_focus (webView);
-					break;
-				}
-				case SWT.Resize: {
-					onResize (event);
-					break;
-				}
+				ignoreDispose = true;
+				browser.notifyListeners (event.type, event);
+				event.type = SWT.NONE;
+				onDispose (event);
+				break;
+			}
+			case SWT.FocusIn: {
+				OS.gtk_widget_grab_focus (webView);
+				break;
+			}
+			case SWT.Resize: {
+				onResize (event);
+				break;
 			}
 		}
 	};
@@ -1200,14 +1185,11 @@ boolean handleKeyEvent (String type, int keyCode, int charCode, boolean altKey, 
 
 				if (browser.isFocusControl ()) {
 					if (keyCode == SWT.TAB && (stateMask & (SWT.CTRL | SWT.ALT)) == 0) {
-						browser.getDisplay ().asyncExec (new Runnable () {
-							@Override
-							public void run () {
-								if (browser.isDisposed ()) return;
-								if (browser.getDisplay ().getFocusControl () == null) {
-									int traversal = (stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-									browser.traverse (traversal);
-								}
+						browser.getDisplay ().asyncExec (() -> {
+							if (browser.isDisposed ()) return;
+							if (browser.getDisplay ().getFocusControl () == null) {
+								int traversal = (stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+								browser.traverse (traversal);
 							}
 						});
 					}
@@ -1582,12 +1564,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	data = new GridData ();
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
-	final Listener cancelListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			WebKitGTK.webkit_download_cancel (webkitDownload);
-		}
-	};
+	final Listener cancelListener = event -> WebKitGTK.webkit_download_cancel (webkitDownload);
 	cancel.addListener (SWT.Selection, cancelListener);
 
 	OS.g_object_ref (webkitDownload);
@@ -1608,12 +1585,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 				display.timerExec (-1, this);
 				OS.g_object_unref (webkitDownload);
 				cancel.removeListener (SWT.Selection, cancelListener);
-				cancel.addListener (SWT.Selection, new Listener () {
-					@Override
-					public void handleEvent (Event event) {
-						shell.dispose ();
-					}
-				});
+				cancel.addListener (SWT.Selection, event -> shell.dispose ());
 				return;
 			}
 
@@ -1816,27 +1788,24 @@ long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ down
 	* As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
 	* a hang.  The workaround is to open it asynchronously with a new download.
 	*/
-	browser.getDisplay ().asyncExec (new Runnable () {
-		@Override
-		public void run () {
-			if (!browser.isDisposed ()) {
-				FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
-				dialog.setFileName (nameString);
-				String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
-				dialog.setText (title);
-				String path = dialog.open ();
-				if (path != null) {
-					path = URI_FILEROOT + path;
-					long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
-					byte[] uriBytes = Converter.wcsToMbcs (null, path, true);
-					WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
-					openDownloadWindow (newDownload);
-					WebKitGTK.webkit_download_start (newDownload);
-					OS.g_object_unref (newDownload);
-				}
+	browser.getDisplay ().asyncExec (() -> {
+		if (!browser.isDisposed ()) {
+			FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
+			dialog.setFileName (nameString);
+			String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
+			dialog.setText (title);
+			String path = dialog.open ();
+			if (path != null) {
+				path = URI_FILEROOT + path;
+				long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
+				byte[] uriBytes = Converter.wcsToMbcs (null, path, true);
+				WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
+				openDownloadWindow (newDownload);
+				WebKitGTK.webkit_download_start (newDownload);
+				OS.g_object_unref (newDownload);
 			}
-			OS.g_object_unref (request);
 		}
+		OS.g_object_unref (request);
 	});
 
 	return 1;

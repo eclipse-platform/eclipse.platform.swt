@@ -39,14 +39,11 @@ static ClipboardProxy _getInstance(final Display display) {
 	if (proxy != null) return proxy;
 	proxy = new ClipboardProxy(display);
 	display.setData(ID, proxy);
-	display.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			ClipboardProxy clipbordProxy = (ClipboardProxy)display.getData(ID);
-			if (clipbordProxy == null) return;
-			display.setData(ID, null);
-			clipbordProxy.dispose();
-		}
+	display.addListener(SWT.Dispose, event -> {
+		ClipboardProxy clipbordProxy = (ClipboardProxy)display.getData(ID);
+		if (clipbordProxy == null) return;
+		display.setData(ID, null);
+		clipbordProxy.dispose();
 	});
 	return proxy;
 }

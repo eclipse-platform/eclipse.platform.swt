@@ -511,15 +511,12 @@ public class Display extends Device {
 	* be removed in the future.
 	*/
 	static {
-		DeviceFinder = new Runnable () {
-			@Override
-			public void run () {
-				Device device = getCurrent ();
-				if (device == null) {
-					device = getDefault ();
-				}
-				setDevice (device);
+		DeviceFinder = () -> {
+			Device device = getCurrent ();
+			if (device == null) {
+				device = getDefault ();
 			}
+			setDevice (device);
 		};
 	}
 

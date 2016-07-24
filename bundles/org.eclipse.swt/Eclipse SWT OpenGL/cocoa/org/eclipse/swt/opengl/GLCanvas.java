@@ -11,9 +11,8 @@
 package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.opengl.GLData;
+import org.eclipse.swt.widgets.*;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
@@ -121,24 +120,21 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	setData(GLCONTEXT_KEY, context);
 	NSNotificationCenter.defaultCenter().addObserver(view,  OS.sel_updateOpenGLContext_, OS.NSViewGlobalFrameDidChangeNotification, view);
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
+	Listener listener = event -> {
+		switch (event.type) {
 
-				case SWT.Dispose:
-					setData(GLCONTEXT_KEY, null);
-					NSNotificationCenter.defaultCenter().removeObserver(view);
+			case SWT.Dispose:
+				setData(GLCONTEXT_KEY, null);
+				NSNotificationCenter.defaultCenter().removeObserver(view);
 
-					if (context != null) {
-						context.clearDrawable();
-						context.release();
-					}
-					context = null;
-					if (pixelFormat != null) pixelFormat.release();
-					pixelFormat = null;
-					break;
-			}
+				if (context != null) {
+					context.clearDrawable();
+					context.release();
+				}
+				context = null;
+				if (pixelFormat != null) pixelFormat.release();
+				pixelFormat = null;
+				break;
 		}
 	};
 	addListener (SWT.Dispose, listener);

@@ -205,21 +205,18 @@ public DragSource(Control control, int style) {
 	}
 	control.setData(DND.DRAG_SOURCE_KEY, this);
 
-	controlListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.type == SWT.Dispose) {
-				if (!DragSource.this.isDisposed()) {
-					DragSource.this.dispose();
-				}
+	controlListener = event -> {
+		if (event.type == SWT.Dispose) {
+			if (!DragSource.this.isDisposed()) {
+				DragSource.this.dispose();
 			}
-			if (event.type == SWT.DragDetect) {
-				if (!DragSource.this.isDisposed()) {
-					if (event.widget instanceof Table || event.widget instanceof Tree) {
-						DragSource.this.dragOutlineViewStart(event);
-					} else {
-						DragSource.this.drag(event);
-					}
+		}
+		if (event.type == SWT.DragDetect) {
+			if (!DragSource.this.isDisposed()) {
+				if (event.widget instanceof Table || event.widget instanceof Tree) {
+					DragSource.this.dragOutlineViewStart(event);
+				} else {
+					DragSource.this.drag(event);
 				}
 			}
 		}
@@ -227,12 +224,7 @@ public DragSource(Control control, int style) {
 	control.addListener (SWT.Dispose, controlListener);
 	control.addListener (SWT.DragDetect, controlListener);
 
-	this.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			onDispose();
-		}
-	});
+	this.addListener(SWT.Dispose, e -> onDispose());
 
 	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
 	if (effect instanceof DragSourceEffect) {

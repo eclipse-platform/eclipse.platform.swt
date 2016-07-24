@@ -188,13 +188,10 @@ void openDownloadWindow (final IWebDownload download, String name) {
 	data = new GridData ();
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
-	final Listener cancelListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			download.cancel ();
-			status = DOWNLOAD_CANCELLED;
-			download.Release ();
-		}
+	final Listener cancelListener = event -> {
+		download.cancel ();
+		status = DOWNLOAD_CANCELLED;
+		download.Release ();
 	};
 	cancel.addListener (SWT.Selection, cancelListener);
 
@@ -210,12 +207,7 @@ void openDownloadWindow (final IWebDownload download, String name) {
 			if (status == DOWNLOAD_ERROR) {
 				statusLabel.setText (Compatibility.getMessage ("SWT_Download_Error")); //$NON-NLS-1$
 				cancel.removeListener (SWT.Selection, cancelListener);
-				cancel.addListener (SWT.Selection, new Listener () {
-					@Override
-					public void handleEvent (Event event) {
-						shell.dispose ();
-					}
-				});
+				cancel.addListener (SWT.Selection, event -> shell.dispose ());
 				return;
 			}
 			long current = size / 1024L;

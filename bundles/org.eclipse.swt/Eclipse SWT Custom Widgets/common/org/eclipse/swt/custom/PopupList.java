@@ -55,12 +55,7 @@ public PopupList(Shell parent, int style) {
 	list = new List(shell, listStyle);
 
 	// close dialog if user selects outside of the shell
-	shell.addListener(SWT.Deactivate, new Listener() {
-		@Override
-		public void handleEvent(Event e){
-			shell.setVisible (false);
-		}
-	});
+	shell.addListener(SWT.Deactivate, e -> shell.setVisible (false));
 
 	// resize shell when list resizes
 	shell.addControlListener(new ControlListener() {

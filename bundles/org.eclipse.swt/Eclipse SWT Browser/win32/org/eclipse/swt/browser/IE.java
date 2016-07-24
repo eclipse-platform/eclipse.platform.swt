@@ -145,51 +145,42 @@ class IE extends WebBrowser {
 	static final String PROPERTY_WHEELDELTA = "wheelDelta"; //$NON-NLS-1$
 
 	static {
-		NativeClearSessions = new Runnable() {
-			@Override
-			public void run() {
-				if (OS.IsPPC) return;
-				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
-			}
+		NativeClearSessions = () -> {
+			if (OS.IsPPC) return;
+			OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
 		};
 
-		NativeGetCookie = new Runnable () {
-			@Override
-			public void run () {
-				if (OS.IsPPC) return;
-				TCHAR url = new TCHAR (0, CookieUrl, true);
-				TCHAR cookieData = new TCHAR (0, 8192);
-				int[] size = new int[] {cookieData.length ()};
-				if (!OS.InternetGetCookie (url, null, cookieData, size)) {
-					/* original cookieData size was not large enough */
-					size[0] /= TCHAR.sizeof;
-					cookieData = new TCHAR (0, size[0]);
-					if (!OS.InternetGetCookie (url, null, cookieData, size)) return;
-				}
-				String allCookies = cookieData.toString (0, size[0]);
-				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
-				while (tokenizer.hasMoreTokens ()) {
-					String cookie = tokenizer.nextToken ();
-					int index = cookie.indexOf ('=');
-					if (index != -1) {
-						String name = cookie.substring (0, index).trim ();
-						if (name.equals (CookieName)) {
-							CookieValue = cookie.substring (index + 1).trim ();
-							return;
-						}
+		NativeGetCookie = () -> {
+			if (OS.IsPPC) return;
+			TCHAR url = new TCHAR (0, CookieUrl, true);
+			TCHAR cookieData = new TCHAR (0, 8192);
+			int[] size = new int[] {cookieData.length ()};
+			if (!OS.InternetGetCookie (url, null, cookieData, size)) {
+				/* original cookieData size was not large enough */
+				size[0] /= TCHAR.sizeof;
+				cookieData = new TCHAR (0, size[0]);
+				if (!OS.InternetGetCookie (url, null, cookieData, size)) return;
+			}
+			String allCookies = cookieData.toString (0, size[0]);
+			StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+			while (tokenizer.hasMoreTokens ()) {
+				String cookie = tokenizer.nextToken ();
+				int index = cookie.indexOf ('=');
+				if (index != -1) {
+					String name = cookie.substring (0, index).trim ();
+					if (name.equals (CookieName)) {
+						CookieValue = cookie.substring (index + 1).trim ();
+						return;
 					}
 				}
 			}
 		};
 
-		NativeSetCookie = new Runnable () {
-			@Override
-			public void run () {
-				if (OS.IsPPC) return;
-				TCHAR url = new TCHAR (0, CookieUrl, true);
-				TCHAR value = new TCHAR (0, CookieValue, true);
-				CookieResult = OS.InternetSetCookie (url, null, value);
-			}
+		NativeSetCookie = () -> {
+			if (OS.IsPPC) return;
+			TCHAR url = new TCHAR (0, CookieUrl, true);
+			TCHAR value = new TCHAR (0, CookieValue, true);
+			CookieResult = OS.InternetSetCookie (url, null, value);
 		};
 
 		/*
@@ -349,13 +340,10 @@ public void create(Composite parent, int style) {
 				int result = OS.RegQueryValueEx(key[0], lpValueName, 0, null, (int[])null, null);
 				if (result == 0 || result == OS.ERROR_FILE_NOT_FOUND) {
 					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
-						parent.getDisplay().addListener(SWT.Dispose, new Listener() {
-							@Override
-							public void handleEvent(Event event) {
-								long /*int*/[] key = new long /*int*/[1];
-								if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key) == 0) {
-									OS.RegDeleteValue(key[0], lpValueName);
-								}
+						parent.getDisplay().addListener(SWT.Dispose, event -> {
+							long /*int*/[] key1 = new long /*int*/[1];
+							if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key1) == 0) {
+								OS.RegDeleteValue(key1[0], lpValueName);
 							}
 						});
 					}
@@ -368,99 +356,91 @@ public void create(Composite parent, int style) {
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 
-	domListener = new OleListener() {
-		@Override
-		public void handleEvent (OleEvent e) {
-			handleDOMEvent(e);
-		}
-	};
+	domListener = e -> handleDOMEvent(e);
 
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			switch (e.type) {
-				case SWT.Dispose: {
-					/* make this handler run after other dispose listeners */
-					if (ignoreDispose) {
-						ignoreDispose = false;
-						break;
-					}
-					ignoreDispose = true;
-					browser.notifyListeners (e.type, e);
-					e.type = SWT.NONE;
-
-					/* invoke onbeforeunload handlers */
-					if (!browser.isClosing) {
-						LocationListener[] oldLocationListeners = locationListeners;
-						locationListeners = new LocationListener[0];
-						site.ignoreAllMessages = true;
-						execute ("window.location.href='about:blank'"); //$NON-NLS-1$
-						site.ignoreAllMessages = false;
-						locationListeners = oldLocationListeners;
-					}
-
-					/*
-					* It is possible for the Browser's OLE frame to have been disposed
-					* by a Dispose listener that was invoked by notifyListeners above,
-					* so check for this before unhooking its DOM listeners.
-					*/
-					if (!frame.isDisposed ()) unhookDOMListeners(documents);
-
-					for (int i = 0; i < documents.length; i++) {
-						documents[i].dispose();
-					}
-					documents = null;
-
-					Iterator<BrowserFunction> elements = functions.values().iterator ();
-					while (elements.hasNext ()) {
-						elements.next ().dispose (false);
-					}
-					functions = null;
-
-					lastNavigateURL = uncRedirect = null;
-					domListener = null;
-					if (auto != null) auto.dispose();
-					auto = null;
+	Listener listener = e -> {
+		switch (e.type) {
+			case SWT.Dispose: {
+				/* make this handler run after other dispose listeners */
+				if (ignoreDispose) {
+					ignoreDispose = false;
 					break;
 				}
-				case SWT.Resize: {
-					frame.setBounds(browser.getClientArea());
-					break;
+				ignoreDispose = true;
+				browser.notifyListeners (e.type, e);
+				e.type = SWT.NONE;
+
+				/* invoke onbeforeunload handlers */
+				if (!browser.isClosing) {
+					LocationListener[] oldLocationListeners = locationListeners;
+					locationListeners = new LocationListener[0];
+					site.ignoreAllMessages = true;
+					execute ("window.location.href='about:blank'"); //$NON-NLS-1$
+					site.ignoreAllMessages = false;
+					locationListeners = oldLocationListeners;
 				}
-				case SWT.MouseWheel: {
-					/* MouseWheel events come from the DOM */
+
+				/*
+				* It is possible for the Browser's OLE frame to have been disposed
+				* by a Dispose listener that was invoked by notifyListeners above,
+				* so check for this before unhooking its DOM listeners.
+				*/
+				if (!frame.isDisposed ()) unhookDOMListeners(documents);
+
+				for (int i = 0; i < documents.length; i++) {
+					documents[i].dispose();
+				}
+				documents = null;
+
+				Iterator<BrowserFunction> elements = functions.values().iterator ();
+				while (elements.hasNext ()) {
+					elements.next ().dispose (false);
+				}
+				functions = null;
+
+				lastNavigateURL = uncRedirect = null;
+				domListener = null;
+				if (auto != null) auto.dispose();
+				auto = null;
+				break;
+			}
+			case SWT.Resize: {
+				frame.setBounds(browser.getClientArea());
+				break;
+			}
+			case SWT.MouseWheel: {
+				/* MouseWheel events come from the DOM */
+				e.doit = false;
+				break;
+			}
+			case SWT.FocusIn: {
+				site.setFocus();
+				break;
+			}
+			case SWT.Traverse: {
+				/*
+				 * Tabbing out of the browser can fail as a result of the WebSite
+				 * control embedded within the Browser.  The workaround is to
+				 * listen for traversals and re-perform the traversal on the
+				 * appropriate control.
+				 */
+				if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS && e.widget instanceof WebSite) {
+					/* otherwise will traverse to the Browser control */
+					browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS, e);
 					e.doit = false;
-					break;
 				}
-				case SWT.FocusIn: {
-					site.setFocus();
-					break;
+				/*
+				 * Return traversals can sometimes come through TranslateAccelerator,
+				 * depending on where focus is within the Browser.  Traversal
+				 * events should always be triggered by a key event from the DOM,
+				 * so if a Traversal from TranslateAccelerator is detected
+				 * (e.doit == true) then stop its propagation.
+				 */
+				if (e.detail == SWT.TRAVERSE_RETURN && e.doit && e.widget instanceof Browser) {
+					e.type = SWT.None;
+					e.doit = false;
 				}
-				case SWT.Traverse: {
-					/*
-					 * Tabbing out of the browser can fail as a result of the WebSite
-					 * control embedded within the Browser.  The workaround is to
-					 * listen for traversals and re-perform the traversal on the
-					 * appropriate control.
-					 */
-					if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS && e.widget instanceof WebSite) {
-						/* otherwise will traverse to the Browser control */
-						browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS, e);
-						e.doit = false;
-					}
-					/*
-					 * Return traversals can sometimes come through TranslateAccelerator,
-					 * depending on where focus is within the Browser.  Traversal
-					 * events should always be triggered by a key event from the DOM,
-					 * so if a Traversal from TranslateAccelerator is detected
-					 * (e.doit == true) then stop its propagation.
-					 */
-					if (e.detail == SWT.TRAVERSE_RETURN && e.doit && e.widget instanceof Browser) {
-						e.type = SWT.None;
-						e.doit = false;
-					}
-					break;
-				}
+				break;
 			}
 		}
 	};
@@ -471,593 +451,581 @@ public void create(Composite parent, int style) {
 	site.addListener(SWT.MouseWheel, listener);
 	site.addListener(SWT.Traverse, listener);
 
-	OleListener oleListener = new OleListener() {
-		@Override
-		public void handleEvent(OleEvent event) {
-			/* callbacks are asynchronous, auto could be disposed */
-			if (auto != null) {
-				switch (event.type) {
-					case BeforeNavigate2: {
-						isRefresh = false; /* refreshes do not come through here */
+	OleListener oleListener = event -> {
+		/* callbacks are asynchronous, auto could be disposed */
+		if (auto != null) {
+			switch (event.type) {
+				case BeforeNavigate2: {
+					isRefresh = false; /* refreshes do not come through here */
 
-						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (performingInitialNavigate) break;
+					/* don't send client events if the initial navigate to about:blank has not completed */
+					if (performingInitialNavigate) break;
 
-						Variant varResult = event.arguments[1];
-						String url = varResult.getString();
+					Variant varResult1 = event.arguments[1];
+					String url1 = varResult1.getString();
 
-						if (uncRedirect != null) {
+					if (uncRedirect != null) {
+						/*
+						* Silently allow the navigate to proceed if the url is the first segment of a
+						* UNC path being navigated to (initiated by the NavigateError listener to show
+						* a name/password prompter), or if the url is the full UNC path (initiated by
+						* the NavigateComplete listener to redirect from the UNC's first segment to its
+						* full path).
+						*/
+						if (uncRedirect.equals(url1) || (uncRedirect.startsWith(url1) && uncRedirect.indexOf('\\', 2) == url1.length())) {
+							Variant cancel1 = event.arguments[6];
+							if (cancel1 != null) {
+								long /*int*/ pCancel1 = cancel1.getByRef();
+								COM.MoveMemory(pCancel1, new short[] {COM.VARIANT_FALSE}, 2);
+							}
+							isAboutBlank = false;
+							break;
+						} else {
 							/*
-							* Silently allow the navigate to proceed if the url is the first segment of a
-							* UNC path being navigated to (initiated by the NavigateError listener to show
-							* a name/password prompter), or if the url is the full UNC path (initiated by
-							* the NavigateComplete listener to redirect from the UNC's first segment to its
- 							* full path).
+							* This navigate does not correspond to the previously-initiated
+							* UNC navigation so clear this state since it's no longer valid.
 							*/
-							if (uncRedirect.equals(url) || (uncRedirect.startsWith(url) && uncRedirect.indexOf('\\', 2) == url.length())) {
-								Variant cancel = event.arguments[6];
-								if (cancel != null) {
-									long /*int*/ pCancel = cancel.getByRef();
-									COM.MoveMemory(pCancel, new short[] {COM.VARIANT_FALSE}, 2);
-								}
-								isAboutBlank = false;
-								break;
-							} else {
-								/*
-								* This navigate does not correspond to the previously-initiated
-								* UNC navigation so clear this state since it's no longer valid.
-								*/
-								uncRedirect = null;
-							}
+							uncRedirect = null;
 						}
+					}
 
-						/*
-						* Feature in IE.  For navigations on the local machine, BeforeNavigate2's url
-						* field contains a string representation of the file path in a non-URL format.
-						* In order to be consistent with the other Browser implementations, this
-						* case is detected and the string is changed to be a proper url string.
-						*/
-						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-							TCHAR filePath = new TCHAR(0, url, true);
-							TCHAR urlResult = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
-							int[] size = new int[] {urlResult.length()};
-							if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath, urlResult, size, 0) == COM.S_OK) {
-								url = urlResult.toString(0, size[0]);
-							} else {
-								url = PROTOCOL_FILE + url.replace('\\', '/');
-							}
+					/*
+					* Feature in IE.  For navigations on the local machine, BeforeNavigate2's url
+					* field contains a string representation of the file path in a non-URL format.
+					* In order to be consistent with the other Browser implementations, this
+					* case is detected and the string is changed to be a proper url string.
+					*/
+					if (url1.indexOf(":/") == -1 && url1.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
+						TCHAR filePath1 = new TCHAR(0, url1, true);
+						TCHAR urlResult1 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+						int[] size1 = new int[] {urlResult1.length()};
+						if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath1, urlResult1, size1, 0) == COM.S_OK) {
+							url1 = urlResult1.toString(0, size1[0]);
+						} else {
+							url1 = PROTOCOL_FILE + url1.replace('\\', '/');
 						}
+					}
 
-						/* Disallow local file system accesses if the browser content is untrusted */
-						if (url.startsWith(PROTOCOL_FILE) && _getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
-							Variant cancel = event.arguments[6];
-							if (cancel != null) {
-								long /*int*/ pCancel = cancel.getByRef();
-								COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
-							}
-							break;
-						}
-
-						LocationEvent newEvent = new LocationEvent(browser);
-						newEvent.display = browser.getDisplay();
-						newEvent.widget = browser;
-						newEvent.location = url;
-						newEvent.doit = true;
-						for (int i = 0; i < locationListeners.length; i++) {
-							locationListeners[i].changing(newEvent);
-						}
-						boolean doit = newEvent.doit && !browser.isDisposed();
-						Variant cancel = event.arguments[6];
-						if (cancel != null) {
-							long /*int*/ pCancel = cancel.getByRef();
-							COM.MoveMemory(pCancel, new short[] {doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-						}
-						if (doit) {
-							varResult = event.arguments[0];
-							IDispatch dispatch = varResult.getDispatch();
-							Variant variant = new Variant(auto); /* does not need to be disposed */
-							IDispatch top = variant.getDispatch();
-							if (top.getAddress() == dispatch.getAddress()) {
-								isAboutBlank = url.startsWith(ABOUT_BLANK);
-							}
+					/* Disallow local file system accesses if the browser content is untrusted */
+					if (url1.startsWith(PROTOCOL_FILE) && _getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
+						Variant cancel2 = event.arguments[6];
+						if (cancel2 != null) {
+							long /*int*/ pCancel2 = cancel2.getByRef();
+							COM.MoveMemory(pCancel2, new short[] {COM.VARIANT_TRUE}, 2);
 						}
 						break;
 					}
-					case CommandStateChange: {
-						boolean enabled = false;
-						Variant varResult = event.arguments[0];
-						int command = varResult.getInt();
-						varResult = event.arguments[1];
-						enabled = varResult.getBoolean();
-						switch (command) {
-							case CSC_NAVIGATEBACK : back = enabled; break;
-							case CSC_NAVIGATEFORWARD : forward = enabled; break;
+
+					LocationEvent newEvent1 = new LocationEvent(browser);
+					newEvent1.display = browser.getDisplay();
+					newEvent1.widget = browser;
+					newEvent1.location = url1;
+					newEvent1.doit = true;
+					for (int i1 = 0; i1 < locationListeners.length; i1++) {
+						locationListeners[i1].changing(newEvent1);
+					}
+					boolean doit1 = newEvent1.doit && !browser.isDisposed();
+					Variant cancel3 = event.arguments[6];
+					if (cancel3 != null) {
+						long /*int*/ pCancel3 = cancel3.getByRef();
+						COM.MoveMemory(pCancel3, new short[] {doit1 ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+					}
+					if (doit1) {
+						varResult1 = event.arguments[0];
+						IDispatch dispatch1 = varResult1.getDispatch();
+						Variant variant1 = new Variant(auto); /* does not need to be disposed */
+						IDispatch top1 = variant1.getDispatch();
+						if (top1.getAddress() == dispatch1.getAddress()) {
+							isAboutBlank = url1.startsWith(ABOUT_BLANK);
 						}
+					}
+					break;
+				}
+				case CommandStateChange: {
+					boolean enabled = false;
+					Variant varResult2 = event.arguments[0];
+					int command = varResult2.getInt();
+					varResult2 = event.arguments[1];
+					enabled = varResult2.getBoolean();
+					switch (command) {
+						case CSC_NAVIGATEBACK : back = enabled; break;
+						case CSC_NAVIGATEFORWARD : forward = enabled; break;
+					}
+					break;
+				}
+				case DocumentComplete: {
+					if (performingInitialNavigate) {
+						/* this event marks the completion of the initial navigate to about:blank */
+						performingInitialNavigate = false;
+
+						/* if browser content has been provided by the client then set it now */
+						if (pendingText != null) {
+							setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
+						} else if (pendingUrl != null) {
+							setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
+						}
+						pendingText = pendingUrl = null;
 						break;
 					}
-					case DocumentComplete: {
-						if (performingInitialNavigate) {
-							/* this event marks the completion of the initial navigate to about:blank */
-							performingInitialNavigate = false;
 
-							/* if browser content has been provided by the client then set it now */
-							if (pendingText != null) {
-								setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
-							} else if (pendingUrl != null) {
-								setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
-							}
-							pendingText = pendingUrl = null;
-							break;
+					Variant varResult3 = event.arguments[0];
+					IDispatch dispatch2 = varResult3.getDispatch();
+
+					varResult3 = event.arguments[1];
+					String url2 = varResult3.getString();
+					/*
+					* Feature in IE.  For navigations on the local machine, DocumentComplete's url
+					* field contains a string representation of the file path in a non-URL format.
+					* In order to be consistent with the other Browser implementations, this
+					* case is detected and the string is changed to be a proper url string.
+					*/
+					if (url2.indexOf(":/") == -1 && url2.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
+						TCHAR filePath2 = new TCHAR(0, url2, true);
+						TCHAR urlResult2 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+						int[] size2 = new int[] {urlResult2.length()};
+						if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath2, urlResult2, size2, 0) == COM.S_OK) {
+							url2 = urlResult2.toString(0, size2[0]);
+						} else {
+							url2 = PROTOCOL_FILE + url2.replace('\\', '/');
 						}
-
-						Variant varResult = event.arguments[0];
-						IDispatch dispatch = varResult.getDispatch();
-
-						varResult = event.arguments[1];
-						String url = varResult.getString();
-						/*
-						* Feature in IE.  For navigations on the local machine, DocumentComplete's url
-						* field contains a string representation of the file path in a non-URL format.
-						* In order to be consistent with the other Browser implementations, this
-						* case is detected and the string is changed to be a proper url string.
-						*/
-						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-							TCHAR filePath = new TCHAR(0, url, true);
-							TCHAR urlResult = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
-							int[] size = new int[] {urlResult.length()};
-							if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath, urlResult, size, 0) == COM.S_OK) {
-								url = urlResult.toString(0, size[0]);
-							} else {
-								url = PROTOCOL_FILE + url.replace('\\', '/');
-							}
-						}
-						if (html != null && url.equals(ABOUT_BLANK)) {
-							if (delaySetText) {
-								delaySetText = false;
-								browser.getDisplay().asyncExec(new Runnable() {
-									@Override
-									public void run() {
-										if (browser.isDisposed() || html == null) return;
-										setHTML(html);
-										html = null;
-									}
-								});
-							} else {
+					}
+					if (html != null && url2.equals(ABOUT_BLANK)) {
+						if (delaySetText) {
+							delaySetText = false;
+							browser.getDisplay().asyncExec(() -> {
+								if (browser.isDisposed() || html == null) return;
 								setHTML(html);
 								html = null;
-							}
+							});
 						} else {
-							Variant variant = new Variant(auto); /* does not need to be disposed */
-							IDispatch top = variant.getDispatch();
-							LocationEvent locationEvent = new LocationEvent(browser);
-							locationEvent.display = browser.getDisplay();
-							locationEvent.widget = browser;
-							locationEvent.location = url;
-							locationEvent.top = top.getAddress() == dispatch.getAddress();
-							for (int i = 0; i < locationListeners.length; i++) {
-								locationListeners[i].changed(locationEvent);
-							}
-							if (browser.isDisposed()) return;
-
-							/*
-							* With the IBM 64-bit JVM an unexpected document complete event occurs before
-							* the native browser's DOM has been built. Filter this premature event based
-							* on the browser's ready state.
-							*/
-							int[] rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
-							Variant pVarResult = auto.getProperty(rgdispid[0]);
-							if (pVarResult != null) {
-								int readyState = pVarResult.getInt();
-								pVarResult.dispose ();
-								if (readyState != READYSTATE_COMPLETE) {
-									break;
-								}
-							}
-
-							/*
-							 * Note.  The completion of the page loading is detected as
-							 * described in the MSDN article "Determine when a page is
-							 * done loading in WebBrowser Control".
-							 */
-							if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
-								/* final document complete */
-								globalDispatch = 0;
-
-								/* re-install registered functions iff needed */
-								IE ie = (IE)browser.webBrowser;
-								if (ie.installFunctionsOnDocumentComplete) {
-									ie.installFunctionsOnDocumentComplete = false;
-									Iterator<BrowserFunction> elements = functions.values().iterator ();
-									while (elements.hasNext ()) {
-										BrowserFunction function = elements.next ();
-										execute (function.functionString);
-									}
-								}
-
-								ProgressEvent progressEvent = new ProgressEvent(browser);
-								progressEvent.display = browser.getDisplay();
-								progressEvent.widget = browser;
-								for (int i = 0; i < progressListeners.length; i++) {
-									progressListeners[i].completed(progressEvent);
-								}
-							}
+							setHTML(html);
+							html = null;
 						}
-						break;
-					}
-					case DownloadComplete: {
-						/*
-						* IE feature.  Some events that swt relies on are not sent when
-						* a page is refreshed (as opposed to being navigated to).  The
-						* workaround is to use DownloadComplete as an opportunity to
-						* do this work.
-						*/
-
-						Iterator<BrowserFunction> elements = functions.values().iterator ();
-						while (elements.hasNext ()) {
-							BrowserFunction function = elements.next ();
-							execute (function.functionString);
+					} else {
+						Variant variant2 = new Variant(auto); /* does not need to be disposed */
+						IDispatch top2 = variant2.getDispatch();
+						LocationEvent locationEvent = new LocationEvent(browser);
+						locationEvent.display = browser.getDisplay();
+						locationEvent.widget = browser;
+						locationEvent.location = url2;
+						locationEvent.top = top2.getAddress() == dispatch2.getAddress();
+						for (int i2 = 0; i2 < locationListeners.length; i2++) {
+							locationListeners[i2].changed(locationEvent);
 						}
-
-						if (!isRefresh) break;
-						isRefresh = false;
+						if (browser.isDisposed()) return;
 
 						/*
-						* DocumentComplete is not received for refreshes, but clients may rely
-						* on this event for tasks like hooking javascript listeners, so send the
-						* event here.
+						* With the IBM 64-bit JVM an unexpected document complete event occurs before
+						* the native browser's DOM has been built. Filter this premature event based
+						* on the browser's ready state.
 						*/
-						ProgressEvent progressEvent = new ProgressEvent(browser);
-						progressEvent.display = browser.getDisplay();
-						progressEvent.widget = browser;
-						for (int i = 0; i < progressListeners.length; i++) {
-							progressListeners[i].completed(progressEvent);
-						}
-
-						break;
-					}
-					case NavigateComplete2: {
-						jsEnabled = jsEnabledOnNextPage;
-
-						Variant varResult = event.arguments[1];
-						String url = varResult.getString();
-						if (!performingInitialNavigate) {
-							varResult = event.arguments[0];
-							IDispatch dispatch = varResult.getDispatch();
-							Variant variant = new Variant(auto); /* does not need to be disposed */
-							IDispatch top = variant.getDispatch();
-							if (top.getAddress() == dispatch.getAddress()) {
-								isAboutBlank = url.startsWith(ABOUT_BLANK);
-								lastNavigateURL = url;
-							}
-						}
-
-						/*
-						* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
-						* clean up its shells properly when the container Browser is disposed.
-						* This results in Eclipse crashing at shutdown time because the leftover
-						* shells have invalid references to unloaded Acrobat libraries.  The
-						* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
-						* files have been opened.
-						*/
-						boolean isPDF = false;
-						String path = null;
-						try {
-							path = new URL(url).getPath();
-						} catch (MalformedURLException e) {
-						}
-						if (path != null) {
-							int extensionIndex = path.lastIndexOf('.');
-							if (extensionIndex != -1) {
-								String extension = path.substring(extensionIndex);
-								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
-									isPDF = true;
-									PDFCount++;
-									if (PDFCount > MAX_PDF) {
-										COM.FreeUnusedLibraries = false;
-									}
-								}
-							}
-						}
-
-						if (uncRedirect != null) {
-							if (uncRedirect.equals(url)) {
-								/* full UNC path has been successfully navigated */
-								uncRedirect = null;
+						int[] rgdispid1 = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
+						Variant pVarResult1 = auto.getProperty(rgdispid1[0]);
+						if (pVarResult1 != null) {
+							int readyState = pVarResult1.getInt();
+							pVarResult1.dispose ();
+							if (readyState != READYSTATE_COMPLETE) {
 								break;
 							}
-							if (uncRedirect.startsWith(url)) {
-								/*
-								* UNC first segment has been successfully navigated,
-								* now redirect to the full UNC path.
-								*/
-								navigate(uncRedirect, null, null, true);
-								break;
-							}
-							uncRedirect = null;
 						}
 
-						varResult = event.arguments[0];
-						IDispatch dispatch = varResult.getDispatch();
-						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
+						/*
+						 * Note.  The completion of the page loading is detected as
+						 * described in the MSDN article "Determine when a page is
+						 * done loading in WebBrowser Control".
+						 */
+						if (globalDispatch != 0 && dispatch2.getAddress() == globalDispatch) {
+							/* final document complete */
+							globalDispatch = 0;
 
-						OleAutomation webBrowser = varResult.getAutomation();
-						Variant variant = new Variant(auto); /* does not need to be disposed */
-						IDispatch top = variant.getDispatch();
-						boolean isTop = top.getAddress() == dispatch.getAddress();
-						if (isTop) {
-							/* unhook DOM listeners and unref the last document(s) */
-							unhookDOMListeners(documents);
-							for (int i = 0; i < documents.length; i++) {
-								documents[i].dispose();
+							/* re-install registered functions iff needed */
+							IE ie = (IE)browser.webBrowser;
+							if (ie.installFunctionsOnDocumentComplete) {
+								ie.installFunctionsOnDocumentComplete = false;
+								Iterator<BrowserFunction> elements1 = functions.values().iterator ();
+								while (elements1.hasNext ()) {
+									BrowserFunction function1 = elements1.next ();
+									execute (function1.functionString);
+								}
 							}
-							documents = new OleAutomation[0];
 
-							/* re-install registered functions */
-							Iterator<BrowserFunction> elements = functions.values().iterator ();
-							while (elements.hasNext ()) {
-								BrowserFunction function = elements.next ();
-								execute (function.functionString);
+							ProgressEvent progressEvent1 = new ProgressEvent(browser);
+							progressEvent1.display = browser.getDisplay();
+							progressEvent1.widget = browser;
+							for (int i3 = 0; i3 < progressListeners.length; i3++) {
+								progressListeners[i3].completed(progressEvent1);
 							}
 						}
-						if (!isPDF) {
-							hookDOMListeners(webBrowser, isTop);
-						}
-						webBrowser.dispose();
-						break;
 					}
-					case NavigateError: {
-						if (uncRedirect != null) {
-							/*
-							* This is the second error attempting to reach this UNC path, so
-							* it does not exist.  Don't override the default error handling.
-							*/
+					break;
+				}
+				case DownloadComplete: {
+					/*
+					* IE feature.  Some events that swt relies on are not sent when
+					* a page is refreshed (as opposed to being navigated to).  The
+					* workaround is to use DownloadComplete as an opportunity to
+					* do this work.
+					*/
+
+					Iterator<BrowserFunction> elements2 = functions.values().iterator ();
+					while (elements2.hasNext ()) {
+						BrowserFunction function2 = elements2.next ();
+						execute (function2.functionString);
+					}
+
+					if (!isRefresh) break;
+					isRefresh = false;
+
+					/*
+					* DocumentComplete is not received for refreshes, but clients may rely
+					* on this event for tasks like hooking javascript listeners, so send the
+					* event here.
+					*/
+					ProgressEvent progressEvent2 = new ProgressEvent(browser);
+					progressEvent2.display = browser.getDisplay();
+					progressEvent2.widget = browser;
+					for (int i4 = 0; i4 < progressListeners.length; i4++) {
+						progressListeners[i4].completed(progressEvent2);
+					}
+
+					break;
+				}
+				case NavigateComplete2: {
+					jsEnabled = jsEnabledOnNextPage;
+
+					Variant varResult4 = event.arguments[1];
+					String url3 = varResult4.getString();
+					if (!performingInitialNavigate) {
+						varResult4 = event.arguments[0];
+						IDispatch dispatch3 = varResult4.getDispatch();
+						Variant variant3 = new Variant(auto); /* does not need to be disposed */
+						IDispatch top3 = variant3.getDispatch();
+						if (top3.getAddress() == dispatch3.getAddress()) {
+							isAboutBlank = url3.startsWith(ABOUT_BLANK);
+							lastNavigateURL = url3;
+						}
+					}
+
+					/*
+					* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
+					* clean up its shells properly when the container Browser is disposed.
+					* This results in Eclipse crashing at shutdown time because the leftover
+					* shells have invalid references to unloaded Acrobat libraries.  The
+					* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
+					* files have been opened.
+					*/
+					boolean isPDF = false;
+					String path = null;
+					try {
+						path = new URL(url3).getPath();
+					} catch (MalformedURLException e) {
+					}
+					if (path != null) {
+						int extensionIndex = path.lastIndexOf('.');
+						if (extensionIndex != -1) {
+							String extension = path.substring(extensionIndex);
+							if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+								isPDF = true;
+								PDFCount++;
+								if (PDFCount > MAX_PDF) {
+									COM.FreeUnusedLibraries = false;
+								}
+							}
+						}
+					}
+
+					if (uncRedirect != null) {
+						if (uncRedirect.equals(url3)) {
+							/* full UNC path has been successfully navigated */
 							uncRedirect = null;
 							break;
 						}
-						Variant varResult = event.arguments[1];
-						final String url = varResult.getString();
-						if (url.startsWith("\\\\")) { //$NON-NLS-1$
-							varResult = event.arguments[3];
-							int statusCode = varResult.getInt();
-							if (statusCode == INET_E_RESOURCE_NOT_FOUND) {
-								int index = url.indexOf('\\', 2);
-								if (index != -1) {
-									final String host = url.substring(0, index);
-									Variant cancel = event.arguments[4];
-									if (cancel != null) {
-										long /*int*/ pCancel = cancel.getByRef();
-										COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
-									}
-									browser.getDisplay().asyncExec(new Runnable() {
-										@Override
-										public void run() {
-											if (browser.isDisposed()) return;
-											/*
-											* Feature of IE.  When a UNC path ends with a '\' character IE
-											* drops this character when providing the path as an argument
-											* to some IE listeners.  Remove this character here too in
-											* order to match these other listener argument values.
-											*/
-											if (url.endsWith("\\")) { //$NON-NLS-1$
-												uncRedirect = url.substring(0, url.length() - 1);
-											} else {
-												uncRedirect = url;
-											}
-											navigate(host, null, null, true);
-										}
-									});
-								}
-							}
-						}
-						break;
-					}
-					case NewWindow2: {
-						Variant cancel = event.arguments[1];
-						long /*int*/ pCancel = cancel.getByRef();
-						WindowEvent newEvent = new WindowEvent(browser);
-						newEvent.display = browser.getDisplay();
-						newEvent.widget = browser;
-						newEvent.required = false;
-						for (int i = 0; i < openWindowListeners.length; i++) {
-							openWindowListeners[i].open(newEvent);
-						}
-						IE browser = null;
-						if (newEvent.browser != null && newEvent.browser.webBrowser instanceof IE) {
-							browser = (IE)newEvent.browser.webBrowser;
-						}
-						boolean doit = browser != null && !browser.browser.isDisposed();
-						if (doit) {
+						if (uncRedirect.startsWith(url3)) {
 							/*
-							* When a Browser is opened in a new window, BrowserFunctions that are
-							* installed in it in the NavigateComplete2 callback are not retained
-							* through the loading of the page.  The workaround is to re-install
-							* the functions when DocumentComplete is received.
+							* UNC first segment has been successfully navigated,
+							* now redirect to the full UNC path.
 							*/
-							browser.installFunctionsOnDocumentComplete = true;
+							navigate(uncRedirect, null, null, true);
+							break;
+						}
+						uncRedirect = null;
+					}
 
-							Variant variant = new Variant(browser.auto); /* does not need to be disposed */
-							IDispatch iDispatch = variant.getDispatch();
-							Variant ppDisp = event.arguments[0];
-							long /*int*/ byref = ppDisp.getByRef();
-							if (byref != 0) COM.MoveMemory(byref, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+					varResult4 = event.arguments[0];
+					IDispatch dispatch4 = varResult4.getDispatch();
+					if (globalDispatch == 0) globalDispatch = dispatch4.getAddress();
+
+					OleAutomation webBrowser = varResult4.getAutomation();
+					Variant variant4 = new Variant(auto); /* does not need to be disposed */
+					IDispatch top4 = variant4.getDispatch();
+					boolean isTop = top4.getAddress() == dispatch4.getAddress();
+					if (isTop) {
+						/* unhook DOM listeners and unref the last document(s) */
+						unhookDOMListeners(documents);
+						for (int i5 = 0; i5 < documents.length; i5++) {
+							documents[i5].dispose();
 						}
-						if (newEvent.required) {
-							COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+						documents = new OleAutomation[0];
+
+						/* re-install registered functions */
+						Iterator<BrowserFunction> elements3 = functions.values().iterator ();
+						while (elements3.hasNext ()) {
+							BrowserFunction function3 = elements3.next ();
+							execute (function3.functionString);
 						}
-						break;
 					}
-					case OnMenuBar: {
-						Variant arg0 = event.arguments[0];
-						menuBar = arg0.getBoolean();
-						break;
+					if (!isPDF) {
+						hookDOMListeners(webBrowser, isTop);
 					}
-					case OnStatusBar: {
-						Variant arg0 = event.arguments[0];
-						statusBar = arg0.getBoolean();
-						break;
-					}
-					case OnToolBar: {
-						Variant arg0 = event.arguments[0];
-						toolBar = arg0.getBoolean();
+					webBrowser.dispose();
+					break;
+				}
+				case NavigateError: {
+					if (uncRedirect != null) {
 						/*
-						* Feature in Internet Explorer.  OnToolBar FALSE is emitted
-						* when both tool bar, address bar and menu bar must not be visible.
-						* OnToolBar TRUE is emitted when either of tool bar, address bar
-						* or menu bar is visible.
+						* This is the second error attempting to reach this UNC path, so
+						* it does not exist.  Don't override the default error handling.
 						*/
-						if (!toolBar) {
-							addressBar = false;
-							menuBar = false;
-						}
+						uncRedirect = null;
 						break;
 					}
-					case OnVisible: {
-						Variant arg1 = event.arguments[0];
-						boolean visible = arg1.getBoolean();
+					Variant varResult5 = event.arguments[1];
+					final String url4 = varResult5.getString();
+					if (url4.startsWith("\\\\")) { //$NON-NLS-1$
+						varResult5 = event.arguments[3];
+						int statusCode = varResult5.getInt();
+						if (statusCode == INET_E_RESOURCE_NOT_FOUND) {
+							int index = url4.indexOf('\\', 2);
+							if (index != -1) {
+								final String host = url4.substring(0, index);
+								Variant cancel4 = event.arguments[4];
+								if (cancel4 != null) {
+									long /*int*/ pCancel4 = cancel4.getByRef();
+									COM.MoveMemory(pCancel4, new short[] {COM.VARIANT_TRUE}, 2);
+								}
+								browser.getDisplay().asyncExec(() -> {
+									if (browser.isDisposed()) return;
+									/*
+									* Feature of IE.  When a UNC path ends with a '\' character IE
+									* drops this character when providing the path as an argument
+									* to some IE listeners.  Remove this character here too in
+									* order to match these other listener argument values.
+									*/
+									if (url4.endsWith("\\")) { //$NON-NLS-1$
+										uncRedirect = url4.substring(0, url4.length() - 1);
+									} else {
+										uncRedirect = url4;
+									}
+									navigate(host, null, null, true);
+								});
+							}
+						}
+					}
+					break;
+				}
+				case NewWindow2: {
+					Variant cancel5 = event.arguments[1];
+					long /*int*/ pCancel5 = cancel5.getByRef();
+					WindowEvent newEvent2 = new WindowEvent(browser);
+					newEvent2.display = browser.getDisplay();
+					newEvent2.widget = browser;
+					newEvent2.required = false;
+					for (int i6 = 0; i6 < openWindowListeners.length; i6++) {
+						openWindowListeners[i6].open(newEvent2);
+					}
+					IE browser = null;
+					if (newEvent2.browser != null && newEvent2.browser.webBrowser instanceof IE) {
+						browser = (IE)newEvent2.browser.webBrowser;
+					}
+					boolean doit2 = browser != null && !browser.browser.isDisposed();
+					if (doit2) {
+						/*
+						* When a Browser is opened in a new window, BrowserFunctions that are
+						* installed in it in the NavigateComplete2 callback are not retained
+						* through the loading of the page.  The workaround is to re-install
+						* the functions when DocumentComplete is received.
+						*/
+						browser.installFunctionsOnDocumentComplete = true;
+
+						Variant variant5 = new Variant(browser.auto); /* does not need to be disposed */
+						IDispatch iDispatch = variant5.getDispatch();
+						Variant ppDisp = event.arguments[0];
+						long /*int*/ byref = ppDisp.getByRef();
+						if (byref != 0) COM.MoveMemory(byref, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+					}
+					if (newEvent2.required) {
+						COM.MoveMemory(pCancel5, new short[]{doit2 ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+					}
+					break;
+				}
+				case OnMenuBar: {
+					Variant arg01 = event.arguments[0];
+					menuBar = arg01.getBoolean();
+					break;
+				}
+				case OnStatusBar: {
+					Variant arg02 = event.arguments[0];
+					statusBar = arg02.getBoolean();
+					break;
+				}
+				case OnToolBar: {
+					Variant arg03 = event.arguments[0];
+					toolBar = arg03.getBoolean();
+					/*
+					* Feature in Internet Explorer.  OnToolBar FALSE is emitted
+					* when both tool bar, address bar and menu bar must not be visible.
+					* OnToolBar TRUE is emitted when either of tool bar, address bar
+					* or menu bar is visible.
+					*/
+					if (!toolBar) {
+						addressBar = false;
+						menuBar = false;
+					}
+					break;
+				}
+				case OnVisible: {
+					Variant arg11 = event.arguments[0];
+					boolean visible = arg11.getBoolean();
+					WindowEvent newEvent3 = new WindowEvent(browser);
+					newEvent3.display = browser.getDisplay();
+					newEvent3.widget = browser;
+					if (visible) {
+						if (addressBar) {
+							/*
+							* Bug in Internet Explorer.  There is no distinct notification for
+							* the address bar.  If neither address, menu or tool bars are visible,
+							* OnToolBar FALSE is emitted. For some reason, querying the value of
+							* AddressBar in this case returns true even though it should not be
+							* set visible.  The workaround is to only query the value of AddressBar
+							* when OnToolBar FALSE has not been emitted.
+							*/
+							int[] rgdispid2 = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
+							Variant pVarResult2 = auto.getProperty(rgdispid2[0]);
+							if (pVarResult2 != null) {
+								if (pVarResult2.getType () == OLE.VT_BOOL) {
+									addressBar = pVarResult2.getBoolean ();
+								}
+								pVarResult2.dispose ();
+							}
+						}
+						newEvent3.addressBar = addressBar;
+						newEvent3.menuBar = menuBar;
+						newEvent3.statusBar = statusBar;
+						newEvent3.toolBar = toolBar;
+						newEvent3.location = location;
+						newEvent3.size = size;
+						for (int i7 = 0; i7 < visibilityWindowListeners.length; i7++) {
+							visibilityWindowListeners[i7].show(newEvent3);
+						}
+						location = null;
+						size = null;
+					} else {
+						for (int i8 = 0; i8 < visibilityWindowListeners.length; i8++) {
+							visibilityWindowListeners[i8].hide(newEvent3);
+						}
+					}
+					break;
+				}
+				case ProgressChange: {
+					/* don't send client events if the initial navigate to about:blank has not completed */
+					if (performingInitialNavigate) break;
+
+					Variant arg12 = event.arguments[0];
+					int nProgress = arg12.getType() != OLE.VT_I4 ? 0 : arg12.getInt(); // may be -1
+					Variant arg2 = event.arguments[1];
+					int nProgressMax = arg2.getType() != OLE.VT_I4 ? 0 : arg2.getInt();
+					ProgressEvent newEvent4 = new ProgressEvent(browser);
+					newEvent4.display = browser.getDisplay();
+					newEvent4.widget = browser;
+					newEvent4.current = nProgress;
+					newEvent4.total = nProgressMax;
+					if (nProgress != -1) {
+						for (int i9 = 0; i9 < progressListeners.length; i9++) {
+							progressListeners[i9].changed(newEvent4);
+						}
+					}
+					break;
+				}
+				case StatusTextChange: {
+					/* don't send client events if the initial navigate to about:blank has not completed */
+					if (performingInitialNavigate) break;
+
+					Variant arg13 = event.arguments[0];
+					if (arg13.getType() == OLE.VT_BSTR) {
+						String text = arg13.getString();
+						StatusTextEvent newEvent5 = new StatusTextEvent(browser);
+						newEvent5.display = browser.getDisplay();
+						newEvent5.widget = browser;
+						newEvent5.text = text;
+						for (int i10 = 0; i10 < statusTextListeners.length; i10++) {
+							statusTextListeners[i10].changed(newEvent5);
+						}
+					}
+					break;
+				}
+				case TitleChange: {
+					/* don't send client events if the initial navigate to about:blank has not completed */
+					if (performingInitialNavigate) break;
+
+					Variant arg14 = event.arguments[0];
+					if (arg14.getType() == OLE.VT_BSTR) {
+						String title = arg14.getString();
+						TitleEvent newEvent6 = new TitleEvent(browser);
+						newEvent6.display = browser.getDisplay();
+						newEvent6.widget = browser;
+						newEvent6.title = title;
+						for (int i11 = 0; i11 < titleListeners.length; i11++) {
+							titleListeners[i11].changed(newEvent6);
+						}
+					}
+					break;
+				}
+				case WindowClosing: {
+					/*
+					* Disposing the Browser directly from this callback will crash if the
+					* Browser has a text field with an active caret.  As a workaround fire
+					* the Close event and dispose the Browser in an async block.
+					*/
+					browser.getDisplay().asyncExec(() -> {
+						if (browser.isDisposed()) return;
 						WindowEvent newEvent = new WindowEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
-						if (visible) {
-							if (addressBar) {
-								/*
-								* Bug in Internet Explorer.  There is no distinct notification for
-								* the address bar.  If neither address, menu or tool bars are visible,
-								* OnToolBar FALSE is emitted. For some reason, querying the value of
-								* AddressBar in this case returns true even though it should not be
-								* set visible.  The workaround is to only query the value of AddressBar
-								* when OnToolBar FALSE has not been emitted.
-								*/
-								int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
-								Variant pVarResult = auto.getProperty(rgdispid[0]);
-								if (pVarResult != null) {
-									if (pVarResult.getType () == OLE.VT_BOOL) {
-										addressBar = pVarResult.getBoolean ();
-									}
-									pVarResult.dispose ();
-								}
-							}
-							newEvent.addressBar = addressBar;
-							newEvent.menuBar = menuBar;
-							newEvent.statusBar = statusBar;
-							newEvent.toolBar = toolBar;
-							newEvent.location = location;
-							newEvent.size = size;
-							for (int i = 0; i < visibilityWindowListeners.length; i++) {
-								visibilityWindowListeners[i].show(newEvent);
-							}
-							location = null;
-							size = null;
-						} else {
-							for (int i = 0; i < visibilityWindowListeners.length; i++) {
-								visibilityWindowListeners[i].hide(newEvent);
-							}
+						for (int i = 0; i < closeWindowListeners.length; i++) {
+							closeWindowListeners[i].close(newEvent);
 						}
-						break;
-					}
-					case ProgressChange: {
-						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (performingInitialNavigate) break;
-
-						Variant arg1 = event.arguments[0];
-						int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
-						Variant arg2 = event.arguments[1];
-						int nProgressMax = arg2.getType() != OLE.VT_I4 ? 0 : arg2.getInt();
-						ProgressEvent newEvent = new ProgressEvent(browser);
-						newEvent.display = browser.getDisplay();
-						newEvent.widget = browser;
-						newEvent.current = nProgress;
-						newEvent.total = nProgressMax;
-						if (nProgress != -1) {
-							for (int i = 0; i < progressListeners.length; i++) {
-								progressListeners[i].changed(newEvent);
-							}
-						}
-						break;
-					}
-					case StatusTextChange: {
-						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (performingInitialNavigate) break;
-
-						Variant arg1 = event.arguments[0];
-						if (arg1.getType() == OLE.VT_BSTR) {
-							String text = arg1.getString();
-							StatusTextEvent newEvent = new StatusTextEvent(browser);
-							newEvent.display = browser.getDisplay();
-							newEvent.widget = browser;
-							newEvent.text = text;
-							for (int i = 0; i < statusTextListeners.length; i++) {
-								statusTextListeners[i].changed(newEvent);
-							}
-						}
-						break;
-					}
-					case TitleChange: {
-						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (performingInitialNavigate) break;
-
-						Variant arg1 = event.arguments[0];
-						if (arg1.getType() == OLE.VT_BSTR) {
-							String title = arg1.getString();
-							TitleEvent newEvent = new TitleEvent(browser);
-							newEvent.display = browser.getDisplay();
-							newEvent.widget = browser;
-							newEvent.title = title;
-							for (int i = 0; i < titleListeners.length; i++) {
-								titleListeners[i].changed(newEvent);
-							}
-						}
-						break;
-					}
-					case WindowClosing: {
-						/*
-						* Disposing the Browser directly from this callback will crash if the
-						* Browser has a text field with an active caret.  As a workaround fire
-						* the Close event and dispose the Browser in an async block.
-						*/
-						browser.getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								if (browser.isDisposed()) return;
-								WindowEvent newEvent = new WindowEvent(browser);
-								newEvent.display = browser.getDisplay();
-								newEvent.widget = browser;
-								for (int i = 0; i < closeWindowListeners.length; i++) {
-									closeWindowListeners[i].close(newEvent);
-								}
-								browser.dispose();
-							}
-						});
-						Variant cancel = event.arguments[1];
-						long /*int*/ pCancel = cancel.getByRef();
-						Variant arg1 = event.arguments[0];
-						boolean isChildWindow = arg1.getBoolean();
-						COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-						break;
-					}
-					case WindowSetHeight: {
-						if (size == null) size = new Point(0, 0);
-						Variant arg1 = event.arguments[0];
-						size.y = arg1.getInt();
-						break;
-					}
-					case WindowSetLeft: {
-						if (location == null) location = new Point(0, 0);
-						Variant arg1 = event.arguments[0];
-						location.x = arg1.getInt();
-						break;
-					}
-					case WindowSetTop: {
-						if (location == null) location = new Point(0, 0);
-						Variant arg1 = event.arguments[0];
-						location.y = arg1.getInt();
-						break;
-					}
-					case WindowSetWidth: {
-						if (size == null) size = new Point(0, 0);
-						Variant arg1 = event.arguments[0];
-						size.x = arg1.getInt();
-						break;
-					}
+						browser.dispose();
+					});
+					Variant cancel6 = event.arguments[1];
+					long /*int*/ pCancel6 = cancel6.getByRef();
+					Variant arg15 = event.arguments[0];
+					boolean isChildWindow = arg15.getBoolean();
+					COM.MoveMemory(pCancel6, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+					break;
+				}
+				case WindowSetHeight: {
+					if (size == null) size = new Point(0, 0);
+					Variant arg16 = event.arguments[0];
+					size.y = arg16.getInt();
+					break;
+				}
+				case WindowSetLeft: {
+					if (location == null) location = new Point(0, 0);
+					Variant arg17 = event.arguments[0];
+					location.x = arg17.getInt();
+					break;
+				}
+				case WindowSetTop: {
+					if (location == null) location = new Point(0, 0);
+					Variant arg18 = event.arguments[0];
+					location.y = arg18.getInt();
+					break;
+				}
+				case WindowSetWidth: {
+					if (size == null) size = new Point(0, 0);
+					Variant arg19 = event.arguments[0];
+					size.x = arg19.getInt();
+					break;
 				}
 			}
 		}

@@ -208,40 +208,37 @@ void init () {
 		* perform traversals outside of the Browser when it should not.  Hook a Traverse listener
 		* to work around these problems.
 		*/
-		browser.addListener (SWT.Traverse, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				switch (event.detail) {
-					case SWT.TRAVERSE_RETURN: {
-						/* always veto the traversal */
-						event.doit = false;
-						break;
-					}
-					case SWT.TRAVERSE_TAB_NEXT:
-					case SWT.TRAVERSE_TAB_PREVIOUS: {
-						/* veto the traversal whenever an element in the browser has focus */
-						long /*int*/[] result = new long /*int*/[1];
-						int rc = XPCOM.NS_GetServiceManager (result);
-						if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-						if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-						nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-						result[0] = 0;
-						byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-						rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class, MozillaVersion.VERSION_XR10), result);
-						serviceManager.Release ();
+		browser.addListener (SWT.Traverse, event -> {
+			switch (event.detail) {
+				case SWT.TRAVERSE_RETURN: {
+					/* always veto the traversal */
+					event.doit = false;
+					break;
+				}
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS: {
+					/* veto the traversal whenever an element in the browser has focus */
+					long /*int*/[] result = new long /*int*/[1];
+					int rc = XPCOM.NS_GetServiceManager (result);
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+					result[0] = 0;
+					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsIFocusManager.class, MozillaVersion.VERSION_XR10), result);
+					serviceManager.Release ();
 
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						nsIFocusManager focusManager = new nsIFocusManager (result[0]);
+						result[0] = 0;
+						rc = focusManager.GetFocusedElement (result);
+						focusManager.Release ();
+						event.doit = result[0] == 0;
 						if (rc == XPCOM.NS_OK && result[0] != 0) {
-							nsIFocusManager focusManager = new nsIFocusManager (result[0]);
-							result[0] = 0;
-							rc = focusManager.GetFocusedElement (result);
-							focusManager.Release ();
-							event.doit = result[0] == 0;
-							if (rc == XPCOM.NS_OK && result[0] != 0) {
-								new nsISupports (result[0]).Release ();
-							}
+							new nsISupports (result[0]).Release ();
 						}
-						break;
 					}
+					break;
 				}
 			}
 		});

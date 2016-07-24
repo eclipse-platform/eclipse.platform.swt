@@ -11,10 +11,10 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * A Label which supports aligned text and/or an image and different border styles.
@@ -116,28 +116,15 @@ public CLabel(Composite parent, int style) {
 	if ((style & SWT.RIGHT) != 0)  align = SWT.RIGHT;
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
 
-	addPaintListener(new PaintListener() {
-		@Override
-		public void paintControl(PaintEvent event) {
-			onPaint(event);
+	addPaintListener(event -> onPaint(event));
+
+	addTraverseListener(event -> {
+		if (event.detail == SWT.TRAVERSE_MNEMONIC) {
+			onMnemonic(event);
 		}
 	});
 
-	addTraverseListener(new TraverseListener() {
-		@Override
-		public void keyTraversed(TraverseEvent event) {
-			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
-				onMnemonic(event);
-			}
-		}
-	});
-
-	addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			onDispose(event);
-		}
-	});
+	addListener(SWT.Dispose, event -> onDispose(event));
 
 	initAccessible();
 

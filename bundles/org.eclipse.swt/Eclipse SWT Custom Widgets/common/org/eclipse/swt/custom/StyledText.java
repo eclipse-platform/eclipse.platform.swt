@@ -1260,15 +1260,12 @@ public StyledText(Composite parent, int style) {
 	}
 	if (isBidiCaret()) {
 		createCaretBitmaps();
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
-				if (direction == caretDirection) return;
-				if (getCaret() != defaultCaret) return;
-				Point newCaretPos = getPointAtOffset(caretOffset);
-				setCaretLocation(newCaretPos, direction);
-			}
+		Runnable runnable = () -> {
+			int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
+			if (direction == caretDirection) return;
+			if (getCaret() != defaultCaret) return;
+			Point newCaretPos = getPointAtOffset(caretOffset);
+			setCaretLocation(newCaretPos, direction);
 		};
 		BidiUtil.addLanguageListener(this, runnable);
 	}
@@ -5725,21 +5722,18 @@ void installListeners() {
 	ScrollBar verticalBar = getVerticalBar();
 	ScrollBar horizontalBar = getHorizontalBar();
 
-	listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Dispose: handleDispose(event); break;
-				case SWT.KeyDown: handleKeyDown(event); break;
-				case SWT.KeyUp: handleKeyUp(event); break;
-				case SWT.MenuDetect: handleMenuDetect(event); break;
-				case SWT.MouseDown: handleMouseDown(event); break;
-				case SWT.MouseUp: handleMouseUp(event); break;
-				case SWT.MouseMove: handleMouseMove(event); break;
-				case SWT.Paint: handlePaint(event); break;
-				case SWT.Resize: handleResize(event); break;
-				case SWT.Traverse: handleTraverse(event); break;
-			}
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose: handleDispose(event); break;
+			case SWT.KeyDown: handleKeyDown(event); break;
+			case SWT.KeyUp: handleKeyUp(event); break;
+			case SWT.MenuDetect: handleMenuDetect(event); break;
+			case SWT.MouseDown: handleMouseDown(event); break;
+			case SWT.MouseUp: handleMouseUp(event); break;
+			case SWT.MouseMove: handleMouseMove(event); break;
+			case SWT.Paint: handlePaint(event); break;
+			case SWT.Resize: handleResize(event); break;
+			case SWT.Traverse: handleTraverse(event); break;
 		}
 	};
 	addListener(SWT.Dispose, listener);
@@ -5752,31 +5746,18 @@ void installListeners() {
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Resize, listener);
 	addListener(SWT.Traverse, listener);
-	ime.addListener(SWT.ImeComposition, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.detail) {
-				case SWT.COMPOSITION_SELECTION: handleCompositionSelection(event); break;
-				case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
-				case SWT.COMPOSITION_OFFSET: handleCompositionOffset(event); break;
-			}
+	ime.addListener(SWT.ImeComposition, event -> {
+		switch (event.detail) {
+			case SWT.COMPOSITION_SELECTION: handleCompositionSelection(event); break;
+			case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
+			case SWT.COMPOSITION_OFFSET: handleCompositionOffset(event); break;
 		}
 	});
 	if (verticalBar != null) {
-		verticalBar.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handleVerticalScroll(event);
-			}
-		});
+		verticalBar.addListener(SWT.Selection, event -> handleVerticalScroll(event));
 	}
 	if (horizontalBar != null) {
-		horizontalBar.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handleHorizontalScroll(event);
-			}
-		});
+		horizontalBar.addListener(SWT.Selection, event -> handleHorizontalScroll(event));
 	}
 }
 void internalRedrawRange(int start, int length) {
@@ -6955,12 +6936,7 @@ void initializeAccessible() {
 	};
 	acc.addAccessibleControlListener(accControlAdapter);
 
-	addListener(SWT.FocusIn, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			acc.setFocus(ACC.CHILDID_SELF);
-		}
-	});
+	addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
 }
 
 @Override

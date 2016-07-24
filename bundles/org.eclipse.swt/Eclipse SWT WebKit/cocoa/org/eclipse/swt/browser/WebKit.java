@@ -67,54 +67,45 @@ class WebKit extends WebBrowser {
 	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
 
 	static {
-		NativeClearSessions = new Runnable() {
-			@Override
-			public void run() {
-				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage();
-				NSArray cookies = storage.cookies();
-				int count = (int)/*64*/cookies.count ();
-				for (int i = 0; i < count; i++) {
-					NSHTTPCookie cookie = new NSHTTPCookie(cookies.objectAtIndex(i));
-					if (cookie.isSessionOnly()) {
-						storage.deleteCookie(cookie);
-					}
+		NativeClearSessions = () -> {
+			NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage();
+			NSArray cookies = storage.cookies();
+			int count = (int)/*64*/cookies.count ();
+			for (int i = 0; i < count; i++) {
+				NSHTTPCookie cookie = new NSHTTPCookie(cookies.objectAtIndex(i));
+				if (cookie.isSessionOnly()) {
+					storage.deleteCookie(cookie);
 				}
 			}
 		};
 
-		NativeGetCookie = new Runnable () {
-			@Override
-			public void run () {
-				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
-				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
-				NSArray cookies = storage.cookiesForURL (url);
-				int count = (int)/*64*/cookies.count ();
-				if (count == 0) return;
+		NativeGetCookie = () -> {
+			NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
+			NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
+			NSArray cookies = storage.cookiesForURL (url);
+			int count = (int)/*64*/cookies.count ();
+			if (count == 0) return;
 
-				NSString name = NSString.stringWith (CookieName);
-				for (int i = 0; i < count; i++) {
-					NSHTTPCookie current = new NSHTTPCookie (cookies.objectAtIndex (i));
-					if (current.name ().compare (name) == OS.NSOrderedSame) {
-						CookieValue = current.value ().getString ();
-						return;
-					}
+			NSString name = NSString.stringWith (CookieName);
+			for (int i = 0; i < count; i++) {
+				NSHTTPCookie current = new NSHTTPCookie (cookies.objectAtIndex (i));
+				if (current.name ().compare (name) == OS.NSOrderedSame) {
+					CookieValue = current.value ().getString ();
+					return;
 				}
 			}
 		};
 
-		NativeSetCookie = new Runnable () {
-			@Override
-			public void run () {
-				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
-				NSMutableDictionary headers = NSMutableDictionary.dictionaryWithCapacity (1);
-				headers.setValue (NSString.stringWith (CookieValue), NSString.stringWith (HEADER_SETCOOKIE));
-				NSArray cookies = NSHTTPCookie.cookiesWithResponseHeaderFields (headers, url);
-				if (cookies.count () == 0) return;
-				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
-				NSHTTPCookie cookie = new NSHTTPCookie (cookies.objectAtIndex (0));
-				storage.setCookie (cookie);
-				CookieResult = true;
-			}
+		NativeSetCookie = () -> {
+			NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
+			NSMutableDictionary headers = NSMutableDictionary.dictionaryWithCapacity (1);
+			headers.setValue (NSString.stringWith (CookieValue), NSString.stringWith (HEADER_SETCOOKIE));
+			NSArray cookies = NSHTTPCookie.cookiesWithResponseHeaderFields (headers, url);
+			if (cookies.count () == 0) return;
+			NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
+			NSHTTPCookie cookie = new NSHTTPCookie (cookies.objectAtIndex (0));
+			storage.setCookie (cookie);
+			CookieResult = true;
 		};
 
 		if (NativePendingCookies != null) {
@@ -218,56 +209,53 @@ public void create (Composite parent, int style) {
 	this.webView = webView;
 	browser.view.addSubview(webView);
 
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			switch (e.type) {
-				case SWT.FocusIn:
-					WebKit.this.webView.window().makeFirstResponder(WebKit.this.webView);
-					break;
-				case SWT.Dispose: {
-					/* make this handler run after other dispose listeners */
-					if (ignoreDispose) {
-						ignoreDispose = false;
-						break;
-					}
-					ignoreDispose = true;
-					browser.notifyListeners (e.type, e);
-					e.type = SWT.NONE;
-
-					/* Browser could have been disposed by one of the Dispose listeners */
-					if (!browser.isDisposed()) {
-						/* invoke onbeforeunload handlers */
-						if (!browser.isClosing) {
-							close (false);
-						}
-
-						e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
-					}
-
-					WebKit.this.webView.setFrameLoadDelegate(null);
-					WebKit.this.webView.setResourceLoadDelegate(null);
-					WebKit.this.webView.setUIDelegate(null);
-					WebKit.this.webView.setPolicyDelegate(null);
-					WebKit.this.webView.setDownloadDelegate(null);
-
-					WebKit.this.webView.release();
-					WebKit.this.webView = null;
-					WebKit.this.delegate.release();
-					WebKit.this.delegate = null;
-					html = null;
-					lastHoveredLinkURL = lastNavigateURL = null;
-
-					Iterator<BrowserFunction> elements = functions.values().iterator ();
-					while (elements.hasNext ()) {
-						elements.next ().dispose (false);
-					}
-					functions = null;
-
-					if (preferences != null) preferences.release ();
-					preferences = null;
+	Listener listener = e -> {
+		switch (e.type) {
+			case SWT.FocusIn:
+				WebKit.this.webView.window().makeFirstResponder(WebKit.this.webView);
+				break;
+			case SWT.Dispose: {
+				/* make this handler run after other dispose listeners */
+				if (ignoreDispose) {
+					ignoreDispose = false;
 					break;
 				}
+				ignoreDispose = true;
+				browser.notifyListeners (e.type, e);
+				e.type = SWT.NONE;
+
+				/* Browser could have been disposed by one of the Dispose listeners */
+				if (!browser.isDisposed()) {
+					/* invoke onbeforeunload handlers */
+					if (!browser.isClosing) {
+						close (false);
+					}
+
+					e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
+				}
+
+				WebKit.this.webView.setFrameLoadDelegate(null);
+				WebKit.this.webView.setResourceLoadDelegate(null);
+				WebKit.this.webView.setUIDelegate(null);
+				WebKit.this.webView.setPolicyDelegate(null);
+				WebKit.this.webView.setDownloadDelegate(null);
+
+				WebKit.this.webView.release();
+				WebKit.this.webView = null;
+				WebKit.this.delegate.release();
+				WebKit.this.delegate = null;
+				html = null;
+				lastHoveredLinkURL = lastNavigateURL = null;
+
+				Iterator<BrowserFunction> elements = functions.values().iterator ();
+				while (elements.hasNext ()) {
+					elements.next ().dispose (false);
+				}
+				functions = null;
+
+				if (preferences != null) preferences.release ();
+				preferences = null;
+				break;
 			}
 		}
 	};
@@ -1125,14 +1113,11 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[2];
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			user[0] = userText.getText();
-			password[0] = passwordText.getText();
-			result[0] = event.widget == buttons[1];
-			shell.close();
-		}
+	Listener listener = event -> {
+		user[0] = userText.getText();
+		password[0] = passwordText.getText();
+		result[0] = event.widget == buttons[1];
+		shell.close();
 	};
 
 	Composite composite = new Composite (shell, SWT.NONE);

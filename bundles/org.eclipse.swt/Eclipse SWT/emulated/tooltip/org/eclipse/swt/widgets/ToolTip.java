@@ -12,8 +12,8 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent popup windows that are used
@@ -98,25 +98,17 @@ public ToolTip (Shell parent, int style) {
 	tip = new Shell (parent, SWT.ON_TOP | SWT.NO_TRIM);
 	Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 	tip.setBackground (background);
-	listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Dispose: onDispose (event); break;
-				case SWT.Paint: onPaint (event); break;
-				case SWT.MouseDown: onMouseDown (event); break;
-			}
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose: onDispose (event); break;
+			case SWT.Paint: onPaint (event); break;
+			case SWT.MouseDown: onMouseDown (event); break;
 		}
 	};
 	addListener (SWT.Dispose, listener);
 	tip.addListener (SWT.Paint, listener);
 	tip.addListener (SWT.MouseDown, listener);
-	parentListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			dispose ();
-		}
-	};
+	parentListener = event -> dispose ();
 	parent.addListener(SWT.Dispose, parentListener);
 }
 
@@ -633,11 +625,8 @@ public void setVisible (boolean visible) {
 	if (runnable != null) display.timerExec (-1, runnable);
 	runnable = null;
 	if (autohide && visible) {
-		runnable = new Runnable () {
-			@Override
-			public void run () {
-				if (!isDisposed ()) setVisible (false);
-			}
+		runnable = () -> {
+			if (!isDisposed ()) setVisible (false);
 		};
 		display.timerExec(DELAY, runnable);
 	}

@@ -146,42 +146,39 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	OS.gdk_window_show (glWindow);
 
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			switch (event.type) {
-			case SWT.Paint:
-				/**
-				* Bug in MESA.  MESA does some nasty sort of polling to try
-				* and ensure that their buffer sizes match the current X state.
-				* This state can be updated using glViewport().
-				* FIXME: There has to be a better way of doing this.
-				*/
-				int [] viewport = new int [4];
-				GLX.glGetIntegerv (GLX.GL_VIEWPORT, viewport);
-				GLX.glViewport (viewport [0],viewport [1],viewport [2],viewport [3]);
-				break;
-			case SWT.Resize:
-				Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea());
-				OS.gdk_window_move (glWindow, clientArea.x, clientArea.y);
-				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
-				break;
-			case SWT.Dispose:
-				long /*int*/ window = OS.gtk_widget_get_window (handle);
-				long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
-				if (context != 0) {
-					if (GLX.glXGetCurrentContext () == context) {
-						GLX.glXMakeCurrent (xDisplay, 0, 0);
-					}
-					GLX.glXDestroyContext (xDisplay, context);
-					context = 0;
+	Listener listener = event -> {
+		switch (event.type) {
+		case SWT.Paint:
+			/**
+			* Bug in MESA.  MESA does some nasty sort of polling to try
+			* and ensure that their buffer sizes match the current X state.
+			* This state can be updated using glViewport().
+			* FIXME: There has to be a better way of doing this.
+			*/
+			int [] viewport = new int [4];
+			GLX.glGetIntegerv (GLX.GL_VIEWPORT, viewport);
+			GLX.glViewport (viewport [0],viewport [1],viewport [2],viewport [3]);
+			break;
+		case SWT.Resize:
+			Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea());
+			OS.gdk_window_move (glWindow, clientArea.x, clientArea.y);
+			OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
+			break;
+		case SWT.Dispose:
+			long /*int*/ window1 = OS.gtk_widget_get_window (handle);
+			long /*int*/ xDisplay1 = gdk_x11_display_get_xdisplay (window1);
+			if (context != 0) {
+				if (GLX.glXGetCurrentContext () == context) {
+					GLX.glXMakeCurrent (xDisplay1, 0, 0);
 				}
-				if (glWindow != 0) {
-					OS.gdk_window_destroy (glWindow);
-					glWindow = 0;
-				}
-				break;
+				GLX.glXDestroyContext (xDisplay1, context);
+				context = 0;
 			}
+			if (glWindow != 0) {
+				OS.gdk_window_destroy (glWindow);
+				glWindow = 0;
+			}
+			break;
 		}
 	};
 	addListener (SWT.Resize, listener);

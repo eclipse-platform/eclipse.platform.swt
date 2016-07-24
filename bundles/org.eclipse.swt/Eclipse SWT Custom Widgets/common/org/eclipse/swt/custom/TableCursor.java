@@ -83,34 +83,31 @@ public TableCursor(Table parent, int style) {
 	setBackground(null);
 	setForeground(null);
 
-	listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Dispose :
-					onDispose(event);
-					break;
-				case SWT.FocusIn :
-				case SWT.FocusOut :
-					redraw();
-					break;
-				case SWT.KeyDown :
-					keyDown(event);
-					break;
-				case SWT.Paint :
-					paint(event);
-					break;
-				case SWT.Traverse : {
-					event.doit = true;
-					switch (event.detail) {
-						case SWT.TRAVERSE_ARROW_NEXT :
-						case SWT.TRAVERSE_ARROW_PREVIOUS :
-						case SWT.TRAVERSE_RETURN :
-							event.doit = false;
-							break;
-					}
-					break;
+	listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose :
+				onDispose(event);
+				break;
+			case SWT.FocusIn :
+			case SWT.FocusOut :
+				redraw();
+				break;
+			case SWT.KeyDown :
+				keyDown(event);
+				break;
+			case SWT.Paint :
+				paint(event);
+				break;
+			case SWT.Traverse : {
+				event.doit = true;
+				switch (event.detail) {
+					case SWT.TRAVERSE_ARROW_NEXT :
+					case SWT.TRAVERSE_ARROW_PREVIOUS :
+					case SWT.TRAVERSE_RETURN :
+						event.doit = false;
+						break;
 				}
+				break;
 			}
 		}
 	};
@@ -119,46 +116,32 @@ public TableCursor(Table parent, int style) {
 		addListener(events[i], listener);
 	}
 
-	tableListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.MouseDown :
-					tableMouseDown(event);
-					break;
-				case SWT.FocusIn :
-					tableFocusIn(event);
-					break;
-			}
+	tableListener = event -> {
+		switch (event.type) {
+			case SWT.MouseDown :
+				tableMouseDown(event);
+				break;
+			case SWT.FocusIn :
+				tableFocusIn(event);
+				break;
 		}
 	};
 	table.addListener(SWT.FocusIn, tableListener);
 	table.addListener(SWT.MouseDown, tableListener);
 
-	disposeItemListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			unhookRowColumnListeners();
-			row = null;
-			column = null;
-			_resize();
-		}
+	disposeItemListener = event -> {
+		unhookRowColumnListeners();
+		row = null;
+		column = null;
+		_resize();
 	};
-	disposeColumnListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			unhookRowColumnListeners();
-			row = null;
-			column = null;
-			_resize();
-		}
+	disposeColumnListener = event -> {
+		unhookRowColumnListeners();
+		row = null;
+		column = null;
+		_resize();
 	};
-	resizeListener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			_resize();
-		}
-	};
+	resizeListener = event -> _resize();
 	ScrollBar hBar = table.getHorizontalBar();
 	if (hBar != null) {
 		hBar.addListener(SWT.Selection, resizeListener);

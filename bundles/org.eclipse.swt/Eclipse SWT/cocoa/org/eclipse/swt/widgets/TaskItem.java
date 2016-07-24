@@ -397,12 +397,9 @@ public void setProgressState (int progressState) {
 
 void setShell (Shell shell) {
 	this.shell = shell;
-	shell.addListener (SWT.Dispose, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (isDisposed ()) return;
-			dispose ();
-		}
+	shell.addListener (SWT.Dispose, event -> {
+		if (isDisposed ()) return;
+		dispose ();
 	});
 }
 
@@ -459,12 +456,7 @@ void updateImage () {
 		if (drawIntermidiate) {
 			count = iProgress;
 			iProgress = (iProgress + 1) % (PROGRESS_BARS + 1);
-			getDisplay ().timerExec (PROGRESS_TIMER, new Runnable () {
-				@Override
-				public void run () {
-					updateImage ();
-				}
-			});
+			getDisplay ().timerExec (PROGRESS_TIMER, () -> updateImage ());
 		} else {
 			count = progress * PROGRESS_BARS / PROGRESS_MAX;
 		}

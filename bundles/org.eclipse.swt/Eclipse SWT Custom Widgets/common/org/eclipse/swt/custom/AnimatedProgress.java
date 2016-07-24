@@ -11,9 +11,9 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 
 /**
  * A control for showing progress feedback for a long running operation.
@@ -80,18 +80,8 @@ public AnimatedProgress(Composite parent, int style) {
 			redraw();
 		}
 	});
-	addPaintListener(new PaintListener() {
-		@Override
-		public void paintControl(PaintEvent e) {
-			paint(e);
-		}
-	});
-	addDisposeListener(new DisposeListener() {
-		@Override
-		public void widgetDisposed(DisposeEvent e){
-			stop();
-		}
-	});
+	addPaintListener(e -> paint(e));
+	addDisposeListener(e -> stop());
 }
 private static int checkStyle (int style) {
 	int mask = SWT.NONE;
@@ -205,15 +195,12 @@ public synchronized void start() {
 
 	final Display display = getDisplay();
 	final Runnable [] timer = new Runnable [1];
-	timer [0] = new Runnable () {
-		@Override
-		public void run () {
-			if (!active) return;
-			GC gc = new GC(AnimatedProgress.this);
-			paintStripes(gc);
-			gc.dispose();
-			display.timerExec (SLEEP, timer [0]);
-		}
+	timer [0] = () -> {
+		if (!active) return;
+		GC gc = new GC(AnimatedProgress.this);
+		paintStripes(gc);
+		gc.dispose();
+		display.timerExec (SLEEP, timer [0]);
 	};
 	display.timerExec (SLEEP, timer [0]);
 }

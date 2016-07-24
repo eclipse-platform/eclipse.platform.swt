@@ -10,14 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.ole.win32;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.internal.*;
-
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -94,18 +94,15 @@ public OleFrame(Composite parent, int style) {
 	createCOMInterfaces();
 
 	// setup cleanup proc
-	listener = new Listener()  {
-		@Override
-		public void handleEvent(Event e) {
-			switch (e.type) {
-			case SWT.Activate :    onActivate(e); break;
-			case SWT.Deactivate :  onDeactivate(e); break;
-			case SWT.Dispose :  onDispose(e); break;
-			case SWT.Resize :
-			case SWT.Move :     onResize(e); break;
-			default :
-				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
-			}
+	listener = e -> {
+		switch (e.type) {
+		case SWT.Activate :    onActivate(e); break;
+		case SWT.Deactivate :  onDeactivate(e); break;
+		case SWT.Dispose :  onDispose(e); break;
+		case SWT.Resize :
+		case SWT.Move :     onResize(e); break;
+		default :
+			OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 		}
 	};
 
@@ -136,40 +133,37 @@ private static void initCheckFocus (final Display display) {
 	final int time = 50;
 	final Runnable[] timer = new Runnable[1];
 	final Control[] lastFocus = new Control[1];
-	timer[0] = new Runnable() {
-		@Override
-		public void run() {
-			if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
-				// ignore popup menus and dialogs
-				long /*int*/ hwnd = OS.GetFocus();
-				while (hwnd != 0) {
-					long /*int*/ ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
-					if (ownerHwnd != 0) {
-						display.timerExec(time, timer[0]);
-						return;
-					}
-					hwnd = OS.GetParent(hwnd);
+	timer[0] = () -> {
+		if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
+			// ignore popup menus and dialogs
+			long /*int*/ hwnd = OS.GetFocus();
+			while (hwnd != 0) {
+				long /*int*/ ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
+				if (ownerHwnd != 0) {
+					display.timerExec(time, timer[0]);
+					return;
 				}
+				hwnd = OS.GetParent(hwnd);
 			}
-			if (lastFocus[0] == null || lastFocus[0].isDisposed() || !lastFocus[0].isFocusControl()) {
-				Control currentFocus = display.getFocusControl();
-				if (currentFocus instanceof OleFrame) {
-					OleFrame frame = (OleFrame) currentFocus;
-					currentFocus = frame.getCurrentDocument();
-				}
-				if (lastFocus[0] != currentFocus) {
-					Event event = new Event();
-					if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
-						lastFocus[0].notifyListeners (SWT.FocusOut, event);
-					}
-					if (currentFocus instanceof OleClientSite && !currentFocus.isDisposed()) {
-						currentFocus.notifyListeners(SWT.FocusIn, event);
-					}
-				}
-				lastFocus[0] = currentFocus;
-			}
-			display.timerExec(time, timer[0]);
 		}
+		if (lastFocus[0] == null || lastFocus[0].isDisposed() || !lastFocus[0].isFocusControl()) {
+			Control currentFocus = display.getFocusControl();
+			if (currentFocus instanceof OleFrame) {
+				OleFrame frame = (OleFrame) currentFocus;
+				currentFocus = frame.getCurrentDocument();
+			}
+			if (lastFocus[0] != currentFocus) {
+				Event event = new Event();
+				if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
+					lastFocus[0].notifyListeners (SWT.FocusOut, event);
+				}
+				if (currentFocus instanceof OleClientSite && !currentFocus.isDisposed()) {
+					currentFocus.notifyListeners(SWT.FocusIn, event);
+				}
+			}
+			lastFocus[0] = currentFocus;
+		}
+		display.timerExec(time, timer[0]);
 	};
 	display.timerExec(time, timer[0]);
 }
@@ -186,12 +180,9 @@ private static void initMsgHook(Display display) {
 	}
 	display.setData(HHOOK, new LONG(hHook));
 	display.setData(HHOOKMSG, new MSG());
-	display.disposeExec(new Runnable() {
-		@Override
-		public void run() {
-			if (hHook != 0) OS.UnhookWindowsHookEx(hHook);
-			if (callback != null) callback.dispose();
-		}
+	display.disposeExec(() -> {
+		if (hHook != 0) OS.UnhookWindowsHookEx(hHook);
+		if (callback != null) callback.dispose();
 	});
 }
 static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*int*/ lParam) {

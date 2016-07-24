@@ -100,12 +100,7 @@ public TableEditor (Table table) {
 			layout ();
 		}
 	};
-	timer = new Runnable () {
-		@Override
-		public void run() {
-			layout ();
-		}
-	};
+	timer = () -> layout ();
 
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;

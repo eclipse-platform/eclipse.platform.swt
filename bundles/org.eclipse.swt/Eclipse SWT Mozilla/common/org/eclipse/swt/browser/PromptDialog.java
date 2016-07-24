@@ -13,7 +13,7 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -58,12 +58,9 @@ class PromptDialog extends Dialog {
 		data = new GridData ();
 		data.horizontalAlignment = GridData.CENTER;
 		okButton.setLayoutData (data);
-		okButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (checkButton != null) checkValue[0] = checkButton.getSelection();
-				shell.close();
-			}
+		okButton.addListener(SWT.Selection, event -> {
+			if (checkButton != null) checkValue[0] = checkButton.getSelection();
+			shell.close();
 		});
 
 		shell.pack();
@@ -140,48 +137,45 @@ class PromptDialog extends Dialog {
 		Button viewCertButton = new Button(buttonsComposite, SWT.PUSH);
 		viewCertButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		viewCertButton.setText(Compatibility.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
-		viewCertButton.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				long /*int*/[] result = new long /*int*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+		viewCertButton.addListener(SWT.Selection, event -> {
+			long /*int*/[] result = new long /*int*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 
-				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
-				result[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTIFICATEDIALOGS_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICertificateDialogs.class), result);
-				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-				serviceManager.Release();
+			nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+			result[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTIFICATEDIALOGS_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, IIDStore.GetIID (nsICertificateDialogs.class), result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+			serviceManager.Release();
 
-				nsICertificateDialogs dialogs = new nsICertificateDialogs(result[0]);
-				result[0] = 0;
+			nsICertificateDialogs dialogs = new nsICertificateDialogs(result[0]);
+			result[0] = 0;
 
-				/*
-				* Bug in Mozilla.  The certificate viewer dialog does not show its content when
-				* opened.  The workaround is to periodically wake up the UI thread.
-				*/
-				Runnable runnable = new Runnable() {
-					@Override
-					public void run() {
-						browser.getDisplay().timerExec(1000, this);
-					}
-				};
-				runnable.run();
+			/*
+			* Bug in Mozilla.  The certificate viewer dialog does not show its content when
+			* opened.  The workaround is to periodically wake up the UI thread.
+			*/
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					browser.getDisplay().timerExec(1000, this);
+				}
+			};
+			runnable.run();
 
-				rc = ((Mozilla)localBrowser.webBrowser).webBrowser.GetContentDOMWindow(result);
-				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+			rc = ((Mozilla)localBrowser.webBrowser).webBrowser.GetContentDOMWindow(result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 
-				nsIDOMWindow window = new nsIDOMWindow(result[0]);
-				result[0] = 0;
-				rc = dialogs.ViewCert(window.getAddress(), cert.getAddress());
-				browser.getDisplay().timerExec(-1, runnable);
-				window.Release();
-				dialogs.Release();
-			}
+			nsIDOMWindow window = new nsIDOMWindow(result[0]);
+			result[0] = 0;
+			rc = dialogs.ViewCert(window.getAddress(), cert.getAddress());
+			browser.getDisplay().timerExec(-1, runnable);
+			window.Release();
+			dialogs.Release();
 		});
 
 		final Button okButton = new Button(buttonsComposite, SWT.PUSH);
@@ -191,12 +185,9 @@ class PromptDialog extends Dialog {
 		cancelButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		cancelButton.setText(Compatibility.getMessage("SWT_Cancel")); //$NON-NLS-1$
 		final boolean[] result = new boolean[1];
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				shell.dispose();
-				result[0] = event.widget == okButton;
-			}
+		Listener listener = event -> {
+			shell.dispose();
+			result[0] = event.widget == okButton;
 		};
 		okButton.addListener(SWT.Selection, listener);
 		cancelButton.addListener(SWT.Selection, listener);
@@ -229,19 +220,16 @@ class PromptDialog extends Dialog {
 		label.setLayoutData (data);
 
 		final Button[] buttons = new Button[4];
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
-				Widget widget = event.widget;
-				for (int i = 1; i < buttons.length; i++) {
-					if (widget == buttons[i]) {
-						result[0] = i - 1;
-						break;
-					}
+		Listener listener = event -> {
+			if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
+			Widget widget = event.widget;
+			for (int i = 1; i < buttons.length; i++) {
+				if (widget == buttons[i]) {
+					result[0] = i - 1;
+					break;
 				}
-				shell.close();
 			}
+			shell.close();
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
@@ -319,14 +307,11 @@ class PromptDialog extends Dialog {
 		valueText.setLayoutData(data);
 
 		final Button[] buttons = new Button[3];
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
-				value[0] = valueText.getText();
-				result[0] = event.widget == buttons[1];
-				shell.close();
-			}
+		Listener listener = event -> {
+			if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
+			value[0] = valueText.getText();
+			result[0] = event.widget == buttons[1];
+			shell.close();
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
@@ -396,15 +381,12 @@ class PromptDialog extends Dialog {
 		passwordText.setLayoutData(data);
 
 		final Button[] buttons = new Button[3];
-		Listener listener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
-				user[0] = userText.getText();
-				pass[0] = passwordText.getText();
-				result[0] = event.widget == buttons[1];
-				shell.close();
-			}
+		Listener listener = event -> {
+			if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
+			user[0] = userText.getText();
+			pass[0] = passwordText.getText();
+			result[0] = event.widget == buttons[1];
+			shell.close();
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);

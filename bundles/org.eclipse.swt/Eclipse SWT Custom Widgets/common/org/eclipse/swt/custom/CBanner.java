@@ -11,9 +11,9 @@
 package org.eclipse.swt.custom;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class implement a Composite that lays out its
@@ -104,25 +104,22 @@ public CBanner(Composite parent, int style) {
 	super.setLayout(new CBannerLayout());
 	resizeCursor = getDisplay().getSystemCursor(SWT.CURSOR_SIZEWE);
 
-	listener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			switch (e.type) {
-				case SWT.Dispose:
-					onDispose(e); break;
-				case SWT.MouseDown:
-					onMouseDown (e.x, e.y); break;
-				case SWT.MouseExit:
-					onMouseExit(); break;
-				case SWT.MouseMove:
-					onMouseMove(e.x, e.y); break;
-				case SWT.MouseUp:
-					onMouseUp(); break;
-				case SWT.Paint:
-					onPaint(e.gc); break;
-				case SWT.Resize:
-					onResize(); break;
-			}
+	listener = e -> {
+		switch (e.type) {
+			case SWT.Dispose:
+				onDispose(e); break;
+			case SWT.MouseDown:
+				onMouseDown (e.x, e.y); break;
+			case SWT.MouseExit:
+				onMouseExit(); break;
+			case SWT.MouseMove:
+				onMouseMove(e.x, e.y); break;
+			case SWT.MouseUp:
+				onMouseUp(); break;
+			case SWT.Paint:
+				onPaint(e.gc); break;
+			case SWT.Resize:
+				onResize(); break;
 		}
 	};
 	int[] events = new int[] {SWT.Dispose, SWT.MouseDown, SWT.MouseExit, SWT.MouseMove, SWT.MouseUp, SWT.Paint, SWT.Resize};

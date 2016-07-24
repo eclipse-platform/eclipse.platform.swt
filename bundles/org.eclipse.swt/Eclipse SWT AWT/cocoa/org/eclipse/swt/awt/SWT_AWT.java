@@ -204,27 +204,14 @@ public static Frame new_Frame(final Composite parent) {
 	parent.setData(EMBEDDED_FRAME_KEY, frame);
 
 	/* Forward the iconify and deiconify events */
-	final Listener shellListener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Deiconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
-						}
-					});
-					break;
-				case SWT.Iconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
-						}
-					});
-					break;
-			}
+	final Listener shellListener = e -> {
+		switch (e.type) {
+			case SWT.Deiconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED)));
+				break;
+			case SWT.Iconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED)));
+				break;
 		}
 	};
 	Shell shell = parent.getShell ();
@@ -268,42 +255,33 @@ public static Frame new_Frame(final Composite parent) {
 						shell.removeListener (SWT.Deactivate, this);
 					}
 					parent.setVisible(false);
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							try {
-								frame.dispose ();
-							} catch (Throwable e) {}
-						}
+					EventQueue.invokeLater(() -> {
+						try {
+							frame.dispose ();
+						} catch (Throwable e1) {}
 					});
 					break;
 				case SWT.Activate:
 					if (!parent.isFocusControl()) return;
 				case SWT.FocusIn:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							if (frame.isActive()) return;
-							try {
-								Class<?> clazz = frame.getClass();
-								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-								if (method != null) method.invoke(frame, Boolean.TRUE);
-							} catch (Throwable e) {e.printStackTrace();}
-						}
+					EventQueue.invokeLater(() -> {
+						if (frame.isActive()) return;
+						try {
+							Class<?> clazz1 = frame.getClass();
+							Method method = clazz1.getMethod("synthesizeWindowActivation", boolean.class);
+							if (method != null) method.invoke(frame, Boolean.TRUE);
+						} catch (Throwable e1) {e1.printStackTrace();}
 					});
 					break;
 				case SWT.Deactivate:
 				case SWT.FocusOut:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							if (!frame.isActive()) return;
-							try {
-								Class<?> clazz = frame.getClass();
-								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-								if (method != null) method.invoke(frame, Boolean.FALSE);
-							} catch (Throwable e) {e.printStackTrace();}
-						}
+					EventQueue.invokeLater(() -> {
+						if (!frame.isActive()) return;
+						try {
+							Class<?> clazz1 = frame.getClass();
+							Method method = clazz1.getMethod("synthesizeWindowActivation", boolean.class);
+							if (method != null) method.invoke(frame, Boolean.FALSE);
+						} catch (Throwable e1) {e1.printStackTrace();}
 					});
 					break;
 			}
@@ -321,30 +299,24 @@ public static Frame new_Frame(final Composite parent) {
 	}
 	parent.addListener (SWT.Dispose, listener);
 
-	display.asyncExec(new Runnable() {
-		@Override
-		public void run () {
-			if (parent.isDisposed()) return;
-			final Rectangle clientArea = parent.getClientArea();
-			if (isJDK17) {
-				try {
-					Method method = frame.getClass().getMethod("validateWithBounds", int.class, int.class, int.class, int.class);
-					if (method != null) method.invoke(frame, Integer.valueOf(clientArea.x), Integer.valueOf(clientArea.y), Integer.valueOf(clientArea.width), Integer.valueOf(clientArea.height));
-				} catch (Throwable e) {e.printStackTrace();}
-			} else {
-				EventQueue.invokeLater(new Runnable () {
-					@Override
-					public void run () {
-						frame.setSize(clientArea.width, clientArea.height);
-						frame.validate();
+	display.asyncExec(() -> {
+		if (parent.isDisposed()) return;
+		final Rectangle clientArea = parent.getClientArea();
+		if (isJDK17) {
+			try {
+				Method method = frame.getClass().getMethod("validateWithBounds", int.class, int.class, int.class, int.class);
+				if (method != null) method.invoke(frame, Integer.valueOf(clientArea.x), Integer.valueOf(clientArea.y), Integer.valueOf(clientArea.width), Integer.valueOf(clientArea.height));
+			} catch (Throwable e) {e.printStackTrace();}
+		} else {
+			EventQueue.invokeLater(() -> {
+				frame.setSize(clientArea.width, clientArea.height);
+				frame.validate();
 
-						// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
-						// Toggling visibility seems to be the only thing that works.
-						frame.setVisible(false);
-						frame.setVisible(true);
-					}
-				});
-			}
+				// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
+				// Toggling visibility seems to be the only thing that works.
+				frame.setVisible(false);
+				frame.setVisible(true);
+			});
 		}
 	});
 
@@ -384,23 +356,15 @@ public static Shell new_Shell(final Display display, final Canvas parent) {
 	final ComponentListener listener = new ComponentAdapter () {
 		@Override
 		public void componentResized (ComponentEvent e) {
-			display.asyncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (shell.isDisposed()) return;
-					Dimension dim = parent.getSize ();
-					shell.setSize (dim.width, dim.height);
-				}
+			display.asyncExec (() -> {
+				if (shell.isDisposed()) return;
+				Dimension dim = parent.getSize ();
+				shell.setSize (dim.width, dim.height);
 			});
 		}
 	};
 	parent.addComponentListener(listener);
-	shell.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			parent.removeComponentListener(listener);
-		}
-	});
+	shell.addListener(SWT.Dispose, event -> parent.removeComponentListener(listener));
 	shell.setVisible (true);
 	return shell;
 }

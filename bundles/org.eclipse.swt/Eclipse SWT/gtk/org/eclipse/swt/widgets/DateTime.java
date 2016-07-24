@@ -147,12 +147,7 @@ public DateTime (Composite parent, int style) {
 	if (isDateWithDropDownButton ()) {
 		createDropDownButton ();
 		createPopupShell (-1, -1, -1);
-		addListener (SWT.Resize, new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				setDropDownButtonSize ();
-			}
-		});
+		addListener (SWT.Resize, event -> setDropDownButtonSize ());
 	}
 	initAccessible ();
 
@@ -429,48 +424,36 @@ private void createHandleForDateTime () {
 void createDropDownButton () {
 	down = new Button (this, SWT.ARROW  | SWT.DOWN);
 	OS.gtk_widget_set_can_focus (down.handle, false);
-	down.addListener (SWT.Selection, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			popupCalendar.calendarDisplayed = !isDropped ();
-			setFocus ();
-			dropDownCalendar (!isDropped ());
-		}
+	down.addListener (SWT.Selection, event -> {
+		popupCalendar.calendarDisplayed = !isDropped ();
+		setFocus ();
+		dropDownCalendar (!isDropped ());
 	});
 
-	popupListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.widget == popupShell) {
-				popupShellEvent (event);
-				return;
-			}
-			if (event.widget == popupCalendar) {
-				popupCalendarEvent (event);
-				return;
-			}
-			if (event.widget == DateTime.this) {
-				onDispose (event);
-				return;
-			}
-			if (event.widget == getShell ()) {
-				getDisplay ().asyncExec (new Runnable () {
-					@Override
-					public void run () {
-						if (isDisposed ()) return;
-						handleFocus (SWT.FocusOut);
-					}
-				});
-			}
+	popupListener = event -> {
+		if (event.widget == popupShell) {
+			popupShellEvent (event);
+			return;
+		}
+		if (event.widget == popupCalendar) {
+			popupCalendarEvent (event);
+			return;
+		}
+		if (event.widget == DateTime.this) {
+			onDispose (event);
+			return;
+		}
+		if (event.widget == getShell ()) {
+			getDisplay ().asyncExec (() -> {
+				if (isDisposed ()) return;
+				handleFocus (SWT.FocusOut);
+			});
 		}
 	};
-	popupFilter = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			Shell shell = ((Control)event.widget).getShell ();
-			if (shell == DateTime.this.getShell ()) {
-				handleFocus (SWT.FocusOut);
-			}
+	popupFilter = event -> {
+		Shell shell = ((Control)event.widget).getShell ();
+		if (shell == DateTime.this.getShell ()) {
+			handleFocus (SWT.FocusOut);
 		}
 	};
 }
@@ -482,14 +465,11 @@ void createPopupShell (int year, int month, int day) {
 	if (fg != null) popupCalendar.setForeground (fg);
 	if (bg != null) popupCalendar.setBackground (bg);
 
-	mouseEventListener = new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (event.widget instanceof Control) {
-				Control c = (Control)event.widget;
-				if (c != down && c.getShell () != popupShell)
-					dropDownCalendar (false);
-			}
+	mouseEventListener = event -> {
+		if (event.widget instanceof Control) {
+			Control c = (Control)event.widget;
+			if (c != down && c.getShell () != popupShell)
+				dropDownCalendar (false);
 		}
 	};
 
@@ -1326,15 +1306,12 @@ void selectField (int index) {
 		return;
 	}
 	currentField = index;
-	display.syncExec (new Runnable () {
-		@Override
-		public void run () {
-			if (textEntryHandle != 0) {
-				String value = getText (getText (),start, end - 1);
-				int s = value.lastIndexOf (' ');
-				s = (s == -1) ? start : start + s + 1;
-				setSelection (s, end);
-			}
+	display.syncExec (() -> {
+		if (textEntryHandle != 0) {
+			String value = getText (getText (),start, end - 1);
+			int s = value.lastIndexOf (' ');
+			s = (s == -1) ? start : start + s + 1;
+			setSelection (s, end);
 		}
 	});
 }

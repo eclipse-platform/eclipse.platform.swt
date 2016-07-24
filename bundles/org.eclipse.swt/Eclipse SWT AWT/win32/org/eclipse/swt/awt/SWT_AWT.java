@@ -24,7 +24,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
@@ -130,59 +129,56 @@ public static Frame new_Frame (final Composite parent) {
 	final long /*int*/ handle = parent.handle;
 	final Frame[] result = new Frame[1];
 	final Throwable[] exception = new Throwable[1];
-	Runnable runnable = new Runnable () {
-		@Override
-		public void run () {
+	Runnable runnable = () -> {
+		try {
+			/*
+			 * Some JREs have implemented the embedded frame constructor to take an integer
+			 * and other JREs take a long.  To handle this binary incompatibility, use
+			 * reflection to create the embedded frame.
+			 */
+			Class<?> clazz = null;
 			try {
-				/*
-				 * Some JREs have implemented the embedded frame constructor to take an integer
-				 * and other JREs take a long.  To handle this binary incompatibility, use
-				 * reflection to create the embedded frame.
-				 */
-				Class<?> clazz = null;
+				String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+				clazz = Class.forName(className);
+			} catch (Throwable e3) {
+				exception[0] = e3;
+				return;
+			}
+			initializeSwing ();
+			Object value = null;
+			Constructor<?> constructor = null;
+			try {
+				constructor = clazz.getConstructor (int.class);
+				value = constructor.newInstance (new Integer ((int)/*64*/handle));
+			} catch (Throwable e1) {
 				try {
-					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-					clazz = Class.forName(className);
-				} catch (Throwable e) {
-					exception[0] = e;
+					constructor = clazz.getConstructor (long.class);
+					value = constructor.newInstance (new Long (handle));
+				} catch (Throwable e2) {
+					exception[0] = e2;
 					return;
 				}
-				initializeSwing ();
-				Object value = null;
-				Constructor<?> constructor = null;
-				try {
-					constructor = clazz.getConstructor (int.class);
-					value = constructor.newInstance (new Integer ((int)/*64*/handle));
-				} catch (Throwable e1) {
-					try {
-						constructor = clazz.getConstructor (long.class);
-						value = constructor.newInstance (new Long (handle));
-					} catch (Throwable e2) {
-						exception[0] = e2;
-						return;
-					}
-				}
-				final Frame frame = (Frame) value;
+			}
+			final Frame frame = (Frame) value;
 
-				/*
-				* TEMPORARY CODE
-				*
-				* For some reason, the graphics configuration of the embedded
-				* frame is not initialized properly. This causes an exception
-				* when the depth of the screen is changed.
-				*/
-				try {
-					clazz = Class.forName("sun.awt.windows.WComponentPeer");
-					Field field = clazz.getDeclaredField("winGraphicsConfig");
-					field.setAccessible(true);
-					field.set(frame.getPeer(), frame.getGraphicsConfiguration());
-				} catch (Throwable e) {}
+			/*
+			* TEMPORARY CODE
+			*
+			* For some reason, the graphics configuration of the embedded
+			* frame is not initialized properly. This causes an exception
+			* when the depth of the screen is changed.
+			*/
+			try {
+				clazz = Class.forName("sun.awt.windows.WComponentPeer");
+				Field field = clazz.getDeclaredField("winGraphicsConfig");
+				field.setAccessible(true);
+				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
+			} catch (Throwable e4) {}
 
-				result[0] = frame;
-			} finally {
-				synchronized(result) {
-					result.notify();
-				}
+			result[0] = frame;
+		} finally {
+			synchronized(result) {
+				result.notify();
 			}
 		}
 	};
@@ -216,27 +212,14 @@ public static Frame new_Frame (final Composite parent) {
 	parent.setData(EMBEDDED_FRAME_KEY, frame);
 
 	/* Forward the iconify and deiconify events */
-	final Listener shellListener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Deiconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
-						}
-					});
-					break;
-				case SWT.Iconify:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
-						}
-					});
-					break;
-			}
+	final Listener shellListener = e -> {
+		switch (e.type) {
+			case SWT.Deiconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED)));
+				break;
+			case SWT.Iconify:
+				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED)));
+				break;
 		}
 	};
 	Shell shell = parent.getShell ();
@@ -248,71 +231,53 @@ public static Frame new_Frame (final Composite parent) {
 	* the embedded frame. This is needed in order to make keyboard
 	* focus work properly for lightweights.
 	*/
-	Listener listener = new Listener () {
-		@Override
-		public void handleEvent (Event e) {
-			switch (e.type) {
-				case SWT.Dispose:
-					Shell shell = parent.getShell ();
-					shell.removeListener (SWT.Deiconify, shellListener);
-					shell.removeListener (SWT.Iconify, shellListener);
-					parent.setVisible(false);
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							try {
-								frame.dispose ();
-							} catch (Throwable e) {}
-						}
-					});
-					break;
-				case SWT.FocusIn:
-				case SWT.Activate:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							if (frame.isActive()) return;
-							try {
-								Class<?> clazz = frame.getClass();
-								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-								if (method != null) method.invoke(frame, Boolean.TRUE);
-							} catch (Throwable e) {}
-						}
-					});
-					break;
-				case SWT.Deactivate:
-					EventQueue.invokeLater(new Runnable () {
-						@Override
-						public void run () {
-							if (!frame.isActive()) return;
-							try {
-								Class<?> clazz = frame.getClass();
-								Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-								if (method != null) method.invoke(frame, Boolean.FALSE);
-							} catch (Throwable e) {}
-						}
-					});
-					break;
-			}
+	Listener listener = e -> {
+		switch (e.type) {
+			case SWT.Dispose:
+				Shell shell1 = parent.getShell ();
+				shell1.removeListener (SWT.Deiconify, shellListener);
+				shell1.removeListener (SWT.Iconify, shellListener);
+				parent.setVisible(false);
+				EventQueue.invokeLater(() -> {
+					try {
+						frame.dispose ();
+					} catch (Throwable e1) {}
+				});
+				break;
+			case SWT.FocusIn:
+			case SWT.Activate:
+				EventQueue.invokeLater(() -> {
+					if (frame.isActive()) return;
+					try {
+						Class<?> clazz = frame.getClass();
+						Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+						if (method != null) method.invoke(frame, Boolean.TRUE);
+					} catch (Throwable e1) {}
+				});
+				break;
+			case SWT.Deactivate:
+				EventQueue.invokeLater(() -> {
+					if (!frame.isActive()) return;
+					try {
+						Class<?> clazz = frame.getClass();
+						Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
+						if (method != null) method.invoke(frame, Boolean.FALSE);
+					} catch (Throwable e1) {}
+				});
+				break;
 		}
 	};
 	parent.addListener (SWT.FocusIn, listener);
 	parent.addListener (SWT.Deactivate, listener);
 	parent.addListener (SWT.Dispose, listener);
 
-	parent.getDisplay().asyncExec(new Runnable() {
-		@Override
-		public void run () {
-			if (parent.isDisposed()) return;
-			final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea()); // To Pixels
-			EventQueue.invokeLater(new Runnable () {
-				@Override
-				public void run () {
-					frame.setSize (clientArea.width, clientArea.height);
-					frame.validate ();
-				}
-			});
-		}
+	parent.getDisplay().asyncExec(() -> {
+		if (parent.isDisposed()) return;
+		final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea()); // To Pixels
+		EventQueue.invokeLater(() -> {
+			frame.setSize (clientArea.width, clientArea.height);
+			frame.validate ();
+		});
 	});
 	return frame;
 }
@@ -349,23 +314,15 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	final ComponentListener listener = new ComponentAdapter () {
 		@Override
 		public void componentResized (ComponentEvent e) {
-			display.syncExec (new Runnable () {
-				@Override
-				public void run () {
-					if (shell.isDisposed()) return;
-					Dimension dim = parent.getSize ();
-					shell.setSize(DPIUtil.autoScaleDown(new Point(dim.width, dim.height))); // To Points
-				}
+			display.syncExec (() -> {
+				if (shell.isDisposed()) return;
+				Dimension dim = parent.getSize ();
+				shell.setSize(DPIUtil.autoScaleDown(new Point(dim.width, dim.height))); // To Points
 			});
 		}
 	};
 	parent.addComponentListener(listener);
-	shell.addListener(SWT.Dispose, new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			parent.removeComponentListener(listener);
-		}
-	});
+	shell.addListener(SWT.Dispose, event -> parent.removeComponentListener(listener));
 	shell.setVisible (true);
 	return shell;
 }

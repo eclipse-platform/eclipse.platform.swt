@@ -100,14 +100,11 @@ public TableTreeEditor (TableTree tableTree) {
 	this.tableTree = tableTree;
 
 	treeListener = new TreeListener () {
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				if (editor == null || editor.isDisposed()) return;
-				if (TableTreeEditor.this.tableTree.isDisposed()) return;
-				layout();
-				editor.setVisible(true);
-			}
+		final Runnable runnable = () -> {
+			if (editor == null || editor.isDisposed()) return;
+			if (TableTreeEditor.this.tableTree.isDisposed()) return;
+			layout();
+			editor.setVisible(true);
 		};
 		@Override
 		public void treeCollapsed(TreeEvent e) {

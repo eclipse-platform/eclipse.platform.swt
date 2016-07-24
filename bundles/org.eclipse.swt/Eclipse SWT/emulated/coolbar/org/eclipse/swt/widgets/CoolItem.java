@@ -621,12 +621,7 @@ void updateChevron() {
 			if (chevron == null) {
 				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);
 				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
-				toolItem.addListener (SWT.Selection, new Listener() {
-					@Override
-					public void handleEvent (Event event) {
-						CoolItem.this.onSelection (event);
-					}
-				});
+				toolItem.addListener (SWT.Selection, event -> CoolItem.this.onSelection (event));
 			}
 			int controlHeight, currentImageHeight = 0;
 			if ((parent.style & SWT.VERTICAL) != 0) {

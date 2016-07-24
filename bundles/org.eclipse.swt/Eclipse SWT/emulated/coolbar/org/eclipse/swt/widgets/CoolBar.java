@@ -96,19 +96,16 @@ public CoolBar (Composite parent, int style) {
 		hoverCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
 	}
 	dragCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
-	Listener listener = new Listener() {
-		@Override
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Dispose:      		onDispose(event);        	break;
-				case SWT.MouseDown:    		onMouseDown(event);			break;
-				case SWT.MouseExit:    		onMouseExit();      		break;
-				case SWT.MouseMove:    		onMouseMove(event); 		break;
-				case SWT.MouseUp:      		onMouseUp(event);   		break;
-				case SWT.MouseDoubleClick:	onMouseDoubleClick(event); 	break;
-				case SWT.Paint:        		onPaint(event);     		break;
-				case SWT.Resize:          	onResize();     			break;
-			}
+	Listener listener = event -> {
+		switch (event.type) {
+			case SWT.Dispose:      		onDispose(event);        	break;
+			case SWT.MouseDown:    		onMouseDown(event);			break;
+			case SWT.MouseExit:    		onMouseExit();      		break;
+			case SWT.MouseMove:    		onMouseMove(event); 		break;
+			case SWT.MouseUp:      		onMouseUp(event);   		break;
+			case SWT.MouseDoubleClick:	onMouseDoubleClick(event); 	break;
+			case SWT.Paint:        		onPaint(event);     		break;
+			case SWT.Resize:          	onResize();     			break;
 		}
 	};
 	int[] events = new int[] {
