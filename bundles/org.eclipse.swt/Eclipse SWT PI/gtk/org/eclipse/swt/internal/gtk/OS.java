@@ -1666,15 +1666,6 @@ public static final boolean GTK_IS_PLUG(long /*int*/ obj) {
 		lock.unlock();
 	}
 }
-public static final native boolean _GTK_IS_SOCKET(long /*int*/ obj);
-public static final boolean GTK_IS_SOCKET(long /*int*/ obj) {
-	lock.lock();
-	try {
-		return _GTK_IS_SOCKET(obj);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=const */
 public static final native long /*int*/ _GTK_STOCK_CANCEL();
 public static final long /*int*/ GTK_STOCK_CANCEL() {
