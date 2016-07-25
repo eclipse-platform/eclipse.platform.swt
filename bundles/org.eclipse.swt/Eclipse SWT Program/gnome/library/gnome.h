@@ -38,8 +38,4 @@
 #define LIB_VFS "libgnomevfs-2.so.0"
 #endif
 
-#define gnome_vfs_url_show_LIB LIB_VFS
-#define gnome_vfs_make_uri_from_input_with_dirs_LIB LIB_VFS
-#define gnome_vfs_mime_application_launch_LIB LIB_VFS
-
 #endif

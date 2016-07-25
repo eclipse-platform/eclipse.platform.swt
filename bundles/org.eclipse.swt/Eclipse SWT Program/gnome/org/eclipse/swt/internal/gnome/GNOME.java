@@ -28,7 +28,6 @@ public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
 public static final int GNOME_VFS_MIME_IDENTICAL = 1;
 public static final int GNOME_VFS_MIME_PARENT = 2;
 public static final int GNOME_VFS_MIME_UNRELATED = 0;
-public static final int GNOME_VFS_OK = 0;
 public static final int GNOME_VFS_MAKE_URI_DIR_NONE = 0;
 public static final int GNOME_VFS_MAKE_URI_DIR_HOMEDIR = 1<<0;
 public static final int GNOME_VFS_MAKE_URI_DIR_CURRENT = 1<<1;
@@ -111,19 +110,6 @@ public static final long /*int*/ gnome_vfs_make_uri_from_input(byte[] uri) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param uri cast=(const char *)
- */
-public static final native long /*int*/ _gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs);
-public static final long /*int*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs) {
-	lock.lock();
-	try {
-		return _gnome_vfs_make_uri_from_input_with_dirs(uri, dirs);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param application cast=(GnomeVFSMimeApplication *) */
 public static final native void _gnome_vfs_mime_application_free(long /*int*/ application);
 public static final void gnome_vfs_mime_application_free(long /*int*/ application) {
@@ -144,21 +130,6 @@ public static final boolean gnome_vfs_is_executable_command_string(byte[] comman
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param application cast=(GnomeVFSMimeApplication *)
- * @param uris cast=(GList *)
- */
-public static final native int _gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris);
-public static final int gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris) {
-	lock.lock();
-	try {
-		return _gnome_vfs_mime_application_launch(application, uris);
-	} finally {
-		lock.unlock();
-	}
-}
-
 /** @param mimeType cast=(const char *) */
 public static final native long /*int*/ _gnome_vfs_mime_get_default_application(byte[] mimeType);
 public static final long /*int*/ gnome_vfs_mime_get_default_application(byte[] mimeType) {
@@ -189,19 +160,6 @@ public static final long /*int*/ gnome_vfs_mime_type_get_equivalence(long /*int*
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_type_get_equivalence(mime_type, base_mime_type);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param url cast=(const char *)
- */
-public static final native int _gnome_vfs_url_show(long /*int*/ url);
-public static final int gnome_vfs_url_show(long /*int*/ url) {
-	lock.lock();
-	try {
-		return _gnome_vfs_url_show(url);
 	} finally {
 		lock.unlock();
 	}

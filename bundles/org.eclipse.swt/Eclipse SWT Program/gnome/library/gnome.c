@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -145,30 +145,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs
-JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gnome_vfs_make_uri_from_input_with_dirs((const char *)lparg0, arg1);
-*/
-	{
-		GNOME_LOAD_FUNCTION(fp, gnome_vfs_make_uri_from_input_with_dirs)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const char *, jint))fp)((const char *)lparg0, arg1);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gnome_1vfs_1mime_1application_1free
 JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -176,26 +152,6 @@ JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1free)
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1application_1free_FUNC);
 	gnome_vfs_mime_application_free((GnomeVFSMimeApplication *)arg0);
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1application_1free_FUNC);
-}
-#endif
-
-#ifndef NO__1gnome_1vfs_1mime_1application_1launch
-JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1launch)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1application_1launch_FUNC);
-/*
-	rc = (jint)gnome_vfs_mime_application_launch((GnomeVFSMimeApplication *)arg0, (GList *)arg1);
-*/
-	{
-		GNOME_LOAD_FUNCTION(fp, gnome_vfs_mime_application_launch)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GnomeVFSMimeApplication *, GList *))fp)((GnomeVFSMimeApplication *)arg0, (GList *)arg1);
-		}
-	}
-	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1application_1launch_FUNC);
-	return rc;
 }
 #endif
 
@@ -243,26 +199,6 @@ JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1type_1get_1equivalen
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1type_1get_1equivalence_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gnome_1vfs_1url_1show
-JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1url_1show)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1url_1show_FUNC);
-/*
-	rc = (jint)gnome_vfs_url_show((const char *)arg0);
-*/
-	{
-		GNOME_LOAD_FUNCTION(fp, gnome_vfs_url_show)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(const char *))fp)((const char *)arg0);
-		}
-	}
-	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1url_1show_FUNC);
 	return rc;
 }
 #endif

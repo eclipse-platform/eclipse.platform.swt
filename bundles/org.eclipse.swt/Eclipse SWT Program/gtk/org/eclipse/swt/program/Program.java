@@ -368,33 +368,6 @@ static String[] parseCommand(String cmd) {
 }
 
 /**
- * GNOME 2.4 - Execute the program for the given file.
- */
-boolean gnome_execute(String fileName) {
-	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, name, true);
-	long /*int*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
-	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
-	long /*int*/ list = OS.g_list_append(0, uri);
-	int result = GNOME.gnome_vfs_mime_application_launch(ptr, list);
-	GNOME.gnome_vfs_mime_application_free(ptr);
-	OS.g_free(uri);
-	OS.g_list_free(list);
-	return result == GNOME.GNOME_VFS_OK;
-}
-
-/**
- * GNOME 2.4 - Launch the default program for the given file.
- */
-static boolean gnome_launch(String fileName) {
-	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
-	int result = GNOME.gnome_vfs_url_show(uri);
-	OS.g_free(uri);
-	return (result == GNOME.GNOME_VFS_OK);
-}
-
-/**
  * GNOME - Get Image Data
  *
  */
@@ -555,8 +528,8 @@ static String[] getExtensions(Display display) {
 	int desktop = getDesktop(display);
 	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
+		case DESKTOP_GNOME:
 		case DESKTOP_GIO: return gio_getExtensions();
-		case DESKTOP_GNOME: break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new String[0];
@@ -945,10 +918,9 @@ static boolean launch (Display display, String fileName, String workingDir) {
 		}
 	}
 	switch (getDesktop (display)) {
+		case DESKTOP_GNOME:
 		case DESKTOP_GIO:
 			if (gio_launch (fileName)) return true;
-		case DESKTOP_GNOME:
-			if (gnome_launch (fileName)) return true;
 		default:
 			int index = fileName.lastIndexOf ('.');
 			if (index != -1) {
@@ -1010,8 +982,8 @@ public boolean execute(String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int desktop = getDesktop(display);
 	switch (desktop) {
+		case DESKTOP_GNOME:
 		case DESKTOP_GIO: return gio_execute(fileName);
-		case DESKTOP_GNOME: return gnome_execute(fileName);
 		case DESKTOP_CDE: return cde_execute(fileName);
 	}
 	return false;
