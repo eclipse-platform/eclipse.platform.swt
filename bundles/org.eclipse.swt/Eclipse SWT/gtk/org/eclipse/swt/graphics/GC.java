@@ -984,7 +984,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				* NOTE: Cairo.CAIRO_EXTEND_PAD works on Cairo 1.8.x and greater.
 				*/
 				int version = Cairo.cairo_version ();
-				if (version >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 0) && version < Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
+				if (version < Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
 					long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
 					long /*int*/ cr = Cairo.cairo_create(surface);
 					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
@@ -1018,7 +1018,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 					double[] matrix = new double[6];
 					Cairo.cairo_matrix_init_translate(matrix, imgWidth, imgHeight);
 					Cairo.cairo_pattern_set_matrix(pattern, matrix);
-				} else if (version >= Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
+				} else {
 					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
 				}
 			}
