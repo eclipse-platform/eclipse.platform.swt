@@ -879,13 +879,13 @@ void resizeControl () {
 		* case can occur when the control is a
 		* combo box.
 		*/
-		Rectangle itemRect = getBoundsInPixels ();
-		control.setSizeInPixels (itemRect.width, itemRect.height);
+		Rectangle itemRect = getBounds ();
+		control.setSize (itemRect.width, itemRect.height);
 		resizeHandle(itemRect.width, itemRect.height);
-		Rectangle rect = control.getBoundsInPixels ();
+		Rectangle rect = control.getBounds ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-		control.setLocationInPixels (rect.x, rect.y);
+		control.setLocation (rect.x, rect.y);
 	}
 }
 
