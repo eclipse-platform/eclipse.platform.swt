@@ -791,7 +791,6 @@ public static final native int GdkEventWindowState_sizeof();
 public static final native int GdkGeometry_sizeof();
 public static final native int GdkRectangle_sizeof();
 public static final native int GdkWindowAttr_sizeof();
-public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkRequisition_sizeof();
@@ -6348,7 +6347,6 @@ public static final long /*int*/ gtk_accessible_get_widget(long /*int*/ accessib
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native void _gtk_adjustment_configure(long /*int*/ adjustment, double value, double lower, double upper, double step_increment, double page_increment, double page_size);
@@ -6377,7 +6375,6 @@ public static final long /*int*/ gtk_adjustment_new(double value, double lower, 
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_lower(long /*int*/ adjustment);
@@ -6390,7 +6387,6 @@ public static final double gtk_adjustment_get_lower(long /*int*/ adjustment) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_page_increment(long /*int*/ adjustment);
@@ -6403,7 +6399,6 @@ public static final double gtk_adjustment_get_page_increment(long /*int*/ adjust
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_page_size(long /*int*/ adjustment);
@@ -6416,7 +6411,6 @@ public static final double gtk_adjustment_get_page_size(long /*int*/ adjustment)
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_step_increment(long /*int*/ adjustment);
@@ -6429,7 +6423,6 @@ public static final double gtk_adjustment_get_step_increment(long /*int*/ adjust
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_upper(long /*int*/ adjustment);
@@ -6442,7 +6435,6 @@ public static final double gtk_adjustment_get_upper(long /*int*/ adjustment) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native double _gtk_adjustment_get_value(long /*int*/ adjustment);
@@ -6468,7 +6460,6 @@ public static final void gtk_adjustment_set_value(long /*int*/ adjustment, doubl
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  * @param value cast=(gdouble)
  */
@@ -6482,7 +6473,6 @@ public static final void gtk_adjustment_set_step_increment(long /*int*/ adjustme
 	}
 }
 /**
- * @method flags=dynamic
  * @param adjustment cast=(GtkAdjustment *)
  * @param value cast=(gdouble)
  */

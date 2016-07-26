@@ -83,7 +83,6 @@ typedef enum {
 	GdkRGBA_1sizeof_FUNC,
 	GdkRectangle_1sizeof_FUNC,
 	GdkWindowAttr_1sizeof_FUNC,
-	GtkAdjustment_1sizeof_FUNC,
 	GtkAllocation_1sizeof_FUNC,
 	GtkBorder_1sizeof_FUNC,
 	GtkCellRendererPixbufClass_1sizeof_FUNC,

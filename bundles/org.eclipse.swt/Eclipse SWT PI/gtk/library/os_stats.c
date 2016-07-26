@@ -73,7 +73,6 @@ char * OS_nativeFunctionNames[] = {
 	"GdkRGBA_1sizeof",
 	"GdkRectangle_1sizeof",
 	"GdkWindowAttr_1sizeof",
-	"GtkAdjustment_1sizeof",
 	"GtkAllocation_1sizeof",
 	"GtkBorder_1sizeof",
 	"GtkCellRendererPixbufClass_1sizeof",
