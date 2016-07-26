@@ -315,35 +315,6 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
 		fi
 		;;
-	"solaris.x86")
-		if [ "${CC}" = "" ]; then
-			export CC="cc"
-		fi
-		if [ "${CXX}" = "" ]; then
-			export CXX="CC"
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"
-		fi
-		if [ "${MOZILLA_SDK}" = "" ]; then
-			export MOZILLA_SDK="/bluebird/teamswt/bog/mozilla/solaris_x86/1.7/mozilla/dist/sdk"
-		fi
-		if [ "${XULRUNNER_SDK}" = "" ]; then
-			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/solaris-x86/mozilla/dist/sdk"
-		fi
-		if [ "${MOZILLA_INCLUDES}" = "" ]; then
-			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
-		fi
-		if [ "${MOZILLA_LIBS}" = "" ]; then
-			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
-		fi
-		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
-			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
-		fi
-		if [ "${XULRUNNER_LIBS}" = "" ]; then
-			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
-		fi
-		;;
 	"solaris.x86_64")
 		if [ "${CC}" = "" ]; then
 			export CC="cc"
@@ -400,34 +371,6 @@ case $SWT_OS.$SWT_ARCH in
 #			export MOZILLA_LIBS="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 #		fi
 		export PATH CC CXX CDE_HOME JAVA_HOME PKG_CONFIG_PATH;
-		;;
-	"solaris.sparc")
-		PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
-		if [ "${CC}" = "" ]; then
-			CC="cc"
-		fi
-		if [ "${CXX}" = "" ]; then
-			CXX="CC"
-		fi
-		if [ "${CDE_HOME}" = "" ]; then
-			CDE_HOME="/usr/dt"
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			JAVA_HOME="/usr/j2se"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			PKG_CONFIG_PATH="/usr/local/lib/pkgconfig/"
-		fi
-		if [ "${MOZILLA_SDK}" = "" ]; then
-			MOZILLA_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"
-		fi
-		if [ "${MOZILLA_INCLUDES}" = "" ]; then
-			MOZILLA_INCLUDES="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"
-		fi
-		if [ "${MOZILLA_LIBS}" = "" ]; then
-			MOZILLA_LIBS="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"
-		fi
-		export PATH CC CXX CDE_HOME JAVA_HOME PKG_CONFIG_PATH MOZILLA_SDK MOZILLA_INCLUDES MOZILLA_LIBS;
 		;;
 	"linux.s390")
 		if [ "${CC}" = "" ]; then
@@ -501,21 +444,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
 			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/AIX/PPC64/j564/sdk"
-		fi
-		;;
-	"hpux.ia64_32")
-		export PATH="/opt/hp-gcc/bin:/opt/gtk2.6/bin:/opt/${PATH}"
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/opt/java1.5"
-		fi
-		if [ "${AWT_LIB_PATH}" = "" ]; then
-			export AWT_LIB_PATH="/opt/java1.5/jre/lib/IA64N/"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/opt/gtk2.6/lib/pkgconfig"
 		fi
 		;;
 	"hpux.ia64")
