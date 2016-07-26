@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -313,9 +313,8 @@ Control findThemeControl () {
 }
 
 int getBandHeight () {
-	if (hFont == 0) return ExpandItem.CHEVRON_SIZE;
 	long /*int*/ hDC = OS.GetDC (handle);
-	long /*int*/ oldHFont = OS.SelectObject (hDC, hFont);
+	long /*int*/ oldHFont = OS.SelectObject (hDC, hFont == 0 ? defaultFont () : hFont);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics (hDC, lptm);
 	OS.SelectObject (hDC, oldHFont);
