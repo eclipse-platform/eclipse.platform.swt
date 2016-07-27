@@ -16,7 +16,7 @@
   <setupTask
       xsi:type="setup:EclipseIniTask"
       option="-Doomph.redirection.platform.swt"
-      value="=https://git.eclipse.org/c/platform/eclipse.platform.swt.git/tree/bundles/org.eclipse.swt.tools/Oomph/platformSwt.setup->${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt.tools/Oomph/platformSwt.setup"
+      value="=https://git.eclipse.org/c/platform/eclipse.platform.swt.git/plain/bundles/org.eclipse.swt.tools/Oomph/platformSwt.setup->${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt.tools/Oomph/platformSwt.setup"
       vm="true"/>
   <setupTask
       xsi:type="git:GitCloneTask"
