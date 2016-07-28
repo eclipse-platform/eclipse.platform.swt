@@ -46,7 +46,7 @@ git clean -xdf #If new files were added to repo.
 git reset --hard  #If existing binary was overwritten.
 "
 
-if [[ "$1" = "-h" || "$1" = "--help" ]]; then
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "$HELP"
 	exit
 fi
@@ -188,14 +188,14 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${JAVA_HOME}" = "" ]; then
 			# Validate that we set JAVA_HOME to an existing directory. If not try to look for a better one.
 			BLUEBIRD_JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
-			if [[ -d "$BLUEBIRD_JAVA_HOME" ]]; then
+			if [ -d "$BLUEBIRD_JAVA_HOME" ]; then
 				func_echo_plus "JAVA_HOME not set, configured to: $BLUEBIRD_JAVA_HOME"
 				export JAVA_HOME="$BLUEBIRD_JAVA_HOME"
 			else
 				# Cross-platform method of finding JAVA_HOME.
 				# Tested on Fedora 24 and Ubuntu 16
 				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
-				if [[ -n "$DYNAMIC_JAVA_HOME" ]]; then
+				if [ -n "$DYNAMIC_JAVA_HOME" ]; then
 					func_echo_plus "JAVA_HOME not set, dynamically configured to $DYNAMIC_JAVA_HOME"
 					export JAVA_HOME="$DYNAMIC_JAVA_HOME"
 				else
@@ -582,7 +582,7 @@ func_configue_MAKE_GNOME () {
 # Configure OUTPUT_DIR 
 if [ "x${OUTPUT_DIR}" = "x" ]; then
 	OUTPUT_DIR=../../../../../eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
-	if [[ -d "$OUTPUT_DIR" ]]; then
+	if [ -d "$OUTPUT_DIR" ]; then
 		export OUTPUT_DIR
 	fi
 fi
@@ -590,8 +590,8 @@ fi
 # Safety check:
 # If "install" was given as target, check that OUTPUT_DIR is a valid directory.
 for i in "$@"; do  # loop over all input paramaters
-	if [[ "$i" == "install" ]]; then
-		if [[ ! -d "${OUTPUT_DIR}" ]]; then   # if directory not valid.
+	if [ "$i" = "install" ]; then
+		if [ ! -d "${OUTPUT_DIR}" ]; then   # if directory not valid.
 		func_echo_error "ERROR: 'install' was passed in as paramater, but OUTPUT_DIR :"
 		func_echo_error "(${OUTPUT_DIR}) "
 		func_echo_error "is not a valid directory."
@@ -615,7 +615,7 @@ if [ "x${1}" = "xclean" ]; then
 
 	# if there are no more other parameters, exit.
 	# don't exit if there are more paramaters. Useful for one-liners like: ./build.sh clean -gtk-all install
-	if [[ "$1" == "" ]]; then
+	if [ "$1" = "" ]; then
 		exit $?
 	fi
 fi
@@ -652,22 +652,22 @@ func_build_gtk2 () {
 }
 
 
-if [[ "$1" == "-gtk-all" ]]; then
+if [ "$1" = "-gtk-all" ]; then
 	shift
 	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
 	func_clean_up
 	func_build_gtk3 "$@"
 	func_clean_up
 	func_build_gtk2 "$@"
-elif [[ "$1" == "-gtk3" ]]; then
+elif [ "$1" = "-gtk3" ]; then
 	shift
 	func_build_gtk3 "$@"
-elif [[ "$1" == "-gtk2" ]]; then
+elif [ "$1" = "-gtk2" ]; then
 	shift
 	func_build_gtk2 "$@"
-elif [[ "${GTK_VERSION}" == "3.0" ]]; then
+elif [ "${GTK_VERSION}" = "3.0" ]; then
 	func_build_gtk3 "$@"
-elif [[ "${GTK_VERSION}" == "2.0" || "${GTK_VERSION}" == "" ]]; then
+elif [ "${GTK_VERSION}" = "2.0" -o "${GTK_VERSION}" = "" ]; then
 	export GTK_VERSION="2.0"
 	func_build_gtk2 "$@"
 fi
