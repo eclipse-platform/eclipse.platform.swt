@@ -110,6 +110,10 @@ class WebKit extends WebBrowser {
 
 		if (LibraryLoaded) {
 			String webkit2 = System.getenv("SWT_WEBKIT2"); // $NON-NLS-1$
+			int webkit2VersionFunction = WebKitGTK.webkit_get_major_version();
+			if (webkit2VersionFunction != 0) { // SWT_WEBKIT2 env variable is not set but webkit2 was loaded as fallback
+				webkit2 = "1";
+			}
 			WEBKIT2 = webkit2 != null && webkit2.equals("1") && OS.GTK3; // $NON-NLS-1$
 
 			WebViewType = WebKitGTK.webkit_web_view_get_type ();
