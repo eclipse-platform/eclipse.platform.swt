@@ -46,7 +46,7 @@ git clean -xdf #If new files were added to repo.
 git reset --hard  #If existing binary was overwritten.
 "
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+if [[ "$1" = "-h" || "$1" = "--help" ]]; then
 	echo "$HELP"
 	exit
 fi
