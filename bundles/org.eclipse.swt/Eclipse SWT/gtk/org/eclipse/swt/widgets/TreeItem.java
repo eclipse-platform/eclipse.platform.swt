@@ -448,7 +448,7 @@ Rectangle getBoundsInPixels (int index) {
 
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		int [] x = new int [1], w = new int [1];
-		OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
+		gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
 		rect.x += x [0] + w [0];
 		rect.width -= x [0] + w [0];
 	}
@@ -512,7 +512,7 @@ Rectangle getBoundsInPixels () {
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 
-	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
+	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
 	rect.x += x [0];
 	if (parent.columnCount > 0) {
 		if (rect.x + rect.width > right) {
@@ -743,18 +743,7 @@ Rectangle getImageBoundsInPixels (int index) {
 	 * use the same underlying GTK structure.
 	 */
 	int [] x = new int [1], w = new int [1];
-	/*
-	 * Bug 498165: gtk_tree_view_column_cell_get_position() sets off rendererGetPreferredWidthCallback in GTK3 which is an issue
-	 * if there is an ongoing MeasureEvent listener. Disabling it and re-enabling the callback after the method is called
-	 * prevents a stack overflow from occurring.
-	 */
-	if (OS.GTK3) {
-		Callback.setEnabled(false);
-		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
-		Callback.setEnabled(true);
-	} else {
-		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
-	}
+	gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
 	if (OS.GTK3) {
 		if (parent.pixbufSizeSet) {
 			if (x [0] > 0) {
@@ -769,18 +758,7 @@ Rectangle getImageBoundsInPixels (int index) {
 			long /*int*/ textRenderer = parent.getTextRenderer (column);
 			if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 			int [] xText = new int [1], wText = new int [1];
-			/*
-			 * Bug 498165: gtk_tree_view_column_cell_get_position() sets off rendererGetPreferredWidthCallback in GTK3 which is an issue
-			 * if there is an ongoing MeasureEvent listener. Disabling it and re-enabling the callback after the method is called
-			 * prevents a stack overflow from occurring.
-			 */
-			if (OS.GTK3) {
-				Callback.setEnabled(false);
-				OS.gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
-				Callback.setEnabled(true);
-			} else {
-				OS.gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
-			}
+			gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
 			rect.x += xText [0];
 		}
 	} else {
@@ -996,7 +974,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
-	OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
+	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
 	/*
 	 * Fix for Eclipse bug 476562, we need to re-adjust the bounds for the text
 	 * when the separator value is less than the width of the image. Previously
@@ -1591,7 +1569,7 @@ public void setImage (int index, Image image) {
 			long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 			int [] w = new int [1];
 			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
-			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
+			gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
 			if (w[0] < image.getBoundsInPixels().width) {
 				/*
 				 * There is no direct way to clear the cell renderer width so we

@@ -900,6 +900,22 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
 	return 0;
 }
 
+/*
+ * Bug 498165: gtk_tree_view_column_cell_get_position() sets off rendererGetPreferredWidthCallback in GTK3 which is an issue
+ * if there is an ongoing MeasureEvent listener. Disabling it and re-enabling the callback after the method is called
+ * prevents a stack overflow from occurring.
+ */
+boolean gtk_tree_view_column_cell_get_position (long /*int*/ column, long /*int*/ cell_renderer, int[] start_pos, int[] width) {
+	if (OS.GTK3) {
+		Callback.setEnabled(false);
+		boolean result = OS.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
+		Callback.setEnabled(true);
+		return result;
+	} else {
+		return OS.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
+	}
+}
+
 long /*int*/ gtk_unmap (long /*int*/ widget) {
 	return 0;
 }
@@ -1008,7 +1024,7 @@ boolean isActive () {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see SWT#AUTO_TEXT_DIRECTION
  *
  * @since 3.105
