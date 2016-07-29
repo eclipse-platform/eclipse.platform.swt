@@ -37,14 +37,14 @@ requires.7.range = [$version$,$version$]
 requires.7.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=s390)(!(org.eclipse.swt.buildtime=true)))
 
 requires.8.namespace = org.eclipse.equinox.p2.iu
-requires.8.name = org.eclipse.swt.gtk.solaris.sparc
+requires.8.name = org.eclipse.swt.gtk.solaris.sparcv9
 requires.8.range = [$version$,$version$]
-requires.8.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=sparc)(!(org.eclipse.swt.buildtime=true)))
+requires.8.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=sparcv9)(!(org.eclipse.swt.buildtime=true)))
 
 requires.9.namespace = org.eclipse.equinox.p2.iu
-requires.9.name = org.eclipse.swt.gtk.solaris.x86
+requires.9.name = org.eclipse.swt.gtk.solaris.x86_64
 requires.9.range = [$version$,$version$]
-requires.9.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=x86)(!(org.eclipse.swt.buildtime=true)))
+requires.9.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.10.namespace = org.eclipse.equinox.p2.iu
 requires.10.name = org.eclipse.swt.gtk.linux.ppc
