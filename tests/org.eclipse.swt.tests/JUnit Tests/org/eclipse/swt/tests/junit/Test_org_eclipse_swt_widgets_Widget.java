@@ -38,6 +38,10 @@ import org.junit.rules.TestName;
 public class Test_org_eclipse_swt_widgets_Widget{
 	// Use this variable to help validate callbacks
 	boolean listenerCalled;
+	/**
+	 * Set this to true if the unit test intentionally disposed its widget as part of the test
+	 */
+	boolean disposedIntentionally;
 	@Rule public TestName name = new TestName();
 
 @Before
@@ -48,9 +52,11 @@ public void setUp() {
 @After
 public void tearDown() {
 	if (widget != null) {
-		assertEquals(false, widget.isDisposed());
+		assertEquals(disposedIntentionally, widget.isDisposed());
 	}
-	assertEquals(false, shell.isDisposed());
+	if (!disposedIntentionally) {
+		assertEquals(false, shell.isDisposed());
+	}
 	shell.dispose();
 	if (widget != null) {
 		assertTrue(widget.isDisposed());

@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.Accessible;
@@ -861,6 +862,45 @@ protected Point[] determineLocations(int paramA, int paramB,
         array[1] = control.toDisplay(control.getSize().x -20, 0);
     }
     return array;
+}
+
+@Test
+public void testExceptionsThrownInDisposeListenerDontPreventDisposal () {
+	disposedIntentionally = true;
+	Consumer<RuntimeException> oldHandler = Display.getCurrent ().getRuntimeExceptionHandler ();
+	try {
+		final List<RuntimeException> handledExceptions = new ArrayList<> ();
+		// Register an exception handler similar to the one used by the workbench, which doesn't
+		// propogate exceptions
+		Display.getCurrent ().setRuntimeExceptionHandler (exception -> {
+				handledExceptions.add(exception);
+		});
+		final int[] listenerInvocations = new int[1];
+
+		control.addDisposeListener (e -> {
+				listenerInvocations[0]++;
+		});
+
+		control.addDisposeListener (e -> {
+				throw new RuntimeException("Test exception handling");
+		});
+
+		control.addDisposeListener (e -> {
+				listenerInvocations[0]++;
+		});
+
+		try {
+			control.dispose ();
+		} catch (RuntimeException e) {
+			fail("The exception in the listener should have been logged, not passed along to the caller");
+		}
+
+		assertTrue (control.isDisposed ());
+		assertEquals (2, listenerInvocations[0]);
+		assertEquals (1, handledExceptions.size ());
+	} finally {
+		Display.getCurrent ().setRuntimeExceptionHandler (oldHandler);
+	}
 }
 
 }
