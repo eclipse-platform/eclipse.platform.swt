@@ -12,7 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class implement a simple
@@ -81,7 +81,27 @@ public void sendEvent (Event event) {
 			if (event.type == SWT.None) return;
 			if (types [i] == event.type) {
 				Listener listener = listeners [i];
-				if (listener != null) listener.handleEvent (event);
+				if (listener != null) {
+					try {
+						listener.handleEvent (event);
+					} catch (RuntimeException runtimeException) {
+						Display display = Display.getCurrent ();
+
+						if (display == null) {
+							throw runtimeException;
+						}
+
+						display.getRuntimeExceptionHandler ().accept (runtimeException);
+					} catch (Error error) {
+						Display display = Display.getCurrent ();
+
+						if (display == null) {
+							throw error;
+						}
+
+						display.getErrorHandler ().accept (error);
+					}
+				}
 			}
 		}
 	} finally {
