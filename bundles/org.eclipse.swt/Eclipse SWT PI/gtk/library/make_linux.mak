@@ -100,7 +100,9 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
-WEBKITCFLAGS = `pkg-config --cflags glib-2.0`
+
+WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`  # Avoid adding 'webkit2gtk-4.0', as some systems might not have it.
+WEBKITCFLAGS = `pkg-config --cflags gio-2.0`     #     webkit functions should be called dynamically. See Bug 430538
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
@@ -112,7 +114,7 @@ GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
-WEBKIT_OBJECTS = swt.o webkit.o webkit_structs.o webkit_stats.o
+WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitgtk_custom.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS = -O -Wall \
@@ -294,16 +296,19 @@ xpcominit_stats.o: xpcominit_stats.cpp
 make_webkit: $(WEBKIT_LIB)
 
 $(WEBKIT_LIB): $(WEBKIT_OBJECTS)
-	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS)
+	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS) $(WEBKITLIBS)
 
-webkit.o: webkitgtk.c 
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk.c -o webkit.o
+webkitgtk.o: webkitgtk.c webkitgtk_custom.h
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk.c
 
-webkit_structs.o: webkitgtk_structs.c 
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_structs.c -o webkit_structs.o
-	
-webkit_stats.o: webkitgtk_stats.c webkitgtk_stats.h
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_stats.c -o webkit_stats.o
+webkitgtk_structs.o: webkitgtk_structs.c
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_structs.c
+
+webkitgtk_stats.o: webkitgtk_stats.c webkitgtk_stats.h
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_stats.c
+
+webkitgtk_custom.o: webkitgtk_custom.c
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_custom.c
 
 #
 # GLX lib

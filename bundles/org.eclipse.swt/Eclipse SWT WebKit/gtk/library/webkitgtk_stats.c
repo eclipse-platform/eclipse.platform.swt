@@ -73,6 +73,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1uri_1free",
 	"_1soup_1uri_1new",
 	"_1soup_1uri_1to_1string",
+	"_1swt_1webkit_1web_1view_1run_1javascript",
 	"_1webkit_1authentication_1request_1authenticate",
 	"_1webkit_1authentication_1request_1cancel",
 	"_1webkit_1authentication_1request_1is_1retry",
