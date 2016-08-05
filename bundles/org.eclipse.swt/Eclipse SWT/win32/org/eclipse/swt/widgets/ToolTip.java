@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -454,13 +454,27 @@ void updateMessage () {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			long /*int*/ hHeap = OS.GetProcessHeap ();
-			TCHAR buffer = new TCHAR (0, message, true);
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			lpti.lpszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (lpti.lpszText, buffer, byteCount);
-			OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
-			OS.HeapFree(hHeap, 0, lpti.lpszText);
+			if (message != null && message.length() > 0) {
+				long /*int*/ hHeap = OS.GetProcessHeap ();
+				TCHAR buffer = new TCHAR (0, message, true);
+				int byteCount = buffer.length () * TCHAR.sizeof;
+				lpti.lpszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				OS.MoveMemory (lpti.lpszText, buffer, byteCount);
+				OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
+				OS.HeapFree(hHeap, 0, lpti.lpszText);
+			}
+			else {
+				/*
+				 * Bug 498895: When empty message string is set, then
+				 * underlying native tool-tip object goes into dirty state &
+				 * becomes unusable. Hence reset TOOLINFO#lpszText message
+				 * text field to -1 (which is the default initial value of
+				 * this field when fetch using TTM_GETCURRENTTOOL API call)
+				 * to set empty message string at native level successfully.
+				 */
+				lpti.lpszText =  -1;
+				OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
+			}
 		}
 	}
 }
