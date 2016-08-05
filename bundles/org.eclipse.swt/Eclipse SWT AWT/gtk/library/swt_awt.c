@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -71,3 +71,54 @@ JNIEXPORT void JNICALL SWT_AWT_NATIVE(setDebug)
 	}
 }
 #endif
+
+#ifndef NO_initFrame
+JNIEXPORT jobject JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_initFrame
+	(JNIEnv *env, jclass that, jintLong handle)
+{
+	jobject object;
+	jmethodID constructor;
+	
+	jclass cls = (*env)->FindClass(env, "sun/awt/X11/XEmbeddedFrame");
+	if (NULL == cls) return NULL;
+	constructor = (*env)->GetMethodID(env, cls, "<init>", "(J)V");
+	object = (*env)->NewObject(env, cls, constructor, handle);
+	return object;
+}
+#endif
+
+#ifndef NO_validateWithBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_validateWithBounds
+(JNIEnv *env, jclass that, jobject frame, jint x,jint y,jint w,jint h)
+{
+    jclass cls = (*env)->FindClass(env, "sun/awt/X11/XEmbeddedFrame");
+    if (NULL == cls) return;
+    jmethodID midInit = (*env)->GetMethodID(env, cls, "validateWithBounds", "(IIII)V");
+    (*env)->CallVoidMethod(env, frame, midInit, x,y,w,h);
+}
+#endif
+
+#ifndef NO_synthesizeWindowActivation
+JNIEXPORT void JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_synthesizeWindowActivation
+(JNIEnv *env, jclass that, jobject frame, jboolean doActivate)
+{
+    jclass cls = (*env)->FindClass(env, "sun/awt/X11/XEmbeddedFrame");
+    if (NULL == cls) return;
+    jmethodID midInit = (*env)->GetMethodID(env, cls, "synthesizeWindowActivation", "(Z)V");
+    (*env)->CallVoidMethod(env, frame, midInit, doActivate);
+}
+#endif
+
+#ifndef NO_registerListeners
+JNIEXPORT void JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_registerListeners
+(JNIEnv *env, jclass that, jobject frame)
+{
+    jclass cls = (*env)->FindClass(env, "sun/awt/X11/XEmbeddedFrame");
+    if (NULL == cls) return;
+    jmethodID midInit = (*env)->GetMethodID(env, cls, "registerListeners", "()V");
+    (*env)->CallVoidMethod(env, frame, midInit);
+}
+#endif
+
+
+

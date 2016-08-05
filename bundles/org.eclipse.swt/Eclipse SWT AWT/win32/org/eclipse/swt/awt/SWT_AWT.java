@@ -51,6 +51,8 @@ public class SWT_AWT {
 static boolean loaded, swingInitialized;
 
 static native final long /*int*/ getAWTHandle (Canvas canvas);
+static native final Object initFrame (long /*int*/ handle, String className);
+static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
@@ -136,46 +138,26 @@ public static Frame new_Frame (final Composite parent) {
 			 * and other JREs take a long.  To handle this binary incompatibility, use
 			 * reflection to create the embedded frame.
 			 */
-			Class<?> clazz = null;
+			String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
 			try {
-				String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-				clazz = Class.forName(className);
-			} catch (Throwable e3) {
-				exception[0] = e3;
+				if (embeddedFrameClass != null) {
+					Class.forName(className);
+				}
+				loadLibrary();
+			} catch (ClassNotFoundException cne) {
+				SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne);
+			} catch (Throwable e) {
+				exception[0] = e;
 				return;
 			}
 			initializeSwing ();
-			Object value = null;
-			Constructor<?> constructor = null;
-			try {
-				constructor = clazz.getConstructor (int.class);
-				value = constructor.newInstance (new Integer ((int)/*64*/handle));
-			} catch (Throwable e1) {
-				try {
-					constructor = clazz.getConstructor (long.class);
-					value = constructor.newInstance (new Long (handle));
-				} catch (Throwable e2) {
-					exception[0] = e2;
-					return;
-				}
+			Object value = initFrame(handle, className);
+			if (value == null || !(value instanceof Frame)) {
+				exception [0] = new Throwable("[Error while creating AWT embedded frame]");
+				SWT.error (SWT.ERROR_UNSPECIFIED, exception[0]);
+				return;
 			}
-			final Frame frame = (Frame) value;
-
-			/*
-			* TEMPORARY CODE
-			*
-			* For some reason, the graphics configuration of the embedded
-			* frame is not initialized properly. This causes an exception
-			* when the depth of the screen is changed.
-			*/
-			try {
-				clazz = Class.forName("sun.awt.windows.WComponentPeer");
-				Field field = clazz.getDeclaredField("winGraphicsConfig");
-				field.setAccessible(true);
-				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
-			} catch (Throwable e4) {}
-
-			result[0] = frame;
+			result[0] = (Frame) value;
 		} finally {
 			synchronized(result) {
 				result.notify();

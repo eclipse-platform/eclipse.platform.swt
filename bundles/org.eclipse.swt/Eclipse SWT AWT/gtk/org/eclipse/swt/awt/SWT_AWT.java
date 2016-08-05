@@ -54,6 +54,10 @@ static boolean loaded, swingInitialized;
 
 static native final long /*int*/ getAWTHandle (Object canvas);
 static native final void setDebug (Frame canvas, boolean debug);
+static native final Object initFrame (long /*int*/ handle, String className);
+static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
+static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
+static native final void registerListeners (Frame frame);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
@@ -144,46 +148,38 @@ public static Frame new_Frame (final Composite parent) {
 	 * and other JREs take a long.  To handle this binary incompatibility, use
 	 * reflection to create the embedded frame.
 	 */
-	Class<?> clazz = null;
+	String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
 	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
-		clazz = Class.forName(className);
+		if (embeddedFrameClass != null) {
+			Class.forName(className);
+		}
+		loadLibrary();
+	} catch (ClassNotFoundException cne) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne);
 	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e, " [need JDK 1.5 or greater]");
+		SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");
 	}
 	initializeSwing ();
-	Object value = null;
-	Constructor<?> constructor = null;
-	try {
-		constructor = clazz.getConstructor (int.class, boolean.class);
-		value = constructor.newInstance (new Integer ((int)/*64*/handle), Boolean.TRUE);
-	} catch (Throwable e1) {
-		try {
-			constructor = clazz.getConstructor (long.class, boolean.class);
-			value = constructor.newInstance (new Long (handle), Boolean.TRUE);
-		} catch (Throwable e2) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
-		}
+	final Frame [] frame = new Frame [1];
+	Object object = initFrame(handle, className);
+	if (object == null || !(object instanceof Frame)) {
+		SWT.error (SWT.ERROR_UNSPECIFIED , new Throwable(), " [Error while starting AWT]");
 	}
-	final Frame frame = (Frame) value;
-	parent.setData(EMBEDDED_FRAME_KEY, frame);
+	frame[0] = (Frame) object;
+	parent.setData(EMBEDDED_FRAME_KEY, frame[0]);
 	if (Device.DEBUG) {
-		loadLibrary();
-		setDebug(frame, true);
+		setDebug(frame[0], true);
 	}
-	try {
-		/* Call registerListeners() to make XEmbed focus traversal work */
-		Method method = clazz.getMethod("registerListeners");
-		if (method != null) method.invoke(value);
-	} catch (Throwable e) {}
+	/* Call registerListeners() to make XEmbed focus traversal work */
+	registerListeners(frame[0]);
+
 	final AWTEventListener awtListener = event -> {
 		if (event.getID() == WindowEvent.WINDOW_OPENED) {
 			final Window window = (Window) event.getSource();
-			if (window.getParent() == frame) {
+			if (window.getParent() == frame[0]) {
 				parent.getDisplay().asyncExec(() -> {
 					if (parent.isDisposed()) return;
 					Shell shell = parent.getShell();
-					loadLibrary();
 					long /*int*/ awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
 					long /*int*/ xWindow;
@@ -197,14 +193,15 @@ public static Frame new_Frame (final Composite parent) {
 			}
 		}
 	};
-	frame.getToolkit().addAWTEventListener(awtListener, AWTEvent.WINDOW_EVENT_MASK);
+
+	frame[0].getToolkit().addAWTEventListener(awtListener, AWTEvent.WINDOW_EVENT_MASK);
 	final Listener shellListener = e -> {
 		switch (e.type) {
 			case SWT.Deiconify:
-				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED)));
+				EventQueue.invokeLater(() -> frame[0].dispatchEvent (new WindowEvent (frame[0], WindowEvent.WINDOW_DEICONIFIED)));
 				break;
 			case SWT.Iconify:
-				EventQueue.invokeLater(() -> frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED)));
+				EventQueue.invokeLater(() -> frame[0].dispatchEvent (new WindowEvent (frame[0], WindowEvent.WINDOW_ICONIFIED)));
 				break;
 		}
 	};
@@ -220,13 +217,13 @@ public static Frame new_Frame (final Composite parent) {
 				shell1.removeListener (SWT.Iconify, shellListener);
 				parent.setVisible(false);
 				EventQueue.invokeLater(() -> {
-					frame.getToolkit().removeAWTEventListener(awtListener);
-					frame.dispose ();
+					frame[0].getToolkit().removeAWTEventListener(awtListener);
+					frame[0].dispose ();
 				});
 				break;
 			case SWT.Resize:
 				final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
-				EventQueue.invokeLater(() -> frame.setSize (clientArea.width, clientArea.height));
+				EventQueue.invokeLater(() -> frame[0].setSize (clientArea.width, clientArea.height));
 				break;
 		}
 	};
@@ -237,11 +234,11 @@ public static Frame new_Frame (final Composite parent) {
 		if (parent.isDisposed()) return;
 		final Rectangle clientArea = DPIUtil.autoScaleUp(parent.getClientArea());
 		EventQueue.invokeLater(() -> {
-			frame.setSize (clientArea.width, clientArea.height);
-			frame.validate ();
+			frame[0].setSize (clientArea.width, clientArea.height);
+			frame[0].validate ();
 		});
 	});
-	return frame;
+	return frame[0];
 }
 
 /**

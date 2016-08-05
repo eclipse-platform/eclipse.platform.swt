@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,5 +41,32 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 		awt.FreeDrawingSurface(ds);
 	}
 	return result;
+}
+#endif
+
+#ifndef NO_initFrame
+JNIEXPORT jobject JNICALL SWT_AWT_NATIVE(initFrame)
+	(JNIEnv *env, jclass that, jintLong handle, jstring className)
+{
+	jobject object;
+	jmethodID constructor;
+	
+	jclass cls = (*env)->FindClass(env, "sun/awt/windows/WEmbeddedFrame");
+	if (NULL == cls) return NULL;
+	constructor = (*env)->GetMethodID(env, cls, "<init>", "(J)V");
+	object = (*env)->NewObject(env, cls, constructor, handle);
+	return object;
+}
+#endif
+
+#ifndef NO_synthesizeWindowActivation
+JNIEXPORT void JNICALL SWT_AWT_NATIVE(synthesizeWindowActivation)
+(JNIEnv *env, jclass that, jobject frame, jboolean doActivate)
+{
+	jmethodID midInit;
+    jclass cls = (*env)->FindClass(env, "sun/awt/windows/WEmbeddedFrame");
+    if (NULL == cls) return;
+    midInit = (*env)->GetMethodID(env, cls, "synthesizeWindowActivation", "(Z)V");
+    (*env)->CallVoidMethod(env, frame, midInit, doActivate);
 }
 #endif

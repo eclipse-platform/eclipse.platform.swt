@@ -51,16 +51,14 @@ public class SWT_AWT {
 	 */
 	static final String RUN_AWT_INVOKE_LATER_KEY = "org.eclipse.swt.internal.runAWTInvokeLater"; //$NON-NLS-1$
 
-	static {
-		System.setProperty("apple.awt.usingSWT", "true");
-	}
-
-	static final String JDK16_FRAME = "apple.awt.CEmbeddedFrame";
 	static final String JDK17_FRAME = "sun.lwawt.macosx.CViewEmbeddedFrame";
 
 	static boolean loaded, swingInitialized;
 
 	static native final long /*int*/ getAWTHandle (Canvas canvas);
+	static native final Object initFrame (long /*int*/ handle, String className);
+	static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
+	static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
 
 	static synchronized void loadLibrary () {
 		if (loaded) return;
@@ -136,23 +134,15 @@ public static Frame new_Frame(final Composite parent) {
 	if ((parent.getStyle() & SWT.EMBEDDED) == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-
 	final long /*int*/ handle = parent.view.id;
-
-	final Class<?> [] clazz = new Class [1];
+	final String className = embeddedFrameClass != null ? embeddedFrameClass : JDK17_FRAME;
 	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : JDK16_FRAME;
-		if (embeddedFrameClass == null) {
-			clazz[0] = Class.forName(className, true, ClassLoader.getSystemClassLoader());
-		} else {
-			clazz[0] = Class.forName(className);
+		if (embeddedFrameClass != null) {
+			Class.forName(className);
 		}
+		loadLibrary();
 	} catch (ClassNotFoundException cne) {
-		try {
-			clazz[0] = Class.forName(JDK17_FRAME);
-		} catch (ClassNotFoundException cne1) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne1);
-		}
+			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");
 	}
@@ -168,14 +158,14 @@ public static Frame new_Frame(final Composite parent) {
 		public void run() {
 			if (run) return;
 			run = true;
-			Constructor<?> constructor = null;
-			try {
-				constructor = clazz[0].getConstructor (long.class);
-				result [0] = (Frame) (constructor.newInstance (new Long(handle)));
-				result [0].addNotify();
-			} catch (Throwable e) {
-				exception[0] = e;
-			}
+				Object obj = initFrame(handle, className);
+				if (obj == null || !(obj instanceof Frame)) {
+					exception [0] = new Throwable("[Error while creating AWT embedded frame]");
+					SWT.error (SWT.ERROR_UNSPECIFIED, exception[0]);
+					return;
+				}
+				result[0] = (Frame) obj;
+				result[0].addNotify();
 		}
 	};
 	if (EventQueue.isDispatchThread() || parent.getDisplay().getSyncThread() != null) {
@@ -196,7 +186,6 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);
 	}
 	final Frame frame = result[0];
-	final boolean isJDK17 = JDK17_FRAME.equals(frame.getClass().getName());
 
 	/* NOTE: addNotify() should not be called in the UI thread or we could hang */
 	//frame.addNotify();
@@ -250,10 +239,8 @@ public static Frame new_Frame(final Composite parent) {
 					Shell shell = parent.getShell ();
 					shell.removeListener (SWT.Deiconify, shellListener);
 					shell.removeListener (SWT.Iconify, shellListener);
-					if (isJDK17) {
-						shell.removeListener (SWT.Activate, this);
-						shell.removeListener (SWT.Deactivate, this);
-					}
+					shell.removeListener (SWT.Activate, this);
+					shell.removeListener (SWT.Deactivate, this);
 					parent.setVisible(false);
 					EventQueue.invokeLater(() -> {
 						try {
@@ -267,9 +254,7 @@ public static Frame new_Frame(final Composite parent) {
 					EventQueue.invokeLater(() -> {
 						if (frame.isActive()) return;
 						try {
-							Class<?> clazz1 = frame.getClass();
-							Method method = clazz1.getMethod("synthesizeWindowActivation", boolean.class);
-							if (method != null) method.invoke(frame, Boolean.TRUE);
+							synthesizeWindowActivation (frame, Boolean.TRUE);
 						} catch (Throwable e1) {e1.printStackTrace();}
 					});
 					break;
@@ -278,9 +263,7 @@ public static Frame new_Frame(final Composite parent) {
 					EventQueue.invokeLater(() -> {
 						if (!frame.isActive()) return;
 						try {
-							Class<?> clazz1 = frame.getClass();
-							Method method = clazz1.getMethod("synthesizeWindowActivation", boolean.class);
-							if (method != null) method.invoke(frame, Boolean.FALSE);
+							synthesizeWindowActivation (frame, Boolean.FALSE);
 						} catch (Throwable e1) {e1.printStackTrace();}
 					});
 					break;
@@ -289,35 +272,18 @@ public static Frame new_Frame(final Composite parent) {
 	};
 
 	parent.addListener (SWT.FocusIn, listener);
-	if (isJDK17) {
-		parent.addListener(SWT.FocusOut, listener);
-		//To allow cross-app activation/deactivation
-		shell.addListener (SWT.Activate, listener);
-		shell.addListener (SWT.Deactivate, listener);
-	} else {
-		parent.addListener (SWT.Deactivate, listener);
-	}
+	parent.addListener(SWT.FocusOut, listener);
+	//To allow cross-app activation/deactivation
+	shell.addListener (SWT.Activate, listener);
+	shell.addListener (SWT.Deactivate, listener);
 	parent.addListener (SWT.Dispose, listener);
 
 	display.asyncExec(() -> {
 		if (parent.isDisposed()) return;
 		final Rectangle clientArea = parent.getClientArea();
-		if (isJDK17) {
-			try {
-				Method method = frame.getClass().getMethod("validateWithBounds", int.class, int.class, int.class, int.class);
-				if (method != null) method.invoke(frame, Integer.valueOf(clientArea.x), Integer.valueOf(clientArea.y), Integer.valueOf(clientArea.width), Integer.valueOf(clientArea.height));
-			} catch (Throwable e) {e.printStackTrace();}
-		} else {
-			EventQueue.invokeLater(() -> {
-				frame.setSize(clientArea.width, clientArea.height);
-				frame.validate();
-
-				// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
-				// Toggling visibility seems to be the only thing that works.
-				frame.setVisible(false);
-				frame.setVisible(true);
-			});
-		}
+		try {
+			validateWithBounds(frame, Integer.valueOf(clientArea.x), Integer.valueOf(clientArea.y), Integer.valueOf(clientArea.width), Integer.valueOf(clientArea.height));
+		} catch (Throwable e) {e.printStackTrace();}
 	});
 
 	return frame;
