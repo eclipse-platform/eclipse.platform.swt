@@ -373,7 +373,6 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals("getBackground not equal color after setBackground(color)", color, control.getBackground());
 	control.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
-	color.dispose();
 	// Skipping test run for GTK, already failing on GTK3. May be related to bug 421836
 	if (!"gtk".equals(SWT.getPlatform ())) {
 		// With alpha zero
@@ -384,6 +383,16 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
 		color.dispose();
 	}
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(control.getDisplay(), 0, 255, 0);
+		control.setBackground(color);
+		control.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for " + control,
+				color, control.getBackground());
+		assertEquals("Setting a foreground onto a widget with a background failed for " + control,
+				fg, control.getForeground());
+	}
+	color.dispose();
 }
 @Test
 public void test_setBoundsIIII() {
@@ -487,6 +496,15 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, control.getForeground());
 	control.setForeground(null);
 	assertTrue(!control.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(control.getDisplay(), 0, 255, 0);
+		control.setForeground(color);
+		control.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for " + control,
+				color, control.getForeground());
+		assertEquals("Setting a background onto a widget with a foreground failed for " + control,
+				bg, control.getBackground());
+	}
 	color.dispose();
 }
 @Test

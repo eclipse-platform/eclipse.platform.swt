@@ -603,11 +603,38 @@ void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba
 		this.cssBackground = css;
 
 		// Apply background color and any foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
 		gtk_css_provider_load_from_css(context, finalCss);
 	} else {
 		super.setBackgroundColor(context, handle, rgba);
 	}
+}
+
+@Override
+void setForegroundColor (long /*int*/ handle, GdkRGBA rgba) {
+	GdkRGBA toSet = new GdkRGBA();
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		GdkColor defaultForeground = display.COLOR_WIDGET_FOREGROUND;
+		toSet = display.toGdkRGBA (defaultForeground);
+	}
+	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+    		: display.gtk_widget_get_name(handle);
+	GdkRGBA selectedForeground = display.toGdkRGBA(getDisplay().COLOR_LIST_SELECTION_TEXT);
+	String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+	String css = "* {color: " + color + ";}\n"
+			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+
+	// Cache foreground color
+	this.cssForeground = css;
+
+	// Apply foreground color and any cached background color
+	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.FOREGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 @Override
