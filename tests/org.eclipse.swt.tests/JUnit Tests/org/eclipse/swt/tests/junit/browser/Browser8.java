@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -18,9 +20,14 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * This test case tests if 'execute()' works on HTML rendered from memory with getText.
+ * If execute works, the background of the browser should turn yellow and 'at least when I'm not around'
+ * should be appended in between the lines.
+ *
+ */
 public class Browser8 {
-	public static boolean verbose = false;
-	public static boolean passed = false;
+	public static boolean verbose = false;  //Set to true to visually inspect change.
 
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
 	static String script[] = {
@@ -33,38 +40,51 @@ public class Browser8 {
 
 	public static boolean test(final int index) {
 		if (verbose) System.out.println("Javascript - verify execute() works on HTML rendered from memory with getText - script index "+index);
-		passed = false;
+
+
+		AtomicBoolean passed = new AtomicBoolean(); // false on creation.
 
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
+
+		final AtomicBoolean finished = new AtomicBoolean(); // initially false.
+
 		browser.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
 			}
 			@Override
 			public void completed(ProgressEvent event) {
-				passed = browser.execute(script[index]);
+				if (verbose) runLoopTimer(display, shell, 1000); // slow down execution for visual inspection.
+
+				passed.set(browser.execute(script[index]));
+
+				if (verbose) runLoopTimer(display, shell, 1000); // slow down execution for visual inspection.
+				finished.set(true);
 			}
 		});
 		shell.open();
 		browser.setText(html[index]);
 
-		runLoopTimer(display, shell, 10);
-
+	    while (!passed.get() && !finished.get()) {
+	    	runLoopTimer(display, shell, 1000);
+	    	if (!display.isDisposed())
+	    		display.readAndDispatch ();
+	    }
 		display.dispose();
-		return passed;
+		return passed.get();
 	}
 
-	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
+	static boolean runLoopTimer(final Display display, final Shell shell, final int milliseconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
 			@Override
 			public void run() {
 				try {
-					for (int i = 0; i < seconds; i++) {
-						Thread.sleep(1000);
+					for (int i = 0; i < Math.max(milliseconds / 1000, 1); i++) {
+						Thread.sleep(milliseconds);
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
