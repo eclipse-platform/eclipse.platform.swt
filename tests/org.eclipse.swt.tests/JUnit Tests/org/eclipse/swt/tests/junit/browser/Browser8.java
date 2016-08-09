@@ -68,8 +68,8 @@ public class Browser8 {
 		shell.open();
 		browser.setText(html[index]);
 
-	    while (!passed.get() && !finished.get()) {
-	    	runLoopTimer(display, shell, 1000);
+		for (int i = 0; i < 5 && !passed.get() && !finished.get(); i++) {
+	    	runLoopTimer(display, shell, 2);
 	    	if (!display.isDisposed())
 	    		display.readAndDispatch ();
 	    }
@@ -77,14 +77,14 @@ public class Browser8 {
 		return passed.get();
 	}
 
-	static boolean runLoopTimer(final Display display, final Shell shell, final int milliseconds) {
+	static boolean runLoopTimer(final Display display, final Shell shell, final int seconds) {
 		final boolean[] timeout = {false};
 		new Thread() {
 			@Override
 			public void run() {
 				try {
-					for (int i = 0; i < Math.max(milliseconds / 1000, 1); i++) {
-						Thread.sleep(milliseconds);
+					for (int i = 0; i < seconds; i++) {
+						Thread.sleep(seconds * 1000);
 						if (display.isDisposed() || shell.isDisposed()) return;
 					}
 				}
