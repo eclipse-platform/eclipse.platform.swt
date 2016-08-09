@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -35,6 +37,7 @@ public class Browser9 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addStatusTextListener(event -> browser.setData("query", event.text));
+		final AtomicBoolean finished = new AtomicBoolean(); // initially false.
 		browser.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
@@ -45,6 +48,7 @@ public class Browser9 {
 				if (!result) {
 					if (verbose) System.out.println("execute failed for "+script);
 					passed = false;
+					finished.set(true);
 					return;
 				}
 				/* Script may additionally set the Status value */
@@ -55,12 +59,17 @@ public class Browser9 {
 				} else {
 					if (verbose) System.out.println("Failure - expected "+script+", not "+value);
 				}
+				finished.set(true);
 			}
 		});
 		shell.open();
 		browser.setUrl(url);
 
-		runLoopTimer(display, shell, 10);
+		for (int i = 0; i < 5 && !passed && !finished.get(); i++) {
+	    	runLoopTimer(display, shell, 2);
+	    	if (!display.isDisposed())
+	    		display.readAndDispatch ();
+	    }
 		display.dispose();
 		return passed;
 	}
