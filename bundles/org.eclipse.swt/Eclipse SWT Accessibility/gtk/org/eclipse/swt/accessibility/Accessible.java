@@ -412,10 +412,12 @@ public class Accessible {
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
 	 *
+	 * @exception IllegalArgumentException ERROR_NULL_ARGUMENT - if the Accessible target is null
 	 * @since 3.6
 	 */
 	public void addRelation(int type, Accessible target) {
 		checkWidget();
+		if (target == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (relations == null) relations = new ArrayList<>();
 		Relation relation = new Relation(type, target);
 		if (relations.indexOf(relation) != -1) return;
@@ -867,12 +869,13 @@ public class Accessible {
 	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 *
+	 * @exception IllegalArgumentException ERROR_NULL_ARGUMENT - if the Accessible target is null
 	 * @since 3.6
 	 */
 	public void removeRelation(int type, Accessible target) {
 		checkWidget();
 		if (relations == null) return;
+		if (target == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		Relation relation = new Relation(type, target);
 		int index = relations.indexOf(relation);
 		if (index == -1) return;
