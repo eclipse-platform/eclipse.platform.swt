@@ -19,6 +19,10 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * TODO WEBKIT2 - test passes, but doesn't seem to spawn child windows properly the way WEBKIT1 does. Need to investigate.
+ *
+ */
 public class Browser7 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
@@ -42,12 +46,16 @@ public class Browser7 {
 		shell.open();
 		browser.setUrl(url);
 
-		boolean timeout = runLoopTimer(display, shell, 10);
+		for (int i = 0; i < 5 && (cntOpen != 4 &&  cntShow < 4); i++) {
+	    	 runLoopTimer(display, shell, 2);
+	    	if (!display.isDisposed())
+	    		display.readAndDispatch ();
+	    }
 		if (verbose) System.out.println("Window opened: "+cntOpen+" Window shown: "+cntShow);
 		/*
 		 * Bug in Mozilla. Multiple show events are fired by Mozilla.
 		 */
-		if (timeout) passed = cntOpen == 4 && cntShow >= 4;
+		passed = cntOpen == 4 && cntShow >= 4;
 		display.dispose();
 		return passed;
 	}
