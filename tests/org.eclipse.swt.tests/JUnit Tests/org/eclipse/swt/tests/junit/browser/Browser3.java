@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class Browser3 {
-	public static boolean verbose = false;
+	public static boolean verbose = true;
 	public static boolean passed = false;
 	public static boolean openWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
 
