@@ -468,10 +468,8 @@ public void copyArea(Image image, int x, int y) {
 			NSSize size = imageHandle.size();
 			NSArray screens = null;
 			NSString key = null;
-			if (OS.VERSION >= 0x1070) {
-				screens = NSScreen.screens();
-				key = NSString.stringWith("NSScreenNumber");
-			}
+			screens = NSScreen.screens();
+			key = NSString.stringWith("NSScreenNumber");
 			CGRect rect = new CGRect();
 			rect.origin.x = x;
 			rect.origin.y = y;
@@ -486,46 +484,29 @@ public void copyArea(Image image, int x, int y) {
 				OS.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
 				double /*float*/ scaling = 1;
-				if (OS.VERSION >= 0x1070) {
-					for (int j = 0; j < screens.count(); j++) {
-						NSScreen screen = new NSScreen(screens.objectAtIndex(j));
-						if (display[0] == new NSNumber(screen.deviceDescription().objectForKey(key)).intValue()) {
-							scaling = screen.backingScaleFactor();
-							break;
-						}
+				for (int j = 0; j < screens.count(); j++) {
+					NSScreen screen = new NSScreen(screens.objectAtIndex(j));
+					if (display[0] == new NSNumber(screen.deviceDescription().objectForKey(key)).intValue()) {
+						scaling = screen.backingScaleFactor();
+						break;
 					}
+				}
+				/*
+				 * Add a high resolution image representation to the image if scaling factor is > 1
+				 */
+				if (scaling > 1) {
+					int width = (int) (size.width * scaling);
+					int height = (int) (size.height * scaling);
+					NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+					rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+					OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
+					imageHandle.addRepresentation(rep);
+					rep.release();
 				}
 				long /*int*/ srcImage = 0;
-				long /*int*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display[0]);
-				if (address != 0) {
-					long /*int*/ width = OS.CGDisplayPixelsWide(display[0]);
-					long /*int*/ height = OS.CGDisplayPixelsHigh(display[0]);
-					long /*int*/ bpr = OS.CGDisplayBytesPerRow(display[0]);
-					long /*int*/ bpp = OS.CGDisplayBitsPerPixel(display[0]);
-					long /*int*/ bps = OS.CGDisplayBitsPerSample(display[0]);
-					int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
-					switch ((int)/*63*/bpp) {
-						case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
-						case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
-					}
-					if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
-						long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-						long /*int*/ context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, colorspace, bitmapInfo);
-						OS.CGColorSpaceRelease(colorspace);
-						srcImage = OS.CGBitmapContextCreateImage(context);
-						OS.CGContextRelease(context);
-					} else {
-						long /*int*/ provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-						long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-						srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, colorspace, bitmapInfo, provider, 0, true, 0);
-						OS.CGColorSpaceRelease(colorspace);
-						OS.CGDataProviderRelease(provider);
-					}
-				} else {
-					if (OS.VERSION >= 0x1060) srcImage = OS.CGDisplayCreateImage(display[0]);
-				}
+				srcImage = OS.CGDisplayCreateImage(display[0]);
 				if (srcImage != 0) {
-					copyArea(image, (int)(x * scaling - rect.origin.x), (int)(y * scaling - rect.origin.y), srcImage, scaling);
+					copyArea(image, (int)(x * scaling - rect.origin.x), (int)(y * scaling - rect.origin.y), srcImage);
 					OS.CGImageRelease(srcImage);
 				}
 			}
@@ -537,7 +518,7 @@ public void copyArea(Image image, int x, int y) {
 	}
 }
 
-void copyArea (Image image, int x, int y, long /*int*/ srcImage, double /*float*/ scaling) {
+void copyArea (Image image, int x, int y, long /*int*/ srcImage) {
 	if (srcImage == 0) return;
 	NSBitmapImageRep rep = image.getRepresentation();
 	long /*int*/ bpc = rep.bitsPerSample();
@@ -557,10 +538,10 @@ void copyArea (Image image, int x, int y, long /*int*/ srcImage, double /*float*
 	OS.CGColorSpaceRelease(colorspace);
 	if (context != 0) {
 	 	CGRect rect = new CGRect();
-	 	rect.origin.x = -x / scaling;
-	 	rect.origin.y = y / scaling;
-	 	rect.size.width = OS.CGImageGetWidth(srcImage) / scaling;
-		rect.size.height = OS.CGImageGetHeight(srcImage) / scaling;
+	 	rect.origin.x = -x;
+	 	rect.origin.y = y;
+	 	rect.size.width = OS.CGImageGetWidth(srcImage);
+		rect.size.height = OS.CGImageGetHeight(srcImage);
 		OS.CGContextTranslateCTM(context, 0, -(rect.size.height - height));
 		OS.CGContextDrawImage(context, rect, srcImage);
 		OS.CGContextRelease(context);
