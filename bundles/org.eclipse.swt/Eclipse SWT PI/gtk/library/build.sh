@@ -195,12 +195,12 @@ case $SWT_OS.$SWT_ARCH in
 				# Cross-platform method of finding JAVA_HOME.
 				# Tested on Fedora 24 and Ubuntu 16
 				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
-				if [ -n "$DYNAMIC_JAVA_HOME" ]; then
-					func_echo_plus "JAVA_HOME not set, dynamically configured to $DYNAMIC_JAVA_HOME"
-					export JAVA_HOME="$DYNAMIC_JAVA_HOME"
-				else
-					func_echo_error "JAVA_HOME directory could not be located. You might get a compile error about include 'jni.h', set JAVA_HOME manually."
-				fi
+				if [ -a "${DYNAMIC_JAVA_HOME}include/jni.h" ]; then
+                	func_echo_plus "JAVA_HOME not set, but jni.h found, dynamically configured to $DYNAMIC_JAVA_HOME"
+            		export JAVA_HOME="$DYNAMIC_JAVA_HOME"
+                else
+                	func_echo_error "JAVA_HOME not set and jni.h could not be located. You might get a compile error about include 'jni.h'. You should install 'java-*-openjdk-devel' package or if you have it installed already, find jni.h and  set JAVA_HOME manually to base of 'include' folder"
+                fi
 			fi
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
