@@ -387,9 +387,13 @@ Rectangle getBoundsInPixels (int index) {
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
 	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
+	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	int [] cw = new int [1], ch = new int [1];
+	OS.gtk_tree_view_column_cell_get_size (column, null, null, null, cw, ch);
+	rect.height = ch [0];
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
