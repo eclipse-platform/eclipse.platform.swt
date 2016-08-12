@@ -818,6 +818,12 @@ public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native long /*int*/ localeconv_decimal_point();
 /**
+ * @param env cast=(const char *)
+ * @param value cast=(const char *)
+ */
+public static final native int setenv (byte[] env, byte[] value, int overwrite);
+
+/**
  * @param path cast=(const char *)
  * @param realPath cast=(char *)
  */

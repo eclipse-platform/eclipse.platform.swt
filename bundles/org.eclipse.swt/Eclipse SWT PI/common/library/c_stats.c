@@ -105,7 +105,6 @@ char * C_nativeFunctionNames[] = {
 	"memmove___3SJJ",
 #endif
 	"memset",
-	"setenv",
 	"strlen",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(C_nativeFunctionNames) / sizeof(char*)

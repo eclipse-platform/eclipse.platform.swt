@@ -115,6 +115,5 @@ typedef enum {
 	memmove___3SJJ_FUNC,
 #endif
 	memset_FUNC,
-	setenv_FUNC,
 	strlen_FUNC,
 } C_FUNCS;

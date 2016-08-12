@@ -506,25 +506,6 @@ JNIEXPORT jintLong JNICALL C_NATIVE(memset)
 }
 #endif
 
-#ifndef NO_setenv
-JNIEXPORT jint JNICALL C_NATIVE(setenv)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	jbyte *lparg1=NULL;
-	jint rc = 0;
-	C_NATIVE_ENTER(env, that, setenv_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)setenv((const char *)lparg0, (const char *)lparg1, arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	C_NATIVE_EXIT(env, that, setenv_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_strlen
 JNIEXPORT jint JNICALL C_NATIVE(strlen)
 	(JNIEnv *env, jclass that, jintLong arg0)
