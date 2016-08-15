@@ -709,7 +709,7 @@ protected void init () {
 			if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
 				css =
 					"GtkToolbar {padding-top: 4px; padding-bottom: 4px;}\n"
-					+ "GtkToolbar GtkButton {padding: 4px 4px 4px 4px;}\n"
+					+ "GtkToolbar GtkButton {padding: 2px 4px 3px 4px;}\n"
 					+ ".undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.left {background-image: none;}\n"
 					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n";
 			} else {
