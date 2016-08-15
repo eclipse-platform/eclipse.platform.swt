@@ -89,3 +89,10 @@ case "$LINUX_DISTRO" in
 	;;
 esac
 
+
+# check if .classpath exists in swt project.
+if [ -a "../org.eclipse.swt/.classpath" ]; then 
+	func_echo_plus ".classpath found, you are good to go";
+else 
+	func_echo_error "Warning: ../org.eclipse.swt/.classpath not found. Normally you rename ../org.eclipse.swt/.classpath_gtk to ../*/.classpath manually"
+fi
