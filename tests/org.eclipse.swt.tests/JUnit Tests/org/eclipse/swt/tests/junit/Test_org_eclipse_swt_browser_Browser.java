@@ -54,6 +54,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.dispose();
 	browser = new Browser(shell, SWT.BORDER);
+	System.out.println("Browser#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
 	try {
 		browser = new Browser(null, SWT.NONE);
