@@ -938,6 +938,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
+	"_1gtk_1main_1iteration_1do",
 	"_1gtk_1major_1version",
 	"_1gtk_1menu_1bar_1new",
 	"_1gtk_1menu_1item_1get_1submenu",

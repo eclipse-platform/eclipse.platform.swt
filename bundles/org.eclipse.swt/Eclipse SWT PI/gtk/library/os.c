@@ -12870,6 +12870,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1main_1do_1event)
 }
 #endif
 
+#ifndef NO__1gtk_1main_1iteration_1do
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1main_1iteration_1do)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1main_1iteration_1do_FUNC);
+	gtk_main_iteration_do((gboolean)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1main_1iteration_1do_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1major_1version
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1major_1version)
 	(JNIEnv *env, jclass that)
