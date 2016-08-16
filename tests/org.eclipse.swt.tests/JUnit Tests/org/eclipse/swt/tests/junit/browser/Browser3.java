@@ -43,6 +43,7 @@ public class Browser3 {
 		browser1.addOpenWindowListener(event -> {
 			if (verbose) System.out.println("Browser1:OpenWindow.open");
 			openWindow = true;
+			Screenshots.takeScreenshot(Browser3.class, "openWindow");
 			Browser src = (Browser)event.widget;
 			if (src != browser1) {
 				if (verbose) System.out.println("Failure - expected "+browser1+", got "+src);
@@ -95,6 +96,7 @@ public class Browser3 {
 			@Override
 			public void show(WindowEvent event) {
 				if (verbose) System.out.println("Browser2:Visibility.show");
+				Screenshots.takeScreenshot(Browser3.class, "show");
 				if (!openWindow) {
 					if (verbose) System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
@@ -139,6 +141,7 @@ public class Browser3 {
 			if (verbose) System.out.println("timed out");
 			passed = false;
 		}
+		Screenshots.takeScreenshot(Browser3.class, "end");
 		display.dispose();
 		return passed;
 	}
