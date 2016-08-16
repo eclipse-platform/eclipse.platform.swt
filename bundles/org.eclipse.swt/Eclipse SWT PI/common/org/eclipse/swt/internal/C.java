@@ -22,6 +22,11 @@ public class C extends Platform {
 public static final native void free (long /*int*/ ptr);
 /** @param env cast=(const char *) */
 public static final native long /*int*/ getenv (byte[] env);
+/**
+ * @param env cast=(const char *)
+ * @param value cast=(const char *)
+ */
+public static final native int setenv (byte[] env, byte[] value, int overwrite);
 public static final native long /*int*/ malloc (long /*int*/ size);
 /**
  * @param dest cast=(void *)

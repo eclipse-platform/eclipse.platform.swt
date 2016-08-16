@@ -1884,6 +1884,5 @@ typedef enum {
 	pangoLayoutNewProc_1CALLBACK_FUNC,
 	printerOptionWidgetNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
-	setenv_FUNC,
 	strcmp_FUNC,
 } OS_FUNCS;

@@ -20,9 +20,8 @@ import org.eclipse.swt.internal.cairo.*;
 
 public class OS extends C {
 	static {
-		// Note that OS.setenv(..) and other natives defined in OS.java have
-		// to be called after Library.loadLibrary("swt-pi*"), otherwise we get an
-		// unsatisfied link error due to library not being loaded at the time of the call (bug 499545).
+		String scalingProperty = "GDK_SCALE";
+		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
 		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
@@ -35,9 +34,6 @@ public class OS extends C {
 				Library.loadLibrary("swt-pi");
 			}
 		}
-
-		String scalingProperty = "GDK_SCALE";
-		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
 	}
 
 	//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
@@ -821,12 +817,6 @@ public static final native int XEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native long /*int*/ localeconv_decimal_point();
-/**
- * @param env cast=(const char *)
- * @param value cast=(const char *)
- */
-public static final native int setenv (byte[] env, byte[] value, int overwrite);
-
 /**
  * @param path cast=(const char *)
  * @param realPath cast=(char *)

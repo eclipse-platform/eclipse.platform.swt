@@ -1874,7 +1874,6 @@ char * OS_nativeFunctionNames[] = {
 	"pangoLayoutNewProc_1CALLBACK",
 	"printerOptionWidgetNewProc_1CALLBACK",
 	"realpath",
-	"setenv",
 	"strcmp",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)

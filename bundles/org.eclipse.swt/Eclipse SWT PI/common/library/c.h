@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,5 +21,9 @@
 #ifdef _WIN32_WCE
 #define NO_getenv
 #endif /* _WIN32_WCE */
+
+#ifdef _WIN32
+#define NO_setenv
+#endif /* _WIN32 */
 
 #endif /* INC_c_H */
