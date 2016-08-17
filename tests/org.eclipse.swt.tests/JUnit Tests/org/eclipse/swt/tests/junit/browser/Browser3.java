@@ -63,7 +63,7 @@ public class Browser3 {
 			private int changed = 1;
 			@Override
 			public void changed(LocationEvent event) {
-				if (verbose) System.out.println("Browser2:Location.changed");
+				if (verbose) System.out.println("Browser2:Location.changed to " + event.location);
 				Screenshots.takeScreenshot(Browser3.class, "changed" + changed++);
 				if (!openWindow || !locationChanging) {
 					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
@@ -75,7 +75,7 @@ public class Browser3 {
 			}
 			@Override
 			public void changing(LocationEvent event) {
-				if (verbose) System.out.println("Browser2:Location.changing");
+				if (verbose) System.out.println("Browser2:Location.changing to " + event.location);
 				if (!openWindow) {
 					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
