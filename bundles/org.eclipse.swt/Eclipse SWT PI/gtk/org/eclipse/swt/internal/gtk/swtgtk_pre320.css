@@ -1,0 +1,25 @@
+GtkToolbar {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+GtkToolbar GtkButton {
+	padding: 2px 4px 3px 4px;
+}
+
+.undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.lef	{
+	background-image: none;
+}
+
+GtkToolbar GtkMenuButton {
+	padding: 1px 0px 1px 0px;
+}
+
+@binding-set SWTTreeViewBinding {
+	bind "Left" { "expand-collapse-cursor-row" (0,0,0)};
+	bind "Right" {"expand-collapse-cursor-row" (0,1,0)};
+}
+
+GtkTreeView {
+	gtk-key-bindings: SWTTreeViewBinding;
+}

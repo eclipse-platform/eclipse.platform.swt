@@ -11,6 +11,9 @@
 package org.eclipse.swt.graphics;
 
 
+import java.io.*;
+import java.util.stream.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -704,40 +707,35 @@ protected void init () {
 	if (OS.GTK3) {
 		long /*int*/ screen = OS.gdk_screen_get_default();
 		long /*int*/ provider = OS.gtk_css_provider_new();
-		String css = "";
+		String resourcePath = "";
 		if (screen != 0 && provider != 0) {
+			String userCSS = "";
+			String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
+			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0) && additionalCSSPath != null){
+				try (BufferedReader buffer = new BufferedReader(new FileReader(
+						new File(additionalCSSPath)))) {
+					userCSS = buffer.lines().collect(Collectors.joining("\n"));
+				} catch (IOException e) {
+					//Resource was not loaded thus no modifications to the gtk theme will be applied
+				}
+
+			}
+
 			if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
-				css =
-					"GtkToolbar {padding-top: 4px; padding-bottom: 4px;}\n"
-					+ "GtkToolbar GtkButton {padding: 2px 4px 3px 4px;}\n"
-					+ ".undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.left {background-image: none;}\n"
-					+ "GtkToolbar GtkMenuButton {padding: 1px 0px 1px 0px;}\n"
-					+ "@binding-set SWTTreeViewBinding { bind \"Left\"     { \"expand-collapse-cursor-row\" (0,0,0) };"
-					+ "bind \"Right\"    { \"expand-collapse-cursor-row\" (0,1,0) }; }	"
-					+ "GtkTreeView	{  gtk-key-bindings: SWTTreeViewBinding;	}\n";
+				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_pre320.css";
 			} else {
-				css =
-					"toolbar {padding-top: 2px; padding-bottom: 2px;}\n"
-					+ "toolbar button {padding: 2px;}"
-					+ "toolbar button.popup {padding: 0px;}\n"
-					+ "toolbar toolbutton button {padding: 0px 0px 0px 0px;}"
-					+ "@binding-set SWTTreeViewBinding { bind \"Left\"     { \"expand-collapse-cursor-row\" (0,0,0) };"
-					+ "bind \"Right\"    { \"expand-collapse-cursor-row\" (0,1,0) }; }	"
-					+ "treeview	{ -gtk-key-bindings: SWTTreeViewBinding;	}"
-					+ "scrolledwindow undershoot.top, scrolledwindow undershoot.right, scrolledwindow undershoot.bottom, "
-					+ "scrolledwindow undershoot.left {background-image: none;}\n";
-				/*
-				 * Feature in GTK3.20: Entries have increased minimum heights
-				 * causing them to be larger than usual. The fix is to
-				 * adjust the minimum height to make them more like GTK3.18
-				 * and below.
-				 */
-				css += "entry {min-height: 26px;}";
+				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_320.css";
 			}
-			if (css != null) {
+			try (BufferedReader buffer = new BufferedReader(new InputStreamReader(
+					Device.class.getResourceAsStream(resourcePath)))) {
+				String css = buffer.lines().collect(Collectors.joining("\n"));
+				String fullCSS = css + userCSS;
 				OS.gtk_style_context_add_provider_for_screen (screen, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, fullCSS, true), -1, null);
+			} catch (IOException e) {
+				//Resource was not loaded thus no modifications to the gtk theme will be applied
 			}
+
 		}
 	}
 }

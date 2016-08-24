@@ -1,0 +1,34 @@
+toolbar {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+toolbar button {
+	padding: 2px;
+}
+
+toolbar button.popup {
+	padding: 0px;
+}
+
+toolbar toolbutton button {
+	padding: 0px 0px 0px 0px;
+}
+
+@binding-set SWTTreeViewBinding {
+	bind "Left" { "expand-collapse-cursor-row" (0,0,0)};
+	bind "Right" { "expand-collapse-cursor-row" (0,1,0)};
+}
+
+treeview {
+	-gtk-key-bindings: SWTTreeViewBinding;
+}
+
+scrolledwindow undershoot.top, scrolledwindow undershoot.right,
+	scrolledwindow undershoot.bottom, scrolledwindow undershoot.left {
+	background-image: none;
+}
+
+entry {
+	min-height: 26px;
+}
