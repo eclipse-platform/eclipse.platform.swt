@@ -508,19 +508,6 @@
 #define g_icon_to_string_LIB LIB_GIO
 #define g_icon_new_for_string_LIB LIB_GIO
 #define g_file_query_info_LIB LIB_GIO
-#define g_settings_get_LIB LIB_GIO
-#define g_settings_new_LIB LIB_GIO
-#define g_settings_get_value_LIB LIB_GIO
-#define g_variant_dict_lookup_value_LIB LIB_GIO
-#define g_variant_iter_next_LIB LIB_GIO
-#define g_variant_iter_next_value_LIB LIB_GIO
-#define g_variant_iter_init_LIB LIB_GIO
-#define g_variant_iter_free_LIB LIB_GIO
-#define g_variant_iter_new_LIB LIB_GIO
-#define g_variant_unref_LIB LIB_GIO
-#define g_variant_print_LIB LIB_GIO
-#define g_settings_schema_source_get_default_LIB LIB_GIO
-#define g_settings_schema_source_lookup_LIB LIB_GIO
 
 // GTK3 only
 #define gtk_widget_draw_LIB LIB_GTK
