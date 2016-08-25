@@ -21455,6 +21455,18 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1wakeup)
 }
 #endif
 
+#ifndef NO_g_1strdup
+JNIEXPORT jintLong JNICALL OS_NATIVE(g_1strdup)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1strdup_FUNC);
+	rc = (jintLong)g_strdup((char *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1strdup_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1value_1get_1double
 JNIEXPORT jdouble JNICALL OS_NATIVE(g_1value_1get_1double)
 	(JNIEnv *env, jclass that, jintLong arg0)

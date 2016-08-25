@@ -1616,6 +1616,7 @@ typedef enum {
 	_1swt_1fixed_1restack_FUNC,
 	_1ubuntu_1menu_1proxy_1get_FUNC,
 	g_1main_1context_1wakeup_FUNC,
+	g_1strdup_FUNC,
 	g_1value_1get_1double_FUNC,
 	g_1value_1get_1float_FUNC,
 	g_1value_1get_1int_FUNC,

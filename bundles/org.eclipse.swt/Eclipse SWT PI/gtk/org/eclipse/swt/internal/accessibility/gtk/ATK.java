@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -15,8 +15,8 @@
 package org.eclipse.swt.internal.accessibility.gtk;
 
 
-import org.eclipse.swt.internal.Library;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 public class ATK extends OS {
 	static {
@@ -439,8 +439,6 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
-/** @param str cast=(char *) */
-public static final native long /*int*/ g_strdup (long /*int*/ str);
 public static final native void memmove (AtkActionIface dest, long /*int*/ src);
 public static final native void memmove (AtkComponentIface dest, long /*int*/ src);
 public static final native void memmove (AtkEditableTextIface dest, long /*int*/ src);

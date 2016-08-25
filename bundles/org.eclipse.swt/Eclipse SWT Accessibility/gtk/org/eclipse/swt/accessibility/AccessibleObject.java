@@ -894,14 +894,14 @@ class AccessibleObject {
 				AtkAttribute attr = new AtkAttribute();
 				if (event.leftMargin != -1) {
 					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_LEFT_MARGIN));
+					attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_LEFT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.leftMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.rightMargin != -1) {
 					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RIGHT_MARGIN));
+					attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RIGHT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.rightMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
@@ -922,20 +922,20 @@ class AccessibleObject {
 				}
 				if (event.indent != -1) {
 					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_INDENT));
+					attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_INDENT));
 					attr.value = getStringPtr (String.valueOf(event.indent));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.justify) {
 					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
+					attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
 					attr.value = getStringPtr ("fill"); //$NON-NLS-1$
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				} else if (event.alignment != -1) {
 					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
+					attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
 					String str = "left"; //$NON-NLS-1$
 					switch (event.alignment) {
 						case SWT.LEFT: str = "left"; break; //$NON-NLS-1$
@@ -2121,14 +2121,14 @@ class AccessibleObject {
 				if (style != null) {
 					if (style.rise != 0) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RISE));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RISE));
 						attr.value = getStringPtr (String.valueOf(style.rise));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 					}
 					if (style.underline) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_UNDERLINE));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_UNDERLINE));
 						String str = "none"; //$NON-NLS-1$
 						switch (style.underlineStyle) {
 							case SWT.UNDERLINE_DOUBLE: str = "double"; break; //$NON-NLS-1$
@@ -2142,7 +2142,7 @@ class AccessibleObject {
 					}
 					if (style.strikeout) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRIKETHROUGH));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRIKETHROUGH));
 						attr.value = getStringPtr ("1");
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
@@ -2152,37 +2152,37 @@ class AccessibleObject {
 						//TODO language and direction
 						long /*int*/ attrPtr;
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME));
-						attr.value = ATK.g_strdup (OS.pango_font_description_get_family (font.handle));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME));
+						attr.value = OS.g_strdup (OS.pango_font_description_get_family (font.handle));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_size(font.handle) / OS.PANGO_SCALE));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE));
-						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, OS.pango_font_description_get_style(font.handle)));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, OS.pango_font_description_get_style(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT));
-						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, OS.pango_font_description_get_variant(font.handle)));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, OS.pango_font_description_get_variant(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH));
-						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, OS.pango_font_description_get_stretch(font.handle)));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, OS.pango_font_description_get_stretch(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_weight(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
@@ -2190,7 +2190,7 @@ class AccessibleObject {
 					Color color = style.foreground;
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
@@ -2198,7 +2198,7 @@ class AccessibleObject {
 					color = style.background;
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
-						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
+						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);

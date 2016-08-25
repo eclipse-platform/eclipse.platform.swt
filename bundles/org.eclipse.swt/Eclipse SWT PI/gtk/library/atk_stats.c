@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -73,7 +73,6 @@ char * ATK_nativeFunctionNames[] = {
 #else
 	"_1call__JJJJJJ",
 #endif
-	"g_1strdup",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
 #else

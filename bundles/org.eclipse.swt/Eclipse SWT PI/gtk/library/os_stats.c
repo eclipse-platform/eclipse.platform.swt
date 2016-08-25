@@ -1606,6 +1606,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1swt_1fixed_1restack",
 	"_1ubuntu_1menu_1proxy_1get",
 	"g_1main_1context_1wakeup",
+	"g_1strdup",
 	"g_1value_1get_1double",
 	"g_1value_1get_1float",
 	"g_1value_1get_1int",

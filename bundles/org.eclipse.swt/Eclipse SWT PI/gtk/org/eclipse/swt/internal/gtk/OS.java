@@ -3363,6 +3363,8 @@ public static final double g_strtod(long /*int*/ str, long /*int*/[] endptr) {
 		lock.unlock();
 	}
 }
+/** @param str cast=(char *) */
+public static final native long /*int*/ g_strdup (long /*int*/ str);
 /**
  * @param instance_type cast=(GType)
  * @param interface_type cast=(GType)
