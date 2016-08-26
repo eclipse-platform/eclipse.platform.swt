@@ -32,3 +32,8 @@ scrolledwindow undershoot.top, scrolledwindow undershoot.right,
 entry {
 	min-height: 26px;
 }
+
+tab {
+	padding-left: 6px;
+	padding-right: 6px;
+}
