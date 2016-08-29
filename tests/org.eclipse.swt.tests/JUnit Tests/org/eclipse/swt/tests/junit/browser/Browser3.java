@@ -43,7 +43,7 @@ public class Browser3 {
 		browser1.addOpenWindowListener(event -> {
 			if (verbose) System.out.println("Browser1:OpenWindow.open");
 			openWindow = true;
-			Screenshots.takeScreenshot(Browser3.class, "openWindow");
+			if (verbose) Screenshots.takeScreenshot(Browser3.class, "openWindow");
 			Browser src = (Browser)event.widget;
 			if (src != browser1) {
 				if (verbose) System.out.println("Failure - expected "+browser1+", got "+src);
@@ -64,7 +64,7 @@ public class Browser3 {
 			@Override
 			public void changed(LocationEvent event) {
 				if (verbose) System.out.println("Browser2:Location.changed to " + event.location);
-				Screenshots.takeScreenshot(Browser3.class, "changed" + changed++);
+				if (verbose) Screenshots.takeScreenshot(Browser3.class, "changed" + changed++);
 				if (!openWindow || !locationChanging) {
 					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
@@ -96,7 +96,7 @@ public class Browser3 {
 			@Override
 			public void show(WindowEvent event) {
 				if (verbose) System.out.println("Browser2:Visibility.show");
-				Screenshots.takeScreenshot(Browser3.class, "show");
+				if (verbose) Screenshots.takeScreenshot(Browser3.class, "show");
 				if (!openWindow) {
 					if (verbose) System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
@@ -121,7 +121,7 @@ public class Browser3 {
 						if (verbose) System.out.println("timer start");
 						try { sleep(2000); } catch (Exception e) {}
 						passed = true;
-						Screenshots.takeScreenshot(Browser3.class, "completed");
+						if (verbose) Screenshots.takeScreenshot(Browser3.class, "completed");
 						if (!display.isDisposed())
 							display.asyncExec(() -> {
 								if (verbose) System.out.println("timer asyncexec shell.close");
@@ -141,7 +141,7 @@ public class Browser3 {
 			if (verbose) System.out.println("timed out");
 			passed = false;
 		}
-		Screenshots.takeScreenshot(Browser3.class, "end");
+		if (verbose) Screenshots.takeScreenshot(Browser3.class, "end");
 		display.dispose();
 		return passed;
 	}

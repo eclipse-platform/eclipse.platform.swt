@@ -12,12 +12,8 @@ package org.eclipse.swt.tests.junit.browser;
 
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.mozilla.MozillaVersion;
 import org.eclipse.swt.tests.junit.SwtTestUtil;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,35 +26,13 @@ import org.junit.rules.TestName;
  * @see org.eclipse.swt.browser.StatusTextListener
  */
 public class Test_BrowserSuite {
-	
+
 public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"));
 
 @Rule public TestName name = new TestName();
 
-private static boolean logXulRunnerVersion() {
-	Display display = new Display();
-	try {
-		Shell shell = new Shell(display);
-		Browser browser = new Browser(shell, SWT.NONE);
-		String browserType = browser.getBrowserType();
-		if ("mozilla".equals(browserType)) {
-			int version = MozillaVersion.GetCurrentVersion();
-			System.out.println("Test_BrowserSuite: MozillaVersion.GetCurrentVersion(): " + version);
-			return version <= MozillaVersion.VERSION_XR1_9_2;
-		}
-		return false;
-	} finally {
-		display.dispose();
-	}
-}
-
 @Test
 public void testBrowser1() {
-	logXulRunnerVersion();
-	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
-		return;
-	}
 	assertTrue(Browser1.test());
 }
 
@@ -69,6 +43,10 @@ public void testBrowser2() {
 
 @Test
 public void testBrowser3() {
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
+		return;
+	}
 	assertTrue(Browser3.test());
 }
 
@@ -79,19 +57,11 @@ public void testBrowser4() {
 
 @Test
 public void testBrowser5() {
-	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
-		return;
-	}
 	assertTrue(Browser5.test());
 }
 
 @Test
 public void testBrowser6() {
-	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
-		return;
-	}
 	assertTrue(Browser6.test());
 }
 
@@ -102,19 +72,11 @@ public void testBrowser7() {
 
 @Test
 public void testBrowser8() {
-	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
-		return;
-	}
 	assertTrue(Browser8.test());
 }
 
 @Test
 public void testBrowser9() {
-	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser1() skipped, see bug 465721");
-		return;
-	}
 	assertTrue(Browser9.test());
 }
 
