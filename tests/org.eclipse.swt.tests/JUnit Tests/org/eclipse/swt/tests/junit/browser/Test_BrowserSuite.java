@@ -27,7 +27,9 @@ import org.junit.rules.TestName;
  */
 public class Test_BrowserSuite {
 
-public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK && "hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"));
+public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK
+		&& ("hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
+				|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
 @Rule public TestName name = new TestName();
 
@@ -62,6 +64,10 @@ public void testBrowser5() {
 
 @Test
 public void testBrowser6() {
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser6() skipped, see bug 499159");
+		return;
+	}
 	assertTrue(Browser6.test());
 }
 
