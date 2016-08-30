@@ -206,7 +206,7 @@ void _setVisible (boolean visible) {
 			if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
 				OS.gtk_menu_shell_set_take_focus (handle, false);
 			}
-			long /*int*/ address = hasLocation ? display.menuPositionProc: 0;
+			long /*int*/ address = 0;
 			hasLocation = false;
 			long /*int*/ data = 0;
 			/*
@@ -805,37 +805,6 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
-}
-
-@Override
-long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
-	/*
-	* Feature in GTK.  The menu position function sets the position of the
-	* top-left pixel of the menu.  If the menu would be off-screen, GTK will
-	* add a scroll arrow at the bottom and position the first menu entry at
-	* the specified position.  The fix is to flip the menu location to be
-	* completely inside the screen.
-	*
-	* NOTE: This code doesn't work for multiple monitors.
-	*/
-    GtkRequisition requisition = new GtkRequisition ();
-    gtk_widget_get_preferred_size (menu, requisition);
-    int screenHeight = OS.gdk_screen_height ();
-	int reqy = this.y;
-	if (reqy + requisition.height > screenHeight) {
-    	reqy = Math.max (0, reqy - requisition.height);
-	}
-    int screenWidth = OS.gdk_screen_width ();
-	int reqx = this.x;
-    if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-    	if (reqx - requisition.width >= 0) reqx -= requisition.width;
-    } else {
-    	if (reqx + requisition.width > screenWidth) reqx -= requisition.width;
-    }
-	if (x != 0) OS.memmove (x, new int [] {reqx}, 4);
-	if (y != 0) OS.memmove (y, new int [] {reqy}, 4);
-	if (push_in != 0) OS.memmove (push_in, new int [] {1}, 4);
-	return 0;
 }
 
 @Override

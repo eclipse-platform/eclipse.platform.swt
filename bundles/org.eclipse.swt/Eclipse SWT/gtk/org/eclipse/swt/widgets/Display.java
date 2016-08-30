@@ -200,10 +200,6 @@ public class Display extends Device {
 	long /*int*/ mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 
-	/* Menu position callback */
-	long /*int*/ menuPositionProc;
-	Callback menuPositionCallback;
-
 	/* Tooltip size allocate callback */
 	long /*int*/ sizeAllocateProc;
 	Callback sizeAllocateCallback;
@@ -3412,10 +3408,6 @@ void initializeCallbacks () {
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	menuPositionCallback = new Callback(this, "menuPositionProc", 5); //$NON-NLS-1$
-	menuPositionProc = menuPositionCallback.getAddress();
-	if (menuPositionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 	sizeAllocateCallback = new Callback(this, "sizeAllocateProc", 3); //$NON-NLS-1$
 	sizeAllocateProc = sizeAllocateCallback.getAddress();
 	if (sizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -3821,12 +3813,6 @@ static char mbcsToWcs (char ch) {
 	return result [0];
 }
 
-long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
-	Widget widget = getWidget (menu);
-	if (widget == null) return 0;
-	return widget.menuPositionProc (menu, x, y, push_in, user_data);
-}
-
 /**
  * Maps a point from one coordinate system to another.
  * When the control is null, coordinates are mapped to
@@ -4226,10 +4212,6 @@ void releaseDisplay () {
 	/* Dispose preedit window */
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
 	imControl = null;
-
-	/* Dispose the menu callback */
-	menuPositionCallback.dispose (); menuPositionCallback = null;
-	menuPositionProc = 0;
 
 	/* Dispose the tooltip map callback */
 	sizeAllocateCallback.dispose (); sizeAllocateCallback = null;

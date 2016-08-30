@@ -1102,10 +1102,6 @@ long /*int*/ hoverProc (long /*int*/ widget) {
 	return 0;
 }
 
-long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
-	return 0;
-}
-
 boolean mnemonicHit (long /*int*/ mnemonicHandle, char key) {
 	if (!mnemonicMatch (mnemonicHandle, key)) return false;
 	OS.g_signal_handlers_block_matched (mnemonicHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MNEMONIC_ACTIVATE);
