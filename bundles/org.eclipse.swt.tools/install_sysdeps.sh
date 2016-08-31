@@ -69,7 +69,7 @@ Consider updating this script for your distribution.
 In general, You should install the following packages:
  - C Development tools (usually comes in a 'group install')
  - java-*-openjdk-devel  (depending on current version of java)
- - gtk3-devel gtk3-devel
+ - gtk2-devel gtk3-devel
  - libgnome-devel libgnomeui-devel
  - libXt-devel libXts-devel
  - mesa-libGLU-devel
