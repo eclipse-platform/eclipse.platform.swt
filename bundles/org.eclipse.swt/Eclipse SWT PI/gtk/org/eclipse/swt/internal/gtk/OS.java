@@ -459,6 +459,7 @@ public class OS extends C {
 	public static final int GTK_TREE_VIEW_GRID_LINES_VERTICAL = 2;
 	public static final int GTK_TREE_VIEW_GRID_LINES_BOTH = 3;
 	public static final int GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = 600;
+	public static final int GTK_STYLE_PROVIDER_PRIORITY_USER = 800;
 	public static final int GDK_UNMAP = 15;
 	public static final int GTK_UNIT_PIXEL = 0;
 	public static final int GTK_UNIT_POINTS = 1;

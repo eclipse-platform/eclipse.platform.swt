@@ -1603,11 +1603,11 @@ public void setData (String key, Object value) {
 		}
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
-	if (OS.GTK3 && key.equals(KEY_GTK_CSS) && value instanceof String) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0) && key.equals(KEY_GTK_CSS) && value instanceof String) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 		long /*int*/ provider = OS.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
-			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_USER);
 			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, (String) value, true), -1, null);
 			OS.g_object_unref (provider);
 		}
