@@ -138,10 +138,17 @@ public void addSelectionListener (SelectionListener listener) {
 void configure () {
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (handle);
-	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (handle));
+	/*
+	 * Feature in GTK: using gdk_screen_get_monitor_at_window() does not accurately get the correct monitor on the machine.
+	 * Using gdk_screen_get_monitor_at_point() returns it correctly. Using getLocation() on point will get
+	 * the coordinates for where the tooltip should appear on the host.
+	 */
+	Point point = getLocation();
+	boolean multipleMonitors = (OS.gdk_screen_get_n_monitors(screen) > 1) ? true : false;
+	int monitorNumber = OS.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-	Point point = getSize (dest.width / 4);
+	point = getSize (dest.width / 4);
 	int w = point.x;
 	int h = point.y;
 	point = getLocation ();
@@ -150,7 +157,7 @@ void configure () {
 	OS.gtk_window_resize (handle, w, h + TIP_HEIGHT);
 	int[] polyline;
 	spikeAbove = dest.height >= y + h + TIP_HEIGHT;
-	if (dest.width >= x + w) {
+	if ((dest.width >= x + w) || (multipleMonitors && OS.gdk_screen_width() >= x + w)) {
 		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
@@ -224,7 +231,7 @@ void configure () {
 				borderPolygon[12] =  borderPolygon[14] = 16;
 				borderPolygon [16] = 35;
 			}
-			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y);
+			OS.gtk_window_move (handle, Math.max(dest.width- w, x - w + 17), y);
 		} else {
 			polyline = new int[] {
 				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0,
@@ -247,7 +254,7 @@ void configure () {
 				borderPolygon[36] = 35;
 				borderPolygon[38] = borderPolygon [40] = 17;
 			}
-			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
+			OS.gtk_window_move (handle, Math.max(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}
 	OS.gtk_widget_realize(handle);
@@ -588,7 +595,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	int y = point.y;
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (widget);
-	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (widget));
+	int monitorNumber = OS.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	GtkAllocation widgetAllocation = new GtkAllocation ();
