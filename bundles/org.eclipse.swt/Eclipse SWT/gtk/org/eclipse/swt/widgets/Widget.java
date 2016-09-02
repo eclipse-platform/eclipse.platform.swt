@@ -310,6 +310,10 @@ long /*int*/ paintWindow () {
 	return 0;
 }
 
+long /*int*/ cssHandle() {
+	return handle;
+}
+
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
 	int mask = int0 | int1 | int2 | int3 | int4 | int5;
 	if ((style & mask) == 0) style |= int0;
@@ -1604,7 +1608,7 @@ public void setData (String key, Object value) {
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0) && key.equals(KEY_GTK_CSS) && value instanceof String) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		long /*int*/ context = OS.gtk_widget_get_style_context (cssHandle());
 		long /*int*/ provider = OS.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
 			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_USER);

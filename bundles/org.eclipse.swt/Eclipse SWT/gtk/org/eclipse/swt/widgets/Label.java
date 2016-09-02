@@ -273,6 +273,14 @@ long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
+@Override
+long /*int*/ cssHandle () {
+	if ((style & SWT.SEPARATOR) == 0) {
+		return labelHandle;
+	}
+	return handle;
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
