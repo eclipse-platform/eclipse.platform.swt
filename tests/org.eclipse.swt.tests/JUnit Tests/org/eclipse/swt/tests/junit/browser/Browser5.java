@@ -18,9 +18,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.test.Screenshots;
 
 public class Browser5 {
-	public static boolean verbose = false;
+	public static boolean verbose = true;
 	public static boolean passed = false;
 	static Point[][] regressionBounds = {
 				{new Point(100,200), new Point(300,100)},
@@ -66,6 +67,7 @@ public class Browser5 {
 						 */
 						if (location != null || size != null) {
 							if (verbose) System.out.println("Failure - Browser "+index+" is receiving multiple show events");
+							if (verbose) Screenshots.takeScreenshot(Browser5.class, "show 1");
 							passed = false;
 							shell.close();
 						} else {
@@ -92,16 +94,19 @@ public class Browser5 {
 							(size != null && size.x >= expectedSize.x && size.y >= expectedSize.y);
 						if (!checkSize || !checkLocation) {
 							if (verbose) System.out.println("	Failure ");
+							if (verbose) Screenshots.takeScreenshot(Browser5.class, "show 2 " + location);
 							passed = false;
 							shell.close();
 							return;
 						} else cntPassed++;
 					}
+					if (verbose) Screenshots.takeScreenshot(Browser5.class, "show 3 " + index);
 				}
 			});
 			browser1.addCloseWindowListener(event1 -> {
 				cntClosed++;
 				if (verbose) System.out.println("Close");
+				if (verbose) Screenshots.takeScreenshot(Browser5.class, "close " + cntClosed);
 				Browser browser2 = (Browser)event1.widget;
 				browser2.getShell().close();
 				if (cntPassed == regressionBounds.length) passed = true;

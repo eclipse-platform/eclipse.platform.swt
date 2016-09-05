@@ -35,6 +35,10 @@ public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK
 
 @Test
 public void testBrowser1() {
+	if (isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
+		return;
+	}
 	assertTrue(Browser1.test());
 }
 
