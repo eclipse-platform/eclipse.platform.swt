@@ -26,8 +26,8 @@ public class Browser9 {
 
 	static String html[] = {"browser9.html"};
 	static String script[] = {
-		"changeStatus('new title');"};
-	static String status[] = {"new title"};
+		"changeStatus('userAgent: ' + navigator.userAgent);"};
+	static String status[] = {"userAgent: "};
 
 	public static boolean test(String url, final String script, final String status) {
 		if (verbose) System.out.println("Javascript - verify execute("+script+") works on a static HTML file "+url);
@@ -53,9 +53,9 @@ public class Browser9 {
 				}
 				/* Script may additionally set the Status value */
 				String value = (String)browser.getData("query");
-				if (verbose) System.out.println("window.status after script: "+value);
-				if (status != null) {
-					passed = status.equals(value);
+				System.out.println("Browser9: window.status after script: "+value);
+				if (value != null) {
+					passed = value.startsWith(status);
 				} else {
 					if (verbose) System.out.println("Failure - expected "+script+", not "+value);
 				}
