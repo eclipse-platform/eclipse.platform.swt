@@ -86,6 +86,7 @@ public void test_getChildren() {
 @Override
 @Test
 public void test_isFocusControl() {
+	assertTrue(!ccombo.isFocusControl());
 }
 
 @Test
@@ -129,6 +130,7 @@ public void test_setEnabledZ() {
 @Override
 @Test
 public void test_setFocus() {
+	assertTrue(!ccombo.setFocus());
 }
 
 @Override
@@ -164,7 +166,7 @@ private void add() {
 public void test_consistency_MouseSelection () {
     add();
     consistencyPrePackShell();
-    consistencyEvent(ccombo.getSize().x-10, 5, 30, ccombo.getItemHeight()*2, 
+    consistencyEvent(ccombo.getSize().x-10, 5, 30, ccombo.getItemHeight()*2,
             		 ConsistencyUtility.SELECTION);
 }
 

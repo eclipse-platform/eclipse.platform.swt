@@ -1088,7 +1088,8 @@ boolean isDropped () {
 @Override
 public boolean isFocusControl () {
 	checkWidget();
-	if (text.isFocusControl () || arrow.isFocusControl () || list.isFocusControl () || popup.isFocusControl ()) {
+	if ((text != null && text.isFocusControl ()) || (arrow != null && arrow.isFocusControl ()) ||
+            (list != null && list.isFocusControl ()) || (popup != null && popup.isFocusControl ())) {
 		return true;
 	}
 	return super.isFocusControl ();

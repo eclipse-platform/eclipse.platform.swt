@@ -4005,7 +4005,9 @@ void releaseParent () {
 
 @Override
 void releaseWidget () {
+	boolean hadFocus = display.getFocusControl() == this;
 	super.releaseWidget ();
+	if (hadFocus) fixFocus (this);
 	if (display.currentControl == this) display.currentControl = null;
 	display.removeMouseHoverTimeout (handle);
 	long /*int*/ imHandle = imHandle ();
