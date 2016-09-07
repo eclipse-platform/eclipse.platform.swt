@@ -3577,7 +3577,18 @@ class AccessibleObject {
 	}
 
 	void addRelation (int type, Accessible target) {
-		OS.atk_object_add_relationship(handle, toATKRelation(type), target.getAccessibleObject().handle);
+		AccessibleObject targetAccessibleObject = target.getAccessibleObject();
+		if (targetAccessibleObject != null) {
+			/*
+			 * FIXME: Workaround for https://bugs.eclipse.org/312451
+			 *
+			 * This null check is conceptually wrong and will probably cause
+			 * inconsistent behavior, but since we don't know in what
+			 * circumstances the target doesn't have an accessibleObject, that's
+			 * the best way we know to avoid throwing an NPE.
+			 */
+			OS.atk_object_add_relationship(handle, toATKRelation(type), targetAccessibleObject.handle);
+		}
 	}
 
 	void release () {
