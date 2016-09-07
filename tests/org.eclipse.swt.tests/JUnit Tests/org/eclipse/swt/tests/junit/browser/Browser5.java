@@ -99,6 +99,7 @@ public class Browser5 {
 									&& expectedLocation.x - location.x < 20
 									&& expectedLocation.y - location.y < 20) {
 								// FIXME: Hack to investigate bug 499159: don't stop after first failure (off by window trimming)
+								cntPassed++;
 							} else {
 								passed = false;
 								shell.close();
