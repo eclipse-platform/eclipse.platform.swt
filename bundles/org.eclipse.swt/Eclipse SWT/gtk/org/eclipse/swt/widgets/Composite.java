@@ -1176,12 +1176,9 @@ public void layout (Control [] changed, int flags) {
 		for (int i=0; i<changed.length; i++) {
 			Control child = changed [i];
 			Composite composite = child.parent;
-			if (child instanceof Composite) {
-				Composite compositeChild = ((Composite) child);
-				if (compositeChild.layout != null) {
-					compositeChild.state |= LAYOUT_NEEDED;
-				}
-			}
+			// Update layout when the list of children has changed.
+			// See bug 497812.
+			child.markLayout(false, false);
 			while (child != this) {
 				if (composite.layout != null) {
 					composite.state |= LAYOUT_NEEDED;
