@@ -1962,8 +1962,25 @@ public void select (int index) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) {
 		int selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+		//corner case for single elements combo boxes for Bug 222752
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0 && count==1 && selection == OS.CB_ERR) {
+			OS.SendMessage (handle, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
+			sendEvent (SWT.Modify);
+			return;
+		}
 		int code = (int)/*64*/OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
 		if (code != OS.CB_ERR && code != selection) {
+			//Workaround for Bug 222752
+			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0) {
+				int firstKey = OS.VK_UP;
+				int secondKey = OS.VK_DOWN;
+				if (index == 0) {
+					firstKey = OS.VK_DOWN;
+					secondKey = OS.VK_UP;
+				}
+				OS.SendMessage (handle, OS.WM_KEYDOWN, firstKey, 0);
+				OS.SendMessage (handle, OS.WM_KEYDOWN, secondKey, 0);
+			}
 			sendEvent (SWT.Modify);
 			// widget could be disposed at this point
 		}
