@@ -70,6 +70,7 @@ public void widgetDefaultSelected(SelectionEvent e);
  *
  * @param c the consumer of the event
  * @return SelectionListener
+ * @since 3.106
  */
 public static SelectionListener widgetSelected(Consumer<SelectionEvent> c) {
 	return new SelectionAdapter() {
@@ -86,8 +87,9 @@ public static SelectionListener widgetSelected(Consumer<SelectionEvent> c) {
  *
  * @param c the consumer of the event
  * @return SelectionListener
+ * @since 3.106
 */
-	public static SelectionListener widgetDefaultSelected(Consumer<SelectionEvent> c) {
+public static SelectionListener widgetDefaultSelected(Consumer<SelectionEvent> c) {
 	return new SelectionAdapter() {
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
