@@ -1612,8 +1612,8 @@ public class Accessible {
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
 				accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
 				accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-				accessibleValueListenersSize() > 0 || getRelationCount() > 0
-				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
+				accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
+				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIServiceProvider == null) createIServiceProvider();
 				COM.MoveMemory(ppvObject, new long /*int*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
@@ -1821,8 +1821,8 @@ public class Accessible {
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
 					accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
 					accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-					accessibleValueListenersSize() > 0 || getRelationCount() > 0
-					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
+					accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
+					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIAccessible2 == null) createIAccessible2();
 				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
