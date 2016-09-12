@@ -1675,15 +1675,4 @@ public static final long /*int*/ SoupMessage_request_headers (long /*int*/ messa
 	}
 }
 
-/* This custom function must only be called on Webkit2, use if (WEBKIT2) boolean. */
-public static final native long _swt_webkit_web_view_run_javascript (long /*int*/ webkit_handle, byte[] script);
-public static final long swt_webkit_web_view_run_javascript (long /*int*/ webkit_handle, byte[] script) {
-	lock.lock();
-	try {
-		return _swt_webkit_web_view_run_javascript (webkit_handle, script);
-	} finally {
-		lock.unlock();
-	}
-}
-
 }

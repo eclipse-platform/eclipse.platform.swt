@@ -83,7 +83,6 @@ typedef enum {
 	_1soup_1uri_1free_FUNC,
 	_1soup_1uri_1new_FUNC,
 	_1soup_1uri_1to_1string_FUNC,
-	_1swt_1webkit_1web_1view_1run_1javascript_FUNC,
 	_1webkit_1authentication_1request_1authenticate_FUNC,
 	_1webkit_1authentication_1request_1cancel_FUNC,
 	_1webkit_1authentication_1request_1is_1retry_FUNC,

@@ -905,11 +905,12 @@ boolean close (boolean showPrompters) {
 public boolean execute (String script) {
 	byte[] scriptBytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
+
 	long /*int*/ result = 0;
 	if (WEBKIT2){
-		// Currently always returns 1 upon completion.
-		// TODO WEBKIT2 - modify webkitgtk_custom to return 0 if there is an error.
-		result = (int) WebKitGTK.swt_webkit_web_view_run_javascript(webView, scriptBytes);
+		WebKitGTK.webkit_web_view_run_javascript (webView, scriptBytes, 0, 0, 0);
+		// TODO - this call is asynchronous, so no return vaulue. As result this call executes but
+		// returns false. Handling of return value to be implemented...
 	} else {
 		long /*int*/ jsScriptString = WebKitGTK.JSStringCreateWithUTF8CString (scriptBytes);
 

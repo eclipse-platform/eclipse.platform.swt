@@ -12,9 +12,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-
-/* Manually written code */
-
+  
 #ifndef INC_webkitgtk_H
 #define INC_webkitgtk_H
 
@@ -22,9 +20,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <glib-object.h>
-
-// For JNI bindings in webkitgtk.c to properly link to custom functions:
-#include "webkitgtk_custom.h"
 
 #define WebKitGTK_LOAD_FUNCTION(var, name) \
 	static int initialized = 0; \
