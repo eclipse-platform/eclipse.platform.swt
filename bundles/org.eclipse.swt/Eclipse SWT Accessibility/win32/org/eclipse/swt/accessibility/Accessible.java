@@ -1830,8 +1830,8 @@ public class Accessible {
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
 				accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
 				accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-				accessibleValueListenersSize() > 0 || getRelationCount() > 0
-				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
+				accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
+				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIServiceProvider == null) createIServiceProvider();
 				COM.MoveMemory(ppvObject, new long /*int*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
@@ -1842,10 +1842,6 @@ public class Accessible {
 			return COM.E_NOINTERFACE;
 		}
 
-		/* Workaround for bug 447930 - add a temporary relation so that the IA2 object is created */
-		if (getRelationCount() == 0 && parent != null) {
-			addRelation(ACC.RELATION_NODE_CHILD_OF, parent);
-		}
 		int code = queryAccessible2Interfaces(guid, ppvObject);
 		if (code != COM.S_FALSE) {
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning" + hresult(code));
@@ -2004,10 +2000,6 @@ public class Accessible {
 				AddRef();
 				return COM.S_OK;
 			}
-			/* Workaround for bug 447930 - add a temporary relation so that the IA2 object is created */
-			if (getRelationCount() == 0 && parent != null) {
-				addRelation(ACC.RELATION_NODE_CHILD_OF, parent);
-			}
 			int code = queryAccessible2Interfaces(guid, ppvObject);
 			if (code != COM.S_FALSE) {
 				if (DEBUG) print(this + ".QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning" + hresult(code));
@@ -2016,10 +2008,6 @@ public class Accessible {
 		}
 
 		if (COM.IsEqualGUID(service, COM.IIDIAccessible2)) {
-			/* Workaround for bug 447930 - add a temporary relation so that the IA2 object is created */
-			if (getRelationCount() == 0 && parent != null) {
-				addRelation(ACC.RELATION_NODE_CHILD_OF, parent);
-			}
 			int code = queryAccessible2Interfaces(guid, ppvObject);
 			if (code != COM.S_FALSE) {
 				if (DEBUG) print(this + ".*QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning" + hresult(code));
@@ -2051,8 +2039,8 @@ public class Accessible {
 			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
 					accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
 					accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-					accessibleValueListenersSize() > 0 || getRelationCount() > 0
-					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
+					accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
+					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIAccessible2 == null) createIAccessible2();
 				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
