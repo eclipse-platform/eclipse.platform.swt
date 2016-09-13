@@ -7,9 +7,12 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com>  - Bug 441116
  *******************************************************************************/
 package org.eclipse.swt.events;
 
+
+import java.util.function.*;
 
 import org.eclipse.swt.internal.*;
 
@@ -60,6 +63,41 @@ public void widgetSelected(SelectionEvent e);
  */
 public void widgetDefaultSelected(SelectionEvent e);
 
+
+
+/**
+ * Static helper method to create a selection listener for the
+ * {@link #widgetSelected(SelectionEvent e)}) method with a lambda expression.
+ *
+ * @param c the consumer of the event
+ * @return SelectionListener
+ * @since 3.106
+ */
+public static SelectionListener widgetSelectedAdapter(Consumer<SelectionEvent> c) {
+	return new SelectionAdapter() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			c.accept(e);
+		}
+	};
 }
 
+/**
+ * Static helper method to create a selection listener for the
+ * {@link #widgetDefaultSelected(SelectionEvent e)}) method with a lambda expression.
+ *
+ * @param c the consumer of the event
+ * @return SelectionListener
+ * @since 3.106
+*/
+public static SelectionListener widgetDefaultSelectedAdapter(Consumer<SelectionEvent> c) {
+	return new SelectionAdapter() {
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+}
 
