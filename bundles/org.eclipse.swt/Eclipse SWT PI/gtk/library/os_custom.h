@@ -229,7 +229,6 @@
 #define gtk_menu_tool_button_new_LIB LIB_GTK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
-#define gtk_set_locale_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK
@@ -274,7 +273,6 @@
 #define gdk_draw_point_LIB LIB_GDK
 #define gdk_draw_polygon_LIB LIB_GDK
 #define gdk_draw_image_LIB LIB_GDK
-#define gdk_drawable_get_size_LIB LIB_GDK
 #define gdk_drawable_get_image_LIB LIB_GDK
 #define gdk_drawable_get_visible_region_LIB LIB_GDK
 #define gdk_gc_new_LIB LIB_GDK
@@ -350,7 +348,6 @@
 #define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_create_similar_surface_LIB LIB_GDK
-#define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
 #define gdk_window_get_device_position_LIB LIB_GDK
 #define gdk_window_get_pointer_LIB LIB_GDK
@@ -411,11 +408,9 @@
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
 #define gdk_x11_window_lookup_for_display_LIB LIB_GDK
 #define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
-#define gdk_x11_drawable_get_xdisplay_LIB LIB_GDK
 #define gdk_x11_drawable_get_xid_LIB LIB_GDK
 #define gdk_x11_get_default_xdisplay_LIB LIB_GDK
 #define gdk_x11_window_get_xid_LIB LIB_GDK
-#define gdk_utf8_to_compound_text_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
 #define atk_object_add_relationship_LIB LIB_ATK

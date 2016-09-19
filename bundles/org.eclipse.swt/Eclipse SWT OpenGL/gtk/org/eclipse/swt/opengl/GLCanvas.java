@@ -108,11 +108,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	long /*int*/ window = OS.gtk_widget_get_window (handle);
 
 	long /*int*/ xDisplay;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
-	} else {
-		xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-	}
+	xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
 	long /*int*/ infoPtr = GLX.glXChooseVisual (xDisplay, OS.XDefaultScreen (xDisplay), glxAttrib);
 	if (infoPtr == 0) {
 		dispose ();
@@ -282,11 +278,7 @@ public void swapBuffers () {
 
 private long /*int*/ gdk_x11_display_get_xdisplay(long /*int*/ window) {
 	long /*int*/ xdisplay;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		xdisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
-	} else {
-		xdisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-	}
+	xdisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
 	return xdisplay;
 }
 }

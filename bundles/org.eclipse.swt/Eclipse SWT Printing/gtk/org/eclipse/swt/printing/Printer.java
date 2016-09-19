@@ -71,9 +71,6 @@ static void gtk_init() {
 			OS.g_thread_init(0);
 		}
 	}
-	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
-	    OS.gtk_set_locale();
-	}
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 	}

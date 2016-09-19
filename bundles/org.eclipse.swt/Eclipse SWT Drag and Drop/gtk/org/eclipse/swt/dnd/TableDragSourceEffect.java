@@ -12,7 +12,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -120,8 +120,6 @@ public class TableDragSourceEffect extends DragSourceEffect {
 					h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
 				} else if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
 					OS.gdk_pixmap_get_size(icons[i], w, h);
-				} else {
-					OS.gdk_drawable_get_size(icons[i], w, h);
 				}
 				width = Math.max(width, w[0]);
 				height = rect.y + h[0] - yy[0];

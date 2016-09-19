@@ -490,18 +490,7 @@ void copyAreaInPixels(Image image, int x, int y) {
 		if (data.image != null) {
 			Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
 		} else if (data.drawable != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-				OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
-			} else {
-				int[] w = new int[1], h = new int[1];
-				OS.gdk_drawable_get_size(data.drawable, w, h);
-				int width = w[0], height = h[0];
-				long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-				long /*int*/ xDrawable = OS.gdk_x11_drawable_get_xid(data.drawable);
-				long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-				long /*int*/ srcSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
-				Cairo.cairo_set_source_surface(cairo, srcSurface, 0, 0);
-			}
+			OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
 		} else {
 			Cairo.cairo_destroy(cairo);
 			return;
@@ -918,11 +907,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	} else {
 		int[] width = new int[1];
 		int[] height = new int[1];
-		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			OS.gdk_pixmap_get_size(srcImage.pixmap, width, height);
-		} else {
-			OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
-		}
+		OS.gdk_pixmap_get_size(srcImage.pixmap, width, height);
 	 	imgWidth = width[0];
 	 	imgHeight = height[0];
 	}
@@ -2910,12 +2895,8 @@ void getSize(int[] width, int[] height) {
 		return;
 	}
 	if (data.drawable != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			width[0] = OS.gdk_window_get_width(data.drawable);
-			height[0] = OS.gdk_window_get_height(data.drawable);
-		} else {
-			OS.gdk_drawable_get_size(data.drawable, width, height);
-		}
+		width[0] = OS.gdk_window_get_width(data.drawable);
+		height[0] = OS.gdk_window_get_height(data.drawable);
 		return;
 	}
 	if (OS.USE_CAIRO) {

@@ -492,12 +492,7 @@ long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*
 }
 
 void gtk_range_get_slider_range (long /*int*/ widget, int [] slider_start, int [] slider_end) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
-		OS.gtk_range_get_slider_range (widget, slider_start, slider_end);
-	} else {
-		slider_start [0] = OS.GTK_RANGE_SLIDER_START (widget);
-		slider_end [0] = OS.GTK_RANGE_SLIDER_END (widget);
-	}
+	OS.gtk_range_get_slider_range (widget, slider_start, slider_end);
 }
 
 @Override

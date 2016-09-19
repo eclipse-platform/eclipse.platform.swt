@@ -952,11 +952,7 @@ void gtk_widget_reparent (long /*int*/ widget, long /*int*/ newParent) {
 }
 
 boolean gtk_widget_get_mapped (long /*int*/ widget) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
-		return OS.gtk_widget_get_mapped (widget);
-	} else {
-		return OS.GTK_WIDGET_MAPPED (widget);
-	}
+	return OS.gtk_widget_get_mapped (widget);
 }
 
 long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
@@ -1804,11 +1800,7 @@ long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int
 }
 
 boolean gtk_widget_get_realized (long /*int*/ widget) {
-	 if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
-		 return OS.gtk_widget_get_realized (widget);
-	 } else {
-		 return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_REALIZED) != 0;
-	 }
+	 return OS.gtk_widget_get_realized (widget);
 }
 
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){
@@ -1819,15 +1811,7 @@ long /*int*/ gtk_widget_get_window (long /*int*/ widget){
 }
 
 void gtk_widget_set_mapped (long /*int*/ widget, boolean mapped) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
-		OS.gtk_widget_set_mapped (widget, mapped);
-	} else {
-		if (mapped) {
-			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
-		} else {
-			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_MAPPED);
-		}
-	}
+	OS.gtk_widget_set_mapped (widget, mapped);
 }
 
 void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
@@ -1843,20 +1827,12 @@ void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 }
 
 void gdk_pixmap_get_size (long /*int*/ pixmap, int[] width, int[] height) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
-		OS.gdk_pixmap_get_size (pixmap, width, height);
-	} else {
-		OS.gdk_drawable_get_size (pixmap, width, height);
-	}
+	OS.gdk_pixmap_get_size (pixmap, width, height);
 }
 
 void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
 		width[0] = OS.gdk_window_get_width (drawable);
 		height[0] = OS.gdk_window_get_height (drawable);
-	} else {
-		OS.gdk_drawable_get_size (drawable, width, height);
-	}
 }
 
 /**

@@ -388,7 +388,6 @@ public class OS extends C {
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
-	public static final int GTK_REALIZED  = 1 << 6;
 	public static final int GTK_RECEIVES_DEFAULT = 1 << 20;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RELIEF_NORMAL = 0;
@@ -743,7 +742,7 @@ public class OS extends C {
 		USE_CAIRO = useCairo || OS.GTK3;
 		boolean initCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
-			initCairo  = GTK_VERSION >= VERSION(2, 17, 0);
+			initCairo  = GTK_VERSION >= VERSION(2, 24, 0);
 		}
 		INIT_CAIRO = initCairo;
 
@@ -836,10 +835,6 @@ public static final native long /*int*/ G_OBJECT_CLASS_CONSTRUCTOR(long /*int*/ 
  * @paramOFF constructor cast=(GObject* (*) (GType, guint, GObjectConstructParam *))
  */
 public static final native void G_OBJECT_CLASS_SET_CONSTRUCTOR(long /*int*/ object_class, long /*int*/ constructor);
-/** @param widget cast=(GtkRange *) */
-public static final native int GTK_RANGE_SLIDER_START(long /*int*/ widget);
-/** @param widget cast=(GtkRange *) */
-public static final native int GTK_RANGE_SLIDER_END(long /*int*/ widget);
 /**
  * @param acce_label cast=(GtkAccelLabel *)
  * @param string cast=(gchar *)
@@ -1256,16 +1251,6 @@ public static final long /*int*/ gdk_x11_display_get_xdisplay (long /*int*/ gdkd
 	}
 }
 /** @method flags=dynamic */
-public static final native long /*int*/ _gdk_x11_drawable_get_xdisplay(long /*int*/ drawable);
-public static final long /*int*/ gdk_x11_drawable_get_xdisplay(long /*int*/ drawable) {
-	lock.lock();
-	try {
-		return _gdk_x11_drawable_get_xdisplay(drawable);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_x11_drawable_get_xid(long /*int*/ drawable);
 public static final long /*int*/ gdk_x11_drawable_get_xid(long /*int*/ drawable) {
 	lock.lock();
@@ -1343,18 +1328,6 @@ public static final long /*int*/ gdk_x11_window_lookup_for_display(long /*int*/ 
 	lock.lock();
 	try {
 		return _gdk_x11_window_lookup_for_display(gdkdisplay, xid);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native long /*int*/ _gdk_window_lookup(long /*int*/ xid);
-public static final long /*int*/ gdk_window_lookup(long /*int*/ xid) {
-	lock.lock();
-	try {
-		return _gdk_window_lookup(xid);
 	} finally {
 		lock.unlock();
 	}
@@ -1757,30 +1730,12 @@ public static final long /*int*/ GTK_TYPE_WIDGET() {
 		lock.unlock();
 	}
 }
-public static final native int _GTK_WIDGET_FLAGS(long /*int*/ wid);
-public static final int GTK_WIDGET_FLAGS(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_FLAGS(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native boolean _gtk_widget_has_default(long /*int*/ widget);
 public static final boolean gtk_widget_has_default(long /*int*/ widget) {
 	lock.lock();
 	try {
 		return _gtk_widget_has_default(widget);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native boolean _GTK_WIDGET_MAPPED(long /*int*/ wid);
-public static final boolean GTK_WIDGET_MAPPED(long /*int*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_MAPPED(wid);
 	} finally {
 		lock.unlock();
 	}
@@ -4493,20 +4448,6 @@ public static final long /*int*/ gdk_drawable_get_image(long /*int*/ drawable, i
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param width cast=(gint *),flags=no_in critical
- * @param height cast=(gint *),flags=no_in critical
- */
-public static final native void _gdk_drawable_get_size(long /*int*/ drawable, int[] width, int[] height);
-public static final void gdk_drawable_get_size(long /*int*/ drawable, int[] width, int[] height) {
-	lock.lock();
-	try {
-		_gdk_drawable_get_size(drawable, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native long /*int*/ _gdk_drawable_get_visible_region(long /*int*/ drawable);
 public static final long /*int*/ gdk_drawable_get_visible_region(long /*int*/ drawable) {
@@ -5674,18 +5615,6 @@ public static final void gdk_set_program_class(byte[] program_class) {
 	lock.lock();
 	try {
 		_gdk_set_program_class(program_class);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native boolean _gdk_utf8_to_compound_text(byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length);
-public static final boolean gdk_utf8_to_compound_text(byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length) {
-	lock.lock();
-	try {
-		return _gdk_utf8_to_compound_text(str, encoding, format, ctext, length);
 	} finally {
 		lock.unlock();
 	}
@@ -11606,16 +11535,6 @@ public static final void gtk_separator_tool_item_set_draw(long /*int*/ item, boo
 	lock.lock();
 	try {
 		_gtk_separator_tool_item_set_draw(item, draw);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _gtk_set_locale();
-public static final long /*int*/ gtk_set_locale() {
-	lock.lock();
-	try {
-		return _gtk_set_locale();
 	} finally {
 		lock.unlock();
 	}

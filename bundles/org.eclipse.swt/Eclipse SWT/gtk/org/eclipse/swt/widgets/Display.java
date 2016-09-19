@@ -830,11 +830,7 @@ long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /
 			return 0;
 	}
 	long /*int*/ window = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
-		window = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), OS.X_EVENT_WINDOW (xEvent));
-	} else {
-	    window = OS.gdk_window_lookup (OS.X_EVENT_WINDOW (xEvent));
-	}
+	window = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), OS.X_EVENT_WINDOW (xEvent));
 	if (window == 0) return 0;
 	if (flushWindow != 0) {
 		if (flushAll) {
@@ -943,9 +939,6 @@ void createDisplay (DeviceData data) {
 		if (!OS.g_thread_supported()) {
 			OS.g_thread_init(0);
 		}
-	}
-	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
-	    OS.gtk_set_locale();
 	}
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
@@ -1547,11 +1540,7 @@ public Control getCursorControl () {
 			if ((xWindow = buffer [0]) != 0) {
 				xParent = xWindow;
 				long /*int*/ gdkWindow = 0;
-				if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
-					gdkWindow = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), xWindow);
-				} else {
-					gdkWindow = OS.gdk_window_lookup (xWindow);
-				}
+				gdkWindow = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), xWindow);
 				if (gdkWindow != 0)	{
 					OS.gdk_window_get_user_data (gdkWindow, user_data);
 					if (user_data[0] != 0) handle = user_data[0];
@@ -2282,13 +2271,7 @@ public boolean getHighContrast () {
 @Override
 public int getDepth () {
 	checkDevice ();
-	if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
-		return OS.gdk_visual_get_depth(OS.gdk_visual_get_system());
-	} else {
-		GdkVisual visual = new GdkVisual ();
-		OS.memmove (visual, OS.gdk_visual_get_system());
-		return visual.depth;
-	}
+	return OS.gdk_visual_get_depth(OS.gdk_visual_get_system());
 }
 
 /**
@@ -2475,13 +2458,11 @@ public Monitor getPrimaryMonitor () {
 	Monitor [] monitors = getMonitors ();
 	int primaryMonitorIndex = 0;
 
-	if (OS.GTK_VERSION >= OS.VERSION(2, 20, 0)) {
-		//attempt to find actual primary monitor if one is configured:
-		long /*int*/ screen = OS.gdk_screen_get_default ();
-		if (screen != 0) {
-			//if no primary monitor is configured by the user, this returns 0.
-			primaryMonitorIndex = OS.gdk_screen_get_primary_monitor (screen);
-		}
+	//attempt to find actual primary monitor if one is configured:
+	long /*int*/ screen = OS.gdk_screen_get_default ();
+	if (screen != 0) {
+		//if no primary monitor is configured by the user, this returns 0.
+		primaryMonitorIndex = OS.gdk_screen_get_primary_monitor (screen);
 	}
 	return monitors [primaryMonitorIndex];
 }

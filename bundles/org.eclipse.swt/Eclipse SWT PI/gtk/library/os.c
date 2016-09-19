@@ -164,30 +164,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1ENTRY_1IM_1CONTEXT)
 }
 #endif
 
-#ifndef NO_GTK_1RANGE_1SLIDER_1END
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1RANGE_1SLIDER_1END)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1SLIDER_1END_FUNC);
-	rc = (jint)GTK_RANGE_SLIDER_END((GtkRange *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1SLIDER_1END_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1RANGE_1SLIDER_1START
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1RANGE_1SLIDER_1START)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1SLIDER_1START_FUNC);
-	rc = (jint)GTK_RANGE_SLIDER_START((GtkRange *)arg0);
-	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1SLIDER_1START_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GTK_1TEXTVIEW_1IM_1CONTEXT
 JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1TEXTVIEW_1IM_1CONTEXT)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1298,30 +1274,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GTK_1TYPE_1WIDGET)
 	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1WIDGET_FUNC);
 	rc = (jintLong)GTK_TYPE_WIDGET;
 	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1WIDGET_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1WIDGET_1FLAGS
-JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1WIDGET_1FLAGS)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1FLAGS_FUNC);
-	rc = (jint)GTK_WIDGET_FLAGS(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1FLAGS_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1WIDGET_1MAPPED
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1MAPPED)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1MAPPED_FUNC);
-	rc = (jboolean)GTK_WIDGET_MAPPED(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1MAPPED_FUNC);
 	return rc;
 }
 #endif
@@ -5822,31 +5774,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drawable_1get_1image)
 }
 #endif
 
-#ifndef NO__1gdk_1drawable_1get_1size
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1drawable_1get_1size)
-	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
-{
-	jint *lparg1=NULL;
-	jint *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1size_FUNC);
-		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
-		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gdk_drawable_get_size(arg0, (gint *)lparg1, (gint *)lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_drawable_get_size)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, gint *, gint *))fp)(arg0, (gint *)lparg1, (gint *)lparg2);
-		}
-	}
-fail:
-		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
-		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1size_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1drawable_1get_1visible_1region
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drawable_1get_1visible_1region)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -7419,42 +7346,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1unicode_1to_1keyval)
 }
 #endif
 
-#ifndef NO__1gdk_1utf8_1to_1compound_1text
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1utf8_1to_1compound_1text)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jintLongArray arg1, jintArray arg2, jintLongArray arg3, jintArray arg4)
-{
-	jbyte *lparg0=NULL;
-	jintLong *lparg1=NULL;
-	jint *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jint *lparg4=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1utf8_1to_1compound_1text_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_utf8_to_compound_text(lparg0, lparg1, lparg2, lparg3, lparg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_utf8_to_compound_text)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jbyte *, jintLong *, jint *, jintLong *, jint *))fp)(lparg0, lparg1, lparg2, lparg3, lparg4);
-		}
-	}
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1utf8_1to_1compound_1text_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1utf8_1to_1string_1target
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1utf8_1to_1string_1target)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -7924,26 +7815,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1window_1is_1visible)
 }
 #endif
 
-#ifndef NO__1gdk_1window_1lookup
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1lookup)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1window_1lookup_FUNC);
-/*
-	rc = (jintLong)gdk_window_lookup(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_window_lookup)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1window_1lookup_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1window_1lower
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1lower)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -8267,26 +8138,6 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1utf8_1to_1compound_1text_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1x11_1drawable_1get_1xdisplay
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1drawable_1get_1xdisplay)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1drawable_1get_1xdisplay_FUNC);
-/*
-	rc = (jintLong)gdk_x11_drawable_get_xdisplay(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_x11_drawable_get_xdisplay)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1drawable_1get_1xdisplay_FUNC);
 	return rc;
 }
 #endif
@@ -14949,26 +14800,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1separator_1tool_1item_1set_1draw)
 	OS_NATIVE_ENTER(env, that, _1gtk_1separator_1tool_1item_1set_1draw_FUNC);
 	gtk_separator_tool_item_set_draw((GtkSeparatorToolItem *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1separator_1tool_1item_1set_1draw_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1set_1locale
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1set_1locale)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1set_1locale_FUNC);
-/*
-	rc = (jintLong)gtk_set_locale();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_set_locale)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1set_1locale_FUNC);
-	return rc;
 }
 #endif
 

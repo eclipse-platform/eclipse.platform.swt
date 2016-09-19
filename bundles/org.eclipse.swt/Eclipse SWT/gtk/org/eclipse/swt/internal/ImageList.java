@@ -102,11 +102,7 @@ public static long /*int*/ createPixbuf(Image image) {
 		Cairo.cairo_surface_destroy(surface);
 	} else {
 		int [] w = new int [1], h = new int [1];
-		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			OS.gdk_pixmap_get_size(image.pixmap, w, h);
-		} else {
-			OS.gdk_drawable_get_size (image.pixmap, w, h);
-		}
+		OS.gdk_pixmap_get_size(image.pixmap, w, h);
 		long /*int*/ colormap = OS.gdk_colormap_get_system ();
 		boolean hasMask = image.mask != 0 && OS.gdk_drawable_get_depth (image.mask) == 1;
 		if (hasMask) {

@@ -392,11 +392,7 @@ public Image(Device device, Image srcImage, int flag) {
 
 	/* Get source image size */
 	int[] w = new int[1], h = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		OS.gdk_pixmap_get_size(srcImage.pixmap, w, h);
-	} else {
-		OS.gdk_drawable_get_size(srcImage.pixmap, w, h);
-	}
+	OS.gdk_pixmap_get_size(srcImage.pixmap, w, h);
  	int width = w[0];
  	int height = h[0];
 
@@ -1111,11 +1107,7 @@ void createSurface() {
 	/* Generate the mask if necessary. */
 	if (transparentPixel != -1) createMask();
 	int[] w = new int[1], h = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		OS.gdk_pixmap_get_size(pixmap, w, h);
-	} else {
-		OS.gdk_drawable_get_size(pixmap, w, h);
-	}
+	OS.gdk_pixmap_get_size(pixmap, w, h);
 	int width = w[0], height = h[0];
 	this.width = width;
 	this.height = height;
@@ -1341,11 +1333,7 @@ public Rectangle getBoundsInPixels() {
 		return new Rectangle(0, 0, width, height);
 	}
 	int[] w = new int[1]; int[] h = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		OS.gdk_pixmap_get_size(pixmap, w, h);
-	} else {
-		OS.gdk_drawable_get_size(pixmap, w, h);
-	}
+	OS.gdk_pixmap_get_size(pixmap, w, h);
 	return new Rectangle(0, 0, width = w[0], height = h[0]);
 }
 
@@ -1441,11 +1429,7 @@ public ImageData getImageDataAtCurrentZoom () {
 		return data;
 	}
 	int[] w = new int[1], h = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-		OS.gdk_pixmap_get_size(pixmap, w, h);
-	} else {
-		OS.gdk_drawable_get_size(pixmap, w, h);
-	}
+	OS.gdk_pixmap_get_size(pixmap, w, h);
  	int width = w[0], height = h[0];
  	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1608,17 +1592,7 @@ void init(int width, int height) {
 
 	/* Create the pixmap */
 	if (OS.USE_CAIRO) {
-		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
-			surface = OS.gdk_window_create_similar_surface(OS.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
-		} else {
-			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-			long /*int*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.gdk_get_default_root_window());
-			long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-			long /*int*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);
-			if (rootSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			surface = Cairo.cairo_surface_create_similar(rootSurface, Cairo.CAIRO_CONTENT_COLOR, width, height);
-			Cairo.cairo_surface_destroy(rootSurface);
-		}
+		surface = OS.gdk_window_create_similar_surface(OS.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		long /*int*/ cairo = Cairo.cairo_create(surface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);

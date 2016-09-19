@@ -574,11 +574,7 @@ void bringToTop (boolean force) {
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
 			long /*int*/ xDisplay;
-			if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-				xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
-			} else {
-				xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-			}
+			xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
 			long /*int*/ xWindow;
 			if (OS.GTK3) {
 				xWindow = OS.gdk_x11_window_get_xid (window);
