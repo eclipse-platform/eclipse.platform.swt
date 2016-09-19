@@ -6,7 +6,11 @@ Thanks for your interest in this project.
 Developer resources:
 --------------------
 
-Information regarding source code management, builds, coding standards, and more.
+See the following description for how to contribute a feature or a bug fix to SWT.
+
+- <https://www.eclipse.org/swt/fixbugs.php>
+
+Information regarding source code management, builds, coding standards, and more and be found under the following link.
 
 - <https://projects.eclipse.org/projects/eclipse.platform.swt/developer>
 
