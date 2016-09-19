@@ -749,6 +749,7 @@ public class OS extends C {
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK_VERSION >>> 16) + "." + (GTK_VERSION >>> 8 & 0xFF) + "." + (GTK_VERSION & 0xFF));
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", getThemeName());
 	}
 
 protected static byte [] ascii (String name) {
@@ -17162,6 +17163,34 @@ public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widge
 	} finally {
 		lock.unlock();
 	}
+}
+
+public static final String getThemeName() {
+	byte[] themeNameBytes = getThemeNameBytes();
+	String themeName = "unknown";
+	if (themeNameBytes != null && themeNameBytes.length > 0) {
+		themeName = new String (Converter.mbcsToWcs (null, themeNameBytes));
+	}
+	return themeName;
+}
+
+public static final byte [] getThemeNameBytes() {
+	byte [] buffer = null;
+	int length;
+	long /*int*/ settings = OS.gtk_settings_get_default ();
+	long /*int*/ [] ptr = new long /*int*/ [1];
+	OS.g_object_get (settings, OS.gtk_theme_name, ptr, 0);
+	if (ptr [0] == 0) {
+		return buffer;
+	}
+	length = OS.strlen (ptr [0]);
+	if (length == 0) {
+		return buffer;
+	}
+	buffer = new byte [length];
+	OS.memmove (buffer, ptr [0], length);
+	OS.g_free (ptr [0]);
+	return buffer;
 }
 
 /**

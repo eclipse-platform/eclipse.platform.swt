@@ -1779,22 +1779,12 @@ String gtk_css_default_theme_values (int swt) {
 	 */
 
 	// Find CSS theme name
-	byte [] buffer;
 	int length;
-	long /*int*/ settings = OS.gtk_settings_get_default ();
-	long /*int*/ [] ptr = new long /*int*/ [1];
 	long /*int*/ str;
-	OS.g_object_get (settings, OS.gtk_theme_name, ptr, 0);
-	if (ptr [0] == 0) {
+	byte [] buffer = OS.getThemeNameBytes();
+	if (buffer == null || buffer.length == 0) {
 		return "";
 	}
-	length = OS.strlen (ptr [0]);
-	if (length == 0) {
-		return "";
-	}
-	buffer = new byte [length];
-	OS.memmove (buffer, ptr [0], length);
-	OS.g_free (ptr [0]);
 
 	// Fetch the actual theme in char/string format
 	long /*int*/ themeProvider = OS.gtk_css_provider_get_named(buffer, null);
