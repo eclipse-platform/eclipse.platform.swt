@@ -169,6 +169,21 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	menuItem.addSelectionListener(listener);
+	menuItem.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+
+	listenerCalled = false;
+	menuItem.removeSelectionListener(listener);
+	menuItem.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
+}
+
+@Test
 public void test_getAccelerator() {
 	menuItem.setAccelerator(SWT.MOD1 + 'X');
 	assertEquals(menuItem.getAccelerator(), SWT.MOD1 + 'X');

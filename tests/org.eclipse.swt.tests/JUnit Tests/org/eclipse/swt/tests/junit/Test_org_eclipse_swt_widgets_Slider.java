@@ -89,6 +89,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
+@Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	slider.addSelectionListener(listener);
+	slider.setSelection(0);
+	assertTrue(":a:", listenerCalled == false);
+	slider.removeSelectionListener(listener);
+}
+
 @Override
 @Test
 public void test_computeSizeIIZ() {

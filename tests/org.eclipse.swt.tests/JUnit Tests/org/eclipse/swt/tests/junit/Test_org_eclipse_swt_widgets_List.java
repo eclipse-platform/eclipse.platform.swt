@@ -215,7 +215,26 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown for listener == null", exceptionThrown);
+}
 
+@Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	list.addSelectionListener(listener);
+	list.select(0);
+	assertTrue(":a:", listenerCalled == false);
+	list.removeSelectionListener(listener);
+
+	// test single-selection list
+
+	setSingleList();
+
+	list.addSelectionListener(listener);
+	list.select(0);
+	assertTrue(":a:", listenerCalled == false);
+	list.removeSelectionListener(listener);
 }
 
 @Override

@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -19,6 +20,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.junit.Before;
@@ -82,6 +84,21 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	}
 	catch (IllegalArgumentException e) {
 	}
+}
+
+@Test
+public void test_addSelectionListenerWidgetSelectedListenerLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	tableColumn.addSelectionListener(listener);
+	tableColumn.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+
+	listenerCalled = false;
+	tableColumn.removeSelectionListener(listener);
+	tableColumn.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
 }
 
 @Test

@@ -407,6 +407,45 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertTrue("Listener called unexpectedly", listener2Called == false);
 }
 
+
+@Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() {
+	String line = "Line1";
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e-> listenerCalled = true );
+
+	text.setText(line);
+	listenerCalled = false;
+	text.addSelectionListener(listener);
+	// cause StyledText to call the listener.
+	text.invokeAction(ST.SELECT_LINE_END);
+	assertTrue("Listener not called", listenerCalled);
+
+	listenerCalled = false;
+	text.removeSelectionListener(listener);
+	// cause StyledText to call the listener.
+	text.invokeAction(ST.SELECT_LINE_END);
+	assertTrue("Listener not removed", listenerCalled == false);
+}
+
+@Test
+public void test_addSelectionListenerWidgetDefaultSelectedAdapterLorg_eclipse_swt_events_SelectionListener() {
+	String line = "Line1";
+	SelectionListener listener = SelectionListener.widgetDefaultSelectedAdapter(e-> listener2Called = true );
+
+	text.setText(line);
+	listener2Called = false;
+	text.addSelectionListener(listener);
+	// cause StyledText to call the listener.
+	text.invokeAction(ST.SELECT_LINE_END);
+	assertTrue("Listener called unexpectedly", listener2Called == false);
+
+	listener2Called = false;
+	text.removeSelectionListener(listener);
+	// cause StyledText to call the listener.
+	text.invokeAction(ST.SELECT_LINE_END);
+	assertTrue("Listener called unexpectedly", listener2Called == false);
+}
+
 @Test
 public void test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener() {
 	boolean exceptionThrown = false;

@@ -223,6 +223,21 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e-> listenerCalled = true);
+
+	combo.addSelectionListener(listener);
+	combo.select(0);
+	assertTrue(":a:", listenerCalled == false);
+
+	combo.removeSelectionListener(listener);
+	listenerCalled = false;
+	combo.select(0);
+	assertTrue(listenerCalled == false);
+}
+
+@Test
 public void test_clearSelection() {
 	int number = 5;
 	for (int i = 0; i < number; i++)

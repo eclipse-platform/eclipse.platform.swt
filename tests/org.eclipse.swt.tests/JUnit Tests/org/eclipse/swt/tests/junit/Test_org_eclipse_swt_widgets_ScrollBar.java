@@ -78,6 +78,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	scrollBar.addSelectionListener(listener);
+	scrollBar.setSelection(100);
+	assertTrue(":a:", listenerCalled == false);
+	scrollBar.removeSelectionListener(listener);
+}
+
+@Test
 public void test_getParent() {
 	assertEquals(canvas, scrollBar.getParent());
 }

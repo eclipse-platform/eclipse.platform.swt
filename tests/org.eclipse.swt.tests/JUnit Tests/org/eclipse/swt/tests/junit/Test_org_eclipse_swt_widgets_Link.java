@@ -94,6 +94,21 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	assertFalse(listenerCalled);
 }
 
+@Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	link.addSelectionListener(listener);
+	link.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+
+	listenerCalled = false;
+	link.removeSelectionListener(listener);
+	link.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
+}
+
 @Override
 @Test
 public void test_computeSizeIIZ() {

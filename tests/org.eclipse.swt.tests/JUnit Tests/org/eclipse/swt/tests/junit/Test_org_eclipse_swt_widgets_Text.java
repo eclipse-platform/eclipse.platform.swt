@@ -130,6 +130,18 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	text.addSelectionListener(listener);
+	text.setText("12345");
+	text.setSelection(1,3);
+	assertTrue(":a:", listenerCalled == false);
+	text.removeSelectionListener(listener);
+}
+
+@Test
 public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	final String line = "Line1";
 	final String newLine = "NewLine1";

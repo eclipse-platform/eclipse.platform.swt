@@ -130,6 +130,21 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+	listenerCalled = false;
+	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
+
+	datetime.addSelectionListener(listener);
+	datetime.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+
+	listenerCalled = false;
+	datetime.removeSelectionListener(listener);
+	datetime.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
+}
+
+@Test
 public void test_setDateIII() {
 	datetime.setDate(2008, AUG, 31);
 	assertEquals(31, datetime.getDay());
