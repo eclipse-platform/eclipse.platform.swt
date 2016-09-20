@@ -2576,13 +2576,13 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 
 @Override
 long /*int*/ fixedMapProc (long /*int*/ widget) {
-	gtk_widget_set_mapped (widget, true);
+	OS.gtk_widget_set_mapped (widget, true);
 	long /*int*/ widgetList = OS.gtk_container_get_children (widget);
 	if (widgetList != 0) {
 		long /*int*/ widgets = widgetList;
 		while (widgets != 0) {
 			long /*int*/ child = OS.g_list_data (widgets);
-			if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !gtk_widget_get_mapped (child)) {
+			if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !OS.gtk_widget_get_mapped (child)) {
 				OS.gtk_widget_map (child);
 			}
 			widgets = OS.g_list_next (widgets);
@@ -3949,7 +3949,7 @@ void redrawChildren () {
 }
 
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
-	if (!gtk_widget_get_realized(handle)) return;
+	if (!OS.gtk_widget_get_realized(handle)) return;
 	long /*int*/ window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
@@ -4960,7 +4960,7 @@ public void setRedraw (boolean redraw) {
 		}
 	} else {
 		if (drawCount++ == 0) {
-			if (gtk_widget_get_realized (handle)) {
+			if (OS.gtk_widget_get_realized (handle)) {
 				long /*int*/ window = paintWindow ();
 				Rectangle rect = getBoundsInPixels ();
 				GdkWindowAttr attributes = new GdkWindowAttr ();
@@ -5751,7 +5751,7 @@ public void update () {
 void update (boolean all, boolean flush) {
 //	checkWidget();
 	if (!OS.gtk_widget_get_visible (topHandle ())) return;
-	if (!gtk_widget_get_realized (handle)) return;
+	if (!OS.gtk_widget_get_realized (handle)) return;
 	long /*int*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
 	/*

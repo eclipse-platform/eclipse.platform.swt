@@ -422,7 +422,7 @@ void redrawBackgroundImage () {
 @Override
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
-	if (!gtk_widget_get_realized (handle)) return;
+	if (!OS.gtk_widget_get_realized (handle)) return;
 	if (!trim) return;
 	long /*int*/ topHandle = topHandle (), paintHandle = paintHandle ();
 	if (topHandle == paintHandle) return;

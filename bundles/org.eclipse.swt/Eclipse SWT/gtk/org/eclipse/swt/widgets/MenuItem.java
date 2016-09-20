@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -438,7 +438,7 @@ long /*int*/ getAccelGroup () {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!gtk_widget_get_mapped (handle)) {
+	if (!OS.gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	GtkAllocation allocation = new GtkAllocation ();

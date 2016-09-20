@@ -193,7 +193,7 @@ static int checkStyle (int style) {
 }
 
 void _setVisible (boolean visible) {
-	if (visible == gtk_widget_get_mapped (handle)) return;
+	if (visible == OS.gtk_widget_get_mapped (handle)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
@@ -404,7 +404,7 @@ void fixMenus (Decorations newParent) {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!gtk_widget_get_mapped (handle)) {
+	if (!OS.gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	long /*int*/ window = gtk_widget_get_window (handle);
@@ -677,7 +677,7 @@ public boolean getVisible () {
 			}
 		}
 	}
-	return gtk_widget_get_mapped (handle);
+	return OS.gtk_widget_get_mapped (handle);
 }
 
 @Override

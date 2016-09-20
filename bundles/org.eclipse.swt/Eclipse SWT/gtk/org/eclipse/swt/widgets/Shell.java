@@ -2365,7 +2365,7 @@ public void setVisible (boolean visible) {
 		updateModal ();
 	}
 	showWithParent = visible;
-	if (gtk_widget_get_mapped (shellHandle) == visible) return;
+	if (OS.gtk_widget_get_mapped (shellHandle) == visible) return;
 	if (visible) {
 		if (center && !moved) {
 			center ();

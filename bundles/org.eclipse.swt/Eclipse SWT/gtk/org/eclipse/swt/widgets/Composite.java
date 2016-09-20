@@ -427,7 +427,7 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 				if (surface == 0) {
 					long /*int*/ drawable = control.backgroundImage.pixmap;
 					int [] w = new int [1], h = new int [1];
-					gdk_pixmap_get_size (drawable, w, h);
+					OS.gdk_pixmap_get_size (drawable, w, h);
 					if (OS.isX11()) {
 						long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 						long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());

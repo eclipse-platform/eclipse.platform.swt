@@ -951,10 +951,6 @@ void gtk_widget_reparent (long /*int*/ widget, long /*int*/ newParent) {
 	OS.g_object_unref (widget);
 }
 
-boolean gtk_widget_get_mapped (long /*int*/ widget) {
-	return OS.gtk_widget_get_mapped (widget);
-}
-
 long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
@@ -1799,19 +1795,11 @@ long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int
 	return 0;
 }
 
-boolean gtk_widget_get_realized (long /*int*/ widget) {
-	 return OS.gtk_widget_get_realized (widget);
-}
-
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){
 	if (OS.GTK3) {
 		OS.gtk_widget_realize(widget);
 	}
 	return OS.gtk_widget_get_window (widget);
-}
-
-void gtk_widget_set_mapped (long /*int*/ widget, boolean mapped) {
-	OS.gtk_widget_set_mapped (widget, mapped);
 }
 
 void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
@@ -1824,10 +1812,6 @@ void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_VISIBLE);
 		}
 	}
-}
-
-void gdk_pixmap_get_size (long /*int*/ pixmap, int[] width, int[] height) {
-	OS.gdk_pixmap_get_size (pixmap, width, height);
 }
 
 void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
