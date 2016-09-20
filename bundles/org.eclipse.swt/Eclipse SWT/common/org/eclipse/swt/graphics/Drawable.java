@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,5 +63,17 @@ public long /*int*/ internal_new_GC (GCData data);
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ handle, GCData data);
+
+/**
+ * This method is to control the autoScaling feature. E.g. GC methods should
+ * not autoScale bound information for Printer devices but it should
+ * autoScale for Monitor displays.
+ *
+ * @return true if autoScale is enabled for that instance.
+ * @since 3.106
+ */
+public default boolean isAutoScalable () {
+	return true;
+}
 
 }

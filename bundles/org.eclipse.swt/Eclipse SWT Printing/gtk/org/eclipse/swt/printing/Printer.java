@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -458,6 +458,11 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 		if (data.drawable != 0) OS.g_object_unref (data.drawable);
 		data.drawable = data.cairo = 0;
 	}
+}
+
+@Override
+public boolean isAutoScalable() {
+	return false;
 }
 
 /**

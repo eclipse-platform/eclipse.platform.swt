@@ -323,6 +323,11 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
+@Override
+public boolean isAutoScalable() {
+	return false;
+}
+
 /**
  * Starts a print job and returns true if the job started successfully
  * and false otherwise.
