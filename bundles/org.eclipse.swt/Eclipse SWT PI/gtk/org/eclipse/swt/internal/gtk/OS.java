@@ -736,13 +736,12 @@ public class OS extends C {
 	static {
 		boolean useCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
-			useCairo  = GTK_VERSION >= VERSION(2, 24, 0) &&
-					Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 9, 4);
+			useCairo  = Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 9, 4);
 		}
 		USE_CAIRO = useCairo || OS.GTK3;
 		boolean initCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
-			initCairo  = GTK_VERSION >= VERSION(2, 24, 0);
+			initCairo  = true;
 		}
 		INIT_CAIRO = initCairo;
 

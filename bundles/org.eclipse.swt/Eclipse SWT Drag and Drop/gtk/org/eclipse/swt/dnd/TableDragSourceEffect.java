@@ -118,7 +118,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				if (OS.GTK3) {
 					w[0] = Cairo.cairo_xlib_surface_get_width(icons[i]);
 					h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
-				} else if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+				} else {
 					OS.gdk_pixmap_get_size(icons[i], w, h);
 				}
 				width = Math.max(width, w[0]);
