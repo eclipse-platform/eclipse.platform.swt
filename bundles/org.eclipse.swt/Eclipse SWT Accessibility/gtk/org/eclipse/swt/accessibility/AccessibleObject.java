@@ -3508,8 +3508,7 @@ class AccessibleObject {
 	}
 
 	static void windowPoint (AccessibleObject object, int [] x, int [] y) {
-		long /*int*/ widget;
-		widget = OS.gtk_accessible_get_widget(object.handle);
+		long /*int*/ widget = OS.gtk_accessible_get_widget(object.handle);
 		while (widget == 0 && object.parent != null) {
 			object = object.parent;
 			if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
