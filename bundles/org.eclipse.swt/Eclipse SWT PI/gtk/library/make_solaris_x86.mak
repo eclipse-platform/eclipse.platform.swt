@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2011 IBM Corporation and others.
+# Copyright (c) 2000, 2016 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -24,7 +24,6 @@ AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
-GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
 XULRUNNER_PREFIX = swt-xulrunner
 XPCOMINIT_PREFIX = swt-xpcominit
@@ -36,7 +35,6 @@ AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -56,9 +54,6 @@ AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0 gtk+-unix-print-$(GTK_VERSION)`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
-
-GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
-GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
 GLXLIBS = -L/usr/X11R6/lib -lGL -lGLU -lm
 
@@ -93,7 +88,6 @@ AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
-GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
@@ -115,7 +109,7 @@ ifndef NO_STRIP
 	LFLAGS := $(LFLAGS) -s
 endif
 
-all: make_swt make_atk make_gnome make_glx
+all: make_swt make_atk make_glx
 
 #
 # SWT libs
@@ -190,23 +184,6 @@ atk_custom.o: atk_custom.c atk_structs.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_custom.c
 atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_stats.c
-
-#
-# Gnome lib
-#
-make_gnome: $(GNOME_LIB)
-
-$(GNOME_LIB): $(GNOME_OBJECTS)
-	$(CC) $(LFLAGS) -o $(GNOME_LIB) $(GNOME_OBJECTS) $(GNOMELIBS)
-
-gnome.o: gnome.c 
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome.c
-
-gnome_structs.o: gnome_structs.c 
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_structs.c
-	
-gnome_stats.o: gnome_stats.c gnome_stats.h
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_stats.c
 
 #
 # Mozilla lib

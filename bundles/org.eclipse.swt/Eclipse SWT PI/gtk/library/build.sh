@@ -560,23 +560,6 @@ else
 	func_echo_error "libjawt.so not found, the SWT/AWT integration library will not be compiled."
 fi
 
-
-func_configue_MAKE_GNOME () {
-	# Prerequisite: This function should only be called under gtk2.
-	if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparcv9" -a ${MODEL} != 'ia64' ]; then
-		if [ "${SWT_OS}" != "solaris" -o "${MODEL}" != "x86_64" ]; then
-			func_echo_plus "libgnomeui-2.0 found, compiling SWT program with GNOME 2.0 support"
-			MAKE_GNOME=make_gnome
-			fi
-	else
-		func_echo_error "libgnome-2.0 and libgnomeui-2.0 not found:"
-		func_echo_error "  >>> SWT Program support for GNOME will not be compiled."
-	fi
-}
-
-
-
-
 ## Interaction(s) with makefile(s) below:
 
 # Configure OUTPUT_DIR 
@@ -627,7 +610,7 @@ func_echo_plus "Building SWT/GTK+ for Architectures: $SWT_OS $SWT_ARCH"
 func_build_gtk3 () {
 	export GTK_VERSION=3.0
 	func_echo_plus "Building GTK3 bindings:"
-	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "${@}"
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "${@}"
 	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
 	if [ "$RETURN_VALUE" -eq 0 ]; then
 		func_echo_plus "GTK3 Build succeeded"
@@ -639,9 +622,8 @@ func_build_gtk3 () {
 
 func_build_gtk2 () {
 	func_echo_plus "Building GTK2 bindings:"
-	func_configue_MAKE_GNOME
 	export GTK_VERSION=2.0
-	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "$@"
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "$@"
 	RETURN_VALUE=$?
 	if [ "$RETURN_VALUE" -eq 0 ]; then
 		func_echo_plus "GTK2 Build succeeded"

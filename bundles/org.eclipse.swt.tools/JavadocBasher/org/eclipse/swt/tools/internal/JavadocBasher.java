@@ -109,7 +109,6 @@ public class JavadocBasher {
 				"emulated/expand", // used by carbon, cocoa
 				"emulated/taskbar", // used by carbon, gtk
 				"emulated/tooltip", // used by cocoa (?!)
-				"gnome", // used by gtk
 				"glx", // used by gtk
 				"gtk",
 				"mozilla", // used by carbon, cocoa, gtk, win32

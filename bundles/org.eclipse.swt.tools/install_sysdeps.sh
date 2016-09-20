@@ -42,9 +42,6 @@ func_configure_fedora () {
 	func_echo_plus "Installing Gtk2 and Gtk3 development packages"
 	sudo $INSTALL_CMD -y install gtk3-devel gtk2-devel
 
-	func_echo_plus "Installing Gnome development packages"
-	sudo $INSTALL_CMD -y install libgnome-devel.x86_64 libgnomeui-devel.x86_64
-
 	func_echo_plus "Installing X11 Development libraries. Someday when wayland takes over these will not be needed..."
 	# Deals with error: "#include <X11/Intrinsic.h>, #include <X11/extensions/XTest.h>" build errors)
 	sudo $INSTALL_CMD -y install libXt-devel libXtst-devel
@@ -70,7 +67,6 @@ In general, You should install the following packages:
  - C Development tools (usually comes in a 'group install')
  - java-*-openjdk-devel  (depending on current version of java)
  - gtk2-devel gtk3-devel
- - libgnome-devel libgnomeui-devel
  - libXt-devel libXts-devel
  - mesa-libGLU-devel
 "
