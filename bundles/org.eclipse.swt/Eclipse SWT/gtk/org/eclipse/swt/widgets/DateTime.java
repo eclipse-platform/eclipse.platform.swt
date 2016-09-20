@@ -1798,7 +1798,17 @@ boolean onNumberKeyInput (int key) {
 	if (first && newValue == 0 && length > 1) {
 		setTextField (fieldName, newValue, false, false);
 	} else if (min <= newValue && newValue <= max) {
-		setTextField (fieldName, newValue, characterCount == 0, characterCount == 0);
+		/*
+		 * Bug 270970: Calendar stores Months from 0-11, therefore an
+		 * adjustment is needed to the value if it is changing a Month.
+		 * This fix is needed in order to allow signal digit inputs to
+		 * be correctly set on Months.
+		 */
+		if (fieldName == Calendar.MONTH && first) {
+			setTextField (fieldName, newValue-1, characterCount == 0, characterCount == 0);
+		} else {
+			setTextField (fieldName, newValue, characterCount == 0, characterCount == 0);
+		}
 	} else {
 		if (newTextLength >= length) {
 			newText = newText.substring (newTextLength - length + 1);
@@ -2037,12 +2047,13 @@ void setTextField (int fieldName, int value, boolean commitInternalDataStructure
 	if (commitInternalDataStructure) {
 		int validValue = validateValueBounds (fieldName, value);
 		setFieldOfInternalDataStructure (fieldName, validValue);
-		updateControl ();
 	} else {
 		String newValue = formattedStringValue (fieldName, value, adjustDisplayedFormatting);
 		newValue = padWithZeros (start, end, newValue);
 		replaceCurrentlySelectedTextRegion (newValue);
+		setFieldOfInternalDataStructure (fieldName, value);
 	}
+	updateControl ();
 	selectField (currentField);
 }
 
