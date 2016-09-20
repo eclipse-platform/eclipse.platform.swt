@@ -29,9 +29,7 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#if GTK_CHECK_VERSION(2,14,0)
 #include <gtk/gtkunixprint.h>
-#else
 #include <gtk/gtkpagesetupunixdialog.h>
 #include <gtk/gtkprinter.h>
 #include <gtk/gtkprintjob.h>

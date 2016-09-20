@@ -565,16 +565,6 @@ struct _GtkAccelLabelPrivate
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string
 #endif
-#if GTK_CHECK_VERSION(2,20,0)
-#define GTK_RANGE_SLIDER_START(arg0) 0
-#else
-#define GTK_RANGE_SLIDER_START(arg0) (arg0)->slider_start
-#endif
-#if GTK_CHECK_VERSION(2,20,0)
-#define GTK_RANGE_SLIDER_END(arg0) 0
-#else
-#define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
-#endif
 #ifndef GTK_WIDGET_SET_FLAGS
 #define GTK_WIDGET_SET_FLAGS(arg0, arg1)
 #endif
@@ -583,9 +573,6 @@ struct _GtkAccelLabelPrivate
 #endif
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) arg0
-#endif
-#ifndef GTK_WIDGET_MAPPED
-#define GTK_WIDGET_MAPPED(arg0) 0
 #endif
 #if !GTK_CHECK_VERSION(3,0,0)
 #define GDK_IS_X11_DISPLAY(arg0) 1
