@@ -546,18 +546,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkWindowAttr_1sizeof)
 }
 #endif
 
-#ifndef NO_GtkAdjustment_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkAdjustment_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkAdjustment_1sizeof_FUNC);
-	rc = (jint)GtkAdjustment_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkAdjustment_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkAllocation_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkAllocation_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -8412,15 +8400,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1configure)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1configure_FUNC);
-/*
 	gtk_adjustment_configure((GtkAdjustment *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_configure)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkAdjustment *, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble))fp)((GtkAdjustment *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1configure_FUNC);
 }
 #endif
@@ -8431,15 +8411,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1lower)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1lower_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_lower((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_lower)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1lower_FUNC);
 	return rc;
 }
@@ -8451,15 +8423,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1page_1increment)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1page_1increment_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_page_increment((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_page_increment)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1page_1increment_FUNC);
 	return rc;
 }
@@ -8471,15 +8435,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1page_1size)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1page_1size_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_page_size((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_page_size)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1page_1size_FUNC);
 	return rc;
 }
@@ -8491,15 +8447,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1step_1increment)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1step_1increment_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_step_increment((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_step_increment)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1step_1increment_FUNC);
 	return rc;
 }
@@ -8511,15 +8459,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1upper)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1upper_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_upper((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_upper)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1upper_FUNC);
 	return rc;
 }
@@ -8531,15 +8471,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1adjustment_1get_1value)
 {
 	jdouble rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1get_1value_FUNC);
-/*
 	rc = (jdouble)gtk_adjustment_get_value((GtkAdjustment *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_get_value)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1get_1value_FUNC);
 	return rc;
 }
@@ -8562,15 +8494,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1set_1page_1increment)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1set_1page_1increment_FUNC);
-/*
 	gtk_adjustment_set_page_increment((GtkAdjustment *)arg0, (gdouble)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_set_page_increment)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkAdjustment *, gdouble))fp)((GtkAdjustment *)arg0, (gdouble)arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1set_1page_1increment_FUNC);
 }
 #endif
@@ -8580,15 +8504,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1set_1step_1increment)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1adjustment_1set_1step_1increment_FUNC);
-/*
 	gtk_adjustment_set_step_increment((GtkAdjustment *)arg0, (gdouble)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_adjustment_set_step_increment)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkAdjustment *, gdouble))fp)((GtkAdjustment *)arg0, (gdouble)arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1adjustment_1set_1step_1increment_FUNC);
 }
 #endif
