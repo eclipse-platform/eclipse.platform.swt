@@ -155,7 +155,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1XGetWindowProperty",
 	"_1XInternAtom",
 	"_1XKeysymToKeycode",
-	"_1XListProperties",
 	"_1XQueryPointer",
 	"_1XRenderComposite",
 	"_1XRenderCreatePicture",

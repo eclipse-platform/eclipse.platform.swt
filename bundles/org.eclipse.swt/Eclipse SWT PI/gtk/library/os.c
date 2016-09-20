@@ -1542,22 +1542,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XKeysymToKeycode)
 }
 #endif
 
-#ifndef NO__1XListProperties
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1XListProperties)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2)
-{
-	jint *lparg2=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XListProperties_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)XListProperties((Display *)arg0, (Window)arg1, (int *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1XListProperties_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1XQueryPointer
 JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryPointer)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)

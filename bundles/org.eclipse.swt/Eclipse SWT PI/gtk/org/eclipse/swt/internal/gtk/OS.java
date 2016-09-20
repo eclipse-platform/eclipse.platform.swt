@@ -1102,20 +1102,6 @@ public static final int XKeysymToKeycode(long /*int*/ display, long /*int*/ keys
 		lock.unlock();
 	}
 }
-/**
- * @param display cast=(Display *)
- * @param window cast=(Window)
- * @param num_prop_return cast=(int *)
- */
-public static final native long /*int*/ _XListProperties(long /*int*/ display, long /*int*/ window, int[] num_prop_return);
-public static final long /*int*/ XListProperties(long /*int*/ display, long /*int*/ window, int[] num_prop_return) {
-	lock.lock();
-	try {
-		return _XListProperties(display, window, num_prop_return);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param handler cast=(XIOErrorHandler) */
 public static final native long /*int*/ _XSetIOErrorHandler(long /*int*/ handler);
 public static final long /*int*/ XSetIOErrorHandler(long /*int*/ handler) {

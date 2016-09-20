@@ -165,7 +165,6 @@ typedef enum {
 	_1XGetWindowProperty_FUNC,
 	_1XInternAtom_FUNC,
 	_1XKeysymToKeycode_FUNC,
-	_1XListProperties_FUNC,
 	_1XQueryPointer_FUNC,
 	_1XRenderComposite_FUNC,
 	_1XRenderCreatePicture_FUNC,

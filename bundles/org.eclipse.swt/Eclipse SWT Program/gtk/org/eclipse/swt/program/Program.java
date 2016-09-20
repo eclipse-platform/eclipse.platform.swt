@@ -21,7 +21,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cde.*;
-import org.eclipse.swt.internal.gnome.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -39,11 +38,11 @@ public final class Program {
 	String iconPath;
 	Display display;
 
-	/* Gnome & GIO specific
+	/* GIO specific
 	 * true if command expects a URI
 	 * false if expects a path
 	 */
-	boolean gnomeExpectUri;
+	boolean gioExpectUri;
 
 	static long modTime;
 	static Map<String, List<String>> mimeTable;
@@ -53,11 +52,9 @@ public final class Program {
 	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	static final String DESKTOP_DATA = "Program_DESKTOP"; //$NON-NLS-1$
-	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 	static final int DESKTOP_UNKNOWN = 0;
-	static final int DESKTOP_GNOME = 1;
 	static final int DESKTOP_GIO = 2;
 	static final int DESKTOP_CDE = 3;
 	static final int PREFERRED_ICON_SIZE = 16;
@@ -75,91 +72,26 @@ static int getDesktop(final Display display) {
 	if (desktopValue != null) return desktopValue.intValue();
 	int desktop = DESKTOP_UNKNOWN;
 
-	if (!OS.isX11 ()) {
-		desktop = DESKTOP_GIO;
-		display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
-		return desktop;
-	}
-
-	/* Get the list of properties on the root window. */
-	long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-	long /*int*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
-	int[] numProp = new int[1];
-	long /*int*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
-	long /*int*/ [] property = new long /*int*/ [numProp[0]];
-	if (propList != 0) {
-		OS.memmove(property, propList, (property.length * OS.PTR_SIZEOF));
-		OS.XFree(propList);
-	}
-
-	/*
-	 * Feature in Linux Desktop. There is currently no official way to
-	 * determine whether the Gnome window manager or gnome-vfs is
-	 * available. Earlier versions including Red Hat 9 and Suse 9 provide
-	 * a documented Gnome specific property on the root window
-	 * WIN_SUPPORTING_WM_CHECK. This property is no longer supported in newer
-	 * versions such as Fedora Core 2.
-	 * The workaround is to simply check that the window manager is a
-	 * compliant one (property _NET_SUPPORTING_WM_CHECK) and to attempt to load
-	 * our native library that depends on gnome-vfs.
-	 *
-	 * Note: GIO is used when available instead of gnome-vfs.
-	 */
-	if (desktop == DESKTOP_UNKNOWN) {
-		byte[] gnomeName = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
-		long /*int*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
-		if (gnome != OS.None) {
-			/* Check for the existence of libgio libraries first */
-			byte[] buffer;
-			int flags = OS.RTLD_LAZY;
-			if (OS.IsAIX) {
-				buffer = Converter.wcsToMbcs(null, "libgio-2.0.a(libgio-2.0.so.0)", true);
-				flags |= OS.RTLD_MEMBER;
-			} else  if (OS.IsHPUX) {
-				buffer = Converter.wcsToMbcs(null, "libgio-2.0.so", true);
-			} else {
-				buffer =  Converter.wcsToMbcs(null, "libgio-2.0.so.0", true);
-			}
-			long /*int*/ libgio = OS.dlopen(buffer, flags);
-			if (libgio != 0) {
-				buffer = Converter.wcsToMbcs(null, "g_app_info_launch_default_for_uri", true);
-				long /*int*/ g_app_info_launch_default_for_uri = OS.dlsym(libgio, buffer);
-				if (g_app_info_launch_default_for_uri != 0) {
-					desktop = DESKTOP_GIO;
-				}
-				OS.dlclose(libgio);
-			}
-
-			if (desktop == DESKTOP_UNKNOWN && gnome_init()) {
-				desktop = DESKTOP_GNOME;
-				long /*int*/ icon_theme = GNOME.gnome_icon_theme_new();
-				display.setData(ICON_THEME_DATA, new LONG(icon_theme));
-				display.addListener(SWT.Dispose, event -> {
-					LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
-					if (gnomeIconTheme == null) return;
-					display.setData(ICON_THEME_DATA, null);
-					/*
-					 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
-					 * data it returns. Use g_object_unref to free the pointer it returns.
-					 */
-					if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
-				});
-			}
-		}
-	}
-
 	/*
 	* On CDE, the atom below may exist without DTWM running. If the atom
 	* below is defined, the CDE database exists and the available
 	* applications can be queried.
 	*/
 	if (desktop == DESKTOP_UNKNOWN) {
+		/* Get the list of properties on the root window. */
+		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+		int[] numProp = new int[1];
+		long /*int*/ [] property = new long /*int*/ [numProp[0]];
 		byte[] cdeName = Converter.wcsToMbcs(null, "_DT_SM_PREFERENCES", true);
 		long /*int*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
 		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
 			if (property[index] == OS.None) continue; /* do not match atoms that do not exist */
 			if (property[index] == cde && cde_init(display)) desktop = DESKTOP_CDE;
 		}
+	}
+
+	if (desktop == DESKTOP_UNKNOWN) {
+		desktop = DESKTOP_GIO;
 	}
 
 	display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
@@ -368,106 +300,6 @@ static String[] parseCommand(String cmd) {
 }
 
 /**
- * GNOME - Get Image Data
- *
- */
-ImageData gnome_getImageData() {
-	if (iconPath == null) return null;
-	try {
-		return new ImageData(iconPath);
-	} catch (Exception e) {}
-	return null;
-}
-
-
-static String gnome_getMimeType(String extension) {
-	String mimeType = null;
-	String fileName = "swt" + extension;
-	byte[] extensionBuffer = Converter.wcsToMbcs(null, fileName, true);
-	long /*int*/ typeName = GNOME.gnome_vfs_mime_type_from_name(extensionBuffer);
-	if (typeName != 0) {
-		int length = OS.strlen(typeName);
-		if (length > 0) {
-			byte [] buffer = new byte[length];
-			OS.memmove(buffer, typeName, length);
-			mimeType = new String(Converter.mbcsToWcs(null, buffer));
-		}
-	}
-	return mimeType;
-}
-
-static Program gnome_getProgram(Display display, String mimeType) {
-	Program program = null;
-	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
-	long /*int*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
-	if (ptr != 0) {
-		program = new Program();
-		program.display = display;
-		program.name = mimeType;
-		GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
-		GNOME.memmove(application, ptr, GnomeVFSMimeApplication.sizeof);
-		if (application.command != 0) {
-			int length = OS.strlen(application.command);
-			if (length > 0) {
-				byte[] buffer = new byte[length];
-				OS.memmove(buffer, application.command, length);
-				program.command = new String(Converter.mbcsToWcs(null, buffer));
-			}
-		}
-		program.gnomeExpectUri = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
-
-		int length = OS.strlen(application.id);
-		byte[] buffer = new byte[length + 1];
-		OS.memmove(buffer, application.id, length);
-		LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
-		long /*int*/ icon_name = GNOME.gnome_icon_lookup(gnomeIconTheme.value, 0, null, buffer, 0, mimeTypeBuffer,
-				GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
-		long /*int*/ path = 0;
-		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(gnomeIconTheme.value, icon_name, PREFERRED_ICON_SIZE, null, null);
-		if (path != 0) {
-			length = OS.strlen(path);
-			if (length > 0) {
-				buffer = new byte[length];
-				OS.memmove(buffer, path, length);
-				program.iconPath = new String(Converter.mbcsToWcs(null, buffer));
-			}
-			OS.g_free(path);
-		}
-		if (icon_name != 0) OS.g_free(icon_name);
-		GNOME.gnome_vfs_mime_application_free(ptr);
-	}
-
-	return program != null && program.command != null ? program : null;
-}
-
-static boolean gnome_init() {
-	try {
-		return GNOME.gnome_vfs_init();
-	} catch (Throwable e) {
-		return false;
-	}
-}
-
-static boolean gnome_isExecutable(String fileName) {
-	/* check if the file is executable */
-	byte [] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	if (!GNOME.gnome_vfs_is_executable_command_string(fileNameBuffer)) return false;
-
-	/* check if the mime type is executable */
-	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
-	long /*int*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
-	OS.g_free(uri);
-
-	byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
-	boolean result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, exeType) != GNOME.GNOME_VFS_MIME_UNRELATED;
-	if (!result) {
-		byte [] shellType = Converter.wcsToMbcs (null, "application/x-shellscript", true); //$NON-NLS-1$
-		result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, shellType) == GNOME.GNOME_VFS_MIME_IDENTICAL;
-	}
-	return result;
-}
-
-/**
  * Finds the program that is associated with an extension.
  * The extension may or may not begin with a '.'.  Note that
  * a <code>Display</code> must already exist to guarantee that
@@ -496,14 +328,12 @@ static Program findProgram(Display display, String extension) {
 	String mimeType = null;
 	switch (desktop) {
 		case DESKTOP_GIO: mimeType = gio_getMimeType(extension); break;
-		case DESKTOP_GNOME: mimeType = gnome_getMimeType(extension); break;
 		case DESKTOP_CDE: mimeType = cde_getMimeType(extension); break;
 	}
 	if (mimeType == null) return null;
 	Program program = null;
 	switch (desktop) {
 		case DESKTOP_GIO: program = gio_getProgram(display, mimeType); break;
-		case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
 		case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 	}
 	return program;
@@ -528,7 +358,6 @@ static String[] getExtensions(Display display) {
 	int desktop = getDesktop(display);
 	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
-		case DESKTOP_GNOME:
 		case DESKTOP_GIO: return gio_getExtensions();
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
@@ -571,7 +400,6 @@ static Program[] getPrograms(Display display) {
 	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getPrograms(display);
-		case DESKTOP_GNOME: break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
@@ -728,7 +556,7 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 			program.command = new String (Converter.mbcsToWcs (null, buffer));
 		}
 	}
-	program.gnomeExpectUri = OS.g_app_info_supports_uris(application);
+	program.gioExpectUri = OS.g_app_info_supports_uris(application);
 	long /*int*/ icon = OS.g_app_info_get_icon(application);
 	if (icon != 0) {
 		long /*int*/ icon_name = OS.g_icon_to_string(icon);
@@ -821,7 +649,7 @@ boolean gio_execute(String fileName) {
 	boolean result = false;
 	byte[] commandBuffer = Converter.wcsToMbcs (null, command, true);
 	byte[] nameBuffer = Converter.wcsToMbcs (null, name, true);
-	long /*int*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gnomeExpectUri
+	long /*int*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gioExpectUri
 				? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
 	if (application != 0) {
 		byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
@@ -857,7 +685,6 @@ static String[] gio_getExtensions() {
 static boolean isExecutable(Display display, String fileName) {
 	switch(getDesktop(display)) {
 		case DESKTOP_GIO: return gio_isExecutable(fileName);
-		case DESKTOP_GNOME: return gnome_isExecutable(fileName);
 		case DESKTOP_CDE: return false; //cde_isExecutable()
 	}
 	return false;
@@ -918,7 +745,6 @@ static boolean launch (Display display, String fileName, String workingDir) {
 		}
 	}
 	switch (getDesktop (display)) {
-		case DESKTOP_GNOME:
 		case DESKTOP_GIO:
 			if (gio_launch (fileName)) return true;
 		default:
@@ -982,7 +808,6 @@ public boolean execute(String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int desktop = getDesktop(display);
 	switch (desktop) {
-		case DESKTOP_GNOME:
 		case DESKTOP_GIO: return gio_execute(fileName);
 		case DESKTOP_CDE: return cde_execute(fileName);
 	}
@@ -999,7 +824,6 @@ public boolean execute(String fileName) {
 public ImageData getImageData() {
 	switch (getDesktop(display)) {
 		case DESKTOP_GIO: return gio_getImageData();
-		case DESKTOP_GNOME: return gnome_getImageData();
 		case DESKTOP_CDE: return cde_getImageData();
 	}
 	return null;
@@ -1042,6 +866,4 @@ public int hashCode() {
 public String toString() {
 	return "Program {" + name + "}";
 }
-
-
 }
