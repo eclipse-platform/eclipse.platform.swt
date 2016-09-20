@@ -31,16 +31,8 @@ boolean done () {
 	return runnable == null || throwable != null;
 }
 
-void run (Display display) {
-	if (runnable != null) {
-		try {
-			runnable.run ();
-		} catch (RuntimeException exception) {
-			display.getRuntimeExceptionHandler ().accept (exception);
-		} catch (Error error) {
-			display.getErrorHandler ().accept (error);
-		}
-	}
+void run () {
+	if (runnable != null) runnable.run ();
 	runnable = null;
 }
 

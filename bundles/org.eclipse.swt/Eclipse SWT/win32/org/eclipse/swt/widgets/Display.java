@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.*;
-import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -204,8 +202,6 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	Consumer<RuntimeException> runtimeExceptionHandler = DefaultExceptionHandler.RUNTIME_EXCEPTION_HANDLER;
-	Consumer<Error> errorHandler = DefaultExceptionHandler.RUNTIME_ERROR_HANDLER;
 	boolean runMessages = true, runMessagesInIdle = false, runMessagesInMessageProc = true;
 	static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	static final String RUN_MESSAGES_IN_MESSAGE_PROC_KEY = "org.eclipse.swt.internal.win32.runMessagesInMessageProc"; //$NON-NLS-1$
@@ -3877,16 +3873,7 @@ protected void release () {
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
-			Runnable next = disposeList [i];
-			if (next != null) {
-				try {
-					next.run ();
-				} catch (RuntimeException exception) {
-					runtimeExceptionHandler.accept (exception);
-				} catch (Error error) {
-					errorHandler.accept (error);
-				}
-			}
+			if (disposeList [i] != null) disposeList [i].run ();
 		}
 	}
 	disposeList = null;
@@ -4339,15 +4326,7 @@ boolean runTimer (long /*int*/ id) {
 				timerIds [index] = 0;
 				Runnable runnable = timerList [index];
 				timerList [index] = null;
-				if (runnable != null) {
-					try {
-						runnable.run ();
-					} catch (RuntimeException exception) {
-						runtimeExceptionHandler.accept (exception);
-					} catch (Error exception) {
-						errorHandler.accept (exception);
-					}
-				}
+				if (runnable != null) runnable.run ();
 				return true;
 			}
 			index++;
@@ -4755,64 +4734,6 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	if (oldSynchronizer != null) {
 		oldSynchronizer.moveAllEventsTo(synchronizer);
 	}
-}
-
-/**
- * Sets a callback that will be invoked whenever an exception is thrown by a listener or external
- * callback function. The application may use this to set a global exception handling policy:
- * the most common policies are either to log and discard the exception or to re-throw the
- * exception.
- * <p>
- * The default SWT error handling policy is to rethrow exceptions.
- *
- * @param runtimeExceptionHandler new exception handler to be registered.
- * @since 3.107
- */
-public final void setRuntimeExceptionHandler (Consumer<RuntimeException> runtimeExceptionHandler) {
-	checkDevice();
-	this.runtimeExceptionHandler = Objects.requireNonNull (runtimeExceptionHandler);
-}
-
-/**
- * Returns the current exception handler. It will receive all exceptions thrown by listeners
- * and external callbacks in this display. If code wishes to temporarily replace the exception
- * handler (for example, during a unit test), it is common practice to invoke this method prior
- * to replacing the exception handler so that the old handler may be restored afterward.
- *
- * @return the current exception handler. Never null.
- * @since 3.107
- */
-public final Consumer<RuntimeException> getRuntimeExceptionHandler () {
-	return runtimeExceptionHandler;
-}
-
-/**
- * Sets a callback that will be invoked whenever an error is thrown by a listener or external
- * callback function. The application may use this to set a global exception handling policy:
- * the most common policies are either to log and discard the exception or to re-throw the
- * exception.
- * <p>
- * The default SWT error handling policy is to rethrow exceptions.
- *
- * @param errorHandler new error handler to be registered.
- * @since 3.107
- */
-public final void setErrorHandler (Consumer<Error> errorHandler) {
-	checkDevice();
-	this.errorHandler = Objects.requireNonNull (errorHandler);
-}
-
-/**
- * Returns the current exception handler. It will receive all errors thrown by listeners
- * and external callbacks in this display. If code wishes to temporarily replace the error
- * handler (for example, during a unit test), it is common practice to invoke this method prior
- * to replacing the error handler so that the old handler may be restored afterward.
- *
- * @return the current error handler. Never null.
- * @since 3.107
- */
-public final Consumer<Error> getErrorHandler () {
-	return errorHandler;
 }
 
 int shiftedKey (int key) {
