@@ -950,6 +950,8 @@ void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
+	//set GTK+ Theme name as property for introspection purposes
+	System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
 	if (OS.isX11()) xDisplay = OS.gdk_x11_get_default_xdisplay();
 	int major = OS.gtk_major_version ();
 	long /*int*/ ptr;

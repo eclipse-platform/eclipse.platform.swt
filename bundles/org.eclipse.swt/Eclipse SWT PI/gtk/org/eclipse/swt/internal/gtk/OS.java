@@ -749,7 +749,6 @@ public class OS extends C {
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK_VERSION >>> 16) + "." + (GTK_VERSION >>> 8 & 0xFF) + "." + (GTK_VERSION & 0xFF));
-		System.setProperty("org.eclipse.swt.internal.gtk.theme", getThemeName());
 	}
 
 protected static byte [] ascii (String name) {
