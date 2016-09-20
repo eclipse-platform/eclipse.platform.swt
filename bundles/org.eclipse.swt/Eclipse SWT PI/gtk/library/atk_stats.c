@@ -206,11 +206,6 @@ char * ATK_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2J",
 #endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J",
-#endif
 };
 #define NATIVE_FUNCTION_COUNT sizeof(ATK_nativeFunctionNames) / sizeof(char*)
 int ATK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

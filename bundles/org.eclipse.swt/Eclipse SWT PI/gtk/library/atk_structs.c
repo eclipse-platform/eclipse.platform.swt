@@ -797,34 +797,3 @@ void setAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStru
 }
 #endif
 
-#ifndef NO_GtkAccessible
-typedef struct GtkAccessible_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID widget;
-} GtkAccessible_FID_CACHE;
-
-GtkAccessible_FID_CACHE GtkAccessibleFc;
-
-void cacheGtkAccessibleFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkAccessibleFc.cached) return;
-	GtkAccessibleFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkAccessibleFc.widget = (*env)->GetFieldID(env, GtkAccessibleFc.clazz, "widget", I_J);
-	GtkAccessibleFc.cached = 1;
-}
-
-GtkAccessible *getGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct)
-{
-	if (!GtkAccessibleFc.cached) cacheGtkAccessibleFields(env, lpObject);
-	lpStruct->widget = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkAccessibleFc.widget);
-	return lpStruct;
-}
-
-void setGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct)
-{
-	if (!GtkAccessibleFc.cached) cacheGtkAccessibleFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkAccessibleFc.widget, (jintLong)lpStruct->widget);
-}
-#endif
-

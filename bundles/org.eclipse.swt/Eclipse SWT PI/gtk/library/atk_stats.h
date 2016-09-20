@@ -216,9 +216,4 @@ typedef enum {
 #else
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2J_FUNC,
 #endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J_FUNC,
-#endif
 } ATK_FUNCS;

@@ -174,15 +174,3 @@ void setAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStru
 #define AtkValueIface_sizeof() 0
 #endif
 
-#ifndef NO_GtkAccessible
-void cacheGtkAccessibleFields(JNIEnv *env, jobject lpObject);
-GtkAccessible *getGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct);
-void setGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct);
-#define GtkAccessible_sizeof() sizeof(GtkAccessible)
-#else
-#define cacheGtkAccessibleFields(a,b)
-#define getGtkAccessibleFields(a,b,c) NULL
-#define setGtkAccessibleFields(a,b,c)
-#define GtkAccessible_sizeof() 0
-#endif
-

@@ -1097,24 +1097,3 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibili
 }
 #endif
 
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I_FUNC);
-#else
-	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J_FUNC);
-#endif
-	if (arg0) setGtkAccessibleFields(env, arg0, (GtkAccessible *)arg1);
-#ifndef JNI64
-	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I_FUNC);
-#else
-	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J_FUNC);
-#endif
-}
-#endif
-

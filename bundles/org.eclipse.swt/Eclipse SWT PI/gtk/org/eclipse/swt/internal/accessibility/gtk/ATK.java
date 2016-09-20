@@ -449,7 +449,6 @@ public static final native void memmove (AtkSelectionIface dest, long /*int*/ sr
 public static final native void memmove (AtkTableIface dest, long /*int*/ src);
 public static final native void memmove (AtkTextIface dest, long /*int*/ src);
 public static final native void memmove (AtkValueIface dest, long /*int*/ src);
-public static final native void memmove (GtkAccessible  dest, long /*int*/ src);
 public static final native void memmove (long /*int*/ dest, AtkActionIface src);
 public static final native void memmove (long /*int*/ dest, AtkComponentIface src);
 public static final native void memmove (long /*int*/ dest, AtkEditableTextIface src);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -143,7 +143,6 @@
 #define NO_GdkImage
 #define NO_GdkVisual
 #define NO_GdkGCValues
-#define NO_GtkAccessible
 #define NO_GTK_1ENTRY_1IM_1CONTEXT
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
 #define NO_GtkAdjustment
