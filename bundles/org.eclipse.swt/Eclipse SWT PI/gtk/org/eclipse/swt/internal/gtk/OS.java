@@ -15801,19 +15801,6 @@ public static final void pango_attr_list_insert(long /*int*/ list, long /*int*/ 
 		lock.unlock();
 	}
 }
-/**
- * @param list cast=(PangoAttrList *)
- * @param attr cast=(PangoAttribute *)
- */
-public static final native void _pango_attr_list_change(long /*int*/ list, long /*int*/ attr);
-public static final void pango_attr_list_change(long /*int*/ list, long /*int*/ attr) {
-	lock.lock();
-	try {
-		_pango_attr_list_change(list, attr);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param list cast=(PangoAttrList *) */
 public static final native long /*int*/ _pango_attr_list_get_iterator(long /*int*/ list);
 public static final long /*int*/ pango_attr_list_get_iterator(long /*int*/ list) {
@@ -15858,17 +15845,6 @@ public static final long /*int*/ pango_attr_iterator_get(long /*int*/ iterator, 
 	}
 }
 /** @param iterator cast=(PangoAttrIterator *) */
-public static final native long /*int*/ _pango_attr_iterator_get_attrs(long /*int*/ iterator);
-public static final long /*int*/ pango_attr_iterator_get_attrs(long /*int*/ iterator) {
-	lock.lock();
-	try {
-		return _pango_attr_iterator_get_attrs(iterator);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @param iterator cast=(PangoAttrIterator *) */
 public static final native void _pango_attr_iterator_destroy(long /*int*/ iterator);
 public static final void pango_attr_iterator_destroy(long /*int*/ iterator) {
 	lock.lock();
@@ -15897,7 +15873,6 @@ public static final void pango_attr_list_unref(long /*int*/ list) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _pango_attr_strikethrough_color_new(short red, short green, short blue);
 public static final long /*int*/ pango_attr_strikethrough_color_new(short red, short green, short blue) {
 	lock.lock();
@@ -15916,7 +15891,6 @@ public static final long /*int*/ pango_attr_strikethrough_new(boolean strikethro
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _pango_attr_underline_color_new(short red, short green, short blue);
 public static final long /*int*/ pango_attr_underline_color_new(short red, short green, short blue) {
 	lock.lock();
@@ -15944,37 +15918,6 @@ public static final long /*int*/ pango_attr_weight_new(int weight) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native long /*int*/ _pango_cairo_font_map_get_default();
-public static final long /*int*/ pango_cairo_font_map_get_default() {
-	lock.lock();
-	try {
-		return _pango_cairo_font_map_get_default();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _pango_cairo_font_map_new();
-public static final long /*int*/ pango_cairo_font_map_new() {
-	lock.lock();
-	try {
-		return _pango_cairo_font_map_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _pango_cairo_font_map_create_context(long /*int*/ fontmap);
-public static final long /*int*/ pango_cairo_font_map_create_context(long /*int*/ fontmap) {
-	lock.lock();
-	try {
-		return _pango_cairo_font_map_create_context(fontmap);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native long /*int*/ _pango_cairo_create_layout(long /*int*/ cairo);
 public static final long /*int*/ pango_cairo_create_layout(long /*int*/ cairo) {
 	lock.lock();
@@ -15985,7 +15928,6 @@ public static final long /*int*/ pango_cairo_create_layout(long /*int*/ cairo) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param context cast=(PangoContext *)
  */
 public static final native long /*int*/ _pango_cairo_context_get_font_options(long /*int*/ context);
@@ -15998,7 +15940,6 @@ public static final long /*int*/ pango_cairo_context_get_font_options(long /*int
 	}
 }
 /**
- * @method flags=dynamic
  * @param context cast=(PangoContext *)
  */
 public static final native void _pango_cairo_context_set_font_options(long /*int*/ context, long /*int*/ options);
@@ -16010,17 +15951,6 @@ public static final void pango_cairo_context_set_font_options(long /*int*/ conte
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native void _pango_cairo_font_map_set_resolution(long /*int*/ fontmap, double dpi);
-public static final void pango_cairo_font_map_set_resolution(long /*int*/ fontmap, double dpi) {
-	lock.lock();
-	try {
-		_pango_cairo_font_map_set_resolution(fontmap, dpi);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native void _pango_cairo_layout_path(long /*int*/ cairo, long /*int*/ layout);
 public static final void pango_cairo_layout_path(long /*int*/ cairo, long /*int*/ layout) {
 	lock.lock();
@@ -16030,7 +15960,6 @@ public static final void pango_cairo_layout_path(long /*int*/ cairo, long /*int*
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native void _pango_cairo_show_layout(long /*int*/ cairo, long /*int*/ layout);
 public static final void pango_cairo_show_layout(long /*int*/ cairo, long /*int*/ layout) {
 	lock.lock();
@@ -16375,62 +16304,12 @@ public static final int pango_font_metrics_get_descent(long /*int*/ metrics) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native int _pango_font_metrics_get_underline_thickness(long /*int*/ metrics);
-public static final int pango_font_metrics_get_underline_thickness(long /*int*/ metrics) {
-	lock.lock();
-	try {
-		return _pango_font_metrics_get_underline_thickness(metrics);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _pango_font_metrics_get_underline_position(long /*int*/ metrics);
-public static final int pango_font_metrics_get_underline_position(long /*int*/ metrics) {
-	lock.lock();
-	try {
-		return _pango_font_metrics_get_underline_position(metrics);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _pango_font_metrics_get_strikethrough_thickness(long /*int*/ metrics);
-public static final int pango_font_metrics_get_strikethrough_thickness(long /*int*/ metrics) {
-	lock.lock();
-	try {
-		return _pango_font_metrics_get_strikethrough_thickness(metrics);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _pango_font_metrics_get_strikethrough_position(long /*int*/ metrics);
-public static final int pango_font_metrics_get_strikethrough_position(long /*int*/ metrics) {
-	lock.lock();
-	try {
-		return _pango_font_metrics_get_strikethrough_position(metrics);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param metrics cast=(PangoFontMetrics *) */
 public static final native void _pango_font_metrics_unref(long /*int*/ metrics);
 public static final void pango_font_metrics_unref(long /*int*/ metrics) {
 	lock.lock();
 	try {
 		_pango_font_metrics_unref(metrics);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param language cast=(const char *),flags=no_out */
-public static final native long /*int*/ _pango_language_from_string(byte[] language);
-public static final long /*int*/ pango_language_from_string(byte[] language) {
-	lock.lock();
-	try {
-		return _pango_language_from_string(language);
 	} finally {
 		lock.unlock();
 	}
@@ -16461,16 +16340,6 @@ public static final long /*int*/ pango_layout_get_context(long /*int*/ layout) {
 	lock.lock();
 	try {
 		return _pango_layout_get_context(layout);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param layout cast=(PangoLayout *) */
-public static final native long /*int*/ _pango_layout_get_attributes(long /*int*/ layout);
-public static final long /*int*/ pango_layout_get_attributes(long /*int*/ layout) {
-	lock.lock();
-	try {
-		return _pango_layout_get_attributes(layout);
 	} finally {
 		lock.unlock();
 	}
@@ -16573,16 +16442,6 @@ public static final int pango_layout_get_spacing(long /*int*/ layout) {
 	lock.lock();
 	try {
 		return _pango_layout_get_spacing(layout);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param layout cast=(PangoLayout*) */
-public static final native long /*int*/ _pango_layout_get_tabs(long /*int*/ layout);
-public static final long /*int*/ pango_layout_get_tabs(long /*int*/ layout) {
-	lock.lock();
-	try {
-		return _pango_layout_get_tabs(layout);
 	} finally {
 		lock.unlock();
 	}
@@ -16698,20 +16557,6 @@ public static final void pango_layout_line_get_extents(long /*int*/ line, PangoR
 		lock.unlock();
 	}
 }
-/**
- * @param line cast=(PangoLayoutLine*)
- * @param index_ cast=(int *)
- * @param trailing cast=(int *)
- */
-public static final native boolean _pango_layout_line_x_to_index(long /*int*/ line, int x_pos, int[] index_, int[] trailing);
-public static final boolean pango_layout_line_x_to_index(long /*int*/ line, int x_pos, int[] index_, int[] trailing) {
-	lock.lock();
-	try {
-		return _pango_layout_line_x_to_index(line, x_pos, index_, trailing);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param context cast=(PangoContext *) */
 public static final native long /*int*/ _pango_layout_new(long /*int*/ context);
 public static final long /*int*/ pango_layout_new(long /*int*/ context) {
@@ -16745,7 +16590,6 @@ public static final void pango_layout_set_attributes(long /*int*/ layout, long /
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native void _pango_layout_set_auto_dir(long /*int*/ layout, boolean auto_dir);
 public static final void pango_layout_set_auto_dir(long /*int*/ layout, boolean auto_dir) {
 	lock.lock();
@@ -16868,30 +16712,6 @@ public static final boolean pango_layout_xy_to_index(long /*int*/ layout, int x,
 	lock.lock();
 	try {
 		return _pango_layout_xy_to_index(layout, x, y, index, trailing);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param tab_array cast=(PangoTabArray *) */
-public static final native int _pango_tab_array_get_size(long /*int*/ tab_array);
-public static final int pango_tab_array_get_size(long /*int*/ tab_array) {
-	lock.lock();
-	try {
-		return _pango_tab_array_get_size(tab_array);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param tab_array cast=(PangoTabArray *)
- * @param alignments cast=(PangoTabAlign **)
- * @param locations cast=(int **)
- */
-public static final native void _pango_tab_array_get_tabs(long /*int*/ tab_array, long /*int*/[] alignments, long /*int*/[] locations);
-public static final void pango_tab_array_get_tabs(long /*int*/ tab_array, long /*int*/[] alignments, long /*int*/[] locations) {
-	lock.lock();
-	try {
-		_pango_tab_array_get_tabs(tab_array, alignments, locations);
 	} finally {
 		lock.unlock();
 	}

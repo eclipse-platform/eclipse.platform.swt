@@ -19703,18 +19703,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attr_1iterator_1get)
 }
 #endif
 
-#ifndef NO__1pango_1attr_1iterator_1get_1attrs
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attr_1iterator_1get_1attrs)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1get_1attrs_FUNC);
-	rc = (jintLong)pango_attr_iterator_get_attrs((PangoAttrIterator *)arg0);
-	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1get_1attrs_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1pango_1attr_1iterator_1next
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1pango_1attr_1iterator_1next)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -19741,16 +19729,6 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1range_FUNC);
-}
-#endif
-
-#ifndef NO__1pango_1attr_1list_1change
-JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1list_1change)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1pango_1attr_1list_1change_FUNC);
-	pango_attr_list_change((PangoAttrList *)arg0, (PangoAttribute *)arg1);
-	OS_NATIVE_EXIT(env, that, _1pango_1attr_1list_1change_FUNC);
 }
 #endif
 
@@ -19833,15 +19811,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attr_1strikethrough_1color_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1attr_1strikethrough_1color_1new_FUNC);
-/*
 	rc = (jintLong)pango_attr_strikethrough_color_new(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_attr_strikethrough_color_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jshort, jshort, jshort))fp)(arg0, arg1, arg2);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1strikethrough_1color_1new_FUNC);
 	return rc;
 }
@@ -19865,15 +19835,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attr_1underline_1color_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1attr_1underline_1color_1new_FUNC);
-/*
 	rc = (jintLong)pango_attr_underline_color_new(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_attr_underline_color_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jshort, jshort, jshort))fp)(arg0, arg1, arg2);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1underline_1color_1new_FUNC);
 	return rc;
 }
@@ -19921,15 +19883,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1context_1get_1font_1options
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1get_1font_1options_FUNC);
-/*
 	rc = (jintLong)pango_cairo_context_get_font_options((PangoContext *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_context_get_font_options)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PangoContext *))fp)((PangoContext *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1get_1font_1options_FUNC);
 	return rc;
 }
@@ -19940,15 +19894,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1context_1set_1font_1options)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
-/*
 	pango_cairo_context_set_font_options((PangoContext *)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_context_set_font_options)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(PangoContext *, jintLong))fp)((PangoContext *)arg0, arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
 }
 #endif
@@ -19959,95 +19905,9 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1create_1layout_FUNC);
-/*
 	rc = (jintLong)pango_cairo_create_layout(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_create_layout)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1create_1layout_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1cairo_1font_1map_1create_1context
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1create_1context)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1create_1context_FUNC);
-/*
-	rc = (jintLong)pango_cairo_font_map_create_context(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_font_map_create_context)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1create_1context_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1cairo_1font_1map_1get_1default
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1get_1default)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
-/*
-	rc = (jintLong)pango_cairo_font_map_get_default();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_font_map_get_default)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1cairo_1font_1map_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1new_FUNC);
-/*
-	rc = (jintLong)pango_cairo_font_map_new();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_font_map_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1cairo_1font_1map_1set_1resolution
-JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1set_1resolution)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1set_1resolution_FUNC);
-/*
-	pango_cairo_font_map_set_resolution(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_font_map_set_resolution)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jdouble))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1set_1resolution_FUNC);
 }
 #endif
 
@@ -20056,15 +19916,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1layout_1path)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1layout_1path_FUNC);
-/*
 	pango_cairo_layout_path(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_layout_path)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1layout_1path_FUNC);
 }
 #endif
@@ -20074,15 +19926,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1show_1layout)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1show_1layout_FUNC);
-/*
 	pango_cairo_show_layout(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_cairo_show_layout)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1show_1layout_FUNC);
 }
 #endif
@@ -20447,86 +20291,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1descent)
 }
 #endif
 
-#ifndef NO__1pango_1font_1metrics_1get_1strikethrough_1position
-JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1strikethrough_1position)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1strikethrough_1position_FUNC);
-/*
-	rc = (jint)pango_font_metrics_get_strikethrough_position(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_font_metrics_get_strikethrough_position)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1strikethrough_1position_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1font_1metrics_1get_1strikethrough_1thickness
-JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1strikethrough_1thickness)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1strikethrough_1thickness_FUNC);
-/*
-	rc = (jint)pango_font_metrics_get_strikethrough_thickness(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_font_metrics_get_strikethrough_thickness)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1strikethrough_1thickness_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1font_1metrics_1get_1underline_1position
-JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1underline_1position)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1underline_1position_FUNC);
-/*
-	rc = (jint)pango_font_metrics_get_underline_position(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_font_metrics_get_underline_position)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1underline_1position_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1font_1metrics_1get_1underline_1thickness
-JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1underline_1thickness)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1underline_1thickness_FUNC);
-/*
-	rc = (jint)pango_font_metrics_get_underline_thickness(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_font_metrics_get_underline_thickness)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1underline_1thickness_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1pango_1font_1metrics_1unref
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1metrics_1unref)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -20534,22 +20298,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1metrics_1unref)
 	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1unref_FUNC);
 	pango_font_metrics_unref((PangoFontMetrics *)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1unref_FUNC);
-}
-#endif
-
-#ifndef NO__1pango_1language_1from_1string
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1language_1from_1string)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1language_1from_1string_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)pango_language_from_string((const char *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1pango_1language_1from_1string_FUNC);
-	return rc;
 }
 #endif
 
@@ -20571,18 +20319,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1alignment)
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1alignment_FUNC);
 	rc = (jint)pango_layout_get_alignment((PangoLayout*)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1alignment_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1layout_1get_1attributes
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1layout_1get_1attributes)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1attributes_FUNC);
-	rc = (jintLong)pango_layout_get_attributes((PangoLayout *)arg0);
-	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1attributes_FUNC);
 	return rc;
 }
 #endif
@@ -20722,18 +20458,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1spacing)
 }
 #endif
 
-#ifndef NO__1pango_1layout_1get_1tabs
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1layout_1get_1tabs)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1tabs_FUNC);
-	rc = (jintLong)pango_layout_get_tabs((PangoLayout*)arg0);
-	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1tabs_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1pango_1layout_1get_1text
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1layout_1get_1text)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -20864,25 +20588,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1pango_1layout_1line_1x_1to_1index
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1pango_1layout_1line_1x_1to_1index)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintArray arg3)
-{
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1layout_1line_1x_1to_1index_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jboolean)pango_layout_line_x_to_index((PangoLayoutLine*)arg0, arg1, (int *)lparg2, (int *)lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1pango_1layout_1line_1x_1to_1index_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1pango_1layout_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1layout_1new)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -20920,15 +20625,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1auto_1dir)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
-/*
 	pango_layout_set_auto_dir(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, pango_layout_set_auto_dir)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
 }
 #endif
@@ -21053,35 +20750,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1free)
 	OS_NATIVE_ENTER(env, that, _1pango_1tab_1array_1free_FUNC);
 	pango_tab_array_free((PangoTabArray *)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1tab_1array_1free_FUNC);
-}
-#endif
-
-#ifndef NO__1pango_1tab_1array_1get_1size
-JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1tab_1array_1get_1size)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1pango_1tab_1array_1get_1size_FUNC);
-	rc = (jint)pango_tab_array_get_size((PangoTabArray *)arg0);
-	OS_NATIVE_EXIT(env, that, _1pango_1tab_1array_1get_1size_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1pango_1tab_1array_1get_1tabs
-JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1get_1tabs)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2)
-{
-	jintLong *lparg1=NULL;
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1pango_1tab_1array_1get_1tabs_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	pango_tab_array_get_tabs((PangoTabArray *)arg0, (PangoTabAlign **)lparg1, (int **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1pango_1tab_1array_1get_1tabs_FUNC);
 }
 #endif
 

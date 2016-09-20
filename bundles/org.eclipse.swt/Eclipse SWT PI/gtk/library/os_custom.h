@@ -37,8 +37,6 @@
 #define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
-#define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
-#define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
 #define LIB_GIO "libgio-2.0.a(libgio-2.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
 #elif HPUX
@@ -49,8 +47,6 @@
 #define LIB_GOBJECT "libgobject-2.0.so"
 #define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
-#define LIB_PANGO "libpango-1.0.so"
-#define LIB_PANGOCAIRO "libpangocairo-1.0.so"
 #define LIB_GIO "libgio-2.0.so"
 #define LIB_FONTCONFIG "libfontconfig.so"
 #else
@@ -66,8 +62,6 @@
 #define LIB_GOBJECT "libgobject-2.0.so.0"
 #define LIB_GTHREAD "libgthread-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
-#define LIB_PANGO "libpango-1.0.so.0"
-#define LIB_PANGOCAIRO "libpangocairo-1.0.so.0"
 #define LIB_GIO "libgio-2.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
 #endif
@@ -415,22 +409,6 @@
 
 #define atk_object_add_relationship_LIB LIB_ATK
 #define atk_object_remove_relationship_LIB LIB_ATK
-#define pango_attr_underline_color_new_LIB LIB_PANGO
-#define pango_attr_strikethrough_color_new_LIB LIB_PANGO
-#define pango_font_metrics_get_underline_thickness_LIB LIB_PANGO
-#define pango_font_metrics_get_underline_position_LIB LIB_PANGO
-#define pango_font_metrics_get_strikethrough_thickness_LIB LIB_PANGO
-#define pango_font_metrics_get_strikethrough_position_LIB LIB_PANGO
-#define pango_layout_set_auto_dir_LIB LIB_PANGO
-#define pango_cairo_create_layout_LIB LIB_PANGOCAIRO
-#define pango_cairo_context_set_font_options_LIB LIB_PANGOCAIRO
-#define pango_cairo_context_get_font_options_LIB LIB_PANGOCAIRO
-#define pango_cairo_layout_path_LIB LIB_PANGOCAIRO
-#define pango_cairo_show_layout_LIB LIB_PANGOCAIRO
-#define pango_cairo_font_map_create_context_LIB LIB_PANGOCAIRO
-#define pango_cairo_font_map_new_LIB LIB_PANGOCAIRO
-#define pango_cairo_font_map_get_default_LIB LIB_PANGOCAIRO
-#define pango_cairo_font_map_set_resolution_LIB LIB_PANGOCAIRO
 #define gdk_cairo_reset_clip_LIB LIB_GDK
 #define gdk_cairo_get_clip_rectangle_LIB LIB_GDK
 #define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
