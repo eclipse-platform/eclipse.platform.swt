@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -173,5 +173,16 @@ public void test_getPrinterList() {
 		PrinterData list[] = Printer.getPrinterList();
 		assertTrue("printer list is empty", list.length > 0);
 	}
+}
+
+@Test
+public void test_isAutoScalable() {
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	boolean isAutoScalable = printer.isAutoScalable();
+	assertFalse("SWT doesnot auto-scale for Printer devices", isAutoScalable);
+	printer.dispose();
 }
 }

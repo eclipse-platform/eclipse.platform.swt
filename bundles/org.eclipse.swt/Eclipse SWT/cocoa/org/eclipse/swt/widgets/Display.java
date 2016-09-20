@@ -3123,6 +3123,11 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
+@Override
+public boolean isAutoScalable() {
+	return true;
+}
+
 boolean isBundled () {
 	NSBundle mainBundle = NSBundle.mainBundle();
 	if (mainBundle != null) {

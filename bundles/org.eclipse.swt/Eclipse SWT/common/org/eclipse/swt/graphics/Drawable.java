@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,5 +63,15 @@ public long /*int*/ internal_new_GC (GCData data);
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (long /*int*/ handle, GCData data);
+
+/**
+ * Returns <code>true</code> iff coordinates can be auto-scaled on this
+ * drawable and <code>false</code> if not. E.g. a {@link GC} method should not
+ * auto-scale the bounds of a figure drawn on a Printer device, but it may have
+ * to auto-scale when drawing on a high-DPI Display monitor.
+ *
+ * @return <code>true</code> if auto-scaling is enabled for this drawable
+ */
+public boolean isAutoScalable ();
 
 }

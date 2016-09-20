@@ -2302,6 +2302,11 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	OS.DeleteDC(hDC);
 }
 
+@Override
+public boolean isAutoScalable() {
+	return true;
+}
+
 /**
  * Returns <code>true</code> if the image has been disposed,
  * and <code>false</code> otherwise.

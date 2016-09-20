@@ -2172,6 +2172,11 @@ public static Display getDefault () {
 	}
 }
 
+@Override
+public boolean isAutoScalable() {
+	return true;
+}
+
 static boolean isValidClass (Class<?> clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');

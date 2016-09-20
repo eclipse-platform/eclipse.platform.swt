@@ -1344,6 +1344,11 @@ boolean isActive () {
 	return getShell ().getModalShell () == null && display.getModalDialog () == null;
 }
 
+@Override
+public boolean isAutoScalable() {
+	return true;
+}
+
 /*
  * Answers a boolean indicating whether a Label that precedes the receiver in
  * a layout should be read by screen readers as the recevier's label.

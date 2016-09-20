@@ -1849,6 +1849,11 @@ boolean isActive () {
 	return shell.getEnabled ();
 }
 
+@Override
+public boolean isAutoScalable() {
+	return true;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * ancestors up to and including the receiver's nearest ancestor

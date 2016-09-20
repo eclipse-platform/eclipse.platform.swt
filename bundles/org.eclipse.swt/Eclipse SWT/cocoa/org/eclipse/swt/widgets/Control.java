@@ -2253,6 +2253,11 @@ void invalidateVisibleRegion () {
 }
 
 @Override
+public boolean isAutoScalable() {
+	return true;
+}
+
+@Override
 boolean isActive () {
 	if (getShell().getModalShell () != null) return false;
 	Dialog dialog = display.getModalDialog();
