@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,18 +21,17 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.2
  */
-import java.nio.ByteBuffer;
+import java.nio.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.opengl.GLCanvas;
-import org.eclipse.swt.opengl.GLData;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.LWJGLException;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.opengl.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.lwjgl.*;
+import org.lwjgl.opengl.*;
+import org.lwjgl.util.glu.*;
 
 public class Snippet341 {
 	static void drawTorus(float r, float R, int nsides, int rings) {
@@ -76,22 +75,19 @@ public class Snippet341 {
 			GLContext.useContext(canvas);
 		} catch(LWJGLException e) { e.printStackTrace(); }
 
-		canvas.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				Rectangle bounds = canvas.getBounds();
-				float fAspect = (float) bounds.width / (float) bounds.height;
-				canvas.setCurrent();
-				try {
-					GLContext.useContext(canvas);
-				} catch(LWJGLException e) { e.printStackTrace(); }
-				GL11.glViewport(0, 0, bounds.width, bounds.height);
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-				GL11.glLoadIdentity();
-				GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				GL11.glLoadIdentity();
-			}
+		canvas.addListener(SWT.Resize, event -> {
+			Rectangle bounds = canvas.getBounds();
+			float fAspect = (float) bounds.width / (float) bounds.height;
+			canvas.setCurrent();
+			try {
+				GLContext.useContext(canvas);
+			} catch(LWJGLException e) { e.printStackTrace(); }
+			GL11.glViewport(0, 0, bounds.width, bounds.height);
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
+			GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glLoadIdentity();
 		});
 
 		GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -103,12 +99,7 @@ public class Snippet341 {
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Capture");
-		button.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				capture(canvas);
-			}
-		});
+		button.addListener(SWT.Selection, event -> capture(canvas));
 		shell.pack();
 		shell.open();
 
@@ -173,19 +164,9 @@ public class Snippet341 {
 		shell.setLayout(new GridLayout());
 		Canvas canvas = new Canvas(shell, SWT.NONE);
 		canvas.setLayoutData(new GridData(bounds.width, bounds.height));
-		canvas.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				event.gc.drawImage(image, 0, 0);
-			}
-		});
+		canvas.addListener(SWT.Paint, event -> event.gc.drawImage(image, 0, 0));
 		shell.pack();
 		shell.open();
-		shell.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				image.dispose();
-			}
-		});
+		shell.addListener(SWT.Dispose, event -> image.dispose());
 	}
 }
