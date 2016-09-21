@@ -19894,7 +19894,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1context_1set_1font_1options)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
-	pango_cairo_context_set_font_options((PangoContext *)arg0, arg1);
+	pango_cairo_context_set_font_options((PangoContext *)arg0, ( cairo_font_options_t *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
 }
 #endif
@@ -19905,7 +19905,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1create_1layout_FUNC);
-	rc = (jintLong)pango_cairo_create_layout(arg0);
+	rc = (jintLong)pango_cairo_create_layout((cairo_t *)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1create_1layout_FUNC);
 	return rc;
 }
@@ -19916,7 +19916,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1layout_1path)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1layout_1path_FUNC);
-	pango_cairo_layout_path(arg0, arg1);
+	pango_cairo_layout_path((cairo_t *)arg0, (PangoLayout *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1layout_1path_FUNC);
 }
 #endif
@@ -19926,7 +19926,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1show_1layout)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1show_1layout_FUNC);
-	pango_cairo_show_layout(arg0, arg1);
+	pango_cairo_show_layout((cairo_t *)arg0, (PangoLayout *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1show_1layout_FUNC);
 }
 #endif
@@ -20625,7 +20625,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1auto_1dir)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
-	pango_layout_set_auto_dir(arg0, arg1);
+	pango_layout_set_auto_dir((PangoLayout *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
 }
 #endif

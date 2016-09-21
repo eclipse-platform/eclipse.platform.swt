@@ -15918,6 +15918,9 @@ public static final long /*int*/ pango_attr_weight_new(int weight) {
 		lock.unlock();
 	}
 }
+/**
+ * @param cairo cast=(cairo_t *)
+ */
 public static final native long /*int*/ _pango_cairo_create_layout(long /*int*/ cairo);
 public static final long /*int*/ pango_cairo_create_layout(long /*int*/ cairo) {
 	lock.lock();
@@ -15941,6 +15944,7 @@ public static final long /*int*/ pango_cairo_context_get_font_options(long /*int
 }
 /**
  * @param context cast=(PangoContext *)
+ * @param options cast=( cairo_font_options_t *)
  */
 public static final native void _pango_cairo_context_set_font_options(long /*int*/ context, long /*int*/ options);
 public static final void pango_cairo_context_set_font_options(long /*int*/ context, long /*int*/ options) {
@@ -15951,6 +15955,10 @@ public static final void pango_cairo_context_set_font_options(long /*int*/ conte
 		lock.unlock();
 	}
 }
+/**
+ * @param cairo cast=(cairo_t *)
+ * @param layout cast=(PangoLayout *)
+ */
 public static final native void _pango_cairo_layout_path(long /*int*/ cairo, long /*int*/ layout);
 public static final void pango_cairo_layout_path(long /*int*/ cairo, long /*int*/ layout) {
 	lock.lock();
@@ -15960,6 +15968,10 @@ public static final void pango_cairo_layout_path(long /*int*/ cairo, long /*int*
 		lock.unlock();
 	}
 }
+/**
+ * @param cairo cast=(cairo_t *)
+ * @param layout cast=(PangoLayout *)
+ */
 public static final native void _pango_cairo_show_layout(long /*int*/ cairo, long /*int*/ layout);
 public static final void pango_cairo_show_layout(long /*int*/ cairo, long /*int*/ layout) {
 	lock.lock();
@@ -16590,6 +16602,9 @@ public static final void pango_layout_set_attributes(long /*int*/ layout, long /
 		lock.unlock();
 	}
 }
+/**
+ * @param layout cast=(PangoLayout *)
+ */
 public static final native void _pango_layout_set_auto_dir(long /*int*/ layout, boolean auto_dir);
 public static final void pango_layout_set_auto_dir(long /*int*/ layout, boolean auto_dir) {
 	lock.lock();
