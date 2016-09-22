@@ -5,7 +5,7 @@
   are made available under the terms of the Eclipse Distribution License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/org/documents/edl-v10.php
- 
+
   Contributors:
      Igor Fedorenko - initial implementation
 -->
@@ -23,16 +23,57 @@
   <packaging>eclipse-test-plugin</packaging>
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
+    <argLine>-Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
   </properties>
   <build>
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <!-- Make all platform-specific fragments available (and optional) via a feature -->
+	      <dependency-resolution>
+	         <extraRequirements>
+	            <requirement>
+	               <type>eclipse-feature</type>
+	               <id>org.eclipse.swt.tests.fragments.feature</id>
+	               <versionRange>0.0.0</versionRange>
+	            </requirement>
+	         </extraRequirements>
+	      </dependency-resolution>
+	      <!-- but only resolve against current environment as we don't want all fragments simultaneously in test -->
+	      <environments combine.self="override"/> <!--  we only want platform specific artifacts here -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
-          <testSuite>org.eclipse.swt.tests</testSuite>
-          <testClass>org.eclipse.swt.tests.junit.AllTests</testClass>
+          <skipTests>true</skipTests> <!-- Use maven surefire -->
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <executions>
+          <execution>
+            <id>test</id>
+            <goals><goal>test</goal></goals>
+            <phase>integration-test</phase>
+            <configuration>
+              <test>AllTests</test>
+              <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit47</artifactId>
+            <version>2.19.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
