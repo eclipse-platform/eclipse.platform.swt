@@ -494,7 +494,6 @@
 #define gtk_style_context_get_color_LIB LIB_GTK
 #define gtk_style_context_get_background_color_LIB LIB_GTK
 #define gtk_style_context_add_class_LIB LIB_GTK
-#define gtk_style_context_get_border_color_LIB LIB_GTK
 #define gtk_style_context_get_padding_LIB LIB_GTK
 #define gtk_style_context_get_border_LIB LIB_GTK
 #define gtk_style_context_invalidate_LIB LIB_GTK

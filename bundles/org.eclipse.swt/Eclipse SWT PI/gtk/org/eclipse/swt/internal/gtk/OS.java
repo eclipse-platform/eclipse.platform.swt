@@ -11756,16 +11756,6 @@ public static final void gtk_style_context_get_background_color(long /*int*/ con
 	}
 }
 /** @method flags=dynamic */
-public static final native void _gtk_style_context_get_border_color(long /*int*/ context, int state, GdkRGBA color);
-public static final void gtk_style_context_get_border_color(long /*int*/ context, int state, GdkRGBA color) {
-	lock.lock();
-	try {
-		_gtk_style_context_get_border_color(context, state, color);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native void _gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color);
 public static final void gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color) {
 	lock.lock();

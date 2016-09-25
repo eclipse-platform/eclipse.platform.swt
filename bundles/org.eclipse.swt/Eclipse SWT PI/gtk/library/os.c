@@ -15087,28 +15087,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1style_1context_1get_1border_1color
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1border_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkRGBA _arg2, *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border_1color_FUNC);
-	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_style_context_get_border_color(arg0, arg1, lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_style_context_get_border_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border_1color_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1style_1context_1get_1color
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1color)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)

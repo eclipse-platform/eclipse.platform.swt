@@ -1110,7 +1110,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1style_1context_1add_1provider_1for_1screen",
 	"_1gtk_1style_1context_1get_1background_1color",
 	"_1gtk_1style_1context_1get_1border",
-	"_1gtk_1style_1context_1get_1border_1color",
 	"_1gtk_1style_1context_1get_1color",
 	"_1gtk_1style_1context_1get_1font",
 	"_1gtk_1style_1context_1get_1padding",
