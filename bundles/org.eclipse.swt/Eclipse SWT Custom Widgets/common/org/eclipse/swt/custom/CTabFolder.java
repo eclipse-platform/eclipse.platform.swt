@@ -550,7 +550,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 				rects[i].y = getControlY(size, rects, borderBottom, borderTop, i);
 				if ((alignment & (SWT.FILL | SWT.WRAP)) != 0) availableWidth -= ctrlSize.x;
 			}
-			if (tabControlSize[i].y >= tabHeight) {
+			if (tabControlSize[i].y >= tabHeight && fixedTabHeight == SWT.DEFAULT) {
 				overflow[i] = true;
 			}
 		}
