@@ -672,6 +672,7 @@ public class OS extends C {
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
 	public static final byte[] gtk_show_input_method_menu = ascii("gtk-show-input-method-menu");
+	public static final byte[] gtk_style_property_font = ascii("font");
 	public static final byte[] gtk_menu_bar_accel = ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_menu_images = ascii("gtk-menu-images");
 	public static final byte[] gtk_theme_name = ascii("gtk-theme-name");
@@ -11351,7 +11352,21 @@ public static final void gtk_style_context_get_padding(long /*int*/ context, int
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic [GTK3; 3.16 deprecated] */
+/**
+ * @method flags=dynamic
+ * @param property cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _gtk_style_context_get(long /*int*/ context, int state, byte [] property, long[] value, long /*int*/ terminator);
+public static final void gtk_style_context_get(long /*int*/ context, int state, byte [] property, long[] value, long /*int*/ terminator) {
+	lock.lock();
+	try {
+		_gtk_style_context_get(context, state, property, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding);
 public static final void gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding) {
 	lock.lock();

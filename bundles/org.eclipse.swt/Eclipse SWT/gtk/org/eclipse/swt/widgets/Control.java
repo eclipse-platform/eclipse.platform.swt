@@ -2913,12 +2913,20 @@ public Font getFont () {
 
 long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
+	long /*int*/ [] fontDesc = new long /*int*/ [1];
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
-		if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
 			return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
+		} else if (OS.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+			OS.gtk_style_context_save(context);
+			OS.gtk_style_context_set_state(context, OS.GTK_STATE_FLAG_NORMAL);
+			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, fontDesc, 0);
+			OS.gtk_style_context_restore(context);
+			return fontDesc [0];
 		} else {
-			return OS.gtk_style_context_get_font(context, OS.gtk_widget_get_state_flags(fontHandle));
+			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, fontDesc, 0);
+			return fontDesc [0];
 		}
 	}
 	OS.gtk_widget_realize (fontHandle);

@@ -644,10 +644,22 @@ protected void init () {
 	OS.gtk_widget_realize(shellHandle);
 
 	/* Initialize the system font slot */
+	long /*int*/ [] defaultFontArray = new long /*int*/ [1];
 	long /*int*/ defaultFont;
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);
-		defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
+		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
+			defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
+		} else if (OS.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+			OS.gtk_style_context_save(context);
+			OS.gtk_style_context_set_state(context, OS.GTK_STATE_FLAG_NORMAL);
+			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, defaultFontArray, 0);
+			OS.gtk_style_context_restore(context);
+			defaultFont = defaultFontArray [0];
+		} else {
+			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, defaultFontArray, 0);
+			defaultFont = defaultFontArray [0];
+		}
 	} else {
 		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
 		defaultFont = OS.gtk_style_get_font_desc (style);
