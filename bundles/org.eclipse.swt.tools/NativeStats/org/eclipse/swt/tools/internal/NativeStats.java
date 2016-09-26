@@ -36,7 +36,7 @@ public class NativeStats {
 	
 	Map<String, NativeFunction[]> snapshot;
 	
-	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
+	final static String[] classes = new String[]{"OS", "ATK", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
 
 	
 	public static class NativeFunction implements Comparable<Object> {
@@ -175,10 +175,6 @@ public static final native int ATK_GetFunctionCallCount(int index);
 public static final native int AGL_GetFunctionCount();
 public static final native String AGL_GetFunctionName(int index);
 public static final native int AGL_GetFunctionCallCount(int index);
-
-public static final native int CDE_GetFunctionCount();
-public static final native String CDE_GetFunctionName(int index);
-public static final native int CDE_GetFunctionCallCount(int index);
 
 public static final native int Gdip_GetFunctionCount();
 public static final native String Gdip_GetFunctionName(int index);

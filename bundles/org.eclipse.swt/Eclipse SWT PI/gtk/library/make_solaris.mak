@@ -92,12 +92,11 @@ CFLAGS = -O \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		-DDTACTION_WARNING_DISABLED \
-		-DSOLARIS -DGTK -DCDE \
+		-DSOLARIS -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/solaris \
 		-K PIC \
-		${SWT_PTR_CFLAGS} \
-		-I$(CDE_HOME)/include
+		${SWT_PTR_CFLAGS}
 LFLAGS = -G -K PIC -s $(SWT_LFLAGS)
 
 

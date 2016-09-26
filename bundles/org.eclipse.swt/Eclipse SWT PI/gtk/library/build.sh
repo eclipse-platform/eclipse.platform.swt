@@ -352,9 +352,6 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${CXX}" = "" ]; then
 			CXX="CC"
 		fi
-		if [ "${CDE_HOME}" = "" ]; then
-			CDE_HOME="/usr/dt"
-		fi
 		if [ "${JAVA_HOME}" = "" ]; then
 			JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/SOLARIS/SPARC64/jdk1.5.0_22"
 		fi
@@ -370,7 +367,7 @@ case $SWT_OS.$SWT_ARCH in
 #		if [ "${MOZILLA_LIBS}" = "" ]; then
 #			export MOZILLA_LIBS="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 #		fi
-		export PATH CC CXX CDE_HOME JAVA_HOME PKG_CONFIG_PATH;
+		export PATH CC CXX JAVA_HOME PKG_CONFIG_PATH;
 		;;
 	"linux.s390")
 		if [ "${CC}" = "" ]; then
@@ -493,8 +490,7 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 	if [ ${OS} = 'SunOS' ]; then
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
 			SWT_LFLAGS=-m64
-			SWT_CDE_64SUFFIX="/64"
-			export SWT_LFLAGS SWT_CDE_64SUFFIX
+			export SWT_LFLAGS
 	fi
 	export SWT_PTR_CFLAGS
 fi
