@@ -3614,20 +3614,6 @@ long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	return 0;
 }
 
-String gtk_widget_get_name(long /*int*/ handle) {
-	long /*int*/ str = OS.gtk_widget_get_name (handle);
-	String name;
-	if (str == 0) {
-		name = "*";
-	} else {
-		int length = OS.strlen (str);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
-		name = new String (Converter.mbcsToWcs (null, buffer));
-	}
-	return name;
-}
-
 void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	gtk_widget_get_preferred_size (widget, requisition);
 }
