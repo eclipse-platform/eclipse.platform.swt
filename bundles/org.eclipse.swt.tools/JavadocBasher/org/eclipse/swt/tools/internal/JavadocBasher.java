@@ -99,7 +99,6 @@ public class JavadocBasher {
 		String sourceSubdir = "win32";
 		String[] targetSubdirs = new String[] { "cairo", // used by gtk
 				// "carbon", // we are no longer maintaining carbon
-				"cde", // used by gtk
 				"cocoa",
 				// "common",
 				// "common_j2me",

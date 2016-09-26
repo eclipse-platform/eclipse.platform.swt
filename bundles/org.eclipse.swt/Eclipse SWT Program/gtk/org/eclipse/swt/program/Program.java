@@ -20,7 +20,6 @@ import java.util.List;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -47,16 +46,11 @@ public final class Program {
 	static long modTime;
 	static Map<String, List<String>> mimeTable;
 
-	static long /*int*/ cdeShell;
-
-	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	static final String DESKTOP_DATA = "Program_DESKTOP"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GIO = 2;
-	static final int DESKTOP_CDE = 3;
 	static final int PREFERRED_ICON_SIZE = 16;
 
 /**
@@ -70,192 +64,10 @@ static int getDesktop(final Display display) {
 	if (display == null) return DESKTOP_UNKNOWN;
 	Integer desktopValue = (Integer)display.getData(DESKTOP_DATA);
 	if (desktopValue != null) return desktopValue.intValue();
-	int desktop = DESKTOP_UNKNOWN;
-
-	/*
-	* On CDE, the atom below may exist without DTWM running. If the atom
-	* below is defined, the CDE database exists and the available
-	* applications can be queried.
-	*/
-	if (desktop == DESKTOP_UNKNOWN) {
-		/* Get the list of properties on the root window. */
-		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		int[] numProp = new int[1];
-		long /*int*/ [] property = new long /*int*/ [numProp[0]];
-		byte[] cdeName = Converter.wcsToMbcs(null, "_DT_SM_PREFERENCES", true);
-		long /*int*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
-		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
-			if (property[index] == OS.None) continue; /* do not match atoms that do not exist */
-			if (property[index] == cde && cde_init(display)) desktop = DESKTOP_CDE;
-		}
-	}
-
-	if (desktop == DESKTOP_UNKNOWN) {
-		desktop = DESKTOP_GIO;
-	}
+	int desktop = DESKTOP_GIO;
 
 	display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
 	return desktop;
-}
-
-boolean cde_execute(String fileName) {
-	/* Use the character encoding for the default locale */
-	byte[] action = Converter.wcsToMbcs(null, command, true);
-	byte[] fileArg = Converter.wcsToMbcs(null, fileName, true);
-	long /*int*/ ptr = OS.g_malloc(fileArg.length);
-	OS.memmove(ptr, fileArg, fileArg.length);
-	DtActionArg args = new DtActionArg();
-	args.argClass = CDE.DtACTION_FILE;
-	args.name = ptr;
-	long actionID = CDE.DtActionInvoke(cdeShell, action, args, 1, null, null, null, 1, 0, 0);
-	OS.g_free(ptr);
-	return actionID != 0;
-}
-
-static String cde_getAction(String dataType) {
-	String action  = null;
-	String actions = cde_getAttribute(dataType, CDE.DtDTS_DA_ACTION_LIST);
-	if (actions != null) {
-		int index = actions.indexOf("Open");
-		if (index != -1) {
-			action = actions.substring(index, index + 4);
-		} else {
-			index = actions.indexOf(",");
-			action = index != -1 ? actions.substring(0, index) : actions;
-		}
-	}
-	return action;
-}
-
-static String cde_getAttribute(String dataType, String attrName) {
-	/* Use the character encoding for the default locale */
-	byte[] dataTypeBuf = Converter.wcsToMbcs(null, dataType, true);
-	byte[] attrNameBuf = Converter.wcsToMbcs(null, attrName, true);
-	byte[] optNameBuf = null;
-	long /*int*/ attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
-	if (attrValue == 0) return null;
-	int length = OS.strlen(attrValue);
-	byte[] attrValueBuf = new byte[length];
-	OS.memmove(attrValueBuf, attrValue, length);
-	CDE.DtDtsFreeAttributeValue(attrValue);
-	/* Use the character encoding for the default locale */
-	return new String(Converter.mbcsToWcs(null, attrValueBuf));
-}
-
-static Map<String, List<String>> cde_getDataTypeInfo() {
-	Map<String, List<String>> dataTypeInfo = new HashMap<>();
-	int index;
-	long /*int*/ dataTypeList = CDE.DtDtsDataTypeNames();
-	if (dataTypeList != 0) {
-		/* For each data type name in the list */
-		index = 0;
-		long /*int*/ [] dataType = new long /*int*/ [1];
-		OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
-		while (dataType[0] != 0) {
-			int length = OS.strlen(dataType[0]);
-			byte[] dataTypeBuf = new byte[length];
-			OS.memmove(dataTypeBuf, dataType[0], length);
-			/* Use the character encoding for the default locale */
-			String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
-
-			/* The data type is valid if it is not an action, and it has an extension and an action. */
-			String extension = cde_getExtension(dataTypeName);
-			if (!CDE.DtDtsDataTypeIsAction(dataTypeBuf) &&
-				extension != null && cde_getAction(dataTypeName) != null) {
-				List<String> exts = new ArrayList<>();
-				exts.add(extension);
-				dataTypeInfo.put(dataTypeName, exts);
-			}
-			OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
-		}
-		CDE.DtDtsFreeDataTypeNames(dataTypeList);
-	}
-
-	return dataTypeInfo;
-}
-
-static String cde_getExtension(String dataType) {
-	String fileExt = cde_getAttribute(dataType, CDE.DtDTS_DA_NAME_TEMPLATE);
-	if (fileExt == null || fileExt.indexOf("%s.") == -1) return null;
-	int dot = fileExt.indexOf(".");
-	return fileExt.substring(dot);
-}
-
-/**
- * CDE - Get Image Data
- *
- * This method returns the image data of the icon associated with
- * the data type. Since CDE supports multiple sizes of icons, several
- * attempts are made to locate an icon of the desired size and format.
- * CDE supports the sizes: tiny, small, medium and large. The best
- * search order is medium, large, small and then tiny. Althoug CDE supports
- * colour and monochrome bitmaps, only colour icons are tried. (The order is
- * defined by the  cdeIconExt and cdeMaskExt arrays above.)
- */
-ImageData cde_getImageData() {
-	// TODO
-	return null;
-}
-
-static String cde_getMimeType(String extension) {
-	String mimeType = null;
-	Map<String, List<String>> mimeInfo = cde_getDataTypeInfo();
-	if (mimeInfo == null) return null;
-	Iterator<String> keys = mimeInfo.keySet().iterator();
-	while (mimeType == null && keys.hasNext()) {
-		String type = keys.next();
-		List<String> mimeExts = mimeInfo.get(type);
-		for (int index = 0; index < mimeExts.size(); index++){
-			if (extension.equals(mimeExts.get(index))) {
-				mimeType = type;
-				break;
-			}
-		}
-	}
-	return mimeType;
-}
-
-static Program cde_getProgram(Display display, String mimeType) {
-	String command = cde_getAction(mimeType);
-	if (command == null) return null;
-
-	Program program = new Program();
-	program.display = display;
-	program.name = mimeType;
-	program.command = command;
-	program.iconPath = cde_getAttribute(program.name, CDE.DtDTS_DA_ICON);
-	return program;
-}
-
-static boolean cde_init(Display display) {
-	try {
-		Library.loadLibrary("swt-cde");
-	} catch (Throwable e) {
-		return false;
-	}
-
-	/* Use the character encoding for the default locale */
-	CDE.XtToolkitInitialize();
-	long /*int*/ xtContext = CDE.XtCreateApplicationContext ();
-	long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-	byte[] appName = Converter.wcsToMbcs(null, "CDE", true);
-	byte[] appClass = Converter.wcsToMbcs(null, "CDE", true);
-	long /*int*/ [] argc = new long /*int*/ [] {0};
-	CDE.XtDisplayInitialize(xtContext, xDisplay, appName, appClass, 0, 0, argc, 0);
-	long /*int*/ widgetClass = CDE.topLevelShellWidgetClass ();
-	cdeShell = CDE.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	CDE.XtSetMappedWhenManaged (cdeShell, false);
-	CDE.XtResizeWidget (cdeShell, 10, 10, 0);
-	CDE.XtRealizeWidget (cdeShell);
-	boolean initOK = CDE.DtAppInitialize(xtContext, xDisplay, cdeShell, appName, appName);
-	if (initOK) CDE.DtDbLoad();
-	return initOK;
-}
-
-static boolean cde_isExecutable(String fileName) {
-	byte [] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	return OS.access(fileNameBuffer, OS.X_OK) == 0;
-	//TODO find the content type of the file and check if it is executable
 }
 
 static String[] parseCommand(String cmd) {
@@ -328,13 +140,11 @@ static Program findProgram(Display display, String extension) {
 	String mimeType = null;
 	switch (desktop) {
 		case DESKTOP_GIO: mimeType = gio_getMimeType(extension); break;
-		case DESKTOP_CDE: mimeType = cde_getMimeType(extension); break;
 	}
 	if (mimeType == null) return null;
 	Program program = null;
 	switch (desktop) {
 		case DESKTOP_GIO: program = gio_getProgram(display, mimeType); break;
-		case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 	}
 	return program;
 }
@@ -356,28 +166,10 @@ public static String[] getExtensions() {
  */
 static String[] getExtensions(Display display) {
 	int desktop = getDesktop(display);
-	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getExtensions();
-		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
-	if (mimeInfo == null) return new String[0];
-
-	/* Create a unique set of the file extensions. */
-	List<String> extensions = new ArrayList<>();
-	Iterator<String> keys = mimeInfo.keySet().iterator();
-	while (keys.hasNext()) {
-		String mimeType = keys.next();
-		List<String> mimeExts = mimeInfo.get(mimeType);
-		for (int index = 0; index < mimeExts.size(); index++){
-			if (!extensions.contains(mimeExts.get(index))) {
-				extensions.add(mimeExts.get(index));
-			}
-		}
-	}
-
-	/* Return the list of extensions. */
-	return extensions.toArray(new String[extensions.size()]);
+	return new String[0];
 }
 
 /**
@@ -397,24 +189,10 @@ public static Program[] getPrograms() {
  */
 static Program[] getPrograms(Display display) {
 	int desktop = getDesktop(display);
-	Map<String, List<String>> mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getPrograms(display);
-		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
-	if (mimeInfo == null) return new Program[0];
-	List<Program> programs = new ArrayList<>();
-	Iterator<String> keys = mimeInfo.keySet().iterator();
-	while (keys.hasNext()) {
-		String mimeType = keys.next();
-		Program program = null;
-		switch (desktop) {
-			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
-		}
-		if (program != null) programs.add(program);
-	}
-
-	return programs.toArray(new Program[programs.size()]);
+	return new Program[0];
 }
 
 ImageData gio_getImageData() {
@@ -685,7 +463,6 @@ static String[] gio_getExtensions() {
 static boolean isExecutable(Display display, String fileName) {
 	switch(getDesktop(display)) {
 		case DESKTOP_GIO: return gio_isExecutable(fileName);
-		case DESKTOP_CDE: return false; //cde_isExecutable()
 	}
 	return false;
 }
@@ -809,7 +586,6 @@ public boolean execute(String fileName) {
 	int desktop = getDesktop(display);
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_execute(fileName);
-		case DESKTOP_CDE: return cde_execute(fileName);
 	}
 	return false;
 }
@@ -824,7 +600,6 @@ public boolean execute(String fileName) {
 public ImageData getImageData() {
 	switch (getDesktop(display)) {
 		case DESKTOP_GIO: return gio_getImageData();
-		case DESKTOP_CDE: return cde_getImageData();
 	}
 	return null;
 }

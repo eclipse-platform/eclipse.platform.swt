@@ -19,7 +19,6 @@ GTK_VERSION?=2.0
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
 SWT_PREFIX = swt
-CDE_PREFIX = swt-cde
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
@@ -27,7 +26,6 @@ ATK_PREFIX = swt-atk
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -39,8 +37,6 @@ CAIROLIBS = `pkg-config --libs cairo` -lcairo
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0 gtk+-unix-print-$(GTK_VERSION)`
 GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lXtst -lX11
-
-CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
 AWT_LFLAGS = -shared -s ${SWT_LFLAGS} 
 AWT_LIBS = -L$(AWT_LIB_PATH) -L$(AWT_LIB_PATH)/server -ljawt -lX11
@@ -55,7 +51,6 @@ GLXLIBS = -L/usr/X11R6/lib -lGL -lGLU -lm
 #NATIVE_STATS = -DNATIVE_STATS
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
-CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
@@ -113,15 +108,6 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
-
-#
-# CDE lib
-#
-
-make_cde: $(CDE_LIB)
-
-$(CDE_LIB): $(CDE_OBJECTS)
-	$(CC) $(LFLAGS) -o $(CDE_LIB) $(CDE_OBJECTS) $(CDE_LIBS)
 
 #
 # AWT lib

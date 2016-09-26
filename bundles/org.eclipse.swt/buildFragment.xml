@@ -194,7 +194,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT PI/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/gtk/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Program/cde/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>

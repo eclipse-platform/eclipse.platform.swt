@@ -19,7 +19,6 @@ GTK_VERSION?=2.0
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
 SWT_PREFIX = swt
-CDE_PREFIX = swt-cde
 AWT_PREFIX = swt-awt
 ifeq ($(GTK_VERSION), 3.0)
 SWTPI_PREFIX = swt-pi3
@@ -35,7 +34,6 @@ WEBKIT_PREFIX = swt-webkit
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -56,8 +54,6 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -
 else
 GTKLIBS = `pkg-config --libs-only-L gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lgtk-x11-$(GTK_VERSION) -lgthread-2.0 -lXtst
 endif
-
-CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
 AWT_LFLAGS = -shared ${SWT_LFLAGS} 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt
@@ -100,7 +96,6 @@ WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`  # Avoid adding 'webkit2gtk-4.0'
 WEBKITCFLAGS = `pkg-config --cflags gio-2.0`     #     webkit functions should be called dynamically. See Bug 430538
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
-CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
@@ -168,15 +163,6 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
-
-#
-# CDE lib
-#
-
-make_cde: $(CDE_LIB)
-
-$(CDE_LIB): $(CDE_OBJECTS)
-	$(CC) $(LFLAGS) -o $(CDE_LIB) $(CDE_OBJECTS) $(CDE_LIBS)
 
 #
 # AWT lib
