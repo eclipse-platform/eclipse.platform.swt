@@ -184,10 +184,6 @@ public static final native int GLX_GetFunctionCount();
 public static final native String GLX_GetFunctionName(int index);
 public static final native int GLX_GetFunctionCallCount(int index);
 
-public static final native int GNOME_GetFunctionCount();
-public static final native String GNOME_GetFunctionName(int index);
-public static final native int GNOME_GetFunctionCallCount(int index);
-
 public static final native int GTK_GetFunctionCount();
 public static final native String GTK_GetFunctionName(int index);
 public static final native int GTK_GetFunctionCallCount(int index);
