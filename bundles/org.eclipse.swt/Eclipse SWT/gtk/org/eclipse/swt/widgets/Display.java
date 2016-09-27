@@ -3978,24 +3978,23 @@ public boolean post (Event event) {
 					OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
 					return true;
 				}
+				case SWT.MouseMove: {
+					Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
+					OS.XTestFakeMotionEvent (xDisplay, -1, loc.x, loc.y, 0);
+					return true;
+				}
 				case SWT.MouseDown:
-				case SWT.MouseMove:
 				case SWT.MouseUp: {
-					if (type == SWT.MouseMove) {
-						Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
-						OS.XTestFakeMotionEvent (xDisplay, -1, loc.x, loc.y, 0);
-					} else {
-						int button = event.button;
-						switch (button) {
-							case 1:
-							case 2:
-							case 3:	break;
-							case 4: button = 6;	break;
-							case 5: button = 7;	break;
-							default: return false;
-						}
-						OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+					int button = event.button;
+					switch (button) {
+						case 1:
+						case 2:
+						case 3:	break;
+						case 4: button = 6;	break;
+						case 5: button = 7;	break;
+						default: return false;
 					}
+					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
 					return true;
 				}
 				/*
