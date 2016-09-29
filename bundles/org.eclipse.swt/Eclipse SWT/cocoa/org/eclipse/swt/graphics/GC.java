@@ -657,7 +657,10 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			dest.y = destY;
 
 			view.lockFocus();
-			OS.NSCopyBits(0, damage , dest);
+			NSSize delta = new NSSize();
+			delta.width = deltaX;
+			delta.height = deltaY;
+			view.scrollRect(damage, delta);
 			view.unlockFocus();
 
 			if (paint) {
