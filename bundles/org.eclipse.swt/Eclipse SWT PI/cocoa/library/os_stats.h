@@ -350,7 +350,6 @@ typedef enum {
 	NSBeep_FUNC,
 	NSBitsPerPixelFromDepth_FUNC,
 	NSCalibratedRGBColorSpace_FUNC,
-	NSCopyBits_FUNC,
 	NSCountWindows_FUNC,
 	NSCursorAttributeName_FUNC,
 	NSDefaultRunLoopMode_FUNC,
@@ -880,6 +879,11 @@ typedef enum {
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF_FUNC,
 #else
 	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Z_FUNC,
