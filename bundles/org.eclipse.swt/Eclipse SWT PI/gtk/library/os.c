@@ -9802,15 +9802,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1get_1expanded_FUNC);
-/*
-	rc = (jboolean)gtk_expander_get_expanded(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_expander_get_expanded)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jboolean)gtk_expander_get_expanded((GtkExpander *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1get_1expanded_FUNC);
 	return rc;
 }
@@ -9824,15 +9816,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1expander_1new)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
 	rc = (jintLong)gtk_expander_new((const gchar *)lparg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_expander_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
-		}
-	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1new_FUNC);
@@ -9845,15 +9829,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1expanded)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1expanded_FUNC);
-/*
-	gtk_expander_set_expanded(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_expander_set_expanded)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
-		}
-	}
+	gtk_expander_set_expanded((GtkExpander *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1expanded_FUNC);
 }
 #endif
@@ -9863,15 +9839,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label_1widget)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1label_1widget_FUNC);
-/*
-	gtk_expander_set_label_widget(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_expander_set_label_widget)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gtk_expander_set_label_widget((GtkExpander *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1label_1widget_FUNC);
 }
 #endif

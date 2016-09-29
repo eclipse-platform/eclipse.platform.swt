@@ -158,12 +158,6 @@
 #define gtk_file_filter_new_LIB LIB_GTK
 #define gtk_file_filter_get_name_LIB LIB_GTK
 #define gtk_file_filter_set_name_LIB LIB_GTK
-#define gtk_expander_get_expanded_LIB LIB_GTK
-#define gtk_expander_get_label_widget_LIB LIB_GTK
-#define gtk_expander_new_LIB LIB_GTK
-#define gtk_expander_set_expanded_LIB LIB_GTK
-#define gtk_expander_set_label_LIB LIB_GTK
-#define gtk_expander_set_label_widget_LIB LIB_GTK
 #define gtk_label_set_line_wrap_mode_LIB LIB_GTK
 #define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK

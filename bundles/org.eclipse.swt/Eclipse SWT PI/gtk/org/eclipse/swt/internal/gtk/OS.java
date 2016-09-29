@@ -7610,7 +7610,7 @@ public static final void gtk_entry_set_visibility(long /*int*/ entry, boolean vi
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param expander cast=(GtkExpander *) */
 public static final native boolean _gtk_expander_get_expanded(long /*int*/ expander);
 public static final boolean gtk_expander_get_expanded(long /*int*/ expander) {
 	lock.lock();
@@ -7621,7 +7621,6 @@ public static final boolean gtk_expander_get_expanded(long /*int*/ expander) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param label cast=(const gchar *)
  */
 public static final native long /*int*/ _gtk_expander_new(byte[] label);
@@ -7633,7 +7632,7 @@ public static final long /*int*/ gtk_expander_new(byte[] label) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param expander cast=(GtkExpander *) */
 public static final native void _gtk_expander_set_expanded(long /*int*/ expander, boolean expanded);
 public static final void gtk_expander_set_expanded(long /*int*/ expander, boolean expanded) {
 	lock.lock();
@@ -7643,7 +7642,10 @@ public static final void gtk_expander_set_expanded(long /*int*/ expander, boolea
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param expander cast=(GtkExpander *)
+ * @param label_widget cast=(GtkWidget *)
+ */
 public static final native void _gtk_expander_set_label_widget(long /*int*/ expander, long /*int*/ label_widget);
 public static final void  gtk_expander_set_label_widget(long /*int*/ expander, long /*int*/ label_widget) {
 	lock.lock();
