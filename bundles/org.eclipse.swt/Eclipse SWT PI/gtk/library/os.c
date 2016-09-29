@@ -21186,27 +21186,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC);
-#endif
-	if (arg1) getGtkAdjustmentFields(env, arg1, (GtkAdjustment *)arg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -21772,27 +21751,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkVisua
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J_FUNC);
-#endif
-	if (arg0) setGtkAdjustmentFields(env, arg0, (GtkAdjustment *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J_FUNC);
 #endif
 }
 #endif

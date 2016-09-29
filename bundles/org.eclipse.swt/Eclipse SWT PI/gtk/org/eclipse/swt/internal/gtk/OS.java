@@ -15507,11 +15507,6 @@ public static final native void memmove(long /*int*/ dest, GtkTargetEntry src, l
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
- */
-public static final native void memmove(long /*int*/ dest, GtkAdjustment src);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GdkColor src, long /*int*/ size);
@@ -15571,11 +15566,6 @@ public static final native void memmove(GdkEventProperty dest, long /*int*/ src)
 public static final native void memmove(GdkDragContext dest, long /*int*/ src, long /*int*/ size);
 /** @param dest flags=no_in */
 public static final native void memmove(GtkWidgetClass dest, long /*int*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GtkAdjustment dest, long /*int*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

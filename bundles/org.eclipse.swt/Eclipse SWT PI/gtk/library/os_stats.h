@@ -1648,11 +1648,6 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC,
 #endif
 #ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2_FUNC,
-#endif
-#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC,
@@ -1771,11 +1766,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC,

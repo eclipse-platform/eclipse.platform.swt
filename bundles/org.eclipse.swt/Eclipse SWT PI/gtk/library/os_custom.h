@@ -113,15 +113,6 @@
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_widget_set_opacity_LIB LIB_GTK
 #define gtk_widget_get_opacity_LIB LIB_GTK
-#define gtk_adjustment_configure_LIB LIB_GTK
-#define gtk_adjustment_get_lower_LIB LIB_GTK
-#define gtk_adjustment_get_page_increment_LIB LIB_GTK
-#define gtk_adjustment_get_page_size_LIB LIB_GTK
-#define gtk_adjustment_get_step_increment_LIB LIB_GTK
-#define gtk_adjustment_get_upper_LIB LIB_GTK
-#define gtk_adjustment_get_value_LIB LIB_GTK
-#define gtk_adjustment_set_page_increment_LIB LIB_GTK
-#define gtk_adjustment_set_step_increment_LIB LIB_GTK
 #define gtk_scrollable_get_vadjustment_LIB LIB_GTK
 #define gtk_adjustment_value_changed_LIB LIB_GTK
 #define gtk_arrow_new_LIB LIB_GTK

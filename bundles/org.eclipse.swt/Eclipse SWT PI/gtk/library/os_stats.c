@@ -1638,11 +1638,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
@@ -1761,11 +1756,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II",
