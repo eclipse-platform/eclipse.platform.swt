@@ -425,7 +425,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		dest.y = destY;
 
 		view.lockFocus();
-		OS.NSCopyBits(0, damage , dest);
+		NSSize delta = new NSSize();
+		delta.width = deltaX;
+		delta.height = deltaY;
+		view.scrollRect(damage, delta);
 		view.unlockFocus();
 
 		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);

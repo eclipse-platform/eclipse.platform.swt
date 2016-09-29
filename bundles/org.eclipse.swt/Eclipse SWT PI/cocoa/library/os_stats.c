@@ -343,7 +343,6 @@ char * OS_nativeFunctionNames[] = {
 	"NSBeep",
 	"NSBitsPerPixelFromDepth",
 	"NSCalibratedRGBColorSpace",
-	"NSCopyBits",
 	"NSCountWindows",
 	"NSCursorAttributeName",
 	"NSDefaultRunLoopMode",
@@ -874,6 +873,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF",
 #else
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSSize_2",
+#else
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSSize_2",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Z",
