@@ -1794,6 +1794,7 @@ public static final long /*int*/ sel_scrollClipView_toPoint_ = sel_registerName(
 public static final long /*int*/ sel_scrollColumnToVisible_ = sel_registerName("scrollColumnToVisible:");
 public static final long /*int*/ sel_scrollPoint_ = sel_registerName("scrollPoint:");
 public static final long /*int*/ sel_scrollRangeToVisible_ = sel_registerName("scrollRangeToVisible:");
+public static final long /*int*/ sel_scrollRect_by_ = sel_registerName("scrollRect:by:");
 public static final long /*int*/ sel_scrollRectToVisible_ = sel_registerName("scrollRectToVisible:");
 public static final long /*int*/ sel_scrollRowToVisible_ = sel_registerName("scrollRowToVisible:");
 public static final long /*int*/ sel_scrollToPoint_ = sel_registerName("scrollToPoint:");
@@ -3257,12 +3258,6 @@ public static final native void NSBeep();
  */
 public static final native long /*int*/ NSBitsPerPixelFromDepth(int depth);
 /**
- * @param srcGState cast=(NSInteger)
- * @param srcRect flags=struct
- * @param destPoint flags=struct
- */
-public static final native void NSCopyBits(long /*int*/ srcGState, NSRect srcRect, NSPoint destPoint);
-/**
  * @param count cast=(NSInteger*)
  */
 public static final native void NSCountWindows(long[] /*int[]*/ count);
@@ -3994,6 +3989,12 @@ public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSRect arg1, long /*int*/ arg2, double /*float*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
+public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSSize arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct
