@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.5
  */
+@FunctionalInterface
 public interface CaretListener extends SWTEventListener {
 
 /**
