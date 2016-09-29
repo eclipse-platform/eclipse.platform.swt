@@ -65,11 +65,12 @@ public long /*int*/ internal_new_GC (GCData data);
 public void internal_dispose_GC (long /*int*/ handle, GCData data);
 
 /**
- * This method is to control the autoScaling feature. E.g. GC methods should
- * not autoScale bound information for Printer devices but it should
- * autoScale for Monitor displays.
+ * Returns <code>true</code> iff coordinates can be auto-scaled on this
+ * drawable and <code>false</code> if not. E.g. a {@link GC} method should not
+ * auto-scale the bounds of a figure drawn on a Printer device, but it may have
+ * to auto-scale when drawing on a high-DPI Display monitor.
  *
- * @return true if autoScale is enabled for that instance.
+ * @return <code>true</code> if auto-scaling is enabled for this drawable
  * @since 3.106
  */
 public default boolean isAutoScalable () {
