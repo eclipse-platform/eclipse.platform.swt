@@ -8848,15 +8848,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1clear)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1clear_FUNC);
-/*
-	gtk_cell_layout_clear(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_cell_layout_clear)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	gtk_cell_layout_clear((GtkCellLayout *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1clear_FUNC);
 }
 #endif
@@ -8867,15 +8859,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1cell_1layout_1get_1cells)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1get_1cells_FUNC);
-/*
-	rc = (jintLong)gtk_cell_layout_get_cells(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_cell_layout_get_cells)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)gtk_cell_layout_get_cells((GtkCellLayout *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1get_1cells_FUNC);
 	return rc;
 }
@@ -8886,15 +8870,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1pack_1start_FUNC);
-/*
-	gtk_cell_layout_pack_start(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_cell_layout_pack_start)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jboolean))fp)(arg0, arg1, arg2);
-		}
-	}
+	gtk_cell_layout_pack_start((GtkCellLayout *)arg0, (GtkCellRenderer *)arg1, arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1pack_1start_FUNC);
 }
 #endif

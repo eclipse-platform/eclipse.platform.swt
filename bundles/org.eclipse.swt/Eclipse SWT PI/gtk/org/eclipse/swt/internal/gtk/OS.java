@@ -6627,7 +6627,7 @@ public static final void gtk_calendar_get_date(long /*int*/ calendar, int[] year
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param cell_layout cast=(GtkCellLayout *) */
 public static final native void _gtk_cell_layout_clear(long /*int*/ cell_layout);
 public static final void gtk_cell_layout_clear(long /*int*/ cell_layout) {
 	lock.lock();
@@ -6637,7 +6637,7 @@ public static final void gtk_cell_layout_clear(long /*int*/ cell_layout) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param cell_layout cast=(GtkCellLayout *) */
 public static final native long /*int*/ _gtk_cell_layout_get_cells(long /*int*/ cell_layout);
 public static final long /*int*/ gtk_cell_layout_get_cells(long /*int*/ cell_layout) {
 	lock.lock();
@@ -6657,7 +6657,10 @@ public static final void gtk_cell_layout_set_attributes(long /*int*/ cell_layout
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param cell_layout cast=(GtkCellLayout *)
+ * @param cell cast=(GtkCellRenderer *)
+ */
 public static final native void _gtk_cell_layout_pack_start(long /*int*/ cell_layout, long /*int*/ cell, boolean expand);
 public static final void gtk_cell_layout_pack_start(long /*int*/ cell_layout, long /*int*/ cell, boolean expand) {
 	lock.lock();
