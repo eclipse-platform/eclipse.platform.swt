@@ -4068,6 +4068,11 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="scrollRect:by:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="scrollRectToVisible:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4995,12 +5000,6 @@
 	<function name="NSBitsPerPixelFromDepth" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSCopyBits" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
 	</function>
 	<function name="NSCountWindows" swt_gen="true">
 		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>

@@ -247,6 +247,10 @@ public void scrollPoint(NSPoint aPoint) {
 	OS.objc_msgSend(this.id, OS.sel_scrollPoint_, aPoint);
 }
 
+public void scrollRect(NSRect aRect, NSSize delta) {
+	OS.objc_msgSend(this.id, OS.sel_scrollRect_by_, aRect, delta);
+}
+
 public boolean scrollRectToVisible(NSRect aRect) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
