@@ -39,12 +39,12 @@ public void testBrowser1() {
 		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
 		return;
 	}
-	assertTrue(Browser1.test());
+	assertTrue(Browser1_location_progress_fromURL.test());
 }
 
 @Test
 public void testBrowser2() {
-	assertTrue(Browser2.test());
+	assertTrue(Browser2_location_and_progress_advanced.test());
 }
 
 @Test
@@ -53,17 +53,17 @@ public void testBrowser3() {
 		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
 		return;
 	}
-	assertTrue(Browser3.test());
+	assertTrue(Browser3_window_open_visibility_listeners.test());
 }
 
 @Test
 public void testBrowser4() {
-	assertTrue(Browser4.test());
+	assertTrue(Browser4_window_close_listener.test());
 }
 
 @Test
 public void testBrowser5() {
-	assertTrue(Browser5.test());
+	assertTrue(Browser5_sizing_and_bounds.test());
 }
 
 @Test
@@ -72,22 +72,22 @@ public void testBrowser6() {
 		System.out.println("Test_BrowserSuite.testBrowser6() skipped, see bug 499159");
 		return;
 	}
-	assertTrue(Browser6.test());
+	assertTrue(Browser6_title_change_listener.test());
 }
 
 @Test
 public void testBrowser7() {
-	assertTrue(Browser7.test());
+	assertTrue(Browser7_child_browsers.test());
 }
 
 @Test
 public void testBrowser8() {
-	assertTrue(Browser8.test());
+	assertTrue(Browser8_execute_fromMemory.test());
 }
 
 @Test
 public void testBrowser9() {
-	assertTrue(Browser9.test());
+	assertTrue(Browser9_execute_fromFile.test());
 }
 
 @Before

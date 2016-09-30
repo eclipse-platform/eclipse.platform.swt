@@ -20,7 +20,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.test.Screenshots;
 
-public class Browser5 {
+/**
+ * Tests setting browser bounds
+ *
+ */
+public class Browser5_sizing_and_bounds {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 	static Point[][] regressionBounds = {
@@ -67,7 +71,7 @@ public class Browser5 {
 						 */
 						if (location != null || size != null) {
 							if (verbose) System.out.println("Failure - Browser "+index+" is receiving multiple show events");
-							if (verbose) Screenshots.takeScreenshot(Browser5.class, "show.noindex");
+							if (verbose) Screenshots.takeScreenshot(Browser5_sizing_and_bounds.class, "show.noindex");
 							passed = false;
 							shell.close();
 						} else {
@@ -94,7 +98,7 @@ public class Browser5 {
 							(size != null && size.x >= expectedSize.x && size.y >= expectedSize.y);
 						if (!checkSize || !checkLocation) {
 							if (verbose) System.out.println("	Failure ");
-							if (verbose) Screenshots.takeScreenshot(Browser5.class, "show.failure." + index);
+							if (verbose) Screenshots.takeScreenshot(Browser5_sizing_and_bounds.class, "show.failure." + index);
 							if (location != null && expectedLocation != null
 									&& expectedLocation.x - location.x < 20
 									&& expectedLocation.y - location.y < 20) {
@@ -107,13 +111,13 @@ public class Browser5 {
 							}
 						} else cntPassed++;
 					}
-					if (verbose) Screenshots.takeScreenshot(Browser5.class, "show.end." + index);
+					if (verbose) Screenshots.takeScreenshot(Browser5_sizing_and_bounds.class, "show.end." + index);
 				}
 			});
 			browser1.addCloseWindowListener(event1 -> {
 				cntClosed++;
 				if (verbose) System.out.println("Close");
-				if (verbose) Screenshots.takeScreenshot(Browser5.class, "close " + cntClosed);
+				if (verbose) Screenshots.takeScreenshot(Browser5_sizing_and_bounds.class, "close " + cntClosed);
 				Browser browser2 = (Browser)event1.widget;
 				browser2.getShell().close();
 				if (cntPassed == regressionBounds.length) passed = true;
@@ -164,7 +168,7 @@ public class Browser5 {
 		String url;
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
-		if (pluginPath == null) url = Browser5.class.getClassLoader().getResource("browser5.html").toString();
+		if (pluginPath == null) url = Browser5_sizing_and_bounds.class.getClassLoader().getResource("browser5.html").toString();
 		else url = pluginPath + "/data/browser5.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {

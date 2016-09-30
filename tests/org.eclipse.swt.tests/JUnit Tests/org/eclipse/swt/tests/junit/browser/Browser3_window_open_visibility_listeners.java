@@ -21,14 +21,23 @@ import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.test.Screenshots;
 
-public class Browser4 {
+/**
+ * Tests a range of listeners
+ * - open window listener (Notification when new window needs to be opened)
+ * - location listener (change of url)
+ * - window visibility (when window needs to be shown or hidden)
+ * - progress listener
+ *
+ */
+public class Browser3_window_open_visibility_listeners {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean openWindow, locationChanging, locationChanged, visibilityShow, progressCompleted, closeWindow;
+	public static boolean openWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
 
 	public static boolean test1(String url) {
-		if (verbose) System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:OpenWindow.open > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed > Browser2.CloseWindow.close");
+		if (verbose) System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:OpenWindow.open > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 
@@ -40,7 +49,9 @@ public class Browser4 {
 		shell2.setLayout(new FillLayout());
 		final Browser browser2 = new Browser(shell2, SWT.NONE);
 		browser1.addOpenWindowListener(event -> {
+			if (verbose) System.out.println("Browser1:OpenWindow.open");
 			openWindow = true;
+			if (verbose) Screenshots.takeScreenshot(Browser3_window_open_visibility_listeners.class, "openWindow");
 			Browser src = (Browser)event.widget;
 			if (src != browser1) {
 				if (verbose) System.out.println("Failure - expected "+browser1+", got "+src);
@@ -57,10 +68,13 @@ public class Browser4 {
 			event.browser = browser2;
 		});
 		browser2.addLocationListener(new LocationListener() {
+			private int changed = 1;
 			@Override
 			public void changed(LocationEvent event) {
+				if (verbose) System.out.println("Browser2:Location.changed to " + event.location);
+				if (verbose) Screenshots.takeScreenshot(Browser3_window_open_visibility_listeners.class, "changed" + changed++);
 				if (!openWindow || !locationChanging) {
-					if (verbose) System.out.println("Failure - Location.changing received at wrong time");
+					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
 					return;
@@ -69,8 +83,9 @@ public class Browser4 {
 			}
 			@Override
 			public void changing(LocationEvent event) {
+				if (verbose) System.out.println("Browser2:Location.changing to " + event.location);
 				if (!openWindow) {
-					if (verbose) System.out.println("Failure - Location.changing received at wrong time");
+					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
 					return;
@@ -81,71 +96,60 @@ public class Browser4 {
 		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
 			@Override
 			public void hide(WindowEvent event) {
+				if (verbose) System.out.println("Browser2:Visibility.hide");
 				if (verbose) System.out.println("Failure - did not expect VisibilityEvent.hide");
 				passed = false;
 				shell.close();
 			}
 			@Override
 			public void show(WindowEvent event) {
+				if (verbose) System.out.println("Browser2:Visibility.show");
+				if (verbose) Screenshots.takeScreenshot(Browser3_window_open_visibility_listeners.class, "show");
 				if (!openWindow) {
-					if (verbose) System.out.println("Failure - Visibility.show received at wrong time");
+					if (verbose) System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
 					shell.close();
 					return;
 				}
 				shell2.open();
-				visibilityShow = true;
 			}
 		});
 		browser2.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
+//				if (verbose) System.out.println("Browser2:Progress.changed");
 			}
 
 			@Override
 			public void completed(ProgressEvent event) {
-				if (!locationChanging || !locationChanged || !visibilityShow) {
-					if (verbose) System.out.println("Failure - Progress.completed received at wrong time");
-					passed = false;
-					shell.close();
-					return;
-				}
-				progressCompleted = true;
+				if (verbose) System.out.println("Browser2:Progress.completed");
+				new Thread() {
+					@Override
+					public void run() {
+						if (verbose) System.out.println("timer start");
+						try { sleep(2000); } catch (Exception e) {}
+						passed = true;
+						if (verbose) Screenshots.takeScreenshot(Browser3_window_open_visibility_listeners.class, "completed");
+						if (!display.isDisposed())
+							display.asyncExec(() -> {
+								if (verbose) System.out.println("timer asyncexec shell.close");
+								if (!shell.isDisposed()) shell.close();
+							});
+						if (verbose) System.out.println("timer over");
+					}
+				}.start();
 			}
-		});
-		browser2.addCloseWindowListener(event -> {
-			if (!progressCompleted) {
-				if (verbose) System.out.println("Failure - CloseWindow.close received at wrong time");
-				passed = false;
-				shell.close();
-				return;
-			}
-			closeWindow = true;
-			final Browser browser = (Browser)event.widget;
-			Shell parent = browser.getShell();
-			parent.close();
-
-			new Thread() {
-				@Override
-				public void run() {
-					if (verbose) System.out.println("timer start");
-					try { sleep(2000); } catch (Exception e) {}
-					passed = true;
-					if (!display.isDisposed())
-						display.asyncExec(() -> {
-							if (verbose) System.out.println("timer asyncexec shell.close");
-							if (!shell.isDisposed()) shell.close();
-						});
-					if (verbose) System.out.println("timer over");
-				}
-			}.start();
 		});
 
 		shell.open();
 		browser1.setUrl(url);
 
 		boolean timeout = runLoopTimer(display, shell, 600);
-		if (timeout) passed = false;
+		if (timeout) {
+			if (verbose) System.out.println("timed out");
+			passed = false;
+		}
+		if (verbose) Screenshots.takeScreenshot(Browser3_window_open_visibility_listeners.class, "end");
 		display.dispose();
 		return passed;
 	}
@@ -180,8 +184,8 @@ public class Browser4 {
 		String url;
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
-		if (pluginPath == null) url = Browser4.class.getClassLoader().getResource("browser4.html").toString();
-		else url = pluginPath + "/data/browser4.html";
+		if (pluginPath == null) url = Browser3_window_open_visibility_listeners.class.getClassLoader().getResource("browser3.html").toString();
+		else url = pluginPath + "/data/browser3.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]);

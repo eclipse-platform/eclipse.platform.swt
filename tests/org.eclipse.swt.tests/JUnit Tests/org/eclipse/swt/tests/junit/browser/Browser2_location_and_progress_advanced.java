@@ -20,15 +20,22 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class Browser1 {
+/**
+ * Tests a range of listeners:
+ * - Location change (different URL)
+ * - progress load listener
+ * But goes into more depth than browser2.
+ *
+ */
+public class Browser2_location_and_progress_advanced {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
 
-	public static boolean test1(String url) {
-		if (verbose) System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");
+	public static boolean test1(String html) {
+		if (verbose) System.out.println("setText - args: "+html+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 
@@ -41,19 +48,14 @@ public class Browser1 {
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);
 				/* certain browsers do send multiple changing events. Safari does this. */
-				/* verify the page has not been reported as being loaded */
-				passed = !progressCompleted;
+				passed = !locationChanged && !progressCompleted;
 				locationChanging = true;
 				if (!passed) shell.close();
 			}
 			@Override
 			public void changed(LocationEvent event) {
 				if (verbose) System.out.println("changed "+event.location);
-				/* ignore non top frame loading */
-				if (!event.top) return;
-				/* verify a changed follows at least one changing */
-				/* verify the page has not been reported as being loaded */
-				passed = locationChanging && !progressCompleted;
+				passed = locationChanging && !locationChanged && !progressCompleted;
 				locationChanged = true;
 				if (!passed) shell.close();
 			}
@@ -67,32 +69,30 @@ public class Browser1 {
 				if (verbose) System.out.println("completed");
 				passed = locationChanging && locationChanged && !progressCompleted;
 				progressCompleted = true;
-				// TEMPORARILY COMMENTED OUT
-				/*if (!passed)*/ shell.close();
-/*				if (passed) {
-					 wait a little bit more before declaring it a success,
+				if (!passed) shell.close();
+				if (passed) {
+					/* wait a little bit more before declaring it a success,
 					 * in case bogus events follow this one.
-
+					 */
 					new Thread() {
+						@Override
 						public void run() {
 							if (verbose) System.out.println("timer start");
-							try { sleep(2000); } catch (Exception e) {};
+							try { sleep(2000); } catch (Exception e) {}
 							if (!display.isDisposed())
-								display.asyncExec(new Runnable(){
-									public void run() {
-										if (verbose) System.out.println("timer asyncexec shell.close");
-										if (!shell.isDisposed()) shell.close();
-									}
+								display.asyncExec(() -> {
+									if (verbose) System.out.println("timer asyncexec shell.close");
+									if (!shell.isDisposed()) shell.close();
 								});
 							if (verbose) System.out.println("timer over");
-						};
+						}
 					}.start();
 				}
-*/			}
+			}
 		});
 
 		shell.open();
-		browser.setUrl(url);
+		browser.setText(html);
 
 		boolean timeout = runLoopTimer(display, shell, 600);
 		if (timeout) passed = false;
@@ -100,8 +100,8 @@ public class Browser1 {
 		return passed;
 	}
 
-	public static boolean test2(String url) {
-		if (verbose) System.out.println("URL Loading Filtering - args: "+url+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
+	public static boolean test2(String html) {
+		if (verbose) System.out.println("setText URL Loading Filtering - args: "+html+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
 		locationChanging = locationChanged = progressCompleted = false;
 		passed = false;
 		final Display display = new Display();
@@ -112,7 +112,15 @@ public class Browser1 {
 			@Override
 			public void changing(LocationEvent event) {
 				if (verbose) System.out.println("changing "+event.location);
-				passed = !locationChanging && !locationChanged && !progressCompleted;
+				/*
+				* Feature on Internet Explorer.  When pending requests are stopped, IE
+				* emits a Location.changing with res://C:\WINDOWS\System32\shdoclc.dll/navcancl.htm.
+				* Pending requests are stopped before going to the blank page to set HTML in memory
+				* with setText.
+				* The test considers it is OK to get multiple Location.changing events at the condition
+				* that no locationChanged and progressCompleted are reported.
+				*/
+				passed = !locationChanged && !progressCompleted;
 				locationChanging = true;
 				if (!passed) {
 					shell.close();
@@ -145,7 +153,8 @@ public class Browser1 {
 				 */
 				passed = event.location.length() == 0;
 				if (verbose) System.out.println("changed "+event.location+" "+passed);
-				locationChanged = true;
+				/* ignore LocationChanged that are empty */
+				locationChanged = !passed;
 			}
 		});
 		browser.addProgressListener(new ProgressListener() {
@@ -169,7 +178,7 @@ public class Browser1 {
 			}
 		});
 		shell.open();
-		browser.setUrl(url);
+		browser.setText(html);
 		boolean timeout = runLoopTimer(display, shell, 600);
 		if (timeout) passed = false;
 		display.dispose();
@@ -203,14 +212,14 @@ public class Browser1 {
 
 	public static boolean test() {
 		int fail = 0;
-		String[] urls = {"http://www.google.com"};
-		for (int i = 0; i < urls.length; i++) {
-			boolean result = test1(urls[i]);
+		String[] html = {file1};
+		for (int i = 0; i < html.length; i++) {
+			boolean result = test1(html[i]);
 			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++;
 		}
-		for (int i = 0; i < urls.length; i++) {
-			boolean result = test2(urls[i]);
+		for (int i = 0; i < html.length; i++) {
+			boolean result = test2(html[i]);
 			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++;
 		}
@@ -220,4 +229,10 @@ public class Browser1 {
 	public static void main(String[] argv) {
 		System.out.println("\r\nTests Finished. SUCCESS: "+test());
 	}
+
+	public static String file1 = "<HTML><HEAD>"+
+		"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">"+
+		"<TITLE>Test with 2 frames</TITLE>"+
+		"</HEAD><BODY>some simple test case here</BODY></HTML>";
+
 }

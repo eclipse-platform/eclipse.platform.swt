@@ -20,7 +20,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class Browser9 {
+/**
+ * Test if execute works on html that is loaded from file.
+ *
+ */
+public class Browser9_execute_fromFile {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 
@@ -106,7 +110,7 @@ public class Browser9 {
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		for (int i = 0; i < html.length; i++) {
-			if (pluginPath == null) url = Browser9.class.getClassLoader().getResource(html[i]).toString();
+			if (pluginPath == null) url = Browser9_execute_fromFile.class.getClassLoader().getResource(html[i]).toString();
 			else url = pluginPath + "/data/"+html[i];
 			boolean result = test(url, script[i], status[i]);
 			if (verbose) System.out.print(result ? "." : "E");

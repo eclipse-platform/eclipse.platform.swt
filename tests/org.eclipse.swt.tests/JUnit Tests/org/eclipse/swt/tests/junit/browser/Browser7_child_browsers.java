@@ -22,8 +22,11 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * TODO WEBKIT2 - test passes, but doesn't seem to spawn child windows properly the way WEBKIT1 does. Need to investigate.
  *
+ * Test that a parent browser can open child browsers dynamically during run time.
+ * Recursivley opens 4 child shells with browsers.
+ *
  */
-public class Browser7 {
+public class Browser7_child_browsers {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 
@@ -130,7 +133,7 @@ public class Browser7 {
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
-		if (pluginPath == null) url = Browser7.class.getClassLoader().getResource("browser7.html").toString();
+		if (pluginPath == null) url = Browser7_child_browsers.class.getClassLoader().getResource("browser7.html").toString();
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {

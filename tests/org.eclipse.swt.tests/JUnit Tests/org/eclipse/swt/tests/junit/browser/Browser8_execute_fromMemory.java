@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Shell;
  * should be appended in between the lines.
  *
  */
-public class Browser8 {
+public class Browser8_execute_fromMemory {
 	public static boolean verbose = false;  //Set to true to visually inspect change.
 
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
@@ -108,7 +108,7 @@ public class Browser8 {
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
-		if (pluginPath == null) url = Browser8.class.getClassLoader().getResource("browser7.html").toString();
+		if (pluginPath == null) url = Browser8_execute_fromMemory.class.getClassLoader().getResource("browser7.html").toString();
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {

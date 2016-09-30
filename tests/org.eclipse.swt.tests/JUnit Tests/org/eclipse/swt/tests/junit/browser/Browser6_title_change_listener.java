@@ -16,7 +16,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class Browser6 {
+/**
+ * Tests listener that kicks in when title of the browser changes.
+ *
+ */
+public class Browser6_title_change_listener {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 	public static boolean isMozilla = false; //SwtTestUtil.isGTK;
@@ -120,7 +124,7 @@ public class Browser6 {
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
-		if (pluginPath == null) url = Browser6.class.getClassLoader().getResource("browser6.html").toString();
+		if (pluginPath == null) url = Browser6_title_change_listener.class.getClassLoader().getResource("browser6.html").toString();
 		else url = pluginPath + "/data/browser6.html";
 		urls = new String[] {url};
 		String[] titles = {"This is a test title that must be carefully checked when that page is loaded"};

@@ -47,6 +47,9 @@ public void setUp() {
 	browser = new Browser(shell, SWT.NONE);
 }
 
+/**
+ * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
+ */
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -62,7 +65,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}	catch (IllegalArgumentException e) {
 	}
 }
-
+/**
+ * Test that if you invoke the addWindowListener without a listener, a proper IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
 	shell.setText("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
@@ -79,6 +84,9 @@ public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListe
 	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
 }
 
+/**
+ * Test that addLocationListener() throws a IllegalArgumentException if no arument given.
+ */
 @Test
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	shell.setText("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
@@ -101,6 +109,9 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
+/**
+ * Tests that when addOpenWindowListener() is called without an argument, a IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
 	shell.setText("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
@@ -117,6 +128,9 @@ public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListene
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
+/**
+ * Test that if addProgressListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
 	shell.setText("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
@@ -139,6 +153,10 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
+
+/**
+ * Test that if addStatusTextListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
 	shell.setText("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
@@ -155,6 +173,9 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
+/**
+ * Test that if addTitleListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	shell.setText("test_addTitleLorg_eclipse_swt_browser_TitleListener");
@@ -171,6 +192,9 @@ public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
 }
 
+/**
+ * Test that if addTitleListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
 	shell.setText("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
@@ -193,6 +217,9 @@ public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityW
 	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
 }
 
+/**
+ * Test that going back in history, when no new pages were visited, returns false.
+ */
 @Test
 public void test_back() {
 	shell.setText("test_back");
@@ -205,6 +232,9 @@ public void test_back() {
 	assertFalse(result);
 }
 
+/**
+ * Test that if execute() is called with 'null' as argument, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_executeLjava_lang_String() {
 	shell.setText("test_executeLjava_lang_String");
@@ -219,7 +249,9 @@ public void test_executeLjava_lang_String() {
 	 * since a document must have been loaded to execute a script on it.
 	 */
 }
-
+/**
+ * Test that going forward in history (without having gone back before) returns false.
+ */
 @Test
 public void test_forward() {
 	shell.setText("test_forward");
@@ -232,6 +264,9 @@ public void test_forward() {
 	assertFalse(result);
 }
 
+/**
+ * Test that getUrl() returns a non-null string.
+ */
 @Test
 public void test_getUrl() {
 	shell.setText("test_getUrl");
@@ -239,6 +274,12 @@ public void test_getUrl() {
 	assertTrue(string != null);
 }
 
+
+/**
+ * Test of 'back in history' api.
+ * - Test isBackEnabled() and back() return the same value.
+ * - Test that going isBackEnabled still returns false if back was called multiple times.
+ */
 @Test
 public void test_isBackEnabled() {
 	shell.setText("test_isBackEnabled");
@@ -255,6 +296,11 @@ public void test_isBackEnabled() {
 	assertFalse(result);
 }
 
+/**
+ * Test of 'forward in history' api.
+ * - Test isForwardEnabled() and forward() return the same value.
+ * - Test that going isBackEnabled still returns false if back was called multiple times.
+ */
 @Test
 public void test_isForwardEnabled() {
 	shell.setText("test_isForwardEnabled");
@@ -271,6 +317,10 @@ public void test_isForwardEnabled() {
 	assertFalse(result);
 }
 
+/**
+ * Test that refresh executes without throwing exceptions.
+ * (Maybe we should actually load a page first?)
+ */
 @Test
 public void test_refresh() {
 	shell.setText("test_refresh");
@@ -280,6 +330,10 @@ public void test_refresh() {
 	}
 }
 
+
+/**
+ * Test that if removeCloseWindowListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
 	try {
@@ -291,6 +345,9 @@ public void test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowLi
 	// tested in addCloseWindowListener
 }
 
+/**
+ * Test that if removeLocationListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	try {
@@ -302,6 +359,9 @@ public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener
 	// tested in addLocationListener
 }
 
+/**
+ * Test that if removeOpenWindowListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
 	try {
@@ -313,6 +373,9 @@ public void test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowList
 	// tested in addOpenWindowListener
 }
 
+/**
+ * Test that if removeProgressListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
 	try {
@@ -324,6 +387,9 @@ public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener
 	// tested in addProgressListener
 }
 
+/**
+ * Test that if removeStatusTextListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
 	try {
@@ -335,6 +401,10 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 	// tested in addStatusTextListener
 }
 
+
+/**
+ * Test that if removeTitleListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	try {
@@ -346,6 +416,9 @@ public void test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
 	// tested in addTitleListener
 }
 
+/**
+ * Test that if removeVisibilityWindowListener() is called without a listener, IllegalArgumentException is thrown.
+ */
 @Test
 public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
 	try {
@@ -357,6 +430,12 @@ public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_Visibili
 	// tested in addVisibilityWindowListener
 }
 
+/**
+ * Test that HTML can be loaded into the browser.
+ * Assertion is based on the return value of setText().
+ * (A true return value doesn't neccessarily mean the text is actually rendered,
+ * You should see a browser page with 'That is a test line...' printed many times.)
+ */
 @Test
 public void test_setTextLjava_lang_String() {
 	shell.setText("test_setTextLjava_lang_String");
@@ -378,6 +457,11 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+/**
+ * Test that setText() without an argument throws a IllegalArgumentException and that
+ * setURL with a live URL doesn't throw an exception.
+ * (TODO This should be split into two test cases)
+ */
 @Test
 public void test_setUrlLjava_lang_String() {
 	shell.setText("test_setUrlLjava_lang_String");
@@ -394,6 +478,9 @@ public void test_setUrlLjava_lang_String() {
 	runLoopTimer(10);
 }
 
+/**
+ * Test that a page load an be stopped (stop()) without throwing an exception.
+ */
 @Test
 public void test_stop() {
 	shell.setText("test_stop");
