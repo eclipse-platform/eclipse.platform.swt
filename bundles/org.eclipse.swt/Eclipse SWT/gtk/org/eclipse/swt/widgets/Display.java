@@ -4667,7 +4667,7 @@ public void setCursorLocation (int x, int y) {
 }
 
 void setCursorLocationInPixels (Point location) {
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		long /*int*/ xWindow = OS.XDefaultRootWindow (xDisplay);
 		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, location.x, location.y);
