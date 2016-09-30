@@ -355,7 +355,7 @@ static boolean isExecutable(String fileName) {
 }
 
 /**
- * GNOME 2.4 - Launch the default program for the given file.
+ * GIO - Launch the default program for the given file.
  */
 static boolean gio_launch(String fileName) {
 	boolean result = false;
