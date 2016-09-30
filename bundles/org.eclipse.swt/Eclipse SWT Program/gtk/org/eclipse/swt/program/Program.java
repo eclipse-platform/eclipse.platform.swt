@@ -557,7 +557,7 @@ public String getName() {
  */
 @Override
 public int hashCode() {
-	return name.hashCode() ^ command.hashCode() ^ display.hashCode();
+	return name.hashCode() ^ command.hashCode();
 }
 
 /**
