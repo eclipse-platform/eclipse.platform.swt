@@ -834,7 +834,7 @@ Composite findDeferredControl () {
  * having a tool bar.
  * <p>
  *
- * @return a ToolBar object representing the Shell's tool bar, or <ocde>null</code>.
+ * @return a ToolBar object representing the Shell's tool bar, or <code>null</code>.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1209,7 +1209,7 @@ float getThemeAlpha () {
  * having a tool bar.
  * <p>
  *
- * @return a ToolBar object representing the Shell's tool bar, or <ocde>null</code>.
+ * @return a ToolBar object representing the Shell's tool bar, or <code>null</code>.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
