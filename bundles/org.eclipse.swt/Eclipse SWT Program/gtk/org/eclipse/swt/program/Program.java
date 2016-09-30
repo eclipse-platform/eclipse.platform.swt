@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
-
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.Path;
@@ -46,28 +45,13 @@ public final class Program {
 	static long modTime;
 	static Map<String, List<String>> mimeTable;
 
-	static final String DESKTOP_DATA = "Program_DESKTOP"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
-	static final int DESKTOP_UNKNOWN = 0;
-	static final int DESKTOP_GIO = 2;
-	static final int PREFERRED_ICON_SIZE = 16;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
 Program() {
-}
-
-/* Determine the desktop for the given display. */
-static int getDesktop(final Display display) {
-	if (display == null) return DESKTOP_UNKNOWN;
-	Integer desktopValue = (Integer)display.getData(DESKTOP_DATA);
-	if (desktopValue != null) return desktopValue.intValue();
-	int desktop = DESKTOP_GIO;
-
-	display.setData(DESKTOP_DATA, Integer.valueOf(desktop));
-	return desktop;
 }
 
 static String[] parseCommand(String cmd) {
@@ -136,40 +120,9 @@ static Program findProgram(Display display, String extension) {
 	if (extension == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length() == 0) return null;
 	if (extension.charAt(0) != '.') extension = "." + extension;
-	int desktop = getDesktop(display);
-	String mimeType = null;
-	switch (desktop) {
-		case DESKTOP_GIO: mimeType = gio_getMimeType(extension); break;
-	}
+	String mimeType = gio_getMimeType(extension);
 	if (mimeType == null) return null;
-	Program program = null;
-	switch (desktop) {
-		case DESKTOP_GIO: program = gio_getProgram(display, mimeType); break;
-	}
-	return program;
-}
-
-/**
- * Answer all program extensions in the operating system.  Note
- * that a <code>Display</code> must already exist to guarantee
- * that this method returns an appropriate result.
- *
- * @return an array of extensions
- */
-public static String[] getExtensions() {
-	return getExtensions(Display.getCurrent());
-}
-
-/*
- *  API: When support for multiple displays is added, this method will
- *       become public and the original method above can be deprecated.
- */
-static String[] getExtensions(Display display) {
-	int desktop = getDesktop(display);
-	switch (desktop) {
-		case DESKTOP_GIO: return gio_getExtensions();
-	}
-	return new String[0];
+	return gio_getProgram(display, mimeType);
 }
 
 /**
@@ -183,19 +136,14 @@ public static Program[] getPrograms() {
 	return getPrograms(Display.getCurrent());
 }
 
-/*
- *  API: When support for multiple displays is added, this method will
- *       become public and the original method above can be deprecated.
+/**
+ * Returns the receiver's image data.  This is the icon
+ * that is associated with the receiver in the operating
+ * system.
+ *
+ * @return the image data for the program, may be null
  */
-static Program[] getPrograms(Display display) {
-	int desktop = getDesktop(display);
-	switch (desktop) {
-		case DESKTOP_GIO: return gio_getPrograms(display);
-	}
-	return new Program[0];
-}
-
-ImageData gio_getImageData() {
+public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
 	long /*int*/ icon_theme =OS.gtk_icon_theme_get_default();
@@ -352,7 +300,11 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 	return program.command != null ? program : null;
 }
 
-static Program[] gio_getPrograms(Display display) {
+/*
+ *  API: When support for multiple displays is added, this method will
+ *       become public and the original method above can be deprecated.
+ */
+static Program[] getPrograms(Display display) {
 	long /*int*/ applicationList = OS.g_app_info_get_all ();
 	long /*int*/ list = applicationList;
 	Program program;
@@ -376,7 +328,7 @@ static Program[] gio_getPrograms(Display display) {
 	return programList;
 }
 
-static boolean gio_isExecutable(String fileName) {
+static boolean isExecutable(String fileName) {
 	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
 	if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
 	if (!OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE)) return false;
@@ -451,20 +403,20 @@ boolean gio_execute(String fileName) {
 	return result;
 }
 
-static String[] gio_getExtensions() {
+/**
+ * Answer all program extensions in the operating system.  Note
+ * that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @return an array of extensions
+ */
+public static String[] getExtensions() {
 	Map<String, List<String>> mimeInfo = gio_getMimeInfo();
 	if (mimeInfo == null) return new String[0];
 	/* Create a unique set of the file extensions. */
 	List<String> extensions = new ArrayList<>(mimeInfo.keySet());
 	/* Return the list of extensions. */
 	return extensions.toArray(new String[extensions.size()]);
-}
-
-static boolean isExecutable(Display display, String fileName) {
-	switch(getDesktop(display)) {
-		case DESKTOP_GIO: return gio_isExecutable(fileName);
-	}
-	return false;
 }
 
 /**
@@ -513,7 +465,7 @@ public static boolean launch (String fileName, String workingDir) {
  */
 static boolean launch (Display display, String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (workingDir != null && isExecutable(display, fileName)) {
+	if (workingDir != null && isExecutable(fileName)) {
 		try {
 			Compatibility.exec (new String [] {fileName}, null, workingDir);
 			return true;
@@ -521,25 +473,20 @@ static boolean launch (Display display, String fileName, String workingDir) {
 			return false;
 		}
 	}
-	switch (getDesktop (display)) {
-		case DESKTOP_GIO:
-			if (gio_launch (fileName)) return true;
-		default:
-			int index = fileName.lastIndexOf ('.');
-			if (index != -1) {
-				String extension = fileName.substring (index);
-				Program program = Program.findProgram (display, extension);
-				if (program != null && program.execute (fileName)) return true;
-			}
-			String lowercaseName = fileName.toLowerCase ();
-			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-				Program program = Program.findProgram (display, ".html"); //$NON-NLS-1$
-				if (program == null) {
-					program = Program.findProgram (display, ".htm"); //$NON-NLS-1$
-				}
-				if (program != null && program.execute (fileName)) return true;
-			}
-			break;
+	if (gio_launch (fileName)) return true;
+	int index = fileName.lastIndexOf ('.');
+	if (index != -1) {
+		String extension = fileName.substring (index);
+		Program program = Program.findProgram (display, extension);
+		if (program != null && program.execute (fileName)) return true;
+	}
+	String lowercaseName = fileName.toLowerCase ();
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+		Program program = Program.findProgram (display, ".html"); //$NON-NLS-1$
+		if (program == null) {
+			program = Program.findProgram (display, ".htm"); //$NON-NLS-1$
+		}
+		if (program != null && program.execute (fileName)) return true;
 	}
 	/* If the above launch attempts didn't launch the file, then try with exec().*/
 	try {
@@ -583,25 +530,7 @@ public boolean equals(Object other) {
  */
 public boolean execute(String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int desktop = getDesktop(display);
-	switch (desktop) {
-		case DESKTOP_GIO: return gio_execute(fileName);
-	}
-	return false;
-}
-
-/**
- * Returns the receiver's image data.  This is the icon
- * that is associated with the receiver in the operating
- * system.
- *
- * @return the image data for the program, may be null
- */
-public ImageData getImageData() {
-	switch (getDesktop(display)) {
-		case DESKTOP_GIO: return gio_getImageData();
-	}
-	return null;
+	return gio_execute(fileName);
 }
 
 /**
