@@ -1912,7 +1912,12 @@ public static final long /*int*/ dlsym(long /*int*/ handle, byte[] symbol) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param commandline cast=(gchar *)
+ * @param applName cast=(gchar *)
+ * @param flags cast=(GAppInfoCreateFlags)
+ * @param error cast=(GError **)
+ */
 public static final native long /*int*/ _g_app_info_create_from_commandline(byte[] commandline, byte[] applName, long /*int*/ flags, long /*int*/ error);
 public static final long /*int*/ g_app_info_create_from_commandline(byte[] commandline, byte[] applName, long /*int*/ flags, long /*int*/ error) {
 	lock.lock();
@@ -1922,7 +1927,6 @@ public static final long /*int*/ g_app_info_create_from_commandline(byte[] comma
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _g_app_info_get_all();
 public static final long /*int*/ g_app_info_get_all() {
 	lock.lock();
@@ -1932,7 +1936,9 @@ public static final long /*int*/ g_app_info_get_all() {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native long /*int*/ _g_app_info_get_executable(long /*int*/ appInfo);
 public static final long /*int*/ g_app_info_get_executable(long /*int*/ appInfo) {
 	lock.lock();
@@ -1942,7 +1948,9 @@ public static final long /*int*/ g_app_info_get_executable(long /*int*/ appInfo)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native long /*int*/ _g_app_info_get_icon(long /*int*/ appInfo);
 public static final long /*int*/ g_app_info_get_icon(long /*int*/ appInfo) {
 	lock.lock();
@@ -1952,7 +1960,9 @@ public static final long /*int*/ g_app_info_get_icon(long /*int*/ appInfo) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native long /*int*/ _g_app_info_get_name(long /*int*/ appInfo);
 public static final long /*int*/ g_app_info_get_name(long /*int*/ appInfo) {
 	lock.lock();
@@ -1962,7 +1972,12 @@ public static final long /*int*/ g_app_info_get_name(long /*int*/ appInfo) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ * @param list cast=(GList *)
+ * @param launchContext cast=(GAppLaunchContext *)
+ * @param error cast=(GError **)
+ */
 public static final native boolean _g_app_info_launch(long /*int*/ appInfo, long /*int*/ list, long /*int*/ launchContext, long /*int*/ error);
 public static final boolean g_app_info_launch(long /*int*/ appInfo, long /*int*/ list, long /*int*/ launchContext, long /*int*/ error) {
 	lock.lock();
@@ -1972,7 +1987,10 @@ public static final boolean g_app_info_launch(long /*int*/ appInfo, long /*int*/
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param mimeType cast=(gchar *)
+ * @param mustSupportURIs cast=(gboolean)
+ */
 public static final native long /*int*/ _g_app_info_get_default_for_type(byte[] mimeType, boolean mustSupportURIs);
 public static final long /*int*/ g_app_info_get_default_for_type(byte[] mimeType, boolean mustSupportURIs) {
 	lock.lock();
@@ -1982,17 +2000,23 @@ public static final long /*int*/ g_app_info_get_default_for_type(byte[] mimeType
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param uri cast=(char *)
+ * @param launchContext cast=(GAppLaunchContext *)
+ * @param error cast=(GError **)
+ */
 public static final native boolean _g_app_info_launch_default_for_uri(long /*int*/ uri, long /*int*/ launchContext, long /*int*/ error);
-public static final boolean g_app_info_launch_default_for_uri(long /*int*/ appInfo, long /*int*/ launchContext, long /*int*/ error) {
+public static final boolean g_app_info_launch_default_for_uri(long /*int*/ uri, long /*int*/ launchContext, long /*int*/ error) {
 	lock.lock();
 	try {
-		return _g_app_info_launch_default_for_uri(appInfo, launchContext, error);
+		return _g_app_info_launch_default_for_uri(uri, launchContext, error);
 	} finally {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native boolean _g_app_info_should_show(long /*int*/ appInfo);
 public static final boolean g_app_info_should_show(long /*int*/ appInfo) {
 	lock.lock();
@@ -2002,7 +2026,9 @@ public static final boolean g_app_info_should_show(long /*int*/ appInfo) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param appInfo cast=(GAppInfo *)
+ */
 public static final native boolean _g_app_info_supports_uris(long /*int*/ appInfo);
 public static final boolean g_app_info_supports_uris(long /*int*/ appInfo) {
 	lock.lock();
@@ -2024,7 +2050,10 @@ public static final long /*int*/ g_error_get_message (long /*int*/ error) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param type1 cast=(gchar *)
+ * @param type2 cast=(gchar *)
+ */
 public static final native boolean _g_content_type_equals(long /*int*/ type1, byte[] type2);
 public static final boolean g_content_type_equals(long /*int*/ type1, byte[] type2) {
 	lock.lock();
@@ -2034,7 +2063,10 @@ public static final boolean g_content_type_equals(long /*int*/ type1, byte[] typ
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param type cast=(gchar *)
+ * @param supertype cast=(gchar *)
+ */
 public static final native boolean _g_content_type_is_a(long /*int*/ type, byte[] supertype);
 public static final boolean g_content_type_is_a(long /*int*/ type, byte[] supertype) {
 	lock.lock();
@@ -2044,7 +2076,9 @@ public static final boolean g_content_type_is_a(long /*int*/ type, byte[] supert
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param info cast=(GFileInfo *)
+ */
 public static final native long /*int*/ _g_file_info_get_content_type (long /*int*/ info);
 public static final long /*int*/ g_file_info_get_content_type (long /*int*/ info) {
 	lock.lock();
@@ -2054,7 +2088,9 @@ public static final long /*int*/ g_file_info_get_content_type (long /*int*/ info
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param file cast=(GFile *)
+ */
 public static final native long /*int*/ _g_file_get_uri(long /*int*/ file);
 public static final long /*int*/ g_file_get_uri (long /*int*/ file) {
 	lock.lock();
@@ -2064,7 +2100,7 @@ public static final long /*int*/ g_file_get_uri (long /*int*/ file) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param fileName cast=(const char *) */
 public static final native long /*int*/ _g_file_new_for_path(byte[] fileName);
 public static final long /*int*/ g_file_new_for_path(byte[] fileName) {
 	lock.lock();
@@ -2074,7 +2110,9 @@ public static final long /*int*/ g_file_new_for_path(byte[] fileName) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param fileName cast=(const char *)
+ */
 public static final native long /*int*/ _g_file_new_for_commandline_arg(byte[] fileName);
 public static final long /*int*/ g_file_new_for_commandline_arg(byte[] fileName) {
 	lock.lock();
@@ -2084,7 +2122,7 @@ public static final long /*int*/ g_file_new_for_commandline_arg(byte[] fileName)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param fileName cast=(const char *) */
 public static final native long /*int*/ _g_file_new_for_uri(byte[] fileName);
 public static final long /*int*/ g_file_new_for_uri(byte[] fileName) {
 	lock.lock();
@@ -2094,7 +2132,13 @@ public static final long /*int*/ g_file_new_for_uri(byte[] fileName) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param file cast=(GFile *)
+ * @param attributes cast=(const char *)
+ * @param flags cast=(GFileQueryInfoFlags)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ */
 public static final native long /*int*/ _g_file_query_info  (long /*int*/ file, byte[] attributes, long /*int*/ flags, long /*int*/ cancellable, long /*int*/ error);
 public static final long /*int*/ g_file_query_info  (long /*int*/ file,byte[] attributes, long /*int*/ flags, long /*int*/ cancellable, long /*int*/ error) {
 	lock.lock();
@@ -2104,7 +2148,10 @@ public static final long /*int*/ g_file_query_info  (long /*int*/ file,byte[] at
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param file cast=(const gchar *)
+ * @param test cast=(GFileTest)
+ */
 public static final native boolean /*long*/ _g_file_test(byte[] file, int test);
 public static final boolean /*long*/ g_file_test(byte[] file, int test) {
 	lock.lock();
@@ -2114,7 +2161,7 @@ public static final boolean /*long*/ g_file_test(byte[] file, int test) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param icon cast=(GIcon *) */
 public static final native long /*int*/ _g_icon_to_string(long /*int*/ icon);
 public static final long /*int*/ g_icon_to_string (long /*int*/ icon) {
 	lock.lock();
@@ -2124,7 +2171,10 @@ public static final long /*int*/ g_icon_to_string (long /*int*/ icon) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param str cast=(const gchar *)
+ * @param error cast=(GError **)
+ */
 public static final native long /*int*/ _g_icon_new_for_string(byte[] str, long /*int*/ error[]);
 public static final long /*int*/ g_icon_new_for_string (byte[] str, long /*int*/ error[]) {
 	lock.lock();

@@ -37,7 +37,6 @@
 #define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
-#define LIB_GIO "libgio-2.0.a(libgio-2.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
 #elif HPUX
 #define LIB_XRENDER "libXrender.so"
@@ -47,7 +46,6 @@
 #define LIB_GOBJECT "libgobject-2.0.so"
 #define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
-#define LIB_GIO "libgio-2.0.so"
 #define LIB_FONTCONFIG "libfontconfig.so"
 #else
 #define LIB_XRENDER "libXrender.so"
@@ -62,7 +60,6 @@
 #define LIB_GOBJECT "libgobject-2.0.so.0"
 #define LIB_GTHREAD "libgthread-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
-#define LIB_GIO "libgio-2.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
 #endif
 
@@ -404,34 +401,6 @@
 #define gtk_progress_bar_set_orientation_LIB LIB_GTK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
-
-#define g_app_info_create_from_commandline_LIB LIB_GIO
-#define g_app_info_get_all_LIB LIB_GIO
-#define g_app_info_get_executable_LIB LIB_GIO
-#define g_app_info_get_icon_LIB LIB_GIO
-#define g_app_info_get_id_LIB LIB_GIO
-#define g_app_info_get_name_LIB LIB_GIO
-#define g_app_info_launch_LIB LIB_GIO
-#define g_app_info_get_default_for_type_LIB LIB_GIO
-#define g_app_info_launch_default_for_uri_LIB LIB_GIO
-#define g_app_info_supports_uris_LIB LIB_GIO
-#define g_app_info_should_show_LIB LIB_GIO
-#define g_content_type_equals_LIB LIB_GIO
-#define g_content_type_get_mime_type_LIB LIB_GIO
-#define g_content_type_is_a_LIB LIB_GIO
-#define g_content_types_get_registered_LIB LIB_GIO
-#define g_desktop_app_info_new_from_filename_LIB LIB_GIO
-#define g_file_get_path_LIB LIB_GIO
-#define g_file_get_uri_LIB LIB_GIO
-#define g_file_icon_get_file_LIB LIB_GIO
-#define g_file_info_get_content_type_LIB LIB_GIO
-#define g_file_new_for_commandline_arg_LIB LIB_GIO
-#define g_file_new_for_path_LIB LIB_GIO
-#define g_file_new_for_uri_LIB LIB_GIO
-#define g_file_test_LIB LIB_GIO
-#define g_icon_to_string_LIB LIB_GIO
-#define g_icon_new_for_string_LIB LIB_GIO
-#define g_file_query_info_LIB LIB_GIO
 
 // GTK3 only
 #define gtk_widget_draw_LIB LIB_GTK
