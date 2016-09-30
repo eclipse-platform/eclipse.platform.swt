@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -16,10 +17,11 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -42,13 +44,10 @@ public static void main (String [] args) {
 		item.setText (ITEM_NAMES[i]);
 		item.setImage (i % 2 == 0 ? checkedImage : uncheckedImage);
 	}
-	table.addSelectionListener(new SelectionAdapter(){
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
+	table.addSelectionListener(widgetDefaultSelectedAdapter(e -> {
 			TableItem item = (TableItem)e.item;
 			item.setImage(item.getImage() == checkedImage ? uncheckedImage : checkedImage);
-		}
-	});
+		}));
 
 	table.getAccessible ().addAccessibleControlListener (new AccessibleControlAdapter () {
 		@Override

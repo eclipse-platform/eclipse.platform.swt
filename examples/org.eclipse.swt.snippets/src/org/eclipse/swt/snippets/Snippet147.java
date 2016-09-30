@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -16,8 +17,10 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -29,12 +32,7 @@ public static void main(String[] args) {
 	Combo combo = new Combo(shell, SWT.NONE);
 	combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	combo.setText("Here is some text");
-	combo.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			System.out.println("Combo default selected (overrides default button)");
-		}
-	});
+	combo.addSelectionListener(widgetDefaultSelectedAdapter(e -> System.out.println("Combo default selected (overrides default button)")));
 	combo.addTraverseListener(e -> {
 		if (e.detail == SWT.TRAVERSE_RETURN) {
 			e.doit = false;
@@ -43,12 +41,7 @@ public static void main(String[] args) {
 	});
 	Button button = new Button(shell, SWT.PUSH);
 	button.setText("Ok");
-	button.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			System.out.println("Button selected");
-		}
-	});
+	button.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Button selected")));
 	shell.setDefaultButton(button);
 	shell.pack();
 	shell.open();

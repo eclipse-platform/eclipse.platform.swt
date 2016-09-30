@@ -7,8 +7,10 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
 
 /*
  * Shell example snippet: prevent escape from closing a dialog
@@ -16,8 +18,10 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -31,18 +35,15 @@ public class Snippet4 {
 		b.pack();
 		Rectangle clientArea = shell.getClientArea();
 		b.setLocation(clientArea.x + 10, clientArea.y + 10);
-		b.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent se) {
-				Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
-				dialog.addListener(SWT.Traverse, e -> {
-					if (e.detail == SWT.TRAVERSE_ESCAPE) {
-						e.doit = false;
-					}
-				});
-				dialog.open();
-			}
-		});
+		b.addSelectionListener(widgetSelectedAdapter(e -> {
+			Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
+			dialog.addListener(SWT.Traverse, t -> {
+				if (t.detail == SWT.TRAVERSE_ESCAPE) {
+					t.doit = false;
+				}
+			});
+			dialog.open();
+		}));
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())

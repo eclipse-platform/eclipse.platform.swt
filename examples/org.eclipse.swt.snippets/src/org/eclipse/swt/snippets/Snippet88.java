@@ -7,8 +7,10 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
 
 /*
  * TableEditor example snippet: edit the text of a table item (in place)
@@ -16,9 +18,11 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -47,29 +51,28 @@ public static void main(String[] args) {
 	// editing the second column
 	final int EDITABLECOLUMN = 1;
 
-	table.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+	table.addSelectionListener(widgetSelectedAdapter(e -> {
 			// Clean up any previous editor control
 			Control oldEditor = editor.getEditor();
-			if (oldEditor != null) oldEditor.dispose();
+			if (oldEditor != null)
+				oldEditor.dispose();
 
 			// Identify the selected row
-			TableItem item = (TableItem)e.item;
-			if (item == null) return;
+			TableItem item = (TableItem) e.item;
+			if (item == null)
+				return;
 
 			// The control that will be the editor must be a child of the Table
 			Text newEditor = new Text(table, SWT.NONE);
 			newEditor.setText(item.getText(EDITABLECOLUMN));
 			newEditor.addModifyListener(me -> {
-				Text text = (Text)editor.getEditor();
+				Text text = (Text) editor.getEditor();
 				editor.getItem().setText(EDITABLECOLUMN, text.getText());
 			});
 			newEditor.selectAll();
 			newEditor.setFocus();
 			editor.setEditor(newEditor, item, EDITABLECOLUMN);
-		}
-	});
+		}));
 	shell.setSize(300, 300);
 	shell.open();
 

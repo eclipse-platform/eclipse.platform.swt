@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,8 +7,10 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
 
 /*
  * Tree example snippet: limit selection to items that match a pattern
@@ -16,8 +18,10 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -41,9 +45,7 @@ public static void main(String[] args) {
 		}
 	}
 	
-	tree.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+	tree.addSelectionListener(widgetSelectedAdapter(e -> {
 			TreeItem[] selection = tree.getSelection();
 			TreeItem[] revisedSelection = new TreeItem[0];
 			for (int i = 0; i < selection.length; i++) {
@@ -56,8 +58,7 @@ public static void main(String[] args) {
 				}
 			}
 			tree.setSelection(revisedSelection);
-		}
-	});
+		}));
 
 	shell.setSize(300, 300);
 	shell.open();

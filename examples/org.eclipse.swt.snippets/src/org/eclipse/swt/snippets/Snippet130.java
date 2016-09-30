@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -16,9 +17,11 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -33,9 +36,7 @@ public class Snippet130 {
 		final int[] nextId = new int[1];
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invoke long running job");
-		b.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		b.addSelectionListener(widgetSelectedAdapter(e-> {
 				Runnable longJob = new Runnable() {
 					boolean done = false;
 					int id;
@@ -67,8 +68,7 @@ public class Snippet130 {
 					}
 				};
 				BusyIndicator.showWhile(display, longJob);
-			}
-		});
+			}));
 		shell.setSize(250, 150);
 		shell.open();
 		while (!shell.isDisposed()) {

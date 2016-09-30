@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,19 +7,23 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
   
+
 /*
  * Printing example snippet: print text to printer, with word wrap and pagination
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import java.io.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.printing.*;
@@ -66,54 +70,24 @@ public class Snippet133 {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("&Open...");
 		item.setAccelerator(SWT.CTRL + 'O');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuOpen();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e-> menuOpen()));
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Font...");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuFont();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e-> menuFont()));
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Foreground Color...");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuForegroundColor();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e-> menuForegroundColor()));
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("Background Color...");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuBackgroundColor();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e-> menuBackgroundColor()));
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("&Print...");
 		item.setAccelerator(SWT.CTRL + 'P');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuPrint();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e-> menuPrint()));
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("E&xit");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				System.exit(0);
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e->	System.exit(0)));
 
 		shell.open();
 		while (!shell.isDisposed()) {

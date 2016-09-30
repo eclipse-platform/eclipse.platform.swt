@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -16,10 +17,11 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet108 {
 
@@ -32,20 +34,10 @@ public static void main (String [] args) {
 	text.setLayoutData (new RowData (100, SWT.DEFAULT));
 	Button ok = new Button (shell, SWT.PUSH);
 	ok.setText ("OK");
-	ok.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			System.out.println("OK");
-		}
-	});
+	ok.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("OK")));
 	Button cancel = new Button (shell, SWT.PUSH);
 	cancel.setText ("Cancel");
-	cancel.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			System.out.println("Cancel");
-		}
-	});
+	cancel.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Cancel")));
 	shell.setDefaultButton (cancel);
 	shell.setLayout (new RowLayout ());
 	shell.pack ();

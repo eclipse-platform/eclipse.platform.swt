@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -18,6 +19,9 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.0
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
@@ -35,25 +39,24 @@ public static void main(String[] args) {
 	Menu menu = new Menu(shell, SWT.POP_UP);
 	final MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
 	copyItem.setText("Copy");
-	copyItem.addSelectionListener(new SelectionAdapter(){
-		@Override
-		public void widgetSelected(SelectionEvent e) {
+	copyItem.addSelectionListener(widgetSelectedAdapter(e -> {
 			String selection = text.getSelectionText();
-			if (selection.length() == 0) return;
-			Object[] data = new Object[]{selection};
-			Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
+			if (selection.length() == 0) {
+				return;
+			}
+			Object[] data = new Object[] { selection };
+			Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
 			cb.setContents(data, types);
-		}
-	});
+		}));
+
 	final MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
 	pasteItem.setText ("Paste");
-	pasteItem.addSelectionListener(new SelectionAdapter(){
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			String string = (String)(cb.getContents(TextTransfer.getInstance()));
-			if (string != null) text.insert(string);
-		}
-	});
+	pasteItem.addSelectionListener(widgetSelectedAdapter(e -> {
+			String string = (String) (cb.getContents(TextTransfer.getInstance()));
+			if (string != null) {
+				text.insert(string);
+			}
+		}));
 	menu.addMenuListener(new MenuAdapter() {
 		@Override
 		public void menuShown(MenuEvent e) {
