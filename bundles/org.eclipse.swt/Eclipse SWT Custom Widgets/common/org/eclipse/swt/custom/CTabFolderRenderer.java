@@ -619,9 +619,9 @@ public class CTabFolderRenderer {
 
 	void drawBackground(GC gc, Rectangle bounds, int state) {
 		boolean selected = (state & SWT.SELECTED) != 0;
-		Color defaultBackground = selected && parent.active ? parent.selectionBackground : parent.getBackground();
+		Color defaultBackground = selected ? parent.selectionBackground : parent.getBackground();
 		Image image = selected ? parent.selectionBgImage : null;
-		Color[] colors = selected & parent.active ? parent.selectionGradientColors : parent.gradientColors;
+		Color[] colors = selected ? parent.selectionGradientColors : parent.gradientColors;
 		int[] percents = selected ? parent.selectionGradientPercents : parent.gradientPercents;
 		boolean vertical = selected ? parent.selectionGradientVertical : parent.gradientVertical;
 
@@ -629,9 +629,9 @@ public class CTabFolderRenderer {
 	}
 
 	void drawBackground(GC gc, int[] shape, boolean selected) {
-		Color defaultBackground = selected && parent.active ? parent.selectionBackground : parent.getBackground();
+		Color defaultBackground = selected ? parent.selectionBackground : parent.getBackground();
 		Image image = selected ? parent.selectionBgImage : null;
-		Color[] colors = selected && parent.active ? parent.selectionGradientColors : parent.gradientColors;
+		Color[] colors = selected ? parent.selectionGradientColors : parent.gradientColors;
 		int[] percents = selected ? parent.selectionGradientPercents : parent.gradientPercents;
 		boolean vertical = selected ? parent.selectionGradientVertical : parent.gradientVertical;
 		Point size = parent.getSize();
@@ -1311,9 +1311,9 @@ public class CTabFolderRenderer {
 			int hh = highlight_header - 1;
 			int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
 			if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
-				drawBackground(gc, shape, parent.active);
+				drawBackground(gc, shape, true);
 			} else {
-				gc.setBackground(parent.active ? parent.selectionBackground : parent.getBackground());
+				gc.setBackground(parent.selectionBackground);
 				gc.fillRectangle(xx, yy, ww, hh);
 			}
 
@@ -1394,7 +1394,7 @@ public class CTabFolderRenderer {
 					if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
 						drawBackground(gc, shape, true);
 					} else {
-						Color defaultBackground = parent.active ? parent.selectionBackground : parent.getBackground();
+						Color defaultBackground = parent.selectionBackground;
 						Image image = parent.selectionBgImage;
 						Color[] colors = parent.selectionGradientColors;
 						int[] percents = parent.selectionGradientPercents;
