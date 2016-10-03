@@ -2385,15 +2385,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1filename_1display_1name)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1filename_1display_1name_FUNC);
-/*
-	rc = (jintLong)g_filename_display_name(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_filename_display_name)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)g_filename_display_name((const gchar *)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1filename_1display_1name_FUNC);
 	return rc;
 }
@@ -2494,15 +2486,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1hash_1table_1get_1values)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1hash_1table_1get_1values_FUNC);
-/*
 	rc = (jintLong)g_hash_table_get_values((GHashTable *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_hash_table_get_values)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GHashTable *))fp)((GHashTable *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1g_1hash_1table_1get_1values_FUNC);
 	return rc;
 }

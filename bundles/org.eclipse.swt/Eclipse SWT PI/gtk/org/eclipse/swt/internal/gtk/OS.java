@@ -2360,9 +2360,7 @@ public static final long /*int*/ g_filename_to_utf8(long /*int*/ opsysstring, lo
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
+/** @param filename cast=(const gchar *) */
 public static final native long /*int*/ _g_filename_display_name(long /*int*/ filename);
 public static final long /*int*/ g_filename_display_name(long /*int*/ filename) {
 	lock.lock();
@@ -2427,7 +2425,6 @@ public static final void g_free(long /*int*/ mem) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param table cast=(GHashTable *)
  */
 public static final native long /*int*/ _g_hash_table_get_values(long /*int*/ table);

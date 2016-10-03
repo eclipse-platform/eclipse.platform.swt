@@ -33,8 +33,6 @@
 #define LIB_XRENDER "libXrender.a(libXrender.so)"
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
-#define LIB_GLIB "libglib-2.0.a(libglib-2.0.so.0)"
-#define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
@@ -42,8 +40,6 @@
 #define LIB_XRENDER "libXrender.so"
 #define LIB_GTK "libgtk-x11-2.0.so"
 #define LIB_GDK "libgdk-x11-2.0.so"
-#define LIB_GLIB "libglib-2.0.so"
-#define LIB_GOBJECT "libgobject-2.0.so"
 #define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
 #define LIB_FONTCONFIG "libfontconfig.so"
@@ -56,8 +52,6 @@
 #define LIB_GTK "libgtk-x11-2.0.so.0"
 #define LIB_GDK "libgdk-x11-2.0.so.0"
 #endif
-#define LIB_GLIB "libglib-2.0.so.0"
-#define LIB_GOBJECT "libgobject-2.0.so.0"
 #define LIB_GTHREAD "libgthread-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
@@ -73,8 +67,6 @@
 #define XRenderFreePicture_LIB LIB_XRENDER
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
-#define g_filename_display_name_LIB LIB_GLIB
-#define g_hash_table_get_values_LIB LIB_GLIB
 #define g_thread_init_LIB LIB_GTHREAD
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_widget_set_opacity_LIB LIB_GTK
