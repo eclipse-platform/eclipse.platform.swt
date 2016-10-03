@@ -15,7 +15,7 @@
   <parent>
     <artifactId>eclipse.platform.swt</artifactId>
     <groupId>eclipse.platform.swt</groupId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.6.2-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
   <groupId>org.eclipse.swt.tools.feature</groupId>
