@@ -211,6 +211,8 @@ public class CTabFolder extends Composite {
 	Rectangle hoverRect = new Rectangle(0,0,0,0);
 	boolean hovering;
 	boolean hoverTimerRunning;
+	boolean active;
+	static CTabFolder currentlyActiveFolder;
 
 	boolean showChevron = false;
 	Menu showMenu;
@@ -338,6 +340,8 @@ void init(int style) {
 			case SWT.Resize:           onResize(event);	break;
 			case SWT.Traverse:         onTraverse(event); break;
 			case SWT.Selection:        onSelection(event); break;
+			case SWT.Activate:         onActivate(event); break;
+			case SWT.Deactivate:       onDeactivate(event); break;
 		}
 	};
 
@@ -358,6 +362,8 @@ void init(int style) {
 		SWT.Paint,
 		SWT.Resize,
 		SWT.Traverse,
+		SWT.Activate,
+		SWT.Deactivate
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
@@ -365,6 +371,22 @@ void init(int style) {
 
 	initAccessible();
 }
+void onDeactivate(Event event) {
+	if (currentlyActiveFolder == this) {
+		currentlyActiveFolder = null;
+	}
+	active = false;
+	redraw();
+}
+
+void onActivate(Event event) {
+	active = true;
+	if (currentlyActiveFolder == null || currentlyActiveFolder.isAncestor(this)) {
+		currentlyActiveFolder = this;
+	}
+	redraw();
+}
+
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
@@ -4048,5 +4070,9 @@ int getWrappedHeight (Point size) {
 	if (chevronVisible == visible) return;
 	chevronVisible = visible;
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
+}
+
+boolean shouldHighlight() {
+	return active || currentlyActiveFolder == this || isAncestor(currentlyActiveFolder) ;
 }
 }
