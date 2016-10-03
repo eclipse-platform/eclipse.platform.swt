@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.*;
 
 public class CTabFolder extends Composite {
 
-	/**
+	/**s
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the form.
 	 *
@@ -211,6 +211,7 @@ public class CTabFolder extends Composite {
 	Rectangle hoverRect = new Rectangle(0,0,0,0);
 	boolean hovering;
 	boolean hoverTimerRunning;
+	boolean highlight;
 
 	boolean showChevron = false;
 	Menu showMenu;
@@ -338,6 +339,8 @@ void init(int style) {
 			case SWT.Resize:           onResize(event);	break;
 			case SWT.Traverse:         onTraverse(event); break;
 			case SWT.Selection:        onSelection(event); break;
+			case SWT.Activate:         onActivate(event); break;
+			case SWT.Deactivate:       onDeactivate(event); break;
 		}
 	};
 
@@ -358,6 +361,8 @@ void init(int style) {
 		SWT.Paint,
 		SWT.Resize,
 		SWT.Traverse,
+		SWT.Activate,
+		SWT.Deactivate
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
@@ -365,6 +370,28 @@ void init(int style) {
 
 	initAccessible();
 }
+void onDeactivate(Event event) {
+	Composite current = this;
+	while (current != null) {
+		if (current instanceof CTabFolder) {
+			((CTabFolder) current).highlight = false;
+		}
+		current = current.getParent();
+	}
+	redraw();
+}
+
+void onActivate(Event event) {
+	Composite current = this;
+	while (current != null) {
+		if (current instanceof CTabFolder) {
+			((CTabFolder) current).highlight = true;
+		}
+		current = current.getParent();
+	}
+	redraw();
+}
+
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
@@ -4048,5 +4075,9 @@ int getWrappedHeight (Point size) {
 	if (chevronVisible == visible) return;
 	chevronVisible = visible;
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
+}
+
+boolean shouldHighlight() {
+	return this.highlight;
 }
 }
