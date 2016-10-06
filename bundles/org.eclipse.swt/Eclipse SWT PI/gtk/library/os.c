@@ -1865,28 +1865,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeKeyEvent)
 }
 #endif
 
-#ifndef NO__1XTestFakeMotionEvent
-JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeMotionEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLong arg4)
-{
-	OS_NATIVE_ENTER(env, that, _1XTestFakeMotionEvent_FUNC);
-	XTestFakeMotionEvent((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
-	OS_NATIVE_EXIT(env, that, _1XTestFakeMotionEvent_FUNC);
-}
-#endif
-
-#ifndef NO__1XWarpPointer
-JNIEXPORT jint JNICALL OS_NATIVE(_1XWarpPointer)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XWarpPointer_FUNC);
-	rc = (jint)XWarpPointer((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-	OS_NATIVE_EXIT(env, that, _1XWarpPointer_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1access
 JNIEXPORT jint JNICALL OS_NATIVE(_1access)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
@@ -4557,6 +4535,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1display_1supports_1cursor_1color_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1warp_1pointer
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1display_1warp_1pointer)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1display_1warp_1pointer_FUNC);
+/*
+	gdk_display_warp_pointer(arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_display_warp_pointer)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1display_1warp_1pointer_FUNC);
 }
 #endif
 

@@ -3983,7 +3983,7 @@ public boolean post (Event event) {
 				}
 				case SWT.MouseMove: {
 					Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
-					OS.XTestFakeMotionEvent (xDisplay, -1, loc.x, loc.y, 0);
+					setCursorLocationInPixels(new Point(loc.x, loc.y));
 					return true;
 				}
 				case SWT.MouseDown:
@@ -4679,14 +4679,12 @@ public void setCursorLocation (int x, int y) {
 }
 
 void setCursorLocationInPixels (Point location) {
+	long /*int*/ gdkDisplay = OS.gdk_display_get_default();
+	long /*int*/ gdkScreen = OS.gdk_screen_get_default();
 	if (!OS.GTK3) {
-		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		long /*int*/ xWindow = OS.XDefaultRootWindow (xDisplay);
-		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, location.x, location.y);
+		OS.gdk_display_warp_pointer(gdkDisplay, gdkScreen, location.x, location.y);
 	} else {
-		long /*int*/ gdkDisplay = OS.gdk_display_get_default();
 		long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
-		long /*int*/ gdkScreen = OS.gdk_screen_get_default();
 		long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
 		OS.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
 	}

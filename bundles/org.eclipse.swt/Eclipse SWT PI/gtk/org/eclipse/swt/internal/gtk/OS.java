@@ -1167,33 +1167,6 @@ public static final void XTestFakeKeyEvent(long /*int*/ display, int keycode, bo
 		lock.unlock();
 	}
 }
-/**
- * @param display cast=(Display *)
- * @param delay cast=(unsigned long)
- */
-public static final native void _XTestFakeMotionEvent(long /*int*/ display, int screen_number, int x, int y, long /*int*/ delay);
-public static final void XTestFakeMotionEvent(long /*int*/ display, int screen_number, int x, int y, long /*int*/ delay) {
-	lock.lock();
-	try {
-		_XTestFakeMotionEvent(display, screen_number, x, y, delay);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param sourceWindow cast=(Window)
- * @param destWindow cast=(Window)
- */
-public static final native int _XWarpPointer(long /*int*/ display, long /*int*/ sourceWindow, long /*int*/ destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
-public static final int XWarpPointer(long /*int*/ display, long /*int*/ sourceWindow, long /*int*/ destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY) {
-	lock.lock();
-	try {
-		return _XWarpPointer(display, sourceWindow, destWindow, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param atom cast=(GdkAtom) */
 public static final native long /*int*/ _gdk_x11_atom_to_xatom(long /*int*/ atom);
 public static final long /*int*/ gdk_x11_atom_to_xatom(long /*int*/ atom) {
@@ -3810,7 +3783,16 @@ public static final long /*int*/ gdk_cursor_new_from_pixbuf(long /*int*/ display
 		lock.unlock();
 	}
 }
-
+/** @method flags=dynamic */
+public static final native void _gdk_display_warp_pointer(long /*int*/ device, long /*int*/ screen, int x, int y);
+public static final void gdk_display_warp_pointer(long /*int*/ device, long /*int*/ screen, int x, int y) {
+		lock.lock();
+		try {
+			_gdk_display_warp_pointer(device, screen, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
 /** @method flags=dynamic */
 public static final native void _gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y);
 public static final void gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y) {
