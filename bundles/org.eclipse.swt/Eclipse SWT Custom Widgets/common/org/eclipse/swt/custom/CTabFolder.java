@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.*;
 
 public class CTabFolder extends Composite {
 
-	/**s
+	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the form.
 	 *
