@@ -15,6 +15,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
@@ -45,6 +48,8 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 
 	Browser browser;
 
+	boolean browser_debug = false;
+
 @Override
 @Before
 public void setUp() {
@@ -65,6 +70,26 @@ public void setUp() {
 		setWidget(browser);
 	}
 }
+
+// TODO - change test cases to use this method instead of shell.setText(..).
+/**
+ * Append relevant information to the shell title.
+ *
+ * On Gtk, we support multiple versions of Webkit. It's useful to know which webkit version the test runs on.
+ *
+ * @param title
+ */
+void setTitle(String title) {
+	if (SwtTestUtil.isGTK) {
+		String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
+		Properties sp = System.getProperties();
+		String webkitGtkVer = sp.getProperty(SWT_WEBKITGTK_VERSION);
+		if (webkitGtkVer != null)
+			title = title + "  Webkit version: " + webkitGtkVer;
+	}
+	shell.setText(title);
+}
+
 
 /**
  * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
@@ -613,7 +638,7 @@ public void test_setTextLjava_lang_String() {
 	html += "</BODY></HTML>";
 	boolean result = browser.setText(html);
 	assertTrue(result);
-	runLoopTimer(2);
+	runLoopTimer(2000);
 }
 
 /**
@@ -624,7 +649,7 @@ public void test_setUrl() {
 	shell.setText("test_setUrl");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	assert(browser.setUrl("http://www.eclipse.org/swt"));
-	runLoopTimer(2);
+	runLoopTimer(2000);
 	// TODO - it would be good to verify that the page actually loaded. ex download the webpage etc..
 }
 
@@ -637,17 +662,61 @@ public void test_stop() {
 	shell.setText("test_stop");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
-	runLoopTimer(1);
+	runLoopTimer(1000);
 	browser.stop();
 }
 
+/**
+ * Test the evaluate() api. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate() {
+	setTitle("test_evalute");
+
+	final String html = "<html><body><p id='myid'>HelloWorld</p></body></html>";
+
+	final AtomicReference<String> returnValue = new AtomicReference<>();
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			String evalResult = (String) browser.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
+			returnValue.set(evalResult);
+
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText(html);
+	shell.open();
+
+	boolean passed = false;
+
+	int secondsToWaitTillFail = 3;
+	int waitMS = browser_debug ? 1000 : 1;       // Normally, sleep in 1 ms intervals 1000 times.
+	int loopMultipier = browser_debug ? 1 : 1000;// during debug, sleep 1000 ms for 1 interval.
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if ("HelloWorld".equals(returnValue.get())) {
+			passed = true;
+			break;
+		}
+	}
+	assertTrue(passed);
+}
+
+
 /* custom */
-void runLoopTimer(final int seconds) {
+void runLoopTimer(final int milliseconds) {
 	final boolean[] exit = {false};
 	new Thread() {
 		@Override
 		public void run() {
-			try {Thread.sleep(seconds * 1000);} catch (Exception e) {}
+			try {Thread.sleep(milliseconds);} catch (Exception e) {}
 			exit[0] = true;
 			/* wake up the event loop */
 			Display display = Display.getDefault();
