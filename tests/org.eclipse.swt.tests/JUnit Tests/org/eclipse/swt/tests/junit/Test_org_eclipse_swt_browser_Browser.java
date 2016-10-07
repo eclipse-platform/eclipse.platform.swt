@@ -51,7 +51,19 @@ public void setUp() {
 	super.setUp();
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
-	setWidget(browser);
+
+	/*
+	 * setWidget() is needed for Browser to occupy the whole shell.
+	 * (Without setWidget(), composite and browser receive half the shell each).
+	 *
+	 * However, on Win32 & IE, an OleFrame() child is created in Browser, which break the first
+	 * assertion in test_getChildren() ":a:: array lengths differed, expected.length=0 actual.length=1"
+	 *
+	 * See: Bug 499387
+	 */
+	if (! SwtTestUtil.isWindows) {
+		setWidget(browser);
+	}
 }
 
 /**
