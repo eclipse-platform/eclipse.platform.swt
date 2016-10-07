@@ -3997,7 +3997,18 @@ public boolean post (Event event) {
 						case 5: button = 7;	break;
 						default: return false;
 					}
-					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+					long /*int*/ gdkDisplay = OS.gdk_display_get_default();
+					long /*int*/ gdkScreen = OS.gdk_screen_get_default();
+					long /*int*/ gdkWindow = OS.gdk_screen_get_active_window(gdkScreen);
+					int[] x = new int[1], y = new int[1];
+					if (OS.GTK3) {
+						long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
+						long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
+						OS.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
+					} else {
+						OS.gdk_window_get_pointer(gdkWindow, x, y, new int[1]);
+					}
+					OS.gdk_test_simulate_button(gdkWindow, x[0], y[0], button, 0, type == SWT.MouseDown ? OS.GDK_BUTTON_PRESS: OS.GDK_BUTTON_RELEASE);
 					return true;
 				}
 				/*

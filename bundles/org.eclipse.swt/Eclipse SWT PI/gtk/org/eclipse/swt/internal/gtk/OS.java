@@ -1144,20 +1144,6 @@ public static final long /*int*/ XSynchronize(long /*int*/ display, boolean onof
  * @param is_press cast=(Bool)
  * @param delay cast=(unsigned long)
  */
-public static final native void _XTestFakeButtonEvent(long /*int*/ display, int button, boolean is_press, long /*int*/ delay);
-public static final void XTestFakeButtonEvent(long /*int*/ display, int button, boolean is_press, long /*int*/ delay) {
-	lock.lock();
-	try {
-		_XTestFakeButtonEvent(display, button, is_press, delay);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param is_press cast=(Bool)
- * @param delay cast=(unsigned long)
- */
 public static final native void _XTestFakeKeyEvent(long /*int*/ display, int keycode, boolean is_press, long /*int*/ delay);
 public static final void XTestFakeKeyEvent(long /*int*/ display, int keycode, boolean is_press, long /*int*/ delay) {
 	lock.lock();
@@ -5155,6 +5141,16 @@ public static final long /*int*/ gdk_screen_get_default() {
 		lock.unlock();
 	}
 }
+/** @param screen cast=(GdkScreen *) */
+public static final native long /*int*/ _gdk_screen_get_active_window(long /*int*/ screen);
+public static final long /*int*/ gdk_screen_get_active_window(long /*int*/ screen) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_active_window(screen);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param screen cast=(GdkScreen *)
@@ -5341,6 +5337,25 @@ public static final long /*int*/ gdk_utf8_to_string_target(byte[] str) {
 	lock.lock();
 	try {
 		return _gdk_utf8_to_string_target(str);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param window cast=(GdkWindow *)
+ * @param x cast=(gint)
+ * @param y cast=(gint)
+ * @param button cast=(guint)
+ * @param modifiers cast=(GdkModifierType)
+ * @param button_pressrelease cast=(GdkEventType)
+ */
+public static final native boolean _gdk_test_simulate_button(long /*int*/ window, int x, int y, int button,
+		int modifiers, int button_pressrelease);
+public static final boolean gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers,
+		int button_pressrelease) {
+	lock.lock();
+	try {
+		return _gdk_test_simulate_button(window, x, y, button, modifiers, button_pressrelease);
 	} finally {
 		lock.unlock();
 	}

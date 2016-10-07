@@ -1845,16 +1845,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XSynchronize)
 }
 #endif
 
-#ifndef NO__1XTestFakeButtonEvent
-JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeButtonEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2, jintLong arg3)
-{
-	OS_NATIVE_ENTER(env, that, _1XTestFakeButtonEvent_FUNC);
-	XTestFakeButtonEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
-	OS_NATIVE_EXIT(env, that, _1XTestFakeButtonEvent_FUNC);
-}
-#endif
-
 #ifndef NO__1XTestFakeKeyEvent
 JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeKeyEvent)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2, jintLong arg3)
@@ -6187,6 +6177,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1active_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1active_1window)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1active_1window_FUNC);
+	rc = (jintLong)gdk_screen_get_active_window((GdkScreen *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1active_1window_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1default
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -6438,6 +6440,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1set_1program_1class)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1set_1program_1class_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1test_1simulate_1button
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1test_1simulate_1button)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1test_1simulate_1button_FUNC);
+	rc = (jboolean)gdk_test_simulate_button((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (guint)arg3, (GdkModifierType)arg4, (GdkEventType)arg5);
+	OS_NATIVE_EXIT(env, that, _1gdk_1test_1simulate_1button_FUNC);
+	return rc;
 }
 #endif
 
