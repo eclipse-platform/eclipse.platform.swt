@@ -23,7 +23,11 @@
 #define INC_cairo_H
 
 #include <cairo.h>
+#ifdef CAIRO_HAS_XLIB_SURFACE
 #include <cairo-xlib.h>
+#else
+#define NO__1cairo_1xlib_1surface_1create
+#endif
 #include <string.h>
 #include <dlfcn.h>
 

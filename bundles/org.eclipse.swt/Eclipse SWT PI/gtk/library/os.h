@@ -30,10 +30,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gtk/gtkunixprint.h>
-#if GTK_CHECK_VERSION(3,0,0)
-#include <gtk/gtkx.h>
-#include <gdk/gdkx.h>
-#endif
 #include <pango/pango.h>
 #include <pango/pango-font.h>
 #include <string.h>
@@ -43,13 +39,30 @@
 
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
 
-#ifndef GDK_WINDOWING_X11
+#ifdef GDK_WINDOWING_X11
+
+#include <gdk/gdkx.h>
+#if GTK_CHECK_VERSION(3,0,0)
+#include <gtk/gtkx.h>
+#endif
+
+#include <X11/extensions/XTest.h>
+#include <X11/extensions/Xrender.h>
+
+#else
+
+#define NO_GDK_1IS_1X11_1DISPLAY
 
 /* X Structures */
+#define NO_XAnyEvent
 #define NO_XClientMessageEvent
 #define NO_XExposeEvent
+#define NO_XEvent
 #define NO_XFocusChangeEvent
+#define NO_XRenderPictureAttributes
 #define NO_XVisibilityEvent
+#define NO_X_1EVENT_1TYPE
+#define NO_X_1EVENT_1WINDOW
 
 /* X functions */
 #define NO__1XCheckMaskEvent
@@ -58,37 +71,51 @@
 #define NO__1XDefaultScreen
 #define NO__1XDefaultRootWindow
 #define NO__1XFlush
+#define NO__1XFree
 #define NO__1XGetSelectionOwner
+#define NO__1XGetWindowProperty
+#define NO__1XInternAtom
 #define NO__1XQueryTree
 #define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
 #define NO__1XReconfigureWMWindow
+#define NO__1XRenderCreatePicture
 #define NO__1XSendEvent
 #define NO__1XSetInputFocus
-#define NO__1XSynchronize
+#define NO__1XSetSelectionOwner
 #define NO__1XSetErrorHandler
 #define NO__1XSetIOErrorHandler
 #define NO__1XSetTransientForHint
+#define NO__1XSynchronize
 #define NO__1XTestFakeButtonEvent
 #define NO__1XTestFakeKeyEvent
 #define NO__1XTestFakeMotionEvent
 #define NO__1XWarpPointer
+#define NO__1GDK_1PIXMAP_1XID
 #define NO__1gdk_x11_atom_to_xatom
+#define NO__1gdk_1x11_1atom_1to_1xatom
+#define NO__1gdk_1x11_1display_1get_1xdisplay
 #define NO__1gdk_1x11_1drawable_1get_1xdisplay
 #define NO__1gdk_1x11_1drawable_1get_1xid
+#define NO__1gdk_1x11_1get_1default_1xdisplay
+#define NO__1gdk_1x11_1screen_1lookup_1visual
+#define NO__1gdk_1x11_1visual_1get_1xvisual
 #define NO__1gdk_window_lookup
 #define NO__1gdk_window_add_filter
+#define NO__1GTK_1IS_1PLUG
+#define NO__1gtk_1plug_1new
+#define NO__1gtk_1socket_1get_1id
+#define NO__1gtk_1socket_1new
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2JJ
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II
 
-#else
-#include <gdk/gdkx.h>
-#include <X11/extensions/XTest.h>
-#include <X11/extensions/Xrender.h>
 #endif
 
 /* Disable access to sealed structs in GTK3 */
