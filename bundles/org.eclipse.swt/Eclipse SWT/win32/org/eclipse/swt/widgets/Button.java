@@ -1542,7 +1542,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						}
 						RECT rect = new RECT ();
 						OS.SetRect (rect, nmcd.left+2, nmcd.top+2, nmcd.right-2, nmcd.bottom-2);
-						long brush = OS.CreateSolidBrush(pixel);
+						long /*int*/ brush = OS.CreateSolidBrush(pixel);
 						OS.FillRect(nmcd.hdc, rect, brush);
 						OS.DeleteObject(brush);
 					}
@@ -1567,7 +1567,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						left += isRadioOrCheck() ? 12 : 0;
 						RECT rect = new RECT ();
 						OS.SetRect (rect, left, nmcd.top, right, nmcd.bottom);
-						long hdc = nmcd.hdc;
+						long /*int*/ hdc = nmcd.hdc;
 
 						// draw text
 						int flags = OS.DT_VCENTER;
