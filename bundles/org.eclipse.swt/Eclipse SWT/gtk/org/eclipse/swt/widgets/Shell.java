@@ -770,6 +770,7 @@ void createHandle (int index) {
 
 @Override
 long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*/ data2) {
+	if (!OS.isX11()) return 0;
 	int eventType = OS.X_EVENT_TYPE (xEvent);
 	if (eventType != OS.FocusOut && eventType != OS.FocusIn) return 0;
 	XFocusChangeEvent xFocusEvent = new XFocusChangeEvent();
@@ -2389,7 +2390,7 @@ public void setVisible (boolean visible) {
 		OS.gtk_widget_show (shellHandle);
 		if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
 		if (isDisposed ()) return;
-		if (!OS.GTK_IS_PLUG (shellHandle)) {
+		if (!(OS.isX11() && OS.GTK_IS_PLUG (shellHandle))) {
 			display.dispatchEvents = new int [] {
 				OS.GDK_EXPOSE,
 				OS.GDK_FOCUS_CHANGE,
@@ -2575,7 +2576,7 @@ int trimWidth () {
 }
 
 void updateModal () {
-	if (OS.GTK_IS_PLUG (shellHandle)) return;
+	if (OS.isX11() && OS.GTK_IS_PLUG (shellHandle)) return;
 	long /*int*/ group = 0;
 	boolean isModalShell = false;
 	if (display.getModalDialog () == null) {
