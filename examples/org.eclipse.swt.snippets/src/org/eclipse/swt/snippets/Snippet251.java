@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -16,8 +17,10 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -30,9 +33,7 @@ public static void main (String [] args) {
 
 	Button open = new Button (shell, SWT.PUSH);
 	open.setText ("Open Dialog");
-	open.addSelectionListener (new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent e) {
+	open.addSelectionListener (widgetSelectedAdapter(e-> {
 			final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM);
 			dialog.setLayout (new GridLayout (3, false));
 
@@ -45,20 +46,18 @@ public static void main (String [] args) {
 			Button ok = new Button (dialog, SWT.PUSH);
 			ok.setText ("OK");
 			ok.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
-			ok.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
+			ok.addSelectionListener (widgetSelectedAdapter(event -> {
 					System.out.println ("Calendar date selected (MM/DD/YYYY) = " + (calendar.getMonth () + 1) + "/" + calendar.getDay () + "/" + calendar.getYear ());
 					System.out.println ("Date selected (MM/YYYY) = " + (date.getMonth () + 1) + "/" + date.getYear ());
 					System.out.println ("Time selected (HH:MM) = " + time.getHours () + ":" + (time.getMinutes () < 10 ? "0" : "") + time.getMinutes ());
 					dialog.close ();
 				}
-			});
+			));
 			dialog.setDefaultButton (ok);
 			dialog.pack ();
 			dialog.open ();
 		}
-	});
+	));
 	shell.pack ();
 	shell.open ();
 	

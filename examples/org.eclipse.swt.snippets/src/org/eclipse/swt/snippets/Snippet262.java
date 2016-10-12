@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2013 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,8 +7,11 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
+import static org.eclipse.swt.events.SelectionListener.*;
 
 import java.io.*;
 
@@ -69,20 +72,11 @@ public class Snippet262 {
 
 		MenuItem menuFileOpen = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileOpen.setText("Open...");
-		menuFileOpen.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fileOpen();
-			}
-		});
+		menuFileOpen.addSelectionListener(widgetSelectedAdapter( e-> fileOpen());
+
 		MenuItem menuFileExit = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileExit.setText("Exit");
-		menuFileExit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				shell.dispose();
-			}
-		});
+		menuFileExit.addSelectionListener(widgetSelectedAdapter( e-> shell.dispose()));
 	}
 
 	static void fileOpen() {

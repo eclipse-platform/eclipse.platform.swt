@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2013 IBM Corporation and others.
+ * Copyright (c) 2007, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -18,11 +19,13 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.3
  */ 
+
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet258 {
 	public static void main(String[] args) {
@@ -37,26 +40,22 @@ public class Snippet258 {
 			ToolBar toolBar = new ToolBar (shell, SWT.FLAT);
 			ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 			item.setImage (image);
-			item.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
+			item.addSelectionListener(widgetSelectedAdapter(e ->  {
 					text.setText("");
 					System.out.println("Search cancelled");
 				}
-			});
+			));
 		}
 		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		text.setText("Search text");
-		text.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+		text.addSelectionListener(widgetSelectedAdapter(e ->  {
 				if (e.detail == SWT.CANCEL) {
 					System.out.println("Search cancelled");
 				} else {
 					System.out.println("Searching for: " + text.getText() + "...");
 				}
 			}
-		});
+		));
 
 		shell.pack();
 		shell.open();
