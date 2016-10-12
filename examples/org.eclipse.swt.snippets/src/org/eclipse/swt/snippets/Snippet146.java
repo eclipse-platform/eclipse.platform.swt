@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 /*
  * UI Automation (for testing tools) snippet: post key events
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -42,7 +42,7 @@ public static void main(String[] args) {
 					Event event = new Event();
 					event.type = SWT.KeyDown;
 					event.keyCode = SWT.SHIFT;
-					display.post(event);	
+					display.post(event);
 				}
 				Event event = new Event();
 				event.type = SWT.KeyDown;
@@ -60,10 +60,10 @@ public static void main(String[] args) {
 					event = new Event();
 					event.type = SWT.KeyUp;
 					event.keyCode = SWT.SHIFT;
-					display.post(event);	
+					display.post(event);
 				}
 			}
-		}	
+		}
 	}.start();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Browser example snippet: Render HTML from memory in response to a link click.
  *
@@ -43,7 +43,7 @@ public static void main(String[] args) {
 	    @Override
 		public void changing(LocationEvent event) {
 			String location = event.location;
-			int index = location.indexOf(PREAMBLE); 
+			int index = location.indexOf(PREAMBLE);
 			if (index != -1) {
 				int pageNumber = Integer.valueOf(location.substring(index + PREAMBLE.length())).intValue();
 				browser.setText(createPage(pageNumber));

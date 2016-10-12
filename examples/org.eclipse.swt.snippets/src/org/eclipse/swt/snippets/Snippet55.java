@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Text example snippet: resize a text control (show about 10 characters)
  *
@@ -42,4 +42,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -23,13 +23,13 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet208 {	 
+public class Snippet208 {
 
 public static void main (String [] args) {
-	PaletteData palette = new PaletteData(0xff, 0xff00, 0xff0000);	
-	
-	// ImageData showing variations of hue	
-	ImageData hueData = new ImageData(360, 100, 24, palette);	
+	PaletteData palette = new PaletteData(0xff, 0xff00, 0xff0000);
+
+	// ImageData showing variations of hue
+	ImageData hueData = new ImageData(360, 100, 24, palette);
 	float hue = 0;
 	for (int x = 0; x < hueData.width; x++) {
 		for (int y = 0; y < hueData.height; y++) {
@@ -46,13 +46,13 @@ public static void main (String [] args) {
 	for (int x = 0; x < saturationBrightnessData.width; x++) {
 		brightness = 1f;
 		for (int y = 0; y < saturationBrightnessData.height; y++) {
-			int pixel = palette.getPixel(new RGB(360f, saturation, brightness));	
+			int pixel = palette.getPixel(new RGB(360f, saturation, brightness));
 			saturationBrightnessData.setPixel(x, y, pixel);
 			brightness -= 1f / saturationBrightnessData.height;
 		}
 		saturation += 1f / saturationBrightnessData.width;
 	}
-		
+
 	Display display = new Display();
 	Image hueImage = new Image(display, hueData);
 	Image saturationImage = new Image(display, saturationBrightnessData);
@@ -61,13 +61,13 @@ public static void main (String [] args) {
 	GridLayout gridLayout = new GridLayout(2, false);
 	gridLayout.verticalSpacing = 10;
 	gridLayout.marginWidth = gridLayout.marginHeight = 16;
-	shell.setLayout(gridLayout);		
-	
+	shell.setLayout(gridLayout);
+
 	Label label = new Label(shell, SWT.CENTER);
 	label.setImage(hueImage);
 	GridData data = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-	label.setLayoutData(data);	
-	
+	label.setLayoutData(data);
+
 	label = new Label(shell, SWT.CENTER); //spacer
 	label = new Label(shell, SWT.CENTER);
 	label.setText("Hue");
@@ -76,23 +76,23 @@ public static void main (String [] args) {
 	label = new Label(shell, SWT.CENTER); //spacer
 	data = new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1);
 	label.setLayoutData(data);
-	
+
 	label = new Label(shell, SWT.LEFT);
 	label.setText("Brightness");
 	data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 	label.setLayoutData(data);
-	
+
 	label = new Label(shell, SWT.CENTER);
 	label.setImage(saturationImage);
 	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
 	label.setLayoutData (data);
-	
+
 	label = new Label(shell, SWT.CENTER); //spacer
 	label = new Label(shell, SWT.CENTER);
 	label.setText("Saturation");
 	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
 	label.setLayoutData(data);
-	
+
 	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
@@ -101,7 +101,7 @@ public static void main (String [] args) {
 		}
 	}
 	hueImage.dispose();
-	saturationImage.dispose();	
+	saturationImage.dispose();
 	display.dispose();
 }
 

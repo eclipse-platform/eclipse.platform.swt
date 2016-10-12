@@ -32,21 +32,21 @@ public static void main (String [] args) {
 	gc.setBackground (color);
 	gc.fillRectangle (image.getBounds ());
 	gc.dispose ();
-	
+
 	Image disabledImage = new Image (display, 20, 20);
 	color = display.getSystemColor (SWT.COLOR_GREEN);
 	gc = new GC (disabledImage);
 	gc.setBackground (color);
 	gc.fillRectangle (disabledImage.getBounds ());
 	gc.dispose ();
-	
+
 	Image hotImage = new Image (display, 20, 20);
 	color = display.getSystemColor (SWT.COLOR_RED);
 	gc = new GC (hotImage);
 	gc.setBackground (color);
 	gc.fillRectangle (hotImage.getBounds ());
 	gc.dispose ();
-	
+
 	ToolBar bar = new ToolBar (shell, SWT.BORDER | SWT.FLAT);
 	Rectangle clientArea = shell.getClientArea ();
 	bar.setBounds (clientArea.x, clientArea.y, 200, 32);
@@ -57,7 +57,7 @@ public static void main (String [] args) {
 		item.setHotImage (hotImage);
 		if (i % 3 == 0) item.setEnabled (false);
 	}
-	
+
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
@@ -67,4 +67,4 @@ public static void main (String [] args) {
 	hotImage.dispose ();
 	display.dispose ();
 }
-} 
+}

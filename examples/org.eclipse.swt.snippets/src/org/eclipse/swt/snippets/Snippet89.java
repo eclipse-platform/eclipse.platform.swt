@@ -10,7 +10,7 @@
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 
 /*
  * Menu example snippet: create a menu with radio items

@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Text example snippet: verify input (format for date)
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -72,7 +72,7 @@ public static void main(String[] args) {
 				text.setSelection(e.start, e.start);
 				return;
 			}
-		
+
 			int start = e.start;
 			if (start > 9) return;
 			int index = 0;

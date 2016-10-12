@@ -26,20 +26,20 @@ public class Snippet293 {
 			Display display = new Display();
 			Shell shell = new Shell(display);
 			shell.setLayout(new GridLayout());
-			
+
 			Button b1 = new Button (shell, SWT.CHECK);
 			b1.setText("State 1");
 			b1.setSelection(true);
-			
+
 			Button b2 = new Button (shell, SWT.CHECK);
 			b2.setText("State 2");
 			b2.setSelection(false);
-			
+
 			Button b3 = new Button (shell, SWT.CHECK);
 			b3.setText("State 3");
 			b3.setSelection(true);
 			b3.setGrayed(true);
-			
+
 			shell.pack();
 			shell.open();
 			while (!shell.isDisposed()) {

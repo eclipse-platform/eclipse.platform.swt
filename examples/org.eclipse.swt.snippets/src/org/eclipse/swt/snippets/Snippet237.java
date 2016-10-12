@@ -9,12 +9,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * Composite Snippet: inherit a background color or image
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -30,27 +30,27 @@ public static void main(String[] args) {
 	final Shell shell = new Shell(display);
 	shell.setText("Composite.setBackgroundMode()");
 	shell.setLayout(new RowLayout(SWT.VERTICAL));
-	
+
 	Color color = display.getSystemColor(SWT.COLOR_CYAN);
-	
+
 	Group group = new Group(shell, SWT.NONE);
 	group.setText("SWT.INHERIT_NONE");
 	group.setBackground(color);
 	group.setBackgroundMode(SWT.INHERIT_NONE);
 	createChildren(group);
-	
+
 	group = new Group(shell, SWT.NONE);
 	group.setBackground(color);
 	group.setText("SWT.INHERIT_DEFAULT");
 	group.setBackgroundMode(SWT.INHERIT_DEFAULT);
 	createChildren(group);
-	
+
 	group = new Group(shell, SWT.NONE);
 	group.setBackground(color);
 	group.setText("SWT.INHERIT_FORCE");
 	group.setBackgroundMode(SWT.INHERIT_FORCE);
 	createChildren(group);
-	
+
 	shell.pack();
 	shell.open();
 	while(!shell.isDisposed()) {

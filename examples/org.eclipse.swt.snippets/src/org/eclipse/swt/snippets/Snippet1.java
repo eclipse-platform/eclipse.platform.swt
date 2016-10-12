@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * example snippet: Hello World
  *
  * For a list of all SWT example snippets see

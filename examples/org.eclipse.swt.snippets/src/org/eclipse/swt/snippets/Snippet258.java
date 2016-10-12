@@ -16,9 +16,9 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
- */ 
+ */
 
 import static org.eclipse.swt.events.SelectionListener.*;
 
@@ -32,7 +32,7 @@ public class Snippet258 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, false));
-		
+
 		final Text text = new Text(shell, SWT.SEARCH | SWT.ICON_CANCEL);
 		Image image = null;
 		if ((text.getStyle() & SWT.ICON_CANCEL) == 0) {

@@ -25,4 +25,4 @@ public static void main (String [] args) {
 	System.out.println ("Display Bounds=" + display.getBounds () + " Display ClientArea=" + display.getClientArea ());
 	display.dispose ();
 }
-} 
+}

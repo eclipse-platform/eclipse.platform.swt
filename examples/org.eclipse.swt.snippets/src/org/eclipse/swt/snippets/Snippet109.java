@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * SashForm example snippet: create a sash form with three children
  *
@@ -30,11 +30,11 @@ public static void main (String [] args) {
 
 	SashForm form = new SashForm(shell,SWT.HORIZONTAL);
 	form.setLayout(new FillLayout());
-	
+
 	Composite child1 = new Composite(form,SWT.NONE);
 	child1.setLayout(new FillLayout());
 	new Label(child1,SWT.NONE).setText("Label in pane 1");
-	
+
 	Composite child2 = new Composite(form,SWT.NONE);
 	child2.setLayout(new FillLayout());
 	new Button(child2,SWT.PUSH).setText("Button in pane2");
@@ -42,7 +42,7 @@ public static void main (String [] args) {
 	Composite child3 = new Composite(form,SWT.NONE);
 	child3.setLayout(new FillLayout());
 	new Label(child3,SWT.PUSH).setText("Label in pane3");
-	
+
 	form.setWeights(new int[] {30,40,30});
 	shell.open ();
 	while (!shell.isDisposed ()) {

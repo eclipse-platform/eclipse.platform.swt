@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * GridLayout snippet: align widgets in a GridLayout
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -29,7 +29,7 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	GridLayout layout = new GridLayout(4, false);
 	shell.setLayout(layout);
-	
+
 	Button b = new Button(shell, SWT.PUSH);
 	b.setText("LEFT, TOP");
 	b.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1));
@@ -78,7 +78,7 @@ public static void main (String [] args) {
 	b = new Button(shell, SWT.PUSH);
 	b.setText("FILL, FILL");
 	b.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-	
+
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();

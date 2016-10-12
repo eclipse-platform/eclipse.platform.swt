@@ -11,11 +11,11 @@
 package org.eclipse.swt.snippets;
 
 /*
- * SWT StyledText snippet: use rise and font with StyleRange. 
+ * SWT StyledText snippet: use rise and font with StyleRange.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -26,10 +26,10 @@ import org.eclipse.swt.custom.*;
 
 public class Snippet211 {
 
-	static String text = 
-		"You can set any font you want in a range. You can also set a baseline rise and all other old features" + 
+	static String text =
+		"You can set any font you want in a range. You can also set a baseline rise and all other old features" +
 		" like background and foreground, and mix them any way you want. Totally awesome.";
-	
+
 	public static void main(String [] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -41,23 +41,23 @@ public class Snippet211 {
 		Font font2 = new Font(display, data.getName(), data.getHeight() * 4 / 5, data.getStyle());
 		StyleRange[] styles = new StyleRange[8];
 		styles[0] = new StyleRange();
-		styles[0].font = font1; 
+		styles[0].font = font1;
 		styles[1] = new StyleRange();
-		styles[1].rise = data.getHeight() / 3; 
+		styles[1].rise = data.getHeight() / 3;
 		styles[2] = new StyleRange();
-		styles[2].background = display.getSystemColor(SWT.COLOR_GREEN); 
+		styles[2].background = display.getSystemColor(SWT.COLOR_GREEN);
 		styles[3] = new StyleRange();
-		styles[3].foreground = display.getSystemColor(SWT.COLOR_MAGENTA); 
+		styles[3].foreground = display.getSystemColor(SWT.COLOR_MAGENTA);
 		styles[4] = new StyleRange();
-		styles[4].font = font2; 
+		styles[4].font = font2;
 		styles[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 		styles[4].underline = true;
 		styles[5] = new StyleRange();
-		styles[5].rise = -data.getHeight() / 3; 
+		styles[5].rise = -data.getHeight() / 3;
 		styles[5].strikeout = true;
 		styles[5].underline = true;
 		styles[6] = new StyleRange();
-		styles[6].font = font1; 
+		styles[6].font = font1;
 		styles[6].foreground = display.getSystemColor(SWT.COLOR_YELLOW);
 		styles[6].background = display.getSystemColor(SWT.COLOR_BLUE);
 		styles[7] = new StyleRange();
@@ -66,10 +66,10 @@ public class Snippet211 {
 		styles[7].fontStyle = SWT.BOLD;
 		styles[7].foreground = display.getSystemColor(SWT.COLOR_RED);
 		styles[7].background = display.getSystemColor(SWT.COLOR_BLACK);
-		
+
 		int[] ranges = new int[] {16, 4, 61, 13, 107, 10, 122, 10, 134, 3, 143, 6, 160, 7, 168, 7};
 		styledText.setStyleRanges(ranges, styles);
-		
+
 		shell.setSize(300, 300);
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -77,7 +77,7 @@ public class Snippet211 {
 				display.sleep();
 		}
 		font1.dispose();
-		font2.dispose();		
+		font2.dispose();
 		display.dispose();
 	}
 }

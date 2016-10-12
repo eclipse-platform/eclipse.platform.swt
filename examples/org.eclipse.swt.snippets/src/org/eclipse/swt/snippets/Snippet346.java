@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Text snippet: set text in a secure manner.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.7
  */
 import org.eclipse.swt.*;
@@ -28,7 +28,7 @@ public class Snippet346 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Snippet 346");
-		
+
 		Text text = new Text(shell, SWT.PASSWORD | SWT.BORDER);
 		text.setTextChars(new char[]{'p','a','s','s'});
 		shell.pack();

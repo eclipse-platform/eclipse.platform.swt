@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -32,10 +32,10 @@ public static void main(String[] args) {
 	Image image1 = display.getSystemImage(SWT.ICON_WORKING);
 	Image image2 = display.getSystemImage(SWT.ICON_QUESTION);
 	Image image3 = display.getSystemImage(SWT.ICON_ERROR);
-	
+
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	
+
 	final ScrolledComposite scrollComposite = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
 
 	final Composite parent = new Composite(scrollComposite, SWT.NONE);
@@ -48,7 +48,7 @@ public static void main(String[] args) {
 	RowLayout layout = new RowLayout(SWT.HORIZONTAL);
 	layout.wrap = true;
 	parent.setLayout(layout);
-	
+
 	scrollComposite.setContent(parent);
 	scrollComposite.setExpandVertical(true);
 	scrollComposite.setExpandHorizontal(true);

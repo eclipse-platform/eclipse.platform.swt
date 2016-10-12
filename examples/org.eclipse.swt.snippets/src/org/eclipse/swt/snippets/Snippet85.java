@@ -24,13 +24,13 @@ public class Snippet85 {
 public static void main(String[] args) {
 	Display display = new Display();
 
-	/* 
+	/*
 	 * Create a Shell with the default style
 	 * i.e. full screen, no decoration on PocketPC.
 	 */
 	Shell shell = new Shell(display);
 
-	/* 
+	/*
 	 * Set a text so that the top level Shell
 	 * also appears in the PocketPC task list
 	 */

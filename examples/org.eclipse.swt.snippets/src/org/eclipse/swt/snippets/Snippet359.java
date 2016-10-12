@@ -40,7 +40,7 @@ public class Snippet359 {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				System.out.println("caret position: " + combo.getCaretPosition());
-				System.out.println("caret location: " + combo.getCaretLocation()); 
+				System.out.println("caret location: " + combo.getCaretLocation());
 			}
 		});
 	  shell.pack();

@@ -36,7 +36,7 @@ public static void main (String [] args) {
 	for (int i=0; i<titles.length; i++) {
 		TableColumn column = new TableColumn (table, SWT.NONE);
 		column.setText (titles [i]);
-	}	
+	}
 	int count = 128;
 	for (int i=0; i<count; i++) {
 		TableItem item = new TableItem (table, SWT.NONE);
@@ -50,7 +50,7 @@ public static void main (String [] args) {
 	}
 	for (int i=0; i<titles.length; i++) {
 		table.getColumn (i).pack ();
-	}	
+	}
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
@@ -58,4 +58,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

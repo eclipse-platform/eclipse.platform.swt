@@ -32,7 +32,7 @@ public static void main (String[] args) {
 
 	Button button1 = new Button (shell, SWT.PUSH);
 	button1.setText ("&Typical button");
-	
+
 	Button button2 = new Button (shell, SWT.PUSH);
 	button2.setImage (image);
 	button2.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
@@ -41,7 +41,7 @@ public static void main (String[] args) {
 			e.result = "Eclipse logo";
 		}
 	});
-	
+
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {

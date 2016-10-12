@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Make a dropped data type depend on a target item in table
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -49,7 +49,7 @@ public static void main (String [] args) {
 			if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 				event.data = "once upon a time";
 			}
-		} 
+		}
 	});
 	DropTarget dropTarget = new DropTarget(table, DND.DROP_COPY | DND.DROP_DEFAULT);
 	dropTarget.setTransfer(new Transfer[] {TextTransfer.getInstance(), FileTransfer.getInstance()});
@@ -115,7 +115,7 @@ public static void main (String [] args) {
 				}
 			}
 		}
-		
+
 	});
 	shell.setSize(300, 150);
 	shell.open ();

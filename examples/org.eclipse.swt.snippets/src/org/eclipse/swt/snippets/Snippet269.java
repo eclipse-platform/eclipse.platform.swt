@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 /*
  * Combo example snippet: set the caret position within a Combo's text
  *
@@ -32,7 +32,7 @@ public static void main(String[] args) {
 	combo.select (0);
 	shell.pack ();
 	shell.open ();
-	int stringLength = combo.getText ().length (); 
+	int stringLength = combo.getText ().length ();
 	combo.setSelection (new Point (stringLength, stringLength));
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();

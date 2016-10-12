@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Detect when the user scrolls a text control
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */

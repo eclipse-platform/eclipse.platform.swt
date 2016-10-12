@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Text example snippet: set the selection (start, end),
  * and then scroll the selection to the top of the client area
@@ -43,5 +43,5 @@ public static void main (String [] args) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
-} 
+}
 }

@@ -13,12 +13,12 @@ package org.eclipse.swt.snippets;
 
 
 /*
- * Link example snippet: create a link widget and 
+ * Link example snippet: create a link widget and
  * provide buttons to set the link color.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 
@@ -35,10 +35,10 @@ public class Snippet182 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new RowLayout());
-		
+
 		Link link = new Link(shell, SWT.BORDER);
 		link.setText("This a very simple <a>link</a> widget.");
-		
+
 		Button setButton = new Button(shell, SWT.PUSH);
 		setButton.setText("Choose link color");
 		setButton.addSelectionListener(widgetSelectedAdapter(e -> {
@@ -48,14 +48,14 @@ public class Snippet182 {
 			link.setLinkForeground(new Color(display, color));
 			System.out.println("user selected link color " + link.getLinkForeground());
 		}));
-		
+
 		Button resetButton = new Button(shell, SWT.PUSH);
 		resetButton.setText("Reset link color");
 		resetButton.addSelectionListener(widgetSelectedAdapter(e -> {
 			System.out.println("link color reset to system default");
 			link.setLinkForeground(null);
 		}));
-		
+
 		shell.pack ();
 		shell.open();
 		while (!shell.isDisposed()) {

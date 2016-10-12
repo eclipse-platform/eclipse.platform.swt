@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * example snippet: embed a JTable in SWT (no flicker)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import java.awt.*;
@@ -37,7 +37,7 @@ public class Snippet154 {
 		shell.setLayout(new FillLayout());
 
 		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
-		
+
 		/*
 		* Set a Windows specific AWT property that prevents heavyweight
 		* components from erasing their background. Note that this
@@ -53,7 +53,7 @@ public class Snippet154 {
 		Panel panel = new Panel(new BorderLayout()) {
 			@Override
 			public void update(java.awt.Graphics g) {
-				/* Do not erase the background */ 
+				/* Do not erase the background */
 				paint(g);
 			}
 		};
@@ -82,7 +82,7 @@ public class Snippet154 {
 		JScrollPane scrollPane = new JScrollPane(table);
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(scrollPane);
-		
+
 		shell.open();
 		while(!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();

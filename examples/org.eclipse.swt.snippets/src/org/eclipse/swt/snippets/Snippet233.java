@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Shell example snippet: create a dialog shell and position it
  * with upper left corner at cursor position
  *
@@ -35,7 +35,7 @@ public class Snippet233 {
 				dialog.setLocation (pt.x, pt.y);
 				dialog.setText ("Dialog Shell");
 				dialog.setSize (100, 100);
-				dialog.open (); 
+				dialog.open ();
 			}});
 		shell.setSize (400, 400);
 		shell.open ();

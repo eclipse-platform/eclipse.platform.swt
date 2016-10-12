@@ -38,5 +38,5 @@ public static void main (String [] args) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
-} 
+}
 }

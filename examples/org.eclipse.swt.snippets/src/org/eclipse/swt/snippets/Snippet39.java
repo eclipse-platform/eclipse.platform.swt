@@ -31,7 +31,7 @@ public class Snippet39 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
-		
+
 		CCombo combo = new CCombo(shell, SWT.READ_ONLY | SWT.FLAT | SWT.BORDER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		for (int i = 0; i < 5; i++) {

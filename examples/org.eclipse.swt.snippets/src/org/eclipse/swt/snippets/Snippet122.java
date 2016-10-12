@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 
@@ -29,7 +29,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet122 {
-	
+
 public static void main(String[] args) {
 	Display display = new Display();
 	final Clipboard cb = new Clipboard(display);

@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Shell example snippet: create a dialog shell
  *
@@ -35,4 +35,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

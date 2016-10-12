@@ -17,15 +17,15 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Text with underline and strike through
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 
 public class Snippet189 {
-	
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);

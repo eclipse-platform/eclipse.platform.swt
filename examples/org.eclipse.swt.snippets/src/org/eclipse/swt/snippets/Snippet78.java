@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
 public class Snippet78 {
 
 public static void main (String [] args) {
-	
+
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
@@ -41,10 +41,10 @@ public static void main (String [] args) {
 	display.dispose ();
 }
 public static void setDragDrop (final Label label) {
-	
+
 	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
-	
+
 	final DragSource source = new DragSource (label, operations);
 	source.setTransfer(types);
 	source.addDragListener (new DragSourceListener () {

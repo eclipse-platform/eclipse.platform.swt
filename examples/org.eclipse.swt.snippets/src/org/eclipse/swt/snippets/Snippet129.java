@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Table example snippet: color cells and rows in table
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -24,7 +24,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet129 {
- 
+
 public static void main(String[] args) {
 	Display display = new Display();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -62,11 +62,11 @@ public static void main(String[] args) {
 	item.setBackground(0, blue);
 	item.setForeground(2, white);
 	item.setBackground(2, red);
-	
+
 	column1.pack();
 	column2.pack();
 	column3.pack();
-	
+
 	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {

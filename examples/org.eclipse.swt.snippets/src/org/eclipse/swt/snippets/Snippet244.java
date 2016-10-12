@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * StyledText snippet: Draw a box around text.
  *
  * For a list of all SWT example snippets see

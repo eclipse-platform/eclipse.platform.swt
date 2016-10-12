@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Tool shell snippet: create a tool shell
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -45,7 +45,7 @@ public class Snippet344 {
 				shell2.open();
 			}
 		});
-				
+
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

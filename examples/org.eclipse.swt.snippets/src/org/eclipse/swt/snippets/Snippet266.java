@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Span and center columns with a GridLayout.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
  */
 public class Snippet266 {
@@ -28,10 +28,10 @@ public class Snippet266 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, true));
-		
+
 		TabFolder tabFolder = new TabFolder(shell, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		
+
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
 		item.setText("Widget");
 		Composite composite = new Composite(tabFolder, SWT.NONE);
@@ -60,16 +60,16 @@ public class Snippet266 {
 
 		item = new TabItem(tabFolder, SWT.NONE);
 		item.setText("Toolkit");
-		
+
 		Button button = new Button(shell, SWT.CHECK);
 		button.setText("Totally");
 		button.setSelection(true);
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
+
 		button = new Button(shell, SWT.PUSH);
 		button.setText("Awesome");
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
+
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

@@ -11,12 +11,12 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Create a CTabFolder with min and max buttons, as well as close button and 
+ * Create a CTabFolder with min and max buttons, as well as close button and
  * image only on selected tab.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;

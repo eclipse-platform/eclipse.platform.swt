@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Drag and Drop example snippet: define a default operation (in this example, Copy)
  *
@@ -22,12 +22,12 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet84 {
-	
+
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	
+
 	final Label label = new Label(shell, SWT.BORDER);
 	label.setText("Drag Source");
 	DragSource source = new DragSource(label, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK);
@@ -91,7 +91,7 @@ public static void main(String[] args) {
 			text.append("\n"+operation+(String)event.data);
 		}
 	});
-	
+
 	shell.setSize(400, 400);
 	shell.open();
 	while (!shell.isDisposed()) {

@@ -28,7 +28,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout (new RowLayout ());
-	
+
 	Composite c1 = new Composite (shell, SWT.BORDER);
 	c1.setLayout (new RowLayout ());
 	Button b1 = new Button (c1, SWT.PUSH);
@@ -47,17 +47,17 @@ public static void main (String [] args) {
 	b3.setText ("B&3");
 	Button b4 = new Button (c1, SWT.PUSH);
 	b4.setText ("B&4");
-	
+
 	Composite c2 = new Composite (shell, SWT.BORDER);
 	c2.setLayout (new RowLayout ());
 	Button b5 = new Button (c2, SWT.PUSH);
 	b5.setText ("B&5");
 	Button b6 = new Button (c2, SWT.PUSH);
 	b6.setText ("B&6");
-	
+
 	List l2 = new List (shell, SWT.SINGLE | SWT.BORDER);
 	l2.setItems ("L2");
-	
+
 	ToolBar tb1 = new ToolBar (shell, SWT.FLAT | SWT.BORDER);
 	ToolItem i1 = new ToolItem (tb1, SWT.RADIO);
 	i1.setText ("I1");
@@ -74,10 +74,10 @@ public static void main (String [] args) {
 	i4.setText ("I&4");
 	ToolItem i5 = new ToolItem (tb1, SWT.CHECK);
 	i5.setText ("I5");
-	
+
 	Button b7 = new Button (shell, SWT.PUSH);
 	b7.setText ("B&7");
-	
+
 	Composite c4 = new Composite (shell, SWT.BORDER);
 	Composite c5 = new Composite (c4, SWT.BORDER);
 	c5.setLayout(new FillLayout());
@@ -91,10 +91,10 @@ public static void main (String [] args) {
 
 	shell.pack ();
 	shell.open ();
-	
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

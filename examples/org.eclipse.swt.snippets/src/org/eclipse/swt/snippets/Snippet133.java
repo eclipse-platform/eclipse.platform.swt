@@ -10,7 +10,7 @@
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 
 /*
  * Printing example snippet: print text to printer, with word wrap and pagination
@@ -35,7 +35,7 @@ public class Snippet133 {
 	Text text;
 	Font font;
 	Color foregroundColor, backgroundColor;
-	
+
 	Printer printer;
 	GC gc;
 	FontData[] printerFontData;
@@ -53,14 +53,14 @@ public class Snippet133 {
 	public static void main(String[] args) {
 		new Snippet133().open();
 	}
-	
+
 	void open() {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Print Text");
 		text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		
+
 		Menu menuBar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menuBar);
 		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
@@ -98,7 +98,7 @@ public class Snippet133 {
 		if (backgroundColor != null) backgroundColor.dispose();
 		display.dispose();
 	}
-		
+
 	void menuOpen() {
 		final String textString;
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
@@ -173,7 +173,7 @@ public class Snippet133 {
 		if (data.printToFile) {
 			data.fileName = "print.out"; // you probably want to ask the user for a filename
 		}
-		
+
 		/* Get the text to print from the Text widget (you could get it from anywhere, i.e. your java model) */
 		textToPrint = text.getText();
 
@@ -181,7 +181,7 @@ public class Snippet133 {
 		printerFontData = text.getFont().getFontData();
 		printerForeground = text.getForeground().getRGB();
 		printerBackground = text.getBackground().getRGB();
-		
+
 		/* Do the printing in a background thread so that spooling does not freeze the UI. */
 		printer = new Printer(data);
 		Thread printingThread = new Thread("Printing") {
@@ -193,7 +193,7 @@ public class Snippet133 {
 		};
 		printingThread.start();
 	}
-	
+
 	void print(Printer printer) {
 		if (printer.startJob("Text")) {   // the string is the job name - shows up in the printer's job list
 			Rectangle clientArea = printer.getClientArea();
@@ -203,7 +203,7 @@ public class Snippet133 {
 			rightMargin = clientArea.width - dpi.x + trim.x + trim.width; // one inch from right side of paper
 			topMargin = dpi.y + trim.y; // one inch from top edge of paper
 			bottomMargin = clientArea.height - dpi.y + trim.y + trim.height; // one inch from bottom edge of paper
-			
+
 			/* Create a buffer for computing tab width. */
 			int tabSize = 4; // is tab width a user setting in your UI?
 			StringBuffer tabBuffer = new StringBuffer(tabSize);
@@ -214,14 +214,14 @@ public class Snippet133 {
 			gc = new GC(printer);
 			Font printerFont = new Font(printer, printerFontData);
 			Color printerForegroundColor = new Color(printer, printerForeground);
-			Color printerBackgroundColor = new Color(printer, printerBackground); 
-			
+			Color printerBackgroundColor = new Color(printer, printerBackground);
+
 			gc.setFont(printerFont);
 			gc.setForeground(printerForegroundColor);
 			gc.setBackground(printerBackgroundColor);
 			tabWidth = gc.stringExtent(tabs).x;
 			lineHeight = gc.getFontMetrics().getHeight();
-		
+
 			/* Print text to current gc using word wrap */
 			printText();
 			printer.endJob();
@@ -233,7 +233,7 @@ public class Snippet133 {
 			gc.dispose();
 		}
 	}
-	
+
 	void printText() {
 		printer.startPage();
 		wordBuffer = new StringBuffer();

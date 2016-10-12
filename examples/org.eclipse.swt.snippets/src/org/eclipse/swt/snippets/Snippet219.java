@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 public class Snippet219 {
@@ -38,7 +38,7 @@ public class Snippet219 {
 						pixel.x = imageData.x + x;
 						pixel.y = imageData.y + y;
 						region.add(pixel);
-					} 
+					}
 				}
 			}
 		} else {

@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet304 {
-    static Display display = null; 
+    static Display display = null;
 
     public static void main(String[] args) {
         display = new Display();
@@ -65,7 +65,7 @@ public class Snippet304 {
     	        postEvent(SWT.MOD1, SWT.KeyUp);
     		}
     	}.start();
-        
+
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
                 display.sleep();

@@ -13,10 +13,10 @@ package org.eclipse.swt.snippets;
 /*
  * Drag and Drop example snippet: define data transfer types that subclass each
  * other
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import java.io.*;

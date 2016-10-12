@@ -13,7 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * Drag and Drop example snippet: drag and drop an object with a
  * custom data transfer type from SWT to AWT/Swing
- * 
+ *
  * Note that JRE 1.6 or newer is required on Linux.
  *
  * For a list of all SWT example snippets see
@@ -87,11 +87,11 @@ public void go() {
 
 	/* Register the custom data flavour */
 	final DataFlavor flavor = new DataFlavor(MIME_TYPE, "MyType custom flavor");
-	/* 
+	/*
 	 * Note that according to jre/lib/flavormap.properties, the preferred way to
 	 * augment the default system flavor map is to specify the AWT.DnD.flavorMapFileURL
 	 * property in an awt.properties file.
-	 * 
+	 *
 	 * This snippet uses the alternate approach below in order to provide a simple
 	 * stand-alone snippet that demonstrates the functionality.  This implementation
 	 * works well, but if the instanceof check below fails for some reason when used

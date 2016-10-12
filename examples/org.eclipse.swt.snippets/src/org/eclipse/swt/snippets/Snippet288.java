@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet288 {
-	
+
 	static Display display;
 	static Shell shell;
 	static GC shellGC;
@@ -60,13 +60,13 @@ public class Snippet288 {
 			}
 			toolBar.pack ();
 			shell.open ();
-			
+
 			startAnimationThreads();
-			
+
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch ()) display.sleep ();
 			}
-			
+
 			for (int i = 0; i < numToolBarItems; i++) {
 				for (int j = 0; j < image[i].length; j++) {
 					image[i][j].dispose();
@@ -96,7 +96,7 @@ public class Snippet288 {
 					fullHeight = imageDataArray[i][j].height;
 				}
 				else {
-					//after the first frame of animation, draw the background or previous frame first, then the new image data 
+					//after the first frame of animation, draw the background or previous frame first, then the new image data
 					image[i][j] = new Image(display, fullWidth, fullHeight);
 					GC gc = new GC(image[i][j]);
 					gc.setBackground(shellBackground);
@@ -162,7 +162,7 @@ public class Snippet288 {
 										item[i].setImage(image[i][imageDataIndex]);
 								});
 							}
-							
+
 							/* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */
 							try {
 								int ms = imageDataArray[i][imageDataIndex].delayTime * 10;

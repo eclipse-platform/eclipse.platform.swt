@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * ToolBar example snippet: create a flat tool bar (images)
  *
@@ -48,4 +48,4 @@ public static void main (String [] args) {
 	display.dispose ();
 }
 
-} 
+}

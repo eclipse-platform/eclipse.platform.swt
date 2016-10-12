@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * example snippet: drag and drop text between SWT and Swing
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class Snippet300 {
 	public static void setDragDrop (final Text text) {
 		Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
 		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
-		
+
 		final DragSource source = new DragSource (text, operations);
 		source.setTransfer(types);
 		source.addDragListener (new DragSourceListener () {

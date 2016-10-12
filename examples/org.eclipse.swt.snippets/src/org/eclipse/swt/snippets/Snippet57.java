@@ -29,7 +29,7 @@ public static void main (String [] args) {
 	Rectangle clientArea = shell.getClientArea ();
 	bar.setBounds (clientArea.x, clientArea.y, 200, 32);
 	shell.open ();
-	
+
 	display.timerExec(100, new Runnable() {
 		int i = 0;
 		@Override
@@ -45,4 +45,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

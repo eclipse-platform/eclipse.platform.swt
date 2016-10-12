@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Table example snippet: create a table (no columns, no headers)
  *
@@ -40,4 +40,4 @@ public static void main (String [] args) {
 	display.dispose ();
 }
 
-} 
+}

@@ -30,7 +30,7 @@ public class Snippet141 {
 	static Thread animateThread;
 	static Image image;
 	static final boolean useGIFBackground = false;
-	
+
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
@@ -55,10 +55,10 @@ public class Snippet141 {
 							GC offScreenImageGC = new GC(offScreenImage);
 							offScreenImageGC.setBackground(shellBackground);
 							offScreenImageGC.fillRectangle(0, 0, loader.logicalScreenWidth, loader.logicalScreenHeight);
-								
+
 							try {
 								/* Create the first image and draw it on the off-screen image. */
-								int imageDataIndex = 0;	
+								int imageDataIndex = 0;
 								ImageData imageData = imageDataArray[imageDataIndex];
 								if (image != null && !image.isDisposed()) image.dispose();
 								image = new Image(display, imageData);
@@ -102,7 +102,7 @@ public class Snippet141 {
 											imageData.height);
 										break;
 									}
-														
+
 									imageDataIndex = (imageDataIndex + 1) % imageDataArray.length;
 									imageData = imageDataArray[imageDataIndex];
 									image.dispose();
@@ -117,10 +117,10 @@ public class Snippet141 {
 										imageData.y,
 										imageData.width,
 										imageData.height);
-									
+
 									/* Draw the off-screen image to the shell. */
 									shellGC.drawImage(offScreenImage, 0, 0);
-									
+
 									/* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */
 									try {
 										int ms = imageData.delayTime * 10;
@@ -129,7 +129,7 @@ public class Snippet141 {
 										Thread.sleep(ms);
 									} catch (InterruptedException e) {
 									}
-									
+
 									/* If we have just drawn the last image, decrement the repeat count and start again. */
 									if (imageDataIndex == imageDataArray.length - 1) repeatCount--;
 								}

@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Tree example snippet: Create a Tree with columns
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 

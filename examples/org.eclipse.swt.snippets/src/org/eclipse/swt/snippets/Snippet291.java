@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Give accessible names to a tree and its tree items
  *
  * For a list of all SWT example snippets see

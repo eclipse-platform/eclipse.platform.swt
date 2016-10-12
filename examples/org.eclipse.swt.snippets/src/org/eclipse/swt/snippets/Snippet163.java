@@ -47,7 +47,7 @@ public static void main(String[] args) {
 	style3.length = 13;
 	style3.background = display.getSystemColor(SWT.COLOR_BLUE);
 	text.setStyleRange(style3);
-	
+
 	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {

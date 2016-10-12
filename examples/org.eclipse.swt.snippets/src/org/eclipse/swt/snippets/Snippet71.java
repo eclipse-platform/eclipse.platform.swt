@@ -34,7 +34,7 @@ public static void main (String [] args) {
 	okButton.setText ("&OK");
 	Button cancelButton = new Button (dialog, SWT.PUSH);
 	cancelButton.setText ("&Cancel");
-	
+
 	FormLayout form = new FormLayout ();
 	form.marginWidth = form.marginHeight = 8;
 	dialog.setLayout (form);
@@ -45,14 +45,14 @@ public static void main (String [] args) {
 	cancelData.left = new FormAttachment (okButton, 8);
 	cancelData.top = new FormAttachment (okButton, 0, SWT.TOP);
 	cancelButton.setLayoutData (cancelData);
-	
+
 	dialog.setDefaultButton (okButton);
 	dialog.pack ();
 	dialog.open ();
-	
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

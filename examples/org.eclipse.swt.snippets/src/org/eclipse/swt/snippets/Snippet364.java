@@ -13,8 +13,8 @@ package org.eclipse.swt.snippets;
 /*
  * BIDI example snippet: Set the text direction independent of the widget orientation.
  *
- * Note: This snippet currently only works on Windows. 
- * 
+ * Note: This snippet currently only works on Windows.
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -35,21 +35,21 @@ public class Snippet364 {
 		Button b = new Button(shell, SWT.PUSH | SWT.LEFT_TO_RIGHT);
 		b.setText("Button LEFT_TO_RIGHT...");
 		b.setImage(i);
-		
+
 		Button b2 = new Button(shell, SWT.PUSH | SWT.RIGHT_TO_LEFT);
 		b2.setText("Button RIGHT_TO_LEFT...");
 		b2.setImage(i);
-		
+
 		new Label(shell, SWT.NONE).setText("with FLIP_TEXT_DIRECTION:");
 
 		Button b3 = new Button(shell, SWT.PUSH | SWT.LEFT_TO_RIGHT | SWT.FLIP_TEXT_DIRECTION);
 		b3.setText("Button LEFT_TO_RIGHT...");
 		b3.setImage(i);
-		
+
 		Button b4 = new Button(shell, SWT.PUSH | SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION);
 		b4.setText("Button RIGHT_TO_LEFT...");
 		b4.setImage(i);
-		
+
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

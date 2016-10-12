@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Write an animated GIF to a file.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -29,7 +29,7 @@ public class Snippet194 {
 	public static void main(String[] args) {
 		new Snippet194().run();
 	}
-	
+
 	public void run() {
 		display = new Display();
 		RGB whiteRGB = new RGB(0xff, 0xff, 0xff);
@@ -45,13 +45,13 @@ public class Snippet194 {
 		green = new Color(display, greenRGB);
 		blue = new Color(display, blueRGB);
 		font = new Font(display, "Comic Sans MS", 24, SWT.BOLD);
-		
+
 		ImageData[] data = new ImageData[4];
 		data[0] = newFrame("",  white, false, 0, 0, 101, 55, SWT.DM_FILL_NONE, 40);
 		data[1] = newFrame("S", red,   true,  0, 0,  30, 55, SWT.DM_FILL_NONE, 40);
 		data[2] = newFrame("W", green, true, 28, 0,  39, 55, SWT.DM_FILL_NONE, 40);
 		data[3] = newFrame("T", blue,  true, 69, 0,  32, 55, SWT.DM_FILL_BACKGROUND, 200);
-		
+
 		ImageLoader loader = new ImageLoader();
 		loader.data = data;
 		loader.backgroundPixel = 0;

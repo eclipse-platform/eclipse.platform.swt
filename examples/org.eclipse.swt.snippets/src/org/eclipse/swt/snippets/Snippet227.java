@@ -9,15 +9,15 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-/* 
+/*
  * Tree example snippet: draw multiple lines of text in a tree item
  *
- * For more info on custom-drawing TableItem and TreeItem content see 
+ * For more info on custom-drawing TableItem and TreeItem content see
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet227 {	
+public class Snippet227 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell (display);
@@ -72,7 +72,7 @@ public static void main(String [] args) {
 	Listener paintListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
-			switch(event.type) {		
+			switch(event.type) {
 				case SWT.MeasureItem: {
 					TreeItem item = (TreeItem)event.item;
 					String text = getText(item, event.index);
@@ -84,12 +84,12 @@ public static void main(String [] args) {
 				case SWT.PaintItem: {
 					TreeItem item = (TreeItem)event.item;
 					String text = getText(item, event.index);
-					Point size = event.gc.textExtent(text);					
+					Point size = event.gc.textExtent(text);
 					int offset2 = event.index == 0 ? Math.max(0, (event.height - size.y) / 2) : 0;
 					event.gc.drawText(text, event.x, event.y + offset2, true);
 					break;
 				}
-				case SWT.EraseItem: {	
+				case SWT.EraseItem: {
 					event.detail &= ~SWT.FOREGROUND;
 					break;
 				}

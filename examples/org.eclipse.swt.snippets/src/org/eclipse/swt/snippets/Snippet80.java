@@ -26,7 +26,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet80 {
-	
+
 public static void main(String[] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
@@ -44,7 +44,7 @@ public static void main(String[] args) {
 			}
 		}
 	}
-	
+
 	tree.addSelectionListener(widgetSelectedAdapter(e -> {
 			TreeItem[] selection = tree.getSelection();
 			TreeItem[] revisedSelection = new TreeItem[0];

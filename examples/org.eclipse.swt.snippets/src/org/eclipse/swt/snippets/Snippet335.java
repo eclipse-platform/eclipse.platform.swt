@@ -13,7 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * GridLayout snippet: show a wrappable Label that fills available width
  * without expanding it
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -41,7 +41,7 @@ public static void main(String[] args) {
 
 	/* update the Label's width hint to match what the layout allocated for it */
 	labelData.widthHint = label.getBounds().width;
-	
+
 	/*
 	 * do a second pack() so that the Label will compute its required height
 	 * based on its correct width instead of its previously-set default width

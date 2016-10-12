@@ -17,15 +17,15 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Scroll a widget into view on focus in
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 
 public class Snippet188 {
-	
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
@@ -43,7 +43,7 @@ public static void main (String [] args) {
 	sc.setExpandVertical(true);
 	sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	sc.setShowFocusedControl(true);
-	
+
 	shell.setSize(300, 500);
 	shell.open ();
 	while (!shell.isDisposed ()) {

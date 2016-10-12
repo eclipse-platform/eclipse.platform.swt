@@ -10,7 +10,7 @@
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-  
+
 
 /*
  * CoolBar example snippet: drop-down a chevron menu containing hidden tool items
@@ -31,7 +31,7 @@ public class Snippet140 {
 	static Shell shell;
 	static CoolBar coolBar;
 	static Menu chevronMenu = null;
-	
+
 public static void main (String [] args) {
 	display = new Display ();
 	shell = new Shell (display);

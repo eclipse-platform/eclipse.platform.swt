@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * GC example snippet: draw a thick line
  *
@@ -34,4 +34,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

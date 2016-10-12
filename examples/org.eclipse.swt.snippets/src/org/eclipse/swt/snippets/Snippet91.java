@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Drag and Drop example snippet: drag leaf items in a tree
  *
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
 public class Snippet91 {
 
 public static void main (String [] args) {
-	
+
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
@@ -42,10 +42,10 @@ public static void main (String [] args) {
 			}
 		}
 	}
-	
+
 	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
 	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
-	
+
 	final DragSource source = new DragSource (tree, operations);
 	source.setTransfer(types);
 	final TreeItem[] dragSourceItem = new TreeItem[1];
@@ -125,7 +125,7 @@ public static void main (String [] args) {
 						TreeItem newItem = new TreeItem(item, SWT.NONE);
 						newItem.setText(text);
 					}
-					
+
 				} else {
 					TreeItem[] items = tree.getItems();
 					int index = 0;
@@ -146,8 +146,8 @@ public static void main (String [] args) {
 						newItem.setText(text);
 					}
 				}
-				
-				
+
+
 			}
 		}
 	});

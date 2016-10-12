@@ -28,7 +28,7 @@ public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-		
+
 	final Composite comp = new Composite(shell, SWT.NONE);
 	final Table table = new Table(comp, SWT.BORDER | SWT.V_SCROLL);
 	table.setHeaderVisible(true);
@@ -56,14 +56,14 @@ public static void main(String[] args) {
 			}
 			Point oldSize = table.getSize();
 			if (oldSize.x > area.width) {
-				// table is getting smaller so make the columns 
+				// table is getting smaller so make the columns
 				// smaller first and then resize the table to
 				// match the client area width
 				column1.setWidth(width/3);
 				column2.setWidth(width - column1.getWidth());
 				table.setSize(area.width, area.height);
 			} else {
-				// table is getting bigger so make the table 
+				// table is getting bigger so make the table
 				// bigger first and then make the columns wider
 				// to match the client area width
 				table.setSize(area.width, area.height);
@@ -72,7 +72,7 @@ public static void main(String[] args) {
 			}
 		}
 	});
-		
+
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())

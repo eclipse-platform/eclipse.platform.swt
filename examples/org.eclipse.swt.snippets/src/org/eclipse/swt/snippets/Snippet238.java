@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Menu example snippet: create a popup menu with a submenu
  *
  * For a list of all SWT example snippets see

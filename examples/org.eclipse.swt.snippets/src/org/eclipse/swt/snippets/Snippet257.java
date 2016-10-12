@@ -15,9 +15,9 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
- */ 
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
@@ -35,7 +35,7 @@ public class Snippet257 {
                            "could drag an item in a tree and drop it below a different node in the same tree.";
 
 	static String DRAG_START_DATA = "DRAG_START_DATA";
-	
+
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
@@ -71,14 +71,14 @@ public static void main (String [] args) {
 				int length = selection.y - selection.x;
 				int delta = 0;
 				if (newSelection.x < selection.x)
-					delta = length; 
+					delta = length;
 				text.replaceTextRange(selection.x + delta, length, "");
 			}
 			selection = null;
 			text.setData(DRAG_START_DATA, null);
 		}
 	});
-	
+
 	DropTarget target = new DropTarget(text, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
 	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
@@ -87,7 +87,7 @@ public static void main (String [] args) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				if (text.getData(DRAG_START_DATA) == null)
 					event.detail = DND.DROP_COPY;
-				else 
+				else
 					event.detail = DND.DROP_MOVE;
 			}
 		}
@@ -96,7 +96,7 @@ public static void main (String [] args) {
 			if (event.detail == DND.DROP_DEFAULT) {
 				if (text.getData(DRAG_START_DATA) == null)
 					event.detail = DND.DROP_COPY;
-				else 
+				else
 					event.detail = DND.DROP_MOVE;
 			}
 		}
@@ -109,7 +109,7 @@ public static void main (String [] args) {
 			if (event.detail != DND.DROP_NONE) {
 				Point selection = (Point) text.getData(DRAG_START_DATA);
 				int insertPos = text.getCaretOffset();
-				if (event.detail == DND.DROP_MOVE && selection != null && selection.x <= insertPos  && insertPos <= selection.y 
+				if (event.detail == DND.DROP_MOVE && selection != null && selection.x <= insertPos  && insertPos <= selection.y
 						|| event.detail == DND.DROP_COPY && selection != null && selection.x < insertPos  && insertPos < selection.y) {
 					text.setSelection(selection);
 					event.detail = DND.DROP_COPY;  // prevent source from deleting selection

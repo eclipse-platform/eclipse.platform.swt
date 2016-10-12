@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * TableCursor example snippet: navigate a Table's cells with the arrow keys. 
+ * TableCursor example snippet: navigate a Table's cells with the arrow keys.
  * Edit when user hits Return key.  Exit edit mode by hitting Escape (cancels edit)
  * or Return (applies edit to table).
  *
@@ -47,20 +47,20 @@ public static void main(String[] args) {
 
 	// create a TableCursor to navigate around the table
 	final TableCursor cursor = new TableCursor(table, SWT.NONE);
-	// create an editor to edit the cell when the user hits "ENTER" 
+	// create an editor to edit the cell when the user hits "ENTER"
 	// while over a cell in the table
 	final ControlEditor editor = new ControlEditor(cursor);
 	editor.grabHorizontal = true;
 	editor.grabVertical = true;
 
 	cursor.addSelectionListener(new SelectionAdapter() {
-		// when the TableEditor is over a cell, select the corresponding row in 
+		// when the TableEditor is over a cell, select the corresponding row in
 		// the table
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			table.setSelection(new TableItem[] { cursor.getRow()});
 		}
-		// when the user hits "ENTER" in the TableCursor, pop up a text editor so that 
+		// when the user hits "ENTER" in the TableCursor, pop up a text editor so that
 		// they can change the text of the cell
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
@@ -71,7 +71,7 @@ public static void main(String[] args) {
 			text.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyPressed(KeyEvent e) {
-					// close the text editor and copy the data over 
+					// close the text editor and copy the data over
 					// when the user hits "ENTER"
 					if (e.character == SWT.CR) {
 						TableItem row = cursor.getRow();
@@ -109,7 +109,7 @@ public static void main(String[] args) {
 			}
 		}
 	});
-	// When the user double clicks in the TableCursor, pop up a text editor so that 
+	// When the user double clicks in the TableCursor, pop up a text editor so that
 	// they can change the text of the cell.
 	cursor.addMouseListener(new MouseAdapter() {
 		@Override
@@ -121,7 +121,7 @@ public static void main(String[] args) {
 			text.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyPressed(KeyEvent e) {
-					// close the text editor and copy the data over 
+					// close the text editor and copy the data over
 					// when the user hits "ENTER"
 					if (e.character == SWT.CR) {
 						TableItem row = cursor.getRow();
@@ -146,7 +146,7 @@ public static void main(String[] args) {
 			text.setFocus();
 		}
 	});
-	
+
 	// Show the TableCursor when the user releases the "SHIFT" or "CTRL" key.
 	// This signals the end of the multiple selection task.
 	table.addKeyListener(new KeyAdapter() {

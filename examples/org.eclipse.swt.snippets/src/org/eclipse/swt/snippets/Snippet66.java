@@ -51,4 +51,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

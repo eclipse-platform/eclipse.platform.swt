@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Label example snippet: create a label (with an image)
  *
@@ -39,10 +39,10 @@ public static void main (String[] args) {
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
-		if (!display.readAndDispatch ()) display.sleep (); 
-	} 
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
 	image.dispose ();
 	display.dispose ();
 }
 
-} 
+}

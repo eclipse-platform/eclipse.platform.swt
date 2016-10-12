@@ -43,11 +43,11 @@ public static void main (String [] args) {
 	text.setLayoutData (data);
 	data.left = new FormAttachment (label, 5);
 	data.top = new FormAttachment (label, 0, SWT.CENTER);
-	
+
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-} 
+}

@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Write an Image to a PNG file.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */

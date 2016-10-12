@@ -32,11 +32,11 @@ public class Snippet299 {
 
 		Button button0 = new Button(shell, SWT.PUSH);
 		button0.setText("Button 0");
-		
+
 		Button button1 = new Button(shell, SWT.PUSH);
 		button1.setText("Button 1");
 		button1.setLayoutData(new RowData (SWT.DEFAULT, 50));
-		
+
 		Button button2 = new Button(shell, SWT.PUSH);
 		button2.setText("Button 2");
 		button2.setLayoutData(new RowData (SWT.DEFAULT, 70));
@@ -46,11 +46,11 @@ public class Snippet299 {
 
 		shell.pack();
 		shell.open();
-		
+
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
 		display.dispose();
 	}
-} 
+}

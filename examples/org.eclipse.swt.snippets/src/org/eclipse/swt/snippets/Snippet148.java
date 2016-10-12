@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Browser example snippet: check if the browser is available or not
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.*;
@@ -38,7 +38,7 @@ public class Snippet148 {
 			 * this SWTError and disable any feature requiring the
 			 * Browser widget.
 			 * Platform requirements for the SWT Browser widget are available
-			 * from the SWT FAQ website. 
+			 * from the SWT FAQ website.
 			 */
 		}
 		if (browser != null) {

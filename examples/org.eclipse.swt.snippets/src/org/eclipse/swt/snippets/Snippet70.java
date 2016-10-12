@@ -27,14 +27,14 @@ public static void main (String [] args) {
 	Color red = display.getSystemColor (SWT.COLOR_RED);
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
-	
+
 	Image image = new Image (display, 20, 20);
 	GC gc = new GC (image);
 	gc.setBackground (red);
 	gc.fillRectangle (5, 5, 10, 10);
 	gc.dispose ();
 	ImageData imageData = image.getImageData ();
-	
+
 	PaletteData palette = new PaletteData (new RGB (0, 0, 0),new RGB (0xFF, 0xFF, 0xFF));
 	ImageData maskData = new ImageData (20, 20, 1, palette);
 	Image mask = new Image (display, maskData);
@@ -45,7 +45,7 @@ public static void main (String [] args) {
 	gc.fillRectangle (5, 5, 10, 10);
 	gc.dispose ();
 	maskData = mask.getImageData ();
-	
+
 	Image icon = new Image (display, imageData, maskData);
 	Shell shell = new Shell (display);
 	Button button = new Button (shell, SWT.PUSH);
@@ -60,4 +60,4 @@ public static void main (String [] args) {
 	mask.dispose ();
 	display.dispose ();
 }
-} 
+}

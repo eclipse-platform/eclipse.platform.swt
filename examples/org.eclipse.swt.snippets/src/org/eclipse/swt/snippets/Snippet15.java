@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Tree example snippet: create a tree
  *
@@ -50,4 +50,4 @@ public static void main (String [] args) {
 	}
 	display.dispose ();
 }
-} 
+}

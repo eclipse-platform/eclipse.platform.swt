@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Display snippet: use the AppMenuBar when available.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.7
  */
 import org.eclipse.swt.*;

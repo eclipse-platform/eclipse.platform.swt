@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Table example snippet: show results as a bar chart in table
  *
- * For more info on custom-drawing TableItem and TreeItem content see 
+ * For more info on custom-drawing TableItem and TreeItem content see
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -28,9 +28,9 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet228 {
-	
+
 public static void main(String [] args) {
-	final Display display = new Display();		
+	final Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	shell.setText("Show results as a bar chart in Table");
@@ -68,20 +68,20 @@ public static void main(String [] args) {
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 				gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
 				int width = (column2.getWidth() - 1) * percent / 100;
-				gc.fillGradientRectangle(event.x, event.y, width, event.height, true);					
+				gc.fillGradientRectangle(event.x, event.y, width, event.height, true);
 				Rectangle rect2 = new Rectangle(event.x, event.y, width-1, event.height-1);
 				gc.drawRectangle(rect2);
 				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 				String text = percent+"%";
-				Point size = event.gc.textExtent(text);					
+				Point size = event.gc.textExtent(text);
 				int offset = Math.max(0, (event.height - size.y) / 2);
 				gc.drawText(text, event.x+2, event.y+offset, true);
 				gc.setForeground(background);
 				gc.setBackground(foreground);
 			}
 		}
-	});		
-			
+	});
+
 	shell.pack();
 	shell.open();
 	while(!shell.isDisposed()) {

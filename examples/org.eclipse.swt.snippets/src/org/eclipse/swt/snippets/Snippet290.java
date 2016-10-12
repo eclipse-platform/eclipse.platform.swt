@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-/* 
+/*
  * Canvas snippet: ignore 2nd mouse up event after double-click
  *
  * For a list of all SWT example snippets see

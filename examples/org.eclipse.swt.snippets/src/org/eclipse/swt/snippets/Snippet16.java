@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Display example snippet: create one repeating timer (every 500 ms)
  *
@@ -45,6 +45,6 @@ public static void main (String [] args) {
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
-	display.dispose ();	
+	display.dispose ();
 }
-} 
+}

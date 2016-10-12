@@ -12,10 +12,10 @@ package org.eclipse.swt.snippets;
 
 /*
  * Printer example snippet: print in landscape mode
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.5
  */
 import org.eclipse.swt.*;

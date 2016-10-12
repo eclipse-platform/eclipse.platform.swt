@@ -25,12 +25,12 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 
 public class Snippet357 {
-	
+
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		
+
 		final StyledText text = new StyledText(shell, SWT.BORDER | SWT.MULTI);
 		text.setText("The quick brown fox jumps over the lazy dog.\nThat's all folks!");
 		TextStyle textStyle = new TextStyle(new Font(display, "Courier", 12, SWT.BOLD), display.getSystemColor(SWT.COLOR_RED), null);

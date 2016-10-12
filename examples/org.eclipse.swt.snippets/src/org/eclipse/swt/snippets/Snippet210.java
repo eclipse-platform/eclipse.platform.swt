@@ -15,9 +15,9 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
- */ 
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
@@ -38,7 +38,7 @@ public class Snippet210 {
 	                        "the same application, or from a different application altogether. For example, you "+
 	                        "can drag text from an email application and drop it on your application, or you could "+
 	                        "drag an item in a tree and drop it below a different node in the same tree.";
-	
+
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
@@ -67,7 +67,7 @@ public static void main (String [] args) {
 			selection = null;
 		}
 	});
-	
+
 	final StyledText text2 = new StyledText(shell, style);
 	text2.setText(string2);
 	DropTarget target = new DropTarget(text2, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);

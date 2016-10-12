@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.1
  */
 import java.io.*;
@@ -110,15 +110,15 @@ protected int [] getTypeIds () {
 }
 
 boolean checkMyType(Object object) {
-	if (object == null || 
-		!(object instanceof MyType[]) || 
+	if (object == null ||
+		!(object instanceof MyType[]) ||
 		((MyType[])object).length == 0) {
 		return false;
 	}
 	MyType[] myTypes = (MyType[])object;
 	for (int i = 0; i < myTypes.length; i++) {
-		if (myTypes[i] == null || 
-			myTypes[i].fileName == null || 
+		if (myTypes[i] == null ||
+			myTypes[i].fileName == null ||
 			myTypes[i].fileName.length() == 0) {
 			return false;
 		}

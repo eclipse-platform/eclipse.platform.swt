@@ -37,7 +37,7 @@ public static void main (String [] args) {
 
 	Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
-	
+
 	final Table table = new Table (shell, SWT.FULL_SELECTION | SWT.BORDER);
 	for (int i = 0; i < ITEM_NAMES.length; i++) {
 		TableItem item = new TableItem (table, SWT.NONE);

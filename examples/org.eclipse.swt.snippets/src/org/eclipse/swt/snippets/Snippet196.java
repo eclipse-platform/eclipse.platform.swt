@@ -13,7 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * Text example snippet: use a regular expression to verify input
  * In this case a phone number is used.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -31,20 +31,20 @@ public class Snippet196 {
 	private static final String REGEX = "[(]\\d{3}[)]\\d{3}[-]\\d{4}";  //$NON-NLS-1$
 	private static final String template = "(###)###-####"; //$NON-NLS-1$
 	private static final String defaultText = "(000)000-0000"; //$NON-NLS-1$
-	
-	
+
+
 public static void main(String[] args) {
-	
+
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.BORDER);
 	Font font = new Font(display, "Courier New", 10, SWT.NONE); //$NON-NLS-1$
 	text.setFont(font);
-	text.setText(template);	
+	text.setText(template);
 	text.addListener(SWT.Verify, new Listener() {
 		//create the pattern for verification
-		Pattern pattern = Pattern.compile(REGEX);	
+		Pattern pattern = Pattern.compile(REGEX);
 		//ignore event when caused by inserting text inside event handler
 		boolean ignore;
 		@Override
@@ -53,13 +53,13 @@ public static void main(String[] args) {
 			e.doit = false;
 			if (e.start > 13 || e.end > 14) return;
 			StringBuffer buffer = new StringBuffer(e.text);
-			
+
 			//handle backspace
 			if (e.character == '\b') {
 				for (int i = e.start; i < e.end; i++) {
 					// skip over separators
 					switch (i) {
-						case 0: 
+						case 0:
 							if (e.start + 1 == e.end) {
 								return;
 							} else {
@@ -94,7 +94,7 @@ public static void main(String[] args) {
 				text.setSelection(e.start, e.start);
 				return;
 			}
-			
+
 			StringBuffer newText = new StringBuffer(defaultText);
 			char[] chars = e.text.toCharArray();
 			int index = e.start - 1;
@@ -125,10 +125,10 @@ public static void main(String[] args) {
 				ignore = true;
 				text.insert(newText.substring(e.start, index + 1));
 				ignore = false;
-			}			
+			}
 		}
 	});
-		
+
 	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
