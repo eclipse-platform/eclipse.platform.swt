@@ -50,10 +50,23 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 
 	boolean browser_debug = false;
 
+	/**
+	 * Normally, sleep in 1 ms intervals 1000 times. During browser_debug, sleep 1000 ms for 1 interval.
+	 * This allows one to see the browser shell for a few seconds, which would normally not be visible during
+	 * automated testing.
+	 */
+	int secondsToWaitTillFail, waitMS, loopMultipier;
+
+
 @Override
 @Before
 public void setUp() {
 	super.setUp();
+
+	secondsToWaitTillFail = 3;
+	waitMS = browser_debug ? 1000 : 1;
+	loopMultipier = browser_debug ? 1 : 1000;
+
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
 
@@ -667,14 +680,12 @@ public void test_stop() {
 }
 
 /**
- * Test the evaluate() api. Functionality based on Snippet308.
+ * Test the evaluate() api that returns a String type. Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
 @Test
-public void test_evaluate() {
-	setTitle("test_evalute");
-
-	final String html = "<html><body><p id='myid'>HelloWorld</p></body></html>";
+public void test_evaluate_string() {
+	setTitle("test_evalute_string");
 
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
@@ -685,20 +696,14 @@ public void test_evaluate() {
 		public void completed(ProgressEvent event) {
 			String evalResult = (String) browser.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
 			returnValue.set(evalResult);
-
 			if (browser_debug)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
-	browser.setText(html);
+	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-
 	boolean passed = false;
-
-	int secondsToWaitTillFail = 3;
-	int waitMS = browser_debug ? 1000 : 1;       // Normally, sleep in 1 ms intervals 1000 times.
-	int loopMultipier = browser_debug ? 1 : 1000;// during debug, sleep 1000 ms for 1 interval.
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if ("HelloWorld".equals(returnValue.get())) {
@@ -709,6 +714,77 @@ public void test_evaluate() {
 	assertTrue(passed);
 }
 
+/**
+ * Test the evaluate() api that returns a number (Double). Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_number() {
+	setTitle("test_evalute_number");
+
+	final AtomicReference<Double> returnValue = new AtomicReference<>();
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Double evalResult = (Double) browser.evaluate("return 123");
+			returnValue.set(evalResult);
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	boolean passed = false;
+	Double testNum = 123.0;
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (testNum.equals(returnValue.get())) {
+			passed = true;
+			break;
+		}
+	}
+	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that returns a boolean. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_boolean() {
+	setTitle("test_evalute_boolean");
+
+	final AtomicReference<Boolean> returnValue = new AtomicReference<>();
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Boolean evalResult = (Boolean) browser.evaluate("return true");
+			returnValue.set(evalResult);
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	boolean passed = false;
+	Boolean testbool = true;
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (testbool.equals(returnValue.get())) {
+			passed = true;
+			break;
+		}
+	}
+	assertTrue(passed);
+}
 
 /* custom */
 void runLoopTimer(final int milliseconds) {
