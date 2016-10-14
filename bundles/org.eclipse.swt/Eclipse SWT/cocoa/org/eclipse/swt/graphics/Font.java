@@ -11,8 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -312,52 +312,40 @@ void init(String name, float height, int style, String nsName) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	float size = height * dpi.y / screenDPI.y;
-	if (nsName != null) {
+	NSFont systemFont = NSFont.systemFontOfSize(size);
+	NSFont boldSystemFont = NSFont.boldSystemFontOfSize(size);
+	String systemFontName = systemFont.familyName().getString();
+	String boldSystemFontName = boldSystemFont.familyName().getString();
+	if (systemFontName.equals(name) || boldSystemFontName.equals(name)) {
+		// Use system font to prevent baseline problems with bold text
+		handle = ((style & SWT.BOLD) == 0 ? systemFont : boldSystemFont);
+	} else if (nsName != null) {
 		handle = NSFont.fontWithName(NSString.stringWith(nsName), size);
 	} else {
 		NSString family = NSString.stringWith(name);
-		NSFont nsFont = NSFont.fontWithName(family, size);
-		if (nsFont == null) nsFont = NSFont.systemFontOfSize(size);
-		NSFontManager manager = NSFontManager.sharedFontManager();
-		if (nsFont != null) {
-			if ((style & (SWT.BOLD | SWT.ITALIC)) == 0) {
-				handle = nsFont;
-			} else {
-				int traits = 0;
-				if ((style & SWT.ITALIC) != 0) traits |= OS.NSItalicFontMask;
-				if ((style & SWT.BOLD) != 0) traits |= OS.NSBoldFontMask;
-				handle = manager.convertFont(nsFont, traits);
-				if ((style & SWT.ITALIC) != 0 && (handle == null || (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0)) {
-					traits &= ~OS.NSItalicFontMask;
-					handle = null;
-					if ((style & SWT.BOLD) != 0) {
-						handle = manager.convertFont(nsFont, traits);
-					}
-				}
-				if ((style & SWT.BOLD) != 0 && handle == null) {
-					traits &= ~OS.NSBoldFontMask;
-					if ((style & SWT.ITALIC) != 0) {
-						traits |= OS.NSItalicFontMask;
-						handle = manager.convertFont(nsFont, traits);
-					}
-				}
-				if (handle == null) handle = nsFont;
-			}
-		}
-		if (handle == null) {
-			handle = NSFont.systemFontOfSize(size);
-		}
-		if ((style & SWT.ITALIC) != 0 && (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0) {
-			extraTraits |= OS.NSItalicFontMask;
-		}
-		if ((style & SWT.BOLD) != 0 && (manager.traitsOfFont(handle) & OS.NSBoldFontMask) == 0) {
-			extraTraits |= OS.NSBoldFontMask;
-		}
+		handle = NSFont.fontWithName(family, size);
+	}
+	initTraits(style);
+	handle.retain();
+}
+
+private void initTraits(int style) {
+	NSFontManager manager = NSFontManager.sharedFontManager();
+	if (handle != null && (manager.traitsOfFont(handle) & OS.NSBoldFontMask) == 0 && ((style & SWT.BOLD) != 0)) {
+		handle = manager.convertFont(handle, OS.NSBoldFontMask);
+	}
+	if ((manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0 && ((style & SWT.ITALIC) != 0)) {
+		handle = manager.convertFont(handle, OS.NSItalicFontMask);
 	}
 	if (handle == null) {
 		handle = device.systemFont.handle;
 	}
-	handle.retain();
+	if ((style & SWT.ITALIC) != 0 && (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0) {
+		extraTraits |= OS.NSItalicFontMask;
+	}
+	if ((style & SWT.BOLD) != 0 && (manager.traitsOfFont(handle) & OS.NSBoldFontMask) == 0) {
+		extraTraits |= OS.NSBoldFontMask;
+	}
 }
 
 /**

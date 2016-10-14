@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,11 @@ public NSFont(id id) {
 
 public double /*float*/ ascender() {
 	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
+}
+
+public static NSFont boldSystemFontOfSize(double /*float*/ fontSize) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_boldSystemFontOfSize_, fontSize);
+	return result != 0 ? new NSFont(result) : null;
 }
 
 public static NSFont controlContentFontOfSize(double /*float*/ fontSize) {

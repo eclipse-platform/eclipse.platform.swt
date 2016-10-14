@@ -1317,6 +1317,10 @@
 		<method selector="ascender" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="boldSystemFontOfSize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="controlContentFontOfSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4965,10 +4969,12 @@
 	<enum name="NSTouchPhaseMoved" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseStationary" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseTouching" swt_gen="true"></enum>
+	<enum name="NSUnboldFontMask" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
+	<enum name="NSUnitalicFontMask" swt_gen="true"></enum>
 	<enum name="NSUtilityWindowMask" swt_gen="true"></enum>
 	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
 	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
