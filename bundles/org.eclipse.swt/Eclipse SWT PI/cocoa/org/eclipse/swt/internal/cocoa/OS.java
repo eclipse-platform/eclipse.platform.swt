@@ -1065,6 +1065,7 @@ public static final long /*int*/ sel_bitsPerPixel = sel_registerName("bitsPerPix
 public static final long /*int*/ sel_bitsPerSample = sel_registerName("bitsPerSample");
 public static final long /*int*/ sel_blackColor = sel_registerName("blackColor");
 public static final long /*int*/ sel_blueComponent = sel_registerName("blueComponent");
+public static final long /*int*/ sel_boldSystemFontOfSize_ = sel_registerName("boldSystemFontOfSize:");
 public static final long /*int*/ sel_boolValue = sel_registerName("boolValue");
 public static final long /*int*/ sel_borderWidth = sel_registerName("borderWidth");
 public static final long /*int*/ sel_boundingRectForGlyphRange_inTextContainer_ = sel_registerName("boundingRectForGlyphRange:inTextContainer:");
