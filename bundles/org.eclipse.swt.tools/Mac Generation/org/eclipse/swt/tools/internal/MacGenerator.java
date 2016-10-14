@@ -12,10 +12,12 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 import javax.xml.parsers.*;
 
 import org.w3c.dom.*;
+import org.w3c.dom.Node;
 import org.xml.sax.*;
 @SuppressWarnings("unchecked")
 public class MacGenerator {
@@ -281,13 +283,30 @@ void generateFields(String structName, ArrayList<?> fields) {
 		out(fieldName);
 		if (isStruct(field)) {
 			out(" = new ");
-			String clazz = fieldAttributes.getNamedItem("declared_type").getNodeValue();
+			String clazz = getDeclaredType(fieldAttributes, field);
 			out (clazz);
 			out ("()");
 		}
 		out(";");
 		outln();
 	}
+}
+
+private String getDeclaredType(NamedNodeMap map, Node location) {
+	Node declaredType = map.getNamedItem("declared_type");
+	String value = declaredType != null ? declaredType.getNodeValue() : null;
+	if(value == null) {
+		System.err.printf("Unable to detect declared_type. Check bridge file! It might have been removed, inheritance changed, etc. It could also be an issue with gen_bridge_metadata. Location: %s %n", toDebugLocation(location));
+		return "nodeclaredtype";
+	}
+
+	// strip any _Nullable and _Nonnull annotations
+	value = value.replace("_Nullable", "").replace("_Nonnull", "").replace("_Null_unspecified", "");
+
+	// also remove any white spaces
+	value = value.chars().filter((c)->!Character.isWhitespace(c)).mapToObj(c -> String.valueOf((char)c)).collect(Collectors.joining());
+
+	return value;
 }
 
 void generateMethods(String className, ArrayList<?> methods) {
@@ -1100,7 +1119,7 @@ void generateConstants() {
 					out(constName);
 					out("();");
 					outln();
-					if (attributes.getNamedItem("declared_type").getNodeValue().equals("NSString*")) {
+					if (getDeclaredType(attributes, node).equals("NSString*")) {
 						out("public static final NSString ");
 						out(constName);
 						out(" = new NSString(");
@@ -1456,7 +1475,7 @@ String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 
 String getCType (Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	return attributes.getNamedItem("declared_type").getNodeValue();
+	return getDeclaredType(attributes, node);
 }
 
 Node findNSObjectMethod(Node method) {
@@ -1727,7 +1746,7 @@ String getType(Node node) {
 		return "notype";
 	}
 	String code = type.getNodeValue();
-	return getType(code, attributes, false);
+	return getType(code, attributes, false, node);
 }
 
 private String toDebugLocation(Node location) {
@@ -1775,10 +1794,10 @@ String getType64(Node node) {
 	String code = attrib.getNodeValue();
 	Node attrib64 = attributes.getNamedItem("type64");
 	if (attrib64 != null) code = attrib64.getNodeValue();
-	return getType(code, attributes, true);
+	return getType(code, attributes, true, node);
 }
 
-String getType(String code, NamedNodeMap attributes, boolean is64) {
+String getType(String code, NamedNodeMap attributes, boolean is64, Node location) {
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
 	if (code.equals("s")) return "short";
@@ -1799,7 +1818,7 @@ String getType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals(":")) return is64 ? "long" : "int";
 	if (code.startsWith("^")) return is64 ? "long" : "int";
 	if (code.startsWith("{")) {
-		return attributes.getNamedItem("declared_type").getNodeValue();
+		return getDeclaredType(attributes, location);
 	}
     if (code.startsWith("@?")) {
         return is64 ? "long" : "int";
@@ -1845,7 +1864,7 @@ String getJavaType(Node node) {
 	Node type = attributes.getNamedItem("type");
 	if (type == null) return "notype";
 	String code = type.getNodeValue();
-	return getJavaType(code, attributes, false);
+	return getJavaType(code, attributes, false, node);
 }
 
 String getJavaType64(Node node) {
@@ -1860,10 +1879,10 @@ String getJavaType64(Node node) {
 	String code = attrib.getNodeValue();
 	Node attrib64 = attributes.getNamedItem("type64");
 	if (attrib64 != null) code = attrib64.getNodeValue();
-	return getJavaType(code, attributes, true);
+	return getJavaType(code, attributes, true, node);
 }
 
-String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
+String getJavaType(String code, NamedNodeMap attributes, boolean is64, Node location) {
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
 	if (code.equals("s")) return "short";
@@ -1883,7 +1902,7 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals(":")) return is64 ? "long" : "int";
 	if (code.startsWith("^")) return is64 ? "long" : "int";
 	if (code.equals("@")) {
-		String type = attributes.getNamedItem("declared_type").getNodeValue();
+		String type = getDeclaredType(attributes, location);
 		int index = type.indexOf('*');
 		if (index != -1) type = type.substring(0, index);
 		index = type.indexOf('<');
@@ -1891,7 +1910,7 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 		return type.trim();
 	}
 	if (code.startsWith("{")) {
-		return attributes.getNamedItem("declared_type").getNodeValue().trim();
+		return getDeclaredType(attributes, location).trim();
 	}
     if (code.startsWith("@?")) return is64 ? "long" : "int";
 	return "BAD " + code;
@@ -1941,9 +1960,7 @@ void generateFunctions() {
 								out(" cast=");
 								NamedNodeMap paramAttributes = param.getAttributes();
 								Node swtCast = paramAttributes.getNamedItem("swt_param_cast");
-								Node declaredType = swtCast != null ? swtCast : paramAttributes.getNamedItem("declared_type");
-								if(declaredType == null) throw new RuntimeException("Unable to generate code for function '" + name + "'. 'declared_type' is missing. Please check .bridgesupport file!");
-								String cast = declaredType.getNodeValue();
+								String cast = swtCast != null ? swtCast.getNodeValue(): getDeclaredType(paramAttributes, param);
 								if (!cast.startsWith("(")) out("(");
 								out(cast);
 								if (!cast.endsWith(")")) out(")");
