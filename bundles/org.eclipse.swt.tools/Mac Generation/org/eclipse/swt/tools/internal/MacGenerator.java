@@ -25,7 +25,7 @@ public class MacGenerator {
 	String delimiter = System.getProperty("line.separator");
 	boolean generate64Code;
 	PrintWriter out;
-	
+
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
 	public static boolean GENERATE_STRUCTS = false;
@@ -132,7 +132,7 @@ int getLevel(Node node) {
 
 void merge(Document document, Document extraDocument) {
 	if (extraDocument == null) return;
-	
+
 	/* Build a lookup table for extraDocument */
 	HashMap<String, Node> extras = new HashMap<>();
 	buildLookup(extraDocument, extras);
@@ -140,8 +140,8 @@ void merge(Document document, Document extraDocument) {
 	/* Merge attributes on existing elements building a lookup table for document */
 	HashMap<String, Node> lookup = new HashMap<>();
 	merge(document, extras, lookup);
-	
-	/* 
+
+	/*
 	 * Merge new elements. Extras at this point contains only elements that were
 	 * not found in the document.
 	 */
@@ -299,7 +299,7 @@ void generateMethods(String className, ArrayList<?> methods) {
 		    if ("alloc".equals(sel) || "dealloc".equals(sel)) continue;
 		}
 		out("public ");
-		boolean isStatic = isStatic(method); 
+		boolean isStatic = isStatic(method);
 		if (isStatic) out("static ");
 		Node returnNode = getReturnNode(method.getChildNodes());
 		if (getType(returnNode).equals("void")) returnNode = null;
@@ -565,7 +565,7 @@ void generateExtraMethods(String className) {
 		out("}");
 		outln();
 		outln();
-	}	
+	}
 }
 
 TreeMap<String, Object[]> getGeneratedClasses() {
@@ -591,7 +591,7 @@ TreeMap<String, Object[]> getGeneratedClasses() {
 					Node method = methodList.item(j);
 					if ("method".equals(method.getNodeName()) && getGen(method)) {
 						methods.add(method);
-					}					
+					}
 				}
 			}
 		}
@@ -640,11 +640,11 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 				level++;
 				superclass = getSuperclassName((Node)classes.get(superclass)[0]);
 			}
-			return level;			
+			return level;
 		}
 		@Override
 		public int compare(Object arg0, Object arg1) {
-			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);  
+			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);
 		}
 	});
 	for (Iterator<Object[]> iterator = sortedClasses.iterator(); iterator.hasNext();) {
@@ -679,10 +679,10 @@ String getSuperclassName (Node node) {
 }
 
 void generateClasses() {
-	MetaData metaData = new MetaData(mainClassName);	
+	MetaData metaData = new MetaData(mainClassName);
 	TreeMap<String, Object[]> classes = getGeneratedClasses();
 	copyClassMethodsDown(classes);
-	
+
 	Set<String> classNames = classes.keySet();
 	for (Iterator<String> iterator = classNames.iterator(); iterator.hasNext();) {
 		CharArrayWriter out = new CharArrayWriter();
@@ -706,12 +706,12 @@ void generateClasses() {
 		out(getSuperclassName(node));
 		out(" {");
 		outln();
-		outln();		
+		outln();
 		generateExtraMethods(className);
-		generateMethods(className, methods);		
+		generateMethods(className, methods);
 		out("}");
 		outln();
-		
+
 		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
 		this.out.flush();
 		output(fileName, out.toCharArray());
@@ -720,7 +720,7 @@ void generateClasses() {
 }
 
 void generateStructs() {
-	MetaData metaData = new MetaData(mainClassName);	
+	MetaData metaData = new MetaData(mainClassName);
 	TreeMap<String, Object[]> structs = getGeneratedStructs();
 
 	Set<String> structNames = structs.keySet();
@@ -742,12 +742,12 @@ void generateStructs() {
 		out("public class ");
 		out(className);
 		out(" {");
-		outln();		
-		generateFields(className, methods);		
+		outln();
+		generateFields(className, methods);
 		generateExtraFields(className);
 		out("}");
 		outln();
-		
+
 		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
 		this.out.flush();
 		output(fileName, out.toCharArray());
@@ -787,7 +787,7 @@ void generateMainClass() {
 		input.close();
 	} catch (IOException e) {
 	}
-	
+
 	out(header);
 	outln();
 	outln();
@@ -795,7 +795,7 @@ void generateMainClass() {
 	out("/** Custom callbacks */");
 	outln();
 	generateCustomCallbacks();
-	outln();	
+	outln();
 	out("/** Classes */");
 	outln();
 	generateClassesConst();
@@ -830,7 +830,7 @@ void generateMainClass() {
 	generateSends(false);
 	outln();
 	generateStructNatives();
-	
+
 	outln();
 	out(footer);
 	this.out.flush();
@@ -1064,7 +1064,7 @@ void merge(Node node, HashMap<String, Node> extras, HashMap<String, Node> docLoo
 	}
 }
 
-	
+
 void out(String str) {
 	PrintWriter out = this.out;
 	out.print(str);
@@ -1110,7 +1110,7 @@ void generateConstants() {
 					}
 				}
 			}
-		}		
+		}
 	}
 }
 
@@ -1369,7 +1369,7 @@ void generateStructNatives() {
 String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 	Node returnNode = getReturnNode(method.getChildNodes());
 	StringBuffer buffer = new StringBuffer();
-	buffer.append("public static final native "); 
+	buffer.append("public static final native ");
 	if (returnNode != null && isStruct(returnNode)) {
 		buffer.append("void ");
 		buffer.append(superCall ? "objc_msgSendSuper_stret" : "objc_msgSend_stret");
@@ -1393,7 +1393,7 @@ String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 	} else {
 		if (only64) {
 			buffer.append("long");
-		} else {		
+		} else {
 			if (tags) {
 				buffer.append("int /*long*/");
 			} else {
@@ -1509,7 +1509,7 @@ void generateCustomCallbacks() {
 		if ("informal_protocol".equals(method.getParentNode().getNodeName())) {
 			method = findNSObjectMethod(method);
 			if (method == null) continue;
-		}		
+		}
 		String nativeMth = key.replaceAll(":", "_");
 		out("/** @method callback_types=");
 		Node returnNode = getReturnNode(method.getChildNodes());
@@ -1760,7 +1760,7 @@ String getType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals("#")) return is64 ? "long" : "int";
 	if (code.equals(":")) return is64 ? "long" : "int";
 	if (code.startsWith("^")) return is64 ? "long" : "int";
-	if (code.startsWith("{")) {		
+	if (code.startsWith("{")) {
 		return attributes.getNamedItem("declared_type").getNodeValue();
 	}
     if (code.startsWith("@?")) {
@@ -1793,7 +1793,7 @@ String getJNIType(Node node) {
 	if (code.startsWith("^")) return "I";
     if (code.startsWith("@?")) return "I";
 	if (code.startsWith("[")) return "BAD " + code;
-	if (code.startsWith("{")) {		
+	if (code.startsWith("{")) {
 		return "BAD " + code;
 	}
 	if (code.startsWith("(")) return "BAD " + code;
@@ -1824,7 +1824,7 @@ String getJavaType64(Node node) {
 	if (attrib64 != null) code = attrib64.getNodeValue();
 	return getJavaType(code, attributes, true);
 }
-	
+
 String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
@@ -1852,7 +1852,7 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 		if (index != -1) type = type.substring(0, index);
 		return type.trim();
 	}
-	if (code.startsWith("{")) {		
+	if (code.startsWith("{")) {
 		return attributes.getNamedItem("declared_type").getNodeValue().trim();
 	}
     if (code.startsWith("@?")) return is64 ? "long" : "int";
@@ -1904,6 +1904,7 @@ void generateFunctions() {
 								NamedNodeMap paramAttributes = param.getAttributes();
 								Node swtCast = paramAttributes.getNamedItem("swt_param_cast");
 								Node declaredType = swtCast != null ? swtCast : paramAttributes.getNamedItem("declared_type");
+								if(declaredType == null) throw new RuntimeException("Unable to generate code for function '" + name + "'. 'declared_type' is missing. Please check .bridgesupport file!");
 								String cast = declaredType.getNodeValue();
 								if (!cast.startsWith("(")) out("(");
 								out(cast);
