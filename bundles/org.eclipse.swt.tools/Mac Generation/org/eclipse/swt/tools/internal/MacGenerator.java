@@ -310,6 +310,9 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 	// strip greater-than (>) sign
 	value = value.replace(">", "");
 
+	// also strip __kindof keyword
+	value = value.replace("__kindof", "");
+
 	// also remove any white spaces
 	value = value.chars().filter((c)->!Character.isWhitespace(c)).mapToObj(c -> String.valueOf((char)c)).collect(Collectors.joining());
 
