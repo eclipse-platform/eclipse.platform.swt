@@ -1720,9 +1720,45 @@ String getType(Node node) {
 	Node javaType = attributes.getNamedItem("swt_java_type");
 	if (javaType != null) return javaType.getNodeValue();
 	Node type = attributes.getNamedItem("type");
-	if (type == null) return "notype";
+	if (type == null) {
+		System.err.printf("Unable to detect type. Check bridge file! It might have been removed, inheritance changed, etc. Location: %s %n", toDebugLocation(node));
+		return "notype";
+	}
 	String code = type.getNodeValue();
 	return getType(code, attributes, false);
+}
+
+private String toDebugLocation(Node location) {
+	StringBuilder result = new StringBuilder();
+	while(location != null) {
+		if(result.length() > 0) {
+			result.insert(0, " > ");
+		}
+		result.insert(0, getNodeInfo(location));
+		location = location.getParentNode();
+	}
+	return result.toString();
+}
+
+private String getNodeInfo(Node location) {
+	String name = location.getNodeName();
+	if (name != null) {
+		NamedNodeMap attributes = location.getAttributes();
+		if (attributes != null) {
+			StringBuilder info = new StringBuilder();
+			info.append(name).append("[");
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Node attribute = attributes.item(i);
+				if (i > 0) {
+					info.append(", ");
+				}
+				info.append(attribute.getNodeName()).append("=").append(attribute.getNodeValue());
+			}
+			return info.append("]").toString();
+		}
+		return name;
+	}
+	return location.toString();
 }
 
 String getType64(Node node) {
