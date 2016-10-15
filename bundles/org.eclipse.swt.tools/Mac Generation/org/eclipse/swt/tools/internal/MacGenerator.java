@@ -313,6 +313,10 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 	// also strip __kindof keyword
 	value = value.replace("__kindof", "");
 
+	// anther generics thing is "ObjectType", however, those names can be arbitrary
+	// let's to a catch-all for common names here and handle other cases individually via mapping in extras file
+	value = value.replace("ObjectType", "id").replace("KeyType", "id");
+
 	// also remove any white spaces
 	value = value.chars().filter((c)->!Character.isWhitespace(c)).mapToObj(c -> String.valueOf((char)c)).collect(Collectors.joining());
 
