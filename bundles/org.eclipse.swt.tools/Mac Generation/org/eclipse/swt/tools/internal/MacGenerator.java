@@ -1151,6 +1151,8 @@ void generateEnums() {
 						if (isLong && !value.endsWith("L")) out("L");
 						out(";");
 						outln();
+					} else {
+						System.err.printf("No value for enum. Check bridge file! It might have been removed, renamed, etc. Location: %s %n", toDebugLocation(node));
 					}
 				}
 			}
