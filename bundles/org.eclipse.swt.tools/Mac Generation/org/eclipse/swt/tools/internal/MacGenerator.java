@@ -306,6 +306,13 @@ void generateMethods(String className, ArrayList<?> methods) {
 		String returnType = "", returnType64 = "";
 		if (returnNode != null) {
 			String type = returnType = getJavaType(returnNode), type64 = returnType64 = getJavaType64(returnNode);
+
+			// convert "instancetype" to class name
+			if(type.equals("instancetype")) {
+				type = returnType = className;
+				type64 = returnType64 = className;
+			}
+
 			out(type);
 			if (!type.equals(type64)) {
 				out(" /*");
