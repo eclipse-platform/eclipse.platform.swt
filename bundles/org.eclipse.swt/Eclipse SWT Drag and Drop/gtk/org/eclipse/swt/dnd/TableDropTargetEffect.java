@@ -135,7 +135,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		long /*int*/ handle = table.handle;
 		int effect = checkEffect(event.feedback);
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = table.toControl(coordinates);
+		coordinates = DPIUtil.autoScaleUp(table.toControl(coordinates));
 		long /*int*/ [] path = new long /*int*/ [1];
 		OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
