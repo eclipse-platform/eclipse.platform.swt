@@ -27,6 +27,8 @@
 #include <cairo-xlib.h>
 #else
 #define NO__1cairo_1xlib_1surface_1create
+#define NO__1cairo_1xlib_1surface_1get_1height
+#define NO__1cairo_1xlib_1surface_1get_1width 
 #endif
 #include <string.h>
 #include <dlfcn.h>

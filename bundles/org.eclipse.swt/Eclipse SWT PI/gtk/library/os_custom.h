@@ -58,15 +58,7 @@
 #endif
 
 /* Libraries for dynamic loaded functions */
-#define XRenderQueryExtension_LIB LIB_XRENDER
-#define XRenderQueryVersion_LIB LIB_XRENDER
-#define XRenderFindStandardFormat_LIB LIB_XRENDER
-#define XRenderFindVisualFormat_LIB LIB_XRENDER
-#define XRenderComposite_LIB LIB_XRENDER
-#define XRenderCreatePicture_LIB LIB_XRENDER
-#define XRenderFreePicture_LIB LIB_XRENDER
-#define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
-#define XRenderSetPictureTransform_LIB LIB_XRENDER
+
 #define g_thread_init_LIB LIB_GTHREAD
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_widget_set_opacity_LIB LIB_GTK
@@ -339,13 +331,6 @@
 #define gtk_widget_get_modifier_style_LIB LIB_GTK
 #define gtk_widget_set_focus_on_click_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
-#define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
-#define gdk_x11_screen_lookup_visual_LIB LIB_GDK
-#define gdk_x11_window_lookup_for_display_LIB LIB_GDK
-#define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
-#define gdk_x11_drawable_get_xid_LIB LIB_GDK
-#define gdk_x11_get_default_xdisplay_LIB LIB_GDK
-#define gdk_x11_window_get_xid_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
 #define atk_object_add_relationship_LIB LIB_ATK
@@ -431,6 +416,28 @@
 #define gtk_widget_queue_draw_LIB LIB_GTK
 #ifndef g_thread_supported
 #define g_thread_supported() 0
+#endif
+
+
+#ifdef GDK_WINDOWING_X11
+
+#define XRenderQueryExtension_LIB LIB_XRENDER
+#define XRenderQueryVersion_LIB LIB_XRENDER
+#define XRenderFindStandardFormat_LIB LIB_XRENDER
+#define XRenderFindVisualFormat_LIB LIB_XRENDER
+#define XRenderComposite_LIB LIB_XRENDER
+#define XRenderCreatePicture_LIB LIB_XRENDER
+#define XRenderFreePicture_LIB LIB_XRENDER
+#define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
+#define XRenderSetPictureTransform_LIB LIB_XRENDER
+#define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
+#define gdk_x11_screen_lookup_visual_LIB LIB_GDK
+#define gdk_x11_window_lookup_for_display_LIB LIB_GDK
+#define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
+#define gdk_x11_drawable_get_xid_LIB LIB_GDK
+#define gdk_x11_get_default_xdisplay_LIB LIB_GDK
+#define gdk_x11_window_get_xid_LIB LIB_GDK
+
 #endif
 
 /* Field accessors */

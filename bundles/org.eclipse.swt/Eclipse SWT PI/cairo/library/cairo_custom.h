@@ -36,11 +36,13 @@
 #define cairo_image_surface_get_data_LIB LIB_CAIRO
 #define cairo_image_surface_get_format_LIB LIB_CAIRO
 #define cairo_image_surface_get_stride_LIB LIB_CAIRO
-#define cairo_xlib_surface_get_drawable_LIB LIB_CAIRO
-#define cairo_xlib_surface_get_height_LIB LIB_CAIRO
-#define cairo_xlib_surface_get_width_LIB LIB_CAIRO
 #define cairo_surface_get_content_LIB LIB_CAIRO
 #define cairo_push_group_LIB LIB_CAIRO
 #define cairo_pop_group_to_source_LIB LIB_CAIRO
 #define cairo_region_num_rectangles_LIB LIB_CAIRO
 #define cairo_region_get_rectangle_LIB LIB_CAIRO
+
+#ifdef CAIRO_HAS_XLIB_SURFACE
+#define cairo_xlib_surface_get_height_LIB LIB_CAIRO
+#define cairo_xlib_surface_get_width_LIB LIB_CAIRO 
+#endif
