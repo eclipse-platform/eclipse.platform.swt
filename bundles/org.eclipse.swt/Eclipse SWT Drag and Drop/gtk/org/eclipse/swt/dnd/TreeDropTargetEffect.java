@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -147,7 +148,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 
 		long /*int*/ handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);
-		coordinates = tree.toControl(coordinates);
+		coordinates = DPIUtil.autoScaleUp(tree.toControl(coordinates));
 		long /*int*/ [] path = new long /*int*/ [1];
 		OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
