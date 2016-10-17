@@ -81,4 +81,14 @@ Git repo. If SWT is also in the same workspace, you will run into issues once so
 More information on how to use the generator is available [here](https://www.eclipse.org/swt/macgen.php). Volunteers wanted to convert
 this information into this readme.
 
+
+Compiling native libs
+---------------------
+
+This is done from within the binaries project.
+
+    cd <eclipse.platform.swt.binaries>/bundles/org.eclipse.swt.cocoa.macosx.x86_64
+    mvn clean package -Dnative=cocoa.macosx.x86_64 -Pbuild-individual-bundles
+
+
 Happy development!
