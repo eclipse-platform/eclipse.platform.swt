@@ -23,12 +23,6 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	if [ "x${OUTPUT_DIR}" = "x" ]; then
 		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx.x86_64
 	fi
-	if [ "x${XULRUNNER_SDK}" = "x" ]; then
-		export XULRUNNER_SDK="/Users/Shared/xulrunner/64-bit/mozilla/dist"
-	fi
-	if [ "x${XULRUNNER_LIBS}" = "x" ]; then
-		export XULRUNNER_LIBS="${XULRUNNER_SDK}/lib/libxpcomglue.a"
-	fi
 fi
 
 export MACOSX_DEPLOYMENT_TARGET=10.7
