@@ -14,17 +14,16 @@ package org.eclipse.swt.snippets;
 import static org.eclipse.swt.events.SelectionListener.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
 /*
  * Open an OLE Windows Media Player.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
  */
 public class Snippet265 {
@@ -72,7 +71,7 @@ public class Snippet265 {
 		menuFileOpen.addSelectionListener(widgetSelectedAdapter(e-> fileOpen()));
 		MenuItem menuFileExit = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileExit.setText("Exit");
-		menuFileExit.addSelectionListener(widgetSelectedAdapter(e-> shell.dispose()))
+		menuFileExit.addSelectionListener(widgetSelectedAdapter(e-> shell.dispose()));
 	}
 
 	static void fileOpen() {

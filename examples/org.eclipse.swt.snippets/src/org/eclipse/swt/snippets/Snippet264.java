@@ -14,7 +14,6 @@ package org.eclipse.swt.snippets;
 import static org.eclipse.swt.events.SelectionListener.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -24,9 +23,9 @@ import org.eclipse.swt.widgets.*;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.3
- */ 
+ */
 public class Snippet264 {
 	static OleClientSite clientSite;
 
@@ -46,14 +45,14 @@ public class Snippet264 {
 		}
 		shell.setSize(800, 600);
 		shell.open();
-		
+
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
 		display.dispose();
 	}
-	
+
 	static void addFileMenu(OleFrame frame) {
 		final Shell shell = frame.getShell();
 		Menu menuBar = new Menu(shell, SWT.BAR);
@@ -64,7 +63,7 @@ public class Snippet264 {
 		fileMenu.setMenu(menuFile);
 		MenuItem menuFileControl = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileControl.setText("Exit");
-		menuFileControl.addSelectionListener(widgetSelectedAdapter(e-> shell.dispose());
+		menuFileControl.addSelectionListener(widgetSelectedAdapter(e-> shell.dispose()));
 		frame.setFileMenus(new MenuItem[] { fileMenu });
 	}
 }
