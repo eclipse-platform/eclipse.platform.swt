@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,20 +45,23 @@ import org.junit.runners.model.RunnerBuilder;
  * more information after a timeout.
  * <p>
  * For atomic tests that run longer than 10 minutes, it tries to take a stack trace and a screenshot,
- * and then it tries to stop the "main" thread with an IllegalStateException.
+ * and then it tries to throw an IllegalStateException in the "main" thread. The exact behavior can be
+ * configured using the {@link TracingOptions} annotation.
  * <p>
- * Usage: Modify an existing JUnit 4 suite class or create a new one like this:
+ * Usage: Modify an existing JUnit 4 suite class, or create a new one like this:
  * <pre>
 @RunWith(TracingSuite.class)
-@SuiteClasses(YourTestClass.class)
-public class JUnit4IsCrap { }
+@SuiteClasses(MyTestClass.class)
+@TracingOptions(stackDumpTimeoutSeconds = 5)
+public class TracingMyTestClass { }
 </pre>
- * Directly annotating an existing JUnit 4 class that contains tests doesn't work.
+ * Directly annotating an existing JUnit 4 class that contains atomic tests doesn't work (JUnit 4 design flaw).
  */
 public class TracingSuite extends Suite {
 
-	private static final int MAX_SCREENSHOT_COUNT = 5;
-
+	/**
+	 * Configuration options for classes annotated with {@code @RunWith(TracingSuite.class)}.
+	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	@Inherited
@@ -77,11 +79,17 @@ public class TracingSuite extends Suite {
 		public long stackDumpTimeoutSeconds() default 10 * 60;
 
 		/**
-		 * @return true iff the main thread should get stopped by an
-		 *         {@link IllegalStateException} (only happens after a
-		 *         successful stack dump)
+		 * @return true iff the runner should try to throw an
+		 *         {@link IllegalStateException} in the main thread after
+		 *         writing a stack dump. This sometimes makes an program proceed
+		 *         when the main thread was stuck in an endless loop.
 		 */
-		public boolean stopMainThread() default true;
+		public boolean throwExceptionInMainThread() default true;
+
+		/**
+		 * @return the maximum number of screenshots that are taken
+		 */
+		public int maxScreenshotCount() default 5;
 	}
 
 	private TracingOptions fTracingOptions;
@@ -189,12 +197,12 @@ public class TracingSuite extends Suite {
 			}
 			Thread main = dumpStackTraces(System.err);
 
-			if (fScreenshotCount < MAX_SCREENSHOT_COUNT) {
+			if (fScreenshotCount < fTracingOptions.maxScreenshotCount()) {
 				String screenshotFile = Screenshots.takeScreenshot(TracingSuite.class, Integer.toString(fScreenshotCount++));
 				System.err.println("Timeout screenshot saved to " + screenshotFile);
 			}
 
-			if (main != null && fTracingOptions.stopMainThread()) {
+			if (main != null && fTracingOptions.throwExceptionInMainThread()) {
 				Throwable toThrow = new IllegalStateException("main thread killed by LoggingSuite timeout");
 				toThrow.initCause(new RuntimeException(toThrow.getMessage()));
 				// Set the stack trace to that of the target thread.
@@ -240,7 +248,6 @@ public class TracingSuite extends Suite {
 		}
 	}
 
-	@TracingOptions // serves as default value provider -- has nothing to do with ThreadDump
 	static class ThreadDump extends Exception {
 		private static final long serialVersionUID = 1L;
 		ThreadDump(String message) {
@@ -256,8 +263,11 @@ public class TracingSuite extends Suite {
 
 	public TracingSuite(Class<?> klass, RunnerBuilder builder) throws InitializationError {
 		super(klass, builder);
-		fTracingOptions = Optional.ofNullable(klass.getAnnotation(TracingOptions.class)).orElseGet(
-				() -> ThreadDump.class.getAnnotation(TracingOptions.class));
+		fTracingOptions = klass.getAnnotation(TracingOptions.class);
+		if (fTracingOptions == null) {
+			@TracingOptions class DefaultTracingOptionsProvider {}
+			fTracingOptions = DefaultTracingOptionsProvider.class.getAnnotation(TracingOptions.class);
+		}
 	}
 
 	@Override
