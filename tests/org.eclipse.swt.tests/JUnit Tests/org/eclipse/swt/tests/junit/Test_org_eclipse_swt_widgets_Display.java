@@ -34,7 +34,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Synchronizer;
+import org.eclipse.test.Screenshots;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -44,6 +47,9 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_widgets_Display {
 
 private static final boolean BUG_492569 = SwtTestUtil.isCocoa || SwtTestUtil.isGTK;
+
+@Rule
+public TestName testName = new TestName();
 
 @Test
 public void test_Constructor() {
@@ -1158,9 +1164,12 @@ public void test_setCursorLocationII() {
 	try {
 		Point location = new Point(100, 100);
 		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
+		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
 			assertEquals(location, actual);
+		} else {
+			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
 		}
 	} finally {
 		display.dispose();
@@ -1179,9 +1188,12 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
+		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
 			assertEquals(location, actual);
+		} else {
+			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
 		}
 	} finally {
 		display.dispose();
