@@ -1547,6 +1547,14 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						OS.DeleteObject(brush);
 					}
 					if (customForegroundDrawing()) {
+						/*
+						 * Check-box/Radio buttons are native widget which honors
+						 * the Win OS zoom level for both 'Square' and 'Text' part
+						 * [Note: By-design SWT doesn't control native auto-scaling]
+						 * Hence, custom fore-ground draw logic should auto-scale
+						 * text-padding as per OS Native DPI level to fix bug 506371
+						 */
+						int radioOrCheckTextPadding = DPIUtil.autoScaleUpUsingNativeDPI(16);
 						int left = nmcd.left + 2; // subtract border
 						int right = nmcd.right - 2; // subtract border
 						if (image != null) {
@@ -1558,13 +1566,13 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							int imageWidth = image.getBoundsInPixels().width;
 							left += (imageWidth + MARGIN); // for SWT.RIGHT_TO_LEFT right and left are inverted
 
-							int x = margin + (isRadioOrCheck() ? 12 : 0);
+							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 0);
 							int y = Math.max (0, (nmcd.bottom - image.getBoundsInPixels().height) / 2);
 							gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
 							gc.dispose ();
 						}
 
-						left += isRadioOrCheck() ? 12 : 0;
+						left += isRadioOrCheck() ? radioOrCheckTextPadding : 0;
 						RECT rect = new RECT ();
 						OS.SetRect (rect, left, nmcd.top, right, nmcd.bottom);
 						long /*int*/ hdc = nmcd.hdc;

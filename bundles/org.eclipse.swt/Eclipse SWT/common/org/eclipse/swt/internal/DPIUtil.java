@@ -33,6 +33,7 @@ public class DPIUtil {
 	private static final int DPI_ZOOM_100 = 96;
 
 	private static int deviceZoom = 100;
+	private static int nativeDeviceZoom = 100;
 
 	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
 	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
@@ -292,6 +293,15 @@ public static int autoScaleUp (int size) {
 }
 
 /**
+ * Auto-scale up int dimensions using Native DPI
+ */
+public static int autoScaleUpUsingNativeDPI (int size) {
+	if (nativeDeviceZoom == 100 || size == SWT.DEFAULT) return size;
+	float nativeScaleFactor = nativeDeviceZoom / 100f;
+	return Math.round (size * nativeScaleFactor);
+}
+
+/**
  * Auto-scale up int dimensions if enabled for Drawable class.
  */
 public static int autoScaleUp (Drawable drawable, int size) {
@@ -407,6 +417,7 @@ public static int getDeviceZoom() {
 }
 
 public static void setDeviceZoom (int nativeDeviceZoom) {
+	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = 0;
 	String value = System.getProperty (SWT_AUTOSCALE);
  	if (value != null) {
