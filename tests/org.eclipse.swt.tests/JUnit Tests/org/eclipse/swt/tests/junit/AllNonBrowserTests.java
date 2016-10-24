@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import org.eclipse.test.TracingSuite;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
