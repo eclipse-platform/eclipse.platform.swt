@@ -208,22 +208,29 @@ public void test_findDisplayLjava_lang_Thread() {
 
 @Test
 public void test_getActiveShell() {
-	if (SwtTestUtil.isGTK) {
-		//TODO Fix GTK failure.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_getActiveShell(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)");
-		}
-		return;
-	}
 	Display display = new Display();
 	try {
 		Shell shell = new Shell(display);
 		shell.setText("test_getActiveShell");
 		shell.open();
+		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/506680
 		assertSame(shell, display.getActiveShell());
 		shell.dispose();
 	} finally {
 		display.dispose();
+	}
+}
+
+private static void drainEventQueue(Display display, int millis) {
+	long end = System.currentTimeMillis() + millis;
+	while (!display.isDisposed() && System.currentTimeMillis() < end) {
+		if (!display.readAndDispatch ()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
 
