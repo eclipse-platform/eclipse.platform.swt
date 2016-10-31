@@ -23,7 +23,7 @@
   <packaging>eclipse-test-plugin</packaging>
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
-    <argLine>-Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
+    <tycho.testArgLine></tycho.testArgLine>
   </properties>
   <build>
     <plugins>
@@ -64,6 +64,9 @@
             <configuration>
               <test>AllTests</test>
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+              <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
+               <!-- Force test to run, even on Hudson. To remove once all maintenance branches have this mechanics. -->
+              <skipTests>false</skipTests>
             </configuration>
           </execution>
         </executions>
