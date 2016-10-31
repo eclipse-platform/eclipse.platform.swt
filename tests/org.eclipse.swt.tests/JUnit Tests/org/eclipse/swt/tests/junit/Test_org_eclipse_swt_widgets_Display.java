@@ -1079,8 +1079,11 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		event.type = SWT.MouseDoubleClick;
 		assertFalse(display.post(event));
 
+		drainEventQueue(display, 500); // attempt to work around https://bugs.eclipse.org/492569
+
 		shell.dispose();
 
+		//TODO: Verify the events. The following comment is wrong:
 		// can't verify that the events were actually sent to a listener.
 		// the test shell won't receive any events if it has lost focus,
 		// e.g., due to user intervention or another process popping up
