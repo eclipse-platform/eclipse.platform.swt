@@ -66,7 +66,7 @@
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
               <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
                <!-- Force test to run, even on Hudson. To remove once all maintenance branches have this mechanics. -->
-              <skipTests>false</skipTests>
+              <skipTests>true</skipTests>
             </configuration>
           </execution>
         </executions>
