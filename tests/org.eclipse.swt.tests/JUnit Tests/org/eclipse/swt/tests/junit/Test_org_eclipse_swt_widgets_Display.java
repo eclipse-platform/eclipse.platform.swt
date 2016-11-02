@@ -222,6 +222,11 @@ public void test_getActiveShell() {
 }
 
 private static void drainEventQueue(Display display, int millis) {
+	if (millis == 0) {
+		while (!display.isDisposed() && display.readAndDispatch()) {
+		}
+		return;
+	}
 	long end = System.currentTimeMillis() + millis;
 	while (!display.isDisposed() && System.currentTimeMillis() < end) {
 		if (!display.readAndDispatch ()) {
@@ -1174,6 +1179,7 @@ public void test_setCursorLocationII() {
 	try {
 		Point location = new Point(100, 100);
 		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
+		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
 		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
@@ -1198,6 +1204,7 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 		} catch (IllegalArgumentException e) {
 			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
+		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
 		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
