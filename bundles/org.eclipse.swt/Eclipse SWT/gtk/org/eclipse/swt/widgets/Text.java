@@ -208,11 +208,19 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, handle);
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		/*
-		 * We need to handle borders differently in GTK3.20+. See bug 491319.
-		 * Leaving this call enabled on 3.20 causes an SWT.SINGLE Text widget
-		 * to have a blank background color.
+		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
+		 * So let's set border via css and override the background in this case to be COLOR_LIST_BACKGROUND.
 		 */
-		if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
+		if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				if ((style & SWT.BORDER) == 0) {
+					OS.gtk_entry_set_has_frame(handle, false);
+					long /*int*/ context = OS.gtk_widget_get_style_context(handle);
+					String background = display.gtk_rgba_to_css_string(
+							display.toGdkRGBA(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle));
+					gtk_css_provider_load_from_css(context, "entry {border: solid; background: " + background + ";}");
+					OS.gtk_style_context_invalidate(context);
+				}
+		} else {
 			OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 		}
 		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
