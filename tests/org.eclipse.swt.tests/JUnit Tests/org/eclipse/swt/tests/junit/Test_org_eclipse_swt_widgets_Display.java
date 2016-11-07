@@ -46,7 +46,11 @@ import org.junit.rules.TestName;
  */
 public class Test_org_eclipse_swt_widgets_Display {
 
-private static final boolean BUG_492569 = SwtTestUtil.isCocoa || SwtTestUtil.isGTK;
+private static boolean isRunningOnEclipseOrgHudson =
+		"hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
+		|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name"));
+
+private static final boolean BUG_492569 = SwtTestUtil.isWindows && isRunningOnEclipseOrgHudson;
 
 @Rule
 public TestName testName = new TestName();
