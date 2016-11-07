@@ -13980,25 +13980,17 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1from_1pixbuf)
 }
 #endif
 
-#ifndef NO__1gtk_1status_1icon_1set_1tooltip
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1tooltip)
+#ifndef NO__1gtk_1status_1icon_1set_1tooltip_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1tooltip_1text)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1tooltip_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1tooltip_1text_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	gtk_status_icon_set_tooltip(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_status_icon_set_tooltip)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
-		}
-	}
+	gtk_status_icon_set_tooltip_text((GtkStatusIcon *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1tooltip_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1tooltip_1text_FUNC);
 }
 #endif
 

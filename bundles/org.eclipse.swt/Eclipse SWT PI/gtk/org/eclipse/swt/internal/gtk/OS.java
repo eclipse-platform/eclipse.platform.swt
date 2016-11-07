@@ -11418,13 +11418,14 @@ public static final void gtk_status_icon_set_visible(long /*int*/ handle, boolea
 	}
 }
 /**
- * @method flags=dynamic
+ * @param handle cast=(GtkStatusIcon *)
+ * @param tip_text cast=(const gchar *)
  */
-public static final native void _gtk_status_icon_set_tooltip(long /*int*/ handle, byte[] tip_text);
-public static final void gtk_status_icon_set_tooltip(long /*int*/ handle, byte[] tip_text) {
+public static final native void _gtk_status_icon_set_tooltip_text(long /*int*/ handle, byte[] tip_text);
+public static final void gtk_status_icon_set_tooltip_text(long /*int*/ handle, byte[] tip_text) {
 	lock.lock();
 	try {
-		_gtk_status_icon_set_tooltip(handle, tip_text);
+		_gtk_status_icon_set_tooltip_text(handle, tip_text);
 	} finally {
 		lock.unlock();
 	}

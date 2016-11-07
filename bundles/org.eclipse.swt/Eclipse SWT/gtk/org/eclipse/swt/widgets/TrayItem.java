@@ -542,7 +542,7 @@ public void setToolTipText (String string) {
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (null, string, true);
 	}
-	OS.gtk_status_icon_set_tooltip (handle, buffer);
+	OS.gtk_status_icon_set_tooltip_text (handle, buffer);
 }
 
 /**

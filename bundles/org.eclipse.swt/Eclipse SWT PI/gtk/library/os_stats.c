@@ -1068,7 +1068,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1status_1icon_1new",
 	"_1gtk_1status_1icon_1position_1menu_1func",
 	"_1gtk_1status_1icon_1set_1from_1pixbuf",
-	"_1gtk_1status_1icon_1set_1tooltip",
+	"_1gtk_1status_1icon_1set_1tooltip_1text",
 	"_1gtk_1status_1icon_1set_1visible",
 	"_1gtk_1style_1context_1add_1class",
 	"_1gtk_1style_1context_1add_1provider",
