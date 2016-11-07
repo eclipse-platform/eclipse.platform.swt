@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845, 507186
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -33,6 +33,10 @@ public static void main (String [] args) {
 
 	DateTime calendar = new DateTime (shell, SWT.CALENDAR);
 	calendar.addSelectionListener (widgetSelectedAdapter(e -> System.out.println ("calendar date changed")));
+
+	DateTime calendarDropDown = new DateTime (shell, SWT.DROP_DOWN);
+	calendarDropDown.addSelectionListener (
+		widgetSelectedAdapter(e -> System.out.println ("calendar date changed via drop-down")));
 
 	DateTime time = new DateTime (shell, SWT.TIME);
 	time.addSelectionListener (widgetSelectedAdapter(e -> System.out.println ("time changed")));
