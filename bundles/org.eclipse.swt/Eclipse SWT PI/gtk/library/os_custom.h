@@ -72,7 +72,6 @@
 #define gtk_hbox_new_LIB LIB_GTK
 #define gtk_vbox_new_LIB LIB_GTK
 #define gtk_accessible_get_widget_LIB LIB_GTK
-#define gtk_calendar_display_options_LIB LIB_GTK
 #define gtk_calendar_get_date_LIB LIB_GTK
 #define gtk_calendar_new_LIB LIB_GTK
 #define gtk_calendar_select_day_LIB LIB_GTK
