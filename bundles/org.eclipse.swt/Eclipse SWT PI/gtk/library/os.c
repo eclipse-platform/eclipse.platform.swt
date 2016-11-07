@@ -8594,26 +8594,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1has_1palette)
 }
 #endif
 
-#ifndef NO__1gtk_1combo_1box_1entry_1new_1text
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1entry_1new_1text)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1entry_1new_1text_FUNC);
-/*
-	rc = (jintLong)gtk_combo_box_entry_new_text();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_entry_new_text)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1entry_1new_1text_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1combo_1box_1get_1active
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -8638,48 +8618,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1model)
 }
 #endif
 
-#ifndef NO__1gtk_1combo_1box_1insert_1text
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1insert_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2)
-{
-	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1insert_1text_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_combo_box_insert_text(arg0, arg1, lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_insert_text)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, jbyte *))fp)(arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1insert_1text_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1box_1new_1text
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1new_1text)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1new_1text_FUNC);
-/*
-	rc = (jintLong)gtk_combo_box_new_text();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_new_text)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1new_1text_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1combo_1box_1popdown
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1popdown)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -8697,24 +8635,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1popup)
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1popup_FUNC);
 	gtk_combo_box_popup((GtkComboBox *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1popup_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1box_1remove_1text
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1remove_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1remove_1text_FUNC);
-/*
-	gtk_combo_box_remove_text(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_remove_text)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1remove_1text_FUNC);
 }
 #endif
 
@@ -8781,21 +8701,35 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1text_1insert_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1insert_1text)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_combo_box_text_insert_text(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_insert_text)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jbyte *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1box_1text_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1new)
 	(JNIEnv *env, jclass that)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1new_FUNC);
-/*
 	rc = (jintLong)gtk_combo_box_text_new();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1new_FUNC);
 	return rc;
 }
@@ -8807,15 +8741,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1new_1with_1entry)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1new_1with_1entry_FUNC);
-/*
 	rc = (jintLong)gtk_combo_box_text_new_with_entry();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_new_with_entry)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1new_1with_1entry_FUNC);
 	return rc;
 }
@@ -8826,15 +8752,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1remove)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1remove_FUNC);
-/*
-	gtk_combo_box_text_remove(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_remove)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
+	gtk_combo_box_text_remove((GtkComboBoxText *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1remove_FUNC);
 }
 #endif

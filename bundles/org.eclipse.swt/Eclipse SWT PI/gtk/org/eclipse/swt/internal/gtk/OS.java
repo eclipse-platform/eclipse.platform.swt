@@ -6856,27 +6856,6 @@ public static final void gtk_combo_box_set_focus_on_click(long /*int*/ combo, bo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native long /*int*/ _gtk_combo_box_entry_new_text();
-public static final long /*int*/ gtk_combo_box_entry_new_text() {
-	lock.lock();
-	try {
-		return _gtk_combo_box_entry_new_text();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native long /*int*/ _gtk_combo_box_new_text();
-public static final long /*int*/ gtk_combo_box_new_text() {
-	lock.lock();
-	try {
-		return _gtk_combo_box_new_text();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_combo_box_text_new();
 public static final long /*int*/ gtk_combo_box_text_new() {
 	lock.lock();
@@ -6886,7 +6865,6 @@ public static final long /*int*/ gtk_combo_box_text_new() {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_combo_box_text_new_with_entry();
 public static final long /*int*/ gtk_combo_box_text_new_with_entry() {
 	lock.lock();
@@ -6907,26 +6885,16 @@ public static final void gtk_combo_box_text_insert(long /*int*/ combo_box, int p
 	}
 }
 /** @method flags=dynamic */
-public static final native void _gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text);
-public static final void gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text) {
+public static final native void _gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text);
+public static final void gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text) {
 	lock.lock();
 	try {
-		_gtk_combo_box_insert_text(combo_box, position, text);
+		_gtk_combo_box_text_insert_text(combo_box, position, text);
 	} finally {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native void _gtk_combo_box_remove_text(long /*int*/ combo_box, int position);
-public static final void gtk_combo_box_remove_text(long /*int*/ combo_box, int position) {
-	lock.lock();
-	try {
-		_gtk_combo_box_remove_text(combo_box, position);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
+/** @param combo_box cast=(GtkComboBoxText *) */
 public static final native void _gtk_combo_box_text_remove(long /*int*/ combo_box, int position);
 public static final void gtk_combo_box_text_remove(long /*int*/ combo_box, int position) {
 	lock.lock();

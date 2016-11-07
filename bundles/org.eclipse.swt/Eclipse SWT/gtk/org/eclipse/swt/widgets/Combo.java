@@ -179,9 +179,9 @@ public void add (String string, int index) {
 	items = newItems;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	if (OS.GTK3) {
-		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
+		if (handle != 0) OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
-		OS.gtk_combo_box_insert_text (handle, index, buffer);
+		if (handle != 0) OS.gtk_combo_box_text_insert_text (handle, index, buffer);
 	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
@@ -455,22 +455,14 @@ void createHandle (int index) {
 	OS.gtk_widget_set_has_window (fixedHandle, true);
 	long /*int*/ oldList = OS.gtk_window_list_toplevels ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		if (OS.GTK3) {
-			handle = OS.gtk_combo_box_text_new ();
-		} else {
-			handle = OS.gtk_combo_box_new_text ();
-		}
+		handle = OS.gtk_combo_box_text_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		cellHandle = OS.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		// Setting wrap width has the side effect of removing the whitespace on top in popup bug#438992
 		OS.gtk_combo_box_set_wrap_width(handle, 1);
 	} else {
-		if (OS.GTK3) {
-			handle = OS.gtk_combo_box_text_new_with_entry();
-		} else {
-			handle = OS.gtk_combo_box_entry_new_text ();
-		}
+		handle = OS.gtk_combo_box_text_new_with_entry();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		entryHandle = OS.gtk_bin_get_child (handle);
 		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1689,11 +1681,7 @@ public void remove (int index) {
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	items = newItems;
 	if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
-	if (OS.GTK3) {
-		OS.gtk_combo_box_text_remove(handle, index);
-	} else {
-		OS.gtk_combo_box_remove_text (handle, index);
-	}
+	if (handle != 0) OS.gtk_combo_box_text_remove(handle, index);
 }
 
 /**
@@ -1726,11 +1714,7 @@ public void remove (int start, int end) {
 	int index = OS.gtk_combo_box_get_active (handle);
 	if (start <= index && index <= end) clearText();
 	for (int i = end; i >= start; i--) {
-		if (OS.GTK3) {
-			OS.gtk_combo_box_text_remove(handle, i);
-		} else {
-			OS.gtk_combo_box_remove_text (handle, i);
-		}
+		if (handle != 0) OS.gtk_combo_box_text_remove(handle, i);
 	}
 }
 
@@ -1773,10 +1757,10 @@ public void removeAll () {
 	items = new String[0];
 	clearText ();
 	if (OS.GTK3) {
-		OS.gtk_combo_box_text_remove_all(handle);
+		if (handle != 0) OS.gtk_combo_box_text_remove_all(handle);
 	} else {
 		for (int i = count - 1; i >= 0; i--) {
-			OS.gtk_combo_box_remove_text (handle, i);
+			if (handle != 0) OS.gtk_combo_box_text_remove (handle, i);
 		}
 	}
 }
@@ -2063,11 +2047,11 @@ public void setItem (int index, String string) {
 	items [index] = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	if (OS.GTK3) {
-		OS.gtk_combo_box_text_remove (handle, index);
-		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
+		if (handle != 0) OS.gtk_combo_box_text_remove (handle, index);
+		if (handle != 0) OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
-		OS.gtk_combo_box_remove_text (handle, index);
-		OS.gtk_combo_box_insert_text (handle, index, buffer);
+		if (handle != 0) OS.gtk_combo_box_text_remove (handle, index);
+		if (handle != 0) OS.gtk_combo_box_text_insert_text (handle, index, buffer);
 	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
@@ -2099,19 +2083,19 @@ public void setItems (String... items) {
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
 	if (OS.GTK3) {
-		OS.gtk_combo_box_text_remove_all(handle);
+		if (handle != 0) OS.gtk_combo_box_text_remove_all(handle);
 	} else {
 		for (int i = count - 1; i >= 0; i--) {
-			OS.gtk_combo_box_remove_text (handle, i);
+			if (handle != 0) OS.gtk_combo_box_text_remove (handle, i);
 		}
 	}
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		if (OS.GTK3) {
-			OS.gtk_combo_box_text_insert (handle, i, null, buffer);
+			if (handle != 0) OS.gtk_combo_box_text_insert (handle, i, null, buffer);
 		} else {
-			OS.gtk_combo_box_insert_text (handle, i, buffer);
+			if (handle != 0) OS.gtk_combo_box_text_insert_text (handle, i, buffer);
 		}
 		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
