@@ -18,10 +18,11 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.6
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -73,31 +74,22 @@ public class Snippet333 {
 		buttonContainer.setLayout(new GridLayout(3, false));
 		Button reskin = new Button(buttonContainer, SWT.PUSH);
 		reskin.setText("Reskin All");
-		reskin.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("=======");
-				shell.reskin(SWT.ALL);
-			}
-		});
+		reskin.addSelectionListener(widgetSelectedAdapter(e -> {
+			System.out.println("=======");
+			shell.reskin(SWT.ALL);
+		}));
 		Button reskin2 = new Button(buttonContainer, SWT.PUSH);
 		reskin2.setText("Reskin Shell");
-		reskin2.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("=======");
-				shell.reskin(SWT.None);
-			}
-		});
+		reskin2.addSelectionListener(widgetSelectedAdapter(e -> {
+			System.out.println("=======");
+			shell.reskin(SWT.None);
+		}));
 		Button reskin3 = new Button(buttonContainer, SWT.PUSH);
 		reskin3.setText("Reskin Right Composite");
-		reskin3.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("=======");
-				child3.reskin(SWT.ALL);
-			}
-		});
+		reskin3.addSelectionListener(widgetSelectedAdapter(e -> {
+			System.out.println("=======");
+			child3.reskin(SWT.ALL);
+		}));
 
 		shell.pack();
 		shell.open();

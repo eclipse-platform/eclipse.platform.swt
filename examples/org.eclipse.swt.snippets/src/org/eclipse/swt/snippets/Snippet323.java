@@ -22,6 +22,7 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.3
  */
+import static org.eclipse.swt.events.SelectionListener.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.*;
@@ -78,76 +79,70 @@ class DOMEditor {
 		shell.open ();
 		final TreeItem[] lastItem = new TreeItem[1];
 		final TreeEditor editor = new TreeEditor (tree);
-		tree.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetDefaultSelected (SelectionEvent e) {
-				final TreeItem item = (TreeItem)e.item;
-				final nsIDOMNode node = (nsIDOMNode)item.getData ();
-				if (node == null) return; 	/* not editable */
-				if (item != null && item == lastItem[0]) {
-					final Composite composite = new Composite (tree, SWT.NONE);
-					final Text text = new Text (composite, SWT.NONE);
-					final int inset = 1;
-					composite.addListener (SWT.Resize, new Listener () {
-						@Override
-						public void handleEvent (Event e) {
-							Rectangle rect = composite.getClientArea ();
-							text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
+		tree.addSelectionListener (widgetDefaultSelectedAdapter(e -> {
+			final TreeItem item = (TreeItem)e.item;
+			final nsIDOMNode node = (nsIDOMNode)item.getData ();
+			if (node == null) return; 	/* not editable */
+			if (item != null && item == lastItem[0]) {
+				final Composite composite = new Composite (tree, SWT.NONE);
+				final Text text = new Text (composite, SWT.NONE);
+				final int inset = 1;
+				composite.addListener (SWT.Resize, e -> {
+					Rectangle rect = composite.getClientArea ();
+					text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
+				});
+				Listener textListener = new Listener () {
+					@Override
+					public void handleEvent (final Event e) {
+						switch (e.type) {
+							case SWT.FocusOut:
+								String string = text.getText ();
+								node.setNodeValue (string);
+								item.setText ("Node Value: " + node.getNodeValue ());
+								composite.dispose ();
+								break;
+							case SWT.Verify:
+								String newText = text.getText ();
+								String leftText = newText.substring (0, e.start);
+								String rightText = newText.substring (e.end, newText.length ());
+								GC gc = new GC (text);
+								Point size = gc.textExtent (leftText + e.text + rightText);
+								gc.dispose ();
+								size = text.computeSize (size.x, SWT.DEFAULT);
+								editor.horizontalAlignment = SWT.LEFT;
+								Rectangle itemRect = item.getBounds (), rect = tree.getClientArea ();
+								editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
+								int left = itemRect.x, right = rect.x + rect.width;
+								editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
+								editor.minimumHeight = size.y + inset * 2;
+								editor.layout ();
+								break;
+							case SWT.Traverse:
+								switch (e.detail) {
+									case SWT.TRAVERSE_RETURN:
+										string = text.getText ();
+										node.setNodeValue (string);
+										item.setText ("Node Value: " + node.getNodeValue ());
+										//FALL THROUGH
+									case SWT.TRAVERSE_ESCAPE:
+										composite.dispose ();
+										e.doit = false;
+								}
+								break;
 						}
-					});
-					Listener textListener = new Listener () {
-						@Override
-						public void handleEvent (final Event e) {
-							switch (e.type) {
-								case SWT.FocusOut:
-									String string = text.getText ();
-									node.setNodeValue (string);
-									item.setText ("Node Value: " + node.getNodeValue ());
-									composite.dispose ();
-									break;
-								case SWT.Verify:
-									String newText = text.getText ();
-									String leftText = newText.substring (0, e.start);
-									String rightText = newText.substring (e.end, newText.length ());
-									GC gc = new GC (text);
-									Point size = gc.textExtent (leftText + e.text + rightText);
-									gc.dispose ();
-									size = text.computeSize (size.x, SWT.DEFAULT);
-									editor.horizontalAlignment = SWT.LEFT;
-									Rectangle itemRect = item.getBounds (), rect = tree.getClientArea ();
-									editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
-									int left = itemRect.x, right = rect.x + rect.width;
-									editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
-									editor.minimumHeight = size.y + inset * 2;
-									editor.layout ();
-									break;
-								case SWT.Traverse:
-									switch (e.detail) {
-										case SWT.TRAVERSE_RETURN:
-											string = text.getText ();
-											node.setNodeValue (string);
-											item.setText ("Node Value: " + node.getNodeValue ());
-											//FALL THROUGH
-										case SWT.TRAVERSE_ESCAPE:
-											composite.dispose ();
-											e.doit = false;
-									}
-									break;
-							}
-						}
-					};
-					text.addListener (SWT.FocusOut, textListener);
-					text.addListener (SWT.Traverse, textListener);
-					text.addListener (SWT.Verify, textListener);
-					editor.setEditor (composite, item);
-					String nodeValue = node.getNodeValue ();
-					text.setText (nodeValue == null ? "null" : nodeValue);
-					text.selectAll ();
-					text.setFocus ();
-				}
-				lastItem [0] = item;
+					}
+				};
+				text.addListener (SWT.FocusOut, textListener);
+				text.addListener (SWT.Traverse, textListener);
+				text.addListener (SWT.Verify, textListener);
+				editor.setEditor (composite, item);
+				String nodeValue = node.getNodeValue ();
+				text.setText (nodeValue == null ? "null" : nodeValue);
+				text.selectAll ();
+				text.setFocus ();
 			}
-		});
+			lastItem [0] = item;
+		}));
 	}
 
 	public void populate (nsIDOMElement element) {

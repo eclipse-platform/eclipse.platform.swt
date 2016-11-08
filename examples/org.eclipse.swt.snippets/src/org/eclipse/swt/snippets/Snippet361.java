@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import java.awt.*;
 import java.awt.Canvas;
 /*
@@ -56,16 +58,13 @@ public class Snippet361 {
 
 		Button fileButton = new Button(shell, SWT.PUSH);
 		fileButton.setText("&Open Image File");
-		fileButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String filename = new FileDialog(shell).open();
-				if (filename != null) {
-					image = Toolkit.getDefaultToolkit().getImage(filename);
-					canvas.repaint();
-				}
+		fileButton.addSelectionListener(widgetSelectedAdapter(e -> {
+			String filename = new FileDialog(shell).open();
+			if (filename != null) {
+				image = Toolkit.getDefaultToolkit().getImage(filename);
+				canvas.repaint();
 			}
-		});
+		}));
 
 		new Label(shell, SWT.NONE).setText("Translate &X by:");
 		final Combo translateXCombo = new Combo(shell, SWT.NONE);

@@ -18,6 +18,8 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
@@ -63,22 +65,19 @@ public static void main (String[] args) {
 	 * The following listener ensures that a newly-selected item
 	 * in the Tree is always visible.
 	 */
-	tree.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			TreeItem [] selectedItems = tree.getSelection();
-			if (selectedItems.length > 0) {
-				Rectangle itemRect = selectedItems[0].getBounds();
-				Rectangle area = sc.getClientArea();
-				Point origin = sc.getOrigin();
-				if (itemRect.x < origin.x || itemRect.y < origin.y
-						|| itemRect.x + itemRect.width > origin.x + area.width
-						|| itemRect.y + itemRect.height > origin.y + area.height) {
-					sc.setOrigin(itemRect.x, itemRect.y);
-				}
+	tree.addSelectionListener(widgetSelectedAdapter(e -> {
+		TreeItem [] selectedItems = tree.getSelection();
+		if (selectedItems.length > 0) {
+			Rectangle itemRect = selectedItems[0].getBounds();
+			Rectangle area = sc.getClientArea();
+			Point origin = sc.getOrigin();
+			if (itemRect.x < origin.x || itemRect.y < origin.y
+					|| itemRect.x + itemRect.width > origin.x + area.width
+					|| itemRect.y + itemRect.height > origin.y + area.height) {
+				sc.setOrigin(itemRect.x, itemRect.y);
 			}
 		}
-	});
+	}));
 	/*
 	 * The following listener scrolls the Tree one item at a time
 	 * in response to MouseWheel events.

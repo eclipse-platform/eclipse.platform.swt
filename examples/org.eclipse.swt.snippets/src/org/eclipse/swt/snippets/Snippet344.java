@@ -16,8 +16,9 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -30,21 +31,18 @@ public class Snippet344 {
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Click me");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Shell shell2 = new Shell(SWT.TOOL | SWT.RESIZE | SWT.CLOSE | SWT.MAX);
-				shell2.setLayout(new GridLayout(1, false));
-				shell2.setText("Palette");
-				Label l = new Label(shell2, SWT.LEFT);
-				l.setText("This is a SWT.TOOL Shell");
-				Point origin = shell.getLocation();
-				origin.x += 100;
-				origin.y += 100;
-				shell2.pack();
-				shell2.open();
-			}
-		});
+		button.addSelectionListener(widgetSelectedAdapter(e -> {
+			Shell shell2 = new Shell(SWT.TOOL | SWT.RESIZE | SWT.CLOSE | SWT.MAX);
+			shell2.setLayout(new GridLayout(1, false));
+			shell2.setText("Palette");
+			Label l = new Label(shell2, SWT.LEFT);
+			l.setText("This is a SWT.TOOL Shell");
+			Point origin = shell.getLocation();
+			origin.x += 100;
+			origin.y += 100;
+			shell2.pack();
+			shell2.open();
+		}));
 
 		shell.pack();
 		shell.open();

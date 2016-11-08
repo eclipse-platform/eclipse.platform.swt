@@ -18,8 +18,9 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.7
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -39,12 +40,7 @@ public class Snippet347 {
 		file.setMenu(dropdown);
 		MenuItem exit = new MenuItem(dropdown, SWT.PUSH);
 		exit.setText("Exit");
-		exit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				display.dispose();
-			}
-		});
+		exit.addSelectionListener(widgetSelectedAdapter(e -> display.dispose()));
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Test");
 		shell.pack();

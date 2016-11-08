@@ -9,10 +9,10 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+import static org.eclipse.swt.events.SelectionListener.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -103,117 +103,111 @@ public class Snippet365 {
 		buttonCheckBox.setText("SET TRANSPARENT");
 		buttonCheckBox.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 		buttonCheckBox.setSelection(false);
-		buttonCheckBox.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean transparent = ((Button) e.getSource()).getSelection();
-				if (transparent) {
-					// ContainerGroup
-					containerGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					canvas.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					composite.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					tabFolder.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					for (TabItem item : tabFolder.getItems()) {
-						item.getControl().setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					}
-
-					// Native
-					nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					toolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					coolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					label.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					link.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					scale.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					radio.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					check.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					group.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					sash.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					slider.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					list.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-
-					// Custom
-					customGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					cLabel.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					cTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-					gradientCTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-					sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-					for (Control control : sashForm.getChildren()) {
-						control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
-					}
-					// Default
-					push.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					combo.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					progressBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					dateTime.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					ccombo.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					text.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					styledText.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					expandBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					table.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-					tree.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-
-					// ItemGroup
-					itemGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
-				} else {
-					// Native
-					nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					toolBar.setBackground(null);
-					coolBar.setBackground(null);
-					label.setBackground(null);
-					link.setBackground(null);
-					scale.setBackground(null);
-					RGB rgb = display.getSystemColor(SWT.COLOR_CYAN).getRGB();
-					radio.setBackground(new Color(display, new RGBA(rgb.red, rgb.blue, rgb.green, 255)));
-					check.setBackgroundImage(getBackgroundImage(display));
-					group.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					sash.setBackground(display.getSystemColor(SWT.COLOR_DARK_CYAN));
-					slider.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					text.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-
-					// ContainerGroup
-					containerGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					canvas.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					composite.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					tabFolder.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					for (TabItem item : tabFolder.getItems()) {
-						item.getControl().setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					}
-					// Custom
-					customGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					cLabel.setBackground((Color) null);
-					styledText.setBackground((Color) null);
-					sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					for (Control control : sashForm.getChildren()) {
-						control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					}
-					cTab.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-
-					gradientCTab.setBackground(
-							new Color[] { display.getSystemColor(SWT.COLOR_RED),
-									display.getSystemColor(SWT.COLOR_WHITE) }, new int[] { 90 }, true);
-
-					// Default
-					defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					push.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					combo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					ccombo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					dateTime.setBackground(null);
-					progressBar.setBackground(null);
-					expandBar.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					table.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-					tree.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-
-					// ItemGroup
-					itemGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		buttonCheckBox.addSelectionListener(widgetSelectedAdapter( e-> {
+			boolean transparent = ((Button) e.getSource()).getSelection();
+			if (transparent) {
+				// ContainerGroup
+				containerGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				canvas.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				composite.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				tabFolder.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				for (TabItem item : tabFolder.getItems()) {
+					item.getControl().setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
 				}
+
+				// Native
+				nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				toolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				coolBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				label.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				link.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				scale.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				radio.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				check.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				group.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				sash.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				slider.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				list.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+
+				// Custom
+				customGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				cLabel.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				cTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+				gradientCTab.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+				sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+				for (Control control : sashForm.getChildren()) {
+					control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_TRANSPARENT));
+				}
+				// Default
+				push.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				combo.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				progressBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				dateTime.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				ccombo.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				text.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				styledText.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				expandBar.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				table.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+				tree.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+
+				// ItemGroup
+				itemGroup.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+			} else {
+				// Native
+				nativeGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				toolBar.setBackground(null);
+				coolBar.setBackground(null);
+				label.setBackground(null);
+				link.setBackground(null);
+				scale.setBackground(null);
+				RGB rgb = display.getSystemColor(SWT.COLOR_CYAN).getRGB();
+				radio.setBackground(new Color(display, new RGBA(rgb.red, rgb.blue, rgb.green, 255)));
+				check.setBackgroundImage(getBackgroundImage(display));
+				group.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				sash.setBackground(display.getSystemColor(SWT.COLOR_DARK_CYAN));
+				slider.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				list.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				text.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+
+				// ContainerGroup
+				containerGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				canvas.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				composite.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				tabFolder.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				for (TabItem item : tabFolder.getItems()) {
+					item.getControl().setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				}
+				// Custom
+				customGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				cLabel.setBackground((Color) null);
+				styledText.setBackground((Color) null);
+				sashForm.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				for (Control control : sashForm.getChildren()) {
+					control.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				}
+				cTab.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+
+				gradientCTab.setBackground(
+						new Color[] { display.getSystemColor(SWT.COLOR_RED),
+								display.getSystemColor(SWT.COLOR_WHITE) }, new int[] { 90 }, true);
+
+				// Default
+				defaultBackgroundGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				push.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				combo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				ccombo.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				dateTime.setBackground(null);
+				progressBar.setBackground(null);
+				expandBar.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				table.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				tree.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+
+				// ItemGroup
+				itemGroup.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+		}));
 
 		// ContainerGroup
 		containerGroup = new Composite(shell, SWT.NONE);

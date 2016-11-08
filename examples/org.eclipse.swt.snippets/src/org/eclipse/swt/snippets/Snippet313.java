@@ -18,8 +18,9 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.5
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -49,19 +50,16 @@ public class Snippet313 {
 		up.right = new FormAttachment (0);
 		composite.setLayoutData (up);
 
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (composite.getLayoutData() == up) {
-					composite.setLayoutData (down);
-					button.setText("<<");
-				} else {
-					composite.setLayoutData (up);
-					button.setText(">>");
-				}
-				shell.pack ();
+		button.addSelectionListener(widgetSelectedAdapter(e -> {
+			if (composite.getLayoutData() == up) {
+				composite.setLayoutData (down);
+				button.setText("<<");
+			} else {
+				composite.setLayoutData (up);
+				button.setText(">>");
 			}
-		});
+			shell.pack ();
+		}));
 
 		shell.pack ();
 		shell.open ();

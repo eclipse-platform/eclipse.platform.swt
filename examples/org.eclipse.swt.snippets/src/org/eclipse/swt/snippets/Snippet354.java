@@ -18,6 +18,8 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.7
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -49,12 +51,7 @@ public class Snippet354 {
 		file.setMenu(dropdown);
 		MenuItem exit = new MenuItem(dropdown, SWT.PUSH);
 		exit.setText("Exit");
-		exit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				display.dispose();
-			}
-		});
+		exit.addSelectionListener(widgetSelectedAdapter(e -> display.dispose()));
 
 		Listener keyDownFilter = event -> System.out.println("Key event!");
 		display.addFilter(SWT.KeyDown, keyDownFilter);
@@ -78,58 +75,32 @@ public class Snippet354 {
 
 			MenuItem sysItem = getItem(systemMenu, SWT.ID_QUIT);
 			sysItem.addArmListener(armListener);
-			sysItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("Quit selected");
-				}
-			});
+			sysItem.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Quit selected")));
 			sysItem = getItem(systemMenu, SWT.ID_HIDE_OTHERS);
 			sysItem.addArmListener(armListener);
-			sysItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("Hide others selected -- and blocked!");
-					e.doit = false;
-				}
-			});
+			sysItem.addSelectionListener(widgetSelectedAdapter(e -> {
+				System.out.println("Hide others selected -- and blocked!");
+				e.doit = false;
+			}));
 			sysItem = getItem(systemMenu, SWT.ID_HIDE);
 			sysItem.addArmListener(armListener);
-			sysItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("Hide selected -- and blocked!");
-					e.doit = false;
-				}
-			});
+			sysItem.addSelectionListener(widgetSelectedAdapter(e -> {
+				System.out.println("Hide selected -- and blocked!");
+				e.doit = false;
+			}));
 			sysItem = getItem(systemMenu, SWT.ID_PREFERENCES);
 			sysItem.addArmListener(armListener);
-			sysItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("Preferences selected");
-				}
-			});
+			sysItem.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Preferences selected")));
 			sysItem = getItem(systemMenu, SWT.ID_ABOUT);
 			sysItem.addArmListener(armListener);
-			sysItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("About selected");
-				}
-			});
+			sysItem.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("About selected")));
 
 			int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
 			MenuItem newAppMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
 			newAppMenuItem.setText("SWT-added item");
 			newAppMenuItem.setAccelerator(SWT.MOD1 | 'i');
 			newAppMenuItem.addArmListener(armListener);
-			newAppMenuItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					System.out.println("SWT-added item selected");
-				}
-			});
+			newAppMenuItem.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("SWT-added item selected")));
 			Menu subMenu = new Menu(systemMenu);
 
 			for (int i = 0; i < 4; i++) {

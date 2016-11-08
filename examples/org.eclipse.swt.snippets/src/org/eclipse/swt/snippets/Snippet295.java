@@ -16,8 +16,9 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -34,66 +35,57 @@ public static void main (String [] args) {
 
 	Button open = new Button (shell, SWT.PUSH);
 	open.setText ("Prompt for a String");
-	open.addSelectionListener (new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent e) {
-			final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-			dialog.setText("Dialog Shell");
-			FormLayout formLayout = new FormLayout ();
-			formLayout.marginWidth = 10;
-			formLayout.marginHeight = 10;
-			formLayout.spacing = 10;
-			dialog.setLayout (formLayout);
+	open.addSelectionListener(widgetSelectedAdapter(e -> {
+		final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		dialog.setText("Dialog Shell");
+		FormLayout formLayout = new FormLayout ();
+		formLayout.marginWidth = 10;
+		formLayout.marginHeight = 10;
+		formLayout.spacing = 10;
+		dialog.setLayout (formLayout);
 
-			Label label = new Label (dialog, SWT.NONE);
-			label.setText ("Type a String:");
-			FormData data = new FormData ();
-			label.setLayoutData (data);
+		Label label = new Label (dialog, SWT.NONE);
+		label.setText ("Type a String:");
+		FormData data = new FormData ();
+		label.setLayoutData (data);
 
-			Button cancel = new Button (dialog, SWT.PUSH);
-			cancel.setText ("Cancel");
-			data = new FormData ();
-			data.width = 60;
-			data.right = new FormAttachment (100, 0);
-			data.bottom = new FormAttachment (100, 0);
-			cancel.setLayoutData (data);
-			cancel.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					System.out.println("User cancelled dialog");
-					dialog.close ();
-				}
-			});
+		Button cancel = new Button (dialog, SWT.PUSH);
+		cancel.setText ("Cancel");
+		data = new FormData ();
+		data.width = 60;
+		data.right = new FormAttachment (100, 0);
+		data.bottom = new FormAttachment (100, 0);
+		cancel.setLayoutData (data);
+		cancel.addSelectionListener (widgetSelectedAdapter(event -> {
+			System.out.println("User cancelled dialog");
+			dialog.close ();
+		}));
 
-			final Text text = new Text (dialog, SWT.BORDER);
-			data = new FormData ();
-			data.width = 200;
-			data.left = new FormAttachment (label, 0, SWT.DEFAULT);
-			data.right = new FormAttachment (100, 0);
-			data.top = new FormAttachment (label, 0, SWT.CENTER);
-			data.bottom = new FormAttachment (cancel, 0, SWT.DEFAULT);
-			text.setLayoutData (data);
+		final Text text = new Text (dialog, SWT.BORDER);
+		data = new FormData ();
+		data.width = 200;
+		data.left = new FormAttachment (label, 0, SWT.DEFAULT);
+		data.right = new FormAttachment (100, 0);
+		data.top = new FormAttachment (label, 0, SWT.CENTER);
+		data.bottom = new FormAttachment (cancel, 0, SWT.DEFAULT);
+		text.setLayoutData (data);
 
-			Button ok = new Button (dialog, SWT.PUSH);
-			ok.setText ("OK");
-			data = new FormData ();
-			data.width = 60;
-			data.right = new FormAttachment (cancel, 0, SWT.DEFAULT);
-			data.bottom = new FormAttachment (100, 0);
-			ok.setLayoutData (data);
-			ok.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					System.out.println ("User typed: " + text.getText ());
-					dialog.close ();
-				}
-			});
+		Button ok = new Button (dialog, SWT.PUSH);
+		ok.setText ("OK");
+		data = new FormData ();
+		data.width = 60;
+		data.right = new FormAttachment (cancel, 0, SWT.DEFAULT);
+		data.bottom = new FormAttachment (100, 0);
+		ok.setLayoutData (data);
+		ok.addSelectionListener (widgetSelectedAdapter(event -> {
+			System.out.println ("User typed: " + text.getText ());
+			dialog.close ();
+		}));
 
-			dialog.setDefaultButton (ok);
-			dialog.pack ();
-			dialog.open ();
-		}
-	});
+		dialog.setDefaultButton (ok);
+		dialog.pack ();
+		dialog.open ();
+	}));
 	shell.pack ();
 	shell.open ();
 
