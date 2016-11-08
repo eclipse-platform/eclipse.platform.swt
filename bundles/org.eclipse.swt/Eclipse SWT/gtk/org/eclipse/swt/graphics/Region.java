@@ -709,11 +709,8 @@ void translateInPixels (int x, int y) {
 public void translate (Point pt) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	translate(DPIUtil.autoScaleUp(pt));
-}
-
-void translateInPixels (Point pt) {
-	translateInPixels (pt.x, pt.y);
+	pt = DPIUtil.autoScaleUp(pt);
+	translateInPixels(pt.x, pt.y);
 }
 
 /**
