@@ -192,7 +192,7 @@ public FontData[] getFontData() {
 	int length = OS.strlen(family);
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
-	String name = new String(Converter.mbcsToWcs(null, buffer));
+	String name = new String(Converter.mbcsToWcs(buffer));
 	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	float size = height * screenDPI.y / dpi.y;
@@ -259,7 +259,7 @@ void init(String name, float height, int style, byte[] fontString) {
 	} else {
 		handle = OS.pango_font_description_new();
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		byte[] buffer = Converter.wcsToMbcs(null, name, true);
+		byte[] buffer = Converter.wcsToMbcs(name, true);
 		OS.pango_font_description_set_family(handle, buffer);
 		if (size > 0) {
 			OS.pango_font_description_set_size(handle, (int)(0.5f + size * OS.PANGO_SCALE));

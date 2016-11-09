@@ -27,7 +27,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ gtkStyle = gtk_widget_get_style (progressHandle);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
-	byte[] detail = Converter.wcsToMbcs(null, "trough", true);
+	byte[] detail = Converter.wcsToMbcs("trough", true);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
 	gtk_render_box (gtkStyle, drawable, getStateType(DrawData.WIDGET_WHOLE), OS.GTK_SHADOW_IN, null, progressHandle, detail, x, y, width, height);
 	int xthichness = OS.gtk_style_get_xthickness(gtkStyle);
@@ -47,7 +47,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		height -= ythichness * 2;
 		width *= selection / (float)Math.max(1, maximum - minimum);
 	}
-	detail = Converter.wcsToMbcs(null, "bar", true);
+	detail = Converter.wcsToMbcs("bar", true);
 	gtk_render_box (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_OUT, null, progressHandle, detail, x, y, width, height);
 }
 

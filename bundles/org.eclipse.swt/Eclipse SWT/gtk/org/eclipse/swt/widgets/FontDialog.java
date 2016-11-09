@@ -154,7 +154,7 @@ public RGB getRGB () {
 public FontData open () {
 	long /*int*/ handle;
 	byte [] titleBytes;
-	titleBytes = Converter.wcsToMbcs (null, title, true);
+	titleBytes = Converter.wcsToMbcs (title, true);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	handle = gtk_font_chooser_dialog_new (titleBytes);
 	if (parent!=null) {

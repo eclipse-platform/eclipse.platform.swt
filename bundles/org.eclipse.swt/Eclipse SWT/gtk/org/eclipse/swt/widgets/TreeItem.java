@@ -290,7 +290,7 @@ String _getText (int index) {
 	byte[] buffer = new byte [length];
 	OS.memmove (buffer, ptr [0], length);
 	OS.g_free (ptr [0]);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (buffer));
 }
 
 void clear () {
@@ -1659,7 +1659,7 @@ public void setText (int index, String string) {
 	if (_getText (index).equals (string)) return;
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	byte[] buffer = Converter.wcsToMbcs (null, string, true);
+	byte[] buffer = Converter.wcsToMbcs (string, true);
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
 	cached = true;

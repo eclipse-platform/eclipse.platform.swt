@@ -403,7 +403,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
 		if (OS.gtk_frame_get_label_widget (handle) == 0) {

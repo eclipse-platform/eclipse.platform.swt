@@ -139,7 +139,7 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			for (int j = 0; j < typeIds.length; j++) {
 				GtkTargetEntry	entry = new GtkTargetEntry();
 				entry.info = typeIds[j];
-				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
+				byte[] buffer = Converter.wcsToMbcs(typeNames[j], true);
 				long /*int*/ pName = OS.g_malloc(buffer.length);
 				OS.memmove(pName, buffer, buffer.length);
 				entry.target = pName;

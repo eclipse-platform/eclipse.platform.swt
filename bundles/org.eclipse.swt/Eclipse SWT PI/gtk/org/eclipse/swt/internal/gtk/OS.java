@@ -16585,7 +16585,7 @@ public static final String getThemeName() {
 	byte[] themeNameBytes = getThemeNameBytes();
 	String themeName = "unknown";
 	if (themeNameBytes != null && themeNameBytes.length > 0) {
-		themeName = new String (Converter.mbcsToWcs (null, themeNameBytes));
+		themeName = new String (Converter.mbcsToWcs (themeNameBytes));
 	}
 	return themeName;
 }

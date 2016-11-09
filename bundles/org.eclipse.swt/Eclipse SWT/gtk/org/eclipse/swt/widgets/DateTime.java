@@ -1904,7 +1904,7 @@ int getArrow (long /*int*/ widget) {
  */
 void setText (String dateTimeText) {
 	if (dateTimeText != null){
-		byte [] dateTimeConverted = Converter.wcsToMbcs (null, dateTimeText , true);
+		byte [] dateTimeConverted = Converter.wcsToMbcs (dateTimeText, true);
 		//note, this is ignored if the control is in a fill-layout.
 		OS.gtk_entry_set_width_chars (textEntryHandle, dateTimeText.length ());
 		OS.gtk_entry_set_text (textEntryHandle, dateTimeConverted);
@@ -2007,7 +2007,7 @@ String getText () {
 		int length = OS.strlen (str);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, str, length);
-		return new String (Converter.mbcsToWcs (null, buffer));
+		return new String (Converter.mbcsToWcs (buffer));
 	}
 		return "";
 }
@@ -2142,7 +2142,7 @@ long /*int*/ gtk_output (long /*int*/ widget) {
 void replaceCurrentlySelectedTextRegion (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+	byte [] buffer = Converter.wcsToMbcs (string, false);
 	int [] start = new int [1], end = new int [1];
 	OS.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
 	OS.gtk_editable_delete_selection (textEntryHandle);

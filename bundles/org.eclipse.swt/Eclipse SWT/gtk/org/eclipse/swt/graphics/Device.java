@@ -187,12 +187,12 @@ void checkCairo() {
 		byte[] buffer ;
 		int flags = OS.RTLD_LAZY;
 		if (OS.IsAIX) {
-			 buffer = Converter.wcsToMbcs(null, "libcairo.a(libcairo.so.2)", true);
+			 buffer = Converter.wcsToMbcs("libcairo.a(libcairo.so.2)", true);
 			 flags |= OS.RTLD_MEMBER;
 		} else  if (OS.IsHPUX) {
-			 buffer = Converter.wcsToMbcs(null, "libcairo.so", true);
+			 buffer = Converter.wcsToMbcs("libcairo.so", true);
 		} else {
-			buffer =  Converter.wcsToMbcs(null, "libcairo.so.2", true);
+			buffer =  Converter.wcsToMbcs("libcairo.so.2", true);
 		}
 		long /*int*/ libcairo = OS.dlopen(buffer, flags);
 		if (libcairo != 0) {
@@ -469,7 +469,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 			int length = OS.strlen(familyName);
 			byte[] buffer = new byte[length];
 			OS.memmove(buffer, familyName, length);
-			String name = new String(Converter.mbcsToWcs(null, buffer));
+			String name = new String(Converter.mbcsToWcs(buffer));
 			match = faceName.equalsIgnoreCase(name);
 		}
 		if (match) {
@@ -653,7 +653,7 @@ protected void init () {
 		if (debug) {
 			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
 			for (int i=0; i<log_domains.length; i++) {
-				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				byte [] log_domain = Converter.wcsToMbcs (log_domains [i], true);
 				handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
 			}
 		}
@@ -731,7 +731,7 @@ protected void init () {
 				String css = buffer.lines().collect(Collectors.joining("\n"));
 				String fullCSS = css + userCSS;
 				OS.gtk_style_context_add_provider_for_screen (screen, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, fullCSS, true), -1, null);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (fullCSS, true), -1, null);
 			} catch (IOException e) {
 				//Resource was not loaded thus no modifications to the gtk theme will be applied
 			}
@@ -811,7 +811,7 @@ public boolean isDisposed () {
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, path, true);
+	byte [] buffer = Converter.wcsToMbcs (path, true);
 	return OS.FcConfigAppFontAddFile (0, buffer);
 }
 
@@ -936,7 +936,7 @@ protected void release () {
 	if (xDisplay != 0) {
 		for (int i=0; i<handler_ids.length; i++) {
 			if (handler_ids [i] != 0) {
-				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				byte [] log_domain = Converter.wcsToMbcs (log_domains [i], true);
 				OS.g_log_remove_handler (log_domain, handler_ids [i]);
 				handler_ids [i] = 0;
 			}
@@ -975,7 +975,7 @@ public void setWarnings (boolean warnings) {
 			if (logProc != 0) {
 				for (int i=0; i<handler_ids.length; i++) {
 					if (handler_ids [i] != 0) {
-						byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+						byte [] log_domain = Converter.wcsToMbcs (log_domains [i], true);
 						OS.g_log_remove_handler (log_domain, handler_ids [i]);
 						handler_ids [i] = 0;
 					}
@@ -988,7 +988,7 @@ public void setWarnings (boolean warnings) {
 			if (logProc != 0) {
 				int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
 				for (int i=0; i<log_domains.length; i++) {
-					byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+					byte [] log_domain = Converter.wcsToMbcs (log_domains [i], true);
 					handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
 				}
 			}

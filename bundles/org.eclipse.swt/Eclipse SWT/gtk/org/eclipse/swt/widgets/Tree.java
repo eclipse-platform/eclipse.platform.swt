@@ -2918,7 +2918,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					if (!OS.GTK3) {
 						long /*int*/ style = OS.gtk_widget_get_style (widget);
 						//TODO - parity and sorted
-						byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
+						byte[] detail = Converter.wcsToMbcs ("cell_odd", true);
 						OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
 					}
 				} else {

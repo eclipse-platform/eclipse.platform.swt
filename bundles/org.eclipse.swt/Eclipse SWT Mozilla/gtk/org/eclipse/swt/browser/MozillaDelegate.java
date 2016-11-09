@@ -49,7 +49,7 @@ MozillaDelegate (Browser browser) {
 	* in.  Load this library here and scope it globally so that the mozilla libraries can resolve.
 	*/
 	if (IsSparc) {
-		byte[] buffer = Converter.wcsToMbcs (null, "libCrun.so.1", true); //$NON-NLS-1$
+		byte[] buffer = Converter.wcsToMbcs ("libCrun.so.1", true); //$NON-NLS-1$
 		OS.dlopen (buffer, OS.RTLD_NOW | OS.RTLD_GLOBAL);
 	}
 	if (OS.GTK3) {
@@ -192,13 +192,13 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 		}
 	}
 	if (file.exists ()) {
-		byte[] bytes = Converter.wcsToMbcs (null, file.getAbsolutePath (), true);
+		byte[] bytes = Converter.wcsToMbcs (file.getAbsolutePath (), true);
 		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
 	}
 }
 
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
-	return Converter.mbcsToWcs (codePage, buffer);
+	return Converter.mbcsToWcs (buffer);
 }
 
 static boolean needsSpinup () {
@@ -206,7 +206,7 @@ static boolean needsSpinup () {
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
-	return Converter.wcsToMbcs (codePage, string, terminate);
+	return Converter.wcsToMbcs (string, terminate);
 }
 
 void addWindowSubclass () {

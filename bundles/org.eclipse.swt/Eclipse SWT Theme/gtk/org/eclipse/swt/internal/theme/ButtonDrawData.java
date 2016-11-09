@@ -54,7 +54,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			shadow_type = OS.GTK_SHADOW_OUT;
 		}
 
-		byte[] detail = Converter.wcsToMbcs(null, "radiobutton", true);
+		byte[] detail = Converter.wcsToMbcs("radiobutton", true);
 		if ((state & DrawData.HOT) != 0) {
 			int prelight_x, prelight_y, prelight_width, prelight_height;
 			prelight_x = bounds.x + border_width;
@@ -101,7 +101,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			shadow_type = OS.GTK_SHADOW_OUT;
 		}
 
-		byte[] detail = Converter.wcsToMbcs(null, "checkbutton", true);
+		byte[] detail = Converter.wcsToMbcs("checkbutton", true);
 		if ((state & DrawData.HOT) != 0) {
 			int prelight_x, prelight_y, prelight_width, prelight_height;
 			prelight_x = bounds.x + border_width;
@@ -154,7 +154,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int height = bounds.height - border_width * 2;
 
 		int relief = OS.gtk_button_get_relief(buttonHandle);
-		byte[] detail = Converter.wcsToMbcs(null, (state & DrawData.DEFAULTED) != 0 ? "buttondefault" : "button", true);
+		byte[] detail = Converter.wcsToMbcs((state & DrawData.DEFAULTED) != 0 ? "buttondefault" : "button", true);
 		if ((state & DrawData.DEFAULTED) != 0 && relief == OS.GTK_RELIEF_NORMAL) {
 			gtk_render_box (gtkStyle, drawable, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, null, buttonHandle, detail, x, y, width, height);
             x += default_border.left;

@@ -180,7 +180,7 @@ String computeResultChooserDialog () {
 			byte[] buffer = new byte [length];
 			OS.memmove (buffer, filterNamePtr, length);
 			//OS.g_free (filterNamePtr); //GTK owns this pointer - do not free
-			String filterName = new String (Converter.mbcsToWcs (null, buffer));
+			String filterName = new String (Converter.mbcsToWcs (buffer));
 			for (int i = 0; i < filterExtensions.length; i++) {
 				if (filterNames.length > 0) {
 					if (filterNames[i].equals(filterName)) {
@@ -300,7 +300,7 @@ public String open () {
 		return openChooserDialog ();
 }
 String openChooserDialog () {
-	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	int action = (style & SWT.SAVE) != 0 ?
 		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
 		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -381,11 +381,11 @@ void presetChooserDialog () {
 		}
 		if (filterPath.length () > 0) {
 			if (uriMode) {
-				byte [] buffer = Converter.wcsToMbcs (null, filterPath, true);
+				byte [] buffer = Converter.wcsToMbcs (filterPath, true);
 				OS.gtk_file_chooser_set_current_folder_uri (handle, buffer);
 			} else {
 				/* filename must be a full path */
-				byte [] buffer = Converter.wcsToMbcs (null, SEPARATOR + filterPath, true);
+				byte [] buffer = Converter.wcsToMbcs (SEPARATOR + filterPath, true);
 				/*
 				 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
 				 * to be true canonical path. So using realpath to convert the path to
@@ -435,7 +435,7 @@ void presetChooserDialog () {
 					filenameWithExt.append (extension);
 				}
 			}
-			byte [] buffer = Converter.wcsToMbcs (null, filenameWithExt.toString (), true);
+			byte [] buffer = Converter.wcsToMbcs (filenameWithExt.toString (), true);
 			OS.gtk_file_chooser_set_current_name (handle, buffer);
 		}
 	} else {
@@ -451,7 +451,7 @@ void presetChooserDialog () {
 		if (fileName.length () > 0) {
 			stringBuffer.append(fileName);
 		}
-		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString(), true);
+		byte [] buffer = Converter.wcsToMbcs (stringBuffer.toString(), true);
 		if (uriMode) {
 			OS.gtk_file_chooser_set_uri (handle, buffer);
 		} else {
@@ -500,23 +500,23 @@ void presetChooserDialog () {
 		if (filterExtensions [i] != null) {
 			long /*int*/ filter = OS.gtk_file_filter_new ();
 			if (filterNames.length > i && filterNames [i] != null) {
-				byte [] name = Converter.wcsToMbcs (null, filterNames [i], true);
+				byte [] name = Converter.wcsToMbcs (filterNames [i], true);
 				OS.gtk_file_filter_set_name (filter, name);
 			} else {
-				byte [] name = Converter.wcsToMbcs (null, filterExtensions [i], true);
+				byte [] name = Converter.wcsToMbcs (filterExtensions [i], true);
 				OS.gtk_file_filter_set_name (filter, name);
 			}
 			int start = 0;
 			int index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR);
 			while (index != -1) {
 				String current = filterExtensions [i].substring (start, index);
-				byte [] filterString = Converter.wcsToMbcs (null, current, true);
+				byte [] filterString = Converter.wcsToMbcs (current, true);
 				OS.gtk_file_filter_add_pattern (filter, filterString);
 				start = index + 1;
 				index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR, start);
 			}
 			String current = filterExtensions [i].substring (start);
-			byte [] filterString = Converter.wcsToMbcs (null, current, true);
+			byte [] filterString = Converter.wcsToMbcs (current, true);
 			OS.gtk_file_filter_add_pattern (filter, filterString);
 			OS.gtk_file_chooser_add_filter (handle, filter);
 			if (i == filterIndex) {

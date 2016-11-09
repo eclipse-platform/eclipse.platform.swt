@@ -777,7 +777,7 @@ public boolean open () {
 				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 				OS.g_object_unref (provider);
 			}
-			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 		}
 		long /*int*/ region = OS.gdk_region_new ();
 		OS.gtk_widget_shape_combine_region (overlay, region);

@@ -906,7 +906,7 @@ void initNative(String filename) {
 		int length = filename.length ();
 		char [] chars = new char [length];
 		filename.getChars (0, length, chars, 0);
-		byte [] buffer = Converter.wcsToMbcs(null, chars, true);
+		byte [] buffer = Converter.wcsToMbcs(chars, true);
 		long /*int*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
 			try {

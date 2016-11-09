@@ -641,7 +641,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
 		OS.gtk_widget_show (labelHandle);

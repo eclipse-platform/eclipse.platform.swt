@@ -1060,7 +1060,7 @@ public void setText (String string) {
 		string = string.substring (0, index);
 	}
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	if (boxHandle == 0 && !OS.GTK3) {
 		labelHandle = OS.gtk_bin_get_child (handle);
 	}
@@ -1088,7 +1088,7 @@ public void setText (String string) {
 }
 
 private void setAccelLabel(long /*int*/ label, String accelString) {
-	byte[] buffer = Converter.wcsToMbcs (null, accelString, true);
+	byte[] buffer = Converter.wcsToMbcs (accelString, true);
 	long /*int*/ ptr = OS.g_malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
 	long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
@@ -1142,7 +1142,7 @@ void updateAccelerator (long /*int*/ accelGroup, boolean add) {
 	} else {
 		switch (keysym) {
 			case '\r': keysym = OS.GDK_Return; break;
-			default: keysym = Display.wcsToMbcs ((char) keysym);
+			default: keysym = Converter.wcsToMbcs ((char) keysym);
 		}
 	}
 	/* When accel_key is zero, it causes GTK warnings */
@@ -1181,7 +1181,7 @@ private MaskKeysym getMaskKeysym() {
 	switch (text.length() - start) {
 		case 1:
 			maskKeysym.keysym = text.charAt(start);
-			maskKeysym.keysym = Display.wcsToMbcs ((char) maskKeysym.keysym);
+			maskKeysym.keysym = Converter.wcsToMbcs ((char) maskKeysym.keysym);
 			break;
 		case 2:
 			if (text.charAt(start) == 'F') {

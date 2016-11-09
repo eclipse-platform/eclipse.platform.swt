@@ -288,7 +288,7 @@ public void setPrintToFile(boolean printToFile) {
  * </ul>
  */
 public PrinterData open() {
-	byte [] titleBytes = Converter.wcsToMbcs (null, getText(), true);
+	byte [] titleBytes = Converter.wcsToMbcs (getText(), true);
 	long /*int*/ topHandle = getParent().handle;
 	while (topHandle != 0 && !OS.GTK_IS_WINDOW(topHandle)) {
 		topHandle = OS.gtk_widget_get_parent(topHandle);
@@ -321,7 +321,7 @@ public PrinterData open() {
 		}
 	}
 	if (printerName != null) {
-		byte [] nameBytes = Converter.wcsToMbcs (null, printerName, true);
+		byte [] nameBytes = Converter.wcsToMbcs (printerName, true);
 		OS.gtk_print_settings_set_printer(settings, nameBytes);
 	}
 
@@ -355,7 +355,7 @@ public PrinterData open() {
 	 * field cups-Duplex in the print_settings (which we preserve in otherData).
 	 * The fix is to manually clear cups-Duplex before setting the duplex field.
 	 */
-	byte [] keyBuffer = Converter.wcsToMbcs (null, "cups-Duplex", true);
+	byte [] keyBuffer = Converter.wcsToMbcs ("cups-Duplex", true);
 	OS.gtk_print_settings_set(settings, keyBuffer, (byte[]) null);
 	if (printerData.duplex != SWT.DEFAULT) {
 		int duplex = printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.GTK_PRINT_DUPLEX_HORIZONTAL
@@ -448,7 +448,7 @@ public PrinterData open() {
 				int length = OS.strlen (address);
 				byte [] buffer = new byte [length];
 				OS.memmove (buffer, address, length);
-				data.fileName = new String (Converter.mbcsToWcs (null, buffer));
+				data.fileName = new String (Converter.mbcsToWcs (buffer));
 			}
 
 			data.copyCount = OS.gtk_print_settings_get_n_copies(settings);

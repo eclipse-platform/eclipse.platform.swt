@@ -102,7 +102,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		else if (transferData.type ==  XBM_ID) typeStr = "xbm";
 		else if (transferData.type ==  XPM_ID) typeStr = "xpm";
 		else if (transferData.type ==  XV_ID) typeStr = "xv";
-		byte[] type = Converter.wcsToMbcs(null, typeStr , true);
+		byte[] type = Converter.wcsToMbcs(typeStr, true);
 		long /*int*/ [] buffer = new long /*int*/ [1];
 		long /*int*/ [] len = new long /*int*/ [1];
 		if (type == null) return;

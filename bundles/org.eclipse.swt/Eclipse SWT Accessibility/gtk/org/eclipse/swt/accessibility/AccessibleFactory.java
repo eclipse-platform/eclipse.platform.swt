@@ -306,7 +306,7 @@ class AccessibleFactory {
 		int widgetTypeNameLength = OS.strlen (typeName);
 		byte[] buffer = new byte [widgetTypeNameLength];
 		OS.memmove (buffer, typeName, widgetTypeNameLength);
-		return new String(Converter.mbcsToWcs(null, buffer));
+		return new String(Converter.mbcsToWcs(buffer));
 	}
 
 	static long /*int*/ getParentType (long /*int*/ widgetType) {
@@ -417,7 +417,7 @@ class AccessibleFactory {
 		if (text) swtTypeName += "Text"; //$NON-NLS-1$
 		if (value) swtTypeName += "Value"; //$NON-NLS-1$
 
-		byte[] nameBytes = Converter.wcsToMbcs(null, swtTypeName, true);
+		byte[] nameBytes = Converter.wcsToMbcs(swtTypeName, true);
 		long /*int*/ type = OS.g_type_from_name(nameBytes);
 		if (type == 0) {
 			if (AccessibleObject.DEBUG) AccessibleObject.print("-->New Type=" + swtTypeName); //$NON-NLS-1$
@@ -605,7 +605,7 @@ class AccessibleFactory {
 		/* If NO_OP factory is registered then OS accessibility is not active */
 		if (ATK.ATK_IS_NO_OP_OBJECT_FACTORY(factory)) return;
 		String name = FACTORY_TYPENAME + getTypeName(widgetType);
-		byte[] factoryName = Converter.wcsToMbcs(null, name, true);
+		byte[] factoryName = Converter.wcsToMbcs(name, true);
 		if (OS.g_type_from_name (factoryName) == 0) {
 			if (AccessibleObject.DEBUG) AccessibleObject.print("-->New Factory=" + name); //$NON-NLS-1$
 			/* register the factory */

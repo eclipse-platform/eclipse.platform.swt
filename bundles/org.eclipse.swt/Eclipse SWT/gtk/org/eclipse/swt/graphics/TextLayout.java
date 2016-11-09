@@ -104,7 +104,7 @@ void checkLayout() {
 void computeRuns () {
 	if (attrList != 0) return;
 	String segmentsText = getSegmentsText();
-	byte[] buffer = Converter.wcsToMbcs(null, segmentsText, false);
+	byte[] buffer = Converter.wcsToMbcs(segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
 	if (stylesCount == 2 && styles[0].style == null && ascentInPoints == -1 && descentInPoints == -1 && segments == null) return;
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
@@ -154,7 +154,7 @@ void computeRuns () {
 			lineIndex++;
 		}
 		segmentsText.getChars(oldPos, segementsLength, chars,  oldPos + lineIndex * 2);
-		buffer = Converter.wcsToMbcs(null, chars, false);
+		buffer = Converter.wcsToMbcs(chars, false);
 		OS.pango_layout_set_text (layout, buffer, buffer.length);
 		ptr = OS.pango_layout_get_text(layout);
 		offsetCount += 2 * lineCount;

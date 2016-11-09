@@ -297,7 +297,7 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 @Override
@@ -496,9 +496,9 @@ void drawTooltip (long /*int*/ cr) {
 			byte[] buffer = null;
 			int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 			switch (id) {
-				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break;
-				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs (null, "gtk-dialog-info", true); break;
-				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
+				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("gtk-dialog-error", true); break;
+				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("gtk-dialog-info", true); break;
+				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("gtk-dialog-warning", true); break;
 			}
 			if (buffer != null) {
 				long /*int*/ pixbuf, icon_set = OS.gtk_icon_factory_lookup_default (buffer);
@@ -539,9 +539,9 @@ void drawTooltip (long /*int*/ cr) {
 		byte[] buffer = null;
 		int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 		switch (id) {
-			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break;
-			case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs (null, "gtk-dialog-info", true); break;
-			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
+			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("gtk-dialog-error", true); break;
+			case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("gtk-dialog-info", true); break;
+			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("gtk-dialog-warning", true); break;
 		}
 		if (buffer != null) {
 			long /*int*/ style = OS.gtk_widget_get_default_style ();
@@ -783,7 +783,7 @@ public void setMessage (String string) {
 	if (layoutMessage != 0) OS.g_object_unref (layoutMessage);
 	layoutMessage = 0;
 	if (message.length () != 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		byte [] buffer = Converter.wcsToMbcs (message, true);
 		layoutMessage = OS.gtk_widget_create_pango_layout (handle, buffer);
 		OS.pango_layout_set_auto_dir (layoutMessage, false);
 		OS.pango_layout_set_wrap (layoutMessage, OS.PANGO_WRAP_WORD_CHAR);
@@ -812,7 +812,7 @@ public void setText (String string) {
 	if (layoutText != 0) OS.g_object_unref (layoutText);
 	layoutText = 0;
 	if (text.length () != 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, text, true);
+		byte [] buffer = Converter.wcsToMbcs (text, true);
 		layoutText = OS.gtk_widget_create_pango_layout (handle, buffer);
 		OS.pango_layout_set_auto_dir (layoutText, false);
 		long /*int*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
@@ -859,7 +859,7 @@ public void setVisible (boolean visible) {
 			StringBuffer string = new StringBuffer (text);
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
-			byte [] buffer = Converter.wcsToMbcs (null, string.toString(), true);
+			byte [] buffer = Converter.wcsToMbcs (string.toString(), true);
 			OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
 		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
@@ -868,7 +868,7 @@ public void setVisible (boolean visible) {
 			OS.gtk_widget_hide (handle);
 		} else {
 			long /*int*/ vboxHandle = parent.vboxHandle;
-			byte[] buffer = Converter.wcsToMbcs(null, "", true);
+			byte[] buffer = Converter.wcsToMbcs("", true);
 			OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
 	}

@@ -227,7 +227,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		}
 		string = buffer.toString ();
 	}
-	byte [] buffer1 = Converter.wcsToMbcs (null, string, false);
+	byte [] buffer1 = Converter.wcsToMbcs (string, false);
 	long /*int*/ ptr = OS.pango_layout_get_text (layout);
 	int length = OS.strlen (ptr);
 	byte [] buffer2 = new byte [length];
@@ -553,7 +553,7 @@ public String getText () {
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (buffer));
 }
 
 /**
@@ -599,7 +599,7 @@ String getDecimalSeparator () {
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (buffer));
 }
 
 @Override
@@ -660,7 +660,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
 	/*
@@ -678,7 +678,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (newChars == chars) {
 		OS.g_signal_emit_by_name (imContext, OS.commit, text);
 	} else {
-		buffer = Converter.wcsToMbcs (null, newChars, true);
+		buffer = Converter.wcsToMbcs (newChars, true);
 		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
@@ -705,7 +705,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
 			pos [0] = (int)/*64*/end_pos;
-			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
@@ -735,7 +735,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
 	OS.memmove (buffer, new_text, buffer.length);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
+	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
@@ -753,7 +753,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);

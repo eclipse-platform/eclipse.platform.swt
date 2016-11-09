@@ -177,7 +177,7 @@ public void add (String string, int index) {
 	newItems [index] = string;
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	if (OS.GTK3) {
 		if (handle != 0) OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
@@ -1128,7 +1128,7 @@ public String getText () {
 		int length = OS.strlen (str);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, str, length);
-		return new String (Converter.mbcsToWcs (null, buffer));
+		return new String (Converter.mbcsToWcs (buffer));
 	} else {
 		int index = OS.gtk_combo_box_get_active (handle);
 		return index != -1 ? getItem (index) : "";
@@ -1293,7 +1293,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
 	/*
@@ -1311,7 +1311,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (newChars == chars) {
 		OS.g_signal_emit_by_name (imContext, OS.commit, text);
 	} else {
-		buffer = Converter.wcsToMbcs (null, newChars, true);
+		buffer = Converter.wcsToMbcs (newChars, true);
 		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
@@ -1338,7 +1338,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
 			pos [0] = (int)/*64*/end_pos;
-			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, pos);
@@ -1417,7 +1417,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
 	OS.memmove (buffer, new_text, buffer.length);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
+	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
@@ -1435,7 +1435,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (entryHandle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -2045,7 +2045,7 @@ public void setItem (int index, String string) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	items [index] = string;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	if (OS.GTK3) {
 		if (handle != 0) OS.gtk_combo_box_text_remove (handle, index);
 		if (handle != 0) OS.gtk_combo_box_text_insert (handle, index, null, buffer);
@@ -2091,7 +2091,7 @@ public void setItems (String... items) {
 	}
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (string, true);
 		if (OS.GTK3) {
 			if (handle != 0) OS.gtk_combo_box_text_insert (handle, i, null, buffer);
 		} else {
@@ -2238,7 +2238,7 @@ public void setText (String string) {
 		string = verifyText (string, 0, (int)/*64*/OS.g_utf16_strlen (ptr, -1));
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);

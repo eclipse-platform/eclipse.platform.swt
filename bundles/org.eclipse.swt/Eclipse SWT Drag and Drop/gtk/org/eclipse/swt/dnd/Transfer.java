@@ -131,7 +131,7 @@ abstract protected Object nativeToJava(TransferData transferData);
  */
 public static int registerType(String formatName){
 	if (formatName == null) return OS.GDK_NONE;
-	byte[] buffer = Converter.wcsToMbcs(null, formatName, true);
+	byte[] buffer = Converter.wcsToMbcs(formatName, true);
 	return (int)/*64*/OS.gdk_atom_intern(buffer, false);
 }
 

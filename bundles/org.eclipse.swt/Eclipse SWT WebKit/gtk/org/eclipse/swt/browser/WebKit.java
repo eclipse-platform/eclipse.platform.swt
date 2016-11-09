@@ -167,7 +167,7 @@ class WebKit extends WebBrowser {
 				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
 				if (jar == 0) return;
-				byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
+				byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
 				long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
 				if (uri == 0) return;
 				long /*int*/ cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
@@ -177,7 +177,7 @@ class WebKit extends WebBrowser {
 				bytes = new byte[length];
 				C.memmove (bytes, cookies, length);
 				OS.g_free (cookies);
-				String allCookies = new String (Converter.mbcsToWcs (null, bytes));
+				String allCookies = new String (Converter.mbcsToWcs (bytes));
 				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
 				while (tokenizer.hasMoreTokens ()) {
 					String cookie = tokenizer.nextToken ();
@@ -203,10 +203,10 @@ class WebKit extends WebBrowser {
 					jar = WebKitGTK.soup_session_get_feature (session, type);
 				}
 				if (jar == 0) return;
-				byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
+				byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
 				long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
 				if (uri == 0) return;
-				bytes = Converter.wcsToMbcs (null, CookieValue, true);
+				bytes = Converter.wcsToMbcs (CookieValue, true);
 				long /*int*/ cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
 				if (cookie != 0) {
 					WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
@@ -246,7 +246,7 @@ static String getString (long /*int*/ strPtr) {
 	int length = OS.strlen (strPtr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, strPtr, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (buffer));
 }
 
 static Browser FindBrowser (long /*int*/ webView) {
@@ -439,7 +439,7 @@ long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ a
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uriString, length);
 	OS.g_free (uriString);
-	String location = new String (Converter.mbcsToWcs (null, bytes));
+	String location = new String (Converter.mbcsToWcs (bytes));
 
 	for (int i = 0; i < authenticationListeners.length; i++) {
 		AuthenticationEvent event = new AuthenticationEvent (browser);
@@ -450,8 +450,8 @@ long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ a
 			return 0;
 		}
 		if (event.user != null && event.password != null) {
-			byte[] userBytes = Converter.wcsToMbcs (null, event.user, true);
-			byte[] passwordBytes = Converter.wcsToMbcs (null, event.password, true);
+			byte[] userBytes = Converter.wcsToMbcs (event.user, true);
+			byte[] passwordBytes = Converter.wcsToMbcs (event.password, true);
 			WebKitGTK.soup_auth_authenticate (auth, userBytes, passwordBytes);
 			OS.g_signal_stop_emission_by_name (session, WebKitGTK.authenticate);
 			return 0;
@@ -480,8 +480,8 @@ long /*int*/ webkit_authenticate (long /*int*/ web_view, long /*int*/ request){
 			return 0;
 		}
 		if (event.user != null && event.password != null) {
-			byte[] userBytes = Converter.wcsToMbcs (null, event.user, true);
-			byte[] passwordBytes = Converter.wcsToMbcs (null, event.password, true);
+			byte[] userBytes = Converter.wcsToMbcs (event.user, true);
+			byte[] passwordBytes = Converter.wcsToMbcs (event.password, true);
 			long /*int*/ credentials = WebKitGTK.webkit_credential_new (userBytes, passwordBytes, WebKitGTK.WEBKIT_CREDENTIAL_PERSISTENCE_NONE);
 			WebKitGTK.webkit_authentication_request_authenticate(request, credentials);
 			WebKitGTK.webkit_credential_free(credentials);
@@ -559,7 +559,7 @@ public void create (Composite parent, int style) {
 			System.out.println(String.format("WebKit version %s.%s.%s", vers[0], vers[1], vers[2])); //$NON-NLS-1$
 		}
 		JSClassDefinition jsClassDefinition = new JSClassDefinition ();
-		byte[] bytes = Converter.wcsToMbcs (null, CLASSNAME_EXTERNAL, true);
+		byte[] bytes = Converter.wcsToMbcs (CLASSNAME_EXTERNAL, true);
 		jsClassDefinition.className = C.malloc (bytes.length);
 		OS.memmove (jsClassDefinition.className, bytes, bytes.length);
 		jsClassDefinition.hasProperty = JSObjectHasPropertyProc.getAddress ();
@@ -568,7 +568,7 @@ public void create (Composite parent, int style) {
 		WebKitGTK.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
 		ExternalClass = WebKitGTK.JSClassCreate (classDefinitionPtr);
 
-		bytes = Converter.wcsToMbcs (null, "POST", true); //$NON-NLS-1$
+		bytes = Converter.wcsToMbcs ("POST", true); //$NON-NLS-1$
 		PostString = C.malloc (bytes.length);
 		C.memmove (PostString, bytes, bytes.length);
 
@@ -659,7 +659,7 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (scrolledWindow, OS.motion_notify_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
 	}
 
-	byte[] bytes = Converter.wcsToMbcs (null, "UTF-8", true); // $NON-NLS-1$
+	byte[] bytes = Converter.wcsToMbcs ("UTF-8", true); // $NON-NLS-1$
 
 	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
@@ -736,7 +736,7 @@ public void create (Composite parent, int style) {
 				proxyHost = PROTOCOL_HTTP + proxyHost;
 			}
 			proxyHost += ":" + port; //$NON-NLS-1$
-			bytes = Converter.wcsToMbcs (null, proxyHost, true);
+			bytes = Converter.wcsToMbcs (proxyHost, true);
 			long /*int*/ uri = WebKitGTK.soup_uri_new (bytes);
 			if (uri != 0) {
 				OS.g_object_set (session, WebKitGTK.SOUP_SESSION_PROXY_URI, uri, 0);
@@ -951,7 +951,7 @@ public String getText () {
 	int length = OS.strlen (encoding);
 	byte[] bytes = new byte [length];
 	OS.memmove (bytes, encoding, length);
-	String encodingString = new String (Converter.mbcsToWcs (null, bytes));
+	String encodingString = new String (Converter.mbcsToWcs (bytes));
 
 	length = OS.GString_len (data);
 	bytes = new byte[length];
@@ -962,7 +962,7 @@ public String getText () {
 		return new String (bytes, encodingString);
 	} catch (UnsupportedEncodingException e) {
 	}
-	return new String (Converter.mbcsToWcs (null, bytes));
+	return new String (Converter.mbcsToWcs (bytes));
 }
 
 @Override
@@ -976,7 +976,7 @@ public String getUrl () {
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uri, length);
 
-	String url = new String (Converter.mbcsToWcs (null, bytes));
+	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -1361,7 +1361,7 @@ long /*int*/ handleLoadCommitted (long /*int*/ uri, boolean top) {
 	int length = OS.strlen (uri);
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uri, length);
-	String url = new String (Converter.mbcsToWcs (null, bytes));
+	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -1420,7 +1420,7 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 	int length = OS.strlen (uri);
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uri, length);
-	String url = new String (Converter.mbcsToWcs (null, bytes));
+	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -1441,13 +1441,13 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 	if (top && htmlBytes != null) {
 		if (url.startsWith(ABOUT_BLANK)) {
 			loadingText = true;
-			byte[] mimeType = Converter.wcsToMbcs (null, "text/html", true);  //$NON-NLS-1$
-			byte[] encoding = Converter.wcsToMbcs (null, StandardCharsets.UTF_8.displayName(), true);  //$NON-NLS-1$
+			byte[] mimeType = Converter.wcsToMbcs ("text/html", true);  //$NON-NLS-1$
+			byte[] encoding = Converter.wcsToMbcs (StandardCharsets.UTF_8.displayName(), true);  //$NON-NLS-1$
 			byte[] uriBytes;
 			if (untrustedText) {
-				uriBytes = Converter.wcsToMbcs (null, ABOUT_BLANK, true);
+				uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
 			} else {
-				uriBytes = Converter.wcsToMbcs (null, URI_FILEROOT, true);
+				uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
 			}
 			WebKitGTK.webkit_web_view_load_string (webView, htmlBytes, mimeType, encoding, uriBytes);
 			htmlBytes = null;
@@ -1542,12 +1542,12 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	int length = OS.strlen (name);
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, name, length);
-	String nameString = new String (Converter.mbcsToWcs (null, bytes));
+	String nameString = new String (Converter.mbcsToWcs (bytes));
 	long /*int*/ url = WebKitGTK.webkit_download_get_uri (webkitDownload);
 	length = OS.strlen (url);
 	bytes = new byte[length];
 	OS.memmove (bytes, url, length);
-	String urlString = new String (Converter.mbcsToWcs (null, bytes));
+	String urlString = new String (Converter.mbcsToWcs (bytes));
 	msg = Compatibility.getMessage ("SWT_Download_Location", new Object[] {nameString, urlString}); //$NON-NLS-1$
 	Label nameLabel = new Label (shell, SWT.WRAP);
 	nameLabel.setText (msg);
@@ -1628,15 +1628,15 @@ public boolean setText (String html, boolean trusted) {
 	if (WEBKIT2) {
 		byte[] uriBytes;
 		if (untrustedText) {
-			uriBytes = Converter.wcsToMbcs (null, ABOUT_BLANK, true);
+			uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
 		} else {
-			uriBytes = Converter.wcsToMbcs (null, URI_FILEROOT, true);
+			uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
 		}
 		WebKitGTK.webkit_web_view_load_html (webView, htmlBytes, uriBytes);
 	} else {
 		if (blankLoading) return true;
 
-		byte[] uriBytes = Converter.wcsToMbcs (null, ABOUT_BLANK, true);
+		byte[] uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
 		WebKitGTK.webkit_web_view_load_uri (webView, uriBytes);
 	}
 
@@ -1689,7 +1689,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 					String value = current.substring (index + 1).trim ();
 					if (key.length () > 0 && value.length () > 0) {
 						if (key.equalsIgnoreCase (USER_AGENT)) {
-							byte[] bytes = Converter.wcsToMbcs (null, value, true);
+							byte[] bytes = Converter.wcsToMbcs (value, true);
 							OS.g_object_set (settings, WebKitGTK.user_agent, bytes, 0);
 						}
 					}
@@ -1698,7 +1698,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		}
 	}
 
-	byte[] uriBytes = Converter.wcsToMbcs (null, url, true);
+	byte[] uriBytes = Converter.wcsToMbcs (url, true);
 
 	if (WEBKIT2 && headers != null){
 		long /*int*/ request = WebKitGTK.webkit_uri_request_new (uriBytes);
@@ -1785,7 +1785,7 @@ long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ down
 	int length = OS.strlen (name);
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, name, length);
-	final String nameString = new String (Converter.mbcsToWcs (null, bytes));
+	final String nameString = new String (Converter.mbcsToWcs (bytes));
 
 	final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
 	OS.g_object_ref (request);
@@ -1804,7 +1804,7 @@ long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ down
 			if (path != null) {
 				path = URI_FILEROOT + path;
 				long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
-				byte[] uriBytes = Converter.wcsToMbcs (null, path, true);
+				byte[] uriBytes = Converter.wcsToMbcs (path, true);
 				WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
 				openDownloadWindow (newDownload);
 				WebKitGTK.webkit_download_start (newDownload);
@@ -1832,7 +1832,7 @@ long /*int*/ webkit_hovering_over_link (long /*int*/ web_view, long /*int*/ titl
 		int length = OS.strlen (uri);
 		byte[] bytes = new byte[length];
 		OS.memmove (bytes, uri, length);
-		String text = new String (Converter.mbcsToWcs (null, bytes));
+		String text = new String (Converter.mbcsToWcs (bytes));
 		StatusTextEvent event = new StatusTextEvent (browser);
 		event.display = browser.getDisplay ();
 		event.widget = browser;
@@ -1869,7 +1869,7 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, uri, length);
 
-	String url = new String (Converter.mbcsToWcs (null, bytes));
+	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -2050,7 +2050,7 @@ long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
 		int length = OS.strlen (title);
 		byte[] bytes = new byte[length];
 		OS.memmove (bytes, title, length);
-		titleString = new String (Converter.mbcsToWcs (null, bytes));
+		titleString = new String (Converter.mbcsToWcs (bytes));
 	}
 	TitleEvent event = new TitleEvent (browser);
 	event.display = browser.getDisplay ();
@@ -2131,8 +2131,8 @@ private void addRequestHeaders(long /*int*/ requestHeaders, String[] headers){
 				String key = current.substring (0, index).trim ();
 				String value = current.substring (index + 1).trim ();
 				if (key.length () > 0 && value.length () > 0) {
-					byte[] nameBytes = Converter.wcsToMbcs (null, key, true);
-					byte[] valueBytes = Converter.wcsToMbcs (null, value, true);
+					byte[] nameBytes = Converter.wcsToMbcs (key, true);
+					byte[] valueBytes = Converter.wcsToMbcs (value, true);
 					WebKitGTK.soup_message_headers_append (requestHeaders, nameBytes, valueBytes);
 				}
 			}
@@ -2152,7 +2152,7 @@ long /*int*/ webkit_resource_request_starting (long /*int*/ web_view, long /*int
 				// Set the message method type to POST
 				WebKitGTK.SoupMessage_method (message, PostString);
 				long /*int*/ body = WebKitGTK.SoupMessage_request_body (message);
-				byte[] bytes = Converter.wcsToMbcs (null, postData, false);
+				byte[] bytes = Converter.wcsToMbcs (postData, false);
 				long /*int*/ data = C.malloc (bytes.length);
 				C.memmove (data, bytes, bytes.length);
 				WebKitGTK.soup_message_body_append (body, WebKitGTK.SOUP_MEMORY_TAKE, data, bytes.length);
@@ -2196,7 +2196,7 @@ long /*int*/ webkit_status_bar_text_changed (long /*int*/ web_view, long /*int*/
 	StatusTextEvent statusText = new StatusTextEvent (browser);
 	statusText.display = browser.getDisplay ();
 	statusText.widget = browser;
-	statusText.text = new String (Converter.mbcsToWcs (null, bytes));
+	statusText.text = new String (Converter.mbcsToWcs (bytes));
 	for (int i = 0; i < statusTextListeners.length; i++) {
 		statusTextListeners[i].changed (statusText);
 	}

@@ -382,9 +382,9 @@ void hookEvents () {
 
 		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
 
-		byte [] buffer = Converter.wcsToMbcs (null, "gtk-pointer-window", true);
+		byte [] buffer = Converter.wcsToMbcs ("gtk-pointer-window", true);
 		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs (null, "swt-grab-widget", true);
+		buffer = Converter.wcsToMbcs ("swt-grab-widget", true);
 		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
 	}
 }
@@ -3247,7 +3247,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	sendIMKeyEvent (SWT.KeyDown, null, chars);
 	return 0;
 }
@@ -3263,7 +3263,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	byte [] buffer = null;
 	if (toolTipText != null && toolTipText.length() != 0) {
 		char [] chars = fixMnemonic (toolTipText, false);
-		buffer = Converter.wcsToMbcs (null, chars, true);
+		buffer = Converter.wcsToMbcs (chars, true);
 	}
 	long /*int*/ toolHandle = getShell().handle;
 	OS.gtk_widget_set_tooltip_text (toolHandle, buffer);
@@ -4267,7 +4267,7 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
@@ -4312,7 +4312,7 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 		}
 	}
 	if (pixmapName != null) {
-		byte[] buffer = Converter.wcsToMbcs (null, pixmapName, true);
+		byte[] buffer = Converter.wcsToMbcs (pixmapName, true);
 		ptr = OS.g_malloc (buffer.length);
 		OS.memmove (ptr, buffer, buffer.length);
 	}

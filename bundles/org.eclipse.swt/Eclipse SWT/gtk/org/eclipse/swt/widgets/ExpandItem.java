@@ -643,7 +643,7 @@ void setOrientation (boolean create) {
 @Override
 public void setText (String string) {
 	super.setText (string);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	OS.gtk_label_set_text (labelHandle, buffer);
 }
 

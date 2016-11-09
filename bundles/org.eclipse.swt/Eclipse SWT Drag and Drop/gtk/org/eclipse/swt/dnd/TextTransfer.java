@@ -71,7 +71,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	byte[] utf8 = Converter.wcsToMbcs (null, string, true);
+	byte[] utf8 = Converter.wcsToMbcs (string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
 		long /*int*/[] encoding = new long /*int*/[1];
 		int[] format = new int[1];
@@ -128,7 +128,7 @@ public Object nativeToJava(TransferData transferData){
 	OS.memmove(utf8, ptr[0], length);
 	OS.g_strfreev(list[0]);
 	// convert utf8 byte array to a unicode string
-	char [] unicode = Converter.mbcsToWcs (null, utf8);
+	char [] unicode = Converter.mbcsToWcs (utf8);
 	String string = new String (unicode);
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);

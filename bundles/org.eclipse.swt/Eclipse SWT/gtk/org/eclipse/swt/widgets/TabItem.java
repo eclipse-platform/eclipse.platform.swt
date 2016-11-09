@@ -366,7 +366,7 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 @Override
@@ -434,7 +434,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
 		OS.gtk_widget_show (labelHandle);

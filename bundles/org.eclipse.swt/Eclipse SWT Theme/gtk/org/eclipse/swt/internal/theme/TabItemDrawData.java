@@ -62,7 +62,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		gap_side = OS.GTK_POS_TOP;
 	}
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
-	byte[] detail = Converter.wcsToMbcs(null, "tab", true);
+	byte[] detail = Converter.wcsToMbcs("tab", true);
 	gtk_render_extension (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, notebookHandle, detail, x, y, width, height, gap_side);
 	if (clientArea != null) {
 		int	hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");

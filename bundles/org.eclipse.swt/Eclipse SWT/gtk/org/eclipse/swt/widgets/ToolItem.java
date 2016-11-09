@@ -561,7 +561,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	 * The fix is to create and use the proxy menu for the
 	 * items appearing in the overflow menu.
 	 */
-	byte [] buffer = Converter.wcsToMbcs (null, "menu-id", true); //$NON-NLS-1$
+	byte [] buffer = Converter.wcsToMbcs ("menu-id", true); //$NON-NLS-1$
 	if (proxyMenuItem != 0) {
 		/*
 		 * The menuItem to appear in the overflow menu is cached
@@ -599,12 +599,12 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				 */
 				if (text == null || text.length() == 0) {
 					if ((showImages [0] == 0) && (toolTipText != null))
-						label = Converter.wcsToMbcs(null, toolTipText, true);
+						label = Converter.wcsToMbcs(toolTipText, true);
 					else
 						label = new byte[]{0};
 				}
 				else {
-					label = Converter.wcsToMbcs(null, text, true);
+					label = Converter.wcsToMbcs(text, true);
 				}
 				long /*int*/ menuItem;
 				if (OS.GTK3) {
@@ -662,7 +662,7 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 @Override
@@ -1204,7 +1204,7 @@ public void setText (String string) {
 	super.setText (string);
 	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	/*
 	* If Text/Image of a tool-item changes, then it is

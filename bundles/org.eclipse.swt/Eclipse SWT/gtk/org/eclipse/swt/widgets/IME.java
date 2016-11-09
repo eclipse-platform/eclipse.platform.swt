@@ -262,7 +262,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
 		if (length != 0) {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, textPtr, length);
-			char [] chars = Converter.mbcsToWcs (null, buffer);
+			char [] chars = Converter.mbcsToWcs (buffer);
 			Event event = new Event();
 			event.detail = SWT.COMPOSITION_CHANGED;
 			event.start = startOffset;
@@ -297,7 +297,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 		int length = OS.strlen (preeditString [0]);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, preeditString [0], length);
-		chars = Converter.mbcsToWcs (null, buffer);
+		chars = Converter.mbcsToWcs (buffer);
 		if (pangoAttrs [0] != 0) {
 			int count = 0;
 			long /*int*/ iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);

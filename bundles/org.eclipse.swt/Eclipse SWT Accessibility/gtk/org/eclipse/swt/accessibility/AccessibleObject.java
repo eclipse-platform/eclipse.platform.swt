@@ -47,7 +47,7 @@ class AccessibleObject {
 		if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
 			ROW_ROLE = ATK.ATK_ROLE_TABLE_ROW;
 		} else {
-			ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
+			ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs("row", true)); //$NON-NLS-1$
 		}
 	}
 
@@ -474,7 +474,7 @@ class AccessibleObject {
 								if (value.equals("true") || value.equals("1") || value.equals("single")) style.strikeout = true;
 							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME)))) {
 								// font family name
-								byte [] buffer = Converter.wcsToMbcs(null, value, true);
+								byte [] buffer = Converter.wcsToMbcs(value, true);
 								OS.pango_font_description_set_family(fontDesc, buffer);
 								createFont = true;
 							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE)))) {
@@ -2052,11 +2052,11 @@ class AccessibleObject {
 		int length = OS.strlen (strPtr);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, strPtr, length);
-		return new String (Converter.mbcsToWcs (null, buffer));
+		return new String (Converter.mbcsToWcs (buffer));
 	}
 
 	static long /*int*/ getStringPtr (String str) {
-		byte [] buffer = Converter.wcsToMbcs(null, str != null ? str : "", true);
+		byte [] buffer = Converter.wcsToMbcs(str != null ? str : "", true);
 		long /*int*/ ptr = OS.g_malloc(buffer.length);
 		OS.memmove(ptr, buffer, buffer.length);
 		return ptr;

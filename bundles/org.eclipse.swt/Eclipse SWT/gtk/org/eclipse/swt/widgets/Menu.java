@@ -341,7 +341,7 @@ void createIMMenu (long /*int*/ imHandle) {
 		OS.gtk_menu_shell_insert (handle, imSeparator, -1);
 	}
 	if (imItem == 0) {
-		byte[] buffer = Converter.wcsToMbcs (null, SWT.getMessage("SWT_InputMethods"), true);
+		byte[] buffer = Converter.wcsToMbcs (SWT.getMessage("SWT_InputMethods"), true);
 		if (OS.GTK3) {
 			imItem = OS.gtk_menu_item_new ();
 			if (imItem == 0) error (SWT.ERROR_NO_HANDLES);

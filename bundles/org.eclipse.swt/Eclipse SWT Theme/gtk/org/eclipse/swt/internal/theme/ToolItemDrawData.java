@@ -54,7 +54,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
 		long /*int*/ separatorHandle = theme.separatorHandle;
-		byte[] detail = Converter.wcsToMbcs(null, "vseparator", true);
+		byte[] detail = Converter.wcsToMbcs("vseparator", true);
 		long /*int*/ gtkStyle = gtk_widget_get_style (separatorHandle);
 		theme.transferClipping(gc, gtkStyle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
@@ -87,9 +87,9 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 
 	byte[] detail = null;
 	if ((style & (SWT.PUSH | SWT.DROP_DOWN)) != 0) {
-		detail = Converter.wcsToMbcs(null, "button", true);
+		detail = Converter.wcsToMbcs("button", true);
 	} else if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		detail = Converter.wcsToMbcs(null, "togglebutton", true);
+		detail = Converter.wcsToMbcs("togglebutton", true);
 	}
 
 	int[] relief = new int[1];
@@ -119,7 +119,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int arrow_x = x + width - arrow_width - xthickness - focus_padding;
 		if (interior_focus == 0) arrow_x -= focus_line_width;
 		int arrow_y = y + (height - arrow_height) / 2;
-		byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
+		byte[] arrow_detail = Converter.wcsToMbcs("arrow", true);
 		gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, theme.arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 		if (clientArea != null) {
 			clientArea.width -= bounds.x + bounds.width - arrow_x;

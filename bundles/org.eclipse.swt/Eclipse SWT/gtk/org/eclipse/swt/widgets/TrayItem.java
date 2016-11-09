@@ -540,7 +540,7 @@ public void setToolTipText (String string) {
 	toolTipText = string;
 	byte [] buffer = null;
 	if (string != null && string.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, string, true);
+		buffer = Converter.wcsToMbcs (string, true);
 	}
 	OS.gtk_status_icon_set_tooltip_text (handle, buffer);
 }

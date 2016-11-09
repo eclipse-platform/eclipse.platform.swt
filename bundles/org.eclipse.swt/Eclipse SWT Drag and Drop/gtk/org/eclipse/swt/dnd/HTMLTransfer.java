@@ -63,7 +63,7 @@ public void javaToNative (Object object, TransferData transferData){
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	byte[] utf8 = Converter.wcsToMbcs(null, string, true);
+	byte[] utf8 = Converter.wcsToMbcs(string, true);
 	int byteCount = utf8.length;
 	long /*int*/ pValue = OS.g_malloc(byteCount);
 	if (pValue == 0) return;
@@ -102,7 +102,7 @@ public Object nativeToJava(TransferData transferData){
 		byte[] utf8 = new byte[size];
 		OS.memmove(utf8, transferData.pValue, size);
 		// convert utf8 byte array to a unicode string
-		char [] unicode = org.eclipse.swt.internal.Converter.mbcsToWcs (null, utf8);
+		char [] unicode = org.eclipse.swt.internal.Converter.mbcsToWcs (utf8);
 		string = new String (unicode);
 	}
 	int end = string.indexOf('\0');

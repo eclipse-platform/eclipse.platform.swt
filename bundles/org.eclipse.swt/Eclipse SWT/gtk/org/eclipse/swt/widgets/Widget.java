@@ -1397,7 +1397,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	}
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, keyEvent.string, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
@@ -1604,7 +1604,7 @@ public void setData (String key, Object value) {
 		long /*int*/ provider = OS.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
 			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_USER);
-			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, (String) value, true), -1, null);
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1, null);
 			OS.g_object_unref (provider);
 		}
 	}

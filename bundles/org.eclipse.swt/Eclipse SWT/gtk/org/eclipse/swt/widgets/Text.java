@@ -424,7 +424,7 @@ public void addVerifyListener (VerifyListener listener) {
 public void append (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+	byte [] buffer = Converter.wcsToMbcs (string, false);
 	clearSegments (true);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, new int[]{-1});
@@ -475,7 +475,7 @@ void applySegments () {
 			if (segmentsChars != null && segmentsChars.length > i) {
 				separator [0] = segmentsChars [i];
 			}
-			byte [] buffer = Converter.wcsToMbcs (null, separator, false);
+			byte [] buffer = Converter.wcsToMbcs (separator, false);
 			long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 			pos [0] = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, pos [0]);
 			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
@@ -496,7 +496,7 @@ void applySegments () {
 			if (segmentsChars != null && segmentsChars.length > i) {
 				separator [0] = segmentsChars [i];
 			}
-			byte [] buffer = Converter.wcsToMbcs (null, separator, false);
+			byte [] buffer = Converter.wcsToMbcs (separator, false);
 			OS.gtk_text_buffer_insert (bufferHandle, pos, buffer, buffer.length);
 		}
 		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -588,7 +588,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int width = w [0];
 	int height = h [0];
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		byte [] buffer = Converter.wcsToMbcs (message, true);
 		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 		Arrays.fill (buffer, (byte) 0);
 		OS.pango_layout_get_pixel_size (layout, w, h);
@@ -1260,7 +1260,7 @@ public int getTabs () {
 }
 
 int getTabWidth (int tabs) {
-	byte[] buffer = Converter.wcsToMbcs(null, " ", true);
+	byte[] buffer = Converter.wcsToMbcs(" ", true);
 	long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 	int [] width = new int [1];
 	int [] height = new int [1];
@@ -1363,7 +1363,7 @@ public char [] getTextChars () {
 	OS.memmove (buffer, address, length);
 	if ((style & SWT.MULTI) != 0) OS.g_free (address);
 
-	char [] result = Converter.mbcsToWcs (null, buffer);
+	char [] result = Converter.mbcsToWcs (buffer);
 	Arrays.fill (buffer, (byte) 0);
 	if (segments != null) {
 		result = deprocessText (result, 0, -1);
@@ -1546,7 +1546,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	Arrays.fill (buffer, (byte) 0);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
@@ -1565,7 +1565,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (newChars == chars) {
 		OS.g_signal_emit_by_name (imContext, OS.commit, text);
 	} else {
-		buffer = Converter.wcsToMbcs (null, newChars, true);
+		buffer = Converter.wcsToMbcs (newChars, true);
 		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
 		Arrays.fill (buffer, (byte) 0);
 	}
@@ -1609,7 +1609,7 @@ long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*i
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
 	} else {
 		if (newText.length () > 0) {
-			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
 			OS.gtk_text_buffer_delete (bufferHandle, startIter, endIter);
@@ -1646,7 +1646,7 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
 			pos [0] = (int)/*64*/end_pos;
-			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
@@ -1702,7 +1702,7 @@ void drawMessage (long /*int*/ cr) {
 			int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 			int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 			OS.pango_font_metrics_unref (metrics);
-			byte [] buffer = Converter.wcsToMbcs (null, message, true);
+			byte [] buffer = Converter.wcsToMbcs (message, true);
 			long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 			long /*int*/ line = OS.pango_layout_get_line (layout, 0);
 			PangoRectangle rect = new PangoRectangle ();
@@ -1817,7 +1817,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
 	OS.memmove (buffer, new_text, buffer.length);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
+	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
@@ -1843,7 +1843,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -1913,13 +1913,13 @@ long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter
 	OS.g_free(ptr);
 	byte [] buffer = new byte [(int)/*64*/length];
 	OS.memmove (buffer, text, buffer.length);
-	String oldText = new String (Converter.mbcsToWcs (null, buffer));
+	String oldText = new String (Converter.mbcsToWcs (buffer));
 	String newText = verifyText (oldText, start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
 	} else {
 		if (newText != oldText) {
-			byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer1 = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
 			OS.gtk_text_buffer_insert (bufferHandle, iter, buffer1, buffer1.length);
 			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
@@ -1998,7 +1998,7 @@ public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	clearSegments (true);
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+	byte [] buffer = Converter.wcsToMbcs (string, false);
 	if ((style & SWT.SINGLE) != 0) {
 		int [] start = new int [1], end = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, start, end);
@@ -2392,7 +2392,7 @@ public void setMessage (String message) {
 	this.message = message;
 	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) {
 		if ((style & SWT.SINGLE) != 0) {
-			byte [] buffer = Converter.wcsToMbcs (null, message, true);
+			byte [] buffer = Converter.wcsToMbcs (message, true);
 			OS.gtk_entry_set_placeholder_text (handle, buffer);
 			return;
 		}
@@ -2662,7 +2662,7 @@ public void setTextChars (char [] text) {
 void setText (char [] text) {
 	clearSegments (false);
 	if ((style & SWT.SINGLE) != 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, text, true);
+		byte [] buffer = Converter.wcsToMbcs (text, true);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -2672,7 +2672,7 @@ void setText (char [] text) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		Arrays.fill (buffer, (byte) 0);
 	} else {
-		byte [] buffer = Converter.wcsToMbcs (null, text, false);
+		byte [] buffer = Converter.wcsToMbcs (text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
@@ -2754,7 +2754,7 @@ public void setTopIndex (int index) {
 		 * We also cache the current GtkAdjustment value for future comparison
 		 * in getTopIndex().
 		 */
-		byte [] buffer = Converter.wcsToMbcs (null, "index_mark", true);
+		byte [] buffer = Converter.wcsToMbcs ("index_mark", true);
 		indexMark = OS.gtk_text_buffer_create_mark (bufferHandle, buffer, position, true);
 		OS.gtk_text_view_scroll_to_mark (handle, indexMark, 0, true, 0, 0);
 		long /*int*/ vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);

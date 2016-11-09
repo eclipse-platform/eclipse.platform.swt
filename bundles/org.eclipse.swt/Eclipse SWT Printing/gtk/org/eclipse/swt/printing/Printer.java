@@ -197,13 +197,13 @@ static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
 	int length = OS.strlen (address);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
-	String backendType = new String (Converter.mbcsToWcs (null, buffer));
+	String backendType = new String (Converter.mbcsToWcs (buffer));
 
 	address = OS.gtk_printer_get_name (printer);
 	length = OS.strlen (address);
 	buffer = new byte [length];
 	OS.memmove (buffer, address, length);
-	String name = new String (Converter.mbcsToWcs (null, buffer));
+	String name = new String (Converter.mbcsToWcs (buffer));
 
 	return new PrinterData (backendType, name);
 }
@@ -226,7 +226,7 @@ static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup
 		byte [] valueBuffer = new byte [end - start];
 		System.arraycopy (settingsData, start, valueBuffer, 0, valueBuffer.length);
 		OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
-		if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
+		if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (keyBuffer))+": "+new String (Converter.mbcsToWcs (valueBuffer)));
 	}
 	end++; // skip extra null terminator
 
@@ -372,7 +372,7 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
 	byte [] valueBuffer = new byte [length];
 	System.arraycopy (settingsData, start, valueBuffer, 0, length);
 
-	if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
+	if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (keyBuffer))+": "+new String (Converter.mbcsToWcs (valueBuffer)));
 
 	return valueBuffer;
 }
@@ -488,7 +488,7 @@ public boolean isAutoScalable() {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
-	byte [] buffer = Converter.wcsToMbcs (null, jobName, true);
+	byte [] buffer = Converter.wcsToMbcs (jobName, true);
 	printJob = OS.gtk_print_job_new (buffer, printer, settings, pageSetup);
 	if (printJob == 0) return false;
 	surface = OS.gtk_print_job_get_surface(printJob, null);
@@ -789,8 +789,8 @@ protected void init() {
 		if (duplex == OS.GTK_PRINT_DUPLEX_HORIZONTAL) cupsDuplexType = "DuplexNoTumble";
 		else if (duplex == OS.GTK_PRINT_DUPLEX_VERTICAL) cupsDuplexType = "DuplexTumble";
 		if (cupsDuplexType != null) {
-			byte [] keyBuffer = Converter.wcsToMbcs (null, "cups-Duplex", true);
-			byte [] valueBuffer = Converter.wcsToMbcs (null, cupsDuplexType, true);
+			byte [] keyBuffer = Converter.wcsToMbcs ("cups-Duplex", true);
+			byte [] valueBuffer = Converter.wcsToMbcs (cupsDuplexType, true);
 			OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
 		}
 	}

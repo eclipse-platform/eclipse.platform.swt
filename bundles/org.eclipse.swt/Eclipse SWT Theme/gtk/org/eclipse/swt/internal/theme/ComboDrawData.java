@@ -58,10 +58,10 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int arrow_x = arrow_button_x + (arrow_button_width - arrow_width) / 2;
 	int arrow_y = y + (height - arrow_height) / 2 + 1;
 	if (relief != OS.GTK_RELIEF_NONE || ((state[DrawData.COMBO_ARROW] & (DrawData.PRESSED | DrawData.HOT)) != 0)) {
-		byte[] detail = Converter.wcsToMbcs(null, "button", true);
+		byte[] detail = Converter.wcsToMbcs("button", true);
 		gtk_render_box (gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, arrow_button_x, y, arrow_button_width, height);
 	}
-	byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
+	byte[] arrow_detail = Converter.wcsToMbcs("arrow", true);
 	long /*int*/ arrowHandle = theme.arrowHandle;
 	gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 
@@ -69,7 +69,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	gtkStyle = gtk_widget_get_style(entryHandle);
 	theme.transferClipping(gc, gtkStyle);
 	state_type = getStateType(DrawData.WIDGET_WHOLE);
-	byte[] detail = Converter.wcsToMbcs(null, "entry", true);
+	byte[] detail = Converter.wcsToMbcs("entry", true);
 	gtk_render_shadow (gtkStyle, drawable, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, null, entryHandle, detail, x, y, width - arrow_button_width, height);
 	xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 	ythickness = OS.gtk_style_get_xthickness(gtkStyle);
@@ -77,7 +77,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	y += ythickness;
 	width -= 2 * xthickness;
 	height -= 2 * ythickness;
-	detail = Converter.wcsToMbcs(null, "entry_bg", true);
+	detail = Converter.wcsToMbcs("entry_bg", true);
 	gtk_render_frame (gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, entryHandle, detail, x, y, width - arrow_button_width, height);
 
 	if (clientArea != null) {

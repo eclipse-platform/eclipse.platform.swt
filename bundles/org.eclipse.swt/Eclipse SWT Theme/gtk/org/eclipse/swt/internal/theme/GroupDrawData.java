@@ -37,7 +37,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 	int ythickness = OS.gtk_style_get_ythickness(gtkStyle);
 	int x = bounds.x, y = bounds.y + headerHeight / 2, width = bounds.width, height = bounds.height - headerHeight / 2;
-	byte[] detail = Converter.wcsToMbcs(null, "frame", true);
+	byte[] detail = Converter.wcsToMbcs("frame", true);
 	int gap_x = xthickness + GROUP_X, gap_width = headerWidth + GROUP_PAD * 2, gap_side = OS.GTK_POS_TOP;
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	gtk_render_shadow_gap (gtkStyle, drawable, state_type, OS.GTK_SHADOW_ETCHED_IN, null, frameHandle, detail, x, y, width, height, gap_side, gap_x, gap_width);

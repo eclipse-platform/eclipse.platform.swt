@@ -147,7 +147,7 @@ public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
 	long /*int*/ icon_theme =OS.gtk_icon_theme_get_default();
-	byte[] icon = Converter.wcsToMbcs (null, iconPath, true);
+	byte[] icon = Converter.wcsToMbcs (iconPath, true);
 	long /*int*/ gicon = OS.g_icon_new_for_string(icon, null);
 	if (gicon != 0) {
 		long /*int*/ gicon_info = OS.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
@@ -251,7 +251,7 @@ static String gio_getMimeType(String extension) {
 
 static Program gio_getProgram(Display display, String mimeType) {
 	Program program = null;
-	byte[] mimeTypeBuffer = Converter.wcsToMbcs (null, mimeType, true);
+	byte[] mimeTypeBuffer = Converter.wcsToMbcs (mimeType, true);
 	long /*int*/ application = OS.g_app_info_get_default_for_type (mimeTypeBuffer, false);
 	if (application != 0) {
 		program = gio_getProgram(display, application);
@@ -270,7 +270,7 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 		if (length > 0) {
 			buffer = new byte [length];
 			OS.memmove (buffer, applicationName, length);
-			program.name = new String (Converter.mbcsToWcs (null, buffer));
+			program.name = new String (Converter.mbcsToWcs (buffer));
 		}
 	}
 	long /*int*/ applicationCommand = OS.g_app_info_get_executable (application);
@@ -279,7 +279,7 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 		if (length > 0) {
 			buffer = new byte [length];
 			OS.memmove (buffer, applicationCommand, length);
-			program.command = new String (Converter.mbcsToWcs (null, buffer));
+			program.command = new String (Converter.mbcsToWcs (buffer));
 		}
 	}
 	program.gioExpectUri = OS.g_app_info_supports_uris(application);
@@ -291,7 +291,7 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 			if (length > 0) {
 				buffer = new byte[length];
 				OS.memmove(buffer, icon_name, length);
-				program.iconPath = new String(Converter.mbcsToWcs(null, buffer));
+				program.iconPath = new String(Converter.mbcsToWcs(buffer));
 			}
 			OS.g_free(icon_name);
 		}
@@ -329,21 +329,21 @@ static Program[] getPrograms(Display display) {
 }
 
 static boolean isExecutable(String fileName) {
-	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
+	byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
 	if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
 	if (!OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE)) return false;
 	long /*int*/ file = OS.g_file_new_for_path (fileNameBuffer);
 	boolean result = false;
 	if (file != 0) {
-		byte[] buffer = Converter.wcsToMbcs (null, "*", true); //$NON-NLS-1$
+		byte[] buffer = Converter.wcsToMbcs ("*", true); //$NON-NLS-1$
 		long /*int*/ fileInfo = OS.g_file_query_info(file, buffer, 0, 0, 0);
 		if (fileInfo != 0) {
 			long /*int*/ contentType = OS.g_file_info_get_content_type(fileInfo);
 			if (contentType != 0) {
-				byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
+				byte[] exeType = Converter.wcsToMbcs ("application/x-executable", true); //$NON-NLS-1$
 				result = OS.g_content_type_is_a(contentType, exeType);
 				if (!result) {
-					byte [] shellType = Converter.wcsToMbcs (null, "application/x-shellscript", true); //$NON-NLS-1$
+					byte [] shellType = Converter.wcsToMbcs ("application/x-shellscript", true); //$NON-NLS-1$
 					result = OS.g_content_type_equals(contentType, shellType);
 				}
 			}
@@ -359,7 +359,7 @@ static boolean isExecutable(String fileName) {
  */
 static boolean gio_launch(String fileName) {
 	boolean result = false;
-	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
+	byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
 	long /*int*/ file = OS.g_file_new_for_commandline_arg (fileNameBuffer);
 	if (file != 0) {
 		long /*int*/ uri = OS.g_file_get_uri (file);
@@ -377,12 +377,12 @@ static boolean gio_launch(String fileName) {
  */
 boolean gio_execute(String fileName) {
 	boolean result = false;
-	byte[] commandBuffer = Converter.wcsToMbcs (null, command, true);
-	byte[] nameBuffer = Converter.wcsToMbcs (null, name, true);
+	byte[] commandBuffer = Converter.wcsToMbcs (command, true);
+	byte[] nameBuffer = Converter.wcsToMbcs (name, true);
 	long /*int*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gioExpectUri
 				? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
 	if (application != 0) {
-		byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
+		byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
 		long /*int*/ file = 0;
 		if (fileName.length() > 0) {
 			if (OS.g_app_info_supports_uris (application)) {

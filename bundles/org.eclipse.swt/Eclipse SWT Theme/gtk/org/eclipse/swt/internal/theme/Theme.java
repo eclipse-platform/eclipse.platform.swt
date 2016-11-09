@@ -170,7 +170,7 @@ public Rectangle measureText(GC gc, Rectangle bounds, DrawData data, String text
 }
 
 int getWidgetProperty(long /*int*/ handle, String name) {
-	byte[] propertyName = Converter.wcsToMbcs(null, name, true);
+	byte[] propertyName = Converter.wcsToMbcs(name, true);
 	int[] result = new int[1];
 	OS.gtk_widget_style_get(handle, propertyName, result, 0);
 	return result[0];
@@ -178,7 +178,7 @@ int getWidgetProperty(long /*int*/ handle, String name) {
 
 
 long /*int*/ getBorderProperty(long /*int*/ handle, String name) {
-	byte[] propertyName = Converter.wcsToMbcs(null, name, true);
+	byte[] propertyName = Converter.wcsToMbcs(name, true);
 	long /*int*/ [] result = new long /*int*/[1];
 	OS.gtk_widget_style_get(handle, propertyName, result, 0);
 	return result[0];

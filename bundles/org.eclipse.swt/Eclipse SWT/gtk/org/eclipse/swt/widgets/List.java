@@ -101,7 +101,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_list_store_append (modelHandle, iter);
@@ -142,7 +142,7 @@ public void add (String string, int index) {
 	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	/*
@@ -497,7 +497,7 @@ public String getItem (int index) {
 	byte[] buffer2 = new byte [length];
 	OS.memmove (buffer2, ptr [0], length);
 	OS.g_free (ptr [0]);
-	return new String (Converter.mbcsToWcs (null, buffer2));
+	return new String (Converter.mbcsToWcs (buffer2));
 }
 
 /**
@@ -586,7 +586,7 @@ public String [] getItems () {
 			byte[] buffer = new byte [length];
 			OS.memmove (buffer, ptr [0], length);
 			OS.g_free (ptr [0]);
-			result [index] = new String (Converter.mbcsToWcs (null, buffer));
+			result [index] = new String (Converter.mbcsToWcs (buffer));
 		}
 	}
 	OS.g_free (iter);
@@ -984,7 +984,7 @@ public int indexOf (String string, int start) {
 public boolean isSelected (int index) {
 	checkWidget();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-	byte [] buffer = Converter.wcsToMbcs (null, Integer.toString (index), true);
+	byte [] buffer = Converter.wcsToMbcs (Integer.toString (index), true);
 	long /*int*/ path = OS.gtk_tree_path_new_from_string (buffer);
 	boolean answer = OS.gtk_tree_selection_path_is_selected (selection, path);
 	OS.gtk_tree_path_free (path);
@@ -1417,7 +1417,7 @@ public void setItem (int index, String string) {
 	}
 	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
@@ -1450,7 +1450,7 @@ public void setItems (String... items) {
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (string, true);
 		OS.gtk_list_store_append (modelHandle, iter);
 		OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	}

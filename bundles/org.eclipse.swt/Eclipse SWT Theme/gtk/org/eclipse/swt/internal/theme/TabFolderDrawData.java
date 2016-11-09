@@ -44,7 +44,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	} else {
 		y += tabsHeight;
 	}
-	byte[] detail = Converter.wcsToMbcs(null, "notebook", true);
+	byte[] detail = Converter.wcsToMbcs("notebook", true);
 	gtk_render_frame_gap (gtkStyle, drawable, getStateType(DrawData.WIDGET_WHOLE), OS.GTK_SHADOW_OUT, null, notebookHandle, detail, x, y, width, height, gap_side, gap_x, gap_width);
 	if (tabsArea != null) {
 		tabsArea.x = bounds.x;

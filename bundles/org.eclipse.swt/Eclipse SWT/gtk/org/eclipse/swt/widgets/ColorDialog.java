@@ -125,7 +125,7 @@ public RGB[] getRGBs() {
  * </ul>
  */
 public RGB open () {
-	byte [] buffer = Converter.wcsToMbcs (null, title, true);
+	byte [] buffer = Converter.wcsToMbcs (title, true);
 	long /*int*/ handle = 0;
 	if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 		handle = OS.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
@@ -205,12 +205,12 @@ public RGB open () {
 
 			buffer = new byte [length];
 			OS.memmove (buffer, strPtr, length);
-			String paletteString = new String (Converter.mbcsToWcs (null, buffer));
-			buffer = Converter.wcsToMbcs (null, paletteString, true);
+			String paletteString = new String (Converter.mbcsToWcs (buffer));
+			buffer = Converter.wcsToMbcs (paletteString, true);
 			OS.g_free (gdkColors);
 			long /*int*/ settings = OS.gtk_settings_get_default ();
 			if (settings != 0) {
-				OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
+				OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs ("gtk_color_selection_palette_to_string", true));
 
 			}
 		}
@@ -272,14 +272,14 @@ public RGB open () {
 					OS.g_free (ptr [0]);
 					String [] gdkColorStrings = null;
 					if (length > 0) {
-						String gtk_color_palette = new String(Converter.mbcsToWcs (null, buffer));
+						String gtk_color_palette = new String(Converter.mbcsToWcs (buffer));
 						gdkColorStrings = splitString(gtk_color_palette, ':');
 						length = gdkColorStrings.length;
 					}
 					rgbs = new RGB [length];
 					for (int i=0; i<length; i++) {
 						String colorString = gdkColorStrings[i];
-						buffer = Converter.wcsToMbcs (null, colorString, true);
+						buffer = Converter.wcsToMbcs (colorString, true);
 						OS.gdk_color_parse(buffer, color);
 						int redI = (color.red >> 8) & 0xFF;
 						int greenI = (color.green >> 8) & 0xFF;

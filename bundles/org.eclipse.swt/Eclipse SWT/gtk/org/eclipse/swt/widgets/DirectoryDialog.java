@@ -119,7 +119,7 @@ public String open () {
 		return openChooserDialog ();
 }
 String openChooserDialog () {
-	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	long /*int*/ shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ handle = 0;
@@ -152,7 +152,7 @@ String openChooserDialog () {
 			stringBuffer.append (SEPARATOR);
 		}
 		stringBuffer.append (filterPath);
-		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+		byte [] buffer = Converter.wcsToMbcs (stringBuffer.toString (), true);
 		/*
 		 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
 		 * to be true canonical path. So using realpath to convert the path to
@@ -176,7 +176,7 @@ String openChooserDialog () {
 		}
 	}
 	if (message.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		byte [] buffer = Converter.wcsToMbcs (message, true);
 		long /*int*/ box = 0;
 		if (OS.GTK3) {
 			box = OS.gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, 0);

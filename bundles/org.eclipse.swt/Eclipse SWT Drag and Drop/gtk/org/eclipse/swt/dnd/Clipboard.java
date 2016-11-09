@@ -37,10 +37,10 @@ public class Clipboard {
 
 	static {
 		GTKCLIPBOARD = OS.gtk_clipboard_get(OS.GDK_NONE);
-		byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
+		byte[] buffer = Converter.wcsToMbcs("PRIMARY", true);
 		long /*int*/ primary = OS.gdk_atom_intern(buffer, false);
 		GTKPRIMARYCLIPBOARD = OS.gtk_clipboard_get(primary);
-		buffer = Converter.wcsToMbcs(null, "TARGETS", true);
+		buffer = Converter.wcsToMbcs("TARGETS", true);
 		TARGET = OS.gdk_atom_intern(buffer, false);
 	}
 
@@ -567,7 +567,7 @@ public String[] getAvailableTypeNames() {
 		byte[] buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
-		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (null, buffer));
+		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
 	for (int i = 0; i < types2.length; i++) {
 		long /*int*/ pName = OS.gdk_atom_name(types2[i]);
@@ -577,7 +577,7 @@ public String[] getAvailableTypeNames() {
 		byte[] buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
-		result[count++] = "GTKPRIMARYCLIPBOARD "+new String (Converter.mbcsToWcs (null, buffer));
+		result[count++] = "GTKPRIMARYCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
 	if (count < result.length){
 		String[] temp = new String[count];

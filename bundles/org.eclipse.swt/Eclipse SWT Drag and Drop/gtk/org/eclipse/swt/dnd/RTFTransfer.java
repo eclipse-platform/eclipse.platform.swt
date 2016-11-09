@@ -65,7 +65,7 @@ public void javaToNative (Object object, TransferData transferData){
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	long /*int*/ pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	OS.memmove(pValue, buffer, buffer.length);
@@ -92,7 +92,7 @@ public Object nativeToJava(TransferData transferData){
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);
-	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] chars = Converter.mbcsToWcs (buffer);
 	String string = new String (chars);
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);

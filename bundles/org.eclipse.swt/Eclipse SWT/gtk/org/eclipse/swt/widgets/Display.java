@@ -137,11 +137,11 @@ public class Display extends Device {
 	static final int SWT_OBJECT_INDEX1;
 	static final int SWT_OBJECT_INDEX2;
 	static {
-		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX", true); //$NON-NLS-1$
+		byte [] buffer = Converter.wcsToMbcs ("SWT_OBJECT_INDEX", true); //$NON-NLS-1$
 		SWT_OBJECT_INDEX = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX1", true); //$NON-NLS-1$
+		buffer = Converter.wcsToMbcs ("SWT_OBJECT_INDEX1", true); //$NON-NLS-1$
 		SWT_OBJECT_INDEX1 = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX2", true); //$NON-NLS-1$
+		buffer = Converter.wcsToMbcs ("SWT_OBJECT_INDEX2", true); //$NON-NLS-1$
 		SWT_OBJECT_INDEX2 = OS.g_quark_from_string (buffer);
 	}
 
@@ -959,7 +959,7 @@ void createDisplay (DeviceData data) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, ptr, length);
-		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (null, buffer))); //$NON-NLS-1$
+		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
 		System.out.println ("***WARNING: SWT requires GTK " + GTK2_MAJOR+ "." + GTK2_MINOR + "." + GTK2_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		int minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -968,7 +968,7 @@ void createDisplay (DeviceData data) {
 		fixed_type = OS.swt_fixed_get_type();
 	}
 	if (fixed_type == 0) {
-		byte [] type_name = Converter.wcsToMbcs (null, "SwtFixed", true); //$NON-NLS-1$
+		byte [] type_name = Converter.wcsToMbcs ("SwtFixed", true); //$NON-NLS-1$
 		fixedClassInitCallback = new Callback (getClass (), "fixedClassInitProc", 2); //$NON-NLS-1$
 		fixedClassInitProc = fixedClassInitCallback.getAddress ();
 		if (fixedClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1021,7 +1021,7 @@ void createDisplay (DeviceData data) {
 		renderer_info.instance_size = (short) OS.GtkCellRendererText_sizeof ();
 		text_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
 		OS.memmove (text_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
-		byte [] type_name = Converter.wcsToMbcs (null, "SwtTextRenderer", true); //$NON-NLS-1$
+		byte [] type_name = Converter.wcsToMbcs ("SwtTextRenderer", true); //$NON-NLS-1$
 		text_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TEXT (), type_name, text_renderer_info_ptr, 0);
 	}
 	if (pixbuf_renderer_type == 0) {
@@ -1031,7 +1031,7 @@ void createDisplay (DeviceData data) {
 		renderer_info.instance_size = (short) OS.GtkCellRendererPixbuf_sizeof ();
 		pixbuf_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
 		OS.memmove (pixbuf_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
-		byte [] type_name = Converter.wcsToMbcs (null, "SwtPixbufRenderer", true); //$NON-NLS-1$
+		byte [] type_name = Converter.wcsToMbcs ("SwtPixbufRenderer", true); //$NON-NLS-1$
 		pixbuf_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_PIXBUF (), type_name, pixbuf_renderer_info_ptr, 0);
 	}
 	if (toggle_renderer_type == 0) {
@@ -1041,16 +1041,16 @@ void createDisplay (DeviceData data) {
 		renderer_info.instance_size = (short) OS.GtkCellRendererToggle_sizeof ();
 		toggle_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
 		OS.memmove (toggle_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
-		byte [] type_name = Converter.wcsToMbcs (null, "SwtToggleRenderer", true); //$NON-NLS-1$
+		byte [] type_name = Converter.wcsToMbcs ("SwtToggleRenderer", true); //$NON-NLS-1$
 		toggle_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
 	}
 
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
-	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
+	byte [] buffer = Converter.wcsToMbcs (APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	OS.gdk_set_program_class (buffer);
 	if (!OS.GTK3) {
-		byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true); //$NON-NLS-1$
+		byte [] flatStyle = Converter.wcsToMbcs ("style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true); //$NON-NLS-1$
 		OS.gtk_rc_parse_string (flatStyle);
 	}
 
@@ -1076,7 +1076,7 @@ void createDisplay (DeviceData data) {
 		} else {
 			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
 		}
-		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
+		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 		long /*int*/ atom = OS.XInternAtom (xDisplay, atomName, false);
 		OS.XSetSelectionOwner (xDisplay, atom, xWindow, OS.CurrentTime);
 		OS.XGetSelectionOwner (xDisplay, atom);
@@ -1090,7 +1090,7 @@ void createDisplay (DeviceData data) {
 }
 
 Image createImage (String name) {
-	byte[] buffer = Converter.wcsToMbcs (null, name, true);
+	byte[] buffer = Converter.wcsToMbcs (name, true);
 	long /*int*/ pixbuf, icon_set = OS.gtk_icon_factory_lookup_default (buffer);
 	if (OS.GTK3) {
 		pixbuf = OS.gtk_icon_set_render_icon_pixbuf(icon_set, OS.gtk_widget_get_style_context(shellHandle), OS.GTK_ICON_SIZE_DIALOG);
@@ -1787,7 +1787,7 @@ String gtk_css_default_theme_values (int swt) {
 	}
 	buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 
 	// Parse the theme values based on the corresponding SWT value
 	// i.e. theme_selected_bg_color in GTK is SWT.COLOR_LIST_SELECTION in SWT
@@ -1975,7 +1975,7 @@ GdkColor gtk_css_parse_background (long /*int*/ provider, String precise) {
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
 	 * This section allows for finer searching: for example
@@ -2024,7 +2024,7 @@ GdkColor gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	String cssOutput = new String (Converter.mbcsToWcs (null, buffer));
+	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
 	 * This section allows for finer searching: for example
@@ -2077,7 +2077,7 @@ GdkRGBA gtk_css_property_to_rgba(String property) {
 	GdkRGBA rgba = new GdkRGBA ();
 	String [] propertyParsed = new String [1];
 	propertyParsed = property.split (";");
-	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (null, propertyParsed[0], true));
+	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (propertyParsed[0], true));
 	return rgba;
 }
 
@@ -2102,7 +2102,7 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (buffer));
 }
 
 String gtk_widget_get_name(long /*int*/ handle) {
@@ -2114,7 +2114,7 @@ String gtk_widget_get_name(long /*int*/ handle) {
 		int length = OS.strlen (str);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, str, length);
-		name = new String (Converter.mbcsToWcs (null, buffer));
+		name = new String (Converter.mbcsToWcs (buffer));
 	}
 	return name;
 }
@@ -2128,7 +2128,7 @@ String gtk_widget_class_get_css_name(long /*int*/ handle) {
 		int length = OS.strlen (str);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, str, length);
-		name = new String (Converter.mbcsToWcs (null, buffer));
+		name = new String (Converter.mbcsToWcs (buffer));
 	}
 	return name;
 }
@@ -2330,7 +2330,7 @@ Dialog getModalDialog () {
  * windows.  See http://freedesktop.org/Standards/wm-spec.
  */
 Rectangle getWorkArea() {
-	byte[] name = Converter.wcsToMbcs (null, "_NET_WORKAREA", true); //$NON-NLS-1$
+	byte[] name = Converter.wcsToMbcs ("_NET_WORKAREA", true); //$NON-NLS-1$
 	long /*int*/ atom = OS.gdk_atom_intern (name, true);
 	if (atom == OS.GDK_NONE) return null;
 	long /*int*/[] actualType = new long /*int*/[1];
@@ -2787,7 +2787,7 @@ void getBackgroundColor (long /*int*/ context, int state, GdkRGBA rgba) {
 void initializeSystemColors () {
 	long /*int*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	byte[] gtk_tooltip = Converter.wcsToMbcs (null, OS.GTK3 ? "gtk-tooltip" : "gtk-tooltips", true); //$NON-NLS-1$
+	byte[] gtk_tooltip = Converter.wcsToMbcs (OS.GTK3 ? "gtk-tooltip" : "gtk-tooltips", true); //$NON-NLS-1$
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	OS.gtk_widget_realize (tooltipShellHandle);
 
@@ -3516,7 +3516,7 @@ void initializeWindowManager () {
 				if (length > 0) {
 					byte [] buffer2 = new byte [length];
 					OS.memmove (buffer2, ptr2, length);
-					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
+					windowManager = new String (Converter.mbcsToWcs (buffer2));
 				}
 			}
 		}
@@ -3768,23 +3768,6 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return mapInPixels (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-}
-
-static char mbcsToWcs (char ch) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
-	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
-	}
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
 }
 
 /**
@@ -5363,7 +5346,7 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 			GdkEventProperty gdkEvent = new GdkEventProperty ();
 			OS.memmove (gdkEvent, arg1);
 			if (gdkEvent.type == OS.GDK_PROPERTY_NOTIFY) {
-				byte[] name = Converter.wcsToMbcs (null, "org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
+				byte[] name = Converter.wcsToMbcs ("org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
 				long /*int*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
 					long /*int*/ xWindow;
@@ -5384,7 +5367,7 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 						byte [] buffer = new byte [nitems [0]];
 						OS.memmove(buffer, data [0], buffer.length);
 						OS.XFree (data [0]);
-						char[] chars = Converter.mbcsToWcs(null, buffer);
+						char[] chars = Converter.mbcsToWcs(buffer);
 						String string = new String (chars);
 
 						int lastIndex = 0;
@@ -5501,17 +5484,6 @@ public void wake () {
 void wakeThread () {
 	OS.g_main_context_wakeup (0);
 	wake = true;
-}
-
-static char wcsToMbcs (char ch) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (null, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-	}
-	return 0;
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

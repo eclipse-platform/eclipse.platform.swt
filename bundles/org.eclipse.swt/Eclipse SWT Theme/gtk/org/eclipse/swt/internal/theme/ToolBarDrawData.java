@@ -27,7 +27,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
-	byte[] detail = Converter.wcsToMbcs(null, "toolbar", true);
+	byte[] detail = Converter.wcsToMbcs("toolbar", true);
 	gtk_render_box (gtkStyle, drawable, getStateType(DrawData.WIDGET_WHOLE), OS.GTK_SHADOW_NONE, null, toolbarHandle, detail, x, y, width, height);
 	if (clientArea != null) {
 		clientArea.x = bounds.x;

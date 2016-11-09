@@ -1353,7 +1353,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			area.y = gdkEventExpose.area_y;
 			area.width = gdkEventExpose.area_width;
 			area.height = gdkEventExpose.area_height;
-			byte [] detail = Converter.wcsToMbcs (null, "base", true); //$NON-NLS-1$
+			byte [] detail = Converter.wcsToMbcs ("base", true); //$NON-NLS-1$
 			int border = OS.gtk_container_get_border_width (widget);
 			int state = display.activeShell == this ? OS.GTK_STATE_SELECTED : OS.GTK_STATE_PRELIGHT;
 			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
@@ -2334,7 +2334,7 @@ public void setText (String string) {
 	char [] chars = new char [Math.max (6, length) + 1];
 	string.getChars (0, length , chars, 0);
 	for (int i=length; i<chars.length; i++)  chars [i] = ' ';
-	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	OS.gtk_window_set_title (shellHandle, buffer);
 }
 
@@ -2781,7 +2781,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 	byte [] buffer = null;
 	if (string != null && string.length () > 0) {
 		char [] chars = fixMnemonic (string, false);
-		buffer = Converter.wcsToMbcs (null, chars, true);
+		buffer = Converter.wcsToMbcs (chars, true);
 	}
 	long /*int*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
 	boolean same = false;

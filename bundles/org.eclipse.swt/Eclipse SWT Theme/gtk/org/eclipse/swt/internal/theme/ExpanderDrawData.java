@@ -30,7 +30,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	int expander_style = OS.GTK_EXPANDER_COLAPSED;
 	if ((this.style & SWT.DOWN) != 0) expander_style = OS.GTK_EXPANDER_EXPANDED;
-	byte[] detail = Converter.wcsToMbcs(null, "treeview", true);
+	byte[] detail = Converter.wcsToMbcs("treeview", true);
 	int expander_size = theme.getWidgetProperty(treeHandle, "expander-size");
 	int x = bounds.x + expander_size / 2;
 	int y = bounds.y + expander_size / 2;

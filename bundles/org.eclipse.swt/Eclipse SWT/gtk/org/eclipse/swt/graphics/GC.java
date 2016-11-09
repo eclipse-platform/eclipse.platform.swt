@@ -170,7 +170,7 @@ public GC(Drawable drawable, int style) {
 }
 
 static void addCairoString(long /*int*/ cairo, String string, float x, float y, Font font) {
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	byte[] buffer = Converter.wcsToMbcs(string, true);
 	long /*int*/ layout = OS.pango_cairo_create_layout(cairo);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_layout_set_text(layout, buffer, -1);
@@ -4008,10 +4008,10 @@ void setString(String string, int flags) {
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (mnemonic = fixMnemonic(text)) != -1) {
 		char[] text1 = new char[mnemonic - 1];
 		System.arraycopy(text, 0, text1, 0, text1.length);
-		byte[] buffer1 = Converter.wcsToMbcs(null, text1, false);
+		byte[] buffer1 = Converter.wcsToMbcs(text1, false);
 		char[] text2 = new char[text.length - mnemonic];
 		System.arraycopy(text, mnemonic - 1, text2, 0, text2.length);
-		byte[] buffer2 = Converter.wcsToMbcs(null, text2, false);
+		byte[] buffer2 = Converter.wcsToMbcs(text2, false);
 		buffer = new byte[buffer1.length + buffer2.length];
 		System.arraycopy(buffer1, 0, buffer, 0, buffer1.length);
 		System.arraycopy(buffer2, 0, buffer, buffer1.length, buffer2.length);
@@ -4026,7 +4026,7 @@ void setString(String string, int flags) {
 		OS.pango_layout_set_attributes(layout, attr_list);
 		OS.pango_attr_list_unref(attr_list);
 	} else {
-		buffer = Converter.wcsToMbcs(null, text, false);
+		buffer = Converter.wcsToMbcs(text, false);
 		OS.pango_layout_set_attributes(layout, 0);
 	}
 	OS.pango_layout_set_text(layout, buffer, buffer.length);

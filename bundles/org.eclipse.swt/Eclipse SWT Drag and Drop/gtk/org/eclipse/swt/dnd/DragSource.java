@@ -577,7 +577,7 @@ public void setTransfer(Transfer... transferAgents){
 			String[] typeNames = transfer.getTypeNames();
 			for (int j = 0; j < typeIds.length; j++) {
 				GtkTargetEntry entry = new GtkTargetEntry();
-				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
+				byte[] buffer = Converter.wcsToMbcs(typeNames[j], true);
 				entry.target = OS.g_malloc(buffer.length);
 				OS.memmove(entry.target, buffer, buffer.length);
 				entry.info = typeIds[j];

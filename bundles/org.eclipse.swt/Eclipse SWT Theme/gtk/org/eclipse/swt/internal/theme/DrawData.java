@@ -119,7 +119,7 @@ void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	long /*int*/ gtkStyle = gtk_widget_get_style(widget);
 	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping (gc, gtkStyle);
-	byte[] buffer = Converter.wcsToMbcs(null, text, true);
+	byte[] buffer = Converter.wcsToMbcs(text, true);
 	long /*int*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
 	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_pixel_size(layout, width, height);
@@ -142,7 +142,7 @@ void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 		y += bounds.height - height[0];
 	}
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
-	byte[] detail = Converter.wcsToMbcs(null, "label", true);
+	byte[] detail = Converter.wcsToMbcs("label", true);
 	gtk_render_layout(gtkStyle, drawable, state_type, false, null, widget, detail, x, y, layout);
 	OS.g_object_unref(layout);
 }
@@ -179,7 +179,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	long /*int*/ widget = getTextHandle(theme);
-	byte[] buffer = Converter.wcsToMbcs(null, text, true);
+	byte[] buffer = Converter.wcsToMbcs(text, true);
 	long /*int*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
 	if (bounds != null) OS.pango_layout_set_width(layout, bounds.width);
 	if ((flags & DrawData.DRAW_LEFT) != 0) {
