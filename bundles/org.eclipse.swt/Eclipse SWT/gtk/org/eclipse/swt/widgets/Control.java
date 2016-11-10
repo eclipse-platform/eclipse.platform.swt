@@ -2471,7 +2471,7 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	boolean quit = false, dragging = false, timeoutFlag = true;
+	boolean quit = false, dragging = false;
 
 	//428852 DND workaround for GTk3.
 	//Gtk3 no longer sends motion events on the same control during thread sleep
@@ -2503,21 +2503,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					dragging = OS.gtk_drag_check_threshold (handle,
 								startPos.x, startPos.y, currPos.x, currPos.y);
 					if (dragging) break;
-					/*
-					 *  Bug 503431: Wayland does not put GDK_BUTTON_RELEASE event into the gdk_event queue, instead it put into the system queue.
-					 *  Gdk_event_peek() does not read from the system queue, while gdk_event_get() does. GDK_BUTTON_RELEASE event is processed
-					 *  already in Wayland, so using gdk_window_get_device_position() we can get the correct mouse status to break out of
-					 *  timeout if necessary.
-					 */
-
-					OS.g_main_context_iteration (0, false);
-					int [] mask = new int [1];
-					gdk_window_get_device_position(0, null, null, mask);
-					if (mask[0] != OS.GDK_BUTTON1_MASK) {
-						timeoutFlag = false;
-						quit = true;
-						break;
-					}
 				} else {
 				try {Thread.sleep(50);}
 				catch (Exception ex) {}
@@ -2526,44 +2511,42 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		}
 		display.sendPostExternalEventDispatchEvent();
 		if (dragging) return true;  //428852
-		if (eventPtr == 0 && timeoutFlag) return dragOnTimeout;
-		if (eventPtr != 0) {
-			switch (OS.GDK_EVENT_TYPE (eventPtr)) {
-				case OS.GDK_MOTION_NOTIFY: {
-					GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
-					OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
-					if ((gdkMotionEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
-						if (OS.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
-							dragging = true;
-							quit = true;
-						}
-					} else {
+		if (eventPtr == 0) return dragOnTimeout;
+		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
+			case OS.GDK_MOTION_NOTIFY: {
+				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
+				OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
+				if ((gdkMotionEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+					if (OS.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
+						dragging = true;
 						quit = true;
 					}
-					int [] newX = new int [1], newY = new int [1];
-					gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
-					break;
-				}
-				case OS.GDK_KEY_PRESS:
-				case OS.GDK_KEY_RELEASE: {
-					GdkEventKey gdkEvent = new GdkEventKey ();
-					OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-					if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
-					break;
-				}
-				case OS.GDK_BUTTON_RELEASE:
-				case OS.GDK_BUTTON_PRESS:
-				case OS.GDK_2BUTTON_PRESS:
-				case OS.GDK_3BUTTON_PRESS: {
-					OS.gdk_event_put (eventPtr);
+				} else {
 					quit = true;
-					break;
 				}
-				default:
-					OS.gtk_main_do_event (eventPtr);
+				int [] newX = new int [1], newY = new int [1];
+				gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
+				break;
 			}
-			OS.gdk_event_free (eventPtr);
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE: {
+				GdkEventKey gdkEvent = new GdkEventKey ();
+				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+				if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
+				break;
+			}
+			case OS.GDK_BUTTON_RELEASE:
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS:
+			case OS.GDK_3BUTTON_PRESS: {
+				OS.gdk_event_put (eventPtr);
+				quit = true;
+				break;
+			}
+			default:
+				OS.gtk_main_do_event (eventPtr);
 		}
+		OS.gdk_event_free (eventPtr);
 	}
 	return dragging;
 }
