@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -83,7 +83,6 @@ public Pattern(Device device, Image image) {
 	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device.checkCairo();
 	image.createSurface();
 	handle = Cairo.cairo_pattern_create_for_surface(image.surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -179,7 +178,6 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device.checkCairo();
 	handle = Cairo.cairo_pattern_create_linear(x1, y1, x2, y2);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	GC.setCairoPatternColor(handle, 0, color1, alpha1);

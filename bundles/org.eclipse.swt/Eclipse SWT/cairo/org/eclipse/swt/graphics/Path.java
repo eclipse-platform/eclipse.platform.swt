@@ -80,7 +80,6 @@ public class Path extends Resource {
  */
 public Path (Device device) {
 	super(device);
-	this.device.checkCairo();
 	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);

@@ -3067,7 +3067,6 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 }
 
 void initCairo() {
-	data.device.checkCairo();
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
 	data.cairo = cairo = OS.gdk_cairo_create(data.drawable);

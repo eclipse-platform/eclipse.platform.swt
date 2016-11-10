@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -142,7 +142,6 @@ public Transform(Device device, float[] elements) {
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	this.device.checkCairo();
 	handle = new double[6];
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_matrix_init(handle, m11, m12, m21, m22, DPIUtil.autoScaleUp(dx), DPIUtil.autoScaleUp(dy));
