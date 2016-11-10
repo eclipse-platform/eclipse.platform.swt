@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 IBM Corporation and others.
+ * Copyright (c) 2011, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507185
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -20,7 +21,9 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.8
  */
-import org.eclipse.swt.SWT;
+import static org.eclipse.swt.events.KeyListener.*;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -76,45 +79,38 @@ public static void main(String[] args) {
 
 		// when the user hits "ENTER" in the TreeCursor, pop up a text
 		// editor so that they can change the text of the cell
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			final Text text = new Text(cursor, SWT.NONE);
-			TreeItem row = cursor.getRow();
-			int column = cursor.getColumn();
-			text.setText(row.getText(column));
-			text.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				final Text text = new Text(cursor, SWT.NONE);
+				TreeItem row = cursor.getRow();
+				int column = cursor.getColumn();
+				text.setText(row.getText(column));
+				text.addKeyListener(keyPressedAdapter(event -> {
 					// close the text editor and copy the data over
 					// when the user hits "ENTER"
-					if (e.character == SWT.CR) {
-						TreeItem row = cursor.getRow();
-						int column = cursor.getColumn();
-						row.setText(column, text.getText());
+					if (event.character == SWT.CR) {
+						TreeItem localRow = cursor.getRow();
+						int localColumn = cursor.getColumn();
+						localRow.setText(localColumn, text.getText());
 						text.dispose();
 					}
 					// close the text editor when the user hits "ESC"
-					if (e.character == SWT.ESC) {
+					if (event.character == SWT.ESC) {
 						text.dispose();
 					}
-				}
-			});
-			editor.setEditor(text);
-			text.setFocus();
-		}
-	});
-	// Hide the TreeCursor when the user hits the "MOD1" or "MOD2" key.
-	// This allows the user to select multiple items in the tree.
-	cursor.addKeyListener(new KeyAdapter() {
-		@Override
-		public void keyPressed(KeyEvent e) {
-			if (e.keyCode == SWT.MOD1 || e.keyCode == SWT.MOD2
-					|| (e.stateMask & SWT.MOD1) != 0
+				}));
+				editor.setEditor(text);
+				text.setFocus();
+			}
+		});
+		// Hide the TreeCursor when the user hits the "MOD1" or "MOD2" key.
+		// This allows the user to select multiple items in the tree.
+		cursor.addKeyListener(keyPressedAdapter(e -> {
+			if (e.keyCode == SWT.MOD1 || e.keyCode == SWT.MOD2 || (e.stateMask & SWT.MOD1) != 0
 					|| (e.stateMask & SWT.MOD2) != 0) {
 				cursor.setVisible(false);
 			}
-		}
-	});
+		}));
 	// Show the TreeCursor when the user releases the "MOD2" or "MOD1" key.
 	// This signals the end of the multiple selection task.
 	tree.addKeyListener(new KeyListener() {

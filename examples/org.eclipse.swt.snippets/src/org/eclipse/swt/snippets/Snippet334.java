@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507339
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -18,6 +19,9 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.6
  */
+
+import static org.eclipse.swt.events.KeyListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -56,12 +60,10 @@ public static void main(String[] arg) {
 					break;
 			}
 		});
-		canvas.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				// key listener enables traversal out
-			}
-		});
+
+		// key listener enables traversal out)
+		canvas.addKeyListener(keyPressedAdapter(e-> {}));
+
 		canvas.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {

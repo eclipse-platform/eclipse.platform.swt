@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507185
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -18,6 +19,9 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+
+import static org.eclipse.swt.events.KeyListener.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
@@ -68,23 +72,20 @@ public static void main(String[] args) {
 			TableItem row = cursor.getRow();
 			int column = cursor.getColumn();
 			text.setText(row.getText(column));
-			text.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
+			text.addKeyListener(keyPressedAdapter(event -> {
 					// close the text editor and copy the data over
 					// when the user hits "ENTER"
-					if (e.character == SWT.CR) {
-						TableItem row = cursor.getRow();
-						int column = cursor.getColumn();
-						row.setText(column, text.getText());
+					if (event.character == SWT.CR) {
+						TableItem localRow = cursor.getRow();
+						int localColumn = cursor.getColumn();
+						localRow.setText(localColumn, text.getText());
 						text.dispose();
 					}
 					// close the text editor when the user hits "ESC"
-					if (e.character == SWT.ESC) {
+					if (event.character == SWT.ESC) {
 						text.dispose();
 					}
-				}
-			});
+			}));
 			// close the text editor when the user tabs away
 			text.addFocusListener(new FocusAdapter() {
 				@Override
@@ -98,17 +99,14 @@ public static void main(String[] args) {
 	});
 	// Hide the TableCursor when the user hits the "CTRL" or "SHIFT" key.
 	// This allows the user to select multiple items in the table.
-	cursor.addKeyListener(new KeyAdapter() {
-		@Override
-		public void keyPressed(KeyEvent e) {
+	cursor.addKeyListener(keyPressedAdapter(e-> {
 			if (e.keyCode == SWT.CTRL
 				|| e.keyCode == SWT.SHIFT
 				|| (e.stateMask & SWT.CONTROL) != 0
 				|| (e.stateMask & SWT.SHIFT) != 0) {
 				cursor.setVisible(false);
 			}
-		}
-	});
+	}));
 	// When the user double clicks in the TableCursor, pop up a text editor so that
 	// they can change the text of the cell.
 	cursor.addMouseListener(new MouseAdapter() {
@@ -118,23 +116,20 @@ public static void main(String[] args) {
 			TableItem row = cursor.getRow();
 			int column = cursor.getColumn();
 			text.setText(row.getText(column));
-			text.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
+			text.addKeyListener(keyPressedAdapter(event -> {
 					// close the text editor and copy the data over
 					// when the user hits "ENTER"
-					if (e.character == SWT.CR) {
-						TableItem row = cursor.getRow();
-						int column = cursor.getColumn();
-						row.setText(column, text.getText());
+					if (event.character == SWT.CR) {
+						TableItem localRow = cursor.getRow();
+						int localColumn = cursor.getColumn();
+						localRow.setText(localColumn, text.getText());
 						text.dispose();
 					}
 					// close the text editor when the user hits "ESC"
-					if (e.character == SWT.ESC) {
+					if (event.character == SWT.ESC) {
 						text.dispose();
 					}
-				}
-			});
+			}));
 			// close the text editor when the user clicks away
 			text.addFocusListener(new FocusAdapter() {
 				@Override
@@ -149,9 +144,7 @@ public static void main(String[] args) {
 
 	// Show the TableCursor when the user releases the "SHIFT" or "CTRL" key.
 	// This signals the end of the multiple selection task.
-	table.addKeyListener(new KeyAdapter() {
-		@Override
-		public void keyReleased(KeyEvent e) {
+	table.addKeyListener(keyReleasedAdapter(e-> {
 			if (e.keyCode == SWT.CONTROL && (e.stateMask & SWT.SHIFT) != 0) return;
 			if (e.keyCode == SWT.SHIFT && (e.stateMask & SWT.CONTROL) != 0) return;
 			if (e.keyCode != SWT.CONTROL && (e.stateMask & SWT.CONTROL) != 0) return;
@@ -163,8 +156,7 @@ public static void main(String[] args) {
 			cursor.setSelection(row, cursor.getColumn());
 			cursor.setVisible(true);
 			cursor.setFocus();
-		}
-	});
+	}));
 
 	shell.open();
 	while (!shell.isDisposed()) {
