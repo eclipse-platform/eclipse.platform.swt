@@ -3220,7 +3220,7 @@ void navigate (long /*int*/ requestHandle) {
 }
 
 void onResize () {
-	Rectangle rect = browser.getClientArea ();
+	Rectangle rect = DPIUtil.autoScaleUp (browser.getClientArea ()); // To Pixels
 	int width = Math.max (1, rect.width);
 	int height = Math.max (1, rect.height);
 
