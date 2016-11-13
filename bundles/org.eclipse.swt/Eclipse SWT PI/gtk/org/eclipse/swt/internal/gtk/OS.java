@@ -9106,16 +9106,6 @@ public static final void gtk_main() {
 		lock.unlock();
 	}
 }
-/**  @param blocking cast=(gboolean) */
-public static final native void _gtk_main_iteration_do(boolean blocking);
-public static final void gtk_main_iteration_do(boolean blocking) {
-	lock.lock();
-	try {
-		_gtk_main_iteration_do(blocking);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param event cast=(GdkEvent *) */
 public static final native void _gtk_main_do_event(long /*int*/ event);
 public static final void gtk_main_do_event(long /*int*/ event) {

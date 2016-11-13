@@ -891,7 +891,6 @@ typedef enum {
 #endif
 	_1gtk_1main_FUNC,
 	_1gtk_1main_1do_1event_FUNC,
-	_1gtk_1main_1iteration_1do_FUNC,
 	_1gtk_1major_1version_FUNC,
 	_1gtk_1menu_1bar_1new_FUNC,
 	_1gtk_1menu_1item_1get_1submenu_FUNC,
