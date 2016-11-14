@@ -169,7 +169,6 @@ public DragSource(Control control, int style) {
 	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
-
 	controlListener = event -> {
 		if (event.type == SWT.Dispose) {
 			if (!DragSource.this.isDisposed()) {
@@ -336,16 +335,24 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	if (context != 0) {
 		long /*int*/ dest_window = 0;
 		int action = 0;
+		/*
+		 * Feature in GTK: dest_window information is not gathered here in Wayland as the
+		 * DragEnd signal does not give the correct destination window. GTK3.14+ with
+		 * GTKGestures will handle file operations correctly without the
+		 * gdk_drag_context_get_dest_window() call. See Bug 503431.
+		 */
 		if (OS.GTK3) {
-			dest_window = OS.gdk_drag_context_get_dest_window(context);
 			action = OS.gdk_drag_context_get_selected_action(context);
+			if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+				dest_window = OS.gdk_drag_context_get_dest_window(context);
+			}
 		} else {
 			GdkDragContext gdkDragContext = new GdkDragContext ();
 			OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
 			dest_window = gdkDragContext.dest_window;
 			action = gdkDragContext.action;
 		}
-		if (dest_window != 0) { //NOTE: if dest_window is 0, drag was aborted
+		if (dest_window != 0 || OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) { //NOTE: if dest_window is 0, drag was aborted
 			if (moveData) {
 				operation = DND.DROP_MOVE;
 			} else {
