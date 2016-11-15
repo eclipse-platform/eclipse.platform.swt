@@ -188,37 +188,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(printerOptionWidgetNewProc_1CALLBACK)
 }
 #endif
 
-#ifndef NO__1gtk_1cell_1layout_1set_1attributes
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jint arg3, jintLong arg4)
-{
-	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_cell_layout_set_attributes(arg0, arg1, lparg2, arg3, arg4);
-*/
-	{
-		/*
-		* On AMD64, it is critical that functions which have a variable number of
-		* arguments, indicated by '...', include the '...' in their prototype.  This
-		* changes the calling convention, and leaving it out will cause crashes.
-		*
-		* For some reason, we must also explicitly declare all of the arguments we
-		* are passing in, otherwise it crashes.
-		*/
-		typedef void (*FPTR)(jintLong, jintLong, jbyte *, jint, jintLong, ...);
-		OS_LOAD_FUNCTION(fp, gtk_cell_layout_set_attributes)
-		if (fp) {
-			((FPTR)fp)(arg0, arg1, lparg2, arg3, arg4);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
-}
-#endif
-
 glong g_utf16_strlen(const gchar *str, glong max) {
 	const gchar *s = str;
 	guchar ch;

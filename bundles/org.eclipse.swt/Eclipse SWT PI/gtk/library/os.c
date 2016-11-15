@@ -8040,6 +8040,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1layout_1set_1attributes
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jint arg3, jintLong arg4)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_cell_layout_set_attributes((GtkCellLayout *)arg0, (GtkCellRenderer *)arg1, lparg2, arg3, (const gchar *)NULL);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1renderer_1get_1fixed_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1fixed_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)

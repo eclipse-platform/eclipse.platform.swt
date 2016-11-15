@@ -6381,7 +6381,11 @@ public static final long /*int*/ gtk_cell_layout_get_cells(long /*int*/ cell_lay
 		lock.unlock();
 	}
 }
-/** @method flags=no_gen */
+/**
+ * @param cell_layout cast=(GtkCellLayout *)
+ * @param cell cast=(GtkCellRenderer *)
+ * @param sentinel cast=(const gchar *),flags=sentinel
+ */
 public static final native void _gtk_cell_layout_set_attributes(long /*int*/ cell_layout, long /*int*/ cell, byte[] attribute, int column, long /*int*/ sentinel);
 public static final void gtk_cell_layout_set_attributes(long /*int*/ cell_layout, long /*int*/ cell, byte[] attribute, int column, long /*int*/ sentinel) {
 	lock.lock();
