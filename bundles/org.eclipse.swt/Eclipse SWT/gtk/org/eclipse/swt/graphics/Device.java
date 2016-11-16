@@ -679,7 +679,7 @@ protected void init () {
 		if (screen != 0 && provider != 0) {
 			String userCSS = "";
 			String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
-			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0) && additionalCSSPath != null){
+			if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
 				try (BufferedReader buffer = new BufferedReader(new FileReader(
 						new File(additionalCSSPath)))) {
 					userCSS = buffer.lines().collect(Collectors.joining("\n"));
