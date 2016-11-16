@@ -1029,6 +1029,27 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT Printing/cocoa/org/eclipse/swt/printing/Printer.java" type="org.eclipse.swt.printing.Printer">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT Printing/gtk/org/eclipse/swt/printing/Printer.java" type="org.eclipse.swt.printing.Printer">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT Printing/win32/org/eclipse/swt/printing/Printer.java" type="org.eclipse.swt.printing.Printer">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT WebKit/gtk/org/eclipse/swt/browser/WebKit.java" type="org.eclipse.swt.browser.WebKit">
         <filter id="305365105">
             <message_arguments>
@@ -1199,6 +1220,11 @@
                 <message_argument value="3.3"/>
                 <message_argument value="3.101"/>
                 <message_argument value="findWidget(Widget, long)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1675,6 +1701,11 @@
                 <message_argument value="findWidget(Widget, int)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Shell.java" type="org.eclipse.swt.widgets.Shell">
         <filter id="338792546">
@@ -1783,6 +1814,27 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/graphics/Image.java" type="org.eclipse.swt.graphics.Image">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/Image.java" type="org.eclipse.swt.graphics.Image">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/Image.java" type="org.eclipse.swt.graphics.Image">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ColorDialog.java" type="org.eclipse.swt.widgets.ColorDialog">
         <filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
             <message_arguments>
@@ -1815,11 +1867,37 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/widgets/Control.java" type="org.eclipse.swt.widgets.Control">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Control.java" type="org.eclipse.swt.widgets.Control">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Control.java" type="org.eclipse.swt.widgets.Control">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.widgets.Display"/>
                 <message_argument value="findWidget(Widget, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isAutoScalable()"/>
             </message_arguments>
         </filter>
     </resource>
