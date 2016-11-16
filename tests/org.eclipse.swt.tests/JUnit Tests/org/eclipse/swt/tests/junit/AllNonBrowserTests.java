@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import org.eclipse.test.TracingSuite;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -19,7 +18,7 @@ import org.junit.runners.Suite;
 /**
  * Suite for running most SWT test cases (all except for browser tests).
  */
-@RunWith(TracingSuite.class)
+@RunWith(Suite.class)
 @Suite.SuiteClasses({ Test_org_eclipse_swt_SWT.class, Test_org_eclipse_swt_SWTException.class,
 		Test_org_eclipse_swt_SWTError.class, Test_org_eclipse_swt_widgets_Display.class, AllGraphicsTests.class,
 		AllWidgetTests.class, Test_org_eclipse_swt_layout_GridData.class,
