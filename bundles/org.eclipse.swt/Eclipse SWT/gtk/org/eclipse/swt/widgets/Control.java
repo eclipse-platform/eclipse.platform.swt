@@ -1344,6 +1344,9 @@ boolean isActive () {
 	return getShell ().getModalShell () == null && display.getModalDialog () == null;
 }
 
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ */
 @Override
 public boolean isAutoScalable() {
 	return true;

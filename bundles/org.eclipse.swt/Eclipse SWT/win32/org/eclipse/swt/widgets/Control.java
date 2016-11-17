@@ -1849,6 +1849,9 @@ boolean isActive () {
 	return shell.getEnabled ();
 }
 
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ */
 @Override
 public boolean isAutoScalable() {
 	return true;

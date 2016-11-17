@@ -2172,6 +2172,9 @@ public static Display getDefault () {
 	}
 }
 
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ */
 @Override
 public boolean isAutoScalable() {
 	return true;

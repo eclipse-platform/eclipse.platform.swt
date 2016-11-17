@@ -71,6 +71,8 @@ public void internal_dispose_GC (long /*int*/ handle, GCData data);
  * to auto-scale when drawing on a high-DPI Display monitor.
  *
  * @return <code>true</code> if auto-scaling is enabled for this drawable
+ *
+ * @noreference This method is not intended to be referenced by clients.
  */
 public boolean isAutoScalable ();
 

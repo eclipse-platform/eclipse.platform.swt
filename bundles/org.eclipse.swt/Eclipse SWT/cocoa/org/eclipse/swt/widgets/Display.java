@@ -3123,6 +3123,9 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ */
 @Override
 public boolean isAutoScalable() {
 	return true;
