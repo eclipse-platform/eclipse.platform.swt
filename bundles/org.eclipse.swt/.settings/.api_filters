@@ -1472,14 +1472,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Drawable.java" type="org.eclipse.swt.graphics.Drawable">
-        <filter id="404000815">
-            <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.Drawable"/>
-                <message_argument value="isAutoScalable()"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageData.java" type="org.eclipse.swt.graphics.ImageData">
         <filter id="576725006">
             <message_arguments>
