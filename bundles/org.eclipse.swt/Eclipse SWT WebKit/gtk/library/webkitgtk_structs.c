@@ -98,3 +98,43 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 }
 #endif
 
+#ifndef NO_SWTJSreturnVal
+typedef struct SWTJSreturnVal_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID returnPointer, returnDouble, returnBoolean, returnType;
+} SWTJSreturnVal_FID_CACHE;
+
+SWTJSreturnVal_FID_CACHE SWTJSreturnValFc;
+
+void cacheSWTJSreturnValFields(JNIEnv *env, jobject lpObject)
+{
+	if (SWTJSreturnValFc.cached) return;
+	SWTJSreturnValFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SWTJSreturnValFc.returnPointer = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnPointer", I_J);
+	SWTJSreturnValFc.returnDouble = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnDouble", "D");
+	SWTJSreturnValFc.returnBoolean = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnBoolean", "Z");
+	SWTJSreturnValFc.returnType = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnType", "I");
+	SWTJSreturnValFc.cached = 1;
+}
+
+SWTJSreturnVal *getSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
+{
+	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
+	lpStruct->returnPointer = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.returnPointer);
+	lpStruct->returnDouble = (*env)->GetDoubleField(env, lpObject, SWTJSreturnValFc.returnDouble);
+	lpStruct->returnBoolean = (*env)->GetBooleanField(env, lpObject, SWTJSreturnValFc.returnBoolean);
+	lpStruct->returnType = (int)(*env)->GetIntField(env, lpObject, SWTJSreturnValFc.returnType);
+	return lpStruct;
+}
+
+void setSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
+{
+	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.returnPointer, (jintLong)lpStruct->returnPointer);
+	(*env)->SetDoubleField(env, lpObject, SWTJSreturnValFc.returnDouble, (jdouble)lpStruct->returnDouble);
+	(*env)->SetBooleanField(env, lpObject, SWTJSreturnValFc.returnBoolean, (jboolean)lpStruct->returnBoolean);
+	(*env)->SetIntField(env, lpObject, SWTJSreturnValFc.returnType, (jint)lpStruct->returnType);
+}
+#endif
+

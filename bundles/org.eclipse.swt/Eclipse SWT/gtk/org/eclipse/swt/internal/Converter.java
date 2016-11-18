@@ -81,6 +81,25 @@ public static byte [] wcsToMbcs (String string, boolean terminate) {
 }
 
 /**
+ * This method takes a 'C' pointer (char *) or (gchar *), reads characters up to the terminating symbol '\0' and
+ * converts it into a Java String.
+ * Subsequently it frees up the memory used by 'C'.
+ *
+ * Note: In SWT we don't use JNI's native String functions because of the 3 vs 4 byte issue explained in Class description.
+ * Instead we pass a character pointer from C to java and convert it to a String in Java manually.
+ *
+ * @param cCharPtr - A char * or a gchar *. Which will be freed up afterwards.
+ * @return a Java String object.
+ */
+public static String cCharPtrToJavaString(long /*int*/ cCharPtr) {
+	int length = OS.strlen (cCharPtr);
+	byte[] buffer = new byte [length];
+	OS.memmove (buffer, cCharPtr, length);
+	OS.g_free (cCharPtr);
+	return new String (mbcsToWcs (buffer));
+}
+
+/**
  * Convert a Java UTF-16 Wide character array into a C UTF-8 Multibyte byte array.
  *
  * This algorithm stops when it finds the first NULL character. I.e, if your Java String has embedded NULL

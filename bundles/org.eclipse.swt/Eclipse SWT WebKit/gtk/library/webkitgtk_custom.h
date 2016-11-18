@@ -17,8 +17,13 @@
 #define INC_webkitgtk_custom_H
 
 /* Manually written code */
-
-long swt_webkit_web_view_run_javascript (long webkit_handle, signed char *script);
+/** Dynamic type definitions */
+typedef jintLong 	dyn_WebKitWebView;
+typedef gpointer 	dyn_WebKitJavascriptResult;
+typedef gpointer 	dyn_JSContextRef;
+typedef gpointer 	dyn_JSGlobalContextRef;
+typedef gpointer    dyn_JSStringRef;
+typedef const void *dyn_JSValueRef;
 
 #endif /*INC_webkit_custom_H*/
 

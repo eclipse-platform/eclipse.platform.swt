@@ -11,6 +11,9 @@
 
 # Makefile for creating SWT libraries for Linux GTK
 
+# Uncomment to debug parts of SWT natives
+# SWT_DEBUG = -DWEBKIT_DEBUG
+
 include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
@@ -92,8 +95,14 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
 
-WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`  # Avoid adding 'webkit2gtk-4.0', as some systems might not have it.
-WEBKITCFLAGS = `pkg-config --cflags gio-2.0`     #     webkit functions should be called dynamically. See Bug 430538
+WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`
+WEBKITCFLAGS = `pkg-config --cflags gio-2.0`
+ifdef SWT_DEBUG
+# don't use 'webkit2gtk-4.0' in production,  as some systems might not have those libs and we get crashes.
+WEBKITLIBS +=  `pkg-config --libs-only-l webkit2gtk-4.0`
+WEBKITCFLAGS +=  `pkg-config --cflags webkit2gtk-4.0`
+endif
+
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 AWT_OBJECTS = swt_awt.o
@@ -109,6 +118,7 @@ GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
+		$(SWT_DEBUG) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/linux \

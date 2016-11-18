@@ -30,3 +30,15 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 #define JSClassDefinition_sizeof() 0
 #endif
 
+#ifndef NO_SWTJSreturnVal
+void cacheSWTJSreturnValFields(JNIEnv *env, jobject lpObject);
+SWTJSreturnVal *getSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct);
+void setSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct);
+#define SWTJSreturnVal_sizeof() sizeof(SWTJSreturnVal)
+#else
+#define cacheSWTJSreturnValFields(a,b)
+#define getSWTJSreturnValFields(a,b,c) NULL
+#define setSWTJSreturnValFields(a,b,c)
+#define SWTJSreturnVal_sizeof() 0
+#endif
+

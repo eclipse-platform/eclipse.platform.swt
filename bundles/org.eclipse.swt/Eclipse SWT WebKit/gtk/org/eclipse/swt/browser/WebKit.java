@@ -901,16 +901,20 @@ boolean close (boolean showPrompters) {
 	return result.booleanValue ();
 }
 
+
 @Override
 public boolean execute (String script) {
-	byte[] scriptBytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
 	long /*int*/ result = 0;
 	if (WEBKIT2){
-		// Currently always returns 1 upon completion.
-		// TODO WEBKIT2 - modify webkitgtk_custom to return 0 if there is an error.
-		result = (int) WebKitGTK.swt_webkit_web_view_run_javascript(webView, scriptBytes);
+		try {
+			evaluate(script);
+		} catch (SWTException e) {
+			return false;
+		}
+		return true;
 	} else {
+		byte[] scriptBytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 		long /*int*/ jsScriptString = WebKitGTK.JSStringCreateWithUTF8CString (scriptBytes);
 
 		// Currently loaded website will be used as 'source file' of the javascript to be exucuted.
@@ -925,6 +929,57 @@ public boolean execute (String script) {
 		WebKitGTK.JSStringRelease (jsScriptString);
 	}
 	return result != 0;
+}
+
+
+@Override
+public Object evaluate (String script) throws SWTException {
+	if (WEBKIT2){
+		/* Webkit2: We remove the 'return' prefix that normally comes with the script.
+		 * The reason is that in Webkit1, script was wrapped into a function and if an exception occured
+		 * it was caught on Javascript side and a callback to java was made.
+		 * In Webkit2, webkigtk_custom handles exceptions if they occur. No need to wrap
+		 * script into a temporary function anymore.
+		 */
+		String fixedScript;
+		if (script.length() > 7 && script.substring(0, 7).equals("return ")) {
+			fixedScript = script.substring(7);
+		} else {
+			fixedScript = script;
+		}
+		SWTJSreturnVal jsRetVal = new SWTJSreturnVal();
+		WebKitGTK.swtWebkitEvaluateJavascript(webView, Converter.wcsToMbcs(fixedScript, true), jsRetVal);
+
+		switch (jsRetVal.returnType) {
+		case SWTJSreturnVal.STRING: {
+			return Converter.cCharPtrToJavaString(jsRetVal.returnPointer);
+		}
+		case SWTJSreturnVal.NUMBER:
+			return new Double((double) jsRetVal.returnDouble);
+		case SWTJSreturnVal.BOOLEAN:
+			return new Boolean(jsRetVal.returnBoolean);
+		case SWTJSreturnVal.NULL:
+			return null;
+		case SWTJSreturnVal.ARRAY:
+			// TODO - implement support for retunrning arrays.
+			System.err.println("Webkit2: Support for returning arrays not yet implemented. Returning null instead");
+			return null;
+		case SWT.ERROR_FAILED_EVALUATE: {
+			String err_msg = Converter.cCharPtrToJavaString(jsRetVal.returnPointer);
+			if (err_msg.length() > 0) {
+				throw new SWTException (SWT.ERROR_FAILED_EVALUATE, err_msg);
+			} else {
+				// With no error message, "Failed to evaluate javascript expression" is printed, which is better than "".
+				throw new SWTException (SWT.ERROR_FAILED_EVALUATE);
+			}
+		}
+		case SWT.ERROR_INVALID_RETURN_VALUE:
+			throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
+		}
+		return null;
+	} else {
+		return super.evaluate(script);
+	}
 }
 
 @Override

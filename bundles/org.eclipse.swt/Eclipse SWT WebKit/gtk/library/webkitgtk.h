@@ -26,6 +26,16 @@
 // For JNI bindings in webkitgtk.c to properly link to custom functions:
 #include "webkitgtk_custom.h"
 
+#include "swt.h"  // for jintlong used by custom struct below.
+
+/**
+ * Conceptually the macro does:
+ * void *fp = dlsym(<libwebkit(3|4).so>, "name");  // Note, name is auto-wrapped into string literal.
+ *
+ * I.e, it declares and loads the function pointer from currently loaded webkitlib.
+ * Preformance note: If webkit lib is already loaded, then it's not re-loaded.
+ *   Instead, the lib pointer is simply acquired.
+ */
 #define WebKitGTK_LOAD_FUNCTION(var, name) \
 	static int initialized = 0; \
 	static void *var = NULL; \
@@ -55,6 +65,45 @@
 		initialized = 1; \
 	}
 
+
+
+
+// Below 3 lines are useful to uncomment when developing, so that you get proper C/C++ indexing.
+// To activate this macro for actual compilation, uncomment 'SWT_DEBUG' in make_linux.mak
+//#ifndef WEBKIT_DEBUG
+//#define WEBKIT_DEBUG
+//#endif
+
+
+// Debug print messages conditionally.
+#ifdef WEBKIT_DEBUG
+#define WEBKIT_DBG_MSG(args...) g_message(args)
+#else
+#define WEBKIT_DBG_MSG(args...)
+#endif
+
+#ifdef WEBKIT_DEBUG
+// Note:
+// In production code, do not include things like '<webkit2/webkit2.h>' '<JavaScriptCore/JavaScript.h>' directly as below.
+// All webkit functions must be loaded dynamically.
+// If you compile on a newer Linux that contains Webkit2, trying to run the compiled binary on older
+// OS's without webkit2 will lead to a crash even when they are running in 'Webkit1' mode.
+// See Bug 430538.
+// However, during development and debugging it's useful to have those for prototyping and debugging.
+#include <webkit2/webkit2.h>
+#include <JavaScriptCore/JavaScript.h>
+#else
+/*
+ * These custom structs override the native structs found in webkit/javascript/libsoup.
+ * These are needed because invocation to those libraries is dynamic, and without redefining
+ * these structs, the struct setting/getting functions in webkigtk_structs.c don't know how to access fields.
+ *
+ * NOTE:
+ * - These are not one-to-one copies. Instead they strip out pointers to other structs and instead use void*.
+ * - During webkit debugging/development, we use native includes for easier debugging.
+ *     But this causes conflicting definitions during build with includes when debugging/developing,
+ *     so these are only defined if not debugging.
+ */
 typedef struct {
     int version;
     int attributes;
@@ -95,5 +144,23 @@ typedef struct {
 	void* response_body;
 	void* response_headers;
 } SoupMessage;
+#endif /*WEBKIT_DEBUG*/
+
+
+/**
+ * Custom SWT Struct for passing return values from Javascript back to java.
+ * Java: SWTJSReturnVal.java (class)
+ * C:    SWTJSReturnVal (struct)
+ * NOTE: If you need to modify fields, modify both the C part which is declared in webkitgtk.h and java part int SWTJSreturnVal.java
+ * webkigtk_struct.c/h should be updated by auto-tools to add setters/getters.
+ */
+typedef struct {
+	jintLong 	returnPointer;
+	int 		returnType;
+	jboolean 	returnBoolean;
+	double 		returnDouble;
+
+	jboolean 	JsCallFinished; // Custom field only used on C side. Not mirrored by Java.
+} SWTJSreturnVal;
 
 #endif /* INC_webkitgtk_H */

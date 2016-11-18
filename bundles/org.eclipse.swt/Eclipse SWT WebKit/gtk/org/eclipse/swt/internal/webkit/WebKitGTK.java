@@ -1610,6 +1610,8 @@ public static final long /*int*/  webkit_uri_response_get_mime_type (long /*int*
 /* --------------------- start SWT natives --------------------- */
 
 public static final native int JSClassDefinition_sizeof ();
+public static final native int SWTJSreturnVal_sizeof ();
+
 
 /**
  * @param dest cast=(void *)
@@ -1675,15 +1677,17 @@ public static final long /*int*/ SoupMessage_request_headers (long /*int*/ messa
 	}
 }
 
-/* This custom function must only be called on Webkit2, use if (WEBKIT2) boolean. */
-public static final native long _swt_webkit_web_view_run_javascript (long /*int*/ webkit_handle, byte[] script);
-public static final long swt_webkit_web_view_run_javascript (long /*int*/ webkit_handle, byte[] script) {
+/* Custom method in webkitgtk_custom.c */
+/** @method flags=no_gen */
+public static final native void _swtWebkitEvaluateJavascript (long /*int*/ webkit_handle, byte[] script, SWTJSreturnVal retVal);
+public static final void swtWebkitEvaluateJavascript (long /*int*/ webkit_handle, byte[] script, SWTJSreturnVal retVal) {
 	lock.lock();
 	try {
-		return _swt_webkit_web_view_run_javascript (webkit_handle, script);
+		_swtWebkitEvaluateJavascript (webkit_handle, script, retVal);
 	} finally {
 		lock.unlock();
 	}
 }
+
 
 }
