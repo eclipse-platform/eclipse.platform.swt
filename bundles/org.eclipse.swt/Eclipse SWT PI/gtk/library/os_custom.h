@@ -60,7 +60,6 @@
 /* Libraries for dynamic loaded functions */
 
 #define g_thread_init_LIB LIB_GTHREAD
-#define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_widget_set_opacity_LIB LIB_GTK
 #define gtk_widget_get_opacity_LIB LIB_GTK
 #define gtk_scrollable_get_vadjustment_LIB LIB_GTK
@@ -286,33 +285,12 @@
 #define gtk_window_set_opacity_LIB LIB_GTK
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
-#define gtk_widget_get_allocation_LIB LIB_GTK
-#define gtk_widget_get_name_LIB LIB_GTK
 #define gtk_widget_class_get_css_name_LIB LIB_GTK
 #define gtk_widget_size_request_LIB LIB_GTK
 #define gtk_widget_get_default_style_LIB LIB_GTK
 #define gtk_widget_get_preferred_size_LIB LIB_GTK
 #define gtk_widget_get_style_context_LIB LIB_GTK
-#define gtk_widget_get_tooltip_text_LIB LIB_GTK
-#define gtk_widget_get_visible_LIB LIB_GTK
 #define gtk_widget_get_state_flags_LIB LIB_GTK
-#define gtk_widget_has_focus_LIB LIB_GTK
-#define gtk_widget_has_default_LIB LIB_GTK
-#define gtk_widget_set_tooltip_text_LIB LIB_GTK
-#define gtk_widget_set_has_window_LIB LIB_GTK
-#define gtk_widget_get_mapped_LIB LIB_GTK
-#define gtk_widget_get_sensitive_LIB LIB_GTK
-#define gtk_widget_get_has_window_LIB LIB_GTK
-#define gtk_widget_get_visible_LIB LIB_GTK
-#define gtk_widget_get_realized_LIB LIB_GTK
-#define gtk_widget_get_can_default_LIB LIB_GTK
-#define gtk_widget_get_window_LIB LIB_GTK
-#define gtk_widget_set_can_default_LIB LIB_GTK
-#define gtk_widget_set_can_focus_LIB LIB_GTK
-#define gtk_widget_set_mapped_LIB LIB_GTK
-#define gtk_widget_set_sensitive_LIB LIB_GTK
-#define gtk_widget_set_receives_default_LIB LIB_GTK
-#define gtk_widget_set_visible_LIB LIB_GTK
 #define gtk_widget_set_state_LIB LIB_GTK
 #define gtk_widget_shape_combine_region_LIB LIB_GTK
 #define gtk_widget_modify_base_LIB LIB_GTK

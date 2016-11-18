@@ -1653,7 +1653,7 @@ public static final long /*int*/ GTK_TYPE_WIDGET() {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_has_default(long /*int*/ widget);
 public static final boolean gtk_widget_has_default(long /*int*/ widget) {
 	lock.lock();
@@ -1663,7 +1663,7 @@ public static final boolean gtk_widget_has_default(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_sensitive(long /*int*/ widget);
 public static final boolean gtk_widget_get_sensitive(long /*int*/ widget) {
 	lock.lock();
@@ -1673,7 +1673,7 @@ public static final boolean gtk_widget_get_sensitive(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native long /*int*/ _gtk_widget_get_name(long /*int*/ widget);
 public static final long /*int*/ gtk_widget_get_name(long /*int*/ widget) {
 	lock.lock();
@@ -7926,7 +7926,8 @@ public static final long /*int*/ gtk_fixed_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ * @param has_window cast=(gboolean)
  */
 public static final native void _gtk_widget_set_has_window(long /*int*/ widget, boolean has_window);
 public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean has_window) {
@@ -13975,7 +13976,7 @@ public static final long /*int*/ gtk_widget_get_accessible (long /*int*/ widget)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_visible (long /*int*/ widget);
 public static final boolean gtk_widget_get_visible (long /*int*/ widget) {
 	lock.lock();
@@ -13985,7 +13986,7 @@ public static final boolean gtk_widget_get_visible (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_realized (long /*int*/ widget);
 public static final boolean gtk_widget_get_realized (long /*int*/ widget) {
 	lock.lock();
@@ -13995,7 +13996,7 @@ public static final boolean gtk_widget_get_realized (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_has_window (long /*int*/ widget);
 public static final boolean gtk_widget_get_has_window (long /*int*/ widget) {
 	lock.lock();
@@ -14005,7 +14006,7 @@ public static final boolean gtk_widget_get_has_window (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_can_default (long /*int*/ widget);
 public static final boolean gtk_widget_get_can_default (long /*int*/ widget) {
 	lock.lock();
@@ -14025,7 +14026,7 @@ public static final boolean gtk_widget_get_child_visible (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.0 deprecated] */
 public static final native long /*int*/ _gtk_widget_get_default_style();
 public static final long /*int*/ gtk_widget_get_default_style() {
 	lock.lock();
@@ -14045,7 +14046,7 @@ public static final int gtk_widget_get_events(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native long /*int*/ _gtk_widget_get_window (long /*int*/ widget);
 public static final long /*int*/ gtk_widget_get_window (long /*int*/ widget) {
 	lock.lock();
@@ -14056,7 +14057,7 @@ public static final long /*int*/ gtk_widget_get_window (long /*int*/ widget) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  */
 public static final native long /*int*/ _gtk_widget_get_modifier_style(long /*int*/ widget);
@@ -14068,7 +14069,7 @@ public static final long /*int*/ gtk_widget_get_modifier_style(long /*int*/ widg
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic  */
+/** @param widget cast=(GtkWidget *)  */
 public static final native boolean _gtk_widget_get_mapped(long /*int*/ widget);
 public static final boolean gtk_widget_get_mapped(long /*int*/ widget) {
 	lock.lock();
@@ -14109,7 +14110,6 @@ public static final long /*int*/ gtk_widget_get_parent_window(long /*int*/ widge
 	}
 }
 /**
- * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param allocation cast=(GtkAllocation *),flags=no_in
  * */
@@ -14152,7 +14152,7 @@ public static final long /*int*/ gtk_widget_get_style_context(long /*int*/ widge
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  */
 public static final native long /*int*/ _gtk_widget_get_style(long /*int*/ widget);
@@ -14188,7 +14188,7 @@ public static final long /*int*/ gtk_widget_get_toplevel (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native long /*int*/ _gtk_widget_get_tooltip_text (long /*int*/ widget);
 public static final long /*int*/ gtk_widget_get_tooltip_text (long /*int*/ widget) {
 	lock.lock();
@@ -14208,7 +14208,7 @@ public static final void gtk_widget_grab_focus(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_has_focus(long /*int*/ widget);
 public static final boolean gtk_widget_has_focus(long /*int*/ widget) {
        lock.lock();
@@ -14242,7 +14242,7 @@ public static final void gtk_widget_input_shape_combine_region(long /*int*/ widg
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.22 deprecated]
  * @param widget cast=(GtkWidget *)
  */
 public static final native boolean _gtk_widget_is_composited(long /*int*/ widget);
@@ -14288,7 +14288,7 @@ public static final boolean gtk_widget_mnemonic_activate(long /*int*/ widget, bo
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  * @param color cast=(GdkColor *),flags=no_out
@@ -14303,7 +14303,7 @@ public static final void gtk_widget_modify_base(long /*int*/ widget, int state, 
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  * @param color cast=(GdkColor *),flags=no_out
@@ -14318,7 +14318,7 @@ public static final void gtk_widget_modify_bg(long /*int*/ widget, int state, Gd
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param pango_font_descr cast=(PangoFontDescription *)
  */
@@ -14332,7 +14332,7 @@ public static final void gtk_widget_modify_font(long /*int*/ widget, long /*int*
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param style cast=(GtkRcStyle *)
  */
@@ -14462,7 +14462,10 @@ public static final void gtk_widget_set_default_direction(int dir) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param can_default cast=(gboolean)
+ */
 public static final native void _gtk_widget_set_can_default(long /*int*/ widget, boolean can_default);
 public static final void gtk_widget_set_can_default(long /*int*/ widget, boolean can_default) {
 	lock.lock();
@@ -14482,17 +14485,23 @@ public static final void gtk_widget_queue_draw(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native boolean _gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus);
-public static final boolean gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus) {
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param can_focus cast=(gboolean)
+ */
+public static final native void _gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus);
+public static final void gtk_widget_set_can_focus(long /*int*/ widget, boolean can_focus) {
 	lock.lock();
 	try {
-		return _gtk_widget_set_can_focus(widget,can_focus);
+		_gtk_widget_set_can_focus(widget,can_focus);
 	} finally {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param mapped cast=(gboolean)
+ */
 public static final native void _gtk_widget_set_mapped(long /*int*/ widget, boolean mapped);
 public static final void gtk_widget_set_mapped(long /*int*/ widget, boolean mapped) {
 	lock.lock();
@@ -14502,7 +14511,10 @@ public static final void gtk_widget_set_mapped(long /*int*/ widget, boolean mapp
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param visible cast=(gboolean)
+ */
 public static final native void _gtk_widget_set_visible(long /*int*/ widget, boolean visible);
 public static final void gtk_widget_set_visible(long /*int*/ widget, boolean visible) {
 	lock.lock();
@@ -14525,7 +14537,10 @@ public static final void gtk_widget_set_direction(long /*int*/ widget, int dir) 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param receives_default cast=(gboolean)
+ */
 public static final native void _gtk_widget_set_receives_default(long /*int*/ widget, boolean receives_default);
 public static final void gtk_widget_set_receives_default(long /*int*/ widget, boolean receives_default) {
 	lock.lock();
@@ -14642,7 +14657,7 @@ public static final void gtk_widget_set_size_request(long /*int*/ widget, int wi
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  */
@@ -14679,7 +14694,7 @@ public static final void gtk_widget_size_allocate(long /*int*/ widget, GtkAlloca
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param requisition cast=(GtkRequisition *),flags=no_in
  */
@@ -14693,7 +14708,7 @@ public static final void gtk_widget_size_request(long /*int*/ widget, GtkRequisi
 	}
 }
 /**
- * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
  * @param allocation cast=(GtkAllocation *),flags=no_out
  */
 public static final native void _gtk_widget_set_allocation(long /*int*/ widget, GtkAllocation allocation);
@@ -15084,7 +15099,6 @@ public static final void gtk_window_set_opacity(long /*int*/ window, double opac
 	}
 }
 /**
- * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param tip_text cast=(const gchar *)
  */
