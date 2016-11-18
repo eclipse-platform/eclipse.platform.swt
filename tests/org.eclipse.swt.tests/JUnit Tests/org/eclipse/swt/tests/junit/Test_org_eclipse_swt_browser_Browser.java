@@ -16,9 +16,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationAdapter;
@@ -719,9 +721,38 @@ public void test_evaluate_string() {
  * Only wait till success. Otherwise timeout after 3 seconds.
  */
 @Test
-public void test_evaluate_number() {
-	setTitle("test_evalute_number");
+public void test_evaluate_number_normal() {
+	setTitle("test_evaluate_number_normal");
+	Double testNum = 123.0;
+	boolean passed = evaluate_number_helper(testNum);
+	assertTrue(passed);
+}
 
+/**
+ * Test the evaluate() api that returns a number (Double). Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_number_negative() {
+	setTitle("test_evaluate_number_negative");
+	Double testNum = -123.0;
+	boolean passed = evaluate_number_helper(testNum);
+	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that returns a number (Double). Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_number_big() {
+	setTitle("test_evaluate_number_big");
+	Double testNum = 10000000000.0;
+	boolean passed = evaluate_number_helper(testNum);
+	assertTrue(passed);
+}
+
+boolean evaluate_number_helper(Double testNum) {
 	final AtomicReference<Double> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -729,7 +760,7 @@ public void test_evaluate_number() {
 		}
 		@Override
 		public void completed(ProgressEvent event) {
-			Double evalResult = (Double) browser.evaluate("return 123");
+			Double evalResult = (Double) browser.evaluate("return " +testNum.toString());
 			returnValue.set(evalResult);
 			if (browser_debug)
 				System.out.println("Node value: "+ evalResult);
@@ -739,7 +770,6 @@ public void test_evaluate_number() {
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
 	boolean passed = false;
-	Double testNum = 123.0;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if (testNum.equals(returnValue.get())) {
@@ -747,7 +777,7 @@ public void test_evaluate_number() {
 			break;
 		}
 	}
-	assertTrue(passed);
+	return passed;
 }
 
 /**
@@ -780,6 +810,126 @@ public void test_evaluate_boolean() {
 		runLoopTimer(waitMS);
 		if (testbool.equals(returnValue.get())) {
 			passed = true;
+			break;
+		}
+	}
+	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that returns null. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_null() {
+	setTitle("test_evalute_null");
+
+	 // Boolen only used as dummy placeholder so the object is not null.
+	final AtomicReference<Object> returnValue = new AtomicReference<>(new Boolean(true));
+	System.out.println(returnValue);
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Object evalResult = browser.evaluate("return null");
+			returnValue.set(evalResult);
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	boolean passed = false;
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (returnValue.get() == null) {
+			passed = true;
+			break;
+		}
+	}
+	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that throws the invalid return value exception. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_invalid_return_value() {
+	setTitle("test_evaluate_invalid_return_value");
+
+	final AtomicInteger exception = new AtomicInteger(-1);
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {}
+		@Override
+		public void completed(ProgressEvent event) {
+			try {
+			browser.evaluate("return new Date()"); //Date is not supoprted as return value.
+			} catch (SWTException e) {
+				exception.set(e.code);
+			}
+		}
+	});
+
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	boolean passed = false;
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (exception.get() != -1) {
+			if (exception.get() == SWT.ERROR_INVALID_RETURN_VALUE) {
+				passed = true;
+			} else if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
+				System.err.println("SWT Warning: test_evaluate_invalid_return_value threw wrong exception code."
+						+ " Expected ERROR_INVALID_RETURN_VALUE but got ERROR_FAILED_EVALUATE");
+				passed = true;
+				// Webkit1 is known to throw the wrong exception.
+			} else  {
+				System.err.println("test_evaluate_invalid_return_value - Invalid exception code : " + exception.get());
+			}
+			break;
+		}
+	}
+	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that throws the evaluation failed exception. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_evaluation_failed_exception() {
+	setTitle("test_evaluate_evaluation_failed_exception");
+
+	final AtomicInteger exception = new AtomicInteger(-1);
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {}
+		@Override
+		public void completed(ProgressEvent event) {
+			try {
+			browser.evaluate("return runSomeUndefinedFunctionInJavaScriptWhichCausesUndefinedError()");
+			} catch (SWTException e) {
+				exception.set(e.code);
+			}
+		}
+	});
+
+	browser.setText("<html><body>HelloWorld</body></html>");
+	shell.open();
+	boolean passed = false;
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (exception.get() != -1) {
+			if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
+				passed = true;
+			} else  {
+				System.err.println("test_evaluate_invalid_return_value - Invalid exception code");
+			}
 			break;
 		}
 	}
