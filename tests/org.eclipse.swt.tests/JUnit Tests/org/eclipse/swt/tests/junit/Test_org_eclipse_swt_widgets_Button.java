@@ -78,17 +78,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	};
-	
+
 	try {
 		button.addSelectionListener(null);
 		fail("No exception thrown for addSelectionListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	button.addSelectionListener(listener);
 	button.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
-	
+
 	try {
 		button.removeSelectionListener(null);
 		fail("No exception thrown for removeSelectionListener with null argument");
@@ -270,7 +270,7 @@ public void test_consistency_MenuDetect () {
     tearDown();
     setUp(SWT.ARROW);
     consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    
+
 }
 
 @Test

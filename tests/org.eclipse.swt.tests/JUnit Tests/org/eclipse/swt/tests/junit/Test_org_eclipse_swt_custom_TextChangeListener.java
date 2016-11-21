@@ -137,7 +137,7 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 		}
 	};
 	content.addTextChangeListener(listener);
-	
+
 	boolean exceptionHandled = false;
 	verify = 0;
 	styledText.setText("testing");
@@ -192,7 +192,7 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 	verify = 0;
 	styledText.setText("L1\r\n");
 	verify = 10;
-	try {styledText.replaceTextRange(3, 1, "");} 
+	try {styledText.replaceTextRange(3, 1, "");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
 	}
@@ -387,7 +387,7 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 	};
 	content.addTextChangeListener(listener);
 
-	boolean exceptionHandled = false;	
+	boolean exceptionHandled = false;
 	verify = 1;
 	styledText.setText("testing");
 	styledText.replaceTextRange(0, 0, "\n");
@@ -431,7 +431,7 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 
 	verify = 10;
 	styledText.setText("L1\r\n");
-	try {styledText.replaceTextRange(3, 1, "");} 
+	try {styledText.replaceTextRange(3, 1, "");}
 	catch (IllegalArgumentException ex) {
 		exceptionHandled = true;
 	}
@@ -537,7 +537,7 @@ public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 		}
 	};
 	content.addTextChangeListener(listener);
-	
+
 	verify = 1;
 	styledText.setText("testing");
 
@@ -546,10 +546,10 @@ public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 
 	verify = 3;
 	styledText.setText("a");
-	
+
 	verify = 4;
 	try {styledText.setText(null);}
-	catch (IllegalArgumentException ex) {assertTrue(":4:", true);}	
+	catch (IllegalArgumentException ex) {assertTrue(":4:", true);}
 	content.removeTextChangeListener(listener);
 }
 }

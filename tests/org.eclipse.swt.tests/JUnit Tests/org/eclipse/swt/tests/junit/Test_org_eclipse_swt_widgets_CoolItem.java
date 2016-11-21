@@ -46,10 +46,10 @@ public void setUp() {
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	new CoolItem(coolBar, 0);
-	
+
 	try {
 		new CoolItem(null, 0);
-		fail("No exception thrown for parent == null");	
+		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {
 	}
@@ -76,7 +76,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarII() {
 	assertEquals(2, coolBar.getItemCount());
 	coolItem = new CoolItem(coolBar, 0, 0);
 	assertEquals(3, coolBar.getItemCount());
-	assertEquals(coolItem, coolBar.getItem(0));	
+	assertEquals(coolItem, coolBar.getItem(0));
 }
 
 @Test
@@ -108,12 +108,12 @@ public void test_getBounds() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foo");
 	coolItem.setControl(button);
-	
+
 	Rectangle rect = coolItem.getBounds();
 	Point size = coolItem.getSize();
 	assertEquals(size.x, rect.width);
 	assertEquals(size.y, rect.height);
-	
+
 	coolItem.setSize(25, 25);
 	rect = coolItem.getBounds();
 	coolItem.setSize(100, 25);
@@ -154,7 +154,7 @@ public void test_getPreferredSize() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foobar");
 	coolItem.setControl(button);
-	
+
 	Point pref = coolItem.getPreferredSize();
 	coolItem.setPreferredSize(pref);
 	assertEquals(pref, coolItem.getPreferredSize());
@@ -167,7 +167,7 @@ public void test_getSize() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foo");
 	coolItem.setControl(button);
-	
+
 	Point size = coolItem.getSize();
 	Rectangle rect = coolItem.getBounds();
 	assertEquals(rect.width, size.x);
@@ -179,21 +179,21 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
 	coolItem.setControl(null);
-	
+
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foobar");
-	
+
 	Point size = coolItem.getSize();
 	coolItem.setControl(button);
 	Point size2 = coolItem.getSize();
 	assertTrue(size2.x > size.x);
-	
+
 	if (!MINIMAL_CONFORMANCE) {
 		size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		size2 = coolItem.computeSize(size.x, size.y);
 		assertEquals(size2, coolItem.getSize());
 	}
-	
+
 	button = new Button(coolBar, SWT.PUSH);
 	button.dispose();
 	try {
@@ -202,7 +202,7 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	button = new Button(shell, SWT.PUSH);
 	try {
 		coolItem.setControl(button);
@@ -219,7 +219,7 @@ public void test_setPreferredSizeII() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foobar");
 	coolItem.setControl(button);
-	
+
 	Point size = coolItem.getSize();
 	coolItem.setPreferredSize(size);
 	assertEquals(size.x, coolItem.getSize().x);
@@ -234,7 +234,7 @@ public void test_setPreferredSizeLorg_eclipse_swt_graphics_Point() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foobar");
 	coolItem.setControl(button);
-	
+
 	Point size = new Point(50, 30);
 	coolItem.setPreferredSize(size);
 	Point size2 = coolItem.getPreferredSize();
@@ -257,7 +257,7 @@ public void test_setSizeII() {
 	Point smallest = coolItem.getSize();
 	coolItem.setSize(1, 1);
 	assertEquals(smallest, coolItem.getSize());
-	
+
 	Rectangle rect = coolItem.getBounds();
 	Point size = coolItem.getSize();
 	coolItem.setSize(rect.width, rect.height);
@@ -271,7 +271,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	Button button = new Button(coolBar, SWT.PUSH);
 	button.setText("foo");
 	coolItem.setControl(button);
-	
+
 	Point size = new Point(50, 50);
 	coolItem.setSize(size);
 	Point size2 = coolItem.getSize();

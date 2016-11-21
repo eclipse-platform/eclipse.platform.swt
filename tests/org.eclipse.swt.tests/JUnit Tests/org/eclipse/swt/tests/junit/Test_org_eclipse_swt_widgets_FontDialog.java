@@ -63,13 +63,13 @@ public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 	FontData [] fontData = new FontData [1];
 	fontData [0] = new FontData ();
 
-	assertNull(fontDialog.getFontList());	
-		
+	assertNull(fontDialog.getFontList());
+
 	fontDialog.setFontList(fontData);
 	assertArrayEquals(fontDialog.getFontList(), fontData);
 
 	fontDialog.setFontList(null);
-	assertNull(fontDialog.getFontList());	
+	assertNull(fontDialog.getFontList());
 }
 
 @Test
@@ -77,7 +77,7 @@ public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(255, 0, 0);
 	fontDialog.setRGB(rgb);
 	RGB rgb2 = fontDialog.getRGB();
-	assertEquals(rgb, rgb2);	
+	assertEquals(rgb, rgb2);
 }
 
 /* custom */

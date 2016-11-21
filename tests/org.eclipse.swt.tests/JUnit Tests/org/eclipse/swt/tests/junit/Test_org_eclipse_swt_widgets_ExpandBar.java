@@ -46,14 +46,14 @@ public void setUp() {
 @Test
 public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	final boolean[] listenerCalled = new boolean[] {false};
-	ExpandListener expandListener = new ExpandListener() {		
+	ExpandListener expandListener = new ExpandListener() {
 		@Override
 		public void itemCollapsed(ExpandEvent e) {
-			listenerCalled[0] = true;			
+			listenerCalled[0] = true;
 		}
 		@Override
 		public void itemExpanded(ExpandEvent e) {
-			listenerCalled[0] = true;			
+			listenerCalled[0] = true;
 		}
 	};
 
@@ -62,7 +62,7 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 		fail("No exception thrown for addExpandListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	expandBar.addExpandListener(expandListener);
 	expandBar.notifyListeners(SWT.Expand, new Event());
 	assertTrue(":a:", listenerCalled[0]);
@@ -70,13 +70,13 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	listenerCalled[0] = false;
 	expandBar.notifyListeners(SWT.Collapse, new Event());
 	assertTrue(":b:", listenerCalled[0]);
-	
+
 	try {
 		expandBar.removeExpandListener(null);
 		fail("No exception thrown for removeExpandListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	listenerCalled[0] = false;
 	expandBar.removeExpandListener(expandListener);
 	expandBar.notifyListeners(SWT.Expand, new Event());
@@ -136,7 +136,7 @@ public void test_getItems() {
 	  	items[i] = new ExpandItem(expandBar, 0);
 	}
 	assertArrayEquals(items, expandBar.getItems());
-	
+
 	expandBar.getItems()[0].dispose();
 	assertArrayEquals(new ExpandItem[] {items[1], items[2], items[3], items[4]}, expandBar.getItems());
 
@@ -157,14 +157,14 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 	for (int i = 0; i < number; i++) {
 		assertTrue(":a:" + i, expandBar.indexOf(items[i] ) == i);
 	}
-	
+
 	items = new ExpandItem[number];
 	for (int i = 0; i < number; i++) {
 	  	items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i < number; i++) {
 		try {
-			expandBar.indexOf(null);		
+			expandBar.indexOf(null);
 			fail("No exception thrown for expandItem == null");
 		}
 		catch (IllegalArgumentException e) {
@@ -176,10 +176,10 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 public void test_setSpacingI() {
 	expandBar.setSpacing(0);
 	assertEquals(expandBar.getSpacing(), 0);
-	
+
 	expandBar.setSpacing(3);
 	assertEquals(expandBar.getSpacing(), 3);
-	
+
 	expandBar.setSpacing(-4);
 	assertEquals(expandBar.getSpacing(), 3);
 }

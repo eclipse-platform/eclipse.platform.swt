@@ -41,7 +41,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 		fail("No exception thrown for null parent");
 	}
 	catch (IllegalArgumentException e) {
-	}		
+	}
 }
 
 @Test

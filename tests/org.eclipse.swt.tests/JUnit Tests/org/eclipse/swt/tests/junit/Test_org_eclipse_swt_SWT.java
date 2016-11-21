@@ -109,7 +109,7 @@ public void test_getMessageLjava_lang_String() {
 	assertTrue (
 		"invalid key did not return as itself",
 		"_NOT_FOUND_IN_PROPERTIES_".equals(SWT.getMessage("_NOT_FOUND_IN_PROPERTIES_")));
-		
+
 }
 
 @Test

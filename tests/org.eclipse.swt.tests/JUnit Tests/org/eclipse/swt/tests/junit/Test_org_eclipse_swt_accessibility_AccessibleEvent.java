@@ -42,7 +42,7 @@ public void test_ConstructorLjava_lang_Object() {
 	// The source object should be a widget's accessible.
 	AccessibleEvent event = new AccessibleEvent(shell.getAccessible());
 	assertNotNull(event);
-	
+
 	// Test with some other object also.
 	event = new AccessibleEvent(Integer.valueOf(5));
 	assertNotNull(event);

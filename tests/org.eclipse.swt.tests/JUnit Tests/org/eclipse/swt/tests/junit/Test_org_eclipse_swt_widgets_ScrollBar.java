@@ -100,7 +100,7 @@ public void test_isEnabled() {
 @Test
 public void test_isVisible() {
 	scrollBar.setVisible(true);
-	assertTrue(scrollBar.isVisible()); 
+	assertTrue(scrollBar.isVisible());
 	scrollBar.setVisible(false);
 	assertTrue(!scrollBar.isVisible());
 }
@@ -121,7 +121,7 @@ public void test_setIncrementI() {
 	{
 		scrollBar.setIncrement(cases[i]);
 		assertEquals(cases[i], scrollBar.getIncrement());
-	} 
+	}
 
 	scrollBar.setIncrement(25);
 	scrollBar.setIncrement(0); // setting to 0 fails silently
@@ -161,7 +161,7 @@ public void test_setPageIncrementI(){
 	{
 		scrollBar.setPageIncrement(cases[i]);
 		assertEquals(scrollBar.getPageIncrement(), cases[i]);
-	} 
+	}
 
 	scrollBar.setPageIncrement(25);
 	scrollBar.setPageIncrement(0); // setting to 0 fails silently

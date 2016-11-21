@@ -39,7 +39,7 @@ import org.junit.Test;
  * @see org.eclipse.swt.graphics.ImageData
  */
 public class Test_org_eclipse_swt_graphics_ImageData {
-	
+
 @Before
 public void setUp() {
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
@@ -70,7 +70,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 		fail("No exception thrown for unsupported depth");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
 		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB(0, 0, 0)));
@@ -80,7 +80,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 @Test
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	byte[] validData = new byte[] {0, 0x4f, 0x4f, 0};
-	
+
 	try {
 		new ImageData(-1, 1, 1, new PaletteData(new RGB(0, 0, 0)), 1, validData);
 		fail("No exception thrown for width < 0");
@@ -134,13 +134,13 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 		fail("No exception thrown for unsupported depth");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// verify all valid depths
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
 		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB(0, 0, 0)), 1, validData);
 	}
-	
+
 	// verify no divide by zero exception if scanlinePad == 0
 	try {
 		new ImageData(1, 1, 8, new PaletteData(new RGB(0, 0, 0)), 0, validData);
@@ -156,14 +156,14 @@ public void test_ConstructorLjava_io_InputStream() {
 			fail("No exception thrown for InputStream == null");
 		} catch (IllegalArgumentException|IOException e) {
 		}
-		
-		
+
+
 		try (InputStream stream = SwtTestUtil.class.getResourceAsStream("empty.txt")){
 			new ImageData(stream);
 			fail("No exception thrown for invalid InputStream");
 		} catch (SWTException|IOException e) {
 		}
-	
+
 		int numFormats = SwtTestUtil.imageFormats.length;
 		String fileName = SwtTestUtil.imageFilenames[0];
 		for (int i=0; i<numFormats; i++) {
@@ -215,7 +215,7 @@ public void test_clone() {
 @Test
 public void test_getAlphaII() {
 	int value;
-	
+
 	assertEquals(":a:", 255, imageData.getAlpha(0, 0));
 	value = 0xAA;
 	imageData.setAlpha(0, 0, value);
@@ -251,11 +251,11 @@ public void test_getAlphaII() {
 @Test
 public void test_getAlphasIII$BI() {
 	byte value;
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
 	byte[] alphaData = new byte[SIZE];
-	
+
 	imageData.getAlphas(0, 1, GET_WIDTH, alphaData, OFFSET);
 	for (int i = 0; i < alphaData.length; i ++) {
 		if (i < OFFSET) {
@@ -273,12 +273,12 @@ public void test_getAlphasIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":c:", 0, alphaData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":d:", values[i-OFFSET], alphaData[i]);	
+			assertEquals(":d:", values[i-OFFSET], alphaData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":e:", 0, alphaData[i]);
 		}
 	}
-	
+
 	// exception cases
 	try {
 		imageData.getAlphas(0, 1, GET_WIDTH*GET_WIDTH, alphaData, OFFSET);
@@ -320,13 +320,13 @@ public void test_getAlphasIII$BI() {
 		fail("No exception thrown for getWidth < 0");
 	} catch (IllegalArgumentException e) {
 		assertSWTProblem("Incorrect exception thrown for getWidth < 0", SWT.ERROR_INVALID_ARGUMENT, e);
-	}	
+	}
 }
 
 @Test
 public void test_getPixelII() {
 	int value;
-	
+
 	assertEquals(":a:", 0, imageData.getPixel(0, 0));
 	value = 0xAA;
 	imageData.setPixel(0, 0, value);
@@ -361,7 +361,7 @@ public void test_getPixelII() {
 	int height = 3;
 	int depth = 4;
 	byte pixelValue = 1;
-	byte[] data = {(byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4)}; 
+	byte[] data = {(byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4), (byte) ((pixelValue << 4) + pixelValue), (byte) (pixelValue << 4)};
 	imageData = new ImageData(width, height, depth, new PaletteData(new RGB(0, 0, 255), new RGB(111, 111, 111)), 1, data);
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
@@ -373,7 +373,7 @@ public void test_getPixelII() {
 
 @Test
 public void test_getPixelsIII$BI() {
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
 	byte[] pixelData = new byte[SIZE];
@@ -412,7 +412,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":f:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":g:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":g:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":h:", 0, pixelData[i]);
 		}
@@ -432,7 +432,7 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":j:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":k:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":k:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":l:", 0, pixelData[i]);
 		}
@@ -452,12 +452,12 @@ public void test_getPixelsIII$BI() {
 		if (i < OFFSET) {
 			assertEquals(":n:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":o:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":o:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":p:", 0, pixelData[i]);
 		}
 	}
-	
+
 	// exception cases
 	try {
 		imageData.getPixels(0, 1, GET_WIDTH*GET_WIDTH, pixelData, OFFSET);
@@ -500,7 +500,7 @@ public void test_getPixelsIII$BI() {
 	} catch (IllegalArgumentException e) {
 		assertSWTProblem("Incorrect exception thrown for getWidth < 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
-	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));	
+	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 	try {
 		imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
 		fail("No exception thrown for invalid depth");
@@ -511,7 +511,7 @@ public void test_getPixelsIII$BI() {
 
 @Test
 public void test_getPixelsIII$II() {
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
 	int[] pixelData = new int[SIZE];
@@ -550,7 +550,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":f:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":g:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":g:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":h:", 0, pixelData[i]);
 		}
@@ -570,7 +570,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":j:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":k:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":k:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":l:", 0, pixelData[i]);
 		}
@@ -590,7 +590,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":n:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":o:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":o:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":p:", 0, pixelData[i]);
 		}
@@ -610,7 +610,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":r:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":s:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":s:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":t:", 0, pixelData[i]);
 		}
@@ -630,7 +630,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":v:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":w:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":w:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":x:", 0, pixelData[i]);
 		}
@@ -650,7 +650,7 @@ public void test_getPixelsIII$II() {
 		if (i < OFFSET) {
 			assertEquals(":z:", 0, pixelData[i]);
 		} else if (i < OFFSET + values.length) {
-			assertEquals(":aa:", values[i-OFFSET], pixelData[i]);	
+			assertEquals(":aa:", values[i-OFFSET], pixelData[i]);
 		} else if (i < OFFSET+GET_WIDTH) {
 			assertEquals(":ab:", 0, pixelData[i]);
 		}
@@ -710,7 +710,7 @@ public void test_getRGBs() {
 
 @Test
 public void test_getTransparencyMask() {
-//	Bug 71472 - transparency mask should be null	
+//	Bug 71472 - transparency mask should be null
 //	assertNull(":a:", imageData.getTransparencyMask());
 
 	try (InputStream stream = getClass().getResourceAsStream(SwtTestUtil.transparentImageFilenames[0])) {
@@ -721,12 +721,12 @@ public void test_getTransparencyMask() {
 		image.dispose();
 	} catch (IOException e) {}
 
-//	Bug 71472 - transparency mask should be null	
+//	Bug 71472 - transparency mask should be null
 /*	image = new Image(Display.getDefault(), getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]));
 	imageData = image.getImageData();
 	maskData = imageData.getTransparencyMask();
 	assertNull(":c:", maskData);
-*/	
+*/
 }
 
 @Test
@@ -739,7 +739,7 @@ public void test_getTransparencyType() {
 		assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
 		image.dispose();
 	} catch (IOException e) {}
-	
+
 	try (InputStream stream = getClass().getResourceAsStream(SwtTestUtil.imageFilenames[0] + '.' + SwtTestUtil.imageFormats[SwtTestUtil.imageFormats.length-1])) {
 		Image image = new Image(Display.getDefault(), stream);
 		imageData = image.getImageData();
@@ -753,25 +753,25 @@ public void test_scaledToII() {
 	final int imageDimension = 8;
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	byte[] pixelData = new byte[(imageDimension*imageDimension) / 8];
-	
+
 	pixelData[0] = 0x4F;
 	imageData = new ImageData(imageDimension, imageDimension, 1, new PaletteData(rgbs), 1, pixelData);
 
 	ImageData scaledImageData = imageData.scaledTo(-imageDimension, -imageDimension);
 	byte[] scaledPixelData = new byte[imageDimension];
-	scaledImageData.getPixels(0, imageDimension - 1, scaledPixelData.length, scaledPixelData, 0);	
+	scaledImageData.getPixels(0, imageDimension - 1, scaledPixelData.length, scaledPixelData, 0);
 	byte[] expectedPixelData = new byte[] {0x1, 0x1, 0x1, 0x1, 0, 0, 0x1, 0};
 	assertArrayEquals(":a:", expectedPixelData, scaledPixelData);
 
 	scaledImageData = imageData.scaledTo(imageDimension * 10, imageDimension);
 	scaledPixelData = new byte[imageDimension * 10];
-	scaledImageData.getPixels(0, 0, scaledPixelData.length, scaledPixelData, 0);	
+	scaledImageData.getPixels(0, 0, scaledPixelData.length, scaledPixelData, 0);
 	assertEquals(":b:", 0, scaledPixelData[0]);
 	assertEquals(":c:", 0, scaledPixelData[1]);
 
 	scaledImageData = imageData.scaledTo(imageDimension, imageDimension * 10);
 	scaledPixelData = new byte[imageDimension];
-	scaledImageData.getPixels(0, 0, scaledPixelData.length, scaledPixelData, 0);	
+	scaledImageData.getPixels(0, 0, scaledPixelData.length, scaledPixelData, 0);
 	expectedPixelData = new byte[] {0, 0x1, 0, 0, 0x1, 0x1, 0x1, 0x1};
 	assertArrayEquals(":d:", expectedPixelData, scaledPixelData);
 }
@@ -779,7 +779,7 @@ public void test_scaledToII() {
 @Test
 public void test_setAlphaIII() {
 	int value;
-	
+
 	value = 0xAA;
 	imageData.setAlpha(0, 0, value);
 	assertEquals(":a:", value, imageData.getAlpha(0, 0));
@@ -814,10 +814,10 @@ public void test_setAlphaIII() {
 @Test
 public void test_setAlphasIII$BI() {
 	byte value;
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int OFFSET = 1;
 	byte[] alphaData = new byte[SIZE];
-	
+
 	value = (byte) 0xAA;
 	byte[] values = new byte[] {value, (byte) (value+1), (byte) (value+2), (byte) (value+3), (byte) (value+4)};
 	imageData.setAlphas(0, 1, values.length - OFFSET, values, OFFSET);
@@ -829,7 +829,7 @@ public void test_setAlphasIII$BI() {
 			assertEquals(":b:", 0, alphaData[i]);
 		}
 	}
-	
+
 	// exception cases
 	try {
 		imageData.setAlphas(0, 1, IMAGE_DIMENSION*IMAGE_DIMENSION, alphaData, OFFSET);
@@ -871,13 +871,13 @@ public void test_setAlphasIII$BI() {
 		fail("No exception thrown for putWidth < 0");
 	} catch (IllegalArgumentException e) {
 		assertSWTProblem("Incorrect exception thrown for putWidth < 0", SWT.ERROR_INVALID_ARGUMENT, e);
-	}	
+	}
 }
 
 @Test
 public void test_setPixelIII() {
 	int value;
-	
+
 	value = 0xAA;
 	imageData.setPixel(0, 0, value);
 	assertEquals(":a:", value, imageData.getPixel(0, 0));
@@ -911,7 +911,7 @@ public void test_setPixelIII() {
 
 @Test
 public void test_setPixelsIII$BI() {
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int OFFSET = 1;
 	byte[] pixelData = new byte[SIZE];
 
@@ -966,7 +966,7 @@ public void test_setPixelsIII$BI() {
 			assertEquals(":h:", 0, pixelData[i]);
 		}
 	}
-	
+
 	// exception cases
 	try {
 		imageData.setPixels(0, 1, IMAGE_DIMENSION*IMAGE_DIMENSION, pixelData, OFFSET);
@@ -1009,7 +1009,7 @@ public void test_setPixelsIII$BI() {
 	} catch (IllegalArgumentException e) {
 		assertSWTProblem("Incorrect exception thrown for putWidth < 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
-	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));	
+	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 	try {
 		imageData.setPixels(0, 1, IMAGE_DIMENSION, pixelData, OFFSET);
 		fail("No exception thrown for invalid depth");
@@ -1020,7 +1020,7 @@ public void test_setPixelsIII$BI() {
 
 @Test
 public void test_setPixelsIII$II() {
-	final int SIZE = 20; 
+	final int SIZE = 20;
 	final int OFFSET = 1;
 	int[] pixelData = new int[SIZE];
 

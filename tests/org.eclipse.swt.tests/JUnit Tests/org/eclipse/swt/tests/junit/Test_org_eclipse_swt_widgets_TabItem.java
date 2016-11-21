@@ -51,23 +51,23 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	TabItem tItem = new TabItem(tabFolder, SWT.NULL, 0);
-	
+
 	assertTrue(":a:", tabFolder.getItems()[0] == tItem);
-	
-	tItem = new TabItem(tabFolder, SWT.NULL, 1);	
+
+	tItem = new TabItem(tabFolder, SWT.NULL, 1);
 	assertTrue(":b:", tabFolder.getItems()[1] == tItem);
-				
-	tItem = new TabItem(tabFolder, SWT.NULL, 1);	
+
+	tItem = new TabItem(tabFolder, SWT.NULL, 1);
 	assertTrue(":c:", tabFolder.getItems()[1] == tItem);
 
 	try {
-		new TabItem(tabFolder, SWT.NULL, -1);	
+		new TabItem(tabFolder, SWT.NULL, -1);
 		fail("No exception thrown");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	finally {
-		assertTrue(":d:", tabFolder.getItems()[1] == tItem);			
+		assertTrue(":d:", tabFolder.getItems()[1] == tItem);
 	}
 	try {
 		new TabItem(tabFolder, SWT.NULL, tabFolder.getItemCount() + 1);
@@ -95,7 +95,7 @@ public void test_getParent() {
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	Control control = new Table(tabFolder, SWT.NULL);
 
-	assertTrue(":a: ", tabItem.getControl() == null);	
+	assertTrue(":a: ", tabItem.getControl() == null);
 
 	tabItem.setControl(control);
 	assertTrue(":b: ", tabItem.getControl() == control);

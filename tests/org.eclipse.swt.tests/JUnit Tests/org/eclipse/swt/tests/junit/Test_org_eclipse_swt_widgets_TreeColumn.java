@@ -34,8 +34,8 @@ public class Test_org_eclipse_swt_widgets_TreeColumn extends Test_org_eclipse_sw
 @Before
 public void setUp() {
 	super.setUp();
-	tree = new Tree(shell, SWT.SINGLE);		
-	treeColumn = new TreeColumn(tree, SWT.NULL);	
+	tree = new Tree(shell, SWT.SINGLE);
+	treeColumn = new TreeColumn(tree, SWT.NULL);
 	setWidget(treeColumn);
 }
 
@@ -76,7 +76,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeII() {
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	try {
-		treeColumn.addSelectionListener(null);		
+		treeColumn.addSelectionListener(null);
 		fail("No exception thrown for selectionListener == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -86,7 +86,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 @Test
 public void test_getWidth() {
 	int testWidth = 42;
-	
+
 //	try {
 //		treeColumn.setWidth(-1);
 //		assertTrue("No exception thrown", false);
@@ -114,11 +114,11 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 		@Override
 		public void widgetSelected(SelectionEvent e) {}};
 
-	treeColumn.removeSelectionListener(listener);	
-	treeColumn.addSelectionListener(listener);		
-	treeColumn.removeSelectionListener(listener);	
+	treeColumn.removeSelectionListener(listener);
+	treeColumn.addSelectionListener(listener);
+	treeColumn.removeSelectionListener(listener);
 	try {
-		treeColumn.removeSelectionListener(null);		
+		treeColumn.removeSelectionListener(null);
 		fail("No exception thrown for selectionListener == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -128,7 +128,7 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 @Test
 public void test_setAlignmentI() {
 	TreeColumn column2;
-	
+
 	assertTrue(":a:", treeColumn.getAlignment() == SWT.LEFT);
 
 	treeColumn.setAlignment(-1);
@@ -136,18 +136,18 @@ public void test_setAlignmentI() {
 
 	treeColumn.setAlignment(SWT.RIGHT);
 	assertTrue(
-		":c: Should not be allowed to set alignment of the first column", 
+		":c: Should not be allowed to set alignment of the first column",
 		treeColumn.getAlignment() == SWT.LEFT);
 
 	column2 = new TreeColumn(tree, SWT.NULL);
 	column2.setAlignment(SWT.RIGHT);
 	assertTrue(":d:", column2.getAlignment() == SWT.RIGHT);
-	
+
 	column2.setAlignment(SWT.CENTER);
-	assertTrue(":e:", column2.getAlignment() == SWT.CENTER);	
+	assertTrue(":e:", column2.getAlignment() == SWT.CENTER);
 
 	column2.setAlignment(SWT.LEFT);
-	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);	
+	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);
 }
 
 @Override

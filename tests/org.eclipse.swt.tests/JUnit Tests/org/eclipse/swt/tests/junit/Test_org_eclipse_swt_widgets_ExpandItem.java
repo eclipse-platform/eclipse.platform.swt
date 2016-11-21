@@ -35,7 +35,7 @@ public class Test_org_eclipse_swt_widgets_ExpandItem extends Test_org_eclipse_sw
 public void setUp() {
 	super.setUp();
 	expandBar = new ExpandBar(shell, 0);
-	expandItem = new ExpandItem(expandBar, 0); 
+	expandItem = new ExpandItem(expandBar, 0);
 	setWidget(expandItem);
 }
 
@@ -75,16 +75,16 @@ public void test_getControl() {
 }
 
 @Test
-public void test_getParent() {	
+public void test_getParent() {
 	assertEquals(expandItem.getParent(), expandBar);
 }
 
 @Test
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
-	expandItem.setControl(null);	
+	expandItem.setControl(null);
 	Button button = new Button(expandBar, SWT.PUSH);
 	expandItem.setControl(button);
-	
+
 	button = new Button(expandBar, SWT.PUSH);
 	button.dispose();
 	try {
@@ -93,7 +93,7 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	button = new Button(shell, SWT.PUSH);
 	try {
 		expandItem.setControl(button);

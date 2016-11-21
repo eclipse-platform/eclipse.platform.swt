@@ -140,7 +140,7 @@ public void test_consistency_ChevronMouseSelection() {
 
 class CoolItemSelectionListener extends SelectionAdapter {
 	private Menu menu = null;
-	
+
 	@Override
 	public void widgetSelected(SelectionEvent event) {
 		/**
@@ -158,7 +158,7 @@ class CoolItemSelectionListener extends SelectionAdapter {
 				menu = null;
 				return;
 			}
-			
+
 			/* Get the cool item and convert its bounds to display coordinates. */
 			CoolItem coolItem = (CoolItem) event.widget;
 			Rectangle itemBounds = coolItem.getBounds ();
@@ -166,12 +166,12 @@ class CoolItemSelectionListener extends SelectionAdapter {
 			Point pt = coolBar.toDisplay(new Point (itemBounds.x, itemBounds.y));
 			itemBounds.x = pt.x;
 			itemBounds.y = pt.y;
-			
+
 			/* Get the toolbar from the cool item. */
 			ToolBar toolBar = (ToolBar) coolItem.getControl ();
 			ToolItem[] tools = toolBar.getItems ();
 			int toolCount = tools.length;
-							
+
 			/* Convert the bounds of each tool item to display coordinates,
 			 * and determine which ones are past the bounds of the cool item.
 			 */
@@ -185,7 +185,7 @@ class CoolItemSelectionListener extends SelectionAdapter {
 		  		if (!intersection.equals (toolBounds)) break;
 		  		i++;
 			}
-			
+
 			/* Create a pop-up menu with items for each of the hidden buttons. */
 			menu = new Menu (coolBar);
 			for (int j = i; j < toolCount; j++) {
@@ -194,7 +194,7 @@ class CoolItemSelectionListener extends SelectionAdapter {
 				MenuItem menuItem = new MenuItem (menu, SWT.NONE);
 				menuItem.setText(text);
 			}
-			
+
 			/* Display the pop-up menu at the lower left corner of the arrow button.
 			 * Dispose the menu when the user is done with it.
 			 */

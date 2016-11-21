@@ -33,7 +33,7 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 
 	class ContentImplementation implements StyledTextContent {
 		String textContent = "";
-		
+
 		@Override
 		public void addTextChangeListener(TextChangeListener listener){
 		}
@@ -80,7 +80,7 @@ public class Test_org_eclipse_swt_custom_StyledTextContent {
 	StyledTextContent content = new ContentImplementation();
 	Shell shell;
 	StyledText styledText;
-	
+
 @Before
 public void setUp() {
 	if (SwtTestUtil.isBidi()) XINSET = 2;

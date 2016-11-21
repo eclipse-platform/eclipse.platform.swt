@@ -69,7 +69,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 
 	r1.add(r2);
 	assertEquals("Rectangle add incorrect", new Rectangle(1, 2, 4, 4), r1);
-	
+
 	r1 = new Rectangle(1, 2, 3, 4);
 	r2 = new Rectangle(3, 3, 0, 0);
 	r1.add(r2);
@@ -177,7 +177,7 @@ public void test_hashCode() {
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
-	
+
 	r1.intersect(r2);
 	assertEquals("Rectangle intersect incorrect", new Rectangle(3, 3, 1, 2), r1);
 
@@ -229,7 +229,7 @@ public void test_intersectsIIII() {
 	r2 = new Rectangle(200, 300, 400, 500);
 	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", !r1.intersects(200, 300, 400, 500));
 	assertTrue("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(1, 2, 3, 4));
-	
+
 	r2 = new Rectangle(3, 3, 0, 0);
 	assertTrue("Rectangle(1, 2, 3, 4) should intersect Rectangle(3, 3, 0, 0)", r1.intersects(3, 3, 0, 0));
 	assertTrue("Rectangle(3, 3, 0, 0) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(1, 2, 3, 4));
@@ -256,7 +256,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	r2 = new Rectangle(200, 300, 400, 500);
 	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", !r1.intersects(r2));
 	assertTrue("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(r1));
-	
+
 	r2 = new Rectangle(3, 3, 0, 0);
 	assertTrue("Rectangle(1, 2, 3, 4) should intersect Rectangle(3, 3, 0, 0)", r1.intersects(r2));
 	assertTrue("Rectangle(3, 3, 0, 0) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(r1));
@@ -298,7 +298,7 @@ public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 	assertEquals("Rectangle union incorrect", new Rectangle(1, 2, 4, 4), r1.union(r2));
-	
+
 	r2 = new Rectangle(3, 3, 0, 0);
 	assertEquals("Rectangle union incorrect", new Rectangle(1, 2, 3, 4), r1.union(r2));
 

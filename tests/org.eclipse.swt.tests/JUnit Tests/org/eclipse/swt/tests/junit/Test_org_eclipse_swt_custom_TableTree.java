@@ -66,7 +66,7 @@ public void test_getSelectionCount() {
 		items[i] = new TableTreeItem(tableTree, SWT.NONE);
 	}
 	assertEquals("MULTI: After adding items, but before selecting any", 0, tableTree.getSelectionCount());
-	
+
 	// getSelectionCount() is further tested in test_selectAll and test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem
 }
 
@@ -92,7 +92,7 @@ public void test_selectAll() {
 	}
 	selectAll_helper("selectAll()", items);
 
-	
+
 	/* Now run the same tests on a single-select TableTree. */
 	singleSelect();
 	selectAll_helper("Empty table tree", new TableTreeItem[] {});
@@ -113,21 +113,21 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("MULTI: No exception thrown for selecting null in empty table tree");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	int number = 8;
 	TableTreeItem[] items = new TableTreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TableTreeItem(tableTree, 0);
 	}
-	
+
 	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("MULTI: No exception thrown for selecting null in table tree with items");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
 
@@ -148,28 +148,28 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, new TableTreeItem[] {items[4]});
 	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, new TableTreeItem[] {items[0], items[2], items[4]});
 
-	
+
 	/* Now run the same tests on a single-select TableTree. */
 	singleSelect();
-	
+
 	setSelection_helper("Select no items in empty table tree", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("SINGLE: No exception thrown for selecting null in empty table tree");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	items = new TableTreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TableTreeItem(tableTree, 0);
 	}
-	
+
 	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("SINGLE: No exception thrown for selecting null in table tree with items");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
 
@@ -224,7 +224,7 @@ private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, 
 	tableTree.setSelection(itemsToSelect);
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
 	assertEquals(message, expectedSelection.length, tableTree.getSelectionCount());
-	assertArrayEquals(message, expectedSelection, tableTree.getSelection());	
+	assertArrayEquals(message, expectedSelection, tableTree.getSelection());
 }
 
 private void createTableTree(List<String> events, boolean traverse) {
@@ -295,7 +295,7 @@ public void test_consistency_DoubleClick () {
     List<String> events = new ArrayList<>();
     createTableTree(events, true);
     consistencyPrePackShell();
-    consistencyEvent(20, tableTree.getItemHeight()*2, 1, 0, 
+    consistencyEvent(20, tableTree.getItemHeight()*2, 1, 0,
             	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 

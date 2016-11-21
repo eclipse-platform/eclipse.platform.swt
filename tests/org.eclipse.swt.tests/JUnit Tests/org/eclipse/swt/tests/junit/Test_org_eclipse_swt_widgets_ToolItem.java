@@ -32,7 +32,7 @@ public class Test_org_eclipse_swt_widgets_ToolItem extends Test_org_eclipse_swt_
 public void setUp() {
 	super.setUp();
 	toolBar = new ToolBar(shell, 0);
-	toolItem = new ToolItem(toolBar, 0); 
+	toolItem = new ToolItem(toolBar, 0);
 	setWidget(toolItem);
 }
 

@@ -156,8 +156,8 @@ public void test_getPrinterList() {
 		PrinterData list[] = Printer.getPrinterList();
 		if (list.length  == 1) {
 			if (SWT.getPlatform().equals("gtk")) {
-				/* Even though there is no default printer data, 
-				 * on GTK it is still possible to have a print 
+				/* Even though there is no default printer data,
+				 * on GTK it is still possible to have a print
 				 * to file backend
 				 */
 				assertTrue(list[0].driver.equals("GtkPrintBackendFile"));

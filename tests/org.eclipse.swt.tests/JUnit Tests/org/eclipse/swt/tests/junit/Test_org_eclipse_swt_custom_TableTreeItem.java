@@ -25,7 +25,7 @@ public class Test_org_eclipse_swt_custom_TableTreeItem extends Test_org_eclipse_
 
 	TableTree tableTree;
 	TableTreeItem tableTreeItem;
-	
+
 @Override
 @Before
 public void setUp() {

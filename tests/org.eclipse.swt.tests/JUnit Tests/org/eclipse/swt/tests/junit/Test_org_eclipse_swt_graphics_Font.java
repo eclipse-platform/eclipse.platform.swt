@@ -41,9 +41,9 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {
-	
+
 	// null  device argument
-	
+
 	boolean exceptionThrown = false;
 	try {
 		FontData[] data = new FontData[1];
@@ -51,11 +51,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 		font.dispose();
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
-	} 
+	}
 	assertTrue(exceptionThrown);
-	
+
 	// null data argument
-	
+
 	exceptionThrown = false;
 	try {
 		FontData[] data = null;
@@ -63,11 +63,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 		font.dispose();
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
-	} 
+	}
 	assertTrue(exceptionThrown);
 
 	// zero length data array
-	
+
 	exceptionThrown = false;
 	try {
 		FontData[] data = new FontData[0];
@@ -75,11 +75,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 		font.dispose();
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
-	} 
+	}
 	assertTrue(exceptionThrown);
-	
+
 	// null data element
-	
+
 	exceptionThrown = false;
 	try {
 		FontData[] data = {
@@ -90,7 +90,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 		font.dispose();
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
-	} 
+	}
 	assertTrue("null data element 0",exceptionThrown);
 
 	exceptionThrown = false;
@@ -103,8 +103,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 		font.dispose();
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
-	} 
-	assertTrue("null data element 1",exceptionThrown);	
+	}
+	assertTrue("null data element 1",exceptionThrown);
 }
 
 @Test
@@ -349,7 +349,7 @@ public void test_isDisposed() {
 public void test_toString() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	assertNotNull(font.toString());
-	
+
 	font.dispose();
 	assertNotNull(font.toString());
 }

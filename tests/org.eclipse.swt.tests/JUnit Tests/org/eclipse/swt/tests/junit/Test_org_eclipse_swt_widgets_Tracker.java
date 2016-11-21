@@ -19,7 +19,7 @@ import org.junit.Before;
  * @see org.eclipse.swt.widgets.Tracker
  */
 public class Test_org_eclipse_swt_widgets_Tracker extends Test_org_eclipse_swt_widgets_Widget {
-	
+
 @Override
 @Before
 public void setUp() {

@@ -17,14 +17,14 @@ import java.lang.reflect.Method;
 import org.eclipse.swt.SWT;
 /**
  * Use this test class to validate an implementation of the StyledTextContent
- * interface.  To perform the validation, copy this class to the package where 
+ * interface.  To perform the validation, copy this class to the package where
  * your StyledTextContent implementation lives.  Then specify the fully qualified
- * name of your StyledTextContent class as an argument to the main method of this 
- * class. 
- * 
- * NOTE:  This test class assumes that your StyledTextContent implementation 
+ * name of your StyledTextContent class as an argument to the main method of this
+ * class.
+ *
+ * NOTE:  This test class assumes that your StyledTextContent implementation
  * handles the following delimiters:
- * 
+ *
  * 		/r
  * 		/n
  * 		/r/n
@@ -50,14 +50,14 @@ public class StyledTextContentSpec implements TextChangeListener {
 	boolean failed = false;
 	StyledText widget = null;
 	Shell shell = null;
-	
+
 public StyledTextContentSpec() {
 }
 public void assertTrue(String message, boolean condition) {
 	System.out.print("\t" + currentMethod.getName() + " " + message);
-	if (!condition) 
+	if (!condition)
 		fail(message);
-	else 
+	else
 		System.out.println(" passed");
 }
 public void fail(String message) {
@@ -71,7 +71,7 @@ public StyledTextContent getContentInstance() {
 	return contentInstance;
 }
 public static String getTestText() {
-	return 
+	return
 		"This is the first line.\r\n" +
 		"This is the second line.\r\n" +
 		"This is the third line.\r\n" +
@@ -152,7 +152,7 @@ public void run() {
 				} else {
 					System.out.println("FAILED");
 				}
-			} 
+			}
 		} catch (InvocationTargetException ex) {
 			System.out.println("\t" + currentMethod.getName() + " ERROR ==> " + ex.getTargetException().toString());
 			System.out.println("FAILED");
@@ -271,7 +271,7 @@ public void textChanging(TextChangingEvent event) {
 public void test_Insert() {
 	StyledTextContent content = getContentInstance();
 	String newText;
-	
+
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(0, 0, "test\n ");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -317,7 +317,7 @@ public void test_Insert() {
 	assertTrue(":4d:", content.getLine(1).equals("This"));
 	assertTrue(":4e:", content.getLine(2).equals("is a test"));
 	assertTrue(":4f:", content.getLine(3).isEmpty());
-	
+
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(7, 0, "\r\nnewLine");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -373,7 +373,7 @@ public void test_Insert() {
 	assertTrue(":9c:", content.getLine(0).equals("This"));
 	assertTrue(":9d:", content.getLine(1).equals("*** is a test"));
 	assertTrue(":9e:", content.getLine(2).isEmpty());
-	
+
 	content.setText("This\n");
 	content.replaceTextRange(5, 0, "line");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -384,7 +384,7 @@ public void test_Insert() {
 	assertTrue(":10e:", content.getLineAtOffset(8) == 1);
 	assertTrue(":10f:", content.getLineAtOffset(9) == 1);
 
-	// insert at beginning 
+	// insert at beginning
 	content.setText("This\n");
 	content.replaceTextRange(0, 0, "line\n");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -446,21 +446,21 @@ public void test_Empty() {
 }
 public void test_Line_Conversion() {
 	StyledTextContent content = getContentInstance();
-	
+
 	content.setText("This\nis a test\rrepeat\nend\r");
-	assertTrue(":1a:", content.getLineCount() == 5);	
+	assertTrue(":1a:", content.getLineCount() == 5);
 	assertTrue(":1b:", content.getLine(0).equals("This"));
-	assertTrue(":1c:", content.getOffsetAtLine(0) == 0);	
+	assertTrue(":1c:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":1d:", content.getLine(1).equals("is a test"));
 	assertTrue(":1e:", content.getLineAtOffset(4) == 0);
-	assertTrue(":1f:", content.getOffsetAtLine(1) == 5);	
+	assertTrue(":1f:", content.getOffsetAtLine(1) == 5);
 	assertTrue(":1g:", content.getLine(2).equals("repeat"));
-	assertTrue(":1h:", content.getOffsetAtLine(2) == 15);	
+	assertTrue(":1h:", content.getOffsetAtLine(2) == 15);
 	assertTrue(":1i:", content.getLine(3).equals("end"));
 	assertTrue(":1j:", content.getOffsetAtLine(3) == 22);
 	assertTrue(":1k:", content.getLine(4).isEmpty());
 	assertTrue(":1l:", content.getOffsetAtLine(4) == 26);
-	
+
 	content.setText("This\r\nis a test");
 	assertTrue(":2a:", content.getLineCount() == 2);
 	assertTrue(":2b:", content.getLine(1).equals("is a test"));
@@ -471,7 +471,7 @@ public void test_Line_Conversion() {
 	assertTrue(":3a:", content.getLineCount() == 3);
 	assertTrue(":3b:", content.getLine(1).equals("is a test"));
 	assertTrue(":3c:", content.getLineAtOffset(15) == 1);
-	
+
 	content.setText("\r\n");
 	assertTrue(":4a:", content.getLineCount() == 2);
 	assertTrue(":4b:", content.getLine(0).isEmpty());
@@ -483,24 +483,24 @@ public void test_Line_Conversion() {
 	content.setText("\r\n\n\r\r\n");
 	assertTrue(":5a:", content.getLineCount() == 5);
 	assertTrue(":5b:", content.getLine(0).isEmpty());
-	assertTrue(":5c:", content.getOffsetAtLine(0) == 0);	
+	assertTrue(":5c:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":5d:", content.getLine(1).isEmpty());
-	assertTrue(":5e:", content.getOffsetAtLine(1) == 2);	
+	assertTrue(":5e:", content.getOffsetAtLine(1) == 2);
 	assertTrue(":5f:", content.getLine(2).isEmpty());
-	assertTrue(":5g:", content.getOffsetAtLine(2) == 3);	
+	assertTrue(":5g:", content.getOffsetAtLine(2) == 3);
 	assertTrue(":5h:", content.getLine(3).isEmpty());
 	assertTrue(":5i:", content.getOffsetAtLine(3) == 4);
 	assertTrue(":5j:", content.getLine(4).isEmpty());
 	assertTrue(":5k:", content.getOffsetAtLine(4) == 6);
-	
+
 	content.setText("test\r\rtest2\r\r");
 	assertTrue(":6a:", content.getLineCount() == 5);
 	assertTrue(":6b:", content.getLine(0).equals("test"));
 	assertTrue(":6c:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":6d:", content.getLine(1).isEmpty());
-	assertTrue(":6e:", content.getOffsetAtLine(1) == 5);	
+	assertTrue(":6e:", content.getOffsetAtLine(1) == 5);
 	assertTrue(":6f:", content.getLine(2).equals("test2"));
-	assertTrue(":6g:", content.getOffsetAtLine(2) == 6);	
+	assertTrue(":6g:", content.getOffsetAtLine(2) == 6);
 	assertTrue(":6h:", content.getLine(3).isEmpty());
 	assertTrue(":6i:", content.getOffsetAtLine(3) == 12);
 	assertTrue(":6j:", content.getLine(4).isEmpty());
@@ -508,19 +508,19 @@ public void test_Line_Conversion() {
 }
 public void test_Offset_To_Line() {
 	StyledTextContent content = getContentInstance();
-	
+
 	content.setText("This\nis a test\rrepeat\nend\r");
 	assertTrue(":1a:", content.getLineAtOffset(0) == 0);
 	assertTrue(":1b:", content.getLineAtOffset(3) == 0);
 	assertTrue(":1c:", content.getLineAtOffset(4) == 0);
 	assertTrue(":1d:", content.getLineAtOffset(25) == 3);
 	assertTrue(":1e:", content.getLineAtOffset(26) == 4);
-	
+
 	content.setText("This\r\nis a test");
 	assertTrue(":2a:", content.getLineAtOffset(5) == 0);
 	assertTrue(":2b:", content.getLineAtOffset(6) == 1);
 	assertTrue(":2c:", content.getLineAtOffset(10) == 1);
-	
+
 	content.setText("\r\n");
 	assertTrue(":3a:", content.getLineAtOffset(0) == 0);
 	assertTrue(":3b:", content.getLineAtOffset(1) == 0);
@@ -547,28 +547,28 @@ public void test_Offset_To_Line() {
 	assertTrue(":6b:", content.getLineAtOffset(1) == 1);
 	assertTrue(":6c:", content.getLineAtOffset(2) == 2);
 	assertTrue(":6d:", content.getLineAtOffset(4) == 3);
-	
+
 	content.setText("");
 	assertTrue(":7a:", content.getLineAtOffset(0) == 0);
-	
+
 	content = getContentInstance();
-	assertTrue(":8a:", content.getLineAtOffset(0) == 0);	
+	assertTrue(":8a:", content.getLineAtOffset(0) == 0);
 }
 
 public void test_Line_To_Offset() {
 	StyledTextContent content = getContentInstance();
-	
+
 	content.setText("This\nis a test\rrepeat\nend\r");
 	assertTrue(":1a:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":1b:", content.getOffsetAtLine(1) == 5);
 	assertTrue(":1c:", content.getOffsetAtLine(2) == 15);
 	assertTrue(":1d:", content.getOffsetAtLine(3) == 22);
 	assertTrue(":1e:", content.getOffsetAtLine(4) == 26);
-	
+
 	content.setText("This\r\nis a test");
 	assertTrue(":2a:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":2b:", content.getOffsetAtLine(1) == 6);
-	
+
 	content.setText("\r\n");
 	assertTrue(":3a:", content.getOffsetAtLine(0) == 0);
 	assertTrue(":3b:", content.getOffsetAtLine(1) == 2);
@@ -589,14 +589,14 @@ public void test_Line_To_Offset() {
 public void test_Delete() {
 	StyledTextContent content = getContentInstance();
 	String newText;
-	
+
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(6, 2, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":1a:", newText.equals("This\nia test\r"));
 	assertTrue(":1b:", content.getLine(0).equals("This"));
 	assertTrue(":1c:", content.getLine(1).equals("ia test"));
-	
+
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(5, 9, "");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -605,7 +605,7 @@ public void test_Delete() {
 	assertTrue(":2c:", content.getLine(0).equals("This"));
 	assertTrue(":2d:", content.getLine(1).isEmpty());
 	assertTrue(":2e:", content.getLine(2).isEmpty());
-	
+
 	content.setText("This\nis a test\nline 3\nline 4");
 	content.replaceTextRange(21, 7, "");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -614,7 +614,7 @@ public void test_Delete() {
 	assertTrue(":3c:", content.getLine(0).equals("This"));
 	assertTrue(":3d:", content.getLine(1).equals("is a test"));
 	assertTrue(":3e:", content.getLine(2).equals("line 3"));
-	
+
 	content.setText("This\nis a test\nline 3\nline 4");
 	content.replaceTextRange(0, 5, "");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -705,7 +705,7 @@ public void test_Delete() {
 public void test_Replace() {
 	StyledTextContent content = getContentInstance();
 	String newText;
-	
+
 	content.setText("This\nis a test\r");
 	content.replaceTextRange(5, 4, "a");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -731,7 +731,7 @@ public void test_Replace() {
 	assertTrue(":3b:",content.getLineCount() == 2);
 	assertTrue(":3c:", content.getLine(0).equals("This was a test"));
 	assertTrue(":3d:", content.getLineAtOffset(15) == 0);
-	
+
 	content.setText("Line 1\nLine 2\nLine 3");
 	content.replaceTextRange(0, 7, "La\nLb\n");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -764,7 +764,7 @@ public void test_Special_Cases() {
 	StyledTextContent content = getContentInstance();
 	assertTrue(":0a:", content.getLineCount() == 1);
 	assertTrue(":0b:", content.getOffsetAtLine(0) == 0);
-	
+
 	content.setText("This is the input/output text component.");
 	content.replaceTextRange(0, 0, "\n");
 	assertTrue(":1a:", content.getLine(0).isEmpty());
@@ -874,10 +874,10 @@ public void test_Special_Cases() {
 	assertTrue(":7e:", content.getLineCount() == 2);
 	assertTrue(":7f:", content.getLine(0).isEmpty());
 	assertTrue(":7g:", content.getLine(1).equals("1bc"));
-	
+
 	content = getContentInstance();
 	content.replaceTextRange(0,0,"a");
-	
+
 	content.setText("package test;\n/* Line 1\n * Line 2\n */\npublic class SimpleClass {\n}");
 	content.replaceTextRange(14, 23, "\t/*Line 1\n\t * Line 2\n\t */");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -932,7 +932,7 @@ public void test_Text_Changed_Event() {
 
 	verify = 10;
 	content.setText("L1\r\n");
-	try {content.replaceTextRange(3, 1, "");} 
+	try {content.replaceTextRange(3, 1, "");}
 	catch (IllegalArgumentException ex) {assertTrue(":10:", true);}
 
 	verify = 11;
@@ -986,12 +986,12 @@ public void test_Text_Changed_Event() {
 public void test_Delimiter_Special_Cases() {
 	StyledTextContent content = getContentInstance();
 	String newText;
-	
+
 	content.setText("\nL1\r\nL2\r\n");
 	content.replaceTextRange(7, 2, "");
 	newText = content.getTextRange(0, content.getCharCount());
 	assertTrue(":1:", newText.equals("\nL1\r\nL2"));
-	
+
 	content.setText("L1\r\n");
 	content.replaceTextRange(2, 2, "test\n\n");
 	newText = content.getTextRange(0, content.getCharCount());
@@ -1030,7 +1030,7 @@ protected void setUp()  {
 	shell.open ();
 }
 protected void tearDown()  {
-	if (shell != null && !shell.isDisposed ()) 
+	if (shell != null && !shell.isDisposed ())
 		shell.dispose ();
 	shell = null;
 

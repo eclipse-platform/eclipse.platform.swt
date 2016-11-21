@@ -23,13 +23,13 @@ public class ConsistencyUtility {
     static HashMap<String, String[]> eventOrdering = new HashMap<>();
     static HashMap<String, Integer> eventTypes = new HashMap<>();
     static {
-        
+
         eventOrdering.put("DoubleClick", 			new String[] {"MouseDown", "Selection:", "MouseUp", "MouseDown", "MouseDoubleClick", "DefaultSelection", "MouseUp"});
         eventOrdering.put("DragDetect", 			new String[] {"MouseDown", "DragDetect", "MouseUp"});
         eventOrdering.put("EnterSelection", 		new String[] {"Traverse:Return", "KeyDown", "DefaultSelection", "KeyUp"});
         eventOrdering.put("KeySelection", 			new String[] {"Traverse:Arrow Next", "KeyDown", "Selection:", "KeyUp"});
         eventOrdering.put("MenuDetect", 			new String[] {"MouseDown", "MenuDetect", "MouseUp"});
-        
+
         eventOrdering.put("ButtonMouseSelection", 	new String[] {"MouseDown", "MouseUp", "Selection:"});
         eventOrdering.put("ComboMouseSelection",	new String[] {"MouseDown", "MouseUp", "Verify", "Modify", "Selection:"});
         eventOrdering.put("CComboMouseSelection",	new String[] {"Modify", "Selection:"});
@@ -42,7 +42,7 @@ public class ConsistencyUtility {
         eventOrdering.put("TreeMouseSelection",		new String[] {"MouseDown", "Selection:", "MouseUp" });
         eventOrdering.put("TableTreeMouseSelection",new String[] {"MouseDown", "Selection:", "MouseUp" });
         eventOrdering.put("CTabFolderMouseSelection",new String[] {"Selection:", "MouseDown", "MouseUp" });
-        
+
         eventOrdering.put("ListDoubleClick", 		new String[] {"MouseDown", "MouseUp", "Selection:", "MouseDown", "MouseDoubleClick", "DefaultSelection", "MouseUp"});
         eventOrdering.put("ButtonEnterSelection", 	new String[] {"Traverse:Return", "KeyDown", "KeyUp"});
         eventOrdering.put("ExpandBarEnterSelection",new String[] {"Traverse:Return", "Selection:", "KeyDown", "KeyUp"});
@@ -52,25 +52,25 @@ public class ConsistencyUtility {
         eventOrdering.put("TableTreeDragDetect", 	new String[] {"MouseDown", "Selection:", "DragDetect", "MouseUp"});
         eventOrdering.put("TableMenuDetect", 		new String[] {"MenuDetect", "MouseDown", "Selection:", "MouseUp"});
         eventOrdering.put("TableTreeMenuDetect",	new String[] {"MenuDetect", "MouseDown", "Selection:", "MouseUp"});
-        
+
         eventOrdering.put("ButtonSpaceSelection", 	new String[] {"Traverse:Mnemonic", "KeyDown", "KeyUp", "Selection:"});
         eventOrdering.put("ExpandBarSpaceSelection",new String[] {"MouseDown", "MouseUp", "Selection:", "Traverse:Mnemonic", "KeyDown", "KeyUp"});
         eventOrdering.put("ListSpaceSelection", 	new String[] {"Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("ToolBarSpaceSelection", 	new String[] {"MouseDown", "MouseUp", "Selection:", "Traverse:Mnemonic", "KeyDown", "KeyUp"});
         eventOrdering.put("TreeSpaceSelection", 	new String[] {"Selection:", "KeyDown", "KeyUp"});
-        eventOrdering.put("TableTreeSpaceSelection",new String[] {"KeyDown", "KeyUp"}); 
-        
+        eventOrdering.put("TableTreeSpaceSelection",new String[] {"KeyDown", "KeyUp"});
+
         eventOrdering.put("ComboKeySelection", 		new String[] {"KeyDown", "Verify", "Modify", "Selection:", "KeyUp"});
         eventOrdering.put("CComboKeySelection", 	new String[] {"Traverse:Arrow Next", "Modify", "Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("CTabFolderKeySelection",	new String[] {"Traverse:Arrow Next", "Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("SliderKeySelection",		new String[] {"Traverse:Arrow Next", "KeyDown", "Selection:Arrow Down", "KeyUp" });
-        
+
         eventOrdering.put("SliderArrowSelection",	new String[] {"MouseDown", "Selection:Arrow Down", "MouseUp" });
-        
+
         eventOrdering.put("CoolBarChevronDragDetect",new String[] {"MouseDown", "DragDetect"});
         eventOrdering.put("CoolBarChevronMenuDetect",new String[] {"MouseDown", "Selection:Arrow"});
         eventOrdering.put("CoolBarChevronMouseSelection",new String[] {"MouseDown", "Selection:Arrow", });
-        
+
         eventOrdering.put("ScaleTroughSelection",	new String[] {"Selection:", "MouseDown", "MouseUp" });
         eventOrdering.put("SliderTroughSelection",	new String[] {"MouseDown", "Selection:Page Down", "MouseUp" });
         eventOrdering.put("ScaleThumbSelection",	new String[] {"Selection:", "MouseDown", "MouseUp" });
@@ -80,22 +80,22 @@ public class ConsistencyUtility {
         eventOrdering.put("ShellDispose",			new String[] {"Dispose"});
         eventOrdering.put("ShellIconify",			new String[] {"FocusOut", "Iconify", "Deactivate", "Deiconify", "Activate", "FocusIn", "Activate"});
         eventOrdering.put("ShellOpen",				new String[] {"Activate", "FocusIn", "Show"});
-        
+
         eventOrdering.put("TabFolderPgdwnSelection",new String[] {"KeyDown", "Traverse:Page Next", "Selection:", "KeyUp", "KeyUp"});
         eventOrdering.put("TabFolderPgupSelection", new String[] {"KeyDown", "Traverse:Page Previous", "Selection:", "KeyUp", "KeyUp"});
         eventOrdering.put("CTabFolderPgdwnSelection",new String[] {"KeyDown", "Selection:", "Traverse:None", "KeyUp", "KeyUp"});
         eventOrdering.put("CTabFolderPgupSelection",new String[] {"KeyDown", "Selection:", "Traverse:None", "KeyUp", "KeyUp"});
-        
+
         eventOrdering.put("StyledTextModify",		new String[] {"Verify", "Modify", "KeyDown", "KeyUp"});
-        eventOrdering.put("TextModify",				new String[] {"KeyDown", "Verify", "Modify", "KeyUp"});		
-                
+        eventOrdering.put("TextModify",				new String[] {"KeyDown", "Verify", "Modify", "KeyUp"});
+
         eventOrdering.put("TreeKeyExpand", 			new String[] {"Traverse:Arrow Next", "KeyDown", "Expand", "KeyUp"});
         eventOrdering.put("TreeMouseExpand", 		new String[] {"Expand", "MouseDown", "MouseUp"});
         eventOrdering.put("TableTreeKeyExpand", 	new String[] {"Traverse:Arrow Next", "Expand", "KeyDown", "KeyUp"});
         eventOrdering.put("TableTreeMouseExpand", 	new String[] {"Expand", "MouseDown", "Selection:", "MouseUp"});
-        
+
         eventOrdering.put("TableTreeTable", 		new String[] {"MouseDown", "MouseUp", "MouseDoubleClick", "KeyDown", "KeyUp", "MenuDetect", "DragDetect", "Traverse"});
-        
+
         eventTypes.put("None", Integer.valueOf(SWT.None));
         eventTypes.put("KeyDown", Integer.valueOf(SWT.KeyDown));
         eventTypes.put("KeyUp", Integer.valueOf(SWT.KeyUp));
@@ -134,9 +134,9 @@ public class ConsistencyUtility {
         eventTypes.put("MenuDetect", Integer.valueOf(SWT.MenuDetect));
         eventTypes.put("SetData", Integer.valueOf(SWT.SetData));
     }
- 
+
     static String[] eventNames = {
-		"None", 			"KeyDown", 		"KeyUp", 			"MouseDown", 
+		"None", 			"KeyDown", 		"KeyUp", 			"MouseDown",
 		"MouseUp",			"MouseMove",	"MouseEnter",		"MouseExit",
 		"MouseDoubleClick",	"Paint",		"Move",				"Resize",
 		"Dispose",			"Selection",	"DefaultSelection",	"FocusIn",
@@ -146,7 +146,7 @@ public class ConsistencyUtility {
 		"Help",				"DragDetect",	"Arm",				"Traverse",
 		"MouseHover",		"HardKeyDown",	"HardKeyUp",		"MenuDetect",
 		"SetData"};
-    
+
     static int[] convertEventNames(String[] origNames) {
         String[] names = new String[origNames.length];
         System.arraycopy(origNames, 0, names, 0, origNames.length);
@@ -157,7 +157,7 @@ public class ConsistencyUtility {
         }
         return types;
     }
-    
+
     private static String[] removeDuplicates(String[] names) {
         int dups=0;
         for(int i=0; i<names.length; i++) {
@@ -178,13 +178,13 @@ public class ConsistencyUtility {
         System.arraycopy(names, 0, temp, 0, names.length-dups);
         return temp;
     }
-    
+
     public static String[] selectionTypes = {
-        "Drag", 		"Home",  			"End", 				"Arrow Down", 
-        "Arrow Up", 	"Page Down", 		"Page Up", 			"Check", 	
-        "Arrow",     
+        "Drag", 		"Home",  			"End", 				"Arrow Down",
+        "Arrow Up", 	"Page Down", 		"Page Up", 			"Check",
+        "Arrow",
     };
-    
+
     public static int[] [] selectionConversion = {
         {SWT.DRAG, 0},
         {SWT.HOME, 1},
@@ -196,18 +196,18 @@ public class ConsistencyUtility {
         {SWT.CHECK, 7},
         {SWT.ARROW, 8},
     };
-    
+
     static String getSelectionType(int type) {
         for(int i=0; i<selectionConversion.length;i++) {
-            if(type == selectionConversion[i][0]) 
+            if(type == selectionConversion[i][0])
                 return selectionTypes[selectionConversion[i][1]];
         }
         return "";
     }
-    
+
     static String[] traversalTypes = {
-    	    "None", 		"Escape", 			"Return", 			"Tab Previous", 
-    	    "Tab Next", 	"Arrow Previous",	"Arrow Next", 		"Mnemonic", 
+    	    "None", 		"Escape", 			"Return", 			"Tab Previous",
+    	    "Tab Next", 	"Arrow Previous",	"Arrow Next", 		"Mnemonic",
     	    "Page Previous", "Page Next"};
 
     static String getTraversalType(int type) {
@@ -225,10 +225,10 @@ public class ConsistencyUtility {
     static final int MOUSE_DOUBLECLICK = 40;
     static final int MOUSE_DRAG = 50;
     static final int SELECTION = 60;
-    
+
     static final int ESCAPE_MENU = 1;
-    
-    
+
+
     //posts a click at display mapped x and y with button button
     static boolean postClick(Display display, int x, int y, int button) {
         Event event = new Event();
@@ -239,7 +239,7 @@ public class ConsistencyUtility {
             System.out.println("MouseMove not posted");
             return false;
         }
-        
+
         event = new Event();
         event.type = SWT.MouseDown;
         event.button = button;
@@ -257,26 +257,26 @@ public class ConsistencyUtility {
             return false;
         }
 //	  	try {
-//	        Thread.sleep(1600);	
+//	        Thread.sleep(1600);
 //	    } catch(InterruptedException ie) {}
         return true;
     }
-    
+
     static boolean postClick(Display display, Point pt, int button) {
         return postClick(display, pt.x, pt.y, button);
     }
-    
+
     //doubleclicks at display mapped pt with button button
     static boolean postDoubleClick(Display display, Point pt, int button) {
         boolean ret = postClick(display, pt, button);
         ret &= postClick(display, pt, button);
 //	  	try {
-//	        Thread.sleep(1600);	
+//	        Thread.sleep(1600);
 //	    } catch(InterruptedException ie) {}
         return ret;
     }
-    
-    //post a key press 
+
+    //post a key press
     static boolean postKeyPress(Display display, int ch, int keycode) {
         Event event = new Event();
         event.type = SWT.KeyDown;
@@ -298,9 +298,9 @@ public class ConsistencyUtility {
         }
         return true;
     }
-    
+
     //post pressing and holding ch1/keycode1 and then pressing ch2/keycode2
-    static boolean postDoubleKeyPress(Display display, int ch1, int keycode1, 
+    static boolean postDoubleKeyPress(Display display, int ch1, int keycode1,
             						  int ch2, int keycode2) {
         Event event = new Event();
         event.type = SWT.KeyDown;
@@ -323,7 +323,7 @@ public class ConsistencyUtility {
         }
         return true;
     }
-    
+
     //posts a drag from display mapped origin to destination
     //the button to drag with is system dependent
     static boolean postDrag(Display display, Point origin, Point destination) {
@@ -336,7 +336,7 @@ public class ConsistencyUtility {
             System.out.println("MouseMove not posted");
             return false;
         }
-        
+
         event = new Event();
         event.type = SWT.MouseDown;
         event.button = button;
@@ -344,7 +344,7 @@ public class ConsistencyUtility {
             System.out.println("MouseDown not posted");
             return false;
         }
-        
+
         event = new Event();
         event.type = SWT.MouseMove;
         event.x = destination.x;
@@ -372,7 +372,7 @@ public class ConsistencyUtility {
             return 1;
         return 2;
     }
-    
+
     //posts a selection ie clicks on pt1, then click on pt2 (for example, selecting
     //one of the options in a combo by dropping down the list)
     static boolean postSelection(final Display display, Point pt1, Point pt2) {
@@ -395,6 +395,6 @@ public class ConsistencyUtility {
         } else if(SwtTestUtil.isLinux) {
         	x += -16;
         }
-        return postClick(display, x, y, button);    
+        return postClick(display, x, y, button);
     }
 }

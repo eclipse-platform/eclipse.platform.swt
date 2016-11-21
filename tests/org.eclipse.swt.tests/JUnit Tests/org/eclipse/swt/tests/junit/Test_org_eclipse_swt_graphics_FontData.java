@@ -57,7 +57,7 @@ public void test_ConstructorLjava_lang_StringII() {
 	new FontData(SwtTestUtil.testFontName, 0, SWT.NORMAL);
 
 	// valid font data with 1000 height (pretty big, but apparently valid)
-	
+
 
 	// valid normal 10-point font data
 	new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
@@ -108,28 +108,28 @@ public void test_hashCode() {
 public void test_setHeightI() {
 	// Test Font.setHeight(int  height)
 	// valid normal font data for various heights
-	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);	
+	FontData fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid bold font data for various heights
-	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid italic font data for various heights
-	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.ITALIC);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
 
 	// valid bold italic font data for various heights
-	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);	
+	fontData = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	for (int height = 0; height < 1000; height++) {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
@@ -163,7 +163,7 @@ public void test_setNameLjava_lang_String() {
 	}
 
 	// valid name
-	fontData.setName(SwtTestUtil.testFontName);	
+	fontData.setName(SwtTestUtil.testFontName);
 	assertEquals("Wrong name", fontData.getName(), SwtTestUtil.testFontName);
 	// illegal argument, name == null
 	try {
@@ -178,7 +178,7 @@ public void test_setStyleI() {
 	// Test Font.setStyle(int  style)
 	for (int height = 0; height < 1000; height++) {
 		// valid normal font data
-		FontData fontData = new FontData(SwtTestUtil.testFontName, height, SWT.NORMAL);	
+		FontData fontData = new FontData(SwtTestUtil.testFontName, height, SWT.NORMAL);
 		assertEquals("Wrong style", fontData.getStyle(), SWT.NORMAL);
 
 		// valid bold font data
@@ -188,7 +188,7 @@ public void test_setStyleI() {
 		// valid italic font data
 		fontData.setStyle(SWT.ITALIC);
 		assertEquals("Wrong style", fontData.getStyle(), SWT.ITALIC);
-		
+
 		// valid bold italic font data
 		fontData.setStyle(SWT.ITALIC | SWT.BOLD);
 		assertEquals("Wrong style", fontData.getStyle(), SWT.BOLD | SWT.ITALIC);

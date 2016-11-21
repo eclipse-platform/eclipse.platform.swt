@@ -37,7 +37,7 @@ public void setUp() {
 
 /**
  * Possible exceptions:
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -86,7 +86,7 @@ public void test_setMessageLjava_lang_String(){
 	try {
 		messageBox.setMessage(null);
 		fail("No exception thrown");
-	} 
+	}
 	catch (IllegalArgumentException e) {
 	}
 }

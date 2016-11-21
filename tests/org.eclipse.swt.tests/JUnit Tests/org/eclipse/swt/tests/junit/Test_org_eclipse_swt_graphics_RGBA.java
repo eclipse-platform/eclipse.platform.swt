@@ -27,10 +27,10 @@ public class Test_org_eclipse_swt_graphics_RGBA {
 public void test_ConstructorIIII() {
 	// Test RGBA(int red, int green, int blue, int alpha)
 	new RGBA(20,100,200,255);
-	
+
 	new RGBA(0,0,0,0);
 
-	
+
 
 	try {
 		new RGBA(-1, 20, 50, 255);
@@ -38,21 +38,21 @@ public void test_ConstructorIIII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(256, 20, 50, 255);
 		fail("No exception thrown for red > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(20, -1, 50, 0);
 		fail("No exception thrown for green < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(20, 256, 50, 0);
 		fail("No exception thrown for green > 255");
@@ -66,21 +66,21 @@ public void test_ConstructorIIII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(20, 50, 256, 0);
 		fail("No exception thrown for blue > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(20, 50, 10, -1);
 		fail("No exception thrown for alpha < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(20, 50, 10, 256);
 		fail("No exception thrown for alpha > 255");
@@ -93,7 +93,7 @@ public void test_ConstructorIIII() {
 public void test_ConstructorFFFF() {
 
 	new RGBA(0f,0f,0f,0f);
-	
+
 	new RGBA(0f,1f,0f,0f);
 	new RGBA(0f,0f,1f,1f);
 	new RGBA(0f,0.6f,0.4f,0.8f);
@@ -187,56 +187,56 @@ public void test_ConstructorFFFF() {
 	new RGBA(360f,0f,1f,1f);
 	new RGBA(360f,1f,0f,0f);
 	new RGBA(360f,0.6f,0.4f,0.8f);
-	
+
 	try {
 		new RGBA(400f, 0.5f, 0.5f, 0.8f);
 		fail("No exception thrown for hue > 360");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(-5f, 0.5f, 0.5f, 0.8f);
 		fail("No exception thrown for hue < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, -0.5f, 0.5f, 0.8f);
 		fail("No exception thrown for saturation < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, 300f, 0.5f, 0.8f);
 		fail("No exception thrown for saturation > 1");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, 0.5f, -0.5f, 0.8f);
 		fail("No exception thrown for brightness < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, 0.5f, 400f, 0.8f);
 		fail("No exception thrown for brightness > 1");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, 0.5f, 0.5f, -0.5f);
 		fail("No exception thrown for alpha < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGBA(200f, 0.5f, 0.5f, 400f);
 		fail("No exception thrown for alpha > 1");
@@ -250,23 +250,23 @@ public void test_equalsLjava_lang_Object() {
 	int r = 0, g = 127, b = 254, a = 254;
 	RGBA rgba1 = new RGBA(r, g, b, a);
 	RGBA rgba2;
-	
+
 	rgba2 = rgba1;
 	if (!rgba1.equals(rgba2)) {
 		fail("Two references to the same RGBA instance not found equal");
 	}
-	
+
 	rgba2 = new RGBA(r, g, b, a);
 	if (!rgba1.equals(rgba2)) {
 		fail("References to two different RGBA instances with same R G B A parameters not found equal");
 	}
-	
+
 	if (rgba1.equals(new RGBA(r+1, g, b, a)) ||
 	    rgba1.equals(new RGBA(r, g+1, b, a)) ||
 	    rgba1.equals(new RGBA(r, g, b+1, a)) ||
 	    rgba1.equals(new RGBA(r, g, b, a+1)) ||
 	    rgba1.equals(new RGBA(r+1, g+1, b+1, a+1))) {
-		fail("Comparing two RGBA instances with different combination of R G B A parameters found equal");    	
+		fail("Comparing two RGBA instances with different combination of R G B A parameters found equal");
 	}
 
 	float hue = 220f, sat = 0.6f, bright = 0.7f, alpha = 0.5f;
@@ -275,18 +275,18 @@ public void test_equalsLjava_lang_Object() {
 	if (!rgba1.equals(rgba2)) {
 		fail("Two references to the same RGBA instance not found equal");
 	}
-	
+
 	rgba2 = new RGBA(hue, sat, bright, alpha);
 	if (!rgba1.equals(rgba2)) {
 		fail("References to two different RGBA instances with same H S B A parameters not found equal");
 	}
-	
+
 	if (rgba1.equals(new RGBA(hue+1, sat, bright, alpha)) ||
 	    rgba1.equals(new RGBA(hue, sat+0.1f, bright, alpha)) ||
 	    rgba1.equals(new RGBA(hue, sat, bright+0.1f, alpha)) ||
 	    rgba1.equals(new RGBA(hue, sat, bright, alpha+1f)) ||
 	    rgba1.equals(new RGBA(hue+1, sat+0.1f, bright+0.1f, alpha+1f))) {
-		fail("Comparing two RGBA instances with different combination of H S B A parameters found equal");    	
+		fail("Comparing two RGBA instances with different combination of H S B A parameters found equal");
 	}
 }
 
@@ -404,14 +404,14 @@ public void test_hashCode() {
 	int r = 255, g = 100, b = 0, a = 0, different = 150;
 	RGBA rgba1 = new RGBA(r, g, b, a);
 	RGBA rgba2 = new RGBA(r, g, b, a);
-	
+
 	int hash1 = rgba1.hashCode();
 	int hash2 = rgba2.hashCode();
-	
+
 	if (hash1 != hash2) {
 		fail("Two RGBA instances with same R G B A parameters returned different hash codes");
 	}
-	
+
 	if (rgba1.hashCode() == new RGBA(g, b, r, a).hashCode() ||
 		rgba1.hashCode() == new RGBA(b, r, g, a).hashCode()) {
 		fail("Two RGB instances with different R G B A parameters returned the same hash code");
@@ -439,7 +439,7 @@ public void test_toString() {
 	RGBA rgba = new RGBA(0, 100, 200, 255);
 
 	String s = rgba.toString();
-	
+
 	if (s == null || s.length() == 0) {
 		fail("RGBA.toString returns a null or empty String");
 	}

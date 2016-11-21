@@ -31,7 +31,7 @@ import org.junit.Test;
  * @see org.eclipse.swt.program.Program
  */
 public class Test_org_eclipse_swt_program_Program {
-	
+
 @Before
 public void setUp() {
 	Display.getDefault();
@@ -53,10 +53,10 @@ public void test_equalsLjava_lang_Object() {
 
 @Test
 public void test_executeLjava_lang_String() {
-	
+
 	// This test is incomplete because a true test of execute would open
 	// an application that cannot be programmatically closed.
-	
+
 	try {
 		Program[] programs = Program.getPrograms();
 		if (programs != null && programs.length > 0) {
@@ -64,9 +64,9 @@ public void test_executeLjava_lang_String() {
 			// Cannot test empty string argument because it may launch something.
 			//boolean result = programs[0].execute("");
 			//assertFalse(result);
-			
+
 			// test null argument
-				
+
 			programs[0].execute(null);
 			fail("Failed to throw ERROR_NULL_ARGUMENT");
 		}
@@ -85,7 +85,7 @@ public void test_findProgramLjava_lang_String() {
 			// No assertion here because a null result is allowed.
 		}
 	}
-	
+
 	try {
 		Program.findProgram(null);
 		fail("Failed to throw ERROR_NULL_ARGUMENT");
@@ -142,18 +142,18 @@ public void test_getName() {
 @Test
 public void test_getPrograms() {
 	Program[] programs = Program.getPrograms();
-	
-	// The result is not well-documented, but it should 
+
+	// The result is not well-documented, but it should
 	// be non-null and contain no null entries.
-	
+
 	assertNotNull(programs);
-	
+
 	Map<Integer, Program> lookup = new HashMap<>();
 	for (int i=0; i<programs.length; i++) {
-		
+
 		// test non-null entry
 		assertNotNull(programs[i]);
-		
+
 		// test unique hash code
 		int hashCode = programs[i].hashCode();
 		Integer key = Integer.valueOf(hashCode);
@@ -171,11 +171,11 @@ public void test_launchLjava_lang_String() {
 
 	// This test is incomplete because a true test of launch would open
 	// an application that cannot be programmatically closed.
-	
+
 	// Cannot test empty string argument because it may launch something.
-	
+
 	// test null argument
-	
+
 	try {
 		Program.launch(null);
 		fail("Failed to throw ERROR_NULL_ARGUMENT");

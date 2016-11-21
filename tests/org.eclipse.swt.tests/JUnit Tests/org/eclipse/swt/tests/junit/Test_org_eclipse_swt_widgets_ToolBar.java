@@ -101,7 +101,7 @@ public void test_getItems() {
 	  	items[i] = new ToolItem(toolBar, 0);
 	}
 	assertArrayEquals(items, toolBar.getItems());
-	
+
 	toolBar.getItems()[0].dispose();
 	assertArrayEquals(new ToolItem[]{items[1], items[2], items[3], items[4]}, toolBar.getItems());
 
@@ -156,7 +156,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	}
 	for (int i = 0; i<number ; i++){
 		try {
-			toolBar.indexOf(null);		
+			toolBar.indexOf(null);
 			fail("No exception thrown for toolItem == null");
 		}
 		catch (IllegalArgumentException e) {

@@ -101,7 +101,7 @@ ProgressBar progressBar;
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected) {
 	// Uncomment these lines and comment out call to check() if you want the test to report all errors without
 	// stopping.
-	
+
 	//if (progressBar.getMinimum() != minExpected)
 		//System.out.println(call + "(" + set + "): Minimum Expected: " + minExpected + "  Actual: " + progressBar.getMinimum());
 	//if (progressBar.getMaximum() != maxExpected)

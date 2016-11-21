@@ -64,7 +64,7 @@ public void test_getAlignment(){
 	{
  	  label = new Label(shell, cases[i]);
 	  assertEquals(label.getAlignment(), cases[i]);
-	} 
+	}
 }
 
 @Test
@@ -94,7 +94,7 @@ public void test_setAlignmentI(){
 	{
  	  label.setAlignment(cases[i]);
 	  assertEquals(label.getAlignment(), cases[i]);
-	} 
+	}
 }
 
 @Override

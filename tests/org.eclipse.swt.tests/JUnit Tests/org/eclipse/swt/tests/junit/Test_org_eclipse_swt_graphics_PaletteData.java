@@ -63,17 +63,17 @@ public void test_ConstructorIII() {
 
 @Test
 public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
-	// indexed palette tests	
+	// indexed palette tests
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
 	PaletteData data = new PaletteData(rgbs);
-	
+
 	try {
 		data.getPixel(null);
 		fail("No exception thrown for indexed palette with rgb == null");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		data.getPixel(new RGB(0, 0, 1));
 		fail("No exception thrown for rgb not found");
@@ -82,11 +82,11 @@ public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 	}
 
 	assertEquals(":a:", rgbs.length-1, data.getPixel(rgbs[rgbs.length-1]));
-	
-	// direct palette tests	
+
+	// direct palette tests
 	RGB rgb =new RGB(0x32, 0x64, 0x96);
 	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
-	
+
 	try {
 		data.getPixel(null);
 		fail("No exception thrown for direct palette with rgb == null");
@@ -99,7 +99,7 @@ public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 
 @Test
 public void test_getRGBI() {
-	// indexed palette tests	
+	// indexed palette tests
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
 	PaletteData data = new PaletteData(rgbs);
 
@@ -112,24 +112,24 @@ public void test_getRGBI() {
 
 	assertEquals(":a:", rgbs[rgbs.length-1], data.getRGB(rgbs.length-1));
 
-	// direct palette tests	
+	// direct palette tests
 	RGB rgb =new RGB(0x32, 0x64, 0x96);
 	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
-	
+
 	assertEquals(":b:", rgb, data.getRGB(0x326496));
 }
 
 @Test
 public void test_getRGBs() {
-	// indexed palette tests	
+	// indexed palette tests
 	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	PaletteData data = new PaletteData(rgbs);
-	
+
 	assertArrayEquals(":a:", rgbs, data.getRGBs());
-	
-	// direct palette tests	
+
+	// direct palette tests
 	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
-	
+
 	assertNull(":b:", data.getRGBs());
 }
 

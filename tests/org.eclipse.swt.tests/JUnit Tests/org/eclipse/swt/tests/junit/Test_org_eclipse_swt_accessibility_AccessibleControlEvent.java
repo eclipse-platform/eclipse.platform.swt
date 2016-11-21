@@ -42,7 +42,7 @@ public void test_ConstructorLjava_lang_Object() {
 	// The source object should be a widget's accessible.
 	AccessibleControlEvent event = new AccessibleControlEvent(shell.getAccessible());
 	assertNotNull(event);
-	
+
 	// Test with some other object also.
 	event = new AccessibleControlEvent(Integer.valueOf(5));
 	assertNotNull(event);

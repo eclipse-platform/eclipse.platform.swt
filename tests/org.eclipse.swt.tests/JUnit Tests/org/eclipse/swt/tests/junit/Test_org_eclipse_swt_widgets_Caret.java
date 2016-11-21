@@ -118,7 +118,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	caret.setFont(font);
 	assertEquals(font, caret.getFont());
 	caret.setFont(null);
-	
+
 	font = new Font(caret.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	caret.setFont(font);
 	assertEquals(font, caret.getFont());

@@ -121,7 +121,7 @@ public void test_equalsLjava_lang_Object() {
 public void test_hashCode() {
 	Set<StyleRange> set = new HashSet<>();
 	Color testColor = new Color(Display.getDefault(), 0, 0, 0);
-	
+
 	//regression test for bug 30924
 	set.add(new StyleRange());
 	set.add(new StyleRange(0, 1, testColor, null));

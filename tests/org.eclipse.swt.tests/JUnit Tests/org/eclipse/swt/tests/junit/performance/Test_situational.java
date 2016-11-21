@@ -65,7 +65,7 @@ protected void setUp() throws Exception {
 
 /**
  * Situations:
- * 
+ *
  * - Widget creation
  * - syncExec/asyncExec performance
  * - Image creation
@@ -82,7 +82,7 @@ public void test_createComposites() {
 	int samples;
 
     Performance.getDefault();
-	
+
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
 		Shell shell = new Shell(display);
@@ -108,7 +108,7 @@ public void test_createComposites() {
 		meter.stop();
 		shell.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
@@ -137,14 +137,14 @@ public void test_createWidgets() {
 				new Tree(c, SWT.NONE);
 				new Table(c, SWT.NONE);
 				new TabFolder(c, SWT.NONE);
-				new Group(c, SWT.BORDER);				
+				new Group(c, SWT.BORDER);
 				new Composite(c, SWT.NONE);
 			}
 		}
 		meter.stop();
 		shell.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
@@ -159,7 +159,7 @@ public void test_layout() {
 		Label changedLabel;
 		Composite parent = shell;
 		GridData data;
-		
+
 		for(int i = 0; i < 10; i++) {
 			Composite c = new Composite(parent, SWT.BORDER);
 			data = new GridData();
@@ -167,28 +167,28 @@ public void test_layout() {
 			data.verticalAlignment = GridData.FILL;
 			c.setLayoutData(data);
 			c.setLayout(new GridLayout(2, false));
-			
+
 			Composite c1 = new Composite(c, SWT.BORDER);
 			data = new GridData();
 			data.horizontalAlignment = GridData.FILL;
 			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c1.setLayoutData(data);
-			
+
 			Composite c2 = new Composite(c, SWT.BORDER);
 			data = new GridData();
 			data.horizontalAlignment = GridData.FILL;
 			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c2.setLayoutData(data);
-			
+
 			Composite c3 = new Composite(c, SWT.BORDER);
 			data = new GridData();
 			data.horizontalAlignment = GridData.FILL;
 			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c3.setLayoutData(data);
-			
+
 			Composite c4 = new Composite(c, SWT.BORDER);
 			data = new GridData();
 			data.horizontalAlignment = GridData.FILL;
@@ -204,7 +204,7 @@ public void test_layout() {
 		data.grabExcessHorizontalSpace = true;
 		data.grabExcessVerticalSpace = true;
 		changedLabel.setLayoutData(data);
-		
+
 		shell.open();
 		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
@@ -219,14 +219,14 @@ public void test_layout() {
 		meter.stop();
 		shell.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
 public void test_imageDrawing() {
 	PerformanceMeter meter = createMeter("Draw on an image");
 	int samples;
-	
+
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
 		int height = 480;
@@ -253,19 +253,19 @@ public void test_imageDrawing() {
 		color1.dispose();
 		color2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
 public void test_windowDrawing() {
 	PerformanceMeter meter = createMeter("Draw on a window");
 	Performance performance= Performance.getDefault();
-	performance.setComment(meter, 
-			Performance.EXPLAINS_DEGRADATION_COMMENT, 
+	performance.setComment(meter,
+			Performance.EXPLAINS_DEGRADATION_COMMENT,
 			"Regression due to a issue on the Releng test machine");
-			
+
 	int samples;
-	
+
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
 		int height = 480;
@@ -303,14 +303,14 @@ public void test_windowDrawing() {
 		color1.dispose();
 		color2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
 public void test_stringDrawing() {
 	PerformanceMeter meter = createMeterWithoutSummary("Draw strings using GC.drawText");
 	int samples;
-	
+
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
 		int height = 480;
@@ -351,7 +351,7 @@ public void test_stringDrawing() {
 		font1.dispose();
 		font2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 
@@ -398,7 +398,7 @@ public void test_fastStringDrawing() {
 		font1.dispose();
 		font2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
-	}	
+	}
 	disposeMeter(meter);
 }
 

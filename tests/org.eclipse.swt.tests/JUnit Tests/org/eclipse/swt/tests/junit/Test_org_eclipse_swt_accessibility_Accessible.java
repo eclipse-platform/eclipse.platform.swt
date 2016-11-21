@@ -31,7 +31,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.accessibility.Accessible
  */
-public class Test_org_eclipse_swt_accessibility_Accessible {	
+public class Test_org_eclipse_swt_accessibility_Accessible {
 
 @Before
 public void setUp() {

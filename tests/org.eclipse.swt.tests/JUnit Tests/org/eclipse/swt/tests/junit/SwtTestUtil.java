@@ -31,7 +31,7 @@ public class SwtTestUtil {
 	 */
 
 	// run test cases that may themselves be dubious
-	// these should be eventually checked to see if 
+	// these should be eventually checked to see if
 	// there is a valid failure or the test is bogus
 	public static boolean fCheckBogusTestCases = false;
 
@@ -43,22 +43,22 @@ public class SwtTestUtil {
 
 	// make dialog open calls, operator must then close them
 	public static boolean fTestDialogOpen = false;
-	
+
 	public static boolean fTestConsistency = false;
 
-	// used to specify verbose mode, if true unimplemented warning messages will 
+	// used to specify verbose mode, if true unimplemented warning messages will
 	// be written to System.out
 	public static boolean verbose = false;
-	
+
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
 	public static String[] invalidImageFilenames = new String[] {"corrupt", "corruptBadBitDepth.png"};
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
-	
+
 	// specify reparentable platforms
 	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "cocoa"};
-	
+
 	public static final String testFontName;
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
@@ -67,11 +67,11 @@ public class SwtTestUtil {
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
 	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
-	
+
 	static {
 		testFontName = "Helvetica";
 	}
-	
+
 public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {
 	if (actualThrowable instanceof SWTError) {
 		SWTError error = (SWTError) actualThrowable;
@@ -92,7 +92,7 @@ protected static boolean isReparentablePlatform() {
 	String platform = SWT.getPlatform();
 	for (int i=0; i<reparentablePlatforms.length; i++) {
 		if (reparentablePlatforms[i].equals(platform)) return true;
-	}	
+	}
 	return false;
 }
 

@@ -54,10 +54,10 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	}
 
 	for (int i=0; i<10; i++) {
-		new TreeItem(tree, SWT.NONE);	
+		new TreeItem(tree, SWT.NONE);
 	}
 	assertEquals(11, tree.getItemCount());
-	new TreeItem(tree, SWT.NONE, 5);	
+	new TreeItem(tree, SWT.NONE, 5);
 	assertEquals(12, tree.getItemCount());
 }
 
@@ -104,31 +104,31 @@ public void test_getBounds() {
 	Rectangle bounds;
 	Rectangle bounds2;
 	String string = "hello";
-	
+
 	// no columns
  	bounds = treeItem.getBounds();
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
-	
+
 	treeItem.setText(string);
 	GC gc = new GC(tree);
 	Point extent = gc.stringExtent(string);
 	gc.dispose();
 	bounds = treeItem.getBounds();
 	assertTrue(":1b:", bounds.x > 0 && bounds.height > extent.y && bounds.width > extent.x);
-	
+
 	//
 	makeCleanEnvironment();
-	
+
 	Rectangle rect = image.getBounds();
 	treeItem.setImage(image);
 	bounds = treeItem.getBounds();
 	assertTrue(":1c:", bounds.x > 0 && bounds.height >= rect.height);
 	bounds2 = treeItem.getImageBounds(0);
 	assertTrue(":1d:", bounds.x >= bounds2.x + bounds2.width);
-	
+
 	//
 	makeCleanEnvironment();
-	
+
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
 	bounds = subItem.getBounds();
 	assertTrue(":1e:", bounds.equals(new Rectangle(0, 0, 0, 0)));
@@ -139,13 +139,13 @@ public void test_getBounds() {
 	treeItem.setExpanded(false);
 	bounds = subItem.getBounds();
 	assertTrue(":1g:", bounds.equals(new Rectangle(0, 0, 0, 0)));
-	
+
 	treeItem.setExpanded(true);
 	subItem.setText(string);
 	bounds = subItem.getBounds();
 	bounds2 = treeItem.getBounds();
 	assertTrue(":1h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > extent.y && bounds.width > extent.x);
-	
+
 	//
 	makeCleanEnvironment();
 	subItem = new TreeItem(treeItem, SWT.NONE);
@@ -155,12 +155,12 @@ public void test_getBounds() {
 	assertTrue(":1i:", bounds.x > 0 && bounds.height >= rect.height);
 	bounds2 = subItem.getImageBounds(0);
 	assertTrue(":1j:", bounds.x >= bounds2.x + bounds2.width);
-	
+
 	// TODO no columns and CHECK style
 	// TODO with columns
 	// TODO with columns and CHECK style
 }
-void getBoundsIA() {	
+void getBoundsIA() {
 	// no columns - plain style
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
@@ -168,17 +168,17 @@ void getBoundsIA() {
 	GC gc = new GC(tree);
 	Point stringExtent = gc.stringExtent(string);
 	gc.dispose();
-	
+
 	Rectangle bounds;
 	Rectangle bounds2;
-	
+
 	//
 	makeCleanEnvironment();
-	
+
  	bounds = treeItem.getBounds(0);
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem.getBounds(-1);
-	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
  	bounds = treeItem.getBounds(1);
 	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
@@ -195,8 +195,8 @@ void getBoundsIA() {
 	subItem.setText(string);
 	bounds = subItem.getBounds(0);
 	bounds2 = treeItem.getBounds(0);
-	assertTrue(":1g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);	
-	
+	assertTrue(":1g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);
+
 	treeItem.setText(string);
 	bounds = treeItem.getBounds(0);
 	assertTrue(":1h:", bounds.x > 0 && bounds.height > stringExtent.y && bounds.width > stringExtent.x);
@@ -206,10 +206,10 @@ void getBoundsIA() {
 	bounds2 = treeItem.getBounds(0);
 	assertTrue(":1i:", bounds2.x > 0 && bounds2.height > 0);
 	assertTrue(":1j:", bounds2.width < bounds.width);
-	
+
 	//
 	makeCleanEnvironment();
-	
+
 	treeItem.setImage(image);
 	bounds = treeItem.getBounds(0);
 	assertTrue(":1k:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width >= imageBounds.width);
@@ -217,10 +217,10 @@ void getBoundsIA() {
 	bounds2 = treeItem.getBounds(0);
 	assertTrue(":1l:", bounds2.x > 0 && bounds2.height > 0);
 //	assertTrue(":1m:", bounds2.width > bounds.width); // once an image is added the space for it is always there
- 	
+
 	//
 	makeCleanEnvironment();
-	
+
 	treeItem.setText(string);
 	bounds = treeItem.getBounds(0);
 	treeItem.setImage(image);
@@ -237,17 +237,17 @@ void getBoundsIB() {
 	GC gc = new GC(tree);
 	Point stringExtent = gc.stringExtent(string);
 	gc.dispose();
-	
+
 	Rectangle bounds;
 	Rectangle bounds2;
-	
+
 	Tree tree2 = new Tree(shell, SWT.CHECK);
 	TreeItem treeItem2 = new TreeItem(tree2, SWT.NONE);
-	
+
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem2.getBounds(-1);
-	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
  	bounds = treeItem2.getBounds(1);
 	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
@@ -264,7 +264,7 @@ void getBoundsIB() {
 	subItem2.setText(string);
 	bounds = subItem2.getBounds(0);
 	bounds2 = treeItem2.getBounds(0);
-	assertTrue(":2g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);	
+	assertTrue(":2g:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent.y && bounds.width > stringExtent.x);
 
 	treeItem2.setText(string);
 	bounds = treeItem2.getBounds(0);
@@ -275,11 +275,11 @@ void getBoundsIB() {
 	bounds2 = treeItem2.getBounds(0);
 	assertTrue(":2i:", bounds2.x > 0 && bounds2.height > 0);
 	assertTrue(":2j:", bounds2.width < bounds.width);
-	
+
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2 = new TreeItem(tree2, SWT.NONE);
-	
+
 	treeItem2.setImage(image);
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":2k:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width >= imageBounds.width);
@@ -287,11 +287,11 @@ void getBoundsIB() {
 	bounds2 = treeItem2.getBounds(0);
 	assertTrue(":2l:", bounds2.x > 0 && bounds2.height > 0);
 	//assertTrue(":2m:", bounds2.width < bounds.width);  // once an image is added the space for it is always there
-	
+
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2 = new TreeItem(tree2, SWT.NONE);
-	
+
 	treeItem2.setText(string);
 	bounds = treeItem2.getBounds(0);
 	treeItem2.setImage(image);
@@ -302,7 +302,7 @@ void getBoundsIB() {
 }
 void getBoundsIC() {
 	// with columns
-	
+
 	Image image = images[0];
 	Rectangle imageBounds = image.getBounds();
 	String string1 = "hello";
@@ -311,22 +311,22 @@ void getBoundsIC() {
 	Point stringExtent1 = gc.stringExtent(string1);
 	//Point stringExtent2 = gc.stringExtent(string2);
 	gc.dispose();
-	
+
 	Rectangle bounds;
 	Rectangle bounds2;
-	
+
 	//
 	makeCleanEnvironment();
 
 	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
 	TreeColumn column1 = new TreeColumn(tree, SWT.CENTER);
-	
+
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3a:", bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem.getBounds(-1);
-	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
  	bounds = treeItem.getBounds(2);
 	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
@@ -343,7 +343,7 @@ void getBoundsIC() {
 	subItem.setText(new String[] {string1, string2});
 	bounds = subItem.getBounds(0);
 	bounds2 = treeItem.getBounds(0);
-	assertTrue(":3h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width == 0);	
+	assertTrue(":3h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width == 0);
 
 	column0.setWidth(100);
 	bounds = treeItem.getBounds(0);
@@ -352,14 +352,14 @@ void getBoundsIC() {
 	assertTrue(":3j:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
 	bounds = subItem.getBounds(0);
 	bounds2 = treeItem.getBounds(0);
-	assertTrue(":3k:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);	
+	assertTrue(":3k:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
 
 	column1.setWidth(200);
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3l:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3m:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
-	
+
 	treeItem.setText(new String[] {string1, string2});
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3n:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
@@ -370,14 +370,14 @@ void getBoundsIC() {
 	assertTrue(":3p:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3q:", bounds.x >= 100 && bounds.height > stringExtent1.y && bounds.width  == 200);
-	
+
 	//
 	makeCleanEnvironment();
 	column0 = new TreeColumn(tree, SWT.LEFT);
 	column1 = new TreeColumn(tree, SWT.CENTER);
 	column0.setWidth(100);
 	column1.setWidth(200);
-	
+
 	treeItem.setImage(new Image[] {image, image});
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3r:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
@@ -388,24 +388,24 @@ void getBoundsIC() {
 	assertTrue(":3t:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3u:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
-	
+
 	//
 	makeCleanEnvironment();
 	column0 = new TreeColumn(tree, SWT.LEFT);
 	column1 = new TreeColumn(tree, SWT.CENTER);
 	column0.setWidth(100);
 	column1.setWidth(200);
-	
+
 	treeItem.setText(new String[] {string1, string2});
 	treeItem.setImage(new Image[] {image, image});
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3v:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3w:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.height >= imageBounds.height && bounds.width  == 200);
-	
+
 	//
 	makeCleanEnvironment();
-	
+
 	treeItem.setText(string1);
 	new TreeColumn(tree, SWT.RIGHT);
 	bounds = treeItem.getBounds(0);
@@ -422,21 +422,21 @@ void getBoundsID() {
 	Point stringExtent1 = gc.stringExtent(string1);
 	//Point stringExtent2 = gc.stringExtent(string2);
 	gc.dispose();
-	
+
 	Rectangle bounds;
 	Rectangle bounds2;
-	
+
 	Tree tree2 = new Tree(shell, SWT.CHECK);
 	TreeItem treeItem2 = new TreeItem(tree2, SWT.NONE);
 	TreeColumn column0 = new TreeColumn(tree2, SWT.LEFT);
 	TreeColumn column1 = new TreeColumn(tree2, SWT.CENTER);
-	
+
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4a:", bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem2.getBounds(-1);
-	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
  	bounds = treeItem2.getBounds(2);
 	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
@@ -453,8 +453,8 @@ void getBoundsID() {
 	subItem2.setText(new String[] {string1, string2});
 	bounds = subItem2.getBounds(0);
 	bounds2 = treeItem2.getBounds(0);
-	assertTrue(":4h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width == 0);	
-	
+	assertTrue(":4h:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width == 0);
+
 	column0.setWidth(100);
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4i:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
@@ -462,15 +462,15 @@ void getBoundsID() {
 	assertTrue(":4j:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
 	bounds = subItem2.getBounds(0);
 	bounds2 = treeItem2.getBounds(0);
-	assertTrue(":4k:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);	
+	assertTrue(":4k:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
 
-	
+
 	column1.setWidth(200);
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4l:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4m:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
-	
+
 	treeItem2.setText(new String[] {string1, string2});
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4n:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
@@ -481,7 +481,7 @@ void getBoundsID() {
 	assertTrue(":4p:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4q:", bounds.x >= 100 && bounds.height > stringExtent1.y && bounds.width  == 200);
-	
+
 	//
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
@@ -490,7 +490,7 @@ void getBoundsID() {
 	column1 = new TreeColumn(tree2, SWT.CENTER);
 	column0.setWidth(100);
 	column1.setWidth(200);
-	
+
 	treeItem2.setImage(new Image[] {image, image});
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4r:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
@@ -501,7 +501,7 @@ void getBoundsID() {
 	assertTrue(":4t:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4u:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
-	
+
 	//
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
@@ -510,19 +510,19 @@ void getBoundsID() {
 	column1 = new TreeColumn(tree2, SWT.CENTER);
 	column0.setWidth(100);
 	column1.setWidth(200);
-	
+
 	treeItem2.setText(new String[] {string1, string2});
 	treeItem2.setImage(new Image[] {image, image});
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4v:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4w:", bounds.x >= 100 && bounds.height > stringExtent1.y && bounds.height >= imageBounds.height && bounds.width  == 200);
-	
+
 	//
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2 = new TreeItem(tree2, SWT.NONE);
-	
+
 	treeItem2.setText(string1);
 	new TreeColumn(tree2, SWT.RIGHT);
 	bounds = treeItem2.getBounds(0);
@@ -563,41 +563,41 @@ public void test_getImageBoundsI() {
 	Rectangle bounds;
 	Tree tree2 = new Tree(shell, SWT.CHECK);
 	TreeItem treeItem2 = new TreeItem(tree2, SWT.NULL);
-	
+
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(-1));
-	
+
 	// TODO - should this width be 0 or a value?
 	bounds = treeItem.getImageBounds(0);
 	assertTrue(":b:", bounds.width == 0);
-	
+
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(1));
-	
+
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
-	
+
 	// TODO - should this width be 0 or a value?
 	//bounds = treeItem2.getImageBounds(0);
 	//assertTrue(":e:", bounds.width == 0);
-	
+
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
  	//
 	makeCleanEnvironment();
-	
-	Image image = images[0];	
+
+	Image image = images[0];
 //	int imageWidth = image.getBounds().width;
 //	int imageHeight;
-	
+
 	treeItem.setImage(0, image);
 //	imageHeight = tree.getItemHeight() - tree.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(-1));
-	
+
 	bounds = treeItem.getImageBounds(0);
-//	assertTrue(":b:", bounds.x > 0 && bounds.width == imageWidth && bounds.height == imageHeight);	
-// 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(1));	
+//	assertTrue(":b:", bounds.x > 0 && bounds.width == imageWidth && bounds.height == imageHeight);
+// 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(1));
 
 
 	//
-	makeCleanEnvironment();	
-	
+	makeCleanEnvironment();
+
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2.dispose();
@@ -606,10 +606,10 @@ public void test_getImageBoundsI() {
 //	imageWidth = imageBounds.width; 	treeItem2.setImage(0, image);
 //	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
-	
+
 	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
-// 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));	
+// 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
 
 
 	//
@@ -645,14 +645,14 @@ public void test_getItemI() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		treeItem.getItem(number+1);
 		fail("No exception thrown for illegal index argument");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		treeItem.getItem(-1);
 		fail("No exception thrown for illegal index argument");
@@ -706,25 +706,25 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	Display display = treeItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-	
+
 	// no columns
 	assertEquals(tree.getBackground(), treeItem.getBackground(0));
 	assertEquals(treeItem.getBackground(), treeItem.getBackground(0));
 	treeItem.setBackground(0, red);
 	assertEquals(red, treeItem.getBackground(0));
-	
+
 	// index beyond range - no error
 	treeItem.setBackground(10, red);
 	assertEquals(treeItem.getBackground(), treeItem.getBackground(10));
-	
+
 	// with columns
 	new TreeColumn(tree, SWT.LEFT);
 	new TreeColumn(tree, SWT.LEFT);
-	
+
 	// index beyond range - no error
 	treeItem.setBackground(10, red);
 	assertEquals(treeItem.getBackground(), treeItem.getBackground(10));
-	
+
 	treeItem.setBackground(0, red);
 	assertEquals(red, treeItem.getBackground(0));
 	treeItem.setBackground(0, null);
@@ -733,18 +733,18 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	treeItem.setBackground(0, blue);
 	treeItem.setBackground(red);
 	assertEquals(blue, treeItem.getBackground(0));
-	
+
 	treeItem.setBackground(0, null);
 	assertEquals(red, treeItem.getBackground(0));
-	
+
 	treeItem.setBackground(null);
 	assertEquals(tree.getBackground(),treeItem.getBackground(0));
-	
-	try { 
+
+	try {
 		Color color = new Color(display, 255, 0, 0);
 		color.dispose();
 		treeItem.setBackground(color);
-		fail("No exception thrown for color disposed");		
+		fail("No exception thrown for color disposed");
 	} catch (IllegalArgumentException e) {
 	}
 }
@@ -757,9 +757,9 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	treeItem.setBackground(null);
 	assertEquals(tree.getBackground(),treeItem.getBackground());
 	color.dispose();
-	try { 
+	try {
 		treeItem.setBackground(color);
-		fail("No exception thrown for color disposed");		
+		fail("No exception thrown for color disposed");
 	} catch (IllegalArgumentException e) {
 	}
 }
@@ -767,7 +767,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 @Test
 public void test_setCheckedZ() {
 	assertEquals(false, treeItem.getChecked());
-	
+
 	treeItem.setChecked(true);
 	assertEquals(false, treeItem.getChecked());
 
@@ -775,7 +775,7 @@ public void test_setCheckedZ() {
 	TreeItem ti = new TreeItem(t, SWT.NULL);
 	ti.setChecked(true);
 	assertTrue(ti.getChecked());
-	
+
 	ti.setChecked(false);
 	assertEquals(false, ti.getChecked());
 	t.dispose();
@@ -784,7 +784,7 @@ public void test_setCheckedZ() {
 @Test
 public void test_setExpandedZ() {
 	assertEquals(false, treeItem.getExpanded());
-	
+
 	// there must be at least one subitem before you can set the treeitem expanded
 	treeItem.setExpanded(true);
 	assertEquals(false, treeItem.getExpanded());
@@ -795,7 +795,7 @@ public void test_setExpandedZ() {
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
 	assertEquals(false, treeItem.getExpanded());
-		
+
 	TreeItem ti = new TreeItem(treeItem, SWT.NULL);
 	ti.setExpanded(true);
 	treeItem.setExpanded(false);
@@ -807,14 +807,14 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = treeItem.getFont();
 	treeItem.setFont(font);
 	assertTrue(font.equals(treeItem.getFont()));
-	
+
 	font = new Font(treeItem.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	treeItem.setFont(font);
 	assertTrue(font.equals(treeItem.getFont()));
 
 	treeItem.setFont(null);
 	assertTrue(tree.getFont().equals( treeItem.getFont()));
-	
+
 	font.dispose();
 	try {
 		treeItem.setFont(font);
@@ -828,45 +828,45 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Display display = treeItem.getDisplay();
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
-	
+
 	// no columns
 	assertTrue(tree.getFont().equals( treeItem.getFont(0)));
 	assertTrue(treeItem.getFont().equals(treeItem.getFont(0)));
 	treeItem.setFont(0, font);
 	assertTrue(font.equals(treeItem.getFont(0)));
-	
+
 	// index beyond range - no error
 	treeItem.setFont(10, font);
 	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
-	
+
 	// with columns
 	new TreeColumn(tree, SWT.LEFT);
 	new TreeColumn(tree, SWT.LEFT);
-	
+
 	// index beyond range - no error
 	treeItem.setFont(10, font);
 	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
-	
+
 	treeItem.setFont(0, font);
 	assertTrue(font.equals(treeItem.getFont(0)));
 	treeItem.setFont(0, null);
 	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
-	
+
 	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
-	
+
 	treeItem.setFont(0, font);
 	treeItem.setFont(font2);
 	assertTrue(font.equals(treeItem.getFont(0)));
-	
+
 	treeItem.setFont(0, null);
 	assertTrue(font2.equals(treeItem.getFont(0)));
-	
+
 	treeItem.setFont(null);
 	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
-	
+
 	font.dispose();
 	font2.dispose();
-	
+
 	try {
 		treeItem.setFont(0, font);
 		treeItem.setFont(0, null);
@@ -880,25 +880,25 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	Display display = treeItem.getDisplay();
 	Color red = display.getSystemColor(SWT.COLOR_RED);
 	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-	
+
 	// no columns
 	assertEquals(tree.getForeground(), treeItem.getForeground(0));
 	assertEquals(treeItem.getForeground(), treeItem.getForeground(0));
 	treeItem.setForeground(0, red);
 	assertEquals(red, treeItem.getForeground(0));
-	
+
 	// index beyond range - no error
 	treeItem.setForeground(10, red);
 	assertEquals(treeItem.getForeground(), treeItem.getForeground(10));
-	
+
 	// with columns
 	new TreeColumn(tree, SWT.LEFT);
 	new TreeColumn(tree, SWT.LEFT);
-	
+
 	// index beyond range - no error
 	treeItem.setForeground(10, red);
 	assertEquals(treeItem.getForeground(), treeItem.getForeground(10));
-	
+
 	treeItem.setForeground(0, red);
 	assertEquals(red, treeItem.getForeground(0));
 	treeItem.setForeground(0, null);
@@ -907,18 +907,18 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	treeItem.setForeground(0, blue);
 	treeItem.setForeground(red);
 	assertEquals(blue, treeItem.getForeground(0));
-	
+
 	treeItem.setForeground(0, null);
 	assertEquals(red, treeItem.getForeground(0));
-	
+
 	treeItem.setForeground(null);
 	assertEquals(tree.getForeground(),treeItem.getForeground(0));
-	
-	try { 
+
+	try {
 		Color color = new Color(display, 255, 0, 0);
 		color.dispose();
 		treeItem.setForeground(color);
-		fail("No exception thrown for color disposed");		
+		fail("No exception thrown for color disposed");
 	} catch (IllegalArgumentException e) {
 	}
 }
@@ -931,7 +931,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	treeItem.setForeground(null);
 	assertEquals(tree.getForeground(),treeItem.getForeground());
 	color.dispose();
-	try { 
+	try {
 		treeItem.setForeground(color);
 		fail("No exception thrown for color disposed");
 	} catch (IllegalArgumentException e) {
@@ -952,17 +952,17 @@ public void test_setGrayedZ() {
 
 @Test
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
-	assertNull(treeItem.getImage(1));	
- 	treeItem.setImage(-1, null);		
-	assertNull(treeItem.getImage(-1));	
-		
+	assertNull(treeItem.getImage(1));
+ 	treeItem.setImage(-1, null);
+	assertNull(treeItem.getImage(-1));
+
 	treeItem.setImage(0, images[0]);
-	assertEquals(images[0], treeItem.getImage(0));	
+	assertEquals(images[0], treeItem.getImage(0));
  	String texts[] = new String[images.length];
 	for (int i = 0; i < texts.length; i++) {
 		texts[i] = String.valueOf(i);
 	}
-	
+
 	//tree.setText(texts);				// create enough columns for TreeItem.setImage(Image[]) to work
 	int columnCount = tree.getColumnCount();
 	if (columnCount < texts.length) {
@@ -975,7 +975,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 		columns[i].setText(texts[i]);
 	}
 	treeItem.setImage(1, images[1]);
-	assertEquals(images[1], treeItem.getImage(1));	
+	assertEquals(images[1], treeItem.getImage(1));
  	treeItem.setImage(images);
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], treeItem.getImage(i));
@@ -994,32 +994,32 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	assertEquals(null, treeItem.getImage(0));
 	treeItem.setImage(0, images[0]);
 	assertEquals(images[0], treeItem.getImage(0));
-	
+
 	// index beyond range - no error
 	treeItem.setImage(10, images[0]);
 	assertEquals(null, treeItem.getImage(10));
-	
+
 	// with columns
 	new TreeColumn(tree, SWT.LEFT);
 	new TreeColumn(tree, SWT.LEFT);
-	
+
 	// index beyond range - no error
 	treeItem.setImage(10, images[0]);
 	assertEquals(null, treeItem.getImage(10));
-	
+
 	treeItem.setImage(0, images[0]);
 	assertEquals(images[0], treeItem.getImage(0));
 	treeItem.setImage(0, null);
 	assertEquals(null, treeItem.getImage(0));
-	
+
 	treeItem.setImage(0, images[0]);
 	treeItem.setImage(images[1]);
 	assertEquals(images[1], treeItem.getImage(0));
-	
+
 	treeItem.setImage(images[1]);
 	treeItem.setImage(0, images[0]);
 	assertEquals(images[0], treeItem.getImage(0));
-	
+
 	images[0].dispose();
 	try {
 		treeItem.setImage(0, images[0]);
@@ -1033,33 +1033,33 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 public void test_setText$Ljava_lang_String() {
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
-	
+
 	try {
 		treeItem.setText((String []) null);
 		fail("No exception thrown for strings == null");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
    /*
- 	* Test the getText/setText API with a Tree that has only 
+ 	* Test the getText/setText API with a Tree that has only
  	* the default column.
  	*/
-	
+
 	assertEquals(0, treeItem.getText(1).length());
-	
+
 	treeItem.setText(TestStrings);
 	assertEquals(TestStrings[0], treeItem.getText(0));
 	for (int i = 1; i < TestStrings.length; i++) {
 		assertEquals(0, treeItem.getText(i).length());
 	}
-	
-	
+
+
    /*
- 	* Test the getText/setText API with a Tree that enough 
+ 	* Test the getText/setText API with a Tree that enough
  	* columns to fit all test item texts.
  	*/
- 		
+
 	int columnCount = tree.getColumnCount();
 	if (columnCount < images.length) {
 		for (int i = columnCount; i < images.length; i++){
@@ -1080,27 +1080,27 @@ public void test_setTextILjava_lang_String(){
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
 
    /*
- 	* Test the getText/setText API with a Tree that has only 
+ 	* Test the getText/setText API with a Tree that has only
  	* the default column.
  	*/
-	
-	assertEquals(0, treeItem.getText(1).length());	
+
+	assertEquals(0, treeItem.getText(1).length());
  	treeItem.setText(1, TestString);
-	assertEquals(0, treeItem.getText(1).length());	
+	assertEquals(0, treeItem.getText(1).length());
 	assertEquals(0, treeItem.getText(0).length());
-	
+
 	treeItem.setText(0, TestString);
 	assertEquals(TestString, treeItem.getText(0));
  	treeItem.setText(-1, TestStrings[1]);
-	assertEquals(0, treeItem.getText(-1).length());	
+	assertEquals(0, treeItem.getText(-1).length());
 
    /*
- 	* Test the getText/setText API with a Tree that enough 
+ 	* Test the getText/setText API with a Tree that enough
  	* columns to fit all test item texts.
  	*/
 
 	makeCleanEnvironment();
-	
+
 	//tree.setText(TestStrings);				// create anough columns for TreeItem.setText(String[]) to work
 	int columnCount = tree.getColumnCount();
 	if (columnCount < images.length) {
@@ -1112,34 +1112,34 @@ public void test_setTextILjava_lang_String(){
 	for (int i = 0; i < TestStrings.length; i++) {
 		columns[i].setText(TestStrings[i]);
 	}
-	assertEquals(0, treeItem.getText(1).length());	
+	assertEquals(0, treeItem.getText(1).length());
 
 
 	treeItem.setText(1, TestString);
-	assertEquals(TestString, treeItem.getText(1));	
+	assertEquals(TestString, treeItem.getText(1));
 	assertEquals(0, treeItem.getText(0).length());
-	
+
 	treeItem.setText(0, TestString);
 	assertEquals(TestString, treeItem.getText(0));
 
 
 	treeItem.setText(-1, TestStrings[1]);
-	assertEquals(0, treeItem.getText(-1).length());	
+	assertEquals(0, treeItem.getText(-1).length());
 
 
 	try {
-		treeItem.setText(-1, null);		
+		treeItem.setText(-1, null);
 		fail("No exception thrown for string == null");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
-		treeItem.setText(0, null);		
+		treeItem.setText(0, null);
 		fail("No exception thrown for string == null");
 	}
 	catch (IllegalArgumentException e) {
-	} 
+	}
 
 
 }

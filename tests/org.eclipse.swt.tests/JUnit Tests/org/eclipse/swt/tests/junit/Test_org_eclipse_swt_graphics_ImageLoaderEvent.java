@@ -34,7 +34,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_sw
 		fail("No exception thrown for ImageLoader source == null");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	new ImageLoaderEvent(new ImageLoader(), null, 0, true);
 }
 

@@ -106,7 +106,7 @@ Scale scale;
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected) {
 	 //Uncomment these lines and comment out call to check() if you want the test to report all errors without
 	 //stopping.
-	
+
 	//if (trackBar.getMinimum() != minExpected)
 		//System.out.println(call + "(" + set + "): Minimum Expected: " + minExpected + "  Actual: " + trackBar.getMinimum());
 	//if (trackBar.getMaximum() != maxExpected)

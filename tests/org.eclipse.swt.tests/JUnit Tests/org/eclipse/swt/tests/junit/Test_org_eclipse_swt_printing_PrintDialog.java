@@ -23,7 +23,7 @@ import org.junit.Test;
  * @see org.eclipse.swt.printing.PrintDialog
  */
 public class Test_org_eclipse_swt_printing_PrintDialog extends Test_org_eclipse_swt_widgets_Dialog {
-	
+
 @Override
 @Before
 public void setUp() {
@@ -35,7 +35,7 @@ public void setUp() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
-	
+
 	try {
 		new PrintDialog(null);
 		fail("No exception thrown for parent == null");
@@ -47,7 +47,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new PrintDialog(shell, SWT.NONE);
-	
+
 	try {
 		new PrintDialog(null, SWT.NONE);
 		fail("No exception thrown for parent == null");

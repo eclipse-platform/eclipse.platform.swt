@@ -39,7 +39,7 @@ public class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_
 	static final int JAN = 0, FEB = 1, AUG = 7, NOV = 10;
 	DateTime datetime;
 	int style = SWT.DATE;
-	
+
 	@Parameters
 	 public static Collection<Object[]> data() {
 	   Object[][] data = new Object[][] { { SWT.DATE }, { SWT.TIME}, { SWT.CALENDAR }};
@@ -107,17 +107,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	};
-	
+
 	try {
 		datetime.addSelectionListener(null);
 		fail("No exception thrown for addSelectionListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	datetime.addSelectionListener(listener);
 	datetime.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
-	
+
 	try {
 		datetime.removeSelectionListener(null);
 		fail("No exception thrown for removeSelectionListener with null argument");
@@ -433,7 +433,7 @@ public void test_setYearI() {
 
 	datetime.setYear(-1947);
 	assertEquals(2005, datetime.getYear());
-	
+
 	datetime.setDate(2008, FEB, 29);
 	datetime.setYear(2007);
 	assertEquals(2008, datetime.getYear());
@@ -461,7 +461,7 @@ public void test_consistency_MenuDetect () {
     tearDown();
     setUp(SWT.CALENDAR);
     consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    
+
 }
 
 @Test

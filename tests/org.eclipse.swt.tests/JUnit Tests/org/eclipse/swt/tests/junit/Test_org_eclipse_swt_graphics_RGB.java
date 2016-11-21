@@ -27,10 +27,10 @@ public class Test_org_eclipse_swt_graphics_RGB {
 public void test_ConstructorIII() {
 	// Test RGB(int red, int green, int blue)
 	new RGB(20,100,200);
-	
+
 	new RGB(0,0,0);
 
-	
+
 
 	try {
 		new RGB(-1, 20, 50);
@@ -38,21 +38,21 @@ public void test_ConstructorIII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(256, 20, 50);
 		fail("No exception thrown for red > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(20, -1, 50);
 		fail("No exception thrown for green < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(20, 256, 50);
 		fail("No exception thrown for green > 255");
@@ -66,21 +66,21 @@ public void test_ConstructorIII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(20, 50, 256);
 		fail("No exception thrown for blue > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
-			
+
 }
 
 @Test
 public void test_ConstructorFFF() {
 
 	new RGB(0f,0f,0f);
-	
+
 	new RGB(0f,1f,0f);
 	new RGB(0f,0f,1f);
 	new RGB(0f,0.6f,0.4f);
@@ -174,42 +174,42 @@ public void test_ConstructorFFF() {
 	new RGB(360f,0f,1f);
 	new RGB(360f,1f,0f);
 	new RGB(360f,0.6f,0.4f);
-	
+
 	try {
 		new RGB(400f, 0.5f, 0.5f);
 		fail("No exception thrown for hue > 360");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(-5f, 0.5f, 0.5f);
 		fail("No exception thrown for hue < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(200f, -0.5f, 0.5f);
 		fail("No exception thrown for saturation < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(200f, 300f, 0.5f);
 		fail("No exception thrown for saturation > 1");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(200f, 0.5f, -0.5f);
 		fail("No exception thrown for brightness < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
-	
+
 	try {
 		new RGB(200f, 0.5f, 400f);
 		fail("No exception thrown for brightness > 1");
@@ -223,22 +223,22 @@ public void test_equalsLjava_lang_Object() {
 	int r = 0, g = 127, b = 254;
 	RGB rgb1 = new RGB(r, g, b);
 	RGB rgb2;
-	
+
 	rgb2 = rgb1;
 	if (!rgb1.equals(rgb2)) {
 		fail("Two references to the same RGB instance not found equal");
 	}
-	
+
 	rgb2 = new RGB(r, g, b);
 	if (!rgb1.equals(rgb2)) {
 		fail("References to two different RGB instances with same R G B parameters not found equal");
 	}
-	
+
 	if (rgb1.equals(new RGB(r+1, g, b)) ||
 	    rgb1.equals(new RGB(r, g+1, b)) ||
 	    rgb1.equals(new RGB(r, g, b+1)) ||
 	    rgb1.equals(new RGB(r+1, g+1, b+1))) {
-		fail("Comparing two RGB instances with different combination of R G B parameters found equal");    	
+		fail("Comparing two RGB instances with different combination of R G B parameters found equal");
 	}
 
 	float hue = 220f, sat = 0.6f, bright = 0.7f;
@@ -247,17 +247,17 @@ public void test_equalsLjava_lang_Object() {
 	if (!rgb1.equals(rgb2)) {
 		fail("Two references to the same RGB instance not found equal");
 	}
-	
+
 	rgb2 = new RGB(hue, sat, bright);
 	if (!rgb1.equals(rgb2)) {
 		fail("References to two different RGB instances with same H S B parameters not found equal");
 	}
-	
+
 	if (rgb1.equals(new RGB(hue+1, sat, bright)) ||
 	    rgb1.equals(new RGB(hue, sat+0.1f, bright)) ||
 	    rgb1.equals(new RGB(hue, sat, bright+0.1f)) ||
 	    rgb1.equals(new RGB(hue+1, sat+0.1f, bright+0.1f))) {
-		fail("Comparing two RGB instances with different combination of H S B parameters found equal");    	
+		fail("Comparing two RGB instances with different combination of H S B parameters found equal");
 	}
 }
 
@@ -375,14 +375,14 @@ public void test_hashCode() {
 	int r = 255, g = 100, b = 0;
 	RGB rgb1 = new RGB(r, g, b);
 	RGB rgb2 = new RGB(r, g, b);
-	
+
 	int hash1 = rgb1.hashCode();
 	int hash2 = rgb2.hashCode();
-	
+
 	if (hash1 != hash2) {
 		fail("Two RGB instances with same R G B parameters returned different hash codes");
 	}
-	
+
 	if (rgb1.hashCode() == new RGB(g, b, r).hashCode() ||
 		rgb1.hashCode() == new RGB(b, r, g).hashCode()) {
 		fail("Two RGB instances with different R G B parameters returned the same hash code");
@@ -394,7 +394,7 @@ public void test_toString() {
 	RGB rgb = new RGB(0, 100, 200);
 
 	String s = rgb.toString();
-	
+
 	if (s == null || s.length() == 0) {
 		fail("RGB.toString returns a null or empty String");
 	}

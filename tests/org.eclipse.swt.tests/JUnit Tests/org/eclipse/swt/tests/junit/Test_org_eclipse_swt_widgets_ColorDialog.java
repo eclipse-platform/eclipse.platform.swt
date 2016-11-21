@@ -40,7 +40,7 @@ public void setUp() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new ColorDialog(shell);
-	
+
 	try {
 		new ColorDialog(null);
 		fail("No exception thrown for parent == null");
@@ -52,7 +52,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	new ColorDialog(shell, SWT.NULL);
-	
+
 	try {
 		new ColorDialog(null, SWT.NULL);
 		fail("No exception thrown for parent == null");
@@ -65,12 +65,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(0, 0, 0);
 
-	assertTrue(":a:", colorDialog.getRGB() == null);	
-		
+	assertTrue(":a:", colorDialog.getRGB() == null);
+
 	colorDialog.setRGB(rgb);
 	assertTrue(":b:", colorDialog.getRGB() == rgb);
 
 	colorDialog.setRGB(null);
-	assertTrue(":c:", colorDialog.getRGB() == null);	
+	assertTrue(":c:", colorDialog.getRGB() == null);
 }
 }

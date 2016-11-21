@@ -38,7 +38,7 @@ public class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_s
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	// do nothing, even though this is not an abstract class, it was never meant to 
+	// do nothing, even though this is not an abstract class, it was never meant to
 	// be instantiated
 }
 

@@ -43,19 +43,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	// valid color (black)
 	Color color = new Color(display, 0, 0, 0);
 	color.dispose();
-	
+
 	// valid color (black with alpha)
 	color = new Color(display, 0, 0, 0, 0);
 	color.dispose();
-	
+
 	// valid color (white)
 	color = new Color(display, 255, 255, 255);
 	color.dispose();
-	
+
 	// valid color (white with alpha)
 	color = new Color(display, 255, 255, 255, 0);
 	color.dispose();
-	
+
 	// valid color (random grey)
 	color = new Color(display, 20, 20, 20);
 	color.dispose();
@@ -63,23 +63,23 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	// valid color (random grey with alpha)
 	color = new Color(display, 20, 20, 20, 0);
 	color.dispose();
-	
+
 	// valid color (random)
 	color = new Color(display, 102, 255, 0);
 	color.dispose();
-	
+
 	// valid color (random with alpha)
 	color = new Color(display, 102, 255, 0, 0);
 	color.dispose();
-	
+
 	// device == null (valid)
 	color = new Color(null, 0, 0, 0);
 	color.dispose();
-	
+
 	// device == null (valid with alpha)
 	color = new Color(null, 0, 0, 0, 0);
 	color.dispose();
-	
+
 	// illegal argument, rgb < 0
 	try {
 		color = new Color(display, -10, -10, -10);
@@ -87,7 +87,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for rgb < 0");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// illegal argument, alpha < 0
 	try {
 		color = new Color(display, 0, 0, 0, -10);
@@ -95,7 +95,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for rgba < 0");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// illegal argument, rgb > 255
 	try {
 		color = new Color(display, 1000, 2000, 3000);
@@ -103,7 +103,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for rgb > 255");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// illegal argument, rgba > 255
 	try {
 		color = new Color(display, 1000, 2000, 3000, 4000);
@@ -111,7 +111,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for rgba > 255");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// illegal argument, blue > 255
 	try {
 		color = new Color(display, 10, 10, 256);
@@ -119,7 +119,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 		fail("No exception thrown for blue > 255");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	// illegal argument, alpha > 255
 	try {
 		color = new Color(display, 10, 10, 10, 256);
@@ -133,47 +133,47 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
 	// Test new Color(Device device, RGB rgb)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255; or rgb is null
-	
+
 	// valid color (black)
 	Color color = new Color(display, new RGB(0, 0, 0));
 	color.dispose();
-	
+
 	// valid color (black with alpha)
 	color = new Color(display, new RGB(0, 0, 0), 0);
 	color.dispose();
-	
+
 	// valid color (white)
 	color = new Color(display, new RGB(255, 255, 255));
 	color.dispose();
-	
+
 	// valid color (white with alpha)
 	color = new Color(display, new RGB(255, 255, 255), 0);
 	color.dispose();
-	
+
 	// valid color (random grey)
 	color = new Color(display, new RGB(10, 10, 10));
 	color.dispose();
-	
+
 	// valid color (random grey with alpha)
 	color = new Color(display, new RGB(10, 10, 10), 0);
 	color.dispose();
-	
+
 	// valid color (random)
 	color = new Color(display, new RGB(102, 255, 0));
 	color.dispose();
-	
+
 	// valid color (random with alpha)
 	color = new Color(display, new RGB(102, 255, 0), 0);
 	color.dispose();
-	
+
 	// device == null (valid)
 	color = new Color(null, new RGB(0, 0, 0));
 	color.dispose();
-	
+
 	// device == null (valid with alpha)
 	color = new Color(null, new RGB(0, 0, 0), 0);
 	color.dispose();
-	
+
 	// illegal argument, rgb < 0
 	try {
 		color = new Color(display, new RGB(-10, -10, -10));
@@ -236,47 +236,47 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGBA() {
 	// Test new Color(Device device, RGBA rgba)
 	// IllegalArgumentException if the red, green, blue or alpha argument is not between 0 and 255; or rgba is null
-	
+
 	// valid color (black)
 	Color color = new Color(display, new RGBA(0, 0, 0, 255));
 	color.dispose();
-	
+
 	// valid color (black with alpha)
 	color = new Color(display, new RGBA(0, 0, 0, 0));
 	color.dispose();
-	
+
 	// valid color (white)
 	color = new Color(display, new RGBA(255, 255, 255, 255));
 	color.dispose();
-	
+
 	// valid color (white with alpha)
 	color = new Color(display, new RGBA(255, 255, 255, 0));
 	color.dispose();
-	
+
 	// valid color (random grey)
 	color = new Color(display, new RGBA(10, 10, 10, 10));
 	color.dispose();
-	
+
 	// valid color (random grey with alpha)
 	color = new Color(display, new RGBA(10, 10, 10, 0));
 	color.dispose();
-	
+
 	// valid color (random)
 	color = new Color(display, new RGBA(102, 255, 0, 255));
 	color.dispose();
-	
+
 	// valid color (random with alpha)
 	color = new Color(display, new RGBA(102, 255, 0, 0));
 	color.dispose();
-	
+
 	// device == null (valid)
 	color = new Color(null, new RGBA(0, 0, 0, 255));
 	color.dispose();
-	
+
 	// device == null (valid with alpha)
 	color = new Color(null, new RGBA(0, 0, 0, 0));
 	color.dispose();
-	
+
 	// illegal argument, rgba < 0
 	try {
 		color = new Color(display, new RGBA(-10, -10, -10, -10));
@@ -341,7 +341,7 @@ public void test_equalsLjava_lang_Object() {
 		sameColor2.dispose();
 		otherColor.dispose();
 	}
-	
+
 	// With alpha
 	color = new Color(display, 1, 2, 3, 0);
 	sameColor = new Color(display, 1, 2, 3, 0);
@@ -374,7 +374,7 @@ public void test_getBlue() {
 	} finally {
 		color.dispose();
 	}
-	
+
 }
 
 @Test

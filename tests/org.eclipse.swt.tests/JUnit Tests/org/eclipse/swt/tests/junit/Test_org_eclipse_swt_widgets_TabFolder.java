@@ -133,12 +133,12 @@ public void test_getItems() {
 	TabItem[] items = new TabItem[number];
 
 	assertEquals(0, tabFolder.getItems().length);
-	
+
 	for (int i = 0; i<number ; i++){
 	  	items[i] = new TabItem(tabFolder, 0);
 	}
 	assertArrayEquals(items, tabFolder.getItems());
-	
+
 	tabFolder.getItems()[0].dispose();
 	assertArrayEquals(new TabItem[]{items[1], items[2], items[3], items[4]}, tabFolder.getItems());
 
@@ -192,15 +192,15 @@ public void test_getSelectionIndex() {
 	TabItem[] items = new TabItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
-		
+
 	assertTrue(":a:", tabFolder.getSelectionIndex()==0);
 
 	tabFolder.setSelection(new TabItem[]{items[2], items[number-1], items[10]});
 	assertTrue(":b:", tabFolder.getSelectionIndex()==2);
-	
+
 	tabFolder.setSelection(items);
 	assertTrue(":c:", tabFolder.getSelectionIndex()==0);
-	
+
 	tabFolder.setSelection(items[2]);
 	assertTrue(":d:", tabFolder.getSelectionIndex()==2);
 }
@@ -218,7 +218,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 
 	//
 	makeCleanEnvironment();
-	
+
 	for (int i = 0; i<number ; i++){
 	  	tis[i] = new TabItem(tabFolder, 0);
 	}
@@ -232,7 +232,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	}
 
 	//
-	makeCleanEnvironment();	
+	makeCleanEnvironment();
 	number = 20;
 	TabItem[] items = new TabItem[number];
 
@@ -256,7 +256,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	//
 	TabFolder tabFolder2 = new TabFolder(shell, SWT.NULL);
 	TabItem tabItem = new TabItem(tabFolder2, SWT.NULL);
-	
+
 	assertTrue(":a:", tabFolder.indexOf(tabItem) == -1);
 }
 
@@ -277,10 +277,10 @@ public void test_setSelectionEmpty() {
 		tabFolder.setSelection(i);
 		assertEquals(i, tabFolder.getSelectionIndex());
 	}
-	
+
 	makeCleanEnvironment();
 	tabFolder.setSelection(-1);
-	assertEquals(0, tabFolder.getSelection().length);	
+	assertEquals(0, tabFolder.getSelection().length);
 }
 
 @Test
@@ -296,7 +296,7 @@ public void test_setSelectionI() {
 
 	//
 	makeCleanEnvironment();
-	
+
 	for (int i = 0; i<number ; i++){
 	  	new TabItem(tabFolder, 0);
 	  	assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
@@ -304,7 +304,7 @@ public void test_setSelectionI() {
 
 	//
 	makeCleanEnvironment();
-	
+
 	number = 5;
 	TabItem[] items = new TabItem[number];
 	for (int i = 0; i < number; i++)
@@ -318,7 +318,7 @@ public void test_setSelectionI() {
 	finally {
 		assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	}
-	
+
 	try {
 		tabFolder.setSelection((TabItem[]) null);
 		fail("No exception thrown for selection == null");
@@ -331,7 +331,7 @@ public void test_setSelectionI() {
 
 	//
 	makeCleanEnvironment();
-	
+
 	items = new TabItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
@@ -343,55 +343,55 @@ public void test_setSelectionI() {
 	assertArrayEquals(new TabItem[]{items[4]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(2);
-	assertArrayEquals(new TabItem[]{items[2]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[]{items[2]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(1);
 	assertArrayEquals(new TabItem[]{items[1]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(number + 1);
-	assertArrayEquals(new TabItem[]{items[1]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[]{items[1]}, tabFolder.getSelection());
 
 //	tabFolder.setSelection(-1);
-//	assertEquals(0, tabFolder.getSelection().length);	
-	
+//	assertEquals(0, tabFolder.getSelection().length);
+
 	tabFolder.setSelection(3);
 	assertArrayEquals(new TabItem[]{items[3]}, tabFolder.getSelection());
 
 //	tabFolder.setSelection(-2);
-//	assertEquals(0, tabFolder.getSelection().length);	
+//	assertEquals(0, tabFolder.getSelection().length);
 
 	//
 	makeCleanEnvironment();
-	
+
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 
 	tabFolder.setSelection(items[0]);
 	assertArrayEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
-	
+
 	tabFolder.setSelection(new TabItem[] {items[0]});
 	assertArrayEquals(new TabItem[] {items[0]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[3]});
-	assertArrayEquals(new TabItem[] {items[3]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[3]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[4]});
 	assertArrayEquals(new TabItem[] {items[4]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[2]});
-	assertArrayEquals(new TabItem[] {items[2]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[2]}, tabFolder.getSelection());
 
 	tabFolder.setSelection(new TabItem[] {items[1]});
-	assertArrayEquals(new TabItem[] {items[1]}, tabFolder.getSelection());	
+	assertArrayEquals(new TabItem[] {items[1]}, tabFolder.getSelection());
 
 	//
 	makeCleanEnvironment();
-	
+
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 	try {
 		tabFolder.setSelection( new TabItem[]{items[0], null});
-		tabFolder.setSelection( new TabItem[]{null});		
+		tabFolder.setSelection( new TabItem[]{null});
 		fail("No exception thrown for selection == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -421,7 +421,7 @@ private void createTabFolder(List<String> events) {
 		item.setControl(itemText);
 		hookExpectedEvents(item, getTestName(), events);
 	}
-	
+
 //	tabFolder.setSelection(new TabItem[] {tabFolder.getItem(0)});
 }
 

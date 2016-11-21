@@ -102,7 +102,7 @@ public void test_getIncrement() {
 	{
 	  slider.setIncrement(cases[i]);
 	  assertTrue("case: " + String.valueOf(i), slider.getIncrement()==cases[i]);
-	} 
+	}
 }
 
 @Test
@@ -140,14 +140,14 @@ public void test_getPageIncrement() {
 	{
 	  slider.setPageIncrement(cases[i]);
 	  assertTrue("case: " + String.valueOf(i), slider.getPageIncrement()==cases[i]);
-	} 
+	}
 }
 
 @Test
 public void test_getSelection() {
 	slider.setSelection(10);
 	assertTrue(":a:", slider.getSelection()== 10);
-	
+
 }
 
 @Override
@@ -529,7 +529,7 @@ return new int[][] {
 {97, 97, 100, 97, 3},
 {98, 98, 100, 98, 2},
 {99, 99, 100, 99, 1},
-{100, 10, 100, 50, 10}, 
+{100, 10, 100, 50, 10},
 {101, 10, 100, 50, 10},
 {102, 10, 100, 50, 10},
 {103, 10, 100, 50, 10},

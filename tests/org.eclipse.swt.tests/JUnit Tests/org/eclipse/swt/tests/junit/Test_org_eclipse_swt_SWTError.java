@@ -45,7 +45,7 @@ public void test_ConstructorI() {
 public void test_ConstructorILjava_lang_String() {
 	assertTrue (
 		"did not fill in code properly",
-		new SWTError(SWT.ERROR_CANNOT_BE_ZERO, "An uninteresting message").code 
+		new SWTError(SWT.ERROR_CANNOT_BE_ZERO, "An uninteresting message").code
 			== SWT.ERROR_CANNOT_BE_ZERO);
 }
 
@@ -60,33 +60,33 @@ public void test_ConstructorLjava_lang_String() {
 public void test_getMessage() {
 	assertTrue (
 		"did not include creation string in result",
-		new SWTError(SWT.ERROR_CANNOT_BE_ZERO, "An interesting message").getMessage() 
+		new SWTError(SWT.ERROR_CANNOT_BE_ZERO, "An interesting message").getMessage()
 			.indexOf("An interesting message") >= 0);
 }
 
 @Test
 public void test_printStackTrace() {
-	
+
 	// WARNING: this test is not CLDC safe, because it requires java.io.PrintStream
-	
+
 	try {
 		Class.forName("java.io.PrintStream");
 	} catch (ClassNotFoundException e) {
 		// ignore test if running on CLDC
 		return;
 	}
-	
+
 	// test default SWTError
-	
+
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	System.setErr(new PrintStream(out));
 	SWTError error = new SWTError();
 	error.printStackTrace();
 	assertTrue(out.size() > 0);
 	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
-	
+
 	// test SWTError with code
-	
+
 	out = new ByteArrayOutputStream();
 	System.setErr(new PrintStream(out));
 	error = new SWTError(SWT.ERROR_INVALID_ARGUMENT);

@@ -72,17 +72,17 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	};
-	
+
 	try {
 		link.addSelectionListener(null);
 		fail("No exception thrown for addSelectionListener with null argument");
 	} catch (IllegalArgumentException e) {
 	}
-	
+
 	link.addSelectionListener(listener);
 	link.notifyListeners(SWT.Selection, new Event());
 	assertTrue(listenerCalled);
-	
+
 	try {
 		link.removeSelectionListener(null);
 		fail("No exception thrown for removeSelectionListener with null argument");
@@ -140,9 +140,9 @@ public void test_setTextLjava_lang_String() {
 			"Te&&xt &text && <a>L&ink</a> h&i <a>fe&&lipe</a> &l &end&&",
 			"Text <a id=\"1\">Link</a> something <a href=\"bla bla2\" >Link2</a> somethingelse <a>Link3 large large</a>. some text to test this wrapping thing <A href=\"last\">this is suppose to be a very long link text the spraws over several lines in the text layout</a>.end",
 			"The SWT component is designed to provide <A>efficient</A>, <A>portable</A> <A>access to the user-interface facilities of the operating systems</A> on which it is implemented.",
-			"some text", 
-			"ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct", 
-			"\n \n \b \t ", 
+			"some text",
+			"ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct",
+			"\n \n \b \t ",
 			"\0"};
 	for (int i=0; i<cases.length; i++){
 		link.setText(cases[i]);
