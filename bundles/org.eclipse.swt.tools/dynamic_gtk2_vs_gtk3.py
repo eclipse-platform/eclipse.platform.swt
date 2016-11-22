@@ -100,12 +100,12 @@ if __name__ == "__main__":
     gtk2functions = download_gtk2_stable_symbols()
     gtk30functions = download_gtk3_0_symbols()
     gtk3xfunctions = download_gtk3_stable_symbols()
-    gtk3xdepricated = download_gtk3_deprecated_symbols()
+    gtk3xdeprecated = download_gtk3_deprecated_symbols()
 
     os_custom_str = populate_function_list()
 
     find_gtk_version_functions(os_custom_str, gtk2functions, gtk30functions,
-            gtk3xfunctions, gtk3xdepricated)
+            gtk3xfunctions, gtk3xdeprecated)
 
     find_gtk2_and_gtk3_shared()
 
