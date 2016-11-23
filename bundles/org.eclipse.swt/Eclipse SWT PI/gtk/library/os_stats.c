@@ -514,7 +514,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1screen_1get_1n_1monitors",
 	"_1gdk_1screen_1get_1primary_1monitor",
 	"_1gdk_1screen_1get_1resolution",
-	"_1gdk_1screen_1get_1root_1window",
 	"_1gdk_1screen_1height",
 	"_1gdk_1screen_1width",
 	"_1gdk_1screen_1width_1mm",

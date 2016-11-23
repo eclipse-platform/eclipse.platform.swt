@@ -6144,18 +6144,6 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gdk_1screen_1get_1resolution)
 }
 #endif
 
-#ifndef NO__1gdk_1screen_1get_1root_1window
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1root_1window)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1root_1window_FUNC);
-	rc = (jintLong)gdk_screen_get_root_window((GdkScreen *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1root_1window_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1screen_1height
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1height)
 	(JNIEnv *env, jclass that)

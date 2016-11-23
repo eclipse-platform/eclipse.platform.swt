@@ -5003,16 +5003,6 @@ public static final long /*int*/ gdk_screen_get_active_window(long /*int*/ scree
 		lock.unlock();
 	}
 }
-/** @param screen cast=(GdkScreen *) */
-public static final native long /*int*/ _gdk_screen_get_root_window(long /*int*/ screen);
-public static final long /*int*/ gdk_screen_get_root_window(long /*int*/ screen) {
-	lock.lock();
-	try {
-		return _gdk_screen_get_root_window(screen);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic
  * @param screen cast=(GdkScreen *)

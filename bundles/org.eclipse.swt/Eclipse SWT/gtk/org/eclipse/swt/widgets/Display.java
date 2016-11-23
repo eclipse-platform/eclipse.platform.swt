@@ -1071,7 +1071,7 @@ void createDisplay (DeviceData data) {
 
 	byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 	long /*int*/ atom = OS.gdk_atom_intern(atomName, false);
-	OS.gdk_selection_owner_set(OS.gdk_screen_get_root_window(OS.gdk_screen_get_default()), atom, OS.CurrentTime, false);
+	OS.gdk_selection_owner_set(OS.gdk_get_default_root_window(), atom, OS.CurrentTime, false);
 	OS.gdk_selection_owner_get(atom);
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
