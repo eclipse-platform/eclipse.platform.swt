@@ -105,8 +105,6 @@ public abstract class Device implements Drawable {
 
 	long /*int*/ emptyTab;
 
-	boolean useXRender;
-
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -573,15 +571,6 @@ protected void init () {
 	this.dpi = getDPI();
 	this.scaleFactor = getDeviceZoom ();
 	DPIUtil.setDeviceZoom (scaleFactor);
-
-	if (xDisplay != 0 && !OS.USE_CAIRO) {
-		int[] event_basep = new int[1], error_basep = new int [1];
-		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
-			int[] major_versionp = new int[1], minor_versionp = new int [1];
-			OS.XRenderQueryVersion (xDisplay, major_versionp, minor_versionp);
-			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
-		}
-	}
 
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;

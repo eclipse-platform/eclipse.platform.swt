@@ -546,15 +546,3 @@ void setXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent
 #define XFocusChangeEvent_sizeof() 0
 #endif
 
-#ifndef NO_XRenderPictureAttributes
-void cacheXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject);
-XRenderPictureAttributes *getXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPictureAttributes *lpStruct);
-void setXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPictureAttributes *lpStruct);
-#define XRenderPictureAttributes_sizeof() sizeof(XRenderPictureAttributes)
-#else
-#define cacheXRenderPictureAttributesFields(a,b)
-#define getXRenderPictureAttributesFields(a,b,c) NULL
-#define setXRenderPictureAttributesFields(a,b,c)
-#define XRenderPictureAttributes_sizeof() 0
-#endif
-

@@ -1034,10 +1034,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	if (srcWidth == destWidth && srcHeight == destHeight) {
 		OS.gdk_draw_drawable(data.drawable, handle, srcImage.pixmap, srcX, srcY, destX, destY, destWidth, destHeight);
 	} else {
-		if (device.useXRender) {
-			drawImageXRender(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, 0, -1);
-			return;
-		}
 		long /*int*/ pixbuf = scale(srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destWidth, destHeight);
 		if (pixbuf != 0) {
 			OS.gdk_pixbuf_render_to_drawable(pixbuf, data.drawable, handle, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -1049,10 +1045,6 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	if (srcImage.alpha == 0) return;
 	if (srcImage.alpha == 255) {
 		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
-		return;
-	}
-	if (device.useXRender) {
-		drawImageXRender(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, srcImage.mask, OS.PictStandardA8);
 		return;
 	}
 	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
@@ -1088,163 +1080,89 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
 	long /*int*/ maskPixmap = srcImage.mask;
 
-	if (device.useXRender) {
-		drawImageXRender(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, maskPixmap, OS.PictStandardA1);
-	} else {
-		if (srcWidth != destWidth || srcHeight != destHeight) {
-			long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
-			if (pixbuf != 0) {
-				long /*int*/ colormap = OS.gdk_colormap_get_system();
-				OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
-				long /*int*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
-				if (maskPixbuf != 0) {
-					OS.gdk_pixbuf_get_from_drawable(maskPixbuf, maskPixmap, 0, srcX, srcY, 0, 0, srcWidth, srcHeight);
-					int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-					long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-					byte[] line = new byte[stride];
-					int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
-					long /*int*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
-					byte[] maskLine = new byte[maskStride];
-					for (int y=0; y<srcHeight; y++) {
-						long /*int*/ offset = pixels + (y * stride);
-						OS.memmove(line, offset, stride);
-						long /*int*/ maskOffset = maskPixels + (y * maskStride);
-						OS.memmove(maskLine, maskOffset, maskStride);
-						for (int x=0; x<srcWidth; x++) {
-							if (maskLine[x * 3] == 0) {
-								line[x*4+3] = 0;
-							}
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
+		if (pixbuf != 0) {
+			long /*int*/ colormap = OS.gdk_colormap_get_system();
+			OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+			long /*int*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
+			if (maskPixbuf != 0) {
+				OS.gdk_pixbuf_get_from_drawable(maskPixbuf, maskPixmap, 0, srcX, srcY, 0, 0, srcWidth, srcHeight);
+				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+				long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+				byte[] line = new byte[stride];
+				int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
+				long /*int*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
+				byte[] maskLine = new byte[maskStride];
+				for (int y=0; y<srcHeight; y++) {
+					long /*int*/ offset = pixels + (y * stride);
+					OS.memmove(line, offset, stride);
+					long /*int*/ maskOffset = maskPixels + (y * maskStride);
+					OS.memmove(maskLine, maskOffset, maskStride);
+					for (int x=0; x<srcWidth; x++) {
+						if (maskLine[x * 3] == 0) {
+							line[x*4+3] = 0;
 						}
-						OS.memmove(offset, line, stride);
 					}
-					OS.g_object_unref(maskPixbuf);
-					long /*int*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
-					if (scaledPixbuf != 0) {
-						long /*int*/[] colorBuffer = new long /*int*/[1];
-						long /*int*/[] maskBuffer = new long /*int*/[1];
-						OS.gdk_pixbuf_render_pixmap_and_mask(scaledPixbuf, colorBuffer, maskBuffer, 128);
-						colorPixmap = colorBuffer[0];
-						maskPixmap = maskBuffer[0];
-						OS.g_object_unref(scaledPixbuf);
-					}
+					OS.memmove(offset, line, stride);
 				}
-				OS.g_object_unref(pixbuf);
+				OS.g_object_unref(maskPixbuf);
+				long /*int*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+				if (scaledPixbuf != 0) {
+					long /*int*/[] colorBuffer = new long /*int*/[1];
+					long /*int*/[] maskBuffer = new long /*int*/[1];
+					OS.gdk_pixbuf_render_pixmap_and_mask(scaledPixbuf, colorBuffer, maskBuffer, 128);
+					colorPixmap = colorBuffer[0];
+					maskPixmap = maskBuffer[0];
+					OS.g_object_unref(scaledPixbuf);
+				}
 			}
-			srcX = 0;
-			srcY = 0;
-			srcWidth = destWidth;
-			srcHeight = destHeight;
+			OS.g_object_unref(pixbuf);
 		}
-
-		/* Merge clipping with mask if necessary */
-		if (data.clipRgn != 0)	 {
-			int newWidth =  srcX + srcWidth;
-			int newHeight = srcY + srcHeight;
-			int bytesPerLine = (newWidth + 7) / 8;
-			byte[] maskData = new byte[bytesPerLine * newHeight];
-			long /*int*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, newWidth, newHeight);
-			if (mask != 0) {
-				long /*int*/ gc = OS.gdk_gc_new(mask);
-				OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
-				OS.gdk_gc_set_clip_region(gc, data.clipRgn);
-				OS.gdk_region_offset(data.clipRgn, destX - srcX, destY - srcY);
-				GdkColor color = new GdkColor();
-				color.pixel = 1;
-				OS.gdk_gc_set_foreground(gc, color);
-				OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, newWidth, newHeight);
-				OS.gdk_gc_set_function(gc, OS.GDK_AND);
-				OS.gdk_draw_drawable(mask, gc, maskPixmap, 0, 0, 0, 0, newWidth, newHeight);
-				OS.g_object_unref(gc);
-				if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
-				maskPixmap = mask;
-			}
-		}
-
-		/* Blit cliping the mask */
-		GdkGCValues values = new GdkGCValues();
-		OS.gdk_gc_get_values(handle, values);
-		OS.gdk_gc_set_clip_mask(handle, maskPixmap);
-		OS.gdk_gc_set_clip_origin(handle, destX - srcX, destY - srcY);
-		OS.gdk_draw_drawable(drawable, handle, colorPixmap, srcX, srcY, destX, destY, srcWidth, srcHeight);
-		OS.gdk_gc_set_values(handle, values, OS.GDK_GC_CLIP_MASK | OS.GDK_GC_CLIP_X_ORIGIN | OS.GDK_GC_CLIP_Y_ORIGIN);
-		if (data.clipRgn != 0) OS.gdk_gc_set_clip_region(handle, data.clipRgn);
+		srcX = 0;
+		srcY = 0;
+		srcWidth = destWidth;
+		srcHeight = destHeight;
 	}
+
+	/* Merge clipping with mask if necessary */
+	if (data.clipRgn != 0)	 {
+		int newWidth =  srcX + srcWidth;
+		int newHeight = srcY + srcHeight;
+		int bytesPerLine = (newWidth + 7) / 8;
+		byte[] maskData = new byte[bytesPerLine * newHeight];
+		long /*int*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, newWidth, newHeight);
+		if (mask != 0) {
+			long /*int*/ gc = OS.gdk_gc_new(mask);
+			OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
+			OS.gdk_gc_set_clip_region(gc, data.clipRgn);
+			OS.gdk_region_offset(data.clipRgn, destX - srcX, destY - srcY);
+			GdkColor color = new GdkColor();
+			color.pixel = 1;
+			OS.gdk_gc_set_foreground(gc, color);
+			OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, newWidth, newHeight);
+			OS.gdk_gc_set_function(gc, OS.GDK_AND);
+			OS.gdk_draw_drawable(mask, gc, maskPixmap, 0, 0, 0, 0, newWidth, newHeight);
+			OS.g_object_unref(gc);
+			if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
+			maskPixmap = mask;
+		}
+	}
+
+	/* Blit cliping the mask */
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	OS.gdk_gc_set_clip_mask(handle, maskPixmap);
+	OS.gdk_gc_set_clip_origin(handle, destX - srcX, destY - srcY);
+	OS.gdk_draw_drawable(drawable, handle, colorPixmap, srcX, srcY, destX, destY, srcWidth, srcHeight);
+	OS.gdk_gc_set_values(handle, values, OS.GDK_GC_CLIP_MASK | OS.GDK_GC_CLIP_X_ORIGIN | OS.GDK_GC_CLIP_Y_ORIGIN);
+	if (data.clipRgn != 0) OS.gdk_gc_set_clip_region(handle, data.clipRgn);
 
 	/* Destroy scaled pixmaps */
 	if (colorPixmap != 0 && srcImage.pixmap != colorPixmap) OS.g_object_unref(colorPixmap);
 	if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
-}
-void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, long /*int*/ maskPixmap, int maskType) {
-	int translateX = 0, translateY = 0;
-	long /*int*/ drawable = data.drawable;
-	if (data.image == null && !data.realDrawable) {
-		int[] x = new int[1], y = new int[1];
-		long /*int*/ [] real_drawable = new long /*int*/ [1];
-		OS.gdk_window_get_internal_paint_info(drawable, real_drawable, x, y);
-		drawable = real_drawable[0];
-		translateX = -x[0];
-		translateY = -y[0];
-	}
-	long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-	long /*int*/ maskPict = 0;
-	if (maskPixmap != 0) {
-		int attribCount = 0;
-		XRenderPictureAttributes attrib = null;
-		if (srcImage.alpha != -1) {
-			attribCount = 1;
-			attrib = new XRenderPictureAttributes();
-			attrib.repeat = true;
-		}
-		maskPict = OS.XRenderCreatePicture(xDisplay, OS.gdk_x11_drawable_get_xid(maskPixmap), OS.XRenderFindStandardFormat(xDisplay, maskType), attribCount, attrib);
-		if (maskPict == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	long /*int*/ format = OS.XRenderFindVisualFormat(xDisplay, OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system()));
-	long /*int*/ destPict = OS.XRenderCreatePicture(xDisplay, OS.gdk_x11_drawable_get_xid(drawable), format, 0, null);
-	if (destPict == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	long /*int*/ srcPict = OS.XRenderCreatePicture(xDisplay, OS.gdk_x11_drawable_get_xid(srcImage.pixmap), format, 0, null);
-	if (srcPict == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (srcWidth != destWidth || srcHeight != destHeight) {
-		int[] transform = new int[]{(int)(((float)srcWidth / destWidth) * 65536), 0, 0, 0, (int)(((float)srcHeight / destHeight) * 65536), 0, 0, 0, 65536};
-		OS.XRenderSetPictureTransform(xDisplay, srcPict, transform);
-		if (maskPict != 0) OS.XRenderSetPictureTransform(xDisplay, maskPict, transform);
-		srcX *= destWidth / (float)srcWidth;
-		srcY *= destHeight / (float)srcHeight;
-	}
-	long /*int*/ clipping = data.clipRgn;
-	if (data.damageRgn != 0) {
-		if (clipping == 0) {
-			clipping = data.damageRgn;
-		} else {
-			clipping = OS.gdk_region_new();
-			OS.gdk_region_union(clipping, data.clipRgn);
-			OS.gdk_region_intersect(clipping, data.damageRgn);
-		}
-	}
-	if (clipping != 0) {
-		int[] nRects = new int[1];
-		long /*int*/[] rects = new long /*int*/[1];
-		OS.gdk_region_get_rectangles(clipping, rects, nRects);
-		GdkRectangle rect = new GdkRectangle();
-		short[] xRects = new short[nRects[0] * 4];
-		for (int i=0, j=0; i<nRects[0]; i++, j+=4) {
-			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-			xRects[j] = (short)(translateX + rect.x);
-			xRects[j+1] = (short)(translateY + rect.y);
-			xRects[j+2] = (short)rect.width;
-			xRects[j+3] = (short)rect.height;
-		}
-		OS.XRenderSetPictureClipRectangles(xDisplay, destPict, 0, 0, xRects, nRects[0]);
-		if (clipping != data.clipRgn && clipping != data.damageRgn) {
-			OS.gdk_region_destroy(clipping);
-		}
-		if (rects[0] != 0) OS.g_free(rects[0]);
-	}
-	OS.XRenderComposite(xDisplay, maskPict != 0 ? OS.PictOpOver : OS.PictOpSrc, srcPict, maskPict, destPict, srcX, srcY, srcX, srcY, destX + translateX, destY + translateY, destWidth, destHeight);
-	OS.XRenderFreePicture(xDisplay, destPict);
-	OS.XRenderFreePicture(xDisplay, srcPict);
-	if (maskPict != 0) OS.XRenderFreePicture(xDisplay, maskPict);
 }
 long /*int*/ scale(long /*int*/ src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
 	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);

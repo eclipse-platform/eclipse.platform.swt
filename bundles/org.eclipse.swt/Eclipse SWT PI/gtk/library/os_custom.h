@@ -30,21 +30,18 @@
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)
 
 #ifdef AIX
-#define LIB_XRENDER "libXrender.a(libXrender.so)"
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
 #elif HPUX
-#define LIB_XRENDER "libXrender.so"
 #define LIB_GTK "libgtk-x11-2.0.so"
 #define LIB_GDK "libgdk-x11-2.0.so"
 #define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
 #define LIB_FONTCONFIG "libfontconfig.so"
 #else
-#define LIB_XRENDER "libXrender.so"
 #if GTK_CHECK_VERSION(3,0,0)
 #define LIB_GTK "libgtk-3.so.0"
 #define LIB_GDK "libgdk-3.so.0"
@@ -391,15 +388,6 @@
 
 #ifdef GDK_WINDOWING_X11
 
-#define XRenderQueryExtension_LIB LIB_XRENDER
-#define XRenderQueryVersion_LIB LIB_XRENDER
-#define XRenderFindStandardFormat_LIB LIB_XRENDER
-#define XRenderFindVisualFormat_LIB LIB_XRENDER
-#define XRenderComposite_LIB LIB_XRENDER
-#define XRenderCreatePicture_LIB LIB_XRENDER
-#define XRenderFreePicture_LIB LIB_XRENDER
-#define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
-#define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
 #define gdk_x11_window_lookup_for_display_LIB LIB_GDK

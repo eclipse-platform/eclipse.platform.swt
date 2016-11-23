@@ -418,7 +418,6 @@ public Image(Device device, Image srcImage, int flag) {
 		alphaData = new byte[srcImage.alphaData.length];
 		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 	}
-	createAlphaMask(width, height);
 
 	/* Create the new pixmap */
 	long /*int*/ pixmap = OS.gdk_pixmap_new (OS.gdk_get_default_root_window(), width, height, -1);
@@ -918,37 +917,6 @@ void initNative(String filename) {
 	} catch (SWTException e) {}
 }
 
-void createAlphaMask (int width, int height) {
-	if (device.useXRender && (alpha != -1 || alphaData != null)) {
-		mask = OS.gdk_pixmap_new(0, alpha != -1 ? 1 : width, alpha != -1 ? 1 : height, 8);
-		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		long /*int*/ gc = OS.gdk_gc_new(mask);
-		if (alpha != -1) {
-			GdkColor color = new GdkColor();
-			color.pixel = (alpha & 0xFF) << 8 | (alpha & 0xFF);
-			OS.gdk_gc_set_foreground(gc, color);
-			OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, 1, 1);
-		} else {
-			long /*int*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
-			if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			GdkImage gdkImage = new GdkImage();
-			OS.memmove(gdkImage, imagePtr);
-			if (gdkImage.bpl == width) {
-				OS.memmove(gdkImage.mem, alphaData, alphaData.length);
-			} else {
-				byte[] line = new byte[gdkImage.bpl];
-				for (int y = 0; y < height; y++) {
-					System.arraycopy(alphaData, width * y, line, 0, width);
-					OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
-				}
-			}
-			OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
-			OS.g_object_unref(imagePtr);
-		}
-		OS.g_object_unref(gc);
-	}
-}
-
 void createFromPixbuf(int type, long /*int*/ pixbuf) {
 	this.type = type;
 	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
@@ -1028,7 +996,6 @@ void createFromPixbuf(int type, long /*int*/ pixbuf) {
 				}
 				OS.memmove(pixels + (y * stride), line, stride);
 			}
-			createAlphaMask(width, height);
 		}
 		long /*int*/ [] pixmap_return = new long /*int*/ [1];
 		OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
@@ -1832,7 +1799,6 @@ void init(ImageData image) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 		}
-		createAlphaMask(width, height);
 	}
 	this.pixmap = pixmap;
 }

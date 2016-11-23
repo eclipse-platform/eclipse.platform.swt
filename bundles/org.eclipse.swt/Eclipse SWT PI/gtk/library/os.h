@@ -47,7 +47,6 @@
 #endif
 
 #include <X11/extensions/XTest.h>
-#include <X11/extensions/Xrender.h>
 
 #else
 
@@ -59,7 +58,6 @@
 #define NO_XExposeEvent
 #define NO_XEvent
 #define NO_XFocusChangeEvent
-#define NO_XRenderPictureAttributes
 #define NO_XVisibilityEvent
 #define NO_X_1EVENT_1TYPE
 #define NO_X_1EVENT_1WINDOW
@@ -77,7 +75,6 @@
 #define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
 #define NO__1XReconfigureWMWindow
-#define NO__1XRenderCreatePicture
 #define NO__1XSendEvent
 #define NO__1XSetInputFocus
 #define NO__1XSetErrorHandler
