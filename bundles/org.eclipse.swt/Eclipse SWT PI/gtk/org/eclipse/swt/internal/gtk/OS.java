@@ -984,34 +984,6 @@ public static final void XFree(long /*int*/ address) {
 		lock.unlock();
 	}
 }
-/**
- * @param display cast=(Display *)
- * @param selection cast=(Atom)
- * @param window cast=(Window)
- * @param time cast=(Time)
- */
-public static final native long /*int*/ _XSetSelectionOwner(long /*int*/ display, long /*int*/ selection, long /*int*/ window, int time);
-public static final long /*int*/ XSetSelectionOwner(long /*int*/ display, long /*int*/ selection, long /*int*/ window, int time) {
-	lock.lock();
-	try {
-		return _XSetSelectionOwner(display, selection, window, time);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param selection cast=(Atom)
- */
-public static final native long /*int*/ _XGetSelectionOwner(long /*int*/ display, long /*int*/ selection);
-public static final long /*int*/ XGetSelectionOwner(long /*int*/ display, long /*int*/ selection) {
-	lock.lock();
-	try {
-		return _XGetSelectionOwner(display, selection);
-	} finally {
-		lock.unlock();
-	}
-}
 
 /**
  * @param display cast=(Display *)
@@ -1029,22 +1001,6 @@ public static final long /*int*/ XGetWindowProperty(long /*int*/ display, long /
 	lock.lock();
 	try {
 		return _XGetWindowProperty(display, window, property, offset, length, delete, req_type, actual_type_return, actual_format_return , nitems_return, bytes_after_return, prop_return);
-	} finally {
-		lock.unlock();
-	}
-}
-
-
-/**
- * @param display cast=(Display *)
- * @param name cast=(char *)
- * @param ifExists cast=(Bool)
- */
-public static final native long /*int*/ _XInternAtom(long /*int*/ display, byte[] name, boolean ifExists);
-public static final long /*int*/ XInternAtom(long /*int*/ display, byte[] name, boolean ifExists) {
-	lock.lock();
-	try {
-		return _XInternAtom(display, name, ifExists);
 	} finally {
 		lock.unlock();
 	}
@@ -5151,6 +5107,16 @@ public static final long /*int*/ gdk_screen_get_active_window(long /*int*/ scree
 		lock.unlock();
 	}
 }
+/** @param screen cast=(GdkScreen *) */
+public static final native long /*int*/ _gdk_screen_get_root_window(long /*int*/ screen);
+public static final long /*int*/ gdk_screen_get_root_window(long /*int*/ screen) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_root_window(screen);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param screen cast=(GdkScreen *)
@@ -5314,6 +5280,31 @@ public static final void gdk_set_program_class(byte[] program_class) {
 	lock.lock();
 	try {
 		_gdk_set_program_class(program_class);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param atom cast=(GdkAtom) */
+public static final native void _gdk_selection_owner_get(long /*int*/ atom);
+public static final void gdk_selection_owner_get(long /*int*/ atom) {
+	lock.lock();
+	try {
+		_gdk_selection_owner_get(atom);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param owner cast=(GdkWindow *)
+ * @param atom cast=(GdkAtom)
+ * @param time cast=(guint32)
+ * @param send_event cast=(gboolean)
+ */
+public static final native void _gdk_selection_owner_set(long /*int*/ owner, long /*int*/ atom, int time, boolean send_event);
+public static final void gdk_selection_owner_set(long /*int*/ owner, long /*int*/ atom, int time, boolean send_event) {
+	lock.lock();
+	try {
+		_gdk_selection_owner_set(owner, atom, time, send_event);
 	} finally {
 		lock.unlock();
 	}

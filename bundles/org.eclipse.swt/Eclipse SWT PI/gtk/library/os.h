@@ -72,9 +72,7 @@
 #define NO__1XDefaultRootWindow
 #define NO__1XFlush
 #define NO__1XFree
-#define NO__1XGetSelectionOwner
 #define NO__1XGetWindowProperty
-#define NO__1XInternAtom
 #define NO__1XQueryTree
 #define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
@@ -82,7 +80,6 @@
 #define NO__1XRenderCreatePicture
 #define NO__1XSendEvent
 #define NO__1XSetInputFocus
-#define NO__1XSetSelectionOwner
 #define NO__1XSetErrorHandler
 #define NO__1XSetIOErrorHandler
 #define NO__1XSetTransientForHint

@@ -1474,18 +1474,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFree)
 }
 #endif
 
-#ifndef NO__1XGetSelectionOwner
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1XGetSelectionOwner)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XGetSelectionOwner_FUNC);
-	rc = (jintLong)XGetSelectionOwner((Display *)arg0, (Atom)arg1);
-	OS_NATIVE_EXIT(env, that, _1XGetSelectionOwner_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1XGetWindowProperty
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1XGetWindowProperty)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jboolean arg5, jintLong arg6, jintLongArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jintLongArray arg11)
@@ -1510,22 +1498,6 @@ fail:
 	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
 	OS_NATIVE_EXIT(env, that, _1XGetWindowProperty_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1XInternAtom
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1XInternAtom)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jboolean arg2)
-{
-	jbyte *lparg1=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XInternAtom_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)XInternAtom((Display *)arg0, (char *)lparg1, (Bool)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1XInternAtom_FUNC);
 	return rc;
 }
 #endif
@@ -1805,18 +1777,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XSetInputFocus)
 	OS_NATIVE_ENTER(env, that, _1XSetInputFocus_FUNC);
 	rc = (jint)XSetInputFocus((Display *)arg0, (Window)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, _1XSetInputFocus_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1XSetSelectionOwner
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1XSetSelectionOwner)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XSetSelectionOwner_FUNC);
-	rc = (jintLong)XSetSelectionOwner((Display *)arg0, (Atom)arg1, (Window)arg2, (Time)arg3);
-	OS_NATIVE_EXIT(env, that, _1XSetSelectionOwner_FUNC);
 	return rc;
 }
 #endif
@@ -6393,6 +6353,18 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gdk_1screen_1get_1resolution)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1root_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1root_1window)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1root_1window_FUNC);
+	rc = (jintLong)gdk_screen_get_root_window((GdkScreen *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1root_1window_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1height
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1height)
 	(JNIEnv *env, jclass that)
@@ -6426,6 +6398,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1width_1mm)
 	rc = (jint)gdk_screen_width_mm();
 	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1width_1mm_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1selection_1owner_1get
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1selection_1owner_1get)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1selection_1owner_1get_FUNC);
+	gdk_selection_owner_get((GdkAtom)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1selection_1owner_1get_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1selection_1owner_1set
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1selection_1owner_1set)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1selection_1owner_1set_FUNC);
+	gdk_selection_owner_set((GdkWindow *)arg0, (GdkAtom)arg1, (guint32)arg2, (gboolean)arg3);
+	OS_NATIVE_EXIT(env, that, _1gdk_1selection_1owner_1set_FUNC);
 }
 #endif
 

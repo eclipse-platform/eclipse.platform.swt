@@ -1069,18 +1069,10 @@ void createDisplay (DeviceData data) {
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
 
-	if (OS.isX11()) {
-		long /*int*/ xWindow;
-		if (OS.GTK3) {
-			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
-		} else {
-			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
-		}
-		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
-		long /*int*/ atom = OS.XInternAtom (xDisplay, atomName, false);
-		OS.XSetSelectionOwner (xDisplay, atom, xWindow, OS.CurrentTime);
-		OS.XGetSelectionOwner (xDisplay, atom);
-	}
+	byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
+	long /*int*/ atom = OS.gdk_atom_intern(atomName, false);
+	OS.gdk_selection_owner_set(OS.gdk_screen_get_root_window(OS.gdk_screen_get_default()), atom, OS.CurrentTime, false);
+	OS.gdk_selection_owner_get(atom);
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
 	signalProc = signalCallback.getAddress ();
