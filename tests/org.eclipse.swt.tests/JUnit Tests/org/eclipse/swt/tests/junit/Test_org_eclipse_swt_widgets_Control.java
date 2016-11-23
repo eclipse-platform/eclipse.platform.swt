@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -140,7 +141,36 @@ public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 	assertTrue(eventOccurred);
 	control.removeKeyListener(listener);
 }
+@Test
+public void test_addKeyListenerKeyPressedAdapterLorg_eclipse_swt_events_KeyListener() {
+	KeyListener listener = KeyListener.keyPressedAdapter(event -> eventOccurred = true);
+	control.addKeyListener(listener);
+	eventOccurred = false;
 
+	control.notifyListeners(SWT.KeyDown, new Event());
+	assertTrue(eventOccurred);
+
+	control.removeKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyDown, new Event());
+	assertFalse(eventOccurred);
+}
+@Test
+public void test_addKeyListenerKeyReleasedAdapterLorg_eclipse_swt_events_KeyListener() {
+	KeyListener listener = KeyListener.keyReleasedAdapter(event -> eventOccurred = true);
+	control.addKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyUp, new Event());
+	assertTrue(eventOccurred);
+
+	control.removeKeyListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.KeyUp, new Event());
+	assertFalse(eventOccurred);
+}
 @Test
 public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 	MouseListener listener = new MouseListener() {
