@@ -90,7 +90,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 @Test
-public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() throws Exception {
+public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
 	SelectionListener listener = SelectionListener.widgetSelectedAdapter(e -> listenerCalled = true);
 
