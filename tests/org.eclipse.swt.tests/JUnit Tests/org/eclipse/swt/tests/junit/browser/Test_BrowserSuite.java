@@ -31,12 +31,13 @@ public static boolean isRunningOnEclipseOrgHudsonGTK = SwtTestUtil.isGTK
 		&& ("hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
 				|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
-@Rule public TestName name = new TestName();
+@Rule
+public TestName name = new TestName();
 
 @Test
 public void testBrowser1() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
+		System.out.println("Test_BrowserSuite." + name.getMethodName() + "() skipped, see bug 499159");
 		return;
 	}
 	assertTrue(Browser1_location_progress_fromURL.test());
@@ -50,7 +51,7 @@ public void testBrowser2() {
 @Test
 public void testBrowser3() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser3() skipped, see bug 499159");
+		System.out.println("Test_BrowserSuite." + name.getMethodName() + "() skipped, see bug 499159");
 		return;
 	}
 	assertTrue(Browser3_window_open_visibility_listeners.test());
@@ -69,7 +70,7 @@ public void testBrowser5() {
 @Test
 public void testBrowser6() {
 	if (isRunningOnEclipseOrgHudsonGTK) {
-		System.out.println("Test_BrowserSuite.testBrowser6() skipped, see bug 499159");
+		System.out.println("Test_BrowserSuite." + name.getMethodName() + "() skipped, see bug 499159");
 		return;
 	}
 	assertTrue(Browser6_title_change_listener.test());
