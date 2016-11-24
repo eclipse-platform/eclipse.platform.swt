@@ -5639,16 +5639,6 @@ public static final void gdk_window_restack(long /*int*/ window, long /*int*/ si
 		lock.unlock();
 	}
 }
-/** @param window cast=(GdkWindow *) */
-public static final native void _gdk_window_scroll(long /*int*/ window, int dx, int dy);
-public static final void gdk_window_scroll(long /*int*/ window, int dx, int dy) {
-	lock.lock();
-	try {
-		_gdk_window_scroll(window, dx, dy);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native void _gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern);
 public static final void gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern) {
@@ -5682,16 +5672,6 @@ public static final void gdk_window_set_cursor(long /*int*/ window, long /*int*/
 	lock.lock();
 	try {
 		_gdk_window_set_cursor(window, cursor);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param setting cast=(gboolean) */
-public static final native void _gdk_window_set_debug_updates(boolean setting);
-public static final void gdk_window_set_debug_updates(boolean setting) {
-	lock.lock();
-	try {
-		_gdk_window_set_debug_updates(setting);
 	} finally {
 		lock.unlock();
 	}
@@ -6125,19 +6105,6 @@ public static final long /*int*/ gtk_button_new() {
 	lock.lock();
 	try {
 		return _gtk_button_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param button cast=(GtkButton *)
- * @param newstyle cast=(GtkReliefStyle)
- */
-public static final native void _gtk_button_set_relief(long /*int*/ button, int newstyle);
-public static final void gtk_button_set_relief(long /*int*/ button, int newstyle) {
-	lock.lock();
-	try {
-		_gtk_button_set_relief(button, newstyle);
 	} finally {
 		lock.unlock();
 	}

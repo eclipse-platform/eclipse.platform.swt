@@ -6836,16 +6836,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1restack)
 }
 #endif
 
-#ifndef NO__1gdk_1window_1scroll
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1scroll)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1window_1scroll_FUNC);
-	gdk_window_scroll((GdkWindow *)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, _1gdk_1window_1scroll_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1window_1set_1back_1pixmap
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1back_1pixmap)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
@@ -6889,16 +6879,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1cursor)
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1cursor_FUNC);
 	gdk_window_set_cursor((GdkWindow *)arg0, (GdkCursor *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1cursor_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1window_1set_1debug_1updates
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1debug_1updates)
-	(JNIEnv *env, jclass that, jboolean arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1debug_1updates_FUNC);
-	gdk_window_set_debug_updates((gboolean)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1debug_1updates_FUNC);
 }
 #endif
 
@@ -7626,16 +7606,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1button_1new)
 	rc = (jintLong)gtk_button_new();
 	OS_NATIVE_EXIT(env, that, _1gtk_1button_1new_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1button_1set_1relief
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1relief)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1button_1set_1relief_FUNC);
-	gtk_button_set_relief((GtkButton *)arg0, (GtkReliefStyle)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1button_1set_1relief_FUNC);
 }
 #endif
 
