@@ -503,7 +503,7 @@ public int getItemCount () {
 	OS.g_list_free (list);
 	if (imSeparator != 0) count--;
 	if (imItem != 0) count--;
-	return count;
+	return Math.max (0, count);
 }
 
 /**
