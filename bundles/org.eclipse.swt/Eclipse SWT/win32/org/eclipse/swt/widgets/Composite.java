@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1930,7 +1930,13 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				if (hwndParent != 0) break;
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				long /*int*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				/*
+				 * HWND_TOPMOST option places the window above all non-topmost
+				 * windows. The window maintains its topmost position even when
+				 * it is deactivated. Hence this option should be used only
+				 * on the active shell. See bug 491627 for more details.
+				 */
+				long /*int*/ hwndInsertAfter = (hdr.code == OS.TTN_SHOW && display.getActiveShell () == getShell ()) ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
 				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
 				display.lockActiveWindow = false;
 				break;
