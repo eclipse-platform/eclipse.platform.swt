@@ -39,7 +39,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
@@ -47,6 +49,9 @@ import org.junit.Test;
  * @see org.eclipse.swt.browser.Browser
  */
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
+
+	@Rule
+	public TestName name = new TestName();
 
 	Browser browser;
 
@@ -70,6 +75,8 @@ public void setUp() {
 	loopMultipier = browser_debug ? 1 : 1000;
 
 	shell.setLayout(new FillLayout());
+	setTitle(shell);
+
 	browser = new Browser(shell, SWT.NONE);
 
 	/*
@@ -86,15 +93,13 @@ public void setUp() {
 	}
 }
 
-// TODO - change test cases to use this method instead of shell.setText(..).
 /**
  * Append relevant information to the shell title.
- *
  * On Gtk, we support multiple versions of Webkit. It's useful to know which webkit version the test runs on.
- *
  * @param title
  */
-void setTitle(String title) {
+void setTitle(Shell shell) {
+	String title = name.getMethodName();
 	if (SwtTestUtil.isGTK) {
 		String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
 		Properties sp = System.getProperties();
@@ -106,13 +111,13 @@ void setTitle(String title) {
 }
 
 
+
 /**
  * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
  */
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	shell.setText("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.dispose();
 	browser = new Browser(shell, SWT.BORDER);
@@ -129,7 +134,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
  */
 @Test
 public void test_listener_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
-	shell.setText("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
 	try {
 		browser.addCloseWindowListener(null);
 		fail("No exception thrown for listener == null");
@@ -148,7 +152,6 @@ public void test_listener_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWi
  */
 @Test
 public void test_listener_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	shell.setText("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
 	try {
 		browser.addLocationListener(null);
 		fail("No exception thrown for listener == null");
@@ -173,7 +176,6 @@ public void test_listener_addLocationListenerLorg_eclipse_swt_browser_LocationLi
  */
 @Test
 public void test_listener_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
-	shell.setText("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	try {
 		browser.addOpenWindowListener(null);
 		fail("No exception thrown for listener == null");
@@ -192,7 +194,6 @@ public void test_listener_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWind
  */
 @Test
 public void test_listener_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
-	shell.setText("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	try {
 		browser.addProgressListener(null);
 		fail("No exception thrown for listener == null");
@@ -218,7 +219,6 @@ public void test_listener_addProgressListenerLorg_eclipse_swt_browser_ProgressLi
  */
 @Test
 public void test_listener_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
-	shell.setText("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	try {
 		browser.addStatusTextListener(null);
 		fail("No exception thrown for listener == null");
@@ -237,7 +237,6 @@ public void test_listener_addStatusTextListenerLorg_eclipse_swt_browser_StatusTe
  */
 @Test
 public void test_listener_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
-	shell.setText("test_addTitleLorg_eclipse_swt_browser_TitleListener");
 	try {
 		browser.addTitleListener(null);
 		fail("No exception thrown for listener == null");
@@ -256,7 +255,6 @@ public void test_listener_addTitleListenerLorg_eclipse_swt_browser_TitleListener
  */
 @Test
 public void test_listener_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
-	shell.setText("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	try {
 		browser.addVisibilityWindowListener(null);
 		fail("No exception thrown for listener == null");
@@ -281,7 +279,6 @@ public void test_listener_addVisibilityWindowListenerLorg_eclipse_swt_browser_Vi
  */
 @Test
 public void test_listener_executeLjava_lang_String() {
-	shell.setText("test_executeLjava_lang_String");
 	try {
 		browser.execute(null);
 		fail("No exception thrown for script == null");
@@ -300,7 +297,6 @@ public void test_listener_executeLjava_lang_String() {
  */
 @Test
 public void test_back() {
-	shell.setText("test_back");
 	for (int i = 0; i < 2; i++) {
 		browser.back();
 	}
@@ -533,7 +529,6 @@ public void test_listener_hideLorg_eclipse_swt_browser_WindowEvent() {
  */
 @Test
 public void test_setTextNull() {
-	shell.setText("test_setTextNull");
 	try {
 		browser.setText(null);
 		fail("No exception thrown for text == null");
@@ -547,7 +542,6 @@ public void test_setTextNull() {
  */
 @Test
 public void test_setUrlWithNullArg() {
-	shell.setText("test_setUrlLjava_lang_String");
 	try {
 		browser.setUrl(null);
 		fail("No exception thrown for url == null");
@@ -562,7 +556,6 @@ public void test_setUrlWithNullArg() {
  */
 @Test
 public void test_forward() {
-	shell.setText("test_forward");
 	for (int i = 0; i < 2; i++) {
 		browser.forward();
 	}
@@ -576,7 +569,6 @@ public void test_forward() {
  */
 @Test
 public void test_getUrl() {
-	shell.setText("test_getUrl");
 	String string = browser.getUrl();
 	assertTrue(string != null);
 }
@@ -589,7 +581,6 @@ public void test_getUrl() {
  */
 @Test
 public void test_isBackEnabled() {
-	shell.setText("test_isBackEnabled");
 
 	/* back should return the same value that isBackEnabled previously returned */
 	assertEquals(browser.isBackEnabled(), browser.back());
@@ -609,8 +600,6 @@ public void test_isBackEnabled() {
  */
 @Test
 public void test_isForwardEnabled() {
-	shell.setText("test_isForwardEnabled");
-
 	/* forward should return the same value that isForwardEnabled previously returned */
 	assertEquals(browser.isForwardEnabled(), browser.forward());
 
@@ -628,7 +617,6 @@ public void test_isForwardEnabled() {
  */
 @Test
 public void test_refresh() {
-	shell.setText("test_refresh");
 	for (int i = 0; i < 2; i++) {
 		browser.refresh();
 	}
@@ -644,8 +632,6 @@ public void test_refresh() {
  */
 @Test
 public void test_setTextLjava_lang_String() {
-	shell.setText("test_setTextLjava_lang_String");
-
 	String html = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
 	for (int i = 0; i < 1000; i++) {
 		html +="<P>That is a test line with the number "+i+"</P>";
@@ -661,7 +647,6 @@ public void test_setTextLjava_lang_String() {
  */
 @Test
 public void test_setUrl() {
-	shell.setText("test_setUrl");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	assert(browser.setUrl("http://www.eclipse.org/swt"));
 	runLoopTimer(2000);
@@ -674,7 +659,6 @@ public void test_setUrl() {
  */
 @Test
 public void test_stop() {
-	shell.setText("test_stop");
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
 	runLoopTimer(1000);
@@ -687,8 +671,6 @@ public void test_stop() {
  */
 @Test
 public void test_evaluate_string() {
-	setTitle("test_evalute_string");
-
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -722,7 +704,6 @@ public void test_evaluate_string() {
  */
 @Test
 public void test_evaluate_number_normal() {
-	setTitle("test_evaluate_number_normal");
 	Double testNum = 123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -734,7 +715,6 @@ public void test_evaluate_number_normal() {
  */
 @Test
 public void test_evaluate_number_negative() {
-	setTitle("test_evaluate_number_negative");
 	Double testNum = -123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -746,7 +726,6 @@ public void test_evaluate_number_negative() {
  */
 @Test
 public void test_evaluate_number_big() {
-	setTitle("test_evaluate_number_big");
 	Double testNum = 10000000000.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -786,8 +765,6 @@ boolean evaluate_number_helper(Double testNum) {
  */
 @Test
 public void test_evaluate_boolean() {
-	setTitle("test_evalute_boolean");
-
 	final AtomicReference<Boolean> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -822,8 +799,6 @@ public void test_evaluate_boolean() {
  */
 @Test
 public void test_evaluate_null() {
-	setTitle("test_evalute_null");
-
 	 // Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(new Boolean(true));
 	System.out.println(returnValue);
@@ -859,8 +834,6 @@ public void test_evaluate_null() {
  */
 @Test
 public void test_evaluate_invalid_return_value() {
-	setTitle("test_evaluate_invalid_return_value");
-
 	if (SwtTestUtil.isWindows) {
 		/* Bug 508210 . Inconsistent beahiour on windows at the moment.
 		 * Fixing requires deeper investigation. Disabling newly added test for now.
@@ -910,8 +883,6 @@ public void test_evaluate_invalid_return_value() {
  */
 @Test
 public void test_evaluate_evaluation_failed_exception() {
-	setTitle("test_evaluate_evaluation_failed_exception");
-
 	final AtomicInteger exception = new AtomicInteger(-1);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
