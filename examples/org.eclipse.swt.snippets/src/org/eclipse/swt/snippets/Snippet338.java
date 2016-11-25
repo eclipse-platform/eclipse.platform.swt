@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 508155
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -18,8 +19,10 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.6
  */
+
+import static org.eclipse.swt.events.FocusListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -67,16 +70,9 @@ public static void main(String[] args) {
 			canvas.traverse(traversal, event);
 		}
 	});
-	canvas.addFocusListener(new FocusListener() {
-		@Override
-		public void focusLost(FocusEvent e) {
-			canvas.redraw();
-		}
-		@Override
-		public void focusGained(FocusEvent e) {
-			canvas.redraw();
-		}
-	});
+	canvas.addFocusListener(focusLostAdapter(e->canvas.redraw()));
+	canvas.addFocusListener(focusGainedAdapter(e->canvas.redraw()));
+
 
 	Text text2 = new Text(composite, SWT.SINGLE);
 	Button button = new Button(childShell, SWT.PUSH);

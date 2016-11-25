@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507339
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507339, 508155
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -20,6 +20,7 @@ package org.eclipse.swt.snippets;
  * @since 3.6
  */
 
+import static org.eclipse.swt.events.FocusListener.*;
 import static org.eclipse.swt.events.KeyListener.*;
 
 import org.eclipse.swt.*;
@@ -64,16 +65,8 @@ public static void main(String[] arg) {
 		// key listener enables traversal out)
 		canvas.addKeyListener(keyPressedAdapter(e-> {}));
 
-		canvas.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				canvas.redraw();
-			}
-			@Override
-			public void focusLost(FocusEvent e) {
-				canvas.redraw();
-			}
-		});
+		canvas.addFocusListener(focusGainedAdapter(event-> canvas.redraw()));
+		canvas.addFocusListener(focusLostAdapter(event-> canvas.redraw()));
 		canvas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {

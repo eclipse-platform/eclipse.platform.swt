@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507185
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 507185, 508155
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -20,6 +20,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 
+import static org.eclipse.swt.events.FocusListener.*;
 import static org.eclipse.swt.events.KeyListener.*;
 
 import org.eclipse.swt.*;
@@ -87,12 +88,7 @@ public static void main(String[] args) {
 					}
 			}));
 			// close the text editor when the user tabs away
-			text.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					text.dispose();
-				}
-			});
+			text.addFocusListener(focusLostAdapter(event-> text.dispose()));
 			editor.setEditor(text);
 			text.setFocus();
 		}
@@ -131,12 +127,7 @@ public static void main(String[] args) {
 					}
 			}));
 			// close the text editor when the user clicks away
-			text.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					text.dispose();
-				}
-			});
+			text.addFocusListener(focusLostAdapter(event-> text.dispose()));
 			editor.setEditor(text);
 			text.setFocus();
 		}
