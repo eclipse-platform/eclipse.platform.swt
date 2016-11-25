@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Anton Leherbauer (Wind River Systems) - Bug 439419
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -1005,17 +1006,19 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 					}
 				}
 			}
+			styledText.calculateScrollBars();
 			if (styledText.verticalScrollOffset != 0) {
 				int topIndex = styledText.topIndex;
 				int topIndexY = styledText.topIndexY;
 				int lineHeight = getLineHeight();
+				int newVerticalScrollOffset;
 				if (topIndexY >= 0) {
-					styledText.verticalScrollOffset = (topIndex - 1) * lineHeight + lineHeight - topIndexY;
+					newVerticalScrollOffset = (topIndex - 1) * lineHeight + lineHeight - topIndexY;
 				} else {
-					styledText.verticalScrollOffset = topIndex * lineHeight - topIndexY;
+					newVerticalScrollOffset = topIndex * lineHeight - topIndexY;
 				}
+				styledText.scrollVertical(newVerticalScrollOffset - styledText.verticalScrollOffset, true);
 			}
-			styledText.calculateScrollBars();
 			if (styledText.isBidiCaret()) styledText.createCaretBitmaps();
 			styledText.caretDirection = SWT.NULL;
 			styledText.setCaretLocation();
