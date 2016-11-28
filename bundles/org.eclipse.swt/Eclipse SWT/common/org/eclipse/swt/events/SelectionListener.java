@@ -28,6 +28,13 @@ import org.eclipse.swt.internal.*;
  * selection occurs in a control the appropriate method
  * will be invoked.
  * </p>
+ * <p>
+ * The exact key or mouse gesture that causes this event is platform
+ * specific.
+ * Also note, no key/mouse information is carried with this event. As
+ * such, to differentiate if the event was triggered by mouse or keys,
+ * use key/mouse listeners instead.
+ * </p>
  *
  * @see SelectionAdapter
  * @see SelectionEvent
@@ -40,8 +47,14 @@ public interface SelectionListener extends SWTEventListener {
  * For example, selection occurs in a List when the user selects
  * an item or items with the keyboard or mouse.  On some platforms,
  * the event occurs when a mouse button or key is pressed.  On others,
- * it happens when the mouse or key is released.  The exact key or
- * mouse gesture that causes this event is platform specific.
+ * it happens when the mouse or key is released.
+ * </p>
+ * <p>
+ * The exact key or mouse gesture that causes this event is platform
+ * specific.
+ * Also note, no key/mouse information is carried with this event. As
+ * such, to differentiate if the event was triggered by mouse or keys,
+ * use key/mouse listeners instead.
  * </p>
  *
  * @param e an event containing information about the selection
@@ -55,8 +68,13 @@ public void widgetSelected(SelectionEvent e);
  * when the user double-clicks an item or types return in a Text.
  * On some platforms, the event occurs when a mouse button or key is
  * pressed.  On others, it happens when the mouse or key is released.
+ * </p>
+ * <p>
  * The exact key or mouse gesture that causes this event is platform
  * specific.
+ * Also note, no key/mouse information is carried with this event. As
+ * such, to differentiate if the event was triggered by mouse or keys,
+ * use key/mouse listeners instead.
  * </p>
  *
  * @param e an event containing information about the default selection
