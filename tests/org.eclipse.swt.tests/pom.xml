@@ -24,6 +24,7 @@
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
+    <test>AllTests</test>
   </properties>
   <build>
     <plugins>
@@ -62,11 +63,8 @@
             <goals><goal>test</goal></goals>
             <phase>integration-test</phase>
             <configuration>
-              <test>AllTests</test>
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
               <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
-               <!-- Force test to run, even on Hudson. To remove once all maintenance branches have this mechanics. -->
-              <skipTests>true</skipTests>
             </configuration>
           </execution>
         </executions>
