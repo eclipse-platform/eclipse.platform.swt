@@ -7515,7 +7515,10 @@ public static final void  gtk_expander_set_label_widget(long /*int*/ expander, l
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param filter cast=(GtkFileFilter *)
+ */
 public static final native void _gtk_file_chooser_add_filter(long /*int*/ chooser, long /*int*/ filter);
 public static final void gtk_file_chooser_add_filter(long /*int*/ chooser, long /*int*/ filter) {
 	lock.lock();
@@ -7555,7 +7558,7 @@ public static final long /*int*/ gtk_file_chooser_dialog_new(byte[] title, long 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param chooser cast=(GtkFileChooser *) */
 public static final native long /*int*/ _gtk_file_chooser_get_filename(long /*int*/ chooser);
 public static final long /*int*/ gtk_file_chooser_get_filename(long /*int*/ chooser) {
 	lock.lock();
@@ -7565,7 +7568,7 @@ public static final long /*int*/ gtk_file_chooser_get_filename(long /*int*/ choo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**  @param chooser cast=(GtkFileChooser *) */
 public static final native long /*int*/ _gtk_file_chooser_get_filenames(long /*int*/ chooser);
 public static final long /*int*/ gtk_file_chooser_get_filenames(long /*int*/ chooser) {
 	lock.lock();
@@ -7575,7 +7578,7 @@ public static final long /*int*/ gtk_file_chooser_get_filenames(long /*int*/ cho
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param chooser cast=(GtkFileChooser *) */
 public static final native long /*int*/ _gtk_file_chooser_get_uri(long /*int*/ chooser);
 public static final long /*int*/ gtk_file_chooser_get_uri(long /*int*/ chooser) {
 	lock.lock();
@@ -7585,7 +7588,7 @@ public static final long /*int*/ gtk_file_chooser_get_uri(long /*int*/ chooser) 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param chooser cast=(GtkFileChooser *) */
 public static final native long /*int*/ _gtk_file_chooser_get_uris(long /*int*/ chooser);
 public static final long /*int*/ gtk_file_chooser_get_uris(long /*int*/ chooser) {
 	lock.lock();
@@ -7595,7 +7598,7 @@ public static final long /*int*/ gtk_file_chooser_get_uris(long /*int*/ chooser)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param chooser cast=(GtkFileChooser *) */
 public static final native long /*int*/ _gtk_file_chooser_get_filter(long /*int*/ chooser);
 public static final long /*int*/ gtk_file_chooser_get_filter(long /*int*/ chooser) {
 	lock.lock();
@@ -7605,7 +7608,10 @@ public static final long /*int*/ gtk_file_chooser_get_filter(long /*int*/ choose
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param filename cast=(const gchar *)
+ */
 public static final native void _gtk_file_chooser_set_current_folder(long /*int*/ chooser, long /*int*/ filename);
 public static final void gtk_file_chooser_set_current_folder(long /*int*/ chooser, long /*int*/ filename) {
 	lock.lock();
@@ -7615,7 +7621,10 @@ public static final void gtk_file_chooser_set_current_folder(long /*int*/ choose
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param uri cast=(const gchar *)
+ */
 public static final native void _gtk_file_chooser_set_current_folder_uri(long /*int*/ chooser, byte [] uri);
 public static final void gtk_file_chooser_set_current_folder_uri(long /*int*/ chooser, byte [] uri) {
 	lock.lock();
@@ -7625,7 +7634,10 @@ public static final void gtk_file_chooser_set_current_folder_uri(long /*int*/ ch
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param name cast=(const gchar *)
+ */
 public static final native void _gtk_file_chooser_set_current_name(long /*int*/ chooser, byte[] name);
 public static final void gtk_file_chooser_set_current_name(long /*int*/ chooser, byte[] name) {
 	lock.lock();
@@ -7635,7 +7647,10 @@ public static final void gtk_file_chooser_set_current_name(long /*int*/ chooser,
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param local_only cast=(gboolean)
+ */
 public static final native void _gtk_file_chooser_set_local_only(long /*int*/ chooser, boolean local_only);
 public static final void gtk_file_chooser_set_local_only(long /*int*/ chooser, boolean local_only) {
 	lock.lock();
@@ -7645,7 +7660,10 @@ public static final void gtk_file_chooser_set_local_only(long /*int*/ chooser, b
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param do_overwrite_confirmation cast=(gboolean)
+ */
 public static final native void _gtk_file_chooser_set_do_overwrite_confirmation(long /*int*/ chooser, boolean do_overwrite_confirmation);
 public static final void gtk_file_chooser_set_do_overwrite_confirmation(long /*int*/ chooser, boolean do_overwrite_confirmation) {
 	lock.lock();
@@ -7655,7 +7673,10 @@ public static final void gtk_file_chooser_set_do_overwrite_confirmation(long /*i
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param extra_widget cast=(GtkWidget *)
+ */
 public static final native void _gtk_file_chooser_set_extra_widget(long /*int*/ chooser, long /*int*/ extra_widget);
 public static final void gtk_file_chooser_set_extra_widget(long /*int*/ chooser, long /*int*/ extra_widget) {
 	lock.lock();
@@ -7665,7 +7686,10 @@ public static final void gtk_file_chooser_set_extra_widget(long /*int*/ chooser,
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param name cast=(const gchar *)
+ */
 public static final native void _gtk_file_chooser_set_filename(long /*int*/ chooser, long /*int*/ name);
 public static final void gtk_file_chooser_set_filename(long /*int*/ chooser, long /*int*/ name) {
 	lock.lock();
@@ -7675,7 +7699,10 @@ public static final void gtk_file_chooser_set_filename(long /*int*/ chooser, lon
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param filter cast=(GtkFileFilter *)
+ */
 public static final native void _gtk_file_chooser_set_filter(long /*int*/ chooser, long /*int*/ filter);
 public static final void gtk_file_chooser_set_filter(long /*int*/ chooser, long /*int*/ filter) {
 	lock.lock();
@@ -7685,7 +7712,10 @@ public static final void gtk_file_chooser_set_filter(long /*int*/ chooser, long 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param uri cast=(const char *)
+ */
 public static final native void _gtk_file_chooser_set_uri(long /*int*/ chooser, byte [] uri);
 public static final void gtk_file_chooser_set_uri(long /*int*/ chooser, byte [] uri) {
 	lock.lock();
@@ -7695,7 +7725,10 @@ public static final void gtk_file_chooser_set_uri(long /*int*/ chooser, byte [] 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param chooser cast=(GtkFileChooser *)
+ * @param select_multiple cast=(gboolean)
+ */
 public static final native void _gtk_file_chooser_set_select_multiple(long /*int*/ chooser, boolean select_multiple);
 public static final void gtk_file_chooser_set_select_multiple(long /*int*/ chooser, boolean select_multiple) {
 	lock.lock();
