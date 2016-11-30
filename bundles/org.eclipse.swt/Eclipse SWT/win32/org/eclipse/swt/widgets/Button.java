@@ -1604,10 +1604,14 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						OS.SetTextColor(hdc, foreground);
 						OS.DrawText(hdc, buffer, buffer.length(), rect, flags);
 
-						// draw focus rect
+						/*
+						 * With custom foreground, draw focus rectangle for CheckBox
+						 * and Radio buttons considering the native text padding
+						 * value(which is DPI aware). See bug 508141 for details.
+						 */
 						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
 							RECT focusRect = new RECT ();
-							OS.SetRect (focusRect, nmcd.left+3, nmcd.top+3, nmcd.right-3, nmcd.bottom-3);
+							OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom);
 							OS.DrawFocusRect(nmcd.hdc, focusRect);
 						}
 						return new LRESULT (OS.CDRF_SKIPDEFAULT);
