@@ -111,6 +111,54 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 }
 
 @Test
+public void test_addFocusListenerFocusGainedAdapterLorg_eclipse_swt_events_FocusListener() {
+	FocusListener listener = FocusListener.focusGainedAdapter(e -> eventOccurred = true);
+	control.addFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addFocusListenerFocusLostAdapterLorg_eclipse_swt_events_FocusListener() {
+	FocusListener listener = FocusListener.focusLostAdapter(e -> eventOccurred = true);
+	control.addFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeFocusListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.FocusIn, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.FocusOut, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = e -> eventOccurred = true;
 	control.addHelpListener(listener);
