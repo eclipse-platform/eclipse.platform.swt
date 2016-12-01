@@ -106,10 +106,6 @@
 #define gtk_font_selection_dialog_get_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_set_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_new_LIB LIB_GTK
-#define gtk_file_filter_add_pattern_LIB LIB_GTK
-#define gtk_file_filter_new_LIB LIB_GTK
-#define gtk_file_filter_get_name_LIB LIB_GTK
-#define gtk_file_filter_set_name_LIB LIB_GTK
 #define gtk_label_set_line_wrap_mode_LIB LIB_GTK
 #define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK

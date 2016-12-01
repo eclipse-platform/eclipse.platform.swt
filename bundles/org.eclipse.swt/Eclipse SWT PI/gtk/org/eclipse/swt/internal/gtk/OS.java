@@ -7738,7 +7738,10 @@ public static final void gtk_file_chooser_set_select_multiple(long /*int*/ choos
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param filter cast=(GtkFileFilter *)
+ * @param pattern cast=(const gchar *)
+ */
 public static final native void _gtk_file_filter_add_pattern(long /*int*/ filter, byte[] pattern);
 public static final void gtk_file_filter_add_pattern(long /*int*/ filter, byte[] pattern) {
 	lock.lock();
@@ -7748,7 +7751,6 @@ public static final void gtk_file_filter_add_pattern(long /*int*/ filter, byte[]
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_file_filter_new();
 public static final long /*int*/ gtk_file_filter_new() {
 	lock.lock();
@@ -7758,7 +7760,7 @@ public static final long /*int*/ gtk_file_filter_new() {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param filter cast=(GtkFileFilter *) */
 public static final native long /*int*/ _gtk_file_filter_get_name(long /*int*/ filter);
 public static final long /*int*/ gtk_file_filter_get_name(long /*int*/ filter) {
 	lock.lock();
@@ -7768,7 +7770,10 @@ public static final long /*int*/ gtk_file_filter_get_name(long /*int*/ filter) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param filter cast=(GtkFileFilter *)
+ * @param name cast=(const gchar *)
+ */
 public static final native void _gtk_file_filter_set_name(long /*int*/ filter, byte[] name);
 public static final void gtk_file_filter_set_name(long /*int*/ filter, byte[] name) {
 	lock.lock();

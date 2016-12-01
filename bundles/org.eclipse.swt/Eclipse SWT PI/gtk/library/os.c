@@ -9592,15 +9592,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1filter_1add_1pattern)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1filter_1add_1pattern_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	gtk_file_filter_add_pattern(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_file_filter_add_pattern)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
-		}
-	}
+	gtk_file_filter_add_pattern((GtkFileFilter *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1add_1pattern_FUNC);
@@ -9613,15 +9605,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1filter_1get_1name)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1filter_1get_1name_FUNC);
-/*
-	rc = (jintLong)gtk_file_filter_get_name(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_file_filter_get_name)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)gtk_file_filter_get_name((GtkFileFilter *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1get_1name_FUNC);
 	return rc;
 }
@@ -9633,15 +9617,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1filter_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1filter_1new_FUNC);
-/*
 	rc = (jintLong)gtk_file_filter_new();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_file_filter_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1new_FUNC);
 	return rc;
 }
@@ -9654,15 +9630,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1filter_1set_1name)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1filter_1set_1name_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	gtk_file_filter_set_name(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_file_filter_set_name)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
-		}
-	}
+	gtk_file_filter_set_name((GtkFileFilter *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1set_1name_FUNC);
