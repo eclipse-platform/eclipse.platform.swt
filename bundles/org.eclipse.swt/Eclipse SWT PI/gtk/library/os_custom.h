@@ -377,9 +377,6 @@
 #endif
 
 /* Field accessors */
-#if GTK_CHECK_VERSION(3,0,0)
-#define GTK_WIDGET_FLAGS(arg0) 0
-#endif
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
 struct _GtkAccelLabelPrivate
@@ -403,9 +400,6 @@ struct _GtkAccelLabelPrivate
 #endif
 #ifndef GTK_WIDGET_UNSET_FLAGS
 #define GTK_WIDGET_UNSET_FLAGS(arg0, arg1)
-#endif
-#ifndef GTK_OBJECT_FLAGS
-#define GTK_OBJECT_FLAGS(arg0) arg0
 #endif
 #if !GTK_CHECK_VERSION(3,0,0)
 #define GDK_IS_X11_DISPLAY(arg0) 1
