@@ -1908,59 +1908,70 @@ public TreeItem getTopItem () {
 		vAdjustment = OS.gtk_tree_view_get_vadjustment(handle);
 	}
 	currentAdjustment = OS._gtk_adjustment_get_value(vAdjustment);
+	TreeItem item = null;
 	if (cachedAdjustment == currentAdjustment) {
-		/*
-		 *  Check to see if the selected item is also the topItem. If it is, that means topItem is
-		 *  in sync with the GTK view. If not, the real top item should be the last selected item, which is caused
-		 *  by setSelection().
-		 */
-		long /*int*/ treeSelect = OS.gtk_tree_view_get_selection(handle);
-		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows(treeSelect, null);
-		TreeItem treeSelection = null;
-		if (list != 0) {
-			long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-			long /*int*/ data = OS.g_list_data (list);
-			if (OS.gtk_tree_model_get_iter (modelHandle, iter, data)) {
-				 treeSelection = _getItem (iter);
-			}
-			OS.g_free (iter);
-			OS.gtk_tree_path_free (data);
-			if (topItem == treeSelection) {
-				return topItem;
-			}
-			else {
-				return treeSelection;
-			}
-		} else {
-			if (topItem == null) {
-				// if topItem isn't set and there is nothing selected, topItem is the first item on the Tree
-				TreeItem item = null;
-				long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
-				if (OS.gtk_tree_model_get_iter_first (modelHandle, iter)) {
-					item = _getItem (iter);
-				}
-				OS.g_free (iter);
-				return item;
-			} else {
-				return topItem;
-			}
-		}
-	} else {
-		// Use GTK method to get topItem if there has been changes to the vAdjustment
-		long /*int*/ [] path = new long /*int*/ [1];
-		OS.gtk_widget_realize (handle);
-		if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
-		if (path [0] == 0) return null;
-		TreeItem item = null;
-		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
-		if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
-			item = _getItem (iter);
+		item = _getCachedTopItem();
+	}
+	/*
+	 * Bug 501420: check to make sure the item is not disposed before returning
+	 * it. If it is, find the topItem using GtkTreeView API.
+	 */
+	if(item != null && !item.isDisposed()){
+		return item;
+	}
+	// Use GTK method to get topItem if there has been changes to the vAdjustment
+	long /*int*/ [] path = new long /*int*/ [1];
+	OS.gtk_widget_realize (handle);
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
+	if (path [0] == 0) return null;
+	item = null;
+	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
+	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
+		item = _getItem (iter);
+	}
+	OS.g_free (iter);
+	OS.gtk_tree_path_free (path [0]);
+	topItem = item;
+	return item;
+}
+
+TreeItem _getCachedTopItem() {
+	/*
+	 *  Check to see if the selected item is also the topItem. If it is, that means topItem is
+	 *  in sync with the GTK view. If not, the real top item should be the last selected item, which is caused
+	 *  by setSelection().
+	 */
+	long /*int*/ treeSelect = OS.gtk_tree_view_get_selection(handle);
+	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows(treeSelect, null);
+	TreeItem treeSelection = null;
+	if (list != 0) {
+		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		long /*int*/ data = OS.g_list_data (list);
+		if (OS.gtk_tree_model_get_iter (modelHandle, iter, data)) {
+			 treeSelection = _getItem (iter);
 		}
 		OS.g_free (iter);
-		OS.gtk_tree_path_free (path [0]);
-		topItem = item;
-		return item;
+		OS.gtk_tree_path_free (data);
+		if (topItem == treeSelection) {
+			return topItem;
 		}
+		else {
+			return treeSelection;
+		}
+	} else {
+		if (topItem == null) {
+			// if topItem isn't set and there is nothing selected, topItem is the first item on the Tree
+			TreeItem item = null;
+			long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
+			if (OS.gtk_tree_model_get_iter_first (modelHandle, iter)) {
+				item = _getItem (iter);
+			}
+			OS.g_free (iter);
+			return item;
+		} else {
+			return topItem;
+		}
+	}
 }
 
 @Override
