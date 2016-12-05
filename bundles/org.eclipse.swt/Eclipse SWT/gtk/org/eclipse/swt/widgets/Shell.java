@@ -1548,10 +1548,19 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 
 @Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
-	GtkAllocation widgetAllocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (shellHandle, widgetAllocation);
-	int width = widgetAllocation.width;
-	int height = widgetAllocation.height;
+	int width, height;
+	if (OS.GTK3) {
+		int[] widthA = new int [1];
+		int[] heightA = new int [1];
+		OS.gtk_window_get_size(shellHandle, widthA, heightA);
+		width = widthA[0];
+		height = heightA[0];
+	} else {
+		GtkAllocation widgetAllocation = new GtkAllocation ();
+		OS.gtk_widget_get_allocation (shellHandle, widgetAllocation);
+		width = widgetAllocation.width;
+		height = widgetAllocation.height;
+	}
 
 	//	Bug 474235: on Wayland gtk_size_allocate() is called more frequently, causing an
 	//  infinitely recursive resize call. This causes non-resizable Shells/Dialogs to

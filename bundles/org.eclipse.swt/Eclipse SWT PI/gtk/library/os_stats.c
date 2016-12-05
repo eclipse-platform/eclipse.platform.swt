@@ -1479,6 +1479,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1window_1get_1modal",
 	"_1gtk_1window_1get_1opacity",
 	"_1gtk_1window_1get_1position",
+	"_1gtk_1window_1get_1size",
 	"_1gtk_1window_1group_1add_1window",
 	"_1gtk_1window_1group_1new",
 	"_1gtk_1window_1group_1remove_1window",
