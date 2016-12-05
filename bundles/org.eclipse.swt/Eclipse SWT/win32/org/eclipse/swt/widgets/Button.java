@@ -183,7 +183,7 @@ void _setImage (Image image) {
 								fImageType = OS.IMAGE_ICON;
 								break;
 							}
-							//FALL THROUGH
+							//$FALL-THROUGH$
 						case SWT.TRANSPARENCY_ALPHA:
 							image2 = new Image (display, rect.width, rect.height);
 							GC gc = new GC (image2);
@@ -1604,14 +1604,19 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						OS.SetTextColor(hdc, foreground);
 						OS.DrawText(hdc, buffer, buffer.length(), rect, flags);
 
-						/*
-						 * With custom foreground, draw focus rectangle for CheckBox
-						 * and Radio buttons considering the native text padding
-						 * value(which is DPI aware). See bug 508141 for details.
-						 */
+						// draw focus rect
 						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
 							RECT focusRect = new RECT ();
-							OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom);
+							if (isRadioOrCheck()) {
+								/*
+								 * With custom foreground, draw focus rectangle for CheckBox
+								 * and Radio buttons considering the native text padding
+								 * value(which is DPI aware). See bug 508141 for details.
+								 */
+								OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom-1);
+							} else {
+								OS.SetRect (focusRect, nmcd.left+3, nmcd.top+3, nmcd.right-3, nmcd.bottom-3);
+							}
 							OS.DrawFocusRect(nmcd.hdc, focusRect);
 						}
 						return new LRESULT (OS.CDRF_SKIPDEFAULT);
