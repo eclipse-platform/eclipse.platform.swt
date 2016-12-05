@@ -14902,6 +14902,20 @@ public static final void gtk_window_resize(long /*int*/ handle, int x, int y) {
 	}
 }
 /**
+ * @param handle cast=(GtkWindow *)
+ * @param width cast=(gint *)
+ * @param height cast=(gint *)
+ */
+public static final native void _gtk_window_get_size(long /*int*/ handle, int[] width, int[] height);
+public static final void gtk_window_get_size(long /*int*/ handle, int[] width, int[] height) {
+	lock.lock();
+	try {
+		_gtk_window_get_size(handle, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param window cast=(GtkWindow *)
  * @param widget cast=(GtkWidget *)
  */

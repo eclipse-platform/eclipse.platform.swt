@@ -1419,6 +1419,7 @@ typedef enum {
 	_1gtk_1window_1get_1modal_FUNC,
 	_1gtk_1window_1get_1opacity_FUNC,
 	_1gtk_1window_1get_1position_FUNC,
+	_1gtk_1window_1get_1size_FUNC,
 	_1gtk_1window_1group_1add_1window_FUNC,
 	_1gtk_1window_1group_1new_FUNC,
 	_1gtk_1window_1group_1remove_1window_FUNC,
