@@ -68,13 +68,6 @@
 #define gtk_hbox_new_LIB LIB_GTK
 #define gtk_vbox_new_LIB LIB_GTK
 #define gtk_accessible_get_widget_LIB LIB_GTK
-#define gtk_calendar_get_date_LIB LIB_GTK
-#define gtk_calendar_new_LIB LIB_GTK
-#define gtk_calendar_select_day_LIB LIB_GTK
-#define gtk_calendar_mark_day_LIB LIB_GTK
-#define gtk_calendar_clear_marks_LIB LIB_GTK
-#define gtk_calendar_select_month_LIB LIB_GTK
-#define gtk_calendar_set_display_options_LIB LIB_GTK
 #define gtk_clipboard_store_LIB LIB_GTK
 #define gtk_clipboard_set_can_store_LIB LIB_GTK
 #define gtk_cell_layout_set_attributes_LIB LIB_GTK

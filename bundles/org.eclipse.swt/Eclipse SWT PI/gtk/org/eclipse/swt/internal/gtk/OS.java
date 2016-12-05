@@ -6109,7 +6109,6 @@ public static final long /*int*/ gtk_button_new() {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_calendar_new();
 public static final long /*int*/ gtk_calendar_new() {
 	lock.lock();
@@ -6120,22 +6119,20 @@ public static final long /*int*/ gtk_calendar_new() {
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  * @param month cast=(guint)
  * @param year cast=(guint)
  */
-public static final native boolean /*long*/ _gtk_calendar_select_month(long /*int*/ calendar, int month, int year);
-public static final boolean /*long*/ gtk_calendar_select_month(long /*int*/ calendar, int month, int year) {
+public static final native void /*long*/ _gtk_calendar_select_month(long /*int*/ calendar, int month, int year);
+public static final void /*long*/ gtk_calendar_select_month(long /*int*/ calendar, int month, int year) {
 	lock.lock();
 	try {
-		return _gtk_calendar_select_month(calendar, month, year);
+		_gtk_calendar_select_month(calendar, month, year);
 	} finally {
 		lock.unlock();
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  * @param day cast=(guint)
  */
@@ -6149,7 +6146,6 @@ public static final void gtk_calendar_select_day(long /*int*/ calendar, int day)
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  * @param day cast=(guint)
  */
@@ -6163,7 +6159,6 @@ public static final void gtk_calendar_mark_day(long /*int*/ calendar, int day) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  */
 public static final native void _gtk_calendar_clear_marks(long /*int*/ calendar);
@@ -6176,7 +6171,6 @@ public static final void gtk_calendar_clear_marks(long /*int*/ calendar) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  * @param flags cast=(GtkCalendarDisplayOptions)
  */
@@ -6190,7 +6184,6 @@ public static final void gtk_calendar_set_display_options(long /*int*/ calendar,
 	}
 }
 /**
- * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
  * @param year cast=(guint *)
  * @param month cast=(guint *)
