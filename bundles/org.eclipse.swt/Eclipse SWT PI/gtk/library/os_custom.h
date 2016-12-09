@@ -215,11 +215,6 @@
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
 #define gtk_scrolled_window_add_with_viewport_LIB LIB_GTK
-#define gtk_selection_data_get_data_LIB LIB_GTK
-#define gtk_selection_data_get_data_type_LIB LIB_GTK
-#define gtk_selection_data_get_format_LIB LIB_GTK
-#define gtk_selection_data_get_length_LIB LIB_GTK
-#define gtk_selection_data_get_target_LIB LIB_GTK
 #define gtk_settings_set_string_property_LIB LIB_GTK
 #define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_window_get_group_LIB LIB_GTK

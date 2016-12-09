@@ -10987,7 +10987,6 @@ public static final void gtk_selection_data_free(long /*int*/ selection_data) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection_data cast=(GtkSelectionData *)
  */
 public static final native long /*int*/ _gtk_selection_data_get_data(long /*int*/ selection_data);
@@ -11000,7 +10999,6 @@ public static final long /*int*/ gtk_selection_data_get_data(long /*int*/ select
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection_data cast=(GtkSelectionData *)
  */
 public static final native int _gtk_selection_data_get_format(long /*int*/ selection_data);
@@ -11013,7 +11011,6 @@ public static final int gtk_selection_data_get_format(long /*int*/ selection_dat
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection_data cast=(GtkSelectionData *)
  */
 public static final native int _gtk_selection_data_get_length(long /*int*/ selection_data);
@@ -11026,7 +11023,6 @@ public static final int gtk_selection_data_get_length(long /*int*/ selection_dat
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection_data cast=(GtkSelectionData *)
  */
 public static final native long /*int*/ _gtk_selection_data_get_target(long /*int*/ selection_data);
@@ -11039,7 +11035,6 @@ public static final long /*int*/ gtk_selection_data_get_target(long /*int*/ sele
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection_data cast=(GtkSelectionData *)
  */
 public static final native long /*int*/ _gtk_selection_data_get_data_type(long /*int*/ selection_data);

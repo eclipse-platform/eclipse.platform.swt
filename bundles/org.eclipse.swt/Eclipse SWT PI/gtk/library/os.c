@@ -13035,15 +13035,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1selection_1data_1get_1data)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1selection_1data_1get_1data_FUNC);
-/*
 	rc = (jintLong)gtk_selection_data_get_data((GtkSelectionData *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_selection_data_get_data)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkSelectionData *))fp)((GtkSelectionData *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1selection_1data_1get_1data_FUNC);
 	return rc;
 }
@@ -13055,15 +13047,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1selection_1data_1get_1data_1type)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1selection_1data_1get_1data_1type_FUNC);
-/*
 	rc = (jintLong)gtk_selection_data_get_data_type((GtkSelectionData *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_selection_data_get_data_type)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkSelectionData *))fp)((GtkSelectionData *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1selection_1data_1get_1data_1type_FUNC);
 	return rc;
 }
@@ -13075,15 +13059,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1selection_1data_1get_1format)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1selection_1data_1get_1format_FUNC);
-/*
 	rc = (jint)gtk_selection_data_get_format((GtkSelectionData *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_selection_data_get_format)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GtkSelectionData *))fp)((GtkSelectionData *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1selection_1data_1get_1format_FUNC);
 	return rc;
 }
@@ -13095,15 +13071,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1selection_1data_1get_1length)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1selection_1data_1get_1length_FUNC);
-/*
 	rc = (jint)gtk_selection_data_get_length((GtkSelectionData *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_selection_data_get_length)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GtkSelectionData *))fp)((GtkSelectionData *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1selection_1data_1get_1length_FUNC);
 	return rc;
 }
@@ -13115,15 +13083,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1selection_1data_1get_1target)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1selection_1data_1get_1target_FUNC);
-/*
 	rc = (jintLong)gtk_selection_data_get_target((GtkSelectionData *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_selection_data_get_target)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkSelectionData *))fp)((GtkSelectionData *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1selection_1data_1get_1target_FUNC);
 	return rc;
 }
