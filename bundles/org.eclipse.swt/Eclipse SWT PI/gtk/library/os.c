@@ -8405,15 +8405,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1insert_1text)
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_combo_box_text_insert_text(arg0, arg1, lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_insert_text)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, jbyte *))fp)(arg0, arg1, lparg2);
-		}
-	}
+	gtk_combo_box_text_insert_text((GtkComboBoxText *)arg0, (gint)arg1, (const gchar *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
@@ -10910,15 +10902,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1shell_1set_1take_1focus)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
-/*
 	gtk_menu_shell_set_take_focus((GtkMenuShell *)arg0, (gboolean)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_menu_shell_set_take_focus)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkMenuShell *, gboolean))fp)((GtkMenuShell *)arg0, (gboolean)arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
 }
 #endif
@@ -10931,15 +10915,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1menu_1tool_1button_1new)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1tool_1button_1new_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_menu_tool_button_new(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_menu_tool_button_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
-		}
-	}
+	rc = (jintLong)gtk_menu_tool_button_new((GtkWidget *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1tool_1button_1new_FUNC);

@@ -87,7 +87,6 @@
 #define gtk_color_chooser_set_use_alpha_LIB LIB_GTK
 #define gtk_color_chooser_get_use_alpha_LIB LIB_GTK
 #define gtk_combo_box_text_insert_LIB LIB_GTK
-#define gtk_combo_box_text_insert_text_LIB LIB_GTK
 #define gtk_combo_box_text_remove_all_LIB LIB_GTK
 #define gtk_combo_box_set_focus_on_click_LIB LIB_GTK
 #define gtk_drag_begin_LIB LIB_GTK
@@ -110,8 +109,6 @@
 #define gtk_image_set_from_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
-#define gtk_menu_shell_set_take_focus_LIB LIB_GTK
-#define gtk_menu_tool_button_new_LIB LIB_GTK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK

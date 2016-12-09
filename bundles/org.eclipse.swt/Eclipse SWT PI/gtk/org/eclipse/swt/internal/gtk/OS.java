@@ -6681,7 +6681,7 @@ public static final void gtk_color_selection_set_has_palette(long /*int*/ colors
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.20 deprecated]
  * @param combo cast=(GtkComboBox *)
  * @param val cast=(gboolean)
  */
@@ -6722,7 +6722,11 @@ public static final void gtk_combo_box_text_insert(long /*int*/ combo_box, int p
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param combo_box cast=(GtkComboBoxText *)
+ * @param position cast=(gint)
+ * @param text cast=(const gchar *)
+ */
 public static final native void _gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text);
 public static final void gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text) {
 	lock.lock();
@@ -9111,7 +9115,6 @@ public static final void gtk_menu_shell_insert(long /*int*/ menu_shell, long /*i
 	}
 }
 /**
- * @method flags=dynamic
  * @param menu_shell cast=(GtkMenuShell *)
  * @param take_focus cast=(gboolean)
  */
@@ -9124,7 +9127,10 @@ public static final void gtk_menu_shell_set_take_focus(long /*int*/ menu_shell, 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param icon_widget cast=(GtkWidget *)
+ * @param label cast=(const gchar *)
+ */
 public static final native long /*int*/ _gtk_menu_tool_button_new(long /*int*/ icon_widget, byte[] label);
 public static final long /*int*/ gtk_menu_tool_button_new(long /*int*/ icon_widget, byte[] label) {
 	lock.lock();
