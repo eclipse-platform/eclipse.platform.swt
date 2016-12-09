@@ -91,7 +91,6 @@
 #define gtk_combo_box_text_remove_all_LIB LIB_GTK
 #define gtk_combo_box_set_focus_on_click_LIB LIB_GTK
 #define gtk_drag_begin_LIB LIB_GTK
-#define gtk_entry_text_index_to_layout_index_LIB LIB_GTK
 #define gtk_entry_get_inner_border_LIB LIB_GTK
 #define gtk_font_chooser_dialog_new_LIB LIB_GTK
 #define gtk_font_chooser_get_font_LIB LIB_GTK
@@ -132,9 +131,6 @@
 #define gtk_tree_view_set_grid_lines_LIB LIB_GTK
 #define gtk_tree_view_set_rules_hint_LIB LIB_GTK
 #define gtk_tree_view_get_rules_hint_LIB LIB_GTK
-#define gtk_entry_set_alignment_LIB LIB_GTK
-#define gtk_entry_set_icon_from_icon_name_LIB LIB_GTK
-#define gtk_entry_set_icon_sensitive_LIB LIB_GTK
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
 #define gdk_cursor_unref_LIB LIB_GDK
 #define gdk_display_warp_pointer_LIB LIB_GDK
@@ -325,7 +321,6 @@
 #define gtk_widget_override_font_LIB LIB_GTK
 #define gtk_widget_get_preferred_height_for_width_LIB LIB_GTK
 #define gtk_widget_get_preferred_width_for_height_LIB LIB_GTK
-#define gtk_spin_button_set_numeric_LIB LIB_GTK
 #define gtk_style_context_get_font_LIB LIB_GTK
 #define gtk_style_context_get_color_LIB LIB_GTK
 #define gtk_style_context_get_background_color_LIB LIB_GTK

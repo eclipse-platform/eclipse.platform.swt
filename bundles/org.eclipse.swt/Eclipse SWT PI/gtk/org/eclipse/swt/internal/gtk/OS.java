@@ -7215,7 +7215,7 @@ public static final void gtk_editable_set_position(long /*int*/ editable, int po
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.4 deprecated] */
 public static final native long /*int*/ _gtk_entry_get_inner_border (long /*int*/ entry);
 public static final long /*int*/ gtk_entry_get_inner_border (long /*int*/ entry) {
 	lock.lock();
@@ -7268,7 +7268,10 @@ public static final void gtk_entry_get_layout_offsets (long /*int*/ entry, int[]
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param entry cast=(GtkEntry *)
+ * @param index cast=(gint)
+ */
 public static final native int _gtk_entry_text_index_to_layout_index (long /*int*/ entry, int index);
 public static final int gtk_entry_text_index_to_layout_index (long /*int*/ entry, int index) {
 	lock.lock();
@@ -7341,7 +7344,6 @@ public static final long /*int*/ gtk_entry_new() {
 	}
 }
 /**
- * @method flags=dynamic
  * @param entry cast=(GtkEntry *)
  * @param xalign cast=(gfloat)
  */
@@ -7369,7 +7371,6 @@ public static final void gtk_entry_set_has_frame(long /*int*/ entry, boolean set
 }
 
 /**
- * @method flags=dynamic
  * @param entry cast=(GtkEntry *)
  * @param iconPos cast=(gint)
  * @param stock cast=(const gchar *)
@@ -7384,7 +7385,11 @@ public static final void gtk_entry_set_icon_from_icon_name(long /*int*/ entry, i
 	}
 }
 
-/** @method flags=dynamic */
+/**
+ * @param entry cast=(GtkEntry *)
+ * @param icon_pos cast=(GtkEntryIconPosition)
+ * @param sensitive cast=(gboolean)
+ */
 public static final native void _gtk_entry_set_icon_sensitive(long /*int*/ entry, int icon_pos, boolean sensitive);
 public static final void gtk_entry_set_icon_sensitive(long /*int*/ entry, int icon_pos, boolean sensitive) {
 	lock.lock();
@@ -11118,8 +11123,8 @@ public static final long /*int*/ gtk_spin_button_new(long /*int*/ adjustment, do
 	}
 }
 /**
- * @method flags=dynamic
  * @param spin_button cast=(GtkSpinButton*)
+ * @param numeric cast=(gboolean)
  **/
 public static final native void _gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric);
 public static final void gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric) {
