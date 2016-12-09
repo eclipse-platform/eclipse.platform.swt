@@ -69,9 +69,7 @@
 #define gtk_vbox_new_LIB LIB_GTK
 #define gtk_clipboard_store_LIB LIB_GTK
 #define gtk_clipboard_set_can_store_LIB LIB_GTK
-#define gtk_cell_layout_set_attributes_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
-#define gtk_cell_renderer_get_fixed_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
 #define gtk_color_selection_dialog_new_LIB LIB_GTK
@@ -117,13 +115,8 @@
 #define gtk_rc_parse_string_LIB LIB_GTK
 #define gtk_hseparator_new_LIB LIB_GTK
 #define gtk_vseparator_new_LIB LIB_GTK
-#define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
-#define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
 #define gtk_tree_view_column_get_button_LIB LIB_GTK
-#define gtk_tree_view_column_cell_get_position_LIB LIB_GTK
-#define gtk_tree_view_convert_bin_window_to_tree_coords_LIB LIB_GTK
 #define gtk_tree_view_get_vadjustment_LIB LIB_GTK
-#define gtk_tree_view_set_grid_lines_LIB LIB_GTK
 #define gtk_tree_view_set_rules_hint_LIB LIB_GTK
 #define gtk_tree_view_get_rules_hint_LIB LIB_GTK
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
@@ -326,7 +319,6 @@
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK
 #define gtk_entry_get_icon_area_LIB LIB_GTK
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
-#define gtk_cell_renderer_set_fixed_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK

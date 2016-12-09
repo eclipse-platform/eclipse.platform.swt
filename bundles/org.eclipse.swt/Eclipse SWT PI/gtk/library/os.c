@@ -7738,15 +7738,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1fixed_1size)
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1fixed_1size_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_cell_renderer_get_fixed_size((GtkCellRenderer *)arg0, lparg1, lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_get_fixed_size)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkCellRenderer *, jint *, jint *))fp)((GtkCellRenderer *)arg0, lparg1, lparg2);
-		}
-	}
+	gtk_cell_renderer_get_fixed_size((GtkCellRenderer *)arg0, (gint *)lparg1, (gint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -7855,15 +7847,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1set_1fixed_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1set_1fixed_1size_FUNC);
-/*
-	gtk_cell_renderer_set_fixed_size((GtkCellRenderer *)arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_set_fixed_size)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkCellRenderer *, jint, jint))fp)((GtkCellRenderer *)arg0, arg1, arg2);
-		}
-	}
+	gtk_cell_renderer_set_fixed_size((GtkCellRenderer *)arg0, (gint)arg1, (gint)arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1set_1fixed_1size_FUNC);
 }
 #endif
@@ -15060,15 +15044,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1selection_1count_1selected_1rows)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1count_1selected_1rows_FUNC);
-/*
 	rc = (jint)gtk_tree_selection_count_selected_rows((GtkTreeSelection *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_selection_count_selected_rows)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GtkTreeSelection *))fp)((GtkTreeSelection *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1count_1selected_1rows_FUNC);
 	return rc;
 }
@@ -15082,15 +15058,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1selection_1get_1selected_1rows
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1get_1selected_1rows_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
 	rc = (jintLong)gtk_tree_selection_get_selected_rows((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_selection_get_selected_rows)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkTreeSelection *, GtkTreeModel **))fp)((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1);
-		}
-	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1get_1selected_1rows_FUNC);
@@ -15364,15 +15332,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1cell_1get_1posit
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1cell_1get_1position_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
 	rc = (jboolean)gtk_tree_view_column_cell_get_position((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_view_column_cell_get_position)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkTreeViewColumn *, GtkCellRenderer *, gint *, gint *))fp)((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
-		}
-	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -15668,15 +15628,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1convert_1bin_1window_1to_1tr
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
-	gtk_tree_view_convert_bin_window_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_view_convert_bin_window_to_tree_coords)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkTreeView *, jint, jint, jint *, jint *))fp)((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
-		}
-	}
+	gtk_tree_view_convert_bin_window_to_tree_coords((GtkTreeView *)arg0, (gint)arg1, (gint)arg2, (gint *)lparg3, (gint *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -16017,15 +15969,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1set_1grid_1lines)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1set_1grid_1lines_FUNC);
-/*
-	gtk_tree_view_set_grid_lines((GtkTreeView*)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tree_view_set_grid_lines)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkTreeView*, jint))fp)((GtkTreeView*)arg0, arg1);
-		}
-	}
+	gtk_tree_view_set_grid_lines((GtkTreeView*)arg0, (GtkTreeViewGridLines)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1set_1grid_1lines_FUNC);
 }
 #endif

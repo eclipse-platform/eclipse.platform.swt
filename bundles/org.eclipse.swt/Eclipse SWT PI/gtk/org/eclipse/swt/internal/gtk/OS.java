@@ -6242,7 +6242,7 @@ public static final void gtk_cell_layout_pack_start(long /*int*/ cell_layout, lo
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param cell cast=(GtkCellRenderer *)
  * @param widget cast=(GtkWidget *)
  * @param area cast=(GdkRectangle *),flags=no_in
@@ -6290,8 +6290,9 @@ public static final void gtk_cell_renderer_get_preferred_height_for_width(long /
 	}
 }
 /**
- * @method flags=dynamic
  * @param cell cast=(GtkCellRenderer *)
+ * @param width cast=(gint)
+ * @param height cast=(gint)
  */
 public static final native void _gtk_cell_renderer_set_fixed_size(long /*int*/ cell, int width, int height);
 public static final void gtk_cell_renderer_set_fixed_size (long /*int*/ cell, int width, int height) {
@@ -6303,8 +6304,9 @@ public static final void gtk_cell_renderer_set_fixed_size (long /*int*/ cell, in
 	}
 }
 /**
- * @method flags=dynamic
  * @param cell cast=(GtkCellRenderer *)
+ * @param width cast=(gint *)
+ * @param height cast=(gint *)
  */
 public static final native void _gtk_cell_renderer_get_fixed_size(long /*int*/ cell, int[] width, int[] height);
 public static final void gtk_cell_renderer_get_fixed_size (long /*int*/ cell, int[] width, int[] height) {
@@ -12702,7 +12704,6 @@ public static final boolean gtk_tree_path_up(long /*int*/ path) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection cast=(GtkTreeSelection *)
  */
 public static final native int _gtk_tree_selection_count_selected_rows(long /*int*/ selection);
@@ -12715,7 +12716,6 @@ public static final int gtk_tree_selection_count_selected_rows(long /*int*/ sele
 	}
 }
 /**
- * @method flags=dynamic
  * @param selection cast=(GtkTreeSelection *)
  * @param model cast=(GtkTreeModel **)
  */
@@ -12970,7 +12970,6 @@ public static final void gtk_tree_view_column_add_attribute(long /*int*/ treeCol
 	}
 }
 /**
- * @method flags=dynamic
  * @param tree_column cast=(GtkTreeViewColumn *)
  * @param cell_renderer cast=(GtkCellRenderer *)
  * @param start_pos cast=(gint *)
@@ -13404,7 +13403,7 @@ public static final boolean gtk_tree_view_get_headers_visible(long /*int*/ tree_
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param tree_view cast=(GtkTreeView *)
  */
 public static final native long /*int*/ _gtk_tree_view_get_vadjustment(long /*int*/ tree_view);
@@ -13435,7 +13434,7 @@ public static final boolean gtk_tree_view_get_path_at_pos(long /*int*/ tree_view
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.14 deprecated]
  * @param tree_view cast=(GtkTreeView *)
  */
 public static final native boolean _gtk_tree_view_get_rules_hint(long /*int*/ tree_view);
@@ -13580,8 +13579,8 @@ public static final void gtk_tree_view_set_cursor(long /*int*/ tree_view, long /
 	}
 }
 /**
- * @method flags=dynamic
  * @param tree_view cast=(GtkTreeView*)
+ * @param grid_lines cast=(GtkTreeViewGridLines)
  */
 public static final native void _gtk_tree_view_set_grid_lines(long /*int*/ tree_view, int grid_lines);
 public static final void gtk_tree_view_set_grid_lines(long /*int*/ tree_view, int grid_lines) {
@@ -13634,9 +13633,9 @@ public static final void gtk_tree_view_set_model(long /*int*/ tree_view, long /*
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.14 deprecated]
  * @param tree_view cast=(GtkTreeView *)
- * */
+ */
 public static final native void _gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting);
 public static final void gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting) {
 	lock.lock();
@@ -13670,8 +13669,11 @@ public static final void gtk_tree_view_unset_rows_drag_dest(long /*int*/ tree_vi
 	}
 }
 /**
- * @method flags=dynamic
  * @param tree_view cast=(GtkTreeView *)
+ * @param bx cast=(gint)
+ * @param by cast=(gint)
+ * @param tx cast=(gint *)
+ * @param ty cast=(gint *)
  */
 public static final native void _gtk_tree_view_convert_bin_window_to_tree_coords(long /*int*/ tree_view, int bx, int by, int[] tx, int[] ty);
 public static final void gtk_tree_view_convert_bin_window_to_tree_coords(long /*int*/ tree_view, int bx, int by, int[] tx, int[] ty) {
