@@ -520,9 +520,6 @@ public class OS extends C {
 	public static final int RTLD_LAZY = OS.RTLD_LAZY();
 	public static final int RTLD_MEMBER = 0x00040000;
 	public static final int RTLD_NOW = OS.RTLD_NOW();
-	public static final int X_OK = 0x01;
-	public static final int XA_CARDINAL = 6;
-	public static final int XA_WINDOW = 33;
 
 	/** Signals */
 	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");

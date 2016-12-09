@@ -54,27 +54,21 @@
 
 /* X Structures */
 #define NO_XAnyEvent
-#define NO_XClientMessageEvent
 #define NO_XExposeEvent
 #define NO_XEvent
 #define NO_XFocusChangeEvent
-#define NO_XVisibilityEvent
 #define NO_X_1EVENT_1TYPE
 #define NO_X_1EVENT_1WINDOW
 
 /* X functions */
-#define NO__1XCheckMaskEvent
-#define NO__1XCheckWindowEvent
 #define NO__1XCheckIfEvent
 #define NO__1XDefaultScreen
 #define NO__1XDefaultRootWindow
 #define NO__1XFlush
 #define NO__1XFree
 #define NO__1XGetWindowProperty
-#define NO__1XQueryTree
 #define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
-#define NO__1XReconfigureWMWindow
 #define NO__1XSendEvent
 #define NO__1XSetInputFocus
 #define NO__1XSetErrorHandler
@@ -83,7 +77,6 @@
 #define NO__1XSynchronize
 #define NO__1XTestFakeButtonEvent
 #define NO__1XTestFakeKeyEvent
-#define NO__1XTestFakeMotionEvent
 #define NO__1XWarpPointer
 #define NO__1GDK_1PIXMAP_1XID
 #define NO__1gdk_x11_atom_to_xatom
@@ -100,7 +93,6 @@
 #define NO__1gtk_1plug_1new
 #define NO__1gtk_1socket_1get_1id
 #define NO__1gtk_1socket_1new
-#define NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I
@@ -108,7 +100,6 @@
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II
 
 #endif
 
