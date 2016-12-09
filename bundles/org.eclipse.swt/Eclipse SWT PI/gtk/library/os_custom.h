@@ -67,7 +67,6 @@
 #define gtk_box_set_homogeneous_LIB LIB_GTK
 #define gtk_hbox_new_LIB LIB_GTK
 #define gtk_vbox_new_LIB LIB_GTK
-#define gtk_accessible_get_widget_LIB LIB_GTK
 #define gtk_clipboard_store_LIB LIB_GTK
 #define gtk_clipboard_set_can_store_LIB LIB_GTK
 #define gtk_cell_layout_set_attributes_LIB LIB_GTK
@@ -118,7 +117,6 @@
 #define gtk_rc_parse_string_LIB LIB_GTK
 #define gtk_hseparator_new_LIB LIB_GTK
 #define gtk_vseparator_new_LIB LIB_GTK
-#define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
 #define gtk_tree_view_column_get_button_LIB LIB_GTK

@@ -7281,15 +7281,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1accessible_1get_1widget)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1accessible_1get_1widget_FUNC);
-/*
 	rc = (jintLong)gtk_accessible_get_widget((GtkAccessible *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_accessible_get_widget)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAccessible *))fp)((GtkAccessible *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1accessible_1get_1widget_FUNC);
 	return rc;
 }

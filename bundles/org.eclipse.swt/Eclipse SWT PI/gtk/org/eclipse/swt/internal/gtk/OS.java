@@ -5839,7 +5839,6 @@ public static final long /*int*/ gtk_accel_label_new(byte[] label) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param accessible cast=(GtkAccessible *)
  */
 public static final native long /*int*/ _gtk_accessible_get_widget(long /*int*/ accessible);
@@ -5991,7 +5990,7 @@ public static final void gtk_adjustment_set_page_increment(long /*int*/ adjustme
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.18 deprecated]
  * @param adjustment cast=(GtkAdjustment *)
  * */
 public static final native void _gtk_adjustment_value_changed(long /*int*/ adjustment);
