@@ -8321,7 +8321,7 @@ public static final long /*int*/ gtk_icon_set_render_icon(long /*int*/ icon_set,
 }
 
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK3; 3.10 deprecated]
  */
 public static final native long /*int*/ _gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size);
 public static final long /*int*/ gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size) {
@@ -11347,7 +11347,7 @@ public static final void gtk_style_context_add_class(long /*int*/ context, byte[
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK3; 3.16 deprecated] */
 public static final native void _gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color);
 public static final void gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color) {
 	lock.lock();
@@ -11367,7 +11367,7 @@ public static final void gtk_style_context_get_color(long /*int*/ context, int s
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK3; 3.8 deprecated] */
 public static final native long /*int*/ _gtk_style_context_get_font(long /*int*/ context, int state);
 public static final long /*int*/ gtk_style_context_get_font(long /*int*/ context, int state) {
 	lock.lock();
@@ -11387,7 +11387,7 @@ public static final void gtk_style_context_get_padding(long /*int*/ context, int
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK3; 3.16 deprecated] */
 public static final native void _gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding);
 public static final void gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding) {
 	lock.lock();
@@ -11397,7 +11397,7 @@ public static final void gtk_style_context_get_border(long /*int*/ context, int 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK3; 3.12 deprecated] */
 public static final native void _gtk_style_context_invalidate(long /*int*/ context);
 public static final void gtk_style_context_invalidate(long /*int*/ context) {
 	lock.lock();
@@ -14245,7 +14245,7 @@ public static final void gtk_widget_modify_style(long /*int*/ widget, long /*int
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK3; 3.16 deprecated]
  */
 public static final native void _gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color);
 public static final void gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color) {
@@ -14257,7 +14257,7 @@ public static final void gtk_widget_override_color(long /*int*/ widget, int stat
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK3; 3.16 deprecated]
  */
 public static final native void _gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color);
 public static final void gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color) {
@@ -14269,7 +14269,7 @@ public static final void gtk_widget_override_background_color(long /*int*/ widge
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK3; 3.16 deprecated]
  */
 public static final native void _gtk_widget_override_font(long /*int*/ widget, long /*int*/ font);
 public static final void gtk_widget_override_font(long /*int*/ widget, long /*int*/ font) {
