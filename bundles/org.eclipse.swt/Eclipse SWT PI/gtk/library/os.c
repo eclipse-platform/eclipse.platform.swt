@@ -16947,15 +16947,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1queue_1draw)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1queue_1draw_FUNC);
-/*
-	gtk_widget_queue_draw(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_widget_queue_draw)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	gtk_widget_queue_draw((GtkWidget *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1queue_1draw_FUNC);
 }
 #endif
@@ -17481,15 +17473,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1window_1get_1group)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1group_FUNC);
-/*
 	rc = (jintLong)gtk_window_get_group((GtkWindow *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_window_get_group)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWindow *))fp)((GtkWindow *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1group_FUNC);
 	return rc;
 }
@@ -17789,15 +17773,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1skip_1taskbar_1hint)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
-/*
 	gtk_window_set_skip_taskbar_hint((GtkWindow *)arg0, (gboolean)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_window_set_skip_taskbar_hint)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWindow *, gboolean))fp)((GtkWindow *)arg0, (gboolean)arg1);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
 }
 #endif

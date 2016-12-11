@@ -107,7 +107,6 @@
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK
-#define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK
@@ -210,7 +209,6 @@
 #define gtk_scrolled_window_add_with_viewport_LIB LIB_GTK
 #define gtk_settings_set_string_property_LIB LIB_GTK
 #define gtk_status_icon_position_menu_LIB LIB_GTK
-#define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
@@ -230,7 +228,6 @@
 #define gtk_widget_set_halign_LIB LIB_GTK
 #define gtk_widget_set_valign_LIB LIB_GTK
 #define gtk_window_set_opacity_LIB LIB_GTK
-#define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_class_get_css_name_LIB LIB_GTK
 #define gtk_widget_size_request_LIB LIB_GTK
@@ -328,7 +325,6 @@
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK
 #define gtk_drag_begin_with_coordinates_LIB LIB_GTK
-#define gtk_widget_queue_draw_LIB LIB_GTK
 #ifndef g_thread_supported
 #define g_thread_supported() 0
 #endif

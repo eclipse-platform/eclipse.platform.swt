@@ -13822,7 +13822,7 @@ public static final void gtk_widget_destroy(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK3; GTK2 deprecated (different signature)] */
 public static final native void _gtk_widget_draw(long /*int*/ widget, long /*int*/ cr);
 public static final void gtk_widget_draw(long /*int*/ widget, long /*int*/ cr) {
 	lock.lock();
@@ -14354,7 +14354,7 @@ public static final void gtk_widget_set_can_default(long /*int*/ widget, boolean
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_queue_draw(long /*int*/ widget);
 public static final void gtk_widget_queue_draw(long /*int*/ widget) {
 	lock.lock();
@@ -14684,7 +14684,6 @@ public static final long /*int*/ gtk_window_get_focus(long /*int*/ window) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param window cast=(GtkWindow *)
  */
 public static final native long /*int*/ _gtk_window_get_group(long /*int*/ window);
@@ -14727,7 +14726,7 @@ public static final int gtk_window_get_mnemonic_modifier(long /*int*/ window) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.8 deprecated]
  * @param window cast=(GtkWindow *)
  */
 public static final native double _gtk_window_get_opacity (long /*int*/ window);
@@ -14979,7 +14978,7 @@ public static final void gtk_window_set_modal(long /*int*/ window, boolean modal
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.8 deprecated]
  * @param window cast=(GtkWindow *)
  */
 public static final native void _gtk_window_set_opacity(long /*int*/ window, double opacity);
@@ -15044,7 +15043,6 @@ public static final void gtk_window_set_title(long /*int*/ window, byte[] title)
 	}
 }
 /**
- * @method flags=dynamic
  * @param window cast=(GtkWindow *)
  * @param skips_taskbar cast=(gboolean)
  */
