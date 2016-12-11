@@ -7544,15 +7544,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1box_1set_1homogeneous)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1box_1set_1homogeneous_FUNC);
-/*
-	gtk_box_set_homogeneous((GtkBox *)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_box_set_homogeneous)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkBox *, jboolean))fp)((GtkBox *)arg0, arg1);
-		}
-	}
+	gtk_box_set_homogeneous((GtkBox *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1box_1set_1homogeneous_FUNC);
 }
 #endif
@@ -9864,32 +9856,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hseparator_1new)
 #endif
 
 #ifndef NO__1gtk_1hsv_1to_1rgb
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hsv_1to_1rgb)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1hsv_1to_1rgb)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
 {
 	jdouble *lparg3=NULL;
 	jdouble *lparg4=NULL;
 	jdouble *lparg5=NULL;
-	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1hsv_1to_1rgb_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_hsv_to_rgb(arg0, arg1, arg2, lparg3, lparg4, lparg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_hsv_to_rgb)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jdouble, jdouble, jdouble, jdouble *, jdouble *, jdouble *))fp)(arg0, arg1, arg2, lparg3, lparg4, lparg5);
-		}
-	}
+	gtk_hsv_to_rgb((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1hsv_1to_1rgb_FUNC);
-	return rc;
 }
 #endif
 
@@ -9935,15 +9917,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1info_1load_1icon)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1info_1load_1icon_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_icon_info_load_icon(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_icon_info_load_icon)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong *))fp)(arg0, lparg1);
-		}
-	}
+	rc = (jintLong)gtk_icon_info_load_icon((GtkIconInfo *)arg0, (GError **)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1info_1load_1icon_FUNC);
@@ -10053,15 +10027,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1theme_1get_1default)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1theme_1get_1default_FUNC);
-/*
 	rc = (jintLong)gtk_icon_theme_get_default();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_icon_theme_get_default)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1theme_1get_1default_FUNC);
 	return rc;
 }
@@ -10073,15 +10039,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1theme_1lookup_1by_1gicon)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
-/*
-	rc = (jintLong)gtk_icon_theme_lookup_by_gicon(arg0, arg1, arg2, arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_icon_theme_lookup_by_gicon)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
-		}
-	}
+	rc = (jintLong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (GtkIconLookupFlags)arg3);
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
 	return rc;
 }
@@ -10293,15 +10251,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1gicon)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
-/*
-	gtk_image_set_from_gicon((GtkImage *)arg0, arg1, (GtkIconSize)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkImage *, jintLong, GtkIconSize))fp)((GtkImage *)arg0, arg1, (GtkIconSize)arg2);
-		}
-	}
+	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
 }
 #endif
@@ -10450,15 +10400,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1line_1wrap_1mode)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1label_1set_1line_1wrap_1mode_FUNC);
-/*
-	gtk_label_set_line_wrap_mode(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_label_set_line_wrap_mode)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
+	gtk_label_set_line_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1label_1set_1line_1wrap_1mode_FUNC);
 }
 #endif
@@ -11081,15 +11023,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1orientable_1set_1orientation)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1orientable_1set_1orientation_FUNC);
-/*
-	gtk_orientable_set_orientation(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_orientable_set_orientation)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
+	gtk_orientable_set_orientation((GtkOrientable *)arg0, (GtkOrientation)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1orientable_1set_1orientation_FUNC);
 }
 #endif
@@ -12137,15 +12071,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1set_1embed_1page_1s
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1embed_1page_1setup_FUNC);
-/*
-	gtk_print_unix_dialog_set_embed_page_setup(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_print_unix_dialog_set_embed_page_setup)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
-		}
-	}
+	gtk_print_unix_dialog_set_embed_page_setup((GtkPrintUnixDialog *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1embed_1page_1setup_FUNC);
 }
 #endif
@@ -12389,15 +12315,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1range_1get_1slider_1range)
 	OS_NATIVE_ENTER(env, that, _1gtk_1range_1get_1slider_1range_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
 	gtk_range_get_slider_range((GtkRange *)arg0, (gint *)lparg1, (gint *)lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_range_get_slider_range)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkRange *, gint *, gint *))fp)((GtkRange *)arg0, (gint *)lparg1, (gint *)lparg2);
-		}
-	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -12767,32 +12685,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1option)
 #endif
 
 #ifndef NO__1gtk_1rgb_1to_1hsv
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1rgb_1to_1hsv)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rgb_1to_1hsv)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
 {
 	jdouble *lparg3=NULL;
 	jdouble *lparg4=NULL;
 	jdouble *lparg5=NULL;
-	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1rgb_1to_1hsv_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_rgb_to_hsv(arg0, arg1, arg2, lparg3, lparg4, lparg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_rgb_to_hsv)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jdouble, jdouble, jdouble, jdouble *, jdouble *, jdouble *))fp)(arg0, arg1, arg2, lparg3, lparg4, lparg5);
-		}
-	}
+	gtk_rgb_to_hsv((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1rgb_1to_1hsv_FUNC);
-	return rc;
 }
 #endif
 

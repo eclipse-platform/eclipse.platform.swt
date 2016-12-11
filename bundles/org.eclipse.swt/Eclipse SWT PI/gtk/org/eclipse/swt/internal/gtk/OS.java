@@ -8064,25 +8064,35 @@ public static final long /*int*/ gtk_hbox_new(boolean homogeneous, int spacing) 
 	}
 }
 /**
- * @method flags=dynamic
+ * @param h cast=(gdouble)
+ * @param s cast=(gdouble)
+ * @param v cast=(gdouble)
+ * @param r cast=(gdouble *)
+ * @param g cast=(gdouble *)
+ * @param b cast=(gdouble *)
  */
-public static final native long /*int*/ _gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
-public static final long /*int*/ gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b) {
+public static final native void _gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
+public static final void gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b) {
 	lock.lock();
 	try {
-		return _gtk_hsv_to_rgb(h, s, v, r, g, b);
+		_gtk_hsv_to_rgb(h, s, v, r, g, b);
 	} finally {
 		lock.unlock();
 	}
 }
 /**
- * @method flags=dynamic
+ * @param r cast=(gdouble)
+ * @param g cast=(gdouble)
+ * @param b cast=(gdouble)
+ * @param h cast=(gdouble *)
+ * @param s cast=(gdouble *)
+ * @param v cast=(gdouble *)
  */
-public static final native long /*int*/ _gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
-public static final long /*int*/ gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v) {
+public static final native void _gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
+public static final void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v) {
 	lock.lock();
 	try {
-		return _gtk_rgb_to_hsv(r, g, b, h, s, v);
+		_gtk_rgb_to_hsv(r, g, b, h, s, v);
 	} finally {
 		lock.unlock();
 	}
@@ -8133,8 +8143,8 @@ public static final void /*int*/ gtk_box_reorder_child(long /*int*/ box, long /*
 	}
 }
 /**
- * @method flags=dynamic
  * @param box cast=(GtkBox *)
+ * @param homogeneous cast=(gboolean)
  */
 public static final native void _gtk_box_set_homogeneous(long /*int*/ box, boolean homogeneous);
 public static final void gtk_box_set_homogeneous(long /*int*/ box, boolean homogeneous) {
@@ -8322,9 +8332,7 @@ public static final long /*int*/ gtk_icon_set_render_icon_pixbuf(long /*int*/ ic
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
+/** @return cast=(GtkIconTheme *) */
 public static final native long /*int*/ _gtk_icon_theme_get_default();
 public static final long /*int*/ gtk_icon_theme_get_default() {
 	lock.lock();
@@ -8335,7 +8343,10 @@ public static final long /*int*/ gtk_icon_theme_get_default() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param icon_theme cast=(GtkIconTheme *)
+ * @param icon cast=(GIcon *)
+ * @param size cast=(gint)
+ * @param flags cast=(GtkIconLookupFlags)
  */
 public static final native long /*int*/ _gtk_icon_theme_lookup_by_gicon(long /*int*/ icon_theme, long /*int*/ icon, int size, int flags);
 public static final long /*int*/ gtk_icon_theme_lookup_by_gicon(long /*int*/ icon_theme, long /*int*/ icon, int size, int flags) {
@@ -8347,7 +8358,8 @@ public static final long /*int*/ gtk_icon_theme_lookup_by_gicon(long /*int*/ ico
 	}
 }
 /**
- * @method flags=dynamic
+ * @param icon_info cast=(GtkIconInfo *)
+ * @param error cast=(GError **)
  */
 public static final native long /*int*/ _gtk_icon_info_load_icon(long /*int*/ icon_info, long /*int*/ error[]);
 public static final long /*int*/ gtk_icon_info_load_icon(long /*int*/ icon_info, long /*int*/ error[]) {
@@ -8533,8 +8545,8 @@ public static final void gtk_image_set_from_pixbuf(long /*int*/ image, long /*in
 	}
 }
 /**
- * @method flags=dynamic
  * @param image cast=(GtkImage *)
+ * @param gicon cast=(GIcon *)
  * @param size cast=(GtkIconSize)
  */
 public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size);
@@ -8668,7 +8680,10 @@ public static final void gtk_label_set_line_wrap(long /*int*/ label, boolean wra
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param label cast=(GtkLabel *)
+ * @param wrap_mode cast=(PangoWrapMode)
+ */
 public static final native void _gtk_label_set_line_wrap_mode(long /*int*/ label, int wrap_mode);
 public static final void gtk_label_set_line_wrap_mode(long /*int*/ label, int wrap_mode) {
 	lock.lock();
@@ -9314,7 +9329,10 @@ public static final long /*int*/ g_object_ref_sink(long /*int*/ object) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param orientable cast=(GtkOrientable *)
+ * @param orientation cast=(GtkOrientation)
+ */
 public static final native void _gtk_orientable_set_orientation(long /*int*/ orientable, int orientation);
 public static final void gtk_orientable_set_orientation(long /*int*/ orientable, int orientation) {
 	lock.lock();
@@ -10410,7 +10428,10 @@ public static final long /*int*/ gtk_print_unix_dialog_new(byte[] title, long /*
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param dialog cast=(GtkPrintUnixDialog *)
+ * @param embed cast=(gboolean)
+ */
 public static final native void _gtk_print_unix_dialog_set_embed_page_setup(long /*int*/ dialog, boolean embed);
 public static final void gtk_print_unix_dialog_set_embed_page_setup(long /*int*/ dialog, boolean embed) {
 	lock.lock();
@@ -10683,7 +10704,6 @@ public static final void gtk_range_set_value(long /*int*/ range, double value) {
 	}
 }
 /**
- *  @method flags=dynamic
  *  @param range cast=(GtkRange *)
  *  @param slider_start cast=(gint *)
  *  @param slider_end cast=(gint *)

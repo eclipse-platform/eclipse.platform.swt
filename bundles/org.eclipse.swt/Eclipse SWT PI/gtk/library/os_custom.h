@@ -64,11 +64,8 @@
 #define gtk_arrow_new_LIB LIB_GTK
 #define gtk_arrow_set_LIB LIB_GTK
 #define gtk_box_new_LIB LIB_GTK
-#define gtk_box_set_homogeneous_LIB LIB_GTK
 #define gtk_hbox_new_LIB LIB_GTK
 #define gtk_vbox_new_LIB LIB_GTK
-#define gtk_clipboard_store_LIB LIB_GTK
-#define gtk_clipboard_set_can_store_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
@@ -94,18 +91,13 @@
 #define gtk_font_selection_dialog_get_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_set_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_new_LIB LIB_GTK
-#define gtk_label_set_line_wrap_mode_LIB LIB_GTK
-#define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_set_render_icon_LIB LIB_GTK
-#define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
 #define gtk_icon_source_free_LIB LIB_GTK
 #define gtk_icon_source_new_LIB LIB_GTK
 #define gtk_icon_source_set_pixbuf_LIB LIB_GTK
 #define gtk_image_menu_item_set_image_LIB LIB_GTK
-#define gtk_image_set_from_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
-#define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
@@ -195,8 +187,6 @@
 #define gdk_screen_get_primary_monitor_LIB LIB_GDK
 #define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gdk_visual_get_depth_LIB LIB_GDK
-#define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
-#define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
 #define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
 #define gtk_style_context_add_provider_LIB LIB_GTK
@@ -244,7 +234,6 @@
 #define gtk_widget_get_style_LIB LIB_GTK
 #define gtk_widget_get_modifier_style_LIB LIB_GTK
 #define gtk_widget_set_focus_on_click_LIB LIB_GTK
-#define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
 #define atk_object_add_relationship_LIB LIB_ATK
@@ -259,7 +248,6 @@
 #define gdk_cairo_create_LIB LIB_GDK
 #define gdk_colormap_alloc_color_LIB LIB_GDK
 #define gdk_colormap_free_colors_LIB LIB_GDK
-#define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_paint_arrow_LIB LIB_GTK
 #define gtk_paint_box_LIB LIB_GTK
 #define gtk_paint_box_gap_LIB LIB_GTK
@@ -276,7 +264,6 @@
 #define gtk_paint_option_LIB LIB_GTK
 #define gtk_paint_layout_LIB LIB_GTK
 #define gtk_printer_option_widget_get_type_LIB LIB_GTK
-#define gtk_print_unix_dialog_set_embed_page_setup_LIB LIB_GTK
 #define gtk_render_check_LIB LIB_GTK
 #define gtk_render_extension_LIB LIB_GTK
 #define gtk_render_expander_LIB LIB_GTK
@@ -308,8 +295,6 @@
 #define gtk_style_context_get_padding_LIB LIB_GTK
 #define gtk_style_context_get_border_LIB LIB_GTK
 #define gtk_style_context_invalidate_LIB LIB_GTK
-#define gtk_hsv_to_rgb_LIB LIB_GTK
-#define gtk_rgb_to_hsv_LIB LIB_GTK
 #define gdk_screen_get_monitor_workarea_LIB LIB_GDK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
 #define gtk_widget_input_shape_combine_region_LIB LIB_GTK
