@@ -7944,7 +7944,7 @@ public static final long /*int*/ gtk_font_selection_dialog_new(byte[] title) {
 	}
 }
 /**
- * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
+ * @method flags=dynamic [GTK2/GTK3; 2.x/3.2 deprecated]
  * @param fontname cast=(const gchar *)
  */
 public static final native boolean _gtk_font_selection_dialog_set_font_name(long /*int*/ fsd, byte[] fontname);
@@ -9877,7 +9877,7 @@ public static final void gtk_paint_extension(long /*int*/ style, long /*int*/ wi
 	}
 }
 /**
- * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
+ * @method flags=dynamic [GTK2/GTK3; 2.x/3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -14593,7 +14593,7 @@ public static final void gtk_widget_size_allocate(long /*int*/ widget, GtkAlloca
 	}
 }
 /**
- * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
+ * @method flags=dynamic [GTK2/GTK3; 2.x/3.0 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param requisition cast=(GtkRequisition *),flags=no_in
  */
