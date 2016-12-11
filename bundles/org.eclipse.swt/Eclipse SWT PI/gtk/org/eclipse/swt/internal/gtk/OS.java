@@ -6004,7 +6004,7 @@ public static final void gtk_adjustment_value_changed(long /*int*/ adjustment) {
 }
 
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.14 deprecated]
  * @param arrow_type cast=(GtkArrowType)
  * @param shadow_type cast=(GtkShadowType)
  */
@@ -6019,7 +6019,7 @@ public static final long /*int*/ gtk_arrow_new(int arrow_type, int shadow_type) 
 }
 
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.14 deprecated]
  * @param arrow cast=(GtkArrow *)
  * @param arrow_type cast=(GtkArrowType)
  * @param shadow_type cast=(GtkShadowType)
@@ -6403,7 +6403,7 @@ public static final boolean gtk_check_menu_item_get_active(long /*int*/ check_me
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param label cast=(const gchar *)
  */
 public static final native long /*int*/ _gtk_image_menu_item_new_with_label(byte[] label);
@@ -6533,7 +6533,7 @@ public static final long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ cl
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.6 deprecated]
  * @param title cast=(const gchar *)
  */
 public static final native long /*int*/ _gtk_color_selection_dialog_new(byte[] title);
@@ -6599,7 +6599,7 @@ public static final boolean  gtk_color_chooser_get_use_alpha (long /*int*/ choos
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.6 deprecated]
  * @param color_dialog cast=(GtkColorSelectionDialog *)
  */
 public static final native long /*int*/ _gtk_color_selection_dialog_get_color_selection(long /*int*/ color_dialog);
@@ -6636,7 +6636,7 @@ public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRG
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.4 deprecated]
  * @param color flags=no_in
  */
 public static final native void _gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color);
@@ -6648,7 +6648,7 @@ public static final void gtk_color_selection_get_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.6 deprecated] */
 public static final native long /*int*/ _gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors);
 public static final long /*int*/ gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors) {
 	lock.lock();
@@ -6659,7 +6659,7 @@ public static final long /*int*/ gtk_color_selection_palette_to_string(long /*in
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.4 deprecated]
  * @param color flags=no_out
  */
 public static final native void _gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color);
@@ -6671,7 +6671,7 @@ public static final void gtk_color_selection_set_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.6 deprecated] */
 public static final native void _gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette);
 public static final void gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette) {
 	lock.lock();
@@ -6933,7 +6933,7 @@ public static final int gtk_dialog_run(long /*int*/ dialog) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param widget cast=(GtkWidget *)
  * @param targets cast=(GtkTargetList *)
  * @param actions cast=(GdkDragAction)
@@ -7883,7 +7883,7 @@ public static final void gtk_widget_set_valign(long /*int*/ widget, int gtk_alig
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.2 deprecated] */
 public static final native long /*int*/ _gtk_font_selection_dialog_get_font_name(long /*int*/ fsd);
 public static final long /*int*/ gtk_font_selection_dialog_get_font_name(long /*int*/ fsd) {
 	lock.lock();
@@ -7931,7 +7931,7 @@ public static final void gtk_font_chooser_set_font(long /*int*/ fsd, byte[] font
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param title cast=(const gchar *)
  */
 public static final native long /*int*/ _gtk_font_selection_dialog_new(byte[] title);
@@ -7944,7 +7944,7 @@ public static final long /*int*/ gtk_font_selection_dialog_new(byte[] title) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param fontname cast=(const gchar *)
  */
 public static final native boolean _gtk_font_selection_dialog_set_font_name(long /*int*/ fsd, byte[] fontname);
@@ -8050,7 +8050,7 @@ public static final long /*int*/ gtk_grab_get_current() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param homogeneous cast=(gboolean)
  * @param spacing cast=(gint)
  */
@@ -8146,7 +8146,7 @@ public static final void gtk_box_set_homogeneous(long /*int*/ box, boolean homog
 	}
 }
 /**
- *  @method flags=dynamic
+ *  @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  *  @param adjustment cast=(GtkAdjustment *)
  */
 public static final native long /*int*/ _gtk_hscale_new(long /*int*/ adjustment);
@@ -8173,7 +8173,7 @@ public static final long /*int*/ gtk_scale_new(int orientation, long /*int*/ adj
 	}
 }
 /**
-* @method flags=dynamic
+* @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
 * @param adjustment cast=(GtkAdjustment *)
 */
 public static final native long /*int*/ _gtk_hscrollbar_new(long /*int*/ adjustment);
@@ -8232,7 +8232,7 @@ public static final long /*int*/ gtk_status_icon_position_menu_func() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.8 deprecated]
  */
 public static final native void _gtk_icon_info_free(long /*int*/ icon_info);
 public static final void gtk_icon_info_free(long /*int*/ icon_info) {
@@ -8254,7 +8254,7 @@ public static final long /*int*/ gtk_icon_factory_lookup_default(byte[] stock_id
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param source cast=(GtkIconSource *)
  */
 public static final native void _gtk_icon_source_free(long /*int*/ source);
@@ -8266,7 +8266,7 @@ public static final void gtk_icon_source_free(long /*int*/ source) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.10 deprecated] */
 public static final native long /*int*/ _gtk_icon_source_new();
 public static final long /*int*/ gtk_icon_source_new() {
 	lock.lock();
@@ -8277,7 +8277,7 @@ public static final long /*int*/ gtk_icon_source_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param source cast=(GtkIconSource *)
  * @param pixbuf cast=(GdkPixbuf *)
  */
@@ -8291,7 +8291,7 @@ public static final void gtk_icon_source_set_pixbuf(long /*int*/ source, long /*
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param icon_set cast=(GtkIconSet *)
  * @param style cast=(GtkStyle *)
  * @param direction cast=(GtkTextDirection)
@@ -8474,7 +8474,7 @@ public static final long /*int*/ gtk_im_multicontext_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param menu_item cast=(GtkImageMenuItem *)
  * @param image cast=(GtkWidget *)
  */
@@ -9159,7 +9159,7 @@ public static final long /*int*/ gtk_message_dialog_new(long /*int*/ parent, int
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.14 deprecated]
  * @param misc cast=(GtkMisc *)
  * @param xalign cast=(gfloat)
  * @param yalign cast=(gfloat)
@@ -9545,7 +9545,7 @@ public static final double gtk_page_setup_get_page_height(long /*int*/ setup, in
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param area flags=no_out
  * @param widget cast=(GtkWidget *)
@@ -9690,7 +9690,7 @@ public static final void gtk_render_option(long /*int*/ context, long /*int*/ cr
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9705,7 +9705,7 @@ public static final void gtk_paint_flat_box(long /*int*/ style, long /*int*/ win
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param area flags=no_out
  * @param widget cast=(GtkWidget *)
@@ -9737,7 +9737,7 @@ public static final void gtk_render_focus(long /*int*/ context, long /*int*/ cr,
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9752,7 +9752,7 @@ public static final void gtk_paint_option(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9768,7 +9768,7 @@ public static final void gtk_paint_arrow(long /*int*/ style, long /*int*/ window
 }
 
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9783,7 +9783,7 @@ public static final void gtk_paint_box(long /*int*/ style, long /*int*/ window, 
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
@@ -9798,7 +9798,7 @@ public static final void gtk_paint_box_gap(long /*int*/ style, long /*int*/ wind
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9829,7 +9829,7 @@ public static final void gtk_render_check(long /*int*/ context, long /*int*/ cai
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9844,7 +9844,7 @@ public static final void gtk_paint_expander(long /*int*/ style, long /*int*/ win
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
@@ -9859,7 +9859,7 @@ public static final void gtk_paint_extension(long /*int*/ style, long /*int*/ wi
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9874,7 +9874,7 @@ public static final void gtk_paint_hline(long /*int*/ style, long /*int*/ window
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -9890,7 +9890,7 @@ public static final void gtk_paint_layout(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
@@ -9905,7 +9905,7 @@ public static final void gtk_paint_shadow_gap(long /*int*/ style, long /*int*/ w
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
@@ -9920,7 +9920,7 @@ public static final void gtk_paint_shadow(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -10698,7 +10698,7 @@ public static final void gtk_range_get_slider_range(long /*int*/ range, int[] sl
         }
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param rc_string cast=(const gchar *)
  */
 public static final native void _gtk_rc_parse_string(byte[] rc_string);
@@ -10832,7 +10832,7 @@ public static final void gtk_rc_style_set_text(long /*int*/ style, int index, Gd
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.8 deprecated]
  * @param scrolled_window cast=(GtkScrolledWindow *)
  * @param child cast=(GtkWidget *)
  */
@@ -10963,7 +10963,7 @@ public static final long /*int*/ gtk_settings_get_default() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.16 deprecated]
  * @param settings cast=(GtkSettings *)
  * @param name cast=(const gchar *)
  * @param v_string cast=(const gchar *)
@@ -11655,7 +11655,7 @@ public static final int gtk_style_get_ythickness(long /*int*/ style) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  */
 public static final native long /*int*/ _gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail);
 public static final long /*int*/ gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail) {
@@ -13685,7 +13685,7 @@ public static final void gtk_tree_view_convert_bin_window_to_tree_coords(long /*
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param homogeneous cast=(gboolean)
  * @param spacing cast=(gint)
  */
@@ -13712,7 +13712,7 @@ public static final void gtk_viewport_set_shadow_type(long /*int*/ viewport, int
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native long /*int*/ _gtk_vscale_new(long /*int*/ adjustment);
@@ -13725,7 +13725,7 @@ public static final long /*int*/ gtk_vscale_new(long /*int*/ adjustment) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  * @param adjustment cast=(GtkAdjustment *)
  */
 public static final native long /*int*/ _gtk_vscrollbar_new(long /*int*/ adjustment);
@@ -13737,7 +13737,7 @@ public static final long /*int*/ gtk_vscrollbar_new(long /*int*/ adjustment) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @method flags=dynamic [GTK2/GTK3; 3.2 deprecated] */
 public static final native long /*int*/ _gtk_vseparator_new();
 public static final long /*int*/ gtk_vseparator_new() {
 	lock.lock();
