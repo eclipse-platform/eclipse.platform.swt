@@ -10,12 +10,21 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
 
-import java.util.*;
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * This example shows how to use AccessibleTableListener and
@@ -72,66 +81,51 @@ public class AccessibleTableExample {
 		btnGroup.setLayout(new FillLayout(SWT.VERTICAL));
 		Button btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Add rows");
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int currSize = table1.getItemCount();
-				int colCount = table1.getColumnCount();
-				CTableItem item = new CTableItem(table1, SWT.NONE);
-				String[] cells = new String[colCount];
+		btn.addSelectionListener(widgetSelectedAdapter(e -> {
+			int currSize = table1.getItemCount();
+			int colCount = table1.getColumnCount();
+			CTableItem item = new CTableItem(table1, SWT.NONE);
+			String[] cells = new String[colCount];
 
-				for (int i = 0; i < colCount; i++) {
-					cells[i] = "C" + i + "R" + currSize;
-				}
-				item.setText(cells);
+			for (int i = 0; i < colCount; i++) {
+				cells[i] = "C" + i + "R" + currSize;
 			}
-		});
+			item.setText(cells);
+		}));
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove rows");
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int currSize = table1.getItemCount();
-				if (currSize > 0) {
-					table1.remove(currSize - 1);
-				}
+		btn.addSelectionListener(widgetSelectedAdapter(e -> {
+			int currSize = table1.getItemCount();
+			if (currSize > 0) {
+				table1.remove(currSize - 1);
 			}
-		});
+		}));
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove selected rows");
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				CTableItem[] selectedItems = table1.getSelection();
-				for (CTableItem selectedItem : selectedItems) {
-					selectedItem.dispose();
-				}
+		btn.addSelectionListener(widgetSelectedAdapter(e -> {
+			CTableItem[] selectedItems = table1.getSelection();
+			for (CTableItem selectedItem : selectedItems) {
+				selectedItem.dispose();
 			}
-		});
+		}));
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Add column");
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int currSize = table1.getColumnCount();
-				CTableColumn item = new CTableColumn(table1, SWT.NONE);
-				item.setText("Col " + currSize);
-				item.setWidth(50);
-			}
-		});
+		btn.addSelectionListener(widgetSelectedAdapter(e -> {
+			int currSize = table1.getColumnCount();
+			CTableColumn item = new CTableColumn(table1, SWT.NONE);
+			item.setText("Col " + currSize);
+			item.setWidth(50);
+		}));
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove last column");
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int colCount = table1.getColumnCount();
 
-				if (colCount > 0) {
-					CTableColumn column = table1.getColumn(colCount - 1);
-					column.dispose();
-				}
+		btn.addSelectionListener(widgetSelectedAdapter(e -> {
+			int colCount = table1.getColumnCount();
+			if (colCount > 0) {
+				CTableColumn column = table1.getColumn(colCount - 1);
+				column.dispose();
 			}
-		});
+		}));
 
 		new Label(group, SWT.NONE).setText("CTable used as a list");
 
