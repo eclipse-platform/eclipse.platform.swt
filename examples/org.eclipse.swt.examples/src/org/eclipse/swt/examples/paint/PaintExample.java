@@ -75,11 +75,11 @@ public class PaintExample {
 	static final int Dot_linestyle = 13;
 	static final int DashDot_linestyle = 14;
 	static final int Font_options = 15;
-	
+
 	static final int Default_tool = Pencil_tool;
 	static final int Default_fill = None_fill;
 	static final int Default_linestyle = Solid_linestyle;
-	
+
 	public static final Tool[] tools = {
 		new Tool(Pencil_tool, "Pencil", "tool", SWT.RADIO),
 		new Tool(Airbrush_tool, "Airbrush", "tool", SWT.RADIO),
@@ -102,7 +102,7 @@ public class PaintExample {
 	/**
 	 * Creates an instance of a PaintExample embedded inside
 	 * the supplied parent Composite.
-	 * 
+	 *
 	 * @param parent the container of the example
 	 */
 	public PaintExample(Composite parent) {
@@ -134,7 +134,7 @@ public class PaintExample {
 		}
 		instance.dispose();
 	}
-	
+
 	/**
 	 * Creates the toolbar.
 	 * Note: Only called by standalone.
@@ -199,7 +199,7 @@ public class PaintExample {
 		GridLayout gridLayout;
 		GridData gridData;
 
-		/*** Create principal GUI layout elements ***/		
+		/*** Create principal GUI layout elements ***/
 		Composite displayArea = new Composite(parent, SWT.NONE);
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
@@ -211,14 +211,14 @@ public class PaintExample {
 		// instantiate all of the non-GUI application elements to satisfy referential
 		// dependencies.  It is possible to reorder the initialization to some extent, but
 		// this can be very tedious.
-		
+
 		// paint canvas
 		final Canvas paintCanvas = new Canvas(displayArea, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL |
 			SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		paintCanvas.setLayoutData(gridData);
 		paintCanvas.setBackground(paintColorWhite);
-		
+
 		// color selector frame
 		final Composite colorFrame = new Composite(displayArea, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
@@ -234,7 +234,7 @@ public class PaintExample {
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		statusText.setLayoutData(gridData);
 
-		/*** Create the remaining application elements inside the principal GUI layout elements ***/	
+		/*** Create the remaining application elements inside the principal GUI layout elements ***/
 		// paintSurface
 		paintSurface = new PaintSurface(paintCanvas, statusText, paintColorWhite);
 
@@ -248,7 +248,7 @@ public class PaintExample {
 		tools[Ellipse_tool].data = new EllipseTool(toolSettings, paintSurface);
 		tools[Text_tool].data = new TextTool(toolSettings, paintSurface);
 
-		// colorFrame		
+		// colorFrame
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		gridLayout.marginHeight = 0;
@@ -277,8 +277,8 @@ public class PaintExample {
 			@Override
 			public void handleEvent(Event e) {
 				Rectangle bounds = paletteCanvas.getClientArea();
-				Color color = getColorAt(bounds, e.x, e.y);				
-					
+				Color color = getColorAt(bounds, e.x, e.y);
+
 				if (e.button == 1) setForegroundColor(color);
 				else setBackgroundColor(color);
 			}
@@ -306,7 +306,7 @@ public class PaintExample {
 		paletteCanvas.addListener(SWT.Resize, refreshListener);
 		paletteCanvas.addListener(SWT.Paint, refreshListener);
 		//paletteCanvas.redraw();
-		
+
 		// toolSettingsFrame
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 4;
@@ -346,13 +346,13 @@ public class PaintExample {
 			}
 		});
 	}
-		
+
 	/**
 	 * Disposes of all resources associated with a particular
 	 * instance of the PaintExample.
-	 */	
+	 */
 	public void dispose() {
-		if (paintSurface != null) paintSurface.dispose();		
+		if (paintSurface != null) paintSurface.dispose();
 		if (paintColors != null) {
 			for (int i = 0; i < paintColors.length; ++i) {
 				final Color color = paintColors[i];
@@ -376,16 +376,16 @@ public class PaintExample {
 			tool.image = null;
 		}
 	}
-	
+
 	/**
 	 * Returns the Display.
-	 * 
+	 *
 	 * @return the display we're using
 	 */
 	public Display getDisplay() {
 		return mainComposite.getDisplay();
 	}
-	
+
 	/**
 	 * Gets a string from the resource bundle.
 	 * We don't want to crash because of a missing String.
@@ -398,7 +398,7 @@ public class PaintExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!";
-		}			
+		}
 	}
 
 	/**
@@ -421,10 +421,10 @@ public class PaintExample {
 	 */
 	private void init() {
 		Display display = mainComposite.getDisplay();
-		
+
 		paintColorWhite = new Color(display, 255, 255, 255);
 		paintColorBlack = new Color(display, 0, 0, 0);
-		
+
 		paintDefaultFont = display.getSystemFont();
 
 		paintColors = new Color[numPaletteCols * numPaletteRows];
@@ -516,10 +516,10 @@ public class PaintExample {
 	public void setFocus() {
 		mainComposite.setFocus();
 	}
-	
+
 	/**
 	 * Sets the tool foreground color.
-	 * 
+	 *
 	 * @param color the new color to use
 	 */
 	public void setForegroundColor(Color color) {
@@ -531,7 +531,7 @@ public class PaintExample {
 
 	/**
 	 * Set the tool background color.
-	 * 
+	 *
 	 * @param color the new color to use
 	 */
 	public void setBackgroundColor(Color color) {
@@ -549,14 +549,14 @@ public class PaintExample {
 		paintSurface.setPaintSession(paintTool);
 		updateToolSettings();
 	}
-	
+
 	/**
 	 * Selects a filltype given its ID.
 	 */
 	public void setFillType(int id) {
 		Integer fillType = (Integer) tools[id].data;
 		toolSettings.commonFillType = fillType.intValue();
-		updateToolSettings();		
+		updateToolSettings();
 	}
 
 	/**
@@ -565,7 +565,7 @@ public class PaintExample {
 	public void setLineStyle(int id) {
 		Integer lineType = (Integer) tools[id].data;
 		toolSettings.commonLineStyle = lineType.intValue();
-		updateToolSettings();		
+		updateToolSettings();
 	}
 
 	/**
@@ -587,7 +587,7 @@ public class PaintExample {
 	private void updateToolSettings() {
 		final PaintTool activePaintTool = paintSurface.getPaintTool();
 		if (activePaintTool == null) return;
-		
+
 		activePaintTool.endSession();
 		activePaintTool.set(toolSettings);
 		activePaintTool.beginSession();

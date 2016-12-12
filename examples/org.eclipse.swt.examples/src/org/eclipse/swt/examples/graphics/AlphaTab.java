@@ -23,7 +23,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	 * Value used in setAlpha API call. Goes from 0 to 255 and then starts over.
 	 */
 	int alphaValue;
-	
+
 	/**
 	 * Value used in setAlpha API call. Goes from 0 to 255, then from 255 to 0
 	 * and then starts over.
@@ -32,7 +32,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 
 	boolean reachedMax = false;
 	int diameter;
-	
+
 	/** random numbers used for positioning "SWT" */
 	int randX, randY;
 	Image alphaImg1, alphaImg2;
@@ -40,7 +40,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	public AlphaTab(GraphicsExample example) {
 		super(example);
 	}
-	
+
 	@Override
 	public String getCategory() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
@@ -50,17 +50,17 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	public String getText() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("AlphaDescription"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public int getInitialAnimationTime() {
 		return 20;
 	}
-	
+
 	@Override
 	public void dispose() {
 		if (alphaImg1 != null) {
@@ -76,20 +76,20 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	@Override
 	public void next(int width, int height) {
 		alphaValue = (alphaValue+5)%255;
-		
+
 		alphaValue2 = reachedMax ? alphaValue2 - 5 : alphaValue2 + 5;
-			
+
 		if (alphaValue2 == 255) {
 			reachedMax = true;
 		} else if (alphaValue2 == 0) {
 			reachedMax = false;
 		}
-		
+
 		diameter = (diameter + 10)%(width > height ? width : height);
 	}
 
-	/** 
-	 * Paint the receiver into the specified GC. 
+	/**
+	 * Paint the receiver into the specified GC.
 	 */
 	@Override
 	public void paint(GC gc, int width, int height) {
@@ -98,28 +98,28 @@ public class AlphaTab extends AnimatedGraphicsTab {
 
 		if (alphaImg1 == null) {
 			alphaImg1 = GraphicsExample.loadImage(device, GraphicsExample.class, "alpha_img1.png");
-			alphaImg2 = GraphicsExample.loadImage(device, GraphicsExample.class, "alpha_img2.png");	
+			alphaImg2 = GraphicsExample.loadImage(device, GraphicsExample.class, "alpha_img2.png");
 		}
 
 		Rectangle rect = alphaImg1.getBounds();
-		
+
 		gc.setAlpha(alphaValue);
-		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height, 
+		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height,
 				width/2, height/2, width/4, height/4);
-		
-		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height, 
+
+		gc.drawImage(alphaImg1, rect.x, rect.y, rect.width, rect.height,
 				0, 0, width/4, height/4);
 
 		gc.setAlpha(255-alphaValue);
-		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height, 
+		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height,
 				width/2, 0, width/4, height/4);
-		
-		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height, 
+
+		gc.drawImage(alphaImg2, rect.x, rect.y, rect.width, rect.height,
 				0, 3*height/4, width/4, height/4);
-		
+
 		// pentagon
 		gc.setBackground(device.getSystemColor(SWT.COLOR_DARK_MAGENTA));
-		gc.fillPolygon(new int [] {width/10, height/2, 3*width/10, height/2-width/6, 5*width/10, height/2, 
+		gc.fillPolygon(new int [] {width/10, height/2, 3*width/10, height/2-width/6, 5*width/10, height/2,
 				4*width/10, height/2+width/6, 2*width/10, height/2+width/6});
 
 		gc.setBackground(device.getSystemColor(SWT.COLOR_RED));
@@ -127,45 +127,45 @@ public class AlphaTab extends AnimatedGraphicsTab {
 		// square
 		gc.setAlpha(alphaValue);
 		gc.fillRectangle(width/2, height-75, 75, 75);
-		
+
 		// triangle
 		gc.setAlpha(alphaValue + 15);
 		gc.fillPolygon(new int[]{width/2+75, height-(2*75), width/2+75, height-75, width/2+(2*75), height-75});
-		
+
 		// triangle
 		gc.setAlpha(alphaValue + 30);
 		gc.fillPolygon(new int[]{width/2+80, height-(2*75), width/2+(2*75), height-(2*75), width/2+(2*75), height-80});
-		
+
 		// triangle
 		gc.setAlpha(alphaValue + 45);
 		gc.fillPolygon(new int[]{width/2+(2*75), height-(2*75), width/2+(3*75), height-(2*75), width/2+(3*75), height-(3*75)});
-		
+
 		// triangle
 		gc.setAlpha(alphaValue + 60);
 		gc.fillPolygon(new int[]{width/2+(2*75), height-((2*75)+5), width/2+(2*75), height-(3*75), width/2+((3*75)-5), height-(3*75)});
-		
+
 		// square
 		gc.setAlpha(alphaValue + 75);
 		gc.fillRectangle(width/2+(3*75), height-(4*75), 75, 75);
-		
+
 		gc.setBackground(device.getSystemColor(SWT.COLOR_GREEN));
-		
+
 		// circle in top right corner
 		gc.setAlpha(alphaValue2);
 		gc.fillOval(width-100, 0, 100, 100);
-		
+
 		// triangle
 		gc.setAlpha(alphaValue + 90);
 		gc.fillPolygon(new int[]{width-300, 10, width-100, 10, width-275, 50});
-	
+
 		// triangle
 		gc.setAlpha(alphaValue + 105);
 		gc.fillPolygon(new int[]{width-10, 100, width-10, 300, width-50, 275});
-		
+
 		// quadrilateral shape
 		gc.setAlpha(alphaValue + 120);
 		gc.fillPolygon(new int[]{width-100, 100, width-200, 150, width-200, 200, width-150, 200});
-		
+
 		// blue circles
 		gc.setBackground(device.getSystemColor(SWT.COLOR_BLUE));
 		int size = 50;
@@ -179,27 +179,27 @@ public class AlphaTab extends AnimatedGraphicsTab {
 			}
 			alpha = alpha + 20;
 		}
-		
+
 		// SWT string appearing randomly
 		gc.setAlpha(alphaValue2);
 		String text = GraphicsExample.getResourceString("SWT");
 		Font font = createFont(device, 100, SWT.NONE);
 		gc.setFont(font);
-		
+
 		Point textSize = gc.stringExtent(text);
 		int textWidth = textSize.x;
 		int textHeight = textSize.y;
-		
+
 		if (alphaValue2 == 0){
 			randX = (int)(width*Math.random());
 			randY = (int)(height*Math.random());
 			randX = (randX > textWidth) ? randX - textWidth : randX;
 			randY = (randY > textHeight) ? randY - textHeight : randY;
 		}
-		
+
 		gc.drawString(text, randX, randY, true);
 		font.dispose();
-		
+
 		// gray donut
 		gc.setAlpha(100);
 		Path path = new Path(device);
@@ -212,11 +212,11 @@ public class AlphaTab extends AnimatedGraphicsTab {
 		gc.drawPath(path);
 		path.dispose();
 	}
-	
+
 	/**
 	 * Creates a font using the specified arguments and returns it.
 	 * This method takes into account the resident platform.
-	 * 
+	 *
 	 * @param face
 	 * 			The name of the font
 	 * @param points
@@ -224,12 +224,12 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	 * @param style
 	 * 			The style to be applied to the font
 	 */
-	static Font createFont(Device device, int points, int style) {		
+	static Font createFont(Device device, int points, int style) {
 		if(SWT.getPlatform() == "win32") {
-			return new Font(device, "Verdana", points, style);	
+			return new Font(device, "Verdana", points, style);
 		} else if (SWT.getPlatform() == "gtk") {
-			return new Font(device, "Baekmuk Batang", points, style);		
-		} else { 
+			return new Font(device, "Baekmuk Batang", points, style);
+		} else {
 			return new Font(device, "Verdana", points, style);
 		}
 	}

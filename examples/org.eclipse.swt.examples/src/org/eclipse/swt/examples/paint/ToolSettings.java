@@ -44,17 +44,17 @@ public class ToolSettings {
 	 * commonLineStyle: current line type
 	 */
 	public int commonLineStyle = SWT.LINE_SOLID;
-	
+
 	/**
 	 * airbrushRadius: coverage radius in pixels
 	 */
 	public int airbrushRadius = 10;
-	
+
 	/**
 	 * airbrushIntensity: average surface area coverage in region defined by radius per "jot"
 	 */
 	public int airbrushIntensity = 30;
-	
+
 	/**
 	 * roundedRectangleCornerDiameter: the diameter of curvature of corners in a rounded rectangle
 	 */

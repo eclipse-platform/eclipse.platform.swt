@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.controlexample;
 
- 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
@@ -39,36 +39,36 @@ class CoolBarTab extends Tab {
 	CoolBar coolBar;
 	CoolItem pushItem, dropDownItem, radioItem, checkItem, textItem;
 	Group coolBarGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton;
 	Button dropDownButton, flatButton;
 
 	/* Other widgets added to the "Other" group */
 	Button lockedButton;
-	
+
 	Point[] sizes;
 	int[] wrapIndices;
 	int[] order;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	CoolBarTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Other" group.
 	 */
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-	
+
 		/* Create display controls specific to this example */
 		lockedButton = new Button (otherGroup, SWT.CHECK);
 		lockedButton.setText (ControlExample.getResourceString("Locked"));
-	
+
 		/* Add the listeners */
 		lockedButton.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -77,7 +77,7 @@ class CoolBarTab extends Tab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -89,7 +89,7 @@ class CoolBarTab extends Tab {
 		coolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		coolBarGroup.setText ("CoolBar");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
@@ -112,12 +112,12 @@ class CoolBarTab extends Tab {
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (dropDownButton.getSelection()) itemStyle |= SWT.DROP_DOWN;
-	
+
 		/*
 		* Create the example widgets.
 		*/
 		coolBar = new CoolBar (coolBarGroup, style);
-		
+
 		/* Create the push button toolbar cool item */
 		ToolBar toolBar = new ToolBar (coolBar, toolBarStyle);
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);
@@ -135,11 +135,11 @@ class CoolBarTab extends Tab {
 		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText ("SWT.PUSH");		
+		item.setToolTipText ("SWT.PUSH");
 		pushItem = new CoolItem (coolBar, itemStyle);
 		pushItem.setControl (toolBar);
 		pushItem.addSelectionListener (new CoolItemSelectionListener());
-				
+
 		/* Create the dropdown toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.DROP_DOWN);
@@ -168,7 +168,7 @@ class CoolBarTab extends Tab {
 		radioItem = new CoolItem (coolBar, itemStyle);
 		radioItem.setControl (toolBar);
 		radioItem.addSelectionListener (new CoolItemSelectionListener());
-		
+
 		/* Create the check button toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.CHECK);
@@ -186,7 +186,7 @@ class CoolBarTab extends Tab {
 		checkItem = new CoolItem (coolBar, itemStyle);
 		checkItem.setControl (toolBar);
 		checkItem.addSelectionListener (new CoolItemSelectionListener());
-		
+
 		/* Create the text cool item */
 		if (!vertical) {
 			Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
@@ -220,25 +220,25 @@ class CoolBarTab extends Tab {
 			coolItem.setPreferredSize(coolSize);
 			coolItem.setSize(coolSize);
 		}
-		
+
 		/* If we have saved state, restore it */
 		if (order != null && order.length == coolBar.getItemCount()) {
 			coolBar.setItemLayout(order, wrapIndices, sizes);
 		} else {
 			coolBar.setWrapIndices(new int[] {1, 3});
 		}
-		
+
 		/* Add a listener to resize the group box to match the coolbar */
 		coolBar.addListener(SWT.Resize, event -> exampleGroup.layout());
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-	
+
 		/* Create the extra widgets */
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
 		horizontalButton.setText ("SWT.HORIZONTAL");
@@ -255,7 +255,7 @@ class CoolBarTab extends Tab {
 		dropDownButton = new Button (itemGroup, SWT.CHECK);
 		dropDownButton.setText ("SWT.DROP_DOWN");
 	}
-	
+
 	/**
 	 * Disposes the "Example" widgets.
 	 */
@@ -267,7 +267,7 @@ class CoolBarTab extends Tab {
 			wrapIndices = coolBar.getWrapIndices();
 			order = coolBar.getItemOrder();
 		}
-		super.disposeExampleWidgets();	
+		super.disposeExampleWidgets();
 	}
 
 	/**
@@ -279,7 +279,7 @@ class CoolBarTab extends Tab {
 	Item [] getExampleWidgetItems () {
 		return coolBar.getItems();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -287,7 +287,7 @@ class CoolBarTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {coolBar};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -312,7 +312,7 @@ class CoolBarTab extends Tab {
 	String getTabText () {
 		return "CoolBar";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -327,14 +327,14 @@ class CoolBarTab extends Tab {
 		lockedButton.setSelection(coolBar.getLocked());
 		if (!instance.startup) setWidgetLocked ();
 	}
-	
+
 	/**
 	 * Sets the header visible state of the "Example" widgets.
 	 */
 	void setWidgetLocked () {
 		coolBar.setLocked (lockedButton.getSelection ());
 	}
-	
+
 	/**
 	 * Listens to widgetSelected() events on SWT.DROP_DOWN type ToolItems
 	 * and opens/closes a menu when appropriate.
@@ -342,7 +342,7 @@ class CoolBarTab extends Tab {
 	class DropDownSelectionListener extends SelectionAdapter {
 		private Menu menu = null;
 		private boolean visible = false;
-		
+
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			// Create the menu if it has not already been created
@@ -375,13 +375,13 @@ class CoolBarTab extends Tab {
 					}
 				}
 			}
-			
+
 			/**
 			 * A selection event will be fired when a drop down tool
 			 * item is selected in the main area and in the drop
 			 * down arrow.  Examine the event detail to determine
 			 * where the widget was selected.
-			 */		
+			 */
 			if (event.detail == SWT.ARROW) {
 				/*
 				 * The drop down arrow was selected.
@@ -389,11 +389,11 @@ class CoolBarTab extends Tab {
 				if (visible) {
 					// Hide the menu to give the Arrow the appearance of being a toggle button.
 					setMenuVisible(false);
-				} else {	
+				} else {
 					// Position the menu below and vertically aligned with the the drop down tool button.
 					final ToolItem toolItem = (ToolItem) event.widget;
 					final ToolBar  toolBar = toolItem.getParent();
-					
+
 					Rectangle toolItemBounds = toolItem.getBounds();
 					Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
 					menu.setLocation(point.x, point.y + toolItemBounds.height);
@@ -418,7 +418,7 @@ class CoolBarTab extends Tab {
 	 */
 	class CoolItemSelectionListener extends SelectionAdapter {
 		private Menu menu = null;
-		
+
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			/**
@@ -436,7 +436,7 @@ class CoolBarTab extends Tab {
 					menu = null;
 					return;
 				}
-				
+
 				/* Get the cool item and convert its bounds to display coordinates. */
 				CoolItem coolItem = (CoolItem) event.widget;
 				Rectangle itemBounds = coolItem.getBounds ();
@@ -444,12 +444,12 @@ class CoolBarTab extends Tab {
 				Point pt = coolBar.toDisplay(new Point (itemBounds.x, itemBounds.y));
 				itemBounds.x = pt.x;
 				itemBounds.y = pt.y;
-				
+
 				/* Get the toolbar from the cool item. */
 				ToolBar toolBar = (ToolBar) coolItem.getControl ();
 				ToolItem[] tools = toolBar.getItems ();
 				int toolCount = tools.length;
-								
+
 				/* Convert the bounds of each tool item to display coordinates,
 				 * and determine which ones are past the bounds of the cool item.
 				 */
@@ -463,7 +463,7 @@ class CoolBarTab extends Tab {
 			  		if (!intersection.equals (toolBounds)) break;
 			  		i++;
 				}
-				
+
 				/* Create a pop-up menu with items for each of the hidden buttons. */
 				menu = new Menu (shell, SWT.POP_UP | (coolBar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
 				for (int j = i; j < toolCount; j++) {
@@ -498,7 +498,7 @@ class CoolBarTab extends Tab {
 						/* Application code to perform the action for the menu item would go here. */
 					}
 				}
-				
+
 				/* Display the pop-up menu at the lower left corner of the arrow button.
 				 * Dispose the menu when the user is done with it.
 				 */

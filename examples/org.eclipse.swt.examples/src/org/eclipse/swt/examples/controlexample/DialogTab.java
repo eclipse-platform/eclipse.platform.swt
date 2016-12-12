@@ -22,7 +22,7 @@ class DialogTab extends Tab {
 	/* Example widgets and groups that contain them */
 	Group dialogStyleGroup, resultGroup;
 	Text textWidget;
-	
+
 	/* Style widgets added to the "Style" group */
 	Combo dialogCombo;
 	Button createButton;
@@ -75,7 +75,7 @@ class DialogTab extends Tab {
 		boolean abort = abortButton.getSelection ();
 		boolean retry = retryButton.getSelection ();
 		boolean ignore = ignoreButton.getSelection ();
-		
+
 		okButton.setEnabled (!(yes || no || retry || abort || ignore));
 		cancelButton.setEnabled (!(abort || ignore || (yes != no)));
 		yesButton.setEnabled (!(ok || retry || abort || ignore || (cancel && !yes && !no)));
@@ -83,7 +83,7 @@ class DialogTab extends Tab {
 		retryButton.setEnabled (!(ok || yes || no));
 		abortButton.setEnabled (!(ok || cancel || yes || no));
 		ignoreButton.setEnabled (!(ok || cancel || yes || no));
-		
+
 		createButton.setEnabled (
 				!(ok || cancel || yes || no || retry || abort || ignore) ||
 				ok ||
@@ -92,17 +92,17 @@ class DialogTab extends Tab {
 				(yes && no && cancel) ||
 				(retry && cancel) ||
 				(abort && retry && ignore));
-		
+
 
 	}
-	
+
 	/**
 	 * Handle the create button selection event.
 	 *
 	 * @param event org.eclipse.swt.events.SelectionEvent
 	 */
 	void createButtonSelected(SelectionEvent event) {
-	
+
 		/* Compute the appropriate dialog style */
 		int style = getDefaultStyle();
 		if (okButton.getEnabled () && okButton.getSelection ()) style |= SWT.OK;
@@ -124,10 +124,10 @@ class DialogTab extends Tab {
 		if (saveButton.getEnabled () && saveButton.getSelection ()) style |= SWT.SAVE;
 		if (openButton.getEnabled () && openButton.getSelection ()) style |= SWT.OPEN;
 		if (multiButton.getEnabled () && multiButton.getSelection ()) style |= SWT.MULTI;
-	
+
 		/* Open the appropriate dialog type */
 		String name = dialogCombo.getText ();
-		
+
 		if (name.equals (ControlExample.getResourceString("ColorDialog"))) {
 			ColorDialog dialog = new ColorDialog (shell ,style);
 			if (usePreviousResultButton.getSelection()) {
@@ -151,7 +151,7 @@ class DialogTab extends Tab {
 			colorDialogCustomColors = rgbs;
 			return;
 		}
-		
+
 		if (name.equals (ControlExample.getResourceString("DirectoryDialog"))) {
 			DirectoryDialog dialog = new DirectoryDialog (shell, style);
 			if (usePreviousResultButton.getSelection()) {
@@ -165,7 +165,7 @@ class DialogTab extends Tab {
 			directoryDialogResult = result;
 			return;
 		}
-		
+
 		if (name.equals (ControlExample.getResourceString("FileDialog"))) {
 			FileDialog dialog = new FileDialog (shell, style);
 			if (usePreviousResultButton.getSelection()) {
@@ -191,7 +191,7 @@ class DialogTab extends Tab {
 			fileDialogIndexResult = dialog.getFilterIndex();
 			return;
 		}
-		
+
 		if (name.equals (ControlExample.getResourceString("FontDialog"))) {
 			FontDialog dialog = new FontDialog (shell, style);
 			if (usePreviousResultButton.getSelection()) {
@@ -216,7 +216,7 @@ class DialogTab extends Tab {
 			fontDialogColorResult = dialog.getRGB();
 			return;
 		}
-		
+
 		if (name.equals (ControlExample.getResourceString("PrintDialog"))) {
 			PrintDialog dialog = new PrintDialog (shell, style);
 			if (usePreviousResultButton.getSelection()) {
@@ -241,7 +241,7 @@ class DialogTab extends Tab {
 			printDialogResult = result;
 			return;
 		}
-	
+
 		if (name.equals(ControlExample.getResourceString("MessageBox"))) {
 			MessageBox dialog = new MessageBox (shell, style);
 			dialog.setMessage (ControlExample.getResourceString("Example_string"));
@@ -265,7 +265,7 @@ class DialogTab extends Tab {
 				case SWT.CANCEL:
 					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.CANCEL"}));
 					break;
-				case SWT.ABORT: 
+				case SWT.ABORT:
 					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.ABORT"}));
 					break;
 				case SWT.RETRY:
@@ -281,9 +281,9 @@ class DialogTab extends Tab {
 			textWidget.append (Text.DELIMITER + Text.DELIMITER);
 		}
 	}
-	
+
 	/**
-	 * Creates the "Control" group. 
+	 * Creates the "Control" group.
 	 */
 	@Override
 	void createControlGroup () {
@@ -291,7 +291,7 @@ class DialogTab extends Tab {
 		 * Create the "Control" group.  This is the group on the
 		 * right half of each example tab.  It consists of the
 		 * style group, the display group and the size group.
-		 */			
+		 */
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout= new GridLayout ();
 		controlGroup.setLayout(gridLayout);
@@ -299,7 +299,7 @@ class DialogTab extends Tab {
 		gridLayout.makeColumnsEqualWidth = true;
 		controlGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
-		
+
 		/*
 		 * Create a group to hold the dialog style combo box and
 		 * create dialog button.
@@ -311,16 +311,16 @@ class DialogTab extends Tab {
 		dialogStyleGroup.setLayoutData (gridData);
 		dialogStyleGroup.setText (ControlExample.getResourceString("Dialog_Type"));
 	}
-	
+
 	/**
 	 * Creates the "Control" widget children.
 	 */
 	@Override
 	void createControlWidgets () {
-	
+
 		/* Create the combo */
 		String [] strings = {
-			ControlExample.getResourceString("ColorDialog"), 
+			ControlExample.getResourceString("ColorDialog"),
 			ControlExample.getResourceString("DirectoryDialog"),
 			ControlExample.getResourceString("FileDialog"),
 			ControlExample.getResourceString("FontDialog"),
@@ -331,18 +331,18 @@ class DialogTab extends Tab {
 		dialogCombo.setItems (strings);
 		dialogCombo.setText (strings [0]);
 		dialogCombo.setVisibleItemCount(strings.length);
-	
+
 		/* Create the create dialog button */
 		createButton = new Button(dialogStyleGroup, SWT.NONE);
 		createButton.setText (ControlExample.getResourceString("Create_Dialog"));
 		createButton.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-	
+
 		/* Create a group for the various dialog button style controls */
 		Group buttonStyleGroup = new Group (controlGroup, SWT.NONE);
 		buttonStyleGroup.setLayout (new GridLayout ());
 		buttonStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		buttonStyleGroup.setText (ControlExample.getResourceString("Button_Styles"));
-	
+
 		/* Create the button style buttons */
 		okButton = new Button (buttonStyleGroup, SWT.CHECK);
 		okButton.setText ("SWT.OK");
@@ -358,13 +358,13 @@ class DialogTab extends Tab {
 		abortButton.setText ("SWT.ABORT");
 		ignoreButton = new Button (buttonStyleGroup, SWT.CHECK);
 		ignoreButton.setText ("SWT.IGNORE");
-	
+
 		/* Create a group for the icon style controls */
 		Group iconStyleGroup = new Group (controlGroup, SWT.NONE);
 		iconStyleGroup.setLayout (new GridLayout ());
 		iconStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		iconStyleGroup.setText (ControlExample.getResourceString("Icon_Styles"));
-	
+
 		/* Create the icon style buttons */
 		iconErrorButton = new Button (iconStyleGroup, SWT.RADIO);
 		iconErrorButton.setText ("SWT.ICON_ERROR");
@@ -378,13 +378,13 @@ class DialogTab extends Tab {
 		iconWorkingButton.setText ("SWT.ICON_WORKING");
 		noIconButton = new Button (iconStyleGroup, SWT.RADIO);
 		noIconButton.setText (ControlExample.getResourceString("No_Icon"));
-		
+
 		/* Create a group for the modal style controls */
 		Group modalStyleGroup = new Group (controlGroup, SWT.NONE);
 		modalStyleGroup.setLayout (new GridLayout ());
 		modalStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
-	
+
 		/* Create the modal style buttons */
 		primaryModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		primaryModalButton.setText ("SWT.PRIMARY_MODAL");
@@ -392,13 +392,13 @@ class DialogTab extends Tab {
 		applicationModalButton.setText ("SWT.APPLICATION_MODAL");
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
-	
+
 		/* Create a group for the file dialog style controls */
 		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NONE);
 		fileDialogStyleGroup.setLayout (new GridLayout ());
 		fileDialogStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		fileDialogStyleGroup.setText (ControlExample.getResourceString("File_Dialog_Styles"));
-	
+
 		/* Create the file dialog style buttons */
 		openButton = new Button(fileDialogStyleGroup, SWT.RADIO);
 		openButton.setText("SWT.OPEN");
@@ -406,18 +406,18 @@ class DialogTab extends Tab {
 		saveButton.setText ("SWT.SAVE");
 		multiButton = new Button(fileDialogStyleGroup, SWT.CHECK);
 		multiButton.setText("SWT.MULTI");
-	
+
 		/* Create the orientation group */
 		if (RTL_SUPPORT_ENABLE) {
 			createOrientationGroup();
 		}
-		
+
 		/* Create a group for other style and setting controls */
 		Group otherGroup = new Group (controlGroup, SWT.NONE);
 		otherGroup.setLayout (new GridLayout ());
 		otherGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		otherGroup.setText (ControlExample.getResourceString("Other"));
-	
+
 		/* Create the other style and setting controls */
 		sheetButton = new Button(otherGroup, SWT.CHECK);
 		sheetButton.setText("SWT.SHEET");
@@ -452,7 +452,7 @@ class DialogTab extends Tab {
 		retryButton.addSelectionListener (buttonStyleListener);
 		abortButton.addSelectionListener (buttonStyleListener);
 		ignoreButton.addSelectionListener (buttonStyleListener);
-	
+
 		/* Set default values for style buttons */
 		okButton.setEnabled (false);
 		cancelButton.setEnabled (false);
@@ -475,7 +475,7 @@ class DialogTab extends Tab {
 		effectsVisibleButton.setEnabled(false);
 		effectsVisibleButton.setSelection(true);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -483,7 +483,7 @@ class DialogTab extends Tab {
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
-		
+
 		/*
 		 * Create a group for the text widget to display
 		 * the results returned by the example dialogs.
@@ -493,7 +493,7 @@ class DialogTab extends Tab {
 		resultGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		resultGroup.setText (ControlExample.getResourceString("Dialog_Result"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
@@ -504,9 +504,9 @@ class DialogTab extends Tab {
 		 */
 		textWidget = new Text(resultGroup, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		GridData gridData = new GridData (GridData.FILL_BOTH);
-		textWidget.setLayoutData (gridData);	
+		textWidget.setLayoutData (gridData);
 	}
-	
+
 	/**
 	 * The platform dialogs do not have SWT listeners.
 	 */
@@ -520,7 +520,7 @@ class DialogTab extends Tab {
 	 * @param event the selection event
 	 */
 	void dialogSelected (SelectionEvent event) {
-	
+
 		/* Enable/Disable the buttons */
 		String name = dialogCombo.getText ();
 		boolean isMessageBox = name.equals (ControlExample.getResourceString("MessageBox"));
@@ -544,7 +544,7 @@ class DialogTab extends Tab {
 		multiButton.setEnabled (isFileDialog);
 		effectsVisibleButton.setEnabled (isFontDialog);
 		usePreviousResultButton.setEnabled (!isMessageBox);
-	
+
 		/* Deselect the buttons */
 		if (!isMessageBox) {
 			okButton.setSelection (false);
@@ -556,7 +556,7 @@ class DialogTab extends Tab {
 			ignoreButton.setSelection (false);
 		}
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -564,7 +564,7 @@ class DialogTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [0];
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -572,7 +572,7 @@ class DialogTab extends Tab {
 	String getTabText () {
 		return "Dialog";
 	}
-	
+
 	/**
 	 * Recreates the "Example" widgets.
 	 */
@@ -580,6 +580,6 @@ class DialogTab extends Tab {
 	void recreateExampleWidgets () {
 		if (textWidget == null) {
 			super.recreateExampleWidgets ();
-		} 
+		}
 	}
 }

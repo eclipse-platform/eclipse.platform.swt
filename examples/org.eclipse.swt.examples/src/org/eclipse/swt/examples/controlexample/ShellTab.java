@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-class ShellTab extends Tab {	
+class ShellTab extends Tab {
 	/* Style widgets added to the "Style" groups, and "Other" group */
 	Button noParentButton, parentButton;
 	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton, shellTrimButton, dialogTrimButton, noMoveButton;
@@ -35,7 +35,7 @@ class ShellTab extends Tab {
 	/* Variables used to track the open shells */
 	int shellCount = 0;
 	Shell [] shells = new Shell [4];
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -55,14 +55,14 @@ class ShellTab extends Tab {
 		}
 		shellCount = 0;
 	}
-	
+
 	/**
 	 * Handle the Create button selection event.
 	 *
 	 * @param event org.eclipse.swt.events.SelectionEvent
 	 */
 	public void createButtonSelected(SelectionEvent event) {
-	
+
 		/*
 		 * Remember the example shells so they
 		 * can be disposed by the user.
@@ -72,7 +72,7 @@ class ShellTab extends Tab {
 			System.arraycopy (shells, 0, newShells, 0, shells.length);
 			shells = newShells;
 		}
-	
+
 		/* Compute the shell style */
 		int style = SWT.NONE;
 		if (noTrimButton.getSelection()) style |= SWT.NO_TRIM;
@@ -90,7 +90,7 @@ class ShellTab extends Tab {
 		if (primaryModalButton.getSelection()) style |= SWT.PRIMARY_MODAL;
 		if (applicationModalButton.getSelection()) style |= SWT.APPLICATION_MODAL;
 		if (systemModalButton.getSelection()) style |= SWT.SYSTEM_MODAL;
-	
+
 		/* Create the shell with or without a parent */
 		if (noParentButton.getSelection ()) {
 			shells [shellCount] = new Shell (style);
@@ -112,7 +112,7 @@ class ShellTab extends Tab {
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
 		close.addListener(SWT.Selection, event1 -> currentShell.dispose());
-	
+
 		/* Set the size, title, and image, and open the shell */
 		currentShell.setSize (300, 100);
 		currentShell.setText (ControlExample.getResourceString("Title") + shellCount);
@@ -122,9 +122,9 @@ class ShellTab extends Tab {
 		currentShell.open ();
 		shellCount++;
 	}
-	
+
 	/**
-	 * Creates the "Control" group. 
+	 * Creates the "Control" group.
 	 */
 	@Override
 	void createControlGroup () {
@@ -132,23 +132,23 @@ class ShellTab extends Tab {
 		 * Create the "Control" group.  This is the group on the
 		 * right half of each example tab.  It consists of the
 		 * style group, the 'other' group and the size group.
-		 */		
+		 */
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		controlGroup.setLayout (new GridLayout (2, true));
 		controlGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
-	
+
 		/* Create a group for the decoration style controls */
 		styleGroup = new Group (controlGroup, SWT.NONE);
 		styleGroup.setLayout (new GridLayout ());
 		styleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false, 1, 3));
 		styleGroup.setText (ControlExample.getResourceString("Decoration_Styles"));
-	
+
 		/* Create a group for the modal style controls */
 		modalStyleGroup = new Group (controlGroup, SWT.NONE);
 		modalStyleGroup.setLayout (new GridLayout ());
 		modalStyleGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));		
+		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
 
 		/* Create a group for the 'other' controls */
 		otherGroup = new Group (controlGroup, SWT.NONE);
@@ -163,19 +163,19 @@ class ShellTab extends Tab {
 		parentStyleGroup.setLayoutData (gridData);
 		parentStyleGroup.setText (ControlExample.getResourceString("Parent"));
 	}
-	
+
 	/**
 	 * Creates the "Control" widget children.
 	 */
 	@Override
 	void createControlWidgets () {
-	
+
 		/* Create the parent style buttons */
 		noParentButton = new Button (parentStyleGroup, SWT.RADIO);
 		noParentButton.setText (ControlExample.getResourceString("No_Parent"));
 		parentButton = new Button (parentStyleGroup, SWT.RADIO);
 		parentButton.setText (ControlExample.getResourceString("Parent"));
-	
+
 		/* Create the decoration style buttons */
 		noTrimButton = new Button (styleGroup, SWT.CHECK);
 		noTrimButton.setText ("SWT.NO_TRIM");
@@ -205,7 +205,7 @@ class ShellTab extends Tab {
 		shellTrimButton.setText ("SWT.SHELL_TRIM");
 		dialogTrimButton = new Button (styleGroup, SWT.CHECK);
 		dialogTrimButton.setText ("SWT.DIALOG_TRIM");
-	
+
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
 		modelessButton.setText ("SWT.MODELESS");
@@ -215,15 +215,15 @@ class ShellTab extends Tab {
 		applicationModalButton.setText ("SWT.APPLICATION_MODAL");
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
-	
+
 		/* Create the 'other' buttons */
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Image"));
 		backgroundImageButton = new Button(otherGroup, SWT.CHECK);
 		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
-		
+
 		createSetGetGroup();
-	
+
 		/* Create the "create" and "closeAll" buttons */
 		createButton = new Button (controlGroup, SWT.NONE);
 		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
@@ -233,7 +233,7 @@ class ShellTab extends Tab {
 		gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
 		closeAllButton.setText (ControlExample.getResourceString("Close_All_Shells"));
 		closeAllButton.setLayoutData (gridData);
-	
+
 		/* Add the listeners */
 		createButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -265,12 +265,12 @@ class ShellTab extends Tab {
 		shellTrimButton.addSelectionListener (decorationButtonListener);
 		applicationModalButton.addSelectionListener (decorationButtonListener);
 		systemModalButton.addSelectionListener (decorationButtonListener);
-	
+
 		/* Set the default state */
 		noParentButton.setSelection (true);
 		modelessButton.setSelection (true);
 	}
-	
+
 	/**
 	 * Handle a decoration button selection event.
 	 *
@@ -278,9 +278,9 @@ class ShellTab extends Tab {
 	 */
 	public void decorationButtonSelected(SelectionEvent event) {
 		Button widget = (Button) event.widget;
-		
+
 		/*
-		 * Make sure that if the modal style is SWT.APPLICATION_MODAL 
+		 * Make sure that if the modal style is SWT.APPLICATION_MODAL
 		 * or SWT.SYSTEM_MODAL the style SWT.CLOSE is also selected.
 		 * This is to make sure the user can close the shell.
 		 */
@@ -288,14 +288,14 @@ class ShellTab extends Tab {
 			if (widget.getSelection()) {
 				closeButton.setSelection (true);
 				noTrimButton.setSelection (false);
-			} 
+			}
 			return;
 		}
 		if (widget == closeButton) {
 			if (applicationModalButton.getSelection() || systemModalButton.getSelection()) {
 				closeButton.setSelection (true);
 			}
-		}	
+		}
 		/*
 		 * Make sure that if the SWT.NO_TRIM button is selected
 		 * then all other decoration buttons are deselected.
@@ -316,7 +316,7 @@ class ShellTab extends Tab {
 				noTrimButton.setSelection (false);
 			}
 		}
-		
+
 		/*
 		 * Make sure that the SWT.DIALOG_TRIM and SWT.SHELL_TRIM buttons
 		 * are consistent.
@@ -346,7 +346,7 @@ class ShellTab extends Tab {
 			shellTrimButton.setSelection(title && close && min && max && resize && !border);
 		}
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -354,7 +354,7 @@ class ShellTab extends Tab {
 	String getTabText () {
 		return "Shell";
 	}
-	
+
 	@Override
 	String[] getMethodNames() {
 		return new String[] {"Alpha", "Bounds", "MinimumSize", "Modified", "Text"};

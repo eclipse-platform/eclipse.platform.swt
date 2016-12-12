@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 abstract class ScrollableTab extends Tab {
-	/* Style widgets added to the "Style" group */	
+	/* Style widgets added to the "Style" group */
 	Button singleButton, multiButton, horizontalButton, verticalButton;
 
 	/**
@@ -31,7 +31,7 @@ abstract class ScrollableTab extends Tab {
 	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
-	
+
 		/* Create the extra widgets */
 		singleButton = new Button (styleGroup, SWT.RADIO);
 		singleButton.setText ("SWT.SINGLE");
@@ -46,7 +46,7 @@ abstract class ScrollableTab extends Tab {
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */

@@ -14,9 +14,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class BlackHoleTab extends AnimatedGraphicsTab {
-	
+
 	int size = 1;
-	
+
 public BlackHoleTab(GraphicsExample example) {
 	super(example);
 }

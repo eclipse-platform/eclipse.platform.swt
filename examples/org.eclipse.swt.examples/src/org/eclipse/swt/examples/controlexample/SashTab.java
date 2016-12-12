@@ -35,7 +35,7 @@ class SashTab extends Tab {
 								  ControlExample.getResourceString("ListData0_6"),
 								  ControlExample.getResourceString("ListData0_7"),
 								  ControlExample.getResourceString("ListData0_8")};
-								  
+
 	static String [] ListData1 = {ControlExample.getResourceString("ListData1_0"),
 								  ControlExample.getResourceString("ListData1_1"),
 								  ControlExample.getResourceString("ListData1_2"),
@@ -56,7 +56,7 @@ class SashTab extends Tab {
 	SashTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -65,7 +65,7 @@ class SashTab extends Tab {
 		super.createExampleGroup ();
 		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		exampleGroup.setLayout(new FillLayout());
-		
+
 		/* Create a group for the sash widgets */
 		sashGroup = new Group (exampleGroup, SWT.NONE);
 		FillLayout layout = new FillLayout();
@@ -84,7 +84,7 @@ class SashTab extends Tab {
 		 */
 		int style = getDefaultStyle();
 		sashComp = new Composite(sashGroup, SWT.BORDER | style);
-	
+
 		/* Create the list and text widgets */
 		list1 = new List (sashComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		list1.setItems (ListData0);
@@ -92,12 +92,12 @@ class SashTab extends Tab {
 		list2.setItems (ListData1);
 		text = new Text (sashComp, SWT.MULTI | SWT.BORDER);
 		text.setText (ControlExample.getResourceString("Multi_line"));
-	
+
 		/* Create the sashes */
 		style = smoothButton.getSelection() ? SWT.SMOOTH : SWT.NONE;
 		vSash = new Sash (sashComp, SWT.VERTICAL | style);
 		hSash = new Sash (sashComp, SWT.HORIZONTAL | style);
-		
+
 		/* Add the listeners */
 		hSash.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -133,23 +133,23 @@ class SashTab extends Tab {
 	 * Creates the "Size" group.  The "Size" group contains
 	 * controls that allow the user to change the size of
 	 * the example widgets.
-	 */	
+	 */
 	@Override
-	void createSizeGroup () {		
+	void createSizeGroup () {
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-	
+
 		/* Create the extra widgets */
 		smoothButton = new Button (styleGroup, SWT.CHECK);
 		smoothButton.setText("SWT.SMOOTH");
 	}
-	
+
 	@Override
 	void disposeExampleWidgets () {
 		sashComp.dispose();
@@ -163,7 +163,7 @@ class SashTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {hSash, vSash};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -180,21 +180,21 @@ class SashTab extends Tab {
 	String getTabText () {
 		return "Sash";
 	}
-	
+
 	/**
 	 * Layout the list and text widgets according to the new
 	 * positions of the sashes..events.SelectionEvent
 	 */
 	void layout () {
-		
+
 		Rectangle clientArea = sashComp.getClientArea ();
 		Rectangle hSashBounds = hSash.getBounds ();
 		Rectangle vSashBounds = vSash.getBounds ();
-		
+
 		list1.setBounds (0, 0, vSashBounds.x, hSashBounds.y);
 		list2.setBounds (vSashBounds.x + vSashBounds.width, 0, clientArea.width - (vSashBounds.x + vSashBounds.width), hSashBounds.y);
 		text.setBounds (0, hSashBounds.y + hSashBounds.height, clientArea.width, clientArea.height - (hSashBounds.y + hSashBounds.height));
-	
+
 		/**
 		* If the horizontal sash has been moved then the vertical
 		* sash is either too long or too short and its size must
@@ -210,7 +210,7 @@ class SashTab extends Tab {
 	void setExampleWidgetSize () {
 		sashGroup.layout (true);
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -219,34 +219,34 @@ class SashTab extends Tab {
 		super.setExampleWidgetState ();
 		smoothButton.setSelection ((hSash.getStyle () & SWT.SMOOTH) != 0);
 	}
-	
+
 	/**
 	 * Handle the shell resized event.
 	 */
 	void resized () {
-	
+
 		/* Get the client area for the shell */
 		Rectangle clientArea = sashComp.getClientArea ();
-		
+
 		/*
 		* Make list 1 half the width and half the height of the tab leaving room for the sash.
 		* Place list 1 in the top left quadrant of the tab.
 		*/
 		Rectangle list1Bounds = new Rectangle (0, 0, (clientArea.width - SASH_WIDTH) / 2, (clientArea.height - SASH_WIDTH) / 2);
 		list1.setBounds (list1Bounds);
-	
+
 		/*
 		* Make list 2 half the width and half the height of the tab leaving room for the sash.
 		* Place list 2 in the top right quadrant of the tab.
 		*/
 		list2.setBounds (list1Bounds.width + SASH_WIDTH, 0, clientArea.width - (list1Bounds.width + SASH_WIDTH), list1Bounds.height);
-	
+
 		/*
 		* Make the text area the full width and half the height of the tab leaving room for the sash.
 		* Place the text area in the bottom half of the tab.
 		*/
 		text.setBounds (0, list1Bounds.height + SASH_WIDTH, clientArea.width, clientArea.height - (list1Bounds.height + SASH_WIDTH));
-	
+
 		/* Position the sashes */
 		vSash.setBounds (list1Bounds.width, 0, SASH_WIDTH, list1Bounds.height);
 		hSash.setBounds (0, list1Bounds.height, clientArea.width, SASH_WIDTH);

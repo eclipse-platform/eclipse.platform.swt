@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Label;
  * images that have been stretched or shrunk.
  */
 public class InterpolationTab extends GraphicsTab {
-	
+
 	Combo imageCb;	// combo for selecting images
 
 public InterpolationTab(GraphicsExample example) {
@@ -53,11 +53,11 @@ public String getDescription() {
 
 @Override
 public void createControlPanel(Composite parent) {
-	
+
 	Composite comp;
 	GridLayout gridLayout = new GridLayout(2, false);
-	
-	// create drop down combo 
+
+	// create drop down combo
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
 	new Label(comp, SWT.CENTER).setText(GraphicsExample
@@ -83,7 +83,7 @@ public void paint(GC gc, int width, int height) {
 	float scaleY = 10f;
 	Image image = null;
 	switch (imageCb.getSelectionIndex()) {
-	
+
 	case 0:
 		image = GraphicsExample.loadImage(device, GraphicsExample.class, "home_nav.gif");
 		break;
@@ -112,20 +112,20 @@ public void paint(GC gc, int width, int height) {
 		scaleY = 0.5f;
 		break;
 	}
-	
+
 	Rectangle bounds = image.getBounds();
-	
+
 	// draw the original image
-	gc.drawImage(image, (width-bounds.width)/2, 20);	
-	
+	gc.drawImage(image, (width-bounds.width)/2, 20);
+
 	Font font = new Font(device, getPlatformFont(), 20, SWT.NORMAL);
 	gc.setFont(font);
-	
+
 	// write some text below the original image
 	String text = GraphicsExample.getResourceString("OriginalImg"); //$NON-NLS-1$
-	Point size = gc.stringExtent(text);	
+	Point size = gc.stringExtent(text);
 	gc.drawString(text, (width-size.x)/2, 25 + bounds.height, true);
-	
+
 	Transform transform = new Transform(device);
 	transform.translate((width - (bounds.width * scaleX + 10) * 4) / 2, 25 + bounds.height + size.y +
 				(height - (25 + bounds.height + size.y + bounds.height*scaleY)) / 2);
@@ -134,26 +134,26 @@ public void paint(GC gc, int width, int height) {
 	// --- draw strings ---
 	float[] point = new float[2];
 	text = GraphicsExample.getResourceString("None"); //$NON-NLS-1$
-	size = gc.stringExtent(text);	
+	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX);
 	point[1] = bounds.height;
 	transform.transform(point);
 	gc.drawString(text, (int)point[0], (int)point[1], true);
-	
+
 	text = GraphicsExample.getResourceString("Low"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + bounds.width;
 	point[1] = bounds.height;
 	transform.transform(point);
 	gc.drawString(text, (int)point[0], (int)point[1], true);
-	
+
 	text = GraphicsExample.getResourceString("Default"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + 2*bounds.width;
 	point[1] = bounds.height;
 	transform.transform(point);
 	gc.drawString(text, (int)point[0], (int)point[1], true);
-	
+
 	text = GraphicsExample.getResourceString("High"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + 3*bounds.width;
@@ -165,11 +165,11 @@ public void paint(GC gc, int width, int height) {
 	transform.dispose();
 
 	// --- draw images ---
-	
+
 	// no interpolation
 	gc.setInterpolation(SWT.NONE);
 	gc.drawImage(image, 0, 0);
-	
+
 	// low interpolation
 	gc.setInterpolation(SWT.LOW);
 	gc.drawImage(image, bounds.width, 0);
@@ -177,7 +177,7 @@ public void paint(GC gc, int width, int height) {
 	// default interpolation
 	gc.setInterpolation(SWT.DEFAULT);
 	gc.drawImage(image, 2*bounds.width, 0);
-	
+
 	// high interpolation
 	gc.setInterpolation(SWT.HIGH);
 	gc.drawImage(image, 3*bounds.width, 0);
@@ -191,9 +191,9 @@ public void paint(GC gc, int width, int height) {
  */
 static String getPlatformFont() {
 	if(SWT.getPlatform() == "win32") {
-		return "Arial";	
+		return "Arial";
 	} else if (SWT.getPlatform() == "gtk") {
-		return "Baekmuk Batang";		
+		return "Baekmuk Batang";
 	} else {
 		return "Verdana";
 	}

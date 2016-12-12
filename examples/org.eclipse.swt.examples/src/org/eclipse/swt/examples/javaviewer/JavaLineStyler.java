@@ -39,7 +39,7 @@ class JavaLineStyler implements LineStyleListener {
 	public static final int WORD=		0;
 	public static final int WHITE=		1;
 	public static final int KEY=			2;
-	public static final int COMMENT=		3;	
+	public static final int COMMENT=		3;
 	public static final int STRING=		5;
 	public static final int OTHER=		6;
 	public static final int NUMBER=		7;
@@ -81,9 +81,9 @@ void initializeColors() {
 	tokenColors= new int[MAXIMUM_TOKEN];
 	tokenColors[WORD]=		0;
 	tokenColors[WHITE]=		0;
-	tokenColors[KEY]=		3; 
-	tokenColors[COMMENT]=	1; 
-	tokenColors[STRING]= 	2; 
+	tokenColors[KEY]=		3;
+	tokenColors[COMMENT]=	1;
+	tokenColors[STRING]= 	2;
 	tokenColors[OTHER]=		0;
 	tokenColors[NUMBER]=	0;
 }
@@ -95,7 +95,7 @@ void disposeColors() {
 }
 
 /**
- * Event.detail			line start offset (input)	
+ * Event.detail			line start offset (input)
  * Event.text 			line text (input)
  * LineStyleEvent.styles 	Enumeration of StyleRanges, need to be in order. (output)
  * LineStyleEvent.background 	line background color (output)
@@ -119,8 +119,8 @@ public void lineGetStyle(LineStyleEvent event) {
 			// do nothing for non-colored tokens
 		} else if (token != WHITE) {
 			Color color = getColor(token);
-			// Only create a style if the token color is different than the 
-			// widget's default foreground color and the token's style is not 
+			// Only create a style if the token color is different than the
+			// widget's default foreground color and the token's style is not
 			// bold.  Keywords are bolded.
 			if ((!color.equals(defaultFgColor)) || (token == KEY)) {
 				StyleRange style = new StyleRange(scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null);
@@ -135,22 +135,22 @@ public void lineGetStyle(LineStyleEvent event) {
 					if (lastStyle.similarTo(style) && (lastStyle.start + lastStyle.length == style.start)) {
 						lastStyle.length += style.length;
 					} else {
-						styles.add(style); 
+						styles.add(style);
 					}
-				} 
-			} 
+				}
+			}
 		} else if ((!styles.isEmpty()) && ((lastStyle=styles.get(styles.size()-1)).fontStyle == SWT.BOLD)) {
 			int start = scanner.getStartOffset() + event.lineOffset;
 			lastStyle = styles.get(styles.size() - 1);
 			// A font style of SWT.BOLD implies that the last style
 			// represents a java keyword.
 			if (lastStyle.start + lastStyle.length == start) {
-				// Have the white space take on the style before it to 
+				// Have the white space take on the style before it to
 				// minimize the number of style ranges created and the
 				// number of font style changes during rendering.
 				lastStyle.length += scanner.getLength();
 			}
-		} 
+		}
 		token= scanner.nextToken();
 	}
 	event.styles = styles.toArray(new StyleRange[styles.size()]);
@@ -163,7 +163,7 @@ public void parseBlockComments(String text) {
 	int cnt = 0;
 	int[] offsets = new int[2];
 	boolean done = false;
-	
+
 	try {
 	while (!done) {
 		switch (ch = buffer.read()) {
@@ -181,10 +181,10 @@ public void parseBlockComments(String text) {
 					offsets = new int[2];
 					offsets[0] = cnt;
 					blkComment = true;
-					cnt++;	
+					cnt++;
 				} else {
 					cnt++;
-				}						
+				}
 				cnt++;
 				break;
 			}
@@ -193,20 +193,20 @@ public void parseBlockComments(String text) {
 					ch = buffer.read();
 					cnt++;
 					if (ch == '/') {
-						blkComment = false;	
+						blkComment = false;
 						offsets[1] = cnt;
 						blockComments.add(offsets);
 					}
 				}
-				cnt++;	
+				cnt++;
 				break;
 			}
 			default : {
-				cnt++;				
+				cnt++;
 				break;
 			}
 		}
-	}		
+	}
 	} catch(IOException e) {
 		// ignore errors
 	}
@@ -225,7 +225,7 @@ public class JavaScanner {
 	protected int fStartToken;
 	protected boolean fEofSeen= false;
 
-	private String[] fgKeywords= { 
+	private String[] fgKeywords= {
 		"abstract",
 		"boolean", "break", "byte",
 		"case", "catch", "char", "class", "continue",
@@ -278,9 +278,9 @@ public class JavaScanner {
 		int c;
 		fStartToken= fPos;
 		while (true) {
-			switch (c= read()) {			
+			switch (c= read()) {
 			case EOF:
-				return EOF;				
+				return EOF;
 			case '/':	// comment
 				c= read();
 				if (c == '/') {

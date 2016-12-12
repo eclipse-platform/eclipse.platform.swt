@@ -21,7 +21,7 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 
 	/**
 	 * Constructs a RectangleTool.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
@@ -29,20 +29,20 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 		super(paintSurface);
 		set(toolSettings);
 	}
-	
+
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	@Override
 	public void set(ToolSettings toolSettings) {
 		settings = toolSettings;
 	}
-	
+
 	/**
 	 * Returns name associated with this tool.
-	 * 
+	 *
 	 * @return the localized name of this tool
 	 */
 	@Override

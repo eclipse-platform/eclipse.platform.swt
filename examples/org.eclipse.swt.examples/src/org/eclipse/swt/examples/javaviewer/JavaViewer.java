@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  */
-public class JavaViewer {  
+public class JavaViewer {
 	Shell shell;
 	StyledText text;
 	JavaLineStyler lineStyler = new JavaLineStyler();
@@ -51,7 +51,7 @@ Menu createFileMenu() {
 	Menu menu = new Menu (bar);
 	MenuItem item;
 
-	// Open 
+	// Open
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Open_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'O');
@@ -86,7 +86,7 @@ void createMenuBar () {
 
 void createShell (Display display) {
 	shell = new Shell (display);
-	shell.setText (resources.getString("Window_title"));	
+	shell.setText (resources.getString("Window_title"));
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
 	shell.setLayout(layout);
@@ -136,20 +136,20 @@ public Shell open (Display display) {
 	return shell;
 }
 
-void openFile() {	
+void openFile() {
 	if (fileDialog == null) {
 		fileDialog = new FileDialog(shell, SWT.OPEN);
 	}
 
 	fileDialog.setFilterExtensions(new String[] {"*.java", "*.*"});
 	String name = fileDialog.open();
-	
+
 	open(name);
 }
 
 void open(String name) {
 	final String textString;
-	
+
 	if ((name == null) || (name.length() == 0)) return;
 
 	File file = new File(name);
@@ -186,8 +186,8 @@ void open(String name) {
 	}
 	// Guard against superfluous mouse move events -- defer action until later
 	Display display = text.getDisplay();
-	display.asyncExec(() -> text.setText(textString));	
-	
+	display.asyncExec(() -> text.setText(textString));
+
 	// parse the block comments up front since block comments can go across
 	// lines - inefficient way of doing this
 	lineStyler.parseBlockComments(textString);

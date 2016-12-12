@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ContainerFigure extends Figure {
 	private static final int INITIAL_ARRAY_SIZE = 16;
-	
+
 	Figure[]   objectStack = null;
 	int      nextIndex = 0;
 
@@ -29,7 +29,7 @@ public class ContainerFigure extends Figure {
 	}
 	/**
 	 * Adds an object to the container for later drawing.
-	 * 
+	 *
 	 * @param object the object to add to the drawing list
 	 */
 	public void add(Figure object) {
@@ -52,7 +52,7 @@ public class ContainerFigure extends Figure {
 	}
 	/**
 	 * Adds an object to the container and draws its preview then updates the supplied preview state.
-	 * 
+	 *
 	 * @param object the object to add to the drawing list
 	 * @param gc the GC to draw on
 	 * @param offset the offset to add to virtual coordinates to get display coordinates

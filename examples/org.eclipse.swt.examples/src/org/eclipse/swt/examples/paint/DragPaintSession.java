@@ -23,7 +23,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * True if a click-drag is in progress
 	 */
 	private boolean dragInProgress = false;
-	
+
 	/**
 	 * The position of the first click in a click-drag
 	 */
@@ -33,10 +33,10 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * A temporary point
 	 */
 	private Point tempPosition = new Point(-1, -1);
-	
+
 	/**
 	 * Constructs a PaintSession.
-	 * 
+	 *
 	 * @param getPaintSurface() the drawing surface to use
 	 */
 	protected DragPaintSession(PaintSurface paintSurface) {
@@ -53,14 +53,14 @@ public abstract class DragPaintSession extends BasicPaintSession {
 		anchorPosition.x = -1;
 		dragInProgress = false;
 	}
-	
+
 	/**
 	 * Deactivates the tool.
      */
 	@Override
 	public void endSession() {
 	}
-	
+
 	/**
 	 * Resets the tool.
 	 * Aborts any operation in progress.
@@ -74,7 +74,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseDown event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -82,14 +82,14 @@ public abstract class DragPaintSession extends BasicPaintSession {
 		if (event.button != 1) return;
 		if (dragInProgress) return; // spurious event
 		dragInProgress = true;
-		
+
 		anchorPosition.x = event.x;
 		anchorPosition.y = event.y;
 	}
 
 	/**
 	 * Handles a mouseDoubleClick event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -98,7 +98,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseUp event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -110,13 +110,13 @@ public abstract class DragPaintSession extends BasicPaintSession {
 		if (! dragInProgress) return; // spurious event
 		dragInProgress = false;
 		if (anchorPosition.x == -1) return; // spurious event
-		
+
 		getPaintSurface().commitRubberbandSelection();
 	}
-	
+
 	/**
 	 * Handles a mouseMove event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -132,10 +132,10 @@ public abstract class DragPaintSession extends BasicPaintSession {
 		tempPosition.y = event.y;
 		ps.addRubberbandSelection(createFigure(anchorPosition, tempPosition));
 	}
-	
+
 	/**
 	 * Template Method: Creates a Figure for drawing rubberband entities and the final product
-	 * 
+	 *
 	 * @param anchor the anchor point
 	 * @param cursor the point marking the current pointer location
 	 */

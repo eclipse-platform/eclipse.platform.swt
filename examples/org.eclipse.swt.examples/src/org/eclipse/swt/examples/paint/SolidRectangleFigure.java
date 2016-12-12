@@ -22,7 +22,7 @@ public class SolidRectangleFigure extends Figure {
 	/**
 	 * Constructs a SolidRectangle
 	 * These objects are defined by any two diametrically opposing corners.
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param x1 the virtual X coordinate of the first corner
 	 * @param y1 the virtual Y coordinate of the first corner

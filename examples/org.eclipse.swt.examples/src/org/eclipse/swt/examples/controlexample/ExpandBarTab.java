@@ -19,8 +19,8 @@ class ExpandBarTab extends Tab {
 	/* Example widgets and groups that contain them */
 	ExpandBar expandBar1;
 	Group expandBarGroup;
-	
-	/* Style widgets added to the "Style" group */	
+
+	/* Style widgets added to the "Style" group */
 	Button verticalButton;
 
 	/**
@@ -29,35 +29,35 @@ class ExpandBarTab extends Tab {
 	ExpandBarTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the list */
 		expandBarGroup = new Group (exampleGroup, SWT.NONE);
 		expandBarGroup.setLayout (new GridLayout ());
 		expandBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		expandBarGroup.setText ("ExpandBar");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (verticalButton.getSelection()) style |= SWT.V_SCROLL;
-	
-		/* Create the example widgets */		
+
+		/* Create the example widgets */
 		expandBar1 = new ExpandBar (expandBarGroup, style);
-		
+
 		// First item
 		Composite composite = new Composite (expandBar1, SWT.NONE);
 		composite.setLayout(new GridLayout ());
@@ -70,10 +70,10 @@ class ExpandBarTab extends Tab {
 		item.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		item.setControl(composite);
 		item.setImage(instance.images[ControlExample.ciClosedFolder]);
-		
+
 		// Second item
 		composite = new Composite (expandBar1, SWT.NONE);
-		composite.setLayout(new GridLayout (2, false));	
+		composite.setLayout(new GridLayout (2, false));
 		new Label (composite, SWT.NONE).setImage(display.getSystemImage(SWT.ICON_ERROR));
 		new Label (composite, SWT.NONE).setText("SWT.ICON_ERROR");
 		new Label (composite, SWT.NONE).setImage(display.getSystemImage(SWT.ICON_INFORMATION));
@@ -89,14 +89,14 @@ class ExpandBarTab extends Tab {
 		item.setImage(instance.images[ControlExample.ciOpenFolder]);
 		item.setExpanded(true);
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		verticalButton = new Button (styleGroup, SWT.CHECK);
 		verticalButton.setText ("SWT.V_SCROLL");
@@ -104,7 +104,7 @@ class ExpandBarTab extends Tab {
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -112,7 +112,7 @@ class ExpandBarTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {expandBar1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -121,7 +121,7 @@ class ExpandBarTab extends Tab {
 	String[] getMethodNames() {
 		return new String[] {"Spacing"};
 	}
-	
+
 	/**
 	 * Gets the short text for the tab folder item.
 	 */

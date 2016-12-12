@@ -22,16 +22,16 @@ import org.eclipse.swt.widgets.*;
 public class AccessibleShapesExample {
 	static Display display;
 	static Shell shell;
-	
+
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		
+
 		Shape redSquare = new Shape(shell, SWT.NONE);
 		redSquare.setColor(SWT.COLOR_RED);
 		redSquare.setShape(Shape.SQUARE);
-		
+
 		Shape blueCircle = new Shape(shell, SWT.NONE);
 		blueCircle.setColor(SWT.COLOR_BLUE);
 		blueCircle.setShape(Shape.CIRCLE);

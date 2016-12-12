@@ -23,7 +23,7 @@ class SliderTab extends RangeTab {
 
 	/* Spinner widgets added to the "Control" group */
 	Spinner incrementSpinner, pageIncrementSpinner, thumbSpinner;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -41,49 +41,49 @@ class SliderTab extends RangeTab {
 		createIncrementGroup ();
 		createPageIncrementGroup ();
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the slider */
 		sliderGroup = new Group (exampleGroup, SWT.NONE);
 		sliderGroup.setLayout (new GridLayout ());
 		sliderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		sliderGroup.setText ("Slider");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (horizontalButton.getSelection ()) style |= SWT.HORIZONTAL;
 		if (verticalButton.getSelection ()) style |= SWT.VERTICAL;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
-	
+
 		/* Create the example widgets */
 		slider1 = new Slider(sliderGroup, style);
 	}
-	
+
 	/**
 	 * Create a group of widgets to control the increment
 	 * attribute of the example widget.
 	 */
 	void createIncrementGroup() {
-	
+
 		/* Create the group */
 		Group incrementGroup = new Group (controlGroup, SWT.NONE);
 		incrementGroup.setLayout (new GridLayout ());
 		incrementGroup.setText (ControlExample.getResourceString("Increment"));
 		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-	
+
 		/* Create the Spinner widget */
 		incrementSpinner = new Spinner (incrementGroup, SWT.BORDER);
 		incrementSpinner.setMaximum (100000);
@@ -91,28 +91,28 @@ class SliderTab extends RangeTab {
 		incrementSpinner.setPageIncrement (100);
 		incrementSpinner.setIncrement (1);
 		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-	
+
 		/* Add the listeners */
 		incrementSpinner.addSelectionListener (new SelectionAdapter () {
 			@Override
-			public void widgetSelected (SelectionEvent e) {		
+			public void widgetSelected (SelectionEvent e) {
 				setWidgetIncrement ();
 			}
 		});
 	}
-	
+
 	/**
 	 * Create a group of widgets to control the page increment
 	 * attribute of the example widget.
 	 */
 	void createPageIncrementGroup() {
-	
+
 		/* Create the group */
 		Group pageIncrementGroup = new Group (controlGroup, SWT.NONE);
 		pageIncrementGroup.setLayout (new GridLayout ());
 		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
 		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-			
+
 		/* Create the Spinner widget */
 		pageIncrementSpinner = new Spinner (pageIncrementGroup, SWT.BORDER);
 		pageIncrementSpinner.setMaximum (100000);
@@ -129,19 +129,19 @@ class SliderTab extends RangeTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Create a group of widgets to control the thumb
 	 * attribute of the example widget.
 	 */
 	void createThumbGroup() {
-	
+
 		/* Create the group */
 		Group thumbGroup = new Group (controlGroup, SWT.NONE);
 		thumbGroup.setLayout (new GridLayout ());
 		thumbGroup.setText (ControlExample.getResourceString("Thumb"));
 		thumbGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-		
+
 		/* Create the Spinner widget */
 		thumbSpinner = new Spinner (thumbGroup, SWT.BORDER);
 		thumbSpinner.setMaximum (100000);
@@ -158,7 +158,7 @@ class SliderTab extends RangeTab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -166,7 +166,7 @@ class SliderTab extends RangeTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {slider1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -183,7 +183,7 @@ class SliderTab extends RangeTab {
 	String getTabText () {
 		return "Slider";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -196,7 +196,7 @@ class SliderTab extends RangeTab {
 			setWidgetThumb ();
 		}
 	}
-	
+
 	/**
 	 * Gets the default maximum of the "Example" widgets.
 	 */
@@ -204,7 +204,7 @@ class SliderTab extends RangeTab {
 	int getDefaultMaximum () {
 		return slider1.getMaximum();
 	}
-	
+
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
@@ -212,7 +212,7 @@ class SliderTab extends RangeTab {
 	int getDefaultMinimum () {
 		return slider1.getMinimum();
 	}
-	
+
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
@@ -227,14 +227,14 @@ class SliderTab extends RangeTab {
 	int getDefaultIncrement () {
 		return slider1.getIncrement();
 	}
-	
+
 	/**
 	 * Gets the default page increment of the "Example" widgets.
 	 */
 	int getDefaultPageIncrement () {
 		return slider1.getPageIncrement();
 	}
-	
+
 	/**
 	 * Gets the default thumb of the "Example" widgets.
 	 */
@@ -248,7 +248,7 @@ class SliderTab extends RangeTab {
 	void setWidgetIncrement () {
 		slider1.setIncrement (incrementSpinner.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
@@ -256,7 +256,7 @@ class SliderTab extends RangeTab {
 	void setWidgetMaximum () {
 		slider1.setMaximum (maximumSpinner.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
@@ -264,14 +264,14 @@ class SliderTab extends RangeTab {
 	void setWidgetMinimum () {
 		slider1.setMinimum (minimumSpinner.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the page increment of the "Example" widgets.
 	 */
 	void setWidgetPageIncrement () {
 		slider1.setPageIncrement (pageIncrementSpinner.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
@@ -279,7 +279,7 @@ class SliderTab extends RangeTab {
 	void setWidgetSelection () {
 		slider1.setSelection (selectionSpinner.getSelection ());
 	}
-	
+
 	/**
 	 * Sets the thumb of the "Example" widgets.
 	 */

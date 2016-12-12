@@ -26,7 +26,7 @@ class TabFolderTab extends Tab {
 	/* Example widgets and groups that contain them */
 	TabFolder tabFolder1;
 	Group tabFolderGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button topButton, bottomButton;
 
@@ -40,27 +40,27 @@ class TabFolderTab extends Tab {
 	TabFolderTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the TabFolder */
 		tabFolderGroup = new Group (exampleGroup, SWT.NONE);
 		tabFolderGroup.setLayout (new GridLayout ());
 		tabFolderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		tabFolderGroup.setText ("TabFolder");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (topButton.getSelection ()) style |= SWT.TOP;
@@ -78,14 +78,14 @@ class TabFolderTab extends Tab {
 			item.setControl(content);
 		}
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		topButton = new Button (styleGroup, SWT.RADIO);
 		topButton.setText ("SWT.TOP");
@@ -95,7 +95,7 @@ class TabFolderTab extends Tab {
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -105,7 +105,7 @@ class TabFolderTab extends Tab {
 	Item [] getExampleWidgetItems () {
 		return tabFolder1.getItems();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -113,7 +113,7 @@ class TabFolderTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tabFolder1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).

@@ -136,7 +136,7 @@ class ProgressBarTab extends RangeTab {
 	int getDefaultMaximum () {
 		return progressBar1.getMaximum();
 	}
-	
+
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
@@ -144,7 +144,7 @@ class ProgressBarTab extends RangeTab {
 	int getDefaultMinimum () {
 		return progressBar1.getMinimum();
 	}
-	
+
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
@@ -181,7 +181,7 @@ class ProgressBarTab extends RangeTab {
 	}
 
 	/**
-	 * Update the Spinner widgets to reflect the actual value set 
+	 * Update the Spinner widgets to reflect the actual value set
 	 * on the "Example" widget.
 	 */
 	void updateSpinners () {
@@ -189,7 +189,7 @@ class ProgressBarTab extends RangeTab {
 		updateSpinner (selectionSpinner, progressBar1.getSelection ());
 		updateSpinner (maximumSpinner, progressBar1.getMaximum ());
 	}
-	
+
 	void updateSpinner(Spinner spinner, int selection) {
 		if (spinner.getSelection() != selection) spinner.setSelection (selection);
 	}

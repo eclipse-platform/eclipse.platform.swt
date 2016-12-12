@@ -20,7 +20,7 @@ class ListTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	List list1;
 	Group listGroup;
-	
+
 	static String [] ListData1 = {ControlExample.getResourceString("ListData1_0"),
 								  ControlExample.getResourceString("ListData1_1"),
 								  ControlExample.getResourceString("ListData1_2"),
@@ -37,27 +37,27 @@ class ListTab extends ScrollableTab {
 	ListTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the list */
 		listGroup = new Group (exampleGroup, SWT.NONE);
 		listGroup.setLayout (new GridLayout ());
 		listGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		listGroup.setText ("List");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
@@ -65,12 +65,12 @@ class ListTab extends ScrollableTab {
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
-	
+
 		/* Create the example widgets */
 		list1 = new List (listGroup, style);
 		list1.setItems (ListData1);
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -78,7 +78,7 @@ class ListTab extends ScrollableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {list1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).

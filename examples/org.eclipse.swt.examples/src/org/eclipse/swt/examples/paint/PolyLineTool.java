@@ -21,7 +21,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 
 	/**
 	 * Constructs a PolyLineTool.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
@@ -29,10 +29,10 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 		super(paintSurface);
 		set(toolSettings);
 	}
-	
+
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	@Override
@@ -42,7 +42,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 
 	/**
 	 * Returns the name associated with this tool.
-	 * 
+	 *
 	 * @return the localized name of this tool
 	 */
 	@Override

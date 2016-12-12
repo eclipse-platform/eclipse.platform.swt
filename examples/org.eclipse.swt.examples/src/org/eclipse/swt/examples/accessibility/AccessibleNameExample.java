@@ -27,10 +27,10 @@ public class AccessibleNameExample {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		shell.setText("Accessible Name");
-		
+
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Button"); // the first button's accessible name is "Button"
-		
+
 		Image image = new Image(display, AccessibleNameExample.class.getResourceAsStream("run.gif"));
 		button = new Button(shell, SWT.PUSH);
 		button.setImage(image);

@@ -23,21 +23,21 @@ class CLabelTab extends AlignableTab {
 
 	/* Style widgets added to the "Style" group */
 	Button shadowInButton, shadowOutButton, shadowNoneButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	CLabelTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the text labels */
 		textLabelGroup = new Group(exampleGroup, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
@@ -46,13 +46,13 @@ class CLabelTab extends AlignableTab {
 		textLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textLabelGroup.setText (ControlExample.getResourceString("Custom_Labels"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
@@ -61,7 +61,7 @@ class CLabelTab extends AlignableTab {
 		if (leftButton.getSelection ()) style |= SWT.LEFT;
 		if (centerButton.getSelection ()) style |= SWT.CENTER;
 		if (rightButton.getSelection ()) style |= SWT.RIGHT;
-	
+
 		/* Create the example widgets */
 		label1 = new CLabel (textLabelGroup, style);
 		label1.setText(ControlExample.getResourceString("One"));
@@ -71,14 +71,14 @@ class CLabelTab extends AlignableTab {
 		label3 = new CLabel (textLabelGroup, style);
 		label3.setText(ControlExample.getResourceString("Example_string") + "\n" + ControlExample.getResourceString("One_Two_Three"));
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		shadowNoneButton = new Button (styleGroup, SWT.RADIO);
 		shadowNoneButton.setText ("SWT.SHADOW_NONE");
@@ -87,7 +87,7 @@ class CLabelTab extends AlignableTab {
 		shadowOutButton = new Button (styleGroup, SWT.RADIO);
 		shadowOutButton.setText ("SWT.SHADOW_OUT");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -95,7 +95,7 @@ class CLabelTab extends AlignableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {label1, label2, label3};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -112,7 +112,7 @@ class CLabelTab extends AlignableTab {
 	String getTabText () {
 		return "CLabel";
 	}
-	
+
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
@@ -126,7 +126,7 @@ class CLabelTab extends AlignableTab {
 		label2.setAlignment (alignment);
 		label3.setAlignment (alignment);
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */

@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Tracker;
 import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.swt.widgets.Widget;
 
-/** 
+/**
  * Instances of this class implement a selectable user interface
  * object that displays a list of images and strings and issues
  * notification when selected.
@@ -70,7 +70,7 @@ import org.eclipse.swt.widgets.Widget;
  *          item.setText ("Item " + index);
  *          System.out.println (item.getText ());
  *      }
- *  }); 
+ *  });
  * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -135,7 +135,7 @@ public class CTable extends Composite {
 	static final String ID_CHECKMARK = "CHECKMARK";			//$NON-NLS-1$
 	static final String ID_ARROWUP = "ARROWUP";				//$NON-NLS-1$
 	static final String ID_ARROWDOWN = "ARROWDOWN";			//$NON-NLS-1$
-	
+
 	Display display;
 
 //TEMPORARY CODE
@@ -144,14 +144,14 @@ boolean hasFocus;
 public boolean isFocusControl() {
 	return hasFocus;
 }
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -192,19 +192,19 @@ public CTable (Composite parent, int style) {
 	checkboxBounds = getUncheckedImage ().getBounds ();
 	arrowBounds = getArrowDownImage ().getBounds ();
 	clientArea = getClientArea ();
-	
+
 	Listener listener = event -> handleEvents (event);
 	addListener (SWT.Paint, listener);
 	addListener (SWT.MouseDown, listener);
 	addListener (SWT.MouseUp, listener);
 	addListener (SWT.MouseDoubleClick, listener);
-	addListener (SWT.Dispose, listener);	
+	addListener (SWT.Dispose, listener);
 	addListener (SWT.Resize, listener);
 	addListener (SWT.KeyDown, listener);
 	addListener (SWT.FocusOut, listener);
 	addListener (SWT.FocusIn, listener);
 	addListener (SWT.Traverse, listener);
-	
+
 	initAccessibility ();
 
 	header = new Canvas (this, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
@@ -275,7 +275,7 @@ public CTable (Composite parent, int style) {
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);	
+	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection, typedListener);
 	addListener (SWT.DefaultSelection, typedListener);
 }
@@ -298,7 +298,7 @@ static int checkStyle (int style) {
 	* WS_VSCROLL is not specified, Windows creates
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL.
-	* 
+	*
 	* NOTE: This code appears on all platforms so that
 	* applications have consistent scroll bar behavior.
 	*/
@@ -336,10 +336,10 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int index) {
@@ -368,10 +368,10 @@ public void clear (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int start, int end) {
@@ -402,10 +402,10 @@ public void clear (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clear (int [] indices) {
@@ -417,7 +417,7 @@ public void clear (int [] indices) {
 			SWT.error (SWT.ERROR_INVALID_RANGE);
 		}
 	}
-	
+
 	for (int i = 0; i < indices.length; i++) {
 		items [indices [i]].clear ();
 	}
@@ -436,10 +436,10 @@ public void clear (int [] indices) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see SWT#VIRTUAL
  * @see SWT#SetData
- * 
+ *
  * @since 3.0
  */
 public void clearAll () {
@@ -492,7 +492,7 @@ void createItem (CTableColumn column, int index) {
 	newColumns [index] = column;
 	System.arraycopy (columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
-	
+
 	if (orderedColumns != null) {
 		int insertIndex = 0;
 		if (index > 0) {
@@ -524,7 +524,7 @@ void createItem (CTableColumn column, int index) {
 			redrawFromItemDownwards (topIndex);
 		}
 	}
-	
+
 	/* Columns were added, so notify the accessible. */
 	int[] eventData = new int[5];
 	eventData[0] = ACC.INSERT;
@@ -568,7 +568,7 @@ void createItem (CTableItem item) {
 	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
-	/* 
+	/*
 	 * If new item is above viewport then adjust topIndex and the vertical
 	 * scrollbar so that the current viewport items will not change.
 	 */
@@ -580,7 +580,7 @@ void createItem (CTableItem item) {
 	}
 	/*
 	 * If this is the first item and the receiver has focus then its boundary
-	 * focus ring must be removed. 
+	 * focus ring must be removed.
 	 */
 	if (itemsCount == 1 && isFocusControl ()) {
 		focusItem = item;
@@ -609,12 +609,12 @@ public void deselect (int index) {
 	CTableItem item = items [index];
 	int selectIndex = getSelectionIndex (item);
 	if (selectIndex == -1) return;
-	
+
 	CTableItem[] newSelectedItems = new CTableItem [selectedItems.length - 1];
 	System.arraycopy (selectedItems, 0, newSelectedItems, 0, selectIndex);
 	System.arraycopy (selectedItems, selectIndex + 1, newSelectedItems, selectIndex, newSelectedItems.length - selectIndex);
 	selectedItems = newSelectedItems;
-	
+
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
 		redrawItem (item.index, false);
 	}
@@ -622,7 +622,7 @@ public void deselect (int index) {
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected.  The range of the
  * indices is inclusive. Indices that are out of range are ignored.
@@ -649,7 +649,7 @@ public void deselect (int start, int end) {
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
+ * If the item at the given zero-relative index in the receiver
  * is selected, it is deselected.  If the item at the index
  * was not selected, it remains deselected. Indices that are out
  * of range and duplicate indices are ignored.
@@ -757,7 +757,7 @@ void destroyItem (CTableColumn column) {
 		for (int i = 0; i < columns.length; i++) {
 			newWidth += columns [i].width;
 		}
-		ScrollBar hBar = getHorizontalBar (); 
+		ScrollBar hBar = getHorizontalBar ();
 		if (hBar != null) {
 			hBar.setMaximum (newWidth);
 			hBar.setVisible (clientArea.width < newWidth);
@@ -807,7 +807,7 @@ void destroyItem (CTableItem item) {
 		items [index] = null;	/* last item, so no array copy needed */
 	}
 	itemsCount--;
-	
+
 	if (drawCount <= 0 && items.length - itemsCount == 4) {
 		/* shrink the items array */
 		CTableItem[] newItems = new CTableItem [itemsCount];
@@ -824,9 +824,9 @@ void destroyItem (CTableItem item) {
 	int oldTopIndex = topIndex;
 	updateVerticalBar ();
 	updateHorizontalBar (0, -rightX);
-	/* 
+	/*
 	 * If destroyed item is above viewport then adjust topIndex and the vertical
-	 * scrollbar so that the current viewport items will not change. 
+	 * scrollbar so that the current viewport items will not change.
 	 */
 	if (index < topIndex) {
 		topIndex = oldTopIndex - 1;
@@ -872,7 +872,7 @@ Image getArrowUpImage () {
 	return (Image) display.getData (ID_ARROWUP);
 }
 int getCellPadding () {
-	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
+	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT;
 }
 Image getCheckmarkImage () {
 	return (Image) display.getData (ID_CHECKMARK);
@@ -912,7 +912,7 @@ public Control[] getChildren () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#getColumnOrder()
  * @see CTable#setColumnOrder(int[])
  * @see CTableColumn#getMoveable()
@@ -953,7 +953,7 @@ public int getColumnCount () {
  * </p><p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the current visual order of the receiver's items
@@ -962,12 +962,12 @@ public int getColumnCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#setColumnOrder(int[])
  * @see CTableColumn#getMoveable()
  * @see CTableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public int[] getColumnOrder () {
@@ -995,7 +995,7 @@ public int[] getColumnOrder () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1004,7 +1004,7 @@ public int[] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#getColumnOrder()
  * @see CTable#setColumnOrder(int[])
  * @see CTableColumn#getMoveable()
@@ -1024,7 +1024,7 @@ Image getGrayUncheckedImage () {
  * Returns the width in pixels of a grid line.
  *
  * @return the width of a grid line in pixels
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1035,7 +1035,7 @@ public int getGridLineWidth () {
 	return 1;
 }
 /**
- * Returns the height of the receiver's header 
+ * Returns the height of the receiver's header
  *
  * @return the height of the header or zero if the header is not visible
  *
@@ -1043,8 +1043,8 @@ public int getGridLineWidth () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @since 2.0 
+ *
+ * @since 2.0
  */
 public int getHeaderHeight () {
 	checkWidget ();
@@ -1052,7 +1052,7 @@ public int getHeaderHeight () {
 	return header.getSize ().y;
 }
 int getHeaderPadding () {
-	return MARGIN_CELL + WIDTH_HEADER_SHADOW; 
+	return MARGIN_CELL + WIDTH_HEADER_SHADOW;
 }
 /**
  * Returns <code>true</code> if the receiver's header is visible,
@@ -1101,8 +1101,8 @@ public CTableItem getItem (int index) {
  * coordinate system of the receiver.
  * <p>
  * The item that is returned represents an item that could be selected by the user.
- * For example, if selection only occurs in items in the first column, then null is 
- * returned if the point is outside of the item. 
+ * For example, if selection only occurs in items in the first column, then null is
+ * returned if the point is outside of the item.
  * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
  * determines the extent of the selection.
  * </p>
@@ -1158,11 +1158,11 @@ public int getItemHeight () {
 }
 /**
  * Returns a (possibly empty) array of <code>TableItem</code>s which
- * are the items in the receiver. 
+ * are the items in the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  *
  * @return the items in the receiver
@@ -1176,17 +1176,17 @@ public CTableItem[] getItems () {
 	checkWidget ();
 	CTableItem[] result = new CTableItem [itemsCount];
 	System.arraycopy (items, 0, result, 0, itemsCount);
-	return result;	
+	return result;
 }
 /*
- * Returns the current y-coordinate that the specified item should have. 
+ * Returns the current y-coordinate that the specified item should have.
  */
 int getItemY (CTableItem item) {
 	return (item.index - topIndex) * itemHeight + getHeaderHeight ();
 }
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise. Note that some platforms draw 
+ * and <code>false</code> otherwise. Note that some platforms draw
  * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
@@ -1217,7 +1217,7 @@ CTableColumn[] getOrderedColumns () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return an array representing the selection
  *
@@ -1280,7 +1280,7 @@ int getSelectionIndex (CTableItem item) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not affect the receiver. 
+ * not affect the receiver.
  * </p>
  * @return the array of indices of the selected items
  *
@@ -1303,15 +1303,15 @@ public int [] getSelectionIndices () {
  * the receiver. The value may be null if no column shows
  * the sort indicator.
  *
- * @return the sort indicator 
+ * @return the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortColumn(CTableColumn)
- * 
+ *
  * @since 3.2
  */
 public CTableColumn getSortColumn () {
@@ -1319,8 +1319,8 @@ public CTableColumn getSortColumn () {
 	return sortColumn;
 }
 /**
- * Returns the direction of the sort indicator for the receiver. 
- * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * Returns the direction of the sort indicator for the receiver.
+ * The value will be one of <code>UP</code>, <code>DOWN</code>
  * or <code>NONE</code>.
  *
  * @return the sort direction
@@ -1329,9 +1329,9 @@ public CTableColumn getSortColumn () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #setSortDirection(int)
- * 
+ *
  * @since 3.2
  */
 public int getSortDirection () {
@@ -1398,7 +1398,7 @@ void handleEvents (Event event) {
 		case SWT.MouseExit:
 			headerOnMouseExit (); break;
 		case SWT.Dispose:
-			onDispose (event); break;		
+			onDispose (event); break;
 		case SWT.KeyDown:
 			onKeyDown (event); break;
 		case SWT.Resize:
@@ -1414,7 +1414,7 @@ void handleEvents (Event event) {
 		case SWT.FocusOut:
 			onFocusOut (); break;
 		case SWT.FocusIn:
-			onFocusIn (); break;	
+			onFocusIn (); break;
 		case SWT.Traverse:
 			switch (event.detail) {
 				case SWT.TRAVERSE_ESCAPE:
@@ -1426,7 +1426,7 @@ void handleEvents (Event event) {
 					event.doit = true;
 					break;
 			}
-			break;			
+			break;
 	}
 }
 String headerGetToolTip (int x) {
@@ -1584,7 +1584,7 @@ void headerOnMouseMove (Event event) {
 	if (resizeColumn == null) {
 		/* not currently resizing a column */
 		for (int i = 0; i < columns.length; i++) {
-			CTableColumn column = columns [i]; 
+			CTableColumn column = columns [i];
 			int x = column.getX () + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 				if (column.resizable) {
@@ -1598,9 +1598,9 @@ void headerOnMouseMove (Event event) {
 		setCursor (null);
 		return;
 	}
-	
+
 	/* currently resizing a column */
-	
+
 	/* don't allow the resize x to move left of the column's x position */
 	if (event.x <= resizeColumn.getX ()) return;
 
@@ -1651,7 +1651,7 @@ void headerOnPaint (Event event) {
 
 	/* if all damage is to the right of the last column then finished */
 	if (startColumn == -1) return;
-	
+
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
 	for (int i = startColumn; i <= endColumn; i++) {
@@ -1712,7 +1712,7 @@ boolean headerUpdateToolTip (int x) {
 	toolTipLabel.setSize (labelSize);
 	toolTipShell.pack ();
 	/*
-	 * On some platforms, there is a minimum size for a shell  
+	 * On some platforms, there is a minimum size for a shell
 	 * which may be greater than the label size.
 	 * To avoid having the background of the tip shell showing
 	 * around the label, force the label to fill the entire client area.
@@ -1722,7 +1722,7 @@ boolean headerUpdateToolTip (int x) {
 
 	/* Position the tooltip and ensure it's not located off the screen */
 	Point cursorLocation = getDisplay ().getCursorLocation ();
-	int cursorHeight = 21;	/* assuming cursor is 21x21 */ 
+	int cursorHeight = 21;	/* assuming cursor is 21x21 */
 	Point size = toolTipShell.getSize ();
 	Rectangle rect = getMonitor ().getBounds ();
 	Point pt = new Point (cursorLocation.x, cursorLocation.y + cursorHeight + 2);
@@ -1734,7 +1734,7 @@ boolean headerUpdateToolTip (int x) {
 }
 /**
  * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
+ * (index 0) until a column is found that is equal to the
  * argument, and returns the index of that column. If no column
  * is found, returns -1.
  *
@@ -1757,7 +1757,7 @@ public int indexOf (CTableColumn column) {
 }
 /**
  * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
+ * (index 0) until an item is found that is equal to the
  * argument, and returns the index of that item. If no item
  * is found, returns -1.
  *
@@ -2221,7 +2221,7 @@ void onArrowDown (int stateMask) {
 			return;
 		}
 		/* CTRL+Down Arrow */
-		int focusIndex = focusItem.index; 
+		int focusIndex = focusItem.index;
 		if (focusIndex == itemsCount - 1) return;	/* at bottom */
 		CTableItem newFocusItem = items [focusIndex + 1];
 		setFocusItem (newFocusItem, true);
@@ -2266,7 +2266,7 @@ void onArrowLeft (int stateMask) {
 		gc.dispose();
 	}
 	horizontalOffset = newSelection;
-	ScrollBar hBar = getHorizontalBar (); 
+	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) hBar.setSelection (horizontalOffset);
 }
 void onArrowRight (int stateMask) {
@@ -2359,7 +2359,7 @@ void onArrowUp (int stateMask) {
 			return;
 		}
 		/* CTRL+Up Arrow */
-		int focusIndex = focusItem.index; 
+		int focusIndex = focusItem.index;
 		if (focusIndex == 0) return;	/* at top */
 		CTableItem newFocusItem = items [focusIndex - 1];
 		setFocusItem (newFocusItem, true);
@@ -2421,7 +2421,7 @@ void onEnd (int stateMask) {
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 		/* End with no modifiers */
 		if (focusItem.index == lastAvailableIndex) return; 	/* at bottom */
-		CTableItem item = items [lastAvailableIndex]; 
+		CTableItem item = items [lastAvailableIndex];
 		selectItem (item, false);
 		setFocusItem (item, true);
 		redrawItem (lastAvailableIndex, true);
@@ -2440,7 +2440,7 @@ void onEnd (int stateMask) {
 		}
 		/* Shift+End */
 		if (focusItem.index == lastAvailableIndex) return; /* at bottom */
-		CTableItem item = items [lastAvailableIndex]; 
+		CTableItem item = items [lastAvailableIndex];
 		selectItem (item, false);
 		setFocusItem (item, true);
 		redrawItem (lastAvailableIndex, true);
@@ -2639,7 +2639,7 @@ void onKeyDown (Event event) {
 		return;
 	}
 	if ((event.stateMask & SWT.CTRL) != 0) return;
-	
+
 	int initialIndex = focusItem.index;
 	char character = Character.toLowerCase (event.character);
 	/* check available items from current focus item to bottom */
@@ -2682,15 +2682,15 @@ void onMouseDoubleClick (Event event) {
 	int index = (event.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if  (!(0 <= index && index < itemsCount)) return;	/* not on an available item */
 	CTableItem selectedItem = items [index];
-	
-	/* 
+
+	/*
 	 * If the two clicks of the double click did not occur over the same item then do not
 	 * consider this to be a default selection.
 	 */
 	if (selectedItem != lastClickedItem) return;
 
 	if (!selectedItem.getHitBounds ().contains (event.x, event.y)) return;	/* considers x */
-	
+
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
 	notifyListeners (SWT.DefaultSelection, newEvent);
@@ -2700,7 +2700,7 @@ void onMouseDown (Event event) {
 	int index = (event.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (!(0 <= index && index < itemsCount)) return;	/* not on an available item */
 	CTableItem selectedItem = items [index];
-	
+
 	/* if click was in checkbox */
 	if ((getStyle () & SWT.CHECK) != 0 && selectedItem.getCheckboxBounds ().contains (event.x, event.y)) {
 		if (event.button != 1) return;
@@ -2711,7 +2711,7 @@ void onMouseDown (Event event) {
 		notifyListeners (SWT.Selection, newEvent);
 		return;
 	}
-	
+
 	if (!selectedItem.getHitBounds ().contains (event.x, event.y)) return;
 
 	if ((event.stateMask & SWT.SHIFT) == 0 && event.keyCode != SWT.SHIFT) anchorItem = null;
@@ -3176,9 +3176,9 @@ void onResize (Event event) {
 			clientArea = getClientArea ();
 		}
 	}
-	
-	/* horizontal scrollbar */ 
-	ScrollBar hBar = getHorizontalBar (); 
+
+	/* horizontal scrollbar */
+	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) {
 		int hBarMaximum = hBar.getMaximum ();
 		int thumb = Math.min (clientArea.width, hBarMaximum);
@@ -3191,16 +3191,16 @@ void onResize (Event event) {
 			clientArea = getClientArea ();
 		}
 	}
-	
+
 	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
-	
+
 	/* if this is the focus control but there are no items then the boundary focus ring must be repainted */
 	if (itemsCount == 0 && isFocusControl ()) redraw ();
 }
 void onScrollHorizontal (Event event) {
-	ScrollBar hBar = getHorizontalBar (); 
+	ScrollBar hBar = getHorizontalBar ();
 	if (hBar == null) return;
 	int newSelection = hBar.getSelection ();
 	update ();
@@ -3266,8 +3266,8 @@ void onSpace () {
  */
 void reassignFocus () {
 	if (focusItem == null) return;
-	
-	/* 
+
+	/*
 	 * reassign to the previous root-level item if there is one, or the next
 	 * root-level item otherwise
 	 */
@@ -3295,7 +3295,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (drawCount <= 0) super.redraw (x, y, width, height, all);
 }
-/* 
+/*
  * Redraws from the specified index down to the last available item inclusive.  Note
  * that the redraw bounds do not extend beyond the current last item, so clients
  * that reduce the number of available items should use #redrawItems(int,int) instead
@@ -3380,7 +3380,7 @@ public void remove (int index) {
 }
 /**
  * Removes the items from the receiver which are
- * between the given zero-relative start and end 
+ * between the given zero-relative start and end
  * indices (inclusive).
  *
  * @param start the start of the range
@@ -3406,7 +3406,7 @@ public void remove (int start, int end) {
 		for (int i = end; i >= start; i--) {
 			items [i].dispose ();
 		}
-		
+
 		int[] eventData = new int[5];
 		eventData[0] = ACC.DELETE;
 		eventData[1] = start;
@@ -3460,7 +3460,7 @@ public void remove (int [] indices) {
 }
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3489,7 +3489,7 @@ public void removeAll () {
 	eventData[3] = 0;
 	eventData[4] = 0;
 	getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
-	
+
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null) {
 		vBar.setMaximum (1);
@@ -3497,7 +3497,7 @@ public void removeAll () {
 	}
 	if (columns.length == 0) {
 		horizontalOffset = 0;
-		ScrollBar hBar = getHorizontalBar (); 
+		ScrollBar hBar = getHorizontalBar ();
 		if (hBar != null) {
 			hBar.setMaximum (1);
 			hBar.setVisible (false);
@@ -3550,10 +3550,10 @@ public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (SWT.Selection, listener);
-	removeListener (SWT.DefaultSelection, listener);	
+	removeListener (SWT.DefaultSelection, listener);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
  *
@@ -3593,7 +3593,7 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#setSelection(int,int)
  */
 public void select (int start, int end) {
@@ -3630,7 +3630,7 @@ public void select (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#setSelection(int[])
  */
 public void select (int [] indices) {
@@ -3703,17 +3703,17 @@ void selectItem (CTableItem item, boolean addToSelection) {
 @Override
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND); 
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 	super.setBackground (color);
 }
 @Override
 public void setForeground (Color color) {
 	checkWidget ();
-	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND); 
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 	super.setForeground (color);
 }
 /**
- * Sets the order that the items in the receiver should 
+ * Sets the order that the items in the receiver should
  * be displayed in to the given argument which is described
  * in terms of the zero-relative ordering of when the items
  * were added.
@@ -3728,12 +3728,12 @@ public void setForeground (Color color) {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- * 
+ *
  * @see CTable#getColumnOrder()
  * @see CTableColumn#getMoveable()
  * @see CTableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public void setColumnOrder (int [] order) {
@@ -3792,9 +3792,9 @@ public void setFont (Font value) {
 	super.setFont (value);
 	Font font = getFont ();
 	if (font.equals (oldFont)) return;
-		
+
 	GC gc = new GC (this);
-	
+
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	setItemHeight (Math.max (fontHeight, imageHeight) + 2 * getCellPadding ());
@@ -3805,7 +3805,7 @@ public void setFont (Font value) {
 	}
 	header.setFont (font);
 
-	/* 
+	/*
 	 * Notify all columns and items of the font change so that elements that
 	 * use the receiver's font can recompute their cached string widths.
 	 */
@@ -3815,11 +3815,11 @@ public void setFont (Font value) {
 	for (int i = 0; i < itemsCount; i++) {
 		items [i].updateFont (gc);
 	}
-	
+
 	gc.dispose ();
-	
+
 	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
-	
+
 	/* update scrollbars */
 	if (columns.length == 0) updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
@@ -3842,7 +3842,7 @@ void setHeaderImageHeight (int value) {
 }
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -3886,7 +3886,7 @@ public void setItemCount (int count) {
 	if (count == itemsCount) return;
 	int oldCount = itemsCount;
 	int redrawStart, redrawEnd;
-	
+
 	/* if the new item count is less than the current count then remove all excess items from the end */
 	if (count < itemsCount) {
 		redrawStart = count;
@@ -3915,7 +3915,7 @@ public void setItemCount (int count) {
 		if (anchorItem != null && anchorItem.isDisposed ()) anchorItem = null;
 		if (lastClickedItem != null && lastClickedItem.isDisposed ()) lastClickedItem = null;
 		if (focusItem != null && focusItem.isDisposed ()) {
-			CTableItem newFocusItem = count > 0 ? items [count - 1] : null; 
+			CTableItem newFocusItem = count > 0 ? items [count - 1] : null;
 			setFocusItem (newFocusItem, false);
 		}
 		int[] eventData = new int[5];
@@ -3961,7 +3961,7 @@ public void setItemCount (int count) {
 	redrawItems (redrawStart, redrawEnd, false);
 }
 boolean setItemHeight (int value) {
-	boolean update = !customHeightSet || itemHeight < value; 
+	boolean update = !customHeightSet || itemHeight < value;
 	if (update) itemHeight = value;
 	return update;
 }
@@ -4029,7 +4029,7 @@ public void setRedraw (boolean value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSelection (CTableItem item) {
@@ -4072,7 +4072,7 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 		return;
 	}
 	CTableItem[] oldSelection = selectedItems;
-	
+
 	/* remove null and duplicate items */
 	int index = 0;
 	selectedItems = new CTableItem [items.length];	/* assume all valid items */
@@ -4112,24 +4112,24 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 		showItem (selectedItems [0]);
 		setFocusItem (selectedItems [0], true);
 	}
-	
+
 	if (tableSelectionChanged) getAccessible().selectionChanged();
 }
 /**
  * Sets the column used by the sort indicator for the receiver. A null
- * value will clear the sort indicator.  The current sort column is cleared 
+ * value will clear the sort indicator.  The current sort column is cleared
  * before the new column is set.
  *
  * @param column the column used by the sort indicator or <code>null</code>
- * 
+ *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortColumn (CTableColumn column) {
@@ -4145,16 +4145,16 @@ public void setSortColumn (CTableColumn column) {
 	}
 }
 /**
- * Sets the direction of the sort indicator for the receiver. The value 
+ * Sets the direction of the sort indicator for the receiver. The value
  * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
  *
- * @param direction the direction of the sort indicator 
+ * @param direction the direction of the sort indicator
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setSortDirection (int direction) {
@@ -4165,7 +4165,7 @@ public void setSortDirection (int direction) {
 	sortColumn.setSortDirection (sortDirection);
 }
 /**
- * Selects the item at the given zero-relative index in the receiver. 
+ * Selects the item at the given zero-relative index in the receiver.
  * The current selection is first cleared, then the new item is selected.
  *
  * @param index the index of the item to select
@@ -4198,7 +4198,7 @@ public void setSelection (int index) {
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
  * </p>
- * 
+ *
  * @param start the start index of the items to select
  * @param end the end index of the items to select
  *
@@ -4329,7 +4329,7 @@ public void showColumn (CTableColumn column) {
 	} else {
 		horizontalOffset = absX + column.width - clientArea.width;
 	}
-	ScrollBar hBar = getHorizontalBar (); 
+	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) hBar.setSelection (horizontalOffset);
 	redraw ();
 	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
@@ -4357,12 +4357,12 @@ public void showItem (CTableItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
-	
+
 	int index = item.index;
 	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	/* nothing to do if item is already in viewport */
 	if (topIndex <= index && index < topIndex + visibleItemCount) return;
-	
+
 	if (index <= topIndex) {
 		/* item is above current viewport, so show on top */
 		setTopIndex (item.index);
@@ -4446,7 +4446,7 @@ void updateColumnWidth (CTableColumn column, int width) {
 	if (width > oldWidth) {
 		/* column width grew */
 		int change = width - oldWidth + 1;	/* +1 offsets x's -1 above */
-		/* -1/+1 below ensure that right bound of selection redraws correctly in column */ 
+		/* -1/+1 below ensure that right bound of selection redraws correctly in column */
 		redraw (x - 1, 0, change + 1, clientArea.height, false);
 	} else {
 		int change = oldWidth - width + 1;	/* +1 offsets x's -1 above */
@@ -4522,7 +4522,7 @@ void updateHorizontalBar () {
 	if (drawCount > 0) return;
 	ScrollBar hBar = getHorizontalBar ();
 	if (hBar == null) return;
-	
+
 	int maxX = 0;
 	if (columns.length > 0) {
 		for (int i = 0; i < columns.length; i++) {
@@ -4534,7 +4534,7 @@ void updateHorizontalBar () {
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}
-	
+
 	int clientWidth = clientArea.width;
 	if (maxX != hBar.getMaximum ()) {
 		hBar.setMaximum (Math.max (1, maxX));	/* setting a value of 0 here is ignored */
@@ -4545,7 +4545,7 @@ void updateHorizontalBar () {
 		hBar.setPageIncrement (thumb);
 	}
 	hBar.setVisible (clientWidth < maxX);
-	
+
 	/* reclaim any space now left on the right */
 	if (maxX < horizontalOffset + thumb) {
 		horizontalOffset = maxX - thumb;

@@ -19,31 +19,31 @@ import org.eclipse.swt.widgets.*;
  * AnimatedGraphicsTab class.
  */
 public abstract class GraphicsTab {
-	
+
 GraphicsExample example;
 
 public GraphicsTab(GraphicsExample example) {
 	this.example = example;
 }
 
-/** 
+/**
  * Creates the widgets used to control the drawing.
  */
 public void createControlPanel(Composite parent) {
 }
 
-/** 
+/**
  * Disposes resources created by the receiver.
  */
 public void dispose() {
 }
 
-/** 
+/**
  * Answer the receiver's name.
  */
 public abstract String getText();
 
-/** 
+/**
  * Answer the receiver's category.
  */
 public String getCategory() {
@@ -64,8 +64,8 @@ public boolean getDoubleBuffered() {
 	return false;
 }
 
-/** 
- * Paint the receiver into the specified GC. 
+/**
+ * Paint the receiver into the specified GC.
  */
 public void paint(GC gc, int width, int height) {
 }

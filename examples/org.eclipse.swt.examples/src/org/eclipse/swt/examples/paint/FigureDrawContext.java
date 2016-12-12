@@ -26,7 +26,7 @@ public class FigureDrawContext {
 	public GC gc = null;
 	public int xOffset = 0, yOffset = 0; // substract to get GC coords
 	public int xScale = 1, yScale = 1;
-	
+
 	public Rectangle toClientRectangle(int x1, int y1, int x2, int y2) {
 		return new Rectangle(
 			Math.min(x1, x2) * xScale - xOffset,

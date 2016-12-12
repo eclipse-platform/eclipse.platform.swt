@@ -63,7 +63,7 @@ class IconCache {
 		"cmd_Search.gif"
 	};
 	public Image stockImages[];
-	
+
 	// Stock cursors
 	public final int
 		cursorDefault = 0,
@@ -71,18 +71,18 @@ class IconCache {
 	public Cursor stockCursors[];
 	// Cached icons
 	private Map<Program, Image> iconCache; /* map Program to Image */
-	
+
 	public IconCache() {
 	}
 	/**
 	 * Loads the resources
-	 * 
+	 *
 	 * @param display the display
 	 */
 	public void initResources(Display display) {
 		if (stockImages == null) {
 			stockImages = new Image[stockImageLocations.length];
-				
+
 			for (int i = 0; i < stockImageLocations.length; ++i) {
 				Image image = createStockImage(display, stockImageLocations[i]);
 				if (image == null) {
@@ -92,7 +92,7 @@ class IconCache {
 				}
 				stockImages[i] = image;
 			}
-		}	
+		}
 		if (stockCursors == null) {
 			stockCursors = new Cursor[] {
 				null,
@@ -121,7 +121,7 @@ class IconCache {
 	}
 	/**
 	 * Creates a stock image
-	 * 
+	 *
 	 * @param display the display
 	 * @param path the relative path to the icon
 	 */

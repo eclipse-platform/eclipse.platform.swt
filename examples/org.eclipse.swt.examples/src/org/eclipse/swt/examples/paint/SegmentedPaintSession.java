@@ -39,7 +39,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 
 	/**
 	 * Constructs a PaintSession.
-	 * 
+	 *
 	 * @param paintSurface the drawing surface to use
 	 */
 	protected SegmentedPaintSession(PaintSurface paintSurface) {
@@ -57,7 +57,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		currentFigure = null;
 		controlPoints.clear();
 	}
-	
+
 	/**
 	 * Deactivates the tool.
      */
@@ -66,7 +66,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		getPaintSurface().clearRubberbandSelection();
 		if (previousFigure != null) getPaintSurface().drawFigure(previousFigure);
 	}
-	
+
 	/**
 	 * Resets the tool.
 	 * Aborts any operation in progress.
@@ -75,7 +75,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	public void resetSession() {
 		getPaintSurface().clearRubberbandSelection();
 		if (previousFigure != null) getPaintSurface().drawFigure(previousFigure);
-		
+
 		getPaintSurface().setStatusMessage(PaintExample.getResourceString(
 			"session.SegmentedInteractivePaint.message.anchorMode"));
 		previousFigure = null;
@@ -85,7 +85,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseDown event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -105,7 +105,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseDoubleClick event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -122,7 +122,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseUp event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -132,10 +132,10 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Handles a mouseMove event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -152,11 +152,11 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		points[controlPoints.size()] = ps.getCurrentPosition();
 		currentFigure = createFigure(points, points.length, false);
 		ps.addRubberbandSelection(currentFigure);
-	}	
+	}
 
 	/**
 	 * Template Method: Creates a Figure for drawing rubberband entities and the final product
-	 * 
+	 *
 	 * @param points the array of control points
 	 * @param numPoints the number of valid points in the array (n >= 2)
 	 * @param closed true if the user double-clicked on the final control point

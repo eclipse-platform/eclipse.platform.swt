@@ -21,7 +21,7 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 
 	/**
 	 * Constructs a EllipseTool.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
@@ -32,7 +32,7 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	@Override
@@ -42,7 +42,7 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 
 	/**
 	 * Returns name associated with this tool.
-	 * 
+	 *
 	 * @return the localized name of this tool
 	 */
 	@Override

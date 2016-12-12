@@ -18,10 +18,10 @@ import org.eclipse.swt.graphics.Point;
  */
 public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	private ToolSettings settings;
-	
+
 	/**
 	 * Constructs a pencil tool.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 * @param getPaintSurface() the PaintSurface we will render on.
 	 */
@@ -29,10 +29,10 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 		super(paintSurface);
 		set(toolSettings);
 	}
-	
+
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	@Override
@@ -42,7 +42,7 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 
 	/**
 	 * Returns the name associated with this tool.
-	 * 
+	 *
 	 * @return the localized name of this tool
 	 */
 	@Override

@@ -24,7 +24,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * True if a click-drag is in progress.
 	 */
 	private boolean dragInProgress = false;
-	
+
 	/**
 	 * A cached Point array for drawing.
 	 */
@@ -34,7 +34,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * The time to wait between retriggers in milliseconds.
 	 */
 	private int retriggerInterval = 0;
-	
+
 	/**
 	 * The currently valid RetriggerHandler
 	 */
@@ -42,7 +42,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Constructs a ContinuousPaintSession.
-	 * 
+	 *
 	 * @param paintSurface the drawing surface to use
 	 */
 	protected ContinuousPaintSession(PaintSurface paintSurface) {
@@ -70,7 +70,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 			setStatusMessage(PaintExample.getResourceString("session.ContinuousPaint.message"));
 		dragInProgress = false;
 	}
-	
+
 	/**
 	 * Deactivates the tool.
      */
@@ -78,7 +78,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	public void endSession() {
 		abortRetrigger();
 	}
-	
+
 	/**
 	 * Aborts the current operation.
 	 */
@@ -89,7 +89,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseDown event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -106,7 +106,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseDoubleClick event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -115,7 +115,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Handles a mouseUp event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -126,10 +126,10 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 		mouseSegmentFinished(event);
 		dragInProgress = false;
 	}
-	
+
 	/**
 	 * Handles a mouseMove event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -140,10 +140,10 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 		mouseSegmentFinished(event);
 		prepareRetrigger();
 	}
-	
+
 	/**
 	 * Handle a rendering segment
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	private final void mouseSegmentFinished(MouseEvent event) {
@@ -159,7 +159,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * Draws a continuous segment from points[0] to points[1].
 	 * Assumes points[0] has been drawn already.
-	 * 
+	 *
 	 * @post points[0] will refer to the same point as points[1]
 	 */
 	protected void renderContinuousSegment() {
@@ -170,7 +170,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 		int absdY = Math.abs(dY);
 
 		if ((dX == 0) && (dY == 0)) return;
-		
+
 		if (absdY > absdX) {
 			final int incfpX = (dX << 16) / absdY;
 			final int incY = (dY > 0) ? 1 : -1;
@@ -197,7 +197,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 			points[0].y = points[1].y;
 		}
 		render(points[0]);
-	}		
+	}
 
 	/**
 	 * Prepare the retrigger timer
@@ -222,7 +222,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 						prepareRetrigger();
 					}
 				}
-			};			
+			};
 			display.timerExec(retriggerInterval, retriggerHandler);
 		}
 	}
@@ -233,7 +233,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	private final void abortRetrigger() {
 		retriggerHandler = null;
 	}
-	
+
 	/**
 	 * Template method: Renders a point.
 	 * @param point, the point to render

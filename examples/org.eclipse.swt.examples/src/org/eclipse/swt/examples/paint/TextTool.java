@@ -33,7 +33,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 
 	/**
 	 * Constructs a PaintTool.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
@@ -41,27 +41,27 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 		super(paintSurface);
 		set(toolSettings);
 	}
-	
+
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	@Override
 	public void set(ToolSettings toolSettings) {
 		settings = toolSettings;
 	}
-	
+
 	/**
 	 * Returns name associated with this tool.
-	 * 
+	 *
 	 * @return the localized name of this tool
 	 */
 	@Override
 	public String getDisplayName() {
 		return PaintExample.getResourceString("tool.Text.label");
 	}
-	
+
 	/**
 	 * Activates the tool.
 	 */
@@ -70,7 +70,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 		getPaintSurface().setStatusMessage(PaintExample.getResourceString(
 			"session.Text.message"));
 	}
-	
+
 	/**
 	 * Deactivates the tool.
      */
@@ -78,7 +78,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	public void endSession() {
 		getPaintSurface().clearRubberbandSelection();
 	}
-	
+
 	/**
 	 * Aborts the current operation.
 	 */
@@ -86,10 +86,10 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	public void resetSession() {
 		getPaintSurface().clearRubberbandSelection();
 	}
-	
+
 	/**
 	 * Handles a mouseDown event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -141,12 +141,12 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			while (! shell.isDisposed() && ! dialog.isDisposed()) {
 				if (! display.readAndDispatch()) display.sleep();
 			}
-		}	
+		}
 	}
 
 	/**
 	 * Handles a mouseDoubleClick event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
@@ -155,16 +155,16 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 
 	/**
 	 * Handles a mouseUp event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override
 	public void mouseUp(MouseEvent event) {
 	}
-	
+
 	/**
 	 * Handles a mouseMove event.
-	 * 
+	 *
 	 * @param event the mouse event detail information
 	 */
 	@Override

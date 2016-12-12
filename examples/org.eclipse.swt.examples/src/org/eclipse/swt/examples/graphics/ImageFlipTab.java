@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * This tab demonstrates how an image can be flipped in various fashions. 
+ * This tab demonstrates how an image can be flipped in various fashions.
  */
 public class ImageFlipTab extends GraphicsTab {
 
@@ -42,54 +42,54 @@ public String getDescription() {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "houses.png");
 	Rectangle bounds = image.getBounds();
-	
+
 	// top
 	Transform transform = new Transform(device);
 	transform.translate((width-bounds.width)/2, (height-bounds.height)/2);
 	transform.scale(1, -1);
 	gc.setTransform(transform);
-		
+
 	// draw the original image
 	gc.drawImage(image, 0, 0);
-	
+
 	transform.dispose();
-	
+
 	// bottom
 	transform = new Transform(device);
 	transform.translate((width-bounds.width)/2, 2*bounds.height + (height-bounds.height)/2);
 	transform.scale(1, -1);
 	gc.setTransform(transform);
-	
+
 	// draw the original image
 	gc.drawImage(image, 0, 0);
-	
+
 	transform.dispose();
-	
+
 	// left
 	transform = new Transform(device);
 	transform.translate((width-bounds.width)/2, (height-bounds.height)/2);
 	transform.scale(-1, 1);
 	gc.setTransform(transform);
-	
+
 	// draw the original image
 	gc.drawImage(image, 0, 0);
-	
+
 	transform.dispose();
-	
+
 	// right
 	transform = new Transform(device);
 	transform.translate(2*bounds.width + (width-bounds.width)/2, (height-bounds.height)/2);
 	transform.scale(-1, 1);
 	gc.setTransform(transform);
-	
+
 	// draw the original image
 	gc.drawImage(image, 0, 0);
-	
+
 	transform.dispose();
-	
+
 	gc.setTransform(null);
 	gc.drawImage(image, (width-bounds.width)/2, (height-bounds.height)/2);
 	image.dispose();
@@ -100,9 +100,9 @@ public void paint(GC gc, int width, int height) {
  */
 static String getPlatformFont() {
 	if(SWT.getPlatform() == "win32") {
-		return "Arial";	
+		return "Arial";
 	} else if (SWT.getPlatform() == "gtk") {
-		return "Baekmuk Batang";		
+		return "Baekmuk Batang";
 	} else {
 		return "Verdana";
 	}

@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
- 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.ACC;
@@ -67,7 +67,7 @@ public class CTableColumn extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -102,7 +102,7 @@ public CTableColumn (CTable parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -203,7 +203,7 @@ static int checkStyle (int style) {
 	return CTable.checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 void computeDisplayText (GC gc) {
-	int availableWidth = width - 2 * parent.getHeaderPadding (); 
+	int availableWidth = width - 2 * parent.getHeaderPadding ();
 	if (super.getImage () != null) {
 		availableWidth -= super.getImage ().getBounds ().width;
 		availableWidth -= CTable.MARGIN_IMAGE;
@@ -218,7 +218,7 @@ void computeDisplayText (GC gc) {
 		displayText = text;
 		return;
 	}
-	
+
 	/* Ellipsis will be needed, so subtract their width from the available text width */
 	int ellipsisWidth = gc.stringExtent (CTable.ELLIPSIS).x;
 	availableWidth -= ellipsisWidth;
@@ -226,7 +226,7 @@ void computeDisplayText (GC gc) {
 		displayText = CTable.ELLIPSIS;
 		return;
 	}
-	
+
 	/* Make initial guess. */
 	int index = Math.min (availableWidth / gc.getFontMetrics ().getAverageCharWidth (), text.length ());
 	textWidth = gc.textExtent (text.substring (0, index), SWT.DRAW_MNEMONIC).x;
@@ -251,7 +251,7 @@ void computeDisplayText (GC gc) {
 		displayText = text + CTable.ELLIPSIS;
 		return;
 	}
-	
+
 	/* Initial guess is too low, so increase until overrun is found. */
 	while (textWidth < availableWidth) {
 		index++;
@@ -272,7 +272,7 @@ public void dispose () {
 
 	int width = parentBounds.width - x;
 	parent.redraw (x, 0, width, parentBounds.height, false);
-	/* 
+	/*
 	 * If column 0 was disposed then the new column 0 must be redrawn if it appears to the
 	 * left of the disposed column in the column order AND one the following are true:
 	 * - the parent has style CHECK, since these will now appear in the new column 0
@@ -283,7 +283,7 @@ public void dispose () {
 		if (parent.columns.length > 0) {
 			CTableColumn newColumn0 = parent.columns [0];
 			if (newColumn0.getOrderIndex () < orderIndex) {
-				int newColumn0x = newColumn0.getX (); 
+				int newColumn0x = newColumn0.getX ();
 				parent.redraw (newColumn0x, 0, newColumn0.width, parentBounds.height, false);
 				/* if the alignment changed then the header text must be repainted with its new alignment */
 				if (nextColumnAlignment != SWT.LEFT && parent.getHeaderVisible () && parent.drawCount <= 0) {
@@ -310,7 +310,7 @@ void dispose (boolean notifyParent) {
  * text or image in the receiver. The value will be one of
  * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>.
  *
- * @return the alignment 
+ * @return the alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -354,8 +354,8 @@ int getIndex () {
 }
 /**
  * Gets the moveable attribute. A column that is
- * not moveable cannot be reordered by the user 
- * by dragging the header but may be reordered 
+ * not moveable cannot be reordered by the user
+ * by dragging the header but may be reordered
  * by the programmer.
  *
  * @return the moveable attribute
@@ -364,12 +364,12 @@ int getIndex () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#getColumnOrder()
  * @see CTable#setColumnOrder(int[])
  * @see CTableColumn#setMoveable(boolean)
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public boolean getMoveable () {
@@ -377,7 +377,7 @@ public boolean getMoveable () {
 	return moveable;
 }
 int getOrderIndex () {
-	CTableColumn[] orderedColumns = parent.orderedColumns; 
+	CTableColumn[] orderedColumns = parent.orderedColumns;
 	if (orderedColumns == null) return getIndex ();
 	for (int i = 0; i < orderedColumns.length; i++) {
 		if (orderedColumns [i] == this) return i;
@@ -431,7 +431,7 @@ public boolean getResizable () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public String getToolTipText () {
@@ -489,15 +489,15 @@ public void pack () {
 }
 void paint (GC gc) {
 	int padding = parent.getHeaderPadding ();
-	
+
 	int x = getX ();
 	int startX = x + padding;
 	if ((getStyle () & SWT.LEFT) == 0) {
 		int contentWidth = getContentWidth (gc, true);
 		if ((getStyle () & SWT.RIGHT) != 0) {
-			startX = Math.max (startX, x + width - padding - contentWidth);	
+			startX = Math.max (startX, x + width - padding - contentWidth);
 		} else {	/* SWT.CENTER */
-			startX = Math.max (startX, x + (width - contentWidth) / 2);	
+			startX = Math.max (startX, x + (width - contentWidth) / 2);
 		}
 	}
 	int headerHeight = parent.getHeaderHeight ();
@@ -508,7 +508,7 @@ void paint (GC gc) {
 		padding,
 		width - 2 * padding,
 		headerHeight - 2 * padding);
-	
+
 	if (super.getImage () != null) {
 		Rectangle imageBounds = super.getImage ().getBounds ();
 		int drawHeight = Math.min (imageBounds.height, headerHeight - 2 * padding);
@@ -517,8 +517,8 @@ void paint (GC gc) {
 			0, 0,
 			imageBounds.width, imageBounds.height,
 			startX, (headerHeight - drawHeight) / 2,
-			imageBounds.width, drawHeight); 
-		startX += imageBounds.width + CTable.MARGIN_IMAGE; 
+			imageBounds.width, drawHeight);
+		startX += imageBounds.width + CTable.MARGIN_IMAGE;
 	}
 	if (displayText.length () > 0) {
 		gc.setForeground (getParent ().display.getSystemColor (SWT.COLOR_BLACK));
@@ -586,7 +586,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * Note that due to a restriction on some platforms, the first column
  * is always left aligned.
  * </p>
- * @param alignment the new alignment 
+ * @param alignment the new alignment
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -626,12 +626,12 @@ public void setImage (Image value) {
 	if (value == super.getImage ()) return;
 	if (value != null && value.equals (super.getImage ())) return;	/* same value */
 	super.setImage (value);
-	
+
 	/* An image width change may affect the space available for the column's displayText. */
 	GC gc = new GC (parent);
 	computeDisplayText (gc);
 	gc.dispose ();
-	
+
 	/*
 	 * If this is the first image being put into the header then the header
 	 * height may be adjusted, in which case a full redraw is needed.
@@ -648,7 +648,7 @@ public void setImage (Image value) {
 			return;
 		}
 	}
-	
+
 	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		/* don't damage the header's drawn borders */
 		parent.header.redraw (getX (), 1, width - 2, parent.getHeaderHeight () - 3, false);
@@ -657,8 +657,8 @@ public void setImage (Image value) {
 /**
  * Sets the moveable attribute.  A column that is
  * moveable can be reordered by the user by dragging
- * the header. A column that is not moveable cannot be 
- * dragged by the user but may be reordered 
+ * the header. A column that is not moveable cannot be
+ * dragged by the user but may be reordered
  * by the programmer.
  *
  * @param moveable the moveable attribute
@@ -667,12 +667,12 @@ public void setImage (Image value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see CTable#setColumnOrder(int[])
  * @see CTable#getColumnOrder()
  * @see CTableColumn#getMoveable()
  * @see SWT#Move
- * 
+ *
  * @since 3.1
  */
 public void setMoveable (boolean moveable) {
@@ -682,8 +682,8 @@ public void setMoveable (boolean moveable) {
 /**
  * Sets the resizable attribute.  A column that is
  * resizable can be resized by the user dragging the
- * edge of the header.  A column that is not resizable 
- * cannot be dragged by the user but may be resized 
+ * edge of the header.  A column that is not resizable
+ * cannot be dragged by the user but may be resized
  * by the programmer.
  *
  * @param resizable the resize attribute
@@ -702,7 +702,7 @@ void setSortDirection (int value) {
 	boolean widthChange = value == SWT.NONE || sort == SWT.NONE;
 	sort = value;
 	if (widthChange) {
-		/* 
+		/*
 		 * adding/removing the sort arrow decreases/increases the width that is
 		 * available for the column's header text, so recompute the display text
 		 */
@@ -731,24 +731,24 @@ public void setText (String value) {
 }
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that the default tool tip for the 
+ * may be null indicating that the default tool tip for the
  * control will be shown. For a control that has a default
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
  * <p>
  * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
- * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
- * 
+ *
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public void setToolTipText (String string) {

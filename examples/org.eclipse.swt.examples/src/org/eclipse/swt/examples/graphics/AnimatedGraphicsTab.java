@@ -29,7 +29,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 
 	ToolBar toolBar;
 	ToolItem playItem, pauseItem;
-	Spinner timerSpinner;		// to input the speed of the animation 
+	Spinner timerSpinner;		// to input the speed of the animation
 	private boolean animate;	// flag that indicates whether or not to animate the graphic
 
 	public AnimatedGraphicsTab(GraphicsExample example) {
@@ -39,29 +39,29 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 
 	/**
 	 * Sets the layout of the composite to RowLayout and creates the toolbar.
-	 * 
+	 *
 	 * @see org.eclipse.swt.examples.graphics.GraphicsTab#createControlPanel(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createControlPanel(Composite parent) {
-		
+
 		// setup layout
 		RowLayout layout = new RowLayout();
 		layout.wrap = true;
 		layout.spacing = 8;
 		parent.setLayout(layout);
-		
+
 		createToolBar(parent);
 	}
-	
+
 	/**
 	 * Creates the toolbar controls: play, pause and animation timer.
-	 * 
+	 *
 	 * @param parent A composite
 	 */
 	void createToolBar(final Composite parent) {
 		final Display display = parent.getDisplay();
-				
+
 		toolBar = new ToolBar(parent, SWT.FLAT);
 		Listener toolBarListener = event -> {
 			switch (event.type) {
@@ -79,19 +79,19 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 				break;
 			}
 		};
-		
+
 		// play tool item
 		playItem = new ToolItem(toolBar, SWT.PUSH);
 		playItem.setText(GraphicsExample.getResourceString("Play")); //$NON-NLS-1$
 		playItem.setImage(example.loadImage(display, "play.gif")); //$NON-NLS-1$
 		playItem.addListener(SWT.Selection, toolBarListener);
-		
+
 		// pause tool item
 		pauseItem = new ToolItem(toolBar, SWT.PUSH);
 		pauseItem.setText(GraphicsExample.getResourceString("Pause")); //$NON-NLS-1$
 		pauseItem.setImage(example.loadImage(display, "pause.gif")); //$NON-NLS-1$
 		pauseItem.addListener(SWT.Selection, toolBarListener);
-		
+
 		// timer spinner
 		Composite comp = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -101,13 +101,13 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 		label.setText(GraphicsExample.getResourceString("Animation")); //$NON-NLS-1$
 		timerSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 		timerSpinner.setMaximum(1000);
-		
+
 		playItem.setEnabled(false);
 		animate = true;
 
 		timerSpinner.setSelection(getInitialAnimationTime());
 	}
-	
+
 	/**
 	 *  Answer whether the receiver's drawing should be double bufferer.
 	 */
@@ -115,7 +115,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	public boolean getDoubleBuffered() {
 		return true;
 	}
-	
+
 	/**
 	 * Gets the initial animation time to be used by the tab. Animation time:
 	 * number of milliseconds between the current drawing and the next (the time
@@ -125,7 +125,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	public int getInitialAnimationTime() {
 		return 30;
 	}
-	
+
 	/**
 	 * Gets the animation time that is selected in the spinner. Animation time:
 	 * number of milliseconds between the current drawing and the next (the time
@@ -135,17 +135,17 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	public int getAnimationTime() {
 		return timerSpinner.getSelection();
 	}
-	
+
 	/**
 	 * Returns the true if the tab is currently animated; false otherwise.
 	 */
 	public boolean getAnimation() {
 		return animate;
 	}
-	
+
 	/**
 	 * Causes the animation to stop or start.
-	 * 
+	 *
 	 * @param flag
 	 *            true starts the animation; false stops the animation.
 	 */
@@ -159,5 +159,5 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	 * Advance the animation.
 	 */
 	public abstract void next(int width, int height);
-	
+
 }

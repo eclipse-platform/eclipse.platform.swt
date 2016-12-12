@@ -60,19 +60,19 @@ public String getDescription() {
  * This method creates the controls specific to the tab. The call to the
  * createControlPanel method in the super class create the controls that are
  * defined in the super class.
- * 
- * @param parent The parent composite 
+ *
+ * @param parent The parent composite
  */
 @Override
 public void createControlPanel(Composite parent) {
-	
+
 	Composite comp;
 	GridLayout gridLayout = new GridLayout(2, false);
-	
+
 	// create spinner for the rotation angle
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
- 
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("Rotate")); //$NON-NLS-1$
 	rotateSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 	GC gc = new GC(rotateSpinner);
@@ -84,11 +84,11 @@ public void createControlPanel(Composite parent) {
 	rotateSpinner.setMaximum(720);
 	rotateSpinner.setIncrement(30);
 	rotateSpinner.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create a spinner for translating along the x axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("xtranslate")); //$NON-NLS-1$
 	translateSpinnerX = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 	translateSpinnerX.setLayoutData(new GridData(width, SWT.DEFAULT));
@@ -97,7 +97,7 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerX.setSelection(0);
 	translateSpinnerX.setIncrement(10);
 	translateSpinnerX.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create a spinner for translating along the y axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
@@ -110,11 +110,11 @@ public void createControlPanel(Composite parent) {
 	translateSpinnerY.setSelection(0);
 	translateSpinnerY.setIncrement(10);
 	translateSpinnerY.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create a spinner for scaling along the x axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
-	
+
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("xscale")); //$NON-NLS-1$
 	scaleSpinnerX = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 	scaleSpinnerX.setLayoutData(new GridData(width, SWT.DEFAULT));
@@ -124,7 +124,7 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerX.setSelection(100);
 	scaleSpinnerX.setIncrement(10);
 	scaleSpinnerX.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create a spinner for scaling along the y axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
@@ -138,7 +138,7 @@ public void createControlPanel(Composite parent) {
 	scaleSpinnerY.setSelection(100);
 	scaleSpinnerY.setIncrement(10);
 	scaleSpinnerY.addListener(SWT.Selection, event -> example.redraw());
-	
+
 	// create a button for inverting the transform matrix
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
@@ -152,26 +152,26 @@ public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 
-	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_club.jpg"); 
+	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_club.jpg");
 
 	Transform transform = new Transform(device);
-	
+
 	// scale image
 	transform.scale(scaleSpinnerX.getSelection()/100f, scaleSpinnerY.getSelection()/100f);
-	
+
 	// translate image
 	transform.translate(translateSpinnerX.getSelection(), translateSpinnerY.getSelection());
-	
+
 	// rotate on center of image
 	Rectangle rect = image.getBounds();
 	transform.translate(rect.width/2, rect.height/2);
 	transform.rotate(rotateSpinner.getSelection());
 	transform.translate(-rect.width/2, -rect.height/2);
-	
+
 	if(invertButton.getSelection()){
 		transform.invert();
 	}
-	
+
 	gc.setTransform(transform);
 	gc.drawImage(image, 0, 0);
 

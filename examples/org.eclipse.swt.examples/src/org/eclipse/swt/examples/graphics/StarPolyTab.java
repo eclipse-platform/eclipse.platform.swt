@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Label;
 public class StarPolyTab extends GraphicsTab {
 	int[] radial;
 	static final int POINTS  = 11;
-	
+
 	Combo fillRuleCb;
 
 public StarPolyTab(GraphicsExample example) {

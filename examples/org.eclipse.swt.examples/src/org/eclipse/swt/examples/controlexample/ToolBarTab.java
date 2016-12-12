@@ -31,13 +31,13 @@ class ToolBarTab extends Tab {
 	/* Example widgets and groups that contain them */
 	ToolBar imageToolBar, textToolBar, imageTextToolBar;
 	Group imageToolBarGroup, textToolBarGroup, imageTextToolBarGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton, flatButton, shadowOutButton, wrapButton, rightButton;
 
 	/* Other widgets added to the "Other" group */
 	Button comboChildButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -51,32 +51,32 @@ class ToolBarTab extends Tab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the image tool bar */
 		imageToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		imageToolBarGroup.setLayout (new GridLayout ());
 		imageToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageToolBarGroup.setText (ControlExample.getResourceString("Image_ToolBar"));
-	
+
 		/* Create a group for the text tool bar */
 		textToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		textToolBarGroup.setLayout (new GridLayout ());
 		textToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textToolBarGroup.setText (ControlExample.getResourceString("Text_ToolBar"));
-		
+
 		/* Create a group for the image and text tool bar */
 		imageTextToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		imageTextToolBarGroup.setLayout (new GridLayout ());
 		imageTextToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageTextToolBarGroup.setText (ControlExample.getResourceString("ImageText_ToolBar"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-	
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (horizontalButton.getSelection()) style |= SWT.HORIZONTAL;
@@ -86,14 +86,14 @@ class ToolBarTab extends Tab {
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 		if (shadowOutButton.getSelection()) style |= SWT.SHADOW_OUT;
 		if (rightButton.getSelection()) style |= SWT.RIGHT;
-	
+
 		/*
 		* Create the example widgets.
 		*
 		* A tool bar must consist of all image tool
 		* items or all text tool items but not both.
 		*/
-	
+
 		/* Create the image tool bar */
 		imageToolBar = new ToolBar (imageToolBarGroup, style);
 		ToolItem item = new ToolItem (imageToolBar, SWT.PUSH);
@@ -131,7 +131,7 @@ class ToolBarTab extends Tab {
 		item.setImage (instance.images[ControlExample.ciTarget]);
 		item.setToolTipText ("SWT.DROP_DOWN");
 		item.addSelectionListener(new DropDownSelectionListener());
-	
+
 		/* Create the text tool bar */
 		textToolBar = new ToolBar (textToolBarGroup, style);
 		item = new ToolItem (textToolBar, SWT.PUSH);
@@ -223,18 +223,18 @@ class ToolBarTab extends Tab {
 		* is selected.
 		*/
 	}
-	
+
 	/**
 	 * Creates the "Other" group.
 	 */
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-	
+
 		/* Create display controls specific to this example */
 		comboChildButton = new Button (otherGroup, SWT.CHECK);
 		comboChildButton.setText (ControlExample.getResourceString("Combo_child"));
-	
+
 		/* Add the listeners */
 		comboChildButton.addSelectionListener (new SelectionAdapter () {
 			@Override
@@ -243,14 +243,14 @@ class ToolBarTab extends Tab {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-	
+
 		/* Create the extra widgets */
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
 		horizontalButton.setText ("SWT.HORIZONTAL");
@@ -267,12 +267,12 @@ class ToolBarTab extends Tab {
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
-	
+
 	@Override
 	void disposeExampleWidgets () {
 		super.disposeExampleWidgets ();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children's items, if any.
 	 *
@@ -289,7 +289,7 @@ class ToolBarTab extends Tab {
 		System.arraycopy(imageTextToolBarItems, 0, allItems, imageToolBarItems.length + textToolBarItems.length, imageTextToolBarItems.length);
 		return allItems;
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -297,7 +297,7 @@ class ToolBarTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {imageToolBar, textToolBar, imageTextToolBar};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -322,7 +322,7 @@ class ToolBarTab extends Tab {
 	String getTabText () {
 		return "ToolBar";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -337,14 +337,14 @@ class ToolBarTab extends Tab {
 		borderButton.setSelection ((imageToolBar.getStyle () & SWT.BORDER) != 0);
 		rightButton.setSelection ((imageToolBar.getStyle () & SWT.RIGHT) != 0);
 	}
-	
+
 	/**
 	 * Listens to widgetSelected() events on SWT.DROP_DOWN type ToolItems
 	 * and opens/closes a menu when appropriate.
 	 */
 	class DropDownSelectionListener extends SelectionAdapter {
 		private Menu    menu = null;
-		
+
 		@Override
 		public void widgetSelected(SelectionEvent event) {
 			// Create the menu if it has not already been created
@@ -363,13 +363,13 @@ class ToolBarTab extends Tab {
 					}
 				}
 			}
-			
+
 			/**
 			 * A selection event will be fired when a drop down tool
 			 * item is selected in the main area and in the drop
 			 * down arrow.  Examine the event detail to determine
 			 * where the widget was selected.
-			 */		
+			 */
 			if (event.detail == SWT.ARROW) {
 				/*
 				 * The drop down arrow was selected.
@@ -377,11 +377,11 @@ class ToolBarTab extends Tab {
 				// Position the menu below and vertically aligned with the the drop down tool button.
 				final ToolItem toolItem = (ToolItem) event.widget;
 				final ToolBar  toolBar = toolItem.getParent();
-				
+
 				Point point = toolBar.toDisplay(new Point(event.x, event.y));
 				menu.setLocation(point.x, point.y);
 				menu.setVisible(true);
-			} 
+			}
 		}
 	}
 }

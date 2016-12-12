@@ -21,10 +21,10 @@ class CComboTab extends Tab {
 	/* Example widgets and groups that contain them */
 	CCombo combo1;
 	Group comboGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button flatButton, readOnlyButton;
-	
+
 	static String [] ListData = {ControlExample.getResourceString("ListData1_0"),
 								 ControlExample.getResourceString("ListData1_1"),
 								 ControlExample.getResourceString("ListData1_2"),
@@ -41,33 +41,33 @@ class CComboTab extends Tab {
 	CComboTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the combo box */
 		comboGroup = new Group (exampleGroup, SWT.NONE);
 		comboGroup.setLayout (new GridLayout ());
 		comboGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		comboGroup.setText (ControlExample.getResourceString("Custom_Combo"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (flatButton.getSelection ()) style |= SWT.FLAT;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
-		
+
 		/* Create the example widgets */
 		combo1 = new CCombo (comboGroup, style);
 		combo1.setItems (ListData);
@@ -75,14 +75,14 @@ class CComboTab extends Tab {
 			combo1.setText(ListData [2]);
 		}
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
-	
+
 		/* Create the extra widgets */
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
 		readOnlyButton.setText ("SWT.READ_ONLY");
@@ -91,7 +91,7 @@ class CComboTab extends Tab {
 		flatButton = new Button (styleGroup, SWT.CHECK);
 		flatButton.setText ("SWT.FLAT");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -99,7 +99,7 @@ class CComboTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {combo1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -116,7 +116,7 @@ class CComboTab extends Tab {
 	String getTabText () {
 		return "CCombo";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */

@@ -19,7 +19,7 @@ public abstract class BasicPaintSession implements PaintSession {
 
 	/**
 	 * Constructs a PaintSession.
-	 * 
+	 *
 	 * @param paintSurface the drawing surface to use
 	 */
 	protected BasicPaintSession(PaintSurface paintSurface) {
@@ -28,7 +28,7 @@ public abstract class BasicPaintSession implements PaintSession {
 
 	/**
 	 * Returns the paint surface associated with this paint session.
-	 * 
+	 *
 	 * @return the associated PaintSurface
 	 */
 	@Override

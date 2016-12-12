@@ -37,19 +37,19 @@ abstract class AlignableTab extends Tab {
 	}
 
 	/**
-	 * Creates the "Other" group. 
+	 * Creates the "Other" group.
 	 */
 	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
-		
+
 		/* Create the group */
 		alignmentGroup = new Group (otherGroup, SWT.NONE);
 		alignmentGroup.setLayout (new GridLayout ());
 		alignmentGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL |
 			GridData.VERTICAL_ALIGN_FILL));
 		alignmentGroup.setText (ControlExample.getResourceString("Alignment"));
-	
+
 		/* Create the controls */
 		leftButton = new Button (alignmentGroup, SWT.RADIO);
 		leftButton.setText (ControlExample.getResourceString("Left"));
@@ -57,7 +57,7 @@ abstract class AlignableTab extends Tab {
 		centerButton.setText(ControlExample.getResourceString("Center"));
 		rightButton = new Button (alignmentGroup, SWT.RADIO);
 		rightButton.setText (ControlExample.getResourceString("Right"));
-	
+
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
 			@Override
@@ -70,12 +70,12 @@ abstract class AlignableTab extends Tab {
 		centerButton.addSelectionListener (selectionListener);
 		rightButton.addSelectionListener (selectionListener);
 	}
-	
+
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
 	abstract void setExampleWidgetAlignment ();
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */

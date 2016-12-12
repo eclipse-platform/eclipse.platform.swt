@@ -56,7 +56,7 @@ public class ControlExample {
 	/**
 	 * Creates an instance of a ControlExample embedded inside
 	 * the supplied parent Composite.
-	 * 
+	 *
 	 * @param parent the container of the example
 	 */
 	public ControlExample(Composite parent) {
@@ -69,7 +69,7 @@ public class ControlExample {
 		    item.setControl (tab.createTabFolderPage (tabFolder));
 		    item.setData (tab);
 		}
-		
+
 		/* Workaround: if the tab folder is wider than the screen,
 		 * Mac platforms clip instead of somehow scrolling the tab items.
 		 * We try to recover some width by using shorter tab names. */
@@ -122,7 +122,7 @@ public class ControlExample {
 	/**
 	 * Disposes of all resources associated with a particular
 	 * instance of the ControlExample.
-	 */	
+	 */
 	public void dispose() {
 		/*
 		 * Destroy any shells that may have been created
@@ -149,7 +149,7 @@ public class ControlExample {
 			images = null;
 		}
 	}
-	
+
 	/**
 	 * Gets a string from the resource bundle.
 	 * We don't want to crash because of a missing String.
@@ -162,7 +162,7 @@ public class ControlExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-		}			
+		}
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class ControlExample {
 			try {
 				if (images == null) {
 					images = new Image[imageLocations.length];
-					
+
 					for (int i = 0; i < imageLocations.length; ++i) {
 						InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i]);
 						ImageData source = new ImageData(sourceStream);
@@ -234,14 +234,14 @@ public class ControlExample {
 		instance.dispose();
 		display.dispose();
 	}
-	
+
 	/**
 	 * Grabs input focus.
 	 */
 	public void setFocus() {
 		tabFolder.setFocus();
 	}
-	
+
 	/**
 	 * Sets the size of the shell to it's "packed" size,
 	 * unless that makes it larger than the monitor it is being displayed on,

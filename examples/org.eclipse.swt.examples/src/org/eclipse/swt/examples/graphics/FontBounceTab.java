@@ -23,17 +23,17 @@ import org.eclipse.swt.graphics.Point;
  * as it bounces around the screen.
  */
 public class FontBounceTab extends AnimatedGraphicsTab {
-	
+
 	float x, y;
 	float incX = 10.0f;				// units by which to move the word along X axis
-	float incY = 5.0f;				// units by which to move the word along Y axis 
+	float incY = 5.0f;				// units by which to move the word along Y axis
 	int textWidth, textHeight;		// width and height of the word SWT
 	String text = GraphicsExample.getResourceString("SWT");
 	int fontSize = 100;
-	int fontFace = 0; 
+	int fontFace = 0;
 	int foreGrdColor, fillColor;	// font colors
 	int fontStyle;				// represents various style attributes applicable to a Font
-	
+
 public FontBounceTab(GraphicsExample example) {
 	super(example);
 }
@@ -58,14 +58,14 @@ public void next(int width, int height) {
 	x += incX;
     y += incY;
 	float random = (float)Math.random();
-	
-	// collision with right side of screen 
+
+	// collision with right side of screen
     if (x + textWidth > width) {
         x = width - textWidth;
         incX = random * -width / 16 - 1;
         fontFace = 0;
         fontSize = 125;
-        fillColor = SWT.COLOR_DARK_BLUE;  
+        fillColor = SWT.COLOR_DARK_BLUE;
         foreGrdColor = SWT.COLOR_YELLOW;
         fontStyle = SWT.ITALIC;
     }
@@ -106,14 +106,14 @@ public void next(int width, int height) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	Font font = new Font(device, getPlatformFontFace(fontFace), fontSize, fontStyle);
 	gc.setFont(font);
-	
+
 	Point size = gc.stringExtent(text);
 	textWidth = size.x;
 	textHeight = size.y;
-	
+
 	Path path = new Path(device);
 	path.addString(text, x, y, font);
 
@@ -129,16 +129,16 @@ public void paint(GC gc, int width, int height) {
 /**
  * Returns the name of the font using the specified index.
  * This method takes into account the resident platform.
- * 
+ *
  * @param index
  * 			The index of the font to be used
  */
-static String getPlatformFontFace(int index) {	
+static String getPlatformFontFace(int index) {
 	if(SWT.getPlatform() == "win32") {
-		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];	
+		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];
 	} else if (SWT.getPlatform() == "gtk") {
 		return new String [] {"URW Chancery L", "Baekmuk Batang", "Baekmuk Headline", "KacsTitleL"} [index];
-	} else { 
+	} else {
 		return new String [] {"Arial", "Impact", "Times", "Verdana"} [index];
 	}
 }

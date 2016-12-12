@@ -29,7 +29,7 @@ class RowLayoutTab extends Tab {
 	TableEditor comboEditor, widthEditor, heightEditor, nameEditor, excludeEditor;
 	CCombo combo, exclude;
 	Text nameText, widthText, heightText;
-	
+
 	/* Constants */
 	final int NAME_COL = 0;
 	final int COMBO_COL = 1;
@@ -37,14 +37,14 @@ class RowLayoutTab extends Tab {
 	final int HEIGHT_COL = 3;
 	final int EXCLUDE_COL = 4;
 	final int TOTAL_COLS = 5;
-	
+
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
 	RowLayoutTab(LayoutExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
@@ -52,7 +52,7 @@ class RowLayoutTab extends Tab {
 	void createChildWidgets () {
 		/* Add common controls */
 		super.createChildWidgets ();
-		
+
 		/* Add TableEditors */
 		nameEditor = new TableEditor (table);
 		comboEditor = new TableEditor (table);
@@ -73,22 +73,22 @@ class RowLayoutTab extends Tab {
 					return;
 				}
 				table.showSelection ();
-				
+
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
-				
+
 				nameText = new Text(table, SWT.SINGLE);
 				nameText.setText(data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
-				
+
 				widthText = new Text(table, SWT.SINGLE);
 				widthText.setText(data.get(index)[WIDTH_COL]);
 				createTextEditor(widthText, widthEditor, WIDTH_COL);
-				
+
 				heightText = new Text(table, SWT.SINGLE);
 				heightText.setText (data.get (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-                
+
 				String [] boolValues = new String [] {"false", "true"};
 				exclude = new CCombo (table, SWT.NONE);
 				exclude.setItems (boolValues);
@@ -106,9 +106,9 @@ class RowLayoutTab extends Tab {
                     		case NAME_COL :
                     			nameText.setFocus ();
 							case COMBO_COL :
-								combo.setFocus ();	
+								combo.setFocus ();
 								break;
-							case WIDTH_COL :	
+							case WIDTH_COL :
 								widthText.setFocus ();
 								break;
 							case HEIGHT_COL :
@@ -122,11 +122,11 @@ class RowLayoutTab extends Tab {
 								break;
 						}
                     }
-                } 
+                }
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the control widgets.
 	 */
@@ -139,14 +139,14 @@ class RowLayoutTab extends Tab {
 		typeGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, false));
 		horizontal = new Button (typeGroup, SWT.RADIO);
 		horizontal.setText ("SWT.HORIZONTAL");
-		horizontal.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		horizontal.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		horizontal.setSelection(true);
 		horizontal.addSelectionListener (selectionListener);
 		vertical = new Button (typeGroup, SWT.RADIO);
 		vertical.setText ("SWT.VERTICAL");
-		vertical.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		vertical.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		vertical.addSelectionListener (selectionListener);
-		
+
 		/* Controls the margins and spacing of the RowLayout */
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
@@ -181,7 +181,7 @@ class RowLayoutTab extends Tab {
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(3);
 		spacing.addSelectionListener (selectionListener);
-		
+
 		/* Controls other parameters of the RowLayout */
 		Group specGroup = new Group (controlGroup, SWT.NONE);
 		specGroup.setText (LayoutExample.getResourceString ("Properties"));
@@ -190,30 +190,30 @@ class RowLayoutTab extends Tab {
 		wrap = new Button (specGroup, SWT.CHECK);
 		wrap.setText ("Wrap");
 		wrap.setSelection (true);
-		wrap.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		wrap.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		wrap.addSelectionListener (selectionListener);
 		pack = new Button (specGroup, SWT.CHECK);
 		pack.setText ("Pack");
-		pack.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		pack.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		pack.setSelection (true);
 		pack.addSelectionListener(selectionListener);
 		fill = new Button(specGroup, SWT.CHECK);
 		fill.setText("Fill");
-		fill.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
+		fill.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		fill.addSelectionListener(selectionListener);
 		justify = new Button (specGroup, SWT.CHECK);
 		justify.setText ("Justify");
-		justify.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		justify.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		justify.addSelectionListener (selectionListener);
 		center = new Button (specGroup, SWT.CHECK);
 		center.setText ("Center");
-		center.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		center.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 		center.addSelectionListener (selectionListener);
-		
+
 		/* Add common controls */
 		super.createControlWidgets ();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 */
@@ -222,8 +222,8 @@ class RowLayoutTab extends Tab {
 		rowLayout = new RowLayout ();
 		layoutComposite.setLayout (rowLayout);
 	}
-		
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
@@ -236,10 +236,10 @@ class RowLayoutTab extends Tab {
 		nameText.dispose ();
 		exclude.dispose ();
 	}
-	
+
 	/**
 	 * Generates code for the example layout.
-	 */	
+	 */
 	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
@@ -249,7 +249,7 @@ class RowLayoutTab extends Tab {
 		}
 		if (rowLayout.wrap == false) {
 			code.append ("\t\trowLayout.wrap = false;\n");
-		} 
+		}
 		if (rowLayout.pack == false) {
 			code.append ("\t\trowLayout.pack = false;\n");
 		}
@@ -284,7 +284,7 @@ class RowLayoutTab extends Tab {
 			code.append ("\t\trowLayout.spacing = " + rowLayout.spacing + ";\n");
 		}
 		code.append ("\t\tshell.setLayout (rowLayout);\n");
-		
+
 		boolean first = true;
 		for (int i = 0; i < children.length; i++) {
 			Control control = children [i];
@@ -304,7 +304,7 @@ class RowLayoutTab extends Tab {
 					} else if (rowData.height == -1) {
 						code.append ("rowData = new RowData (" + rowData.width + ", SWT.DEFAULT);\n");
 					} else {
-						code.append ("rowData = new RowData (" + rowData.width + ", " + rowData.height + ");\n");				
+						code.append ("rowData = new RowData (" + rowData.width + ", " + rowData.height + ");\n");
 					}
 					if (rowData.exclude) {
 						code.append ("\t\trowData.exclude = true;\n");
@@ -315,7 +315,7 @@ class RowLayoutTab extends Tab {
 		}
 		return code;
 	}
-	
+
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
@@ -329,15 +329,15 @@ class RowLayoutTab extends Tab {
 	 */
 	@Override
 	String [] getLayoutDataFieldNames() {
-		return new String [] { 
+		return new String [] {
 			"Control Name",
 			"Control Type",
-			"width", 
+			"width",
 			"height",
 			"exclude"
 		};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -345,7 +345,7 @@ class RowLayoutTab extends Tab {
 	String getTabText () {
 		return "RowLayout";
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
@@ -355,7 +355,7 @@ class RowLayoutTab extends Tab {
 		if (oldItem != null) {
 			int row = table.indexOf (oldItem);
 			/* Make sure user has entered valid data */
-			try {				
+			try {
 				new String(nameText.getText());
 			} catch (NumberFormatException e) {
 				nameText.setText(oldItem.getText(NAME_COL));
@@ -384,7 +384,7 @@ class RowLayoutTab extends Tab {
 		layoutComposite.layout (true);
 		layoutGroup.layout (true);
 	}
-	
+
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
@@ -403,9 +403,9 @@ class RowLayoutTab extends Tab {
 			data.exclude = exclude.equals ("true");
 			children [i].setLayoutData (data);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Sets the state of the layout.
 	 */
@@ -413,7 +413,7 @@ class RowLayoutTab extends Tab {
 	void setLayoutState () {
 		/* Set the type of layout */
 		rowLayout.type = vertical.getSelection () ? SWT.VERTICAL : SWT.HORIZONTAL;
-		
+
 		/* Set the margins and spacing */
 		rowLayout.marginWidth = marginWidth.getSelection ();
 		rowLayout.marginHeight = marginHeight.getSelection ();
@@ -422,7 +422,7 @@ class RowLayoutTab extends Tab {
 		rowLayout.marginTop = marginTop.getSelection ();
 		rowLayout.marginBottom = marginBottom.getSelection ();
 		rowLayout.spacing = spacing.getSelection ();
-		
+
 		/* Set the other layout properties */
 		rowLayout.wrap = wrap.getSelection ();
 		rowLayout.pack = pack.getSelection ();

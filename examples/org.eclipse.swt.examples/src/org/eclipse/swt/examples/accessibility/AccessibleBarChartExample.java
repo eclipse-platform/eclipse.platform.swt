@@ -23,12 +23,12 @@ import org.eclipse.swt.widgets.*;
 public class AccessibleBarChartExample {
 	static Display display;
 	static Shell shell;
-	
+
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new GridLayout());
-		
+
 		BarChart pets = new BarChart(shell, SWT.BORDER);
 		pets.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		pets.setTitle("Kids in my class: Pet Survey");
@@ -38,7 +38,7 @@ public class AccessibleBarChartExample {
 		pets.addData("Budgies", 1);
 		pets.addData("Fish", 4);
 		pets.addData("None", 4);
-		
+
 		BarChart foods = new BarChart(shell, SWT.BORDER);
 		foods.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		foods.setTitle("Kids in my class: Favorite Food Survey");

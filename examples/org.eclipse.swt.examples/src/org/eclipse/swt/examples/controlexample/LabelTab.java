@@ -22,21 +22,21 @@ class LabelTab extends AlignableTab {
 
 	/* Style widgets added to the "Style" group */
 	Button wrapButton, separatorButton, horizontalButton, verticalButton, shadowInButton, shadowOutButton, shadowNoneButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	LabelTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the text labels */
 		textLabelGroup = new Group(exampleGroup, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
@@ -44,7 +44,7 @@ class LabelTab extends AlignableTab {
 		gridLayout.numColumns = 3;
 		textLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textLabelGroup.setText (ControlExample.getResourceString("Text_Labels"));
-	
+
 		/* Create a group for the image labels */
 		imageLabelGroup = new Group (exampleGroup, SWT.SHADOW_NONE);
 		gridLayout = new GridLayout ();
@@ -53,13 +53,13 @@ class LabelTab extends AlignableTab {
 		imageLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageLabelGroup.setText (ControlExample.getResourceString("Image_Labels"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (wrapButton.getSelection ()) style |= SWT.WRAP;
@@ -73,7 +73,7 @@ class LabelTab extends AlignableTab {
 		if (leftButton.getSelection ()) style |= SWT.LEFT;
 		if (centerButton.getSelection ()) style |= SWT.CENTER;
 		if (rightButton.getSelection ()) style |= SWT.RIGHT;
-	
+
 		/* Create the example widgets */
 		label1 = new Label (textLabelGroup, style);
 		label1.setText(ControlExample.getResourceString("One"));
@@ -92,14 +92,14 @@ class LabelTab extends AlignableTab {
 		label6 = new Label(imageLabelGroup, style);
 		label6.setImage (instance.images[ControlExample.ciTarget]);
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		wrapButton = new Button (styleGroup, SWT.CHECK);
 		wrapButton.setText ("SWT.WRAP");
@@ -120,7 +120,7 @@ class LabelTab extends AlignableTab {
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -128,7 +128,7 @@ class LabelTab extends AlignableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {label1, label2, label3, label4, label5, label6};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -145,7 +145,7 @@ class LabelTab extends AlignableTab {
 	String getTabText () {
 		return "Label";
 	}
-	
+
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
@@ -162,7 +162,7 @@ class LabelTab extends AlignableTab {
 		label5.setAlignment (alignment);
 		label6.setAlignment (alignment);
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -178,7 +178,7 @@ class LabelTab extends AlignableTab {
 		shadowOutButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_OUT) != 0);
 		shadowNoneButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_NONE) != 0);
 		horizontalButton.setSelection (isSeparator && (label1.getStyle () & SWT.HORIZONTAL) != 0);
-		verticalButton.setSelection (isSeparator && (label1.getStyle () & SWT.VERTICAL) != 0);		
+		verticalButton.setSelection (isSeparator && (label1.getStyle () & SWT.VERTICAL) != 0);
 		wrapButton.setEnabled (!isSeparator);
 		leftButton.setEnabled (!isSeparator);
 		centerButton.setEnabled (!isSeparator);

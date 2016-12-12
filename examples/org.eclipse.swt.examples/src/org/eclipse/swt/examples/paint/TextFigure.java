@@ -23,7 +23,7 @@ public class TextFigure extends Figure {
 	private int x, y;
 	/**
 	 * Constructs a TextFigure
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param font  the font for this object
 	 * @param text  the text to draw, tab and new-line expansion is performed

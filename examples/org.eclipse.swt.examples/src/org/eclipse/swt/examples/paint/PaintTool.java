@@ -13,7 +13,7 @@ package org.eclipse.swt.examples.paint;
 public interface PaintTool extends PaintSession {
 	/**
 	 * Sets the tool's settings.
-	 * 
+	 *
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings);

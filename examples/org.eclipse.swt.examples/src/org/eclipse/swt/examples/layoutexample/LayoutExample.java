@@ -22,11 +22,11 @@ import java.util.*;
 public class LayoutExample {
 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_layout");
 	private TabFolder tabFolder;
-	
+
 	/**
 	 * Creates an instance of a LayoutExample embedded inside
 	 * the supplied parent Composite.
-	 * 
+	 *
 	 * @param parent the container of the example
 	 */
 	public LayoutExample(Composite parent) {
@@ -44,22 +44,22 @@ public class LayoutExample {
 		    item.setControl (tab.createTabFolderPage (tabFolder));
 		}
 	}
-	
+
 	/**
 	 * Grabs input focus.
 	 */
 	public void setFocus() {
 		tabFolder.setFocus();
 	}
-	
+
 	/**
 	 * Disposes of all resources associated with a particular
 	 * instance of the LayoutExample.
-	 */	
+	 */
 	public void dispose() {
 		tabFolder = null;
 	}
-	
+
 	/**
 	 * Invokes as a standalone program.
 	 */
@@ -96,7 +96,7 @@ public class LayoutExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!";
-		}			
+		}
 	}
 
 	/**

@@ -23,7 +23,7 @@ public class SolidEllipseFigure extends Figure {
 	 * Constructs a SolidEllipse
 	 * These objects are defined by any two diametrically opposing corners of a box
 	 * bounding the ellipse.
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param x1 the virtual X coordinate of the first corner
 	 * @param y1 the virtual Y coordinate of the first corner

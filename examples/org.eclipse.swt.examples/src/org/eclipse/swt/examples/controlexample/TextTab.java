@@ -24,7 +24,7 @@ class TextTab extends ScrollableTab {
 	/* Style widgets added to the "Style" group */
 	Button wrapButton, readOnlyButton, passwordButton, searchButton, iconCancelButton, iconSearchButton;
 	Button leftButton, centerButton, rightButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -38,20 +38,20 @@ class TextTab extends ScrollableTab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the text widget */
 		textGroup = new Group (exampleGroup, SWT.NONE);
 		textGroup.setLayout (new GridLayout ());
 		textGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textGroup.setText ("Text");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
@@ -68,19 +68,19 @@ class TextTab extends ScrollableTab {
 		if (leftButton.getSelection ()) style |= SWT.LEFT;
 		if (centerButton.getSelection ()) style |= SWT.CENTER;
 		if (rightButton.getSelection ()) style |= SWT.RIGHT;
-	
+
 		/* Create the example widgets */
 		text = new Text (textGroup, style);
 		text.setText (ControlExample.getResourceString("Example_string") + Text.DELIMITER + ControlExample.getResourceString("One_Two_Three"));
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-	
+
 		/* Create the extra widgets */
 		wrapButton = new Button (styleGroup, SWT.CHECK);
 		wrapButton.setText ("SWT.WRAP");
@@ -130,7 +130,7 @@ class TextTab extends ScrollableTab {
 				setExampleWidgetSize ();
 			}
 		});
-		
+
 		return tabFolderPage;
 	}
 
@@ -141,7 +141,7 @@ class TextTab extends ScrollableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {text};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -158,7 +158,7 @@ class TextTab extends ScrollableTab {
 	String getTabText () {
 		return "Text";
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -172,7 +172,7 @@ class TextTab extends ScrollableTab {
 		leftButton.setSelection ((text.getStyle () & SWT.LEFT) != 0);
 		centerButton.setSelection ((text.getStyle () & SWT.CENTER) != 0);
 		rightButton.setSelection ((text.getStyle () & SWT.RIGHT) != 0);
-		
+
 		/* Special case: ICON_CANCEL and H_SCROLL have the same value,
 		 * and ICON_SEARCH and V_SCROLL have the same value,
 		 * so to avoid confusion, only set CANCEL if SEARCH is set. */

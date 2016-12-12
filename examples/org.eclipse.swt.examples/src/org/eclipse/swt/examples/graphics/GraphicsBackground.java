@@ -18,12 +18,12 @@ import org.eclipse.swt.graphics.Image;
  * This class is used for storing data relevant to a background.
  */
 public class GraphicsBackground {
-	
+
 	private Image bgImage;
 	private Image thumbNail;
 	private Color bgColor1;
 	private Color bgColor2;
-	
+
 	public GraphicsBackground() {
 		bgImage = null;
 		thumbNail = null;

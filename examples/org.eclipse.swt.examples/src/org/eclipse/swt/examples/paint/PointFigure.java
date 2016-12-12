@@ -21,7 +21,7 @@ public class PointFigure extends Figure {
 	private int x, y;
 	/**
 	 * Constructs a Point
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param x the virtual X coordinate of the first end-point
 	 * @param y the virtual Y coordinate of the first end-point

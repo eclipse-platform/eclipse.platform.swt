@@ -23,7 +23,7 @@ public class LineFigure extends Figure {
 	/**
 	 * Constructs a Line
 	 * These objects are defined by their two end-points.
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param lineStyle the line style for this object
 	 * @param x1 the virtual X coordinate of the first end-point

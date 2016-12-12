@@ -22,7 +22,7 @@ public class SolidPolygonFigure extends Figure {
 	/**
 	 * Constructs a SolidPolygon
 	 * These objects are defined by a sequence of vertices.
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param vertices the array of vertices making up the polygon
 	 * @param numPoint the number of valid points in the array (n >= 3)
@@ -55,7 +55,7 @@ public class SolidPolygonFigure extends Figure {
 			if (points[i] > xmax) xmax = points[i];
 			if (points[i+1] < ymin) ymin = points[i+1];
 			if (points[i+1] > ymax) ymax = points[i+1];
-		}		
+		}
 		region.add(fdc.toClientRectangle(xmin, ymin, xmax, ymax));
 	}
 }

@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
 public class AccessibleTableExample {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_accessibility"); //$NON-NLS-1$
 	static CTable table1;
-	
+
 	static String getResourceString(String key) {
 		try {
 			return resourceBundle.getString(key);
@@ -33,7 +33,7 @@ public class AccessibleTableExample {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-		}			
+		}
 	}
 	static final String [] itemText = new String [] {
 			AccessibleTableExample.getResourceString("color1"),
@@ -47,13 +47,13 @@ public class AccessibleTableExample {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		shell.setText("Accessible Table Example");
-		
+
 		Group group = new Group(shell, SWT.NONE);
 		group.setText("Tables With Accessible Cell Children");
 		group.setLayout(new GridLayout());
 
 		new Label(group, SWT.NONE).setText("CTable with column headers");
-		
+
 		table1 = new CTable(group, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 		table1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table1.setHeaderVisible(true);
@@ -67,7 +67,7 @@ public class AccessibleTableExample {
 			CTableItem item = new CTableItem(table1, SWT.NONE);
 			item.setText(new String [] {"C0R" + row, "C1R" + row, "C2R" + row});
 		}
-		
+
 		Composite btnGroup = new Composite(group, SWT.NONE);
 		btnGroup.setLayout(new FillLayout(SWT.VERTICAL));
 		Button btn = new Button(btnGroup, SWT.PUSH);
@@ -79,7 +79,7 @@ public class AccessibleTableExample {
 				int colCount = table1.getColumnCount();
 				CTableItem item = new CTableItem(table1, SWT.NONE);
 				String[] cells = new String[colCount];
-				
+
 				for (int i = 0; i < colCount; i++) {
 					cells[i] = "C" + i + "R" + currSize;
 				}
@@ -125,16 +125,16 @@ public class AccessibleTableExample {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int colCount = table1.getColumnCount();
-				
+
 				if (colCount > 0) {
 					CTableColumn column = table1.getColumn(colCount - 1);
 					column.dispose();
 				}
 			}
 		});
-		
+
 		new Label(group, SWT.NONE).setText("CTable used as a list");
-		
+
 		CTable table2 = new CTable(group, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 		table2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table2.setLinesVisible(true);
@@ -142,7 +142,7 @@ public class AccessibleTableExample {
 			CTableItem item = new CTableItem(table2, SWT.NONE);
 			item.setText(itemText[row]);
 		}
-		
+
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {

@@ -31,27 +31,27 @@ class ButtonTab extends AlignableTab {
 
 	/* Style widgets added to the "Style" group */
 	Button pushButton, checkButton, radioButton, toggleButton, arrowButton, flatButton, wrapButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	ButtonTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
-	 * Creates the "Control" group. 
+	 * Creates the "Control" group.
 	 */
 	@Override
 	void createControlGroup () {
 		super.createControlGroup ();
-	
+
 		/* Create the controls */
 		upButton = new Button (alignmentGroup, SWT.RADIO);
 		upButton.setText (ControlExample.getResourceString("Up"));
 		downButton = new Button (alignmentGroup, SWT.RADIO);
 		downButton.setText (ControlExample.getResourceString("Down"));
-	
+
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter() {
 			@Override
@@ -63,14 +63,14 @@ class ButtonTab extends AlignableTab {
 		upButton.addSelectionListener(selectionListener);
 		downButton.addSelectionListener(selectionListener);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for text buttons */
 		textButtonGroup = new Group(exampleGroup, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
@@ -78,7 +78,7 @@ class ButtonTab extends AlignableTab {
 		gridLayout.numColumns = 3;
 		textButtonGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textButtonGroup.setText (ControlExample.getResourceString("Text_Buttons"));
-	
+
 		/* Create a group for the image buttons */
 		imageButtonGroup = new Group(exampleGroup, SWT.NONE);
 		gridLayout = new GridLayout();
@@ -95,13 +95,13 @@ class ButtonTab extends AlignableTab {
 		imagetextButtonGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imagetextButtonGroup.setText (ControlExample.getResourceString("Image_Text_Buttons"));
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-	
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (pushButton.getSelection()) style |= SWT.PUSH;
@@ -114,13 +114,13 @@ class ButtonTab extends AlignableTab {
 		if (leftButton.getSelection()) style |= SWT.LEFT;
 		if (rightButton.getSelection()) style |= SWT.RIGHT;
 		if (arrowButton.getSelection()) {
-			style |= SWT.ARROW; 
+			style |= SWT.ARROW;
 			if (upButton.getSelection()) style |= SWT.UP;
 			if (downButton.getSelection()) style |= SWT.DOWN;
 		} else {
-			if (centerButton.getSelection()) style |= SWT.CENTER;			
+			if (centerButton.getSelection()) style |= SWT.CENTER;
 		}
-	
+
 		/* Create the example widgets */
 		button1 = new Button(textButtonGroup, style);
 		button1.setText(ControlExample.getResourceString("One"));
@@ -152,14 +152,14 @@ class ButtonTab extends AlignableTab {
 		}
 		button9.setImage(instance.images[ControlExample.ciTarget]);
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-	
+
 		/* Create the extra widgets */
 		pushButton = new Button (styleGroup, SWT.RADIO);
 		pushButton.setText("SWT.PUSH");
@@ -178,7 +178,7 @@ class ButtonTab extends AlignableTab {
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -186,7 +186,7 @@ class ButtonTab extends AlignableTab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {button1, button2, button3, button4, button5, button6, button7, button8, button9};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -203,7 +203,7 @@ class ButtonTab extends AlignableTab {
 	String getTabText () {
 		return "Button";
 	}
-	
+
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
@@ -225,7 +225,7 @@ class ButtonTab extends AlignableTab {
 		button8.setAlignment (alignment);
 		button9.setAlignment (alignment);
 	}
-	
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */

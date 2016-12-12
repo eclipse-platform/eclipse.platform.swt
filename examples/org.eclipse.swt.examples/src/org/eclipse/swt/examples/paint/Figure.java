@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.*;
 public abstract class Figure {
 	/**
 	 * Draws this object.
-	 * 
+	 *
 	 * @param fdc a parameter block specifying drawing-related information
 	 */
 	public abstract void draw(FigureDrawContext fdc);
@@ -30,7 +30,7 @@ public abstract class Figure {
 	/**
 	 * Computes the damaged screen region caused by drawing this object (imprecise), then
 	 * appends it to the supplied region.
-	 * 
+	 *
 	 * @param fdc a parameter block specifying drawing-related information
 	 * @param region a region to which additional damage areas will be added
 	 */

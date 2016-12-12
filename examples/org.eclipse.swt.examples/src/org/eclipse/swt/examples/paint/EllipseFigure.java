@@ -24,7 +24,7 @@ public class EllipseFigure extends Figure {
 	 * Constructs an Ellipse
 	 * These objects are defined by any two diametrically opposing corners of a box
 	 * bounding the ellipse.
-	 * 
+	 *
 	 * @param color the color for this object
 	 * @param lineStyle the line style for this object
 	 * @param x1 the virtual X coordinate of the first corner

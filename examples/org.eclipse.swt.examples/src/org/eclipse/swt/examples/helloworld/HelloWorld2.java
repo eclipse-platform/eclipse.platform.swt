@@ -16,12 +16,12 @@ import org.eclipse.swt.widgets.*;
 import java.util.ResourceBundle;
 
 /*
- * This example builds on HelloWorld1 and demonstrates the minimum amount 
+ * This example builds on HelloWorld1 and demonstrates the minimum amount
  * of code required to open an SWT Shell with a Label and process the events.
  */
 public class HelloWorld2 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
-	
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new HelloWorld2 ().open (display);

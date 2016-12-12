@@ -29,14 +29,14 @@ class FillLayoutTab extends Tab {
 	Text nameText;
 	final int NAME_COL = 0;
 	final int TOTAL_COLS = 2;
-	
+
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
 	FillLayoutTab(LayoutExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
@@ -44,7 +44,7 @@ class FillLayoutTab extends Tab {
 	void createChildWidgets () {
 		/* Add common controls */
 		super.createChildWidgets ();
-		
+
 		/* Add TableEditors */
 		comboEditor = new TableEditor (table);
 		nameEditor = new TableEditor (table);
@@ -61,17 +61,17 @@ class FillLayoutTab extends Tab {
 					return;
 				}
 				table.showSelection ();
-				
+
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
-				
+
 				nameText = new Text(table, SWT.SINGLE);
 				nameText.setText(data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the control widgets.
 	 */
@@ -90,8 +90,8 @@ class FillLayoutTab extends Tab {
 		vertical = new Button (typeGroup, SWT.RADIO);
 		vertical.setText ("SWT.VERTICAL");
 		vertical.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
-		vertical.addSelectionListener (selectionListener); 
-		
+		vertical.addSelectionListener (selectionListener);
+
 		/* Controls the margins and spacing of the FillLayout */
 		Group marginGroup = new Group(controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString("Margins_Spacing"));
@@ -110,11 +110,11 @@ class FillLayoutTab extends Tab {
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(0);
 		spacing.addSelectionListener(selectionListener);
-		
+
 		/* Add common controls */
 		super.createControlWidgets ();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 */
@@ -123,8 +123,8 @@ class FillLayoutTab extends Tab {
 		fillLayout = new FillLayout ();
 		layoutComposite.setLayout (fillLayout);
 	}
-	
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
@@ -135,7 +135,7 @@ class FillLayoutTab extends Tab {
 		nameText.dispose();
 	}
 
-	
+
 	/**
 	 * Generates code for the example layout.
 	 */
@@ -162,7 +162,7 @@ class FillLayoutTab extends Tab {
 		}
 		return code;
 	}
-	
+
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
@@ -178,7 +178,7 @@ class FillLayoutTab extends Tab {
 	String [] getLayoutDataFieldNames() {
 		return new String [] { "Control Name", "Control Type" };
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -186,7 +186,7 @@ class FillLayoutTab extends Tab {
 	String getTabText () {
 		return "FillLayout";
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
@@ -196,7 +196,7 @@ class FillLayoutTab extends Tab {
 		comboEditor.setEditor (null, null, -1);
 		if (oldItem != null) {
 			int row = table.indexOf (oldItem);
-			try {				
+			try {
 				new String (nameText.getText ());
 			} catch (NumberFormatException e) {
 				nameText.setText (oldItem.getText (NAME_COL));
@@ -213,7 +213,7 @@ class FillLayoutTab extends Tab {
 		layoutComposite.layout (true);
 		layoutGroup.layout (true);
 	}
-	
+
 	/**
 	 * Sets the state of the layout.
 	 */
@@ -224,10 +224,10 @@ class FillLayoutTab extends Tab {
 		} else {
 			fillLayout.type = SWT.HORIZONTAL;
 		}
-		
+
 		/* Set the margins and spacing */
-		fillLayout.marginWidth = marginWidth.getSelection();		
-		fillLayout.marginHeight = marginHeight.getSelection();		
+		fillLayout.marginWidth = marginWidth.getSelection();
+		fillLayout.marginHeight = marginHeight.getSelection();
 		fillLayout.spacing = spacing.getSelection();
 	}
 }

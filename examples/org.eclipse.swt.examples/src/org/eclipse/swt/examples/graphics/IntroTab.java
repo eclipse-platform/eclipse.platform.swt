@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class IntroTab extends AnimatedGraphicsTab {
-	
+
 	Font font;
 	Image image;
 	Random random = new Random();
@@ -25,7 +25,7 @@ public class IntroTab extends AnimatedGraphicsTab {
 	float incY = 5.0f;
 	int textWidth, textHeight;
 	String text = GraphicsExample.getResourceString("SWT");
-	
+
 public IntroTab(GraphicsExample example) {
 	super(example);
 }
@@ -57,7 +57,7 @@ public String getDescription() {
 public void next(int width, int height) {
     x += incX;
     y += incY;
-	float random = (float)Math.random(); 
+	float random = (float)Math.random();
     if (x + textWidth > width) {
         x = width - textWidth;
         incX = random * -width / 16 - 1;

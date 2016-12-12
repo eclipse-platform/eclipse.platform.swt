@@ -19,37 +19,37 @@ class DateTimeTab extends Tab {
 	/* Example widgets and groups that contain them */
 	DateTime dateTime1;
 	Group dateTimeGroup;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button dateButton, timeButton, calendarButton, shortButton, mediumButton, longButton, dropDownButton;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	DateTimeTab(ControlExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the "Example" group.
 	 */
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the list */
 		dateTimeGroup = new Group (exampleGroup, SWT.NONE);
 		dateTimeGroup.setLayout (new GridLayout ());
 		dateTimeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		dateTimeGroup.setText ("DateTime");
 	}
-	
+
 	/**
 	 * Creates the "Example" widgets.
 	 */
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (dateButton.getSelection ()) style |= SWT.DATE;
@@ -60,18 +60,18 @@ class DateTimeTab extends Tab {
 		if (longButton.getSelection ()) style |= SWT.LONG;
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
-	
-		/* Create the example widgets */		
+
+		/* Create the example widgets */
 		dateTime1 = new DateTime (dateTimeGroup, style);
 	}
-	
+
 	/**
 	 * Creates the "Style" group.
 	 */
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
-		
+
 		/* Create the extra widgets */
 		dateButton = new Button(styleGroup, SWT.RADIO);
 		dateButton.setText("SWT.DATE");
@@ -92,7 +92,7 @@ class DateTimeTab extends Tab {
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -100,7 +100,7 @@ class DateTimeTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {dateTime1};
 	}
-	
+
 	/**
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
@@ -109,7 +109,7 @@ class DateTimeTab extends Tab {
 	String[] getMethodNames() {
 		return new String[] {"Day", "Hours", "Minutes", "Month", "Seconds", "Year"};
 	}
-	
+
 	/**
 	 * Gets the short text for the tab folder item.
 	 */

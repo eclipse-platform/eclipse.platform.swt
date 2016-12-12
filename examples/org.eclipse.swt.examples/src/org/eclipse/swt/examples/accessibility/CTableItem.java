@@ -68,7 +68,7 @@ public class CTableItem extends Item {
 	Font font;
 	Font[] cellFonts;
 	Display display;
-	
+
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
 
 /**
@@ -79,7 +79,7 @@ public class CTableItem extends Item {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -112,7 +112,7 @@ public CTableItem (CTable parent, int style) {
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
+ * class, or must be built by <em>bitwise OR</em>'ing together
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
@@ -191,7 +191,7 @@ void addColumn (CTableColumn column) {
 			images [1] = super.getImage ();
 			super.setImage (null);
 		}
-		
+
 		int[] newTextWidths = new int [columnCount];
 		System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 		System.arraycopy (textWidths, index, newTextWidths, index + 1, columnCount - index - 1);
@@ -202,7 +202,7 @@ void addColumn (CTableColumn column) {
 
 	/*
 	 * The length of displayTexts always matches the parent's column count, unless this
-	 * count is zero, in which case displayTexts is null.  
+	 * count is zero, in which case displayTexts is null.
 	 */
 	String[] newDisplayTexts = new String [columnCount];
 	if (columnCount > 1) {
@@ -243,9 +243,9 @@ void addColumn (CTableColumn column) {
 	}
 
 	if (index == 0 && columnCount > 1) {
-		/* 
+		/*
 		 * The new second column may have more width available to it than it did when it was
-		 * the first column if checkboxes are being shown, so recompute its displayText if needed. 
+		 * the first column if checkboxes are being shown, so recompute its displayText if needed.
 		 */
 		if ((parent.getStyle () & SWT.CHECK) != 0) {
 			GC gc = new GC (parent);
@@ -358,7 +358,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 		textWidths [columnIndex] = textWidth + ellipsisWidth;
 		return;
 	}
-	
+
 	/* Initial guess is too low, so increase until overrun is found. */
 	int previousWidth = 0;
 	while (textWidth < availableWidth) {
@@ -461,7 +461,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 			}
 			@Override
 			public void getFocus(AccessibleControlEvent e) {
-				e.childID = (parent.focusItem == CTableItem.this && parent.isFocusControl()) ? 
+				e.childID = (parent.focusItem == CTableItem.this && parent.isFocusControl()) ?
 						ACC.CHILDID_SELF : ACC.CHILDID_NONE;
 			}
 			@Override
@@ -538,7 +538,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Color getBackground () {
@@ -557,7 +557,7 @@ public Color getBackground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getBackground (int columnIndex) {
@@ -578,7 +578,7 @@ public Color getBackground (int columnIndex) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.2
  */
 public Rectangle getBounds () {
@@ -630,10 +630,10 @@ public Rectangle getBounds (int columnIndex) {
 			width,
 			parent.itemHeight - 1);
 	}
-	
+
 	CTableColumn column = columns [columnIndex];
 	if (columnIndex == 0) {
-		/* 
+		/*
 		 * For column 0 this is bounds from the beginning of the content to the
 		 * end of the column.
 		 */
@@ -733,7 +733,7 @@ int getContentX (int columnIndex) {
 	int contentWidth = getContentWidth (columnIndex);
 	int contentX = 0;
 	if ((column.getStyle () & SWT.RIGHT) != 0) {
-		contentX = column.width - parent.getCellPadding () - contentWidth;	
+		contentX = column.width - parent.getCellPadding () - contentWidth;
 	} else {	/* SWT.CENTER */
 		contentX = (column.width - contentWidth) / 2;
 	}
@@ -853,7 +853,7 @@ int getFontHeight (int columnIndex) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public Color getForeground () {
@@ -863,7 +863,7 @@ public Color getForeground () {
 	return parent.getForeground ();
 }
 /**
- * 
+ *
  * Returns the foreground color at the given column index in the receiver.
  *
  * @param index the column index
@@ -873,7 +873,7 @@ public Color getForeground () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public Color getForeground (int columnIndex) {
@@ -917,13 +917,13 @@ Rectangle getHitBounds () {
 	} else {
 		contentX = getContentX (0);
 	}
-	
+
 	int width = 0;
 	CTableColumn[] columns = parent.columns;
 	if (columns.length == 0) {
 		width = getContentWidth (0);
 	} else {
-		/* 
+		/*
 		 * If there are columns then this spans from the beginning of the receiver's column 0
 		 * image or text to the end of either column 0 or the last column (FULL_SELECTION).
 		 */
@@ -991,7 +991,7 @@ public Rectangle getImageBounds (int columnIndex) {
 	int itemHeight = parent.itemHeight;
 	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
-	Image image = getImage (columnIndex, false); 
+	Image image = getImage (columnIndex, false);
 	int drawWidth = 0;
 	if (columnIndex == 0) {
 		/* for column 0 all images have the same width */
@@ -1126,7 +1126,7 @@ String getText (int columnIndex, boolean checkData) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.3
  */
 public Rectangle getTextBounds (int columnIndex) {
@@ -1151,10 +1151,10 @@ public Rectangle getTextBounds (int columnIndex) {
 			width,
 			parent.itemHeight - 1);
 	}
-	
+
 	CTableColumn column = columns [columnIndex];
 	if (columnIndex == 0) {
-		/* 
+		/*
 		 * For column 0 this is bounds from the beginning of the content to the
 		 * end of the column, starting from the text.
 		 */
@@ -1182,7 +1182,7 @@ int getTextX (int columnIndex) {
 	} else {
 		Image image = getImage (columnIndex, false);
 		if (image != null) {
-			textX += image.getBounds ().width + CTable.MARGIN_IMAGE;	
+			textX += image.getBounds ().width + CTable.MARGIN_IMAGE;
 		}
 	}
 	return textX;
@@ -1215,7 +1215,7 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 		x = column.getX ();
 	}
 
-	/* 
+	/*
 	 * Capture GC attributes that will need to be restored later in the paint
 	 * process to ensure that the item paints as intended without being affected
 	 * by GC changes made in MeasureItem/EraseItem/PaintItem callbacks.
@@ -1284,7 +1284,7 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 
 	/* restrict the clipping region to the cell */
 	gc.setClipping (x, cellBounds.y, clientArea.width - x, cellBounds.height);
-	
+
 	int y = parent.getItemY (this);
 	int itemHeight = parent.itemHeight;
 
@@ -1434,7 +1434,7 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 		String text = getDisplayText (columnIndex);
 		Rectangle imageArea = getImageBounds (columnIndex);
 		int startX = imageArea.x;
-		
+
 		/* while painting the cell's content restrict the clipping region */
 		int padding = parent.getCellPadding ();
 		gc.setClipping (
@@ -1442,7 +1442,7 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 			cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
 			cellRightX - startX - padding,
 			cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
-	
+
 		/* draw the image */
 		if (image != null) {
 			Rectangle imageBounds = image.getBounds ();
@@ -1453,7 +1453,7 @@ boolean paint (GC gc, CTableColumn column, boolean backgroundOnly) {
 				imageArea.x, imageArea.y,				/* dest x, y */
 				imageArea.width, imageArea.height);		/* dest width, height */
 		}
-	
+
 		/* draw the text */
 		if (text.length () > 0) {
 			gc.setFont (getFont (columnIndex, false));
@@ -1548,7 +1548,7 @@ void removeColumn (CTableColumn column, int index) {
 	System.arraycopy (texts, 0, newTexts, 0, index);
 	System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
 	texts = newTexts;
-	
+
 	Image[] newImages = new Image [columnCount];
 	System.arraycopy (images, 0, newImages, 0, index);
 	System.arraycopy (images, index + 1, newImages, index, columnCount - index);
@@ -1600,9 +1600,9 @@ void removeColumn (CTableColumn column, int index) {
 		texts [0] = null;
 		super.setImage(images [0]);
 		images [0] = null;
-		/* 
+		/*
 		 * The new first column may not have as much width available to it as it did when it was
-		 * the second column if checkboxes are being shown, so recompute its displayText if needed. 
+		 * the second column if checkboxes are being shown, so recompute its displayText if needed.
 		 */
 		if ((parent.getStyle () & SWT.CHECK) != 0) {
 			GC gc = new GC (parent);
@@ -1624,13 +1624,13 @@ void removeColumn (CTableColumn column, int index) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setBackground (Color color) {
@@ -1646,7 +1646,7 @@ public void setBackground (Color color) {
 	redrawItem ();
 }
 /**
- * Sets the background color at the given column index in the receiver 
+ * Sets the background color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -1654,13 +1654,13 @@ public void setBackground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setBackground (int columnIndex, Color color) {
@@ -1686,7 +1686,7 @@ public void setBackground (int columnIndex, Color color) {
 	}
 }
 /**
- * Sets the checked state of the checkbox for this item.  This state change 
+ * Sets the checked state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
  * @param checked the new checked state of the checkbox
@@ -1720,13 +1720,13 @@ public void setChecked (boolean value) {
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (Font font) {
@@ -1738,7 +1738,7 @@ public void setFont (Font font) {
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
-	
+
 	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	if ((parent.getStyle () & SWT.VIRTUAL) != 0) cached = true;
@@ -1750,7 +1750,7 @@ public void setFont (Font font) {
 	computeDisplayTexts (gc);
 	computeTextWidths (gc);
 	gc.dispose ();
-	
+
 	/* horizontal bar could be affected if table has no columns */
 	if (parent.columns.length == 0) {
 		bounds = getBounds (false);
@@ -1761,21 +1761,21 @@ public void setFont (Font font) {
 }
 /**
  * Sets the font that the receiver will use to paint textual information
- * for the specified cell in this item to the font specified by the 
- * argument, or to the default font for that kind of control if the 
+ * for the specified cell in this item to the font specified by the
+ * argument, or to the default font for that kind of control if the
  * argument is null.
  *
  * @param index the column index
  * @param font the new font (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setFont (int columnIndex, Font font) {
@@ -1817,13 +1817,13 @@ public void setFont (int columnIndex, Font font) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 2.0
  */
 public void setForeground (Color color) {
@@ -1839,7 +1839,7 @@ public void setForeground (Color color) {
 	redrawItem ();
 }
 /**
- * Sets the foreground color at the given column index in the receiver 
+ * Sets the foreground color at the given column index in the receiver
  * to the color specified by the argument, or to the default system color for the item
  * if the argument is null.
  *
@@ -1847,13 +1847,13 @@ public void setForeground (Color color) {
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.0
  */
 public void setForeground (int columnIndex, Color color) {
@@ -1883,10 +1883,10 @@ public void setForeground (int columnIndex, Color color) {
 	}
 }
 /**
- * Sets the grayed state of the checkbox for this item.  This state change 
+ * Sets the grayed state of the checkbox for this item.  This state change
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state of the checkbox; 
+ * @param grayed the new grayed state of the checkbox;
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1911,8 +1911,8 @@ public void setImage (Image value) {
 	setImage (0, value);
 }
 /**
- * Sets the image for multiple columns in the table. 
- * 
+ * Sets the image for multiple columns in the table.
+ *
  * @param images the array of new images
  *
  * @exception IllegalArgumentException <ul>
@@ -1927,7 +1927,7 @@ public void setImage (Image value) {
 public void setImage (Image[] value) {
 	checkWidget ();
 	if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	
+
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
 		if (value [i] != null) setImage (i, value [i]);
@@ -1964,7 +1964,7 @@ public void setImage (int columnIndex, Image value) {
 	}
 	if ((parent.getStyle () & SWT.VIRTUAL) != 0) cached = true;
 
-	/* 
+	/*
 	 * An image width change may affect the space available for the item text, so
 	 * recompute the displayText if there are columns.
 	 */
@@ -1974,7 +1974,7 @@ public void setImage (int columnIndex, Image value) {
 		computeDisplayText (columnIndex, gc);
 		gc.dispose ();
 	}
-	
+
 	if (value == null) {
 		redrawItem ();	// TODO why the whole item?
 		return;
@@ -1991,7 +1991,7 @@ public void setImage (int columnIndex, Image value) {
 			if (columnIndex == 0) {
 				parent.col0ImageWidth = value.getBounds ().width;
 				if (columns.length > 0) {
-					/* 
+					/*
 					 * All column 0 cells will now have less room available for their texts,
 					 * so all items must now recompute their column 0 displayTexts.
 					 */
@@ -2008,9 +2008,9 @@ public void setImage (int columnIndex, Image value) {
 		}
 	}
 
-	/* 
+	/*
 	 * If this is the first image being put into column 0 then all cells
-	 * in the column should also indent accordingly. 
+	 * in the column should also indent accordingly.
 	 */
 	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
 		parent.col0ImageWidth = value.getBounds ().width;
@@ -2018,7 +2018,7 @@ public void setImage (int columnIndex, Image value) {
 		if (columns.length == 0) {
 			parent.redraw ();
 		} else {
-			/* 
+			/*
 			 * All column 0 cells will now have less room available for their texts,
 			 * so all items must now recompute their column 0 displayTexts.
 			 */
@@ -2048,7 +2048,7 @@ public void setImage (int columnIndex, Image value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @deprecated this functionality is not supported on most platforms
  */
 @Deprecated
@@ -2082,7 +2082,7 @@ public void setText (int columnIndex, String value) {
 	if (columnIndex == 0) {
 		super.setText (value);
 	} else {
-		texts [columnIndex] = value;		
+		texts [columnIndex] = value;
 	}
 	if ((parent.getStyle () & SWT.VIRTUAL) != 0) cached = true;
 
@@ -2120,8 +2120,8 @@ public void setText (String value) {
 	}
 }
 /**
- * Sets the text for multiple columns in the table. 
- * 
+ * Sets the text for multiple columns in the table.
+ *
  * @param strings the array of new strings
  *
  * @exception IllegalArgumentException <ul>
@@ -2165,7 +2165,7 @@ void updateColumnWidth (CTableColumn column, GC gc) {
 			parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
 			return;
 		}
-		/* if the display text has changed then the cell text must be damaged in order to repaint */	
+		/* if the display text has changed then the cell text must be damaged in order to repaint */
 		if (oldDisplayText == null || !oldDisplayText.equals (displayTexts [columnIndex])) {
 			Rectangle cellBounds = getCellBounds (columnIndex);
 			int textX = getTextX (columnIndex);

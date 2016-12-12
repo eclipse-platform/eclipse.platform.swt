@@ -59,11 +59,11 @@ public MazeTab(GraphicsExample example) {
 	nextCoord.addAll(moveDown(475, 330, 475, 435, 10));
 	nextCoord.addAll(moveLeft(465, 435, 20, 435, 10));
 	nextCoord.addAll(moveDown(20, 445, 20, 495, 10));
-	
+
 	nextIndex = 0;
 	xcoord = nextCoord.get(nextIndex).intValue();
 	ycoord = nextCoord.get(nextIndex+1).intValue();
-	
+
 	// wrong path 1
 	nextCoord2 = new ArrayList<>();
 	nextCoord2.addAll(moveDown(20, -25, 20, 110, 10));
@@ -72,11 +72,11 @@ public MazeTab(GraphicsExample example) {
 	nextCoord2.addAll(moveRight(140, 15, 520, 15, 10));
 	nextCoord2.addAll(moveDown(525, 15, 525, 480, 10));
 	nextCoord2.addAll(moveLeft(515, 480, 70, 480, 10));
-	
+
 	nextIndex2 = 0;
 	xcoord2 = nextCoord2.get(nextIndex2).intValue();
 	ycoord2 = nextCoord2.get(nextIndex2+1).intValue();
-	
+
 	// wrong path 2
 	nextCoord3 = new ArrayList<>();
 	nextCoord3.addAll(moveDown(20, 0, 20, 110, 10));
@@ -92,11 +92,11 @@ public MazeTab(GraphicsExample example) {
 	nextCoord3.addAll(moveUp(420, 225, 420, 150, 10));
 	nextCoord3.addAll(moveLeft(420, 145, 70, 145, 10));
 	nextCoord3.addAll(moveDown(70, 150, 70, 320, 10));
-	
+
 	nextIndex3 = 0;
 	xcoord3 = nextCoord3.get(nextIndex3).intValue();
 	ycoord3 = nextCoord3.get(nextIndex3+1).intValue();
-	
+
 	isDone = isDone2 = isDone3 = false;
 }
 
@@ -131,13 +131,13 @@ public void dispose() {
 @Override
 public void createControlPanel(Composite parent) {
 	super.createControlPanel(parent);
-	
-	// add selection listener to reset nextNumber after 
+
+	// add selection listener to reset nextNumber after
 	// the sequence has completed
 	playItem.addListener(SWT.Selection, event -> {
 		if (isDone){
 			nextIndex = nextIndex2 = nextIndex3 = 0;
-			isDone = isDone2 = isDone3 = false; 
+			isDone = isDone2 = isDone3 = false;
 		}
 	});
 }
@@ -154,7 +154,7 @@ public void next(int width, int height) {
 		setAnimation(false);
 		isDone = true;
 	}
-	
+
 	if (nextIndex2+2 < nextCoord2.size()) {
 		nextIndex2 = (nextIndex2+2)%nextCoord2.size();
 		xcoord2 = nextCoord2.get(nextIndex2).intValue();
@@ -162,7 +162,7 @@ public void next(int width, int height) {
 	} else {
 		isDone2 = true;
 	}
-	
+
 	if (nextIndex3+2 < nextCoord3.size()) {
 		nextIndex3 = (nextIndex3+2)%nextCoord3.size();
 		xcoord3 = nextCoord3.get(nextIndex3).intValue();
@@ -175,7 +175,7 @@ public void next(int width, int height) {
 @Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
-	
+
 	if (image == null) {
 		image = example.loadImage(device, "maze.bmp");
 	}
@@ -184,17 +184,17 @@ public void paint(GC gc, int width, int height) {
 	int x = (width - bounds.width) / 2;
 	int y = (height - bounds.height) / 2;
 	gc.drawImage(image, x, y);
-	
+
 	// draw correct oval
 	gc.setBackground(device.getSystemColor(SWT.COLOR_RED));
 	gc.fillOval(x + xcoord, y + ycoord, 16, 16);
 	gc.drawOval(x + xcoord, y + ycoord, 15, 15);
-	
+
 	// draw wrong oval 1
 	gc.setBackground(device.getSystemColor(SWT.COLOR_BLUE));
 	gc.fillOval(x + xcoord2, y + ycoord2, 16, 16);
 	gc.drawOval(x + xcoord2, y + ycoord2, 15, 15);
-	
+
 	// draw wrong oval 2
 	gc.setBackground(device.getSystemColor(SWT.COLOR_GREEN));
 	gc.fillOval(x + xcoord3, y + ycoord3, 16, 16);
@@ -216,7 +216,7 @@ public void paint(GC gc, int width, int height) {
 /**
  * Returns a list of coordinates moving in a "left-moving" fashion from the start
  * point to the end point inclusively.
- * 
+ *
  * @param x1
  *            X component of the start point
  * @param y1
@@ -245,7 +245,7 @@ private List<Integer> moveLeft(int x1, int y1, int x2, int y2, int stepsize) {
 /**
  * Returns a list of coordinates moving in a "right-moving" fashion from the start
  * point to the end point inclusively.
- * 
+ *
  * @param x1
  *            X component of the start point
  * @param y1
@@ -274,7 +274,7 @@ private List<Integer> moveRight(int x1, int y1, int x2, int y2, int stepsize) {
 /**
  * Returns a list of coordinates moving in an upward fashion from the start
  * point to the end point inclusively.
- * 
+ *
  * @param x1
  *            X component of the start point
  * @param y1
@@ -303,7 +303,7 @@ private List<Integer> moveUp(int x1, int y1, int x2, int y2, int stepsize) {
 /**
  * Returns a list of coordinates moving in a downward fashion from the start
  * point to the end point inclusively.
- * 
+ *
  * @param x1
  *            X component of the start point
  * @param y1

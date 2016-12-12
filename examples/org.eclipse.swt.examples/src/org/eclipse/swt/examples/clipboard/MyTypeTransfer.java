@@ -14,11 +14,11 @@ import java.io.*;
 import org.eclipse.swt.dnd.*;
 
 public class MyTypeTransfer extends ByteArrayTransfer {
-	
+
 	private static final String MYTYPENAME = "name_list"; //$NON-NLS-1$
 	private static final int MYTYPEID = registerType(MYTYPENAME);
 	private static MyTypeTransfer _instance = new MyTypeTransfer();
-	
+
 public static MyTypeTransfer getInstance () {
 	return _instance;
 }
@@ -27,7 +27,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	if (!checkMyType(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	MyType[] myTypes = (MyType[]) object;	
+	MyType[] myTypes = (MyType[]) object;
 	try {
 		// write data to a byte array and then ask super to convert to pMedium
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -42,17 +42,17 @@ public void javaToNative (Object object, TransferData transferData) {
 		}
 		byte[] buffer = out.toByteArray();
 		writeOut.close();
-		super.javaToNative(buffer, transferData);	
+		super.javaToNative(buffer, transferData);
 	} catch (IOException e) {
 	}
 }
 @Override
-public Object nativeToJava(TransferData transferData){	
+public Object nativeToJava(TransferData transferData){
 	if (isSupportedType(transferData)) {
-		
+
 		byte[] buffer = (byte[])super.nativeToJava(transferData);
 		if (buffer == null) return null;
-		
+
 		MyType[] myData = new MyType[0];
 		try {
 			ByteArrayInputStream in = new ByteArrayInputStream(buffer);
@@ -93,8 +93,8 @@ boolean checkMyType(Object object) {
 	if (object == null || !(object instanceof MyType[]) || ((MyType[])object).length == 0) return false;
 	MyType[] myTypes = (MyType[])object;
 	for (int i = 0; i < myTypes.length; i++) {
-		if (myTypes[i] == null || 
-			myTypes[i].firstName == null || 
+		if (myTypes[i] == null ||
+			myTypes[i].firstName == null ||
 			myTypes[i].firstName.length() == 0 ||
 			myTypes[i].lastName == null ||
 			myTypes[i].lastName.length() == 0) return false;

@@ -39,15 +39,15 @@ import org.eclipse.swt.widgets.MenuItem;
 public class ColorMenu {
 
 	boolean enableColorItems, enablePatternItems, enableGradientItems;
-	
+
 	public ColorMenu() {
 		enableColorItems = true;
 	}
-	
+
 	/**
 	 * Method used to specify whether or not the color menu items will appear in
 	 * the menu.
-	 * 
+	 *
 	 * @param enable
 	 *            A boolean flag - true to make the color menu items visible in
 	 *            the menu; false otherwise.
@@ -55,18 +55,18 @@ public class ColorMenu {
 	public void setColorItems(boolean enable) {
 		enableColorItems = enable;
 	}
-	
+
 	/**
 	 * @return true if color menu items are contained in the menu; false otherwise.
 	 * */
 	public boolean getColorItems() {
 		return enableColorItems;
 	}
-	
+
 	/**
 	 * Method used to specify whether or not the pattern menu items will appear
 	 * in the menu.
-	 * 
+	 *
 	 * @param enable
 	 *            A boolean flag - true to make the pattern menu items visible
 	 *            in the menu; false otherwise.
@@ -74,18 +74,18 @@ public class ColorMenu {
 	public void setPatternItems(boolean enable) {
 		enablePatternItems = enable;
 	}
-	
+
 	/**
 	 * @return true if pattern menu items are contained in the menu; false otherwise.
 	 * */
 	public boolean getPatternItems() {
 		return enablePatternItems;
 	}
-	
+
 	/**
 	 * Method used to specify whether or not the gradient menu items will appear
 	 * in the menu.
-	 * 
+	 *
 	 * @param enable
 	 *            A boolean flag - true to make the gradient menu items visible
 	 *            in the menu; false otherwise.
@@ -93,23 +93,23 @@ public class ColorMenu {
 	public void setGradientItems(boolean enable) {
 		enableGradientItems = enable;
 	}
-	
+
 	/**
 	 * @return true if gradient menu items are contained in the menu; false otherwise.
 	 */
 	public boolean getGradientItems() {
 		return enableGradientItems;
 	}
-	
+
 	/**
 	 * Creates and returns the menu based on the settings provided via
 	 * setColorItems(), setPatternItems() and setGradientItems()
-	 * 
+	 *
 	 * @return A menu based on the settings
 	 */
 	public Menu createMenu(Control parent, ColorListener cl) {
 		Menu menu = new Menu(parent);
-	
+
 		MenuItemListener menuItemListener = createMenuItemListener(parent);
 		menu.addListener(SWT.Selection, menuItemListener);
 		menu.addListener(SWT.Dispose, menuItemListener);
@@ -126,16 +126,16 @@ public class ColorMenu {
 		}
 		return menu;
 	}
-	
+
 	/** Adds the colors items to the menu. */
 	private void addColorItems(Menu menu, MenuItemListener menuListener,
 			List<Resource> menuResources) {
 		Display display = menu.getDisplay();
-		
+
 		if (menu.getItemCount() != 0) {
 			new MenuItem(menu, SWT.SEPARATOR);
 		}
-		
+
 		// color names
 		String[] names = new String[]{
 			GraphicsExample.getResourceString("White"), //$NON-NLS-1$
@@ -146,7 +146,7 @@ public class ColorMenu {
 			GraphicsExample.getResourceString("Yellow"), //$NON-NLS-1$
 			GraphicsExample.getResourceString("Cyan"), //$NON-NLS-1$
 		};
-		
+
 		// colors needed for the background menu
 		Color[] colors = new Color[]{
 			display.getSystemColor(SWT.COLOR_WHITE),
@@ -157,7 +157,7 @@ public class ColorMenu {
 			display.getSystemColor(SWT.COLOR_YELLOW),
 			display.getSystemColor(SWT.COLOR_CYAN),
 		};
-	
+
 		// add standard color items to menu
 		for (int i = 0; i < names.length; i++) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
@@ -173,59 +173,59 @@ public class ColorMenu {
 			item.setImage(image);
 			item.setData(gb);
 		}
-		
+
 		// add custom color item to menu
 		menuListener.customColorMI = new MenuItem(menu, SWT.NONE);
 		menuListener.customColorMI.setText(GraphicsExample.getResourceString("CustomColor")); //$NON-NLS-1$
 		menuListener.customColorMI.addListener(SWT.Selection, menuListener);
 		GraphicsBackground gb = new GraphicsBackground();
-		menuListener.customColorMI.setData(gb);		
+		menuListener.customColorMI.setData(gb);
 	}
-	
+
 	/** Adds the pattern items to the menu. */
 	private void addPatternItems(Menu menu, MenuItemListener menuListener,
 			List<Resource> menuResources) {
 		Display display = menu.getDisplay();
-		
+
 		if (menu.getItemCount() != 0) {
 			new MenuItem(menu, SWT.SEPARATOR);
 		}
-		
+
 		// pattern names
 		String[] names = new String[]{
 			GraphicsExample.getResourceString("Pattern1"), //$NON-NLS-1$
 			GraphicsExample.getResourceString("Pattern2"), //$NON-NLS-1$
 			GraphicsExample.getResourceString("Pattern3"), //$NON-NLS-1$
 		};
-		
+
 		// pattern images
 		Image[] images = new Image[]{
-			loadImage(display, "pattern1.jpg", menuResources),	
+			loadImage(display, "pattern1.jpg", menuResources),
 			loadImage(display, "pattern2.jpg", menuResources),
 			loadImage(display, "pattern3.jpg", menuResources),
 		};
-		
+
 		// add the pre-defined patterns to the menu
 		for (int i = 0; i < names.length; i++) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			item.setText(names[i]);
 			item.addListener(SWT.Selection, menuListener);
 			Image image = images[i];
-			GraphicsBackground gb = new GraphicsBackground();			
+			GraphicsBackground gb = new GraphicsBackground();
 			gb.setBgImage(image);
 			gb.setThumbNail(image);
 			item.setImage(image);
 			item.setData(gb);
 		}
-		
-		// add the custom pattern item	
+
+		// add the custom pattern item
 		menuListener.customPatternMI = new MenuItem(menu, SWT.NONE);
 		menuListener.customPatternMI.setText(GraphicsExample.getResourceString("CustomPattern")); //$NON-NLS-1$
 		menuListener.customPatternMI.addListener(SWT.Selection, menuListener);
 		GraphicsBackground gb = new GraphicsBackground();
-		menuListener.customPatternMI.setData(gb);			
+		menuListener.customPatternMI.setData(gb);
 	}
-	
+
 	/** Adds the gradient menu item. */
 	private void addGradientItems(Menu menu, MenuItemListener menuListener) {
 		if (menu.getItemCount() != 0) {
@@ -237,15 +237,15 @@ public class ColorMenu {
 		GraphicsBackground gb = new GraphicsBackground();
 		menuListener.customGradientMI.setData(gb);
 	}
-	
+
 	/** Creates and returns the listener for menu items. */
 	private MenuItemListener createMenuItemListener(final Control parent) {
 		return new MenuItemListener(parent);
 	}
-	
+
 	/**
 	 * Creates and returns an instance of Image using on the path of an image.
-	 * 
+	 *
 	 * @param display
 	 *            A Display
 	 * @param name
@@ -270,14 +270,14 @@ public class ColorMenu {
 		GraphicsBackground background;	// used to store information about the background
 		ColorListener colorListener;
 		List<Resource> resources;
-		
+
 		public MenuItemListener(Control parent){
-			this.parent = parent; 
+			this.parent = parent;
 			resources = new ArrayList<>();
 		}
 		/**
 		 * Method used to set the ColorListener
-		 * 
+		 *
 		 * @param cl
 		 *            A ColorListener
 		 * @see org.eclipse.swt.examples.graphics.ColorListener.java
@@ -285,7 +285,7 @@ public class ColorMenu {
 		public void setColorListener(ColorListener cl) {
 			this.colorListener = cl;
 		}
-		
+
 		public List<Resource> getMenuResources() {
 			return resources;
 		}
@@ -348,8 +348,8 @@ public class ColorMenu {
 						if (background.getBgColor1() != null)
 							dialog.setFirstRGB(background.getBgColor1().getRGB());
 						if (background.getBgColor2() != null)
-							dialog.setSecondRGB(background.getBgColor2().getRGB());						
-					}					
+							dialog.setSecondRGB(background.getBgColor2().getRGB());
+					}
 					if (dialog.open() != SWT.OK) return;
 					Color colorA = new Color(display, dialog.getFirstRGB());
 					Color colorB = new Color(display, dialog.getSecondRGB());
@@ -358,7 +358,7 @@ public class ColorMenu {
 					if (customPatternMI != null) customPatternMI.setImage(null);
 					if (customColor != null) customColor.dispose();
 					if (customImage != null) customImage.dispose();
-					customImage = GraphicsExample.createImage(display, colorA, 
+					customImage = GraphicsExample.createImage(display, colorA,
 							colorB, 16, 16);
 					GraphicsBackground gb = new GraphicsBackground();
 					gb.setBgImage(customImage);

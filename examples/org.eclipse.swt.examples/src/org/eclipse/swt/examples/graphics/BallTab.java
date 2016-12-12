@@ -78,7 +78,7 @@ public class BallTab extends AnimatedGraphicsTab {
 	public String getDescription() {
 		return GraphicsExample.getResourceString("BallDescription"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public int getInitialAnimationTime() {
 		return 10;

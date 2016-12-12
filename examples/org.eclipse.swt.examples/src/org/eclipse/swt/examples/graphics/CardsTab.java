@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Transform;
  * translation.
  */
 public class CardsTab extends AnimatedGraphicsTab {
-	
+
 	float movClubX, movClubY, movDiamondX, movDiamondY, movHeart, movSpade;
 	float inc_club = 5.0f;
 	float inc_diamond = 5.0f;
@@ -33,8 +33,8 @@ public class CardsTab extends AnimatedGraphicsTab {
 	float scaleArg = 0;
 	float heartScale = 0.5f;
 	float spadeScale = 0.333f;
-	int clubWidth, diamondWidth, heartWidth, spadeHeight; 
-	
+	int clubWidth, diamondWidth, heartWidth, spadeHeight;
+
 	Image ace_club, ace_spade, ace_diamond, ace_hearts;
 
 /**
@@ -80,16 +80,16 @@ public void next(int width, int height) {
 	// scaleVal goes from 0 to 1, then 1 to 0, then starts over
 	scaleArg = (float)((scaleArg == 1) ? scaleArg - 0.1 : scaleArg + 0.1);
 	scale = (float)Math.cos(scaleArg);
-	
+
 	movClubX += inc_club;
 	movDiamondX += inc_diamond;
 	movHeart += inc_hearts;
 	movSpade += inc_spade;
-	
+
 	scaleWidth = (float) ((movClubY/height)*0.35 + 0.15);
 	movClubY = 2*height/5 * (float)Math.sin(0.01*movClubX - 90) + 2*height/5;
     movDiamondY = 2*height/5 * (float)Math.cos(0.01*movDiamondX) + 2*height/5;
-    
+
     if (movClubX + clubWidth*scaleWidth > width) {
     	movClubX = width - clubWidth*scaleWidth;
         inc_club = -inc_club;
@@ -128,26 +128,26 @@ public void next(int width, int height) {
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
-	
+
 	if (ace_club == null) {
 		ace_club = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_club.jpg");
 		ace_spade = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_spade.jpg");
 		ace_diamond = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_diamond.jpg");
 		ace_hearts = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_hearts.jpg");
 	}
-	
+
 	clubWidth = ace_club.getBounds().width;
 	diamondWidth = ace_diamond.getBounds().width;
 	heartWidth = ace_hearts.getBounds().width;
 	spadeHeight = ace_spade.getBounds().height;
 
 	Transform transform;
-	
-	// ace of clubs		
+
+	// ace of clubs
 	transform = new Transform(device);
-	transform.translate((int)movClubX, (int)movClubY);	
+	transform.translate((int)movClubX, (int)movClubY);
 	transform.scale(scaleWidth, scaleWidth);
-	
+
 	// rotate on center of image
 	Rectangle rect = ace_club.getBounds();
 	transform.translate(rect.width/2, rect.height/2);
@@ -157,7 +157,7 @@ public void paint(GC gc, int width, int height) {
 	gc.setTransform(transform);
 	transform.dispose();
 	gc.drawImage(ace_club, 0, 0);
-	
+
 	// ace of diamonds
 	transform = new Transform(device);
 	transform.translate((int)movDiamondX, (int)movDiamondY);
@@ -173,7 +173,7 @@ public void paint(GC gc, int width, int height) {
 	gc.setTransform(transform);
 	transform.dispose();
 	gc.drawImage(ace_hearts, 0, 0);
-	
+
 	// ace of spades
 	transform = new Transform(device);
 	transform.translate(movSpade, movSpade);

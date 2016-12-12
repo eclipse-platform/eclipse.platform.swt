@@ -18,12 +18,12 @@ import org.eclipse.swt.layout.*;
 import java.util.ResourceBundle;
 
 /*
- * This example builds on HelloWorld2 and demonstrates how to resize the 
+ * This example builds on HelloWorld2 and demonstrates how to resize the
  * Label when the Shell resizes using a Layout.
  */
 public class HelloWorld4 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
-	
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new HelloWorld4 ().open (display);

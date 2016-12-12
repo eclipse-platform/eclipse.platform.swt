@@ -47,7 +47,7 @@ class FormLayoutTab extends Tab {
 	CCombo combo;
 	Text nameText, widthText, heightText;
 	Button leftAttach, rightAttach, topAttach, bottomAttach;
-	
+
 	/* Constants */
 	final int NAME_COL = 0;
 	final int COMBO_COL = 1;
@@ -57,7 +57,7 @@ class FormLayoutTab extends Tab {
 	final int RIGHT_COL = 5;
 	final int TOP_COL = 6;
 	final int BOTTOM_COL = 7;
-	
+
 	final int MODIFY_COLS = 4;	// The number of columns with combo or text editors
 	final int TOTAL_COLS = 8;
 
@@ -67,7 +67,7 @@ class FormLayoutTab extends Tab {
 	FormLayoutTab(LayoutExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Returns the constant for the alignment for an
 	 * attachment given a string.
@@ -80,7 +80,7 @@ class FormLayoutTab extends Tab {
 		if (align.equals("CENTER")) return SWT.CENTER;
 		return SWT.DEFAULT;
 	}
-	
+
 	/**
 	 * Returns a string representing the alignment for an
 	 * attachment given a constant.
@@ -95,10 +95,10 @@ class FormLayoutTab extends Tab {
 		}
 		return "DEFAULT";
 	}
-	
+
 	/**
 	 * Update the attachment field in case the type of control
-	 * has changed. 
+	 * has changed.
 	 */
 	String checkAttachment (String oldAttach, FormAttachment newAttach) {
 		String controlClass = newAttach.control.getClass().toString ();
@@ -110,7 +110,7 @@ class FormLayoutTab extends Tab {
 		String index = oldAttach.substring (i, oldAttach.indexOf (','));
 		return controlType + index + "," + newAttach.offset + ":" + alignmentString (newAttach.alignment);
 	}
-	
+
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
@@ -118,13 +118,13 @@ class FormLayoutTab extends Tab {
 	void createChildWidgets () {
 		/* Add common controls */
 		super.createChildWidgets ();
-		
+
 		/* Resize the columns */
 		table.getColumn (LEFT_COL).setWidth (90);
 		table.getColumn (RIGHT_COL).setWidth (90);
 		table.getColumn (TOP_COL).setWidth (90);
 		table.getColumn (BOTTOM_COL).setWidth (90);
-				
+
 		/* Add TableEditors */
 		nameEditor = new TableEditor (table);
 		comboEditor = new TableEditor (table);
@@ -148,22 +148,22 @@ class FormLayoutTab extends Tab {
 					return;
 				}
 				table.showSelection ();
-				
+
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
-				
+
 				nameText = new Text (table, SWT.SINGLE);
 				nameText.setText (data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
-				
+
 				widthText = new Text (table, SWT.SINGLE);
 				widthText.setText (data.get (index) [WIDTH_COL]);
 				createTextEditor (widthText, widthEditor, WIDTH_COL);
-				
+
 				heightText = new Text (table, SWT.SINGLE);
 				heightText.setText (data.get (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-				
+
 				leftAttach = new Button (table, SWT.PUSH);
 				leftAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
 				leftEditor.horizontalAlignment = SWT.LEFT;
@@ -182,7 +182,7 @@ class FormLayoutTab extends Tab {
 						resetEditors ();
 					}
 				});
-				
+
 				rightAttach = new Button (table, SWT.PUSH);
 				rightAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
 				rightEditor.horizontalAlignment = SWT.LEFT;
@@ -202,7 +202,7 @@ class FormLayoutTab extends Tab {
 						resetEditors ();
 					}
 				});
-				
+
 				topAttach = new Button (table, SWT.PUSH);
 				topAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
 				topEditor.horizontalAlignment = SWT.LEFT;
@@ -240,7 +240,7 @@ class FormLayoutTab extends Tab {
 						resetEditors ();
 					}
 				});
-                
+
                 for (int i=0; i<table.getColumnCount (); i++) {
                 	Rectangle rect = newItem.getBounds (i);
                     if (rect.contains (pt)) {
@@ -249,9 +249,9 @@ class FormLayoutTab extends Tab {
                     			resetEditors ();
                     			break;
 							case COMBO_COL :
-								combo.setFocus ();	
+								combo.setFocus ();
 								break;
-							case WIDTH_COL :	
+							case WIDTH_COL :
 								widthText.setFocus ();
 								break;
 							case HEIGHT_COL :
@@ -261,9 +261,9 @@ class FormLayoutTab extends Tab {
 								break;
 						}
                     }
-                } 
+                }
 			}
-		});		
+		});
 	}
 
 	/**
@@ -304,11 +304,11 @@ class FormLayoutTab extends Tab {
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(0);
 		spacing.addSelectionListener(selectionListener);
-		
+
 		/* Add common controls */
 		super.createControlWidgets ();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 */
@@ -317,8 +317,8 @@ class FormLayoutTab extends Tab {
 		formLayout = new FormLayout ();
 		layoutComposite.setLayout (formLayout);
 	}
-	
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
@@ -337,7 +337,7 @@ class FormLayoutTab extends Tab {
 
 	/**
 	 * Generates code for the example layout.
-	 */	
+	 */
 	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
@@ -364,7 +364,7 @@ class FormLayoutTab extends Tab {
 			code.append ("\t\tformLayout.spacing = " + formLayout.spacing + ";\n");
 		}
 		code.append ("\t\tshell.setLayout (formLayout);\n");
-		
+
 		boolean first = true;
 		for (int i = 0; i < children.length; i++) {
 			Control control = children [i];
@@ -376,7 +376,7 @@ class FormLayoutTab extends Tab {
 					code.append ("FormData ");
 					first = false;
 				}
-				code.append ("data = new FormData ();\n");	
+				code.append ("data = new FormData ();\n");
 				if (data.width != SWT.DEFAULT) {
 					code.append ("\t\tdata.width = " + data.width + ";\n");
 				}
@@ -432,14 +432,14 @@ class FormLayoutTab extends Tab {
 		}
 		return code;
 	}
-	
+
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
 	@Override
 	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType, "-1", "-1",
-				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", "", 
+				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", "",
 				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", ""};
 	}
 
@@ -450,16 +450,16 @@ class FormLayoutTab extends Tab {
 	String [] getLayoutDataFieldNames() {
 		return new String [] {
 			"Control Name",
-			"Control Type", 
-			"width", 
-			"height", 
-			"left", 
-			"right", 
-			"top", 
+			"Control Type",
+			"width",
+			"height",
+			"left",
+			"right",
+			"top",
 			"bottom"
 		};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -467,7 +467,7 @@ class FormLayoutTab extends Tab {
 	String getTabText () {
 		return "FormLayout";
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
@@ -504,14 +504,14 @@ class FormLayoutTab extends Tab {
 		layoutComposite.layout (true);
 		layoutGroup.layout (true);
 	}
-	
+
 	/**
 	 * Return the initial weight of the layout and control groups within the SashForm.
 	 * @return the desired sash weights for the tab page
 	 */
 	@Override
 	int[] sashWeights () {
-		return new int[] {40, 60};		
+		return new int[] {40, 60};
 	}
 
 	/**
@@ -553,10 +553,10 @@ class FormLayoutTab extends Tab {
 			} catch (NumberFormatException e) {
 				offset = 0;
 			}
-			return new FormAttachment (position, offset);		
+			return new FormAttachment (position, offset);
 		}
 	}
-	
+
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
@@ -573,7 +573,7 @@ class FormLayoutTab extends Tab {
 			data = new FormData ();
 			if (width > 0) data.width = width;
 			if (height > 0) data.height = height;
-			
+
 			left = items [i].getText (LEFT_COL);
 			if (left.length () > 0) {
 				data.left = setAttachment (left);
@@ -609,22 +609,22 @@ class FormLayoutTab extends Tab {
 			children [i].setLayoutData (data);
 		}
 	}
-	
+
 	/**
 	 * Sets the state of the layout.
 	 */
 	@Override
 	void setLayoutState () {
 		/* Set the margins and spacing */
-		formLayout.marginWidth = marginWidth.getSelection ();		
-		formLayout.marginHeight = marginHeight.getSelection ();		
+		formLayout.marginWidth = marginWidth.getSelection ();
+		formLayout.marginHeight = marginHeight.getSelection ();
 		formLayout.marginLeft = marginLeft.getSelection ();
 		formLayout.marginRight = marginRight.getSelection ();
 		formLayout.marginTop = marginTop.getSelection ();
 		formLayout.marginBottom = marginBottom.getSelection ();
 		formLayout.spacing = spacing.getSelection ();
-	}	
-	
+	}
+
 	/**
 	 * <code>AttachDialog</code> is the class that creates a
 	 * dialog specific for this example. It creates a dialog
@@ -634,25 +634,25 @@ class FormLayoutTab extends Tab {
 		String result = "";
 		String controlInput, positionInput, alignmentInput, offsetInput;
 		int col = 0;
-		
+
 		public AttachDialog (Shell parent, int style) {
 			super (parent, style);
 		}
-		
+
 		public AttachDialog (Shell parent) {
 			this (parent, 0);
 		}
-		
+
 		public void setColumn (int col) {
 			this.col = col;
 		}
-	 
+
 		public String open () {
 			Shell parent = getParent ();
 			final Shell shell = new Shell (parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 			shell.setText (getText ());
 			shell.setLayout (new GridLayout (3, true));
-			
+
 			/* Find out what was previously set as an attachment */
 			TableItem newItem = leftEditor.getItem ();
 			result = newItem.getText (col);
@@ -676,18 +676,18 @@ class FormLayoutTab extends Tab {
 					}
 				}
 			}
-			
+
 			/* Add position field */
 			final Button posButton = new Button (shell, SWT.RADIO);
 			posButton.setText (LayoutExample.getResourceString ("Position"));
-			posButton.setSelection (!isControl);			
+			posButton.setSelection (!isControl);
 			final Combo position = new Combo (shell, SWT.NONE);
 			position.setItems ("0","25","33","50","67","75","100");
 			position.setVisibleItemCount (7);
 			position.setText (oldPos);
-			position.setEnabled (!isControl);			
+			position.setEnabled (!isControl);
 			position.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			/* Add control field */
 			final Button contButton = new Button (shell, SWT.RADIO);
 			contButton.setText (LayoutExample.getResourceString ("Control"));
@@ -706,7 +706,7 @@ class FormLayoutTab extends Tab {
 			else control.select (0);
 			control.setEnabled (isControl);
 			control.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			/* Add alignment field */
 			new Label (shell, SWT.NONE).setText (LayoutExample.getResourceString ("Alignment"));
 			final Combo alignment = new Combo (shell, SWT.NONE);
@@ -721,13 +721,13 @@ class FormLayoutTab extends Tab {
 			alignment.setText ("SWT." + oldAlign);
 			alignment.setEnabled (isControl);
 			alignment.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			/* Add offset field */
 			new Label (shell, SWT.NONE).setText (LayoutExample.getResourceString ("Offset"));
 			final Text offset = new Text (shell, SWT.SINGLE | SWT.BORDER);
 			offset.setText (oldOffset);
 			offset.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			/* Add listeners for choosing between position and control */
 			posButton.addSelectionListener (new SelectionAdapter () {
 				@Override
@@ -745,7 +745,7 @@ class FormLayoutTab extends Tab {
 					alignment.setEnabled (true);
 				}
 			});
-			
+
 			Button clear = new Button (shell, SWT.PUSH);
 			clear.setText (LayoutExample.getResourceString ("Clear"));
 			clear.setLayoutData (new GridData (SWT.END, SWT.CENTER, false, false));
@@ -795,7 +795,7 @@ class FormLayoutTab extends Tab {
 					shell.close ();
 				}
 			});
-			
+
 			shell.setDefaultButton (ok);
 			shell.pack ();
 			/* Center the dialog */
@@ -807,7 +807,7 @@ class FormLayoutTab extends Tab {
 			while (!shell.isDisposed ()) {
 				if (display.readAndDispatch ()) display.sleep ();
 			}
-			
+
 			return result;
 		}
 	}

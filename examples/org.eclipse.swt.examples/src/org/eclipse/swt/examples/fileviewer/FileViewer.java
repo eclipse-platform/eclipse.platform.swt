@@ -69,23 +69,23 @@ import org.eclipse.swt.widgets.TreeItem;
 /**
  * File Viewer example
  */
-public class FileViewer { 
+public class FileViewer {
  	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
 
 	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
 
-	/* UI elements */ 	
-	private Display display; 
+	/* UI elements */
+	private Display display;
 	private Shell shell;
 	private ToolBar toolBar;
 
 	private Label numObjectsLabel;
 	private Label diskSpaceLabel;
-	
+
 	private File currentDirectory = null;
 	private boolean initial = true;
-	
+
 	/* Drag and drop optimizations */
 	private boolean isDragging = false; // if this app is dragging
 	private boolean isDropping = false; // if this app is dropping
@@ -172,7 +172,7 @@ public class FileViewer {
 	/**
 	 * Opens the main program.
 	 */
-	public Shell open(Display display) {		
+	public Shell open(Display display) {
 		// Create the window
 		this.display = display;
 		iconCache.initResources(display);
@@ -190,7 +190,7 @@ public class FileViewer {
 		workerStop();
 		iconCache.freeResources();
 	}
-	
+
 	/**
 	 * Returns a string from the resource bundle.
 	 * We don't want to crash because of a missing String.
@@ -203,7 +203,7 @@ public class FileViewer {
 			return key;
 		} catch (NullPointerException e) {
 			return "!" + key + "!";
-		}			
+		}
 	}
 
 	/**
@@ -223,11 +223,11 @@ public class FileViewer {
 
 	/**
 	 * Construct the UI
-	 * 
+	 *
 	 * @param container the ShellContainer managing the Shell we are rendering inside
 	 */
 	private void createShellContents() {
-		shell.setText(getResourceString("Title", new Object[] { "" }));	
+		shell.setText(getResourceString("Title", new Object[] { "" }));
 		shell.setImage(iconCache.stockImages[iconCache.shellIcon]);
 		Menu bar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(bar);
@@ -259,16 +259,16 @@ public class FileViewer {
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		gridData.widthHint = 185;
 		numObjectsLabel.setLayoutData(gridData);
-		
+
 		diskSpaceLabel = new Label(shell, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		gridData.horizontalSpan = 2;
 		diskSpaceLabel.setLayoutData(gridData);
 	}
-	
+
 	/**
 	 * Creates the File Menu.
-	 * 
+	 *
 	 * @param parent the parent menu
 	 */
 	private void createFileMenu(Menu parent) {
@@ -296,10 +296,10 @@ public class FileViewer {
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates the Help Menu.
-	 * 
+	 *
 	 * @param parent the parent menu
 	 */
 	private void createHelpMenu(Menu parent) {
@@ -309,7 +309,7 @@ public class FileViewer {
 		header.setMenu(menu);
 
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText(getResourceString("menu.Help.About.text"));		
+		item.setText(getResourceString("menu.Help.About.text"));
 		item.addSelectionListener(new SelectionAdapter () {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -324,7 +324,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the toolbar
-	 * 
+	 *
 	 * @param shell the shell on which to attach the toolbar
 	 * @param layoutData the layout data
 	 */
@@ -397,7 +397,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the combo box view.
-	 * 
+	 *
 	 * @param parent the parent control
 	 */
 	private void createComboView(Composite parent, Object layoutData) {
@@ -427,7 +427,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the file tree view.
-	 * 
+	 *
 	 * @param parent the parent control
 	 */
 	private void createTreeView(Composite parent) {
@@ -452,7 +452,7 @@ public class FileViewer {
 				if (selection != null && selection.length != 0) {
 					TreeItem item = selection[0];
 					File file = (File) item.getData(TREEITEMDATA_FILE);
-				
+
 					notifySelectedDirectory(file);
 				}
 			}
@@ -487,7 +487,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the Drag & Drop DragSource for items being dragged from the tree.
-	 * 
+	 *
 	 * @return the DragSource for the tree
 	 */
 	private DragSource createTreeDragSource(final Tree tree){
@@ -517,7 +517,7 @@ public class FileViewer {
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
 				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
-				
+
 				sourceNames  = new String[dndSelection.length];
 				for (int i = 0; i < dndSelection.length; i++) {
 					File file = (File) dndSelection[i].getData(TREEITEMDATA_FILE);
@@ -531,7 +531,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the Drag & Drop DropTarget for items being dropped onto the tree.
-	 * 
+	 *
 	 * @return the DropTarget for the tree
 	 */
 	private DropTarget createTreeDropTarget(final Tree tree) {
@@ -559,7 +559,7 @@ public class FileViewer {
 					dropTargetHandleDrop(event, targetFile);
 			}
 			private File getTargetFile(DropTargetEvent event) {
-				// Determine the target File for the drop 
+				// Determine the target File for the drop
 				TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
 				File targetFile = null;
 				if (item != null) {
@@ -569,12 +569,12 @@ public class FileViewer {
 				return targetFile;
 			}
 		});
-		return dropTarget;	
+		return dropTarget;
 	}
 
 	/**
 	 * Handles expand events on a tree item.
-	 * 
+	 *
 	 * @param item the TreeItem to fill in
 	 */
 	private void treeExpandItem(TreeItem item) {
@@ -583,10 +583,10 @@ public class FileViewer {
 		if (stub == null) treeRefreshItem(item, true);
 		shell.setCursor(iconCache.stockCursors[iconCache.cursorDefault]);
 	}
-	
+
 	/**
 	 * Traverse the entire tree and update only what has changed.
-	 * 
+	 *
 	 * @param roots the root directory listing
 	 */
 	private void treeRefresh(File[] masterFiles) {
@@ -626,18 +626,18 @@ public class FileViewer {
 			TreeItem newItem = new TreeItem(tree, SWT.NONE);
 			treeInitVolume(newItem, masterFile);
 			new TreeItem(newItem, SWT.NONE); // placeholder child item to get "expand" button
-		}		
+		}
 	}
-	
+
 	/**
 	 * Traverse an item in the tree and update only what has changed.
-	 * 
+	 *
 	 * @param dirItem the tree item of the directory
 	 * @param forcePopulate true iff we should populate non-expanded items as well
 	 */
 	private void treeRefreshItem(TreeItem dirItem, boolean forcePopulate) {
 		final File dir = (File) dirItem.getData(TREEITEMDATA_FILE);
-		
+
 		if (! forcePopulate && ! dirItem.getExpanded()) {
 			// Refresh non-expanded item
 			if (dirItem.getData(TREEITEMDATA_STUB) != null) {
@@ -722,7 +722,7 @@ public class FileViewer {
 
 	/**
 	 * Initializes a folder item.
-	 * 
+	 *
 	 * @param item the TreeItem to initialize
 	 * @param folder the File associated with this TreeItem
 	 */
@@ -736,7 +736,7 @@ public class FileViewer {
 
 	/**
 	 * Initializes a volume item.
-	 * 
+	 *
 	 * @param item the TreeItem to initialize
 	 * @param volume the File associated with this TreeItem
 	 */
@@ -750,7 +750,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the file details table.
-	 * 
+	 *
 	 * @param parent the parent control
 	 */
 	private void createTableView(Composite parent) {
@@ -784,7 +784,7 @@ public class FileViewer {
 			private File[] getSelectedFiles() {
 				final TableItem[] items = table.getSelection();
 				final File[] files = new File[items.length];
-				
+
 				for (int i = 0; i < items.length; ++i) {
 					files[i] = (File) items[i].getData(TABLEITEMDATA_FILE);
 				}
@@ -798,7 +798,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the Drag & Drop DragSource for items being dragged from the table.
-	 * 
+	 *
 	 * @return the DragSource for the table
 	 */
 	private DragSource createTableDragSource(final Table table) {
@@ -826,7 +826,7 @@ public class FileViewer {
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
 				if (! FileTransfer.getInstance().isSupportedType(event.dataType)) return;
-				
+
 				sourceNames  = new String[dndSelection.length];
 				for (int i = 0; i < dndSelection.length; i++) {
 					File file = (File) dndSelection[i].getData(TABLEITEMDATA_FILE);
@@ -840,7 +840,7 @@ public class FileViewer {
 
 	/**
 	 * Creates the Drag & Drop DropTarget for items being dropped onto the table.
-	 * 
+	 *
 	 * @return the DropTarget for the table
 	 */
 	private DropTarget createTableDropTarget(final Table table){
@@ -868,7 +868,7 @@ public class FileViewer {
 					dropTargetHandleDrop(event, targetFile);
 			}
 			private File getTargetFile(DropTargetEvent event) {
-				// Determine the target File for the drop 
+				// Determine the target File for the drop
 				TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
 				File targetFile = null;
 				if (item == null) {
@@ -889,7 +889,7 @@ public class FileViewer {
 
 	/**
 	 * Notifies the application components that a new current directory has been selected
-	 * 
+	 *
 	 * @param dir the directory that was selected, null is ignored
 	 */
 	void notifySelectedDirectory(File dir) {
@@ -897,7 +897,7 @@ public class FileViewer {
 		if (currentDirectory != null && dir.equals(currentDirectory)) return;
 		currentDirectory = dir;
 		notifySelectedFiles(null);
-		
+
 		/* Shell:
 		 * Sets the title to indicate the selected directory
 		 */
@@ -913,7 +913,7 @@ public class FileViewer {
 		 */
 		final File[] comboRoots = (File[]) combo.getData(COMBODATA_ROOTS);
 		int comboEntry = -1;
-		if (comboRoots != null) {		
+		if (comboRoots != null) {
 			for (int i = 0; i < comboRoots.length; ++i) {
 				if (dir.equals(comboRoots[i])) {
 					comboEntry = i;
@@ -960,10 +960,10 @@ public class FileViewer {
 		}
 		tree.setSelection((lastItem != null) ? new TreeItem[] { lastItem } : new TreeItem[0]);
 	}
-	
+
 	/**
 	 * Notifies the application components that files have been selected
-	 * 
+	 *
 	 * @param files the files that were selected, null or empty array indicates no active selection
 	 */
 	void notifySelectedFiles(File[] files) {
@@ -994,7 +994,7 @@ public class FileViewer {
 
 	/**
 	 * Notifies the application components that files must be refreshed
-	 * 
+	 *
 	 * @param files the files that need refreshing, empty array is a no-op, null refreshes all
 	 */
 	void notifyRefreshFiles(File[] files) {
@@ -1057,7 +1057,7 @@ public class FileViewer {
 		if (files == null) {
 			boolean refreshCombo = false;
 			final File[] comboRoots = (File[]) combo.getData(COMBODATA_ROOTS);
-		
+
 			if ((comboRoots != null) && (comboRoots.length == roots.length)) {
 				for (int i = 0; i < roots.length; ++i) {
 					if (! roots[i].equals(comboRoots[i])) {
@@ -1081,7 +1081,7 @@ public class FileViewer {
 		 * Refreshes information about any files in the list and their children.
 		 */
 		treeRefresh(roots);
-		
+
 		// Remind everyone where we are in the filesystem
 		final File dir = currentDirectory;
 		currentDirectory = null;
@@ -1092,7 +1092,7 @@ public class FileViewer {
 
 	/**
 	 * Performs the default action on a set of files.
-	 * 
+	 *
 	 * @param files the array of files to process
 	 */
 	void doDefaultFileAction(File[] files) {
@@ -1104,7 +1104,7 @@ public class FileViewer {
 			notifySelectedDirectory(file);
 		} else {
 			final String fileName = file.getAbsolutePath();
-			if (! Program.launch(fileName)) {	
+			if (! Program.launch(fileName)) {
 				MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 				dialog.setMessage(getResourceString("error.FailedLaunch.message", new Object[] { fileName }));
 				dialog.setText(shell.getText ());
@@ -1121,7 +1121,7 @@ public class FileViewer {
 		File parentDirectory = currentDirectory.getParentFile();
 		notifySelectedDirectory(parentDirectory);
 	}
-	 
+
 	/**
 	 * Performs a refresh
 	 */
@@ -1247,7 +1247,7 @@ public class FileViewer {
 			sourceFiles = new File[sourceNames.length];
 			for (int i = 0; i < sourceNames.length; ++i)
 				sourceFiles[i] = new File(sourceNames[i]);
-		}	
+		}
 		if (progressDialog == null)
 			progressDialog = new ProgressDialog(shell, ProgressDialog.MOVE);
 		progressDialog.setTotalWorkUnits(sourceFiles.length);
@@ -1280,7 +1280,7 @@ public class FileViewer {
 
 	/**
 	 * Gets filesystem root entries
-	 * 
+	 *
 	 * @return an array of Files corresponding to the root directories on the platform,
 	 *         may be empty but not null
 	 */
@@ -1322,7 +1322,7 @@ public class FileViewer {
 
 	/**
 	 * Gets a directory listing
-	 * 
+	 *
 	 * @param file the directory to be listed
 	 * @return an array of files this directory contains, may be empty but not null
 	 */
@@ -1332,24 +1332,24 @@ public class FileViewer {
 		sortFiles(list);
 		return list;
 	}
-	
+
 	/**
 	 * Copies a file or entire directory structure.
-	 * 
+	 *
 	 * @param oldFile the location of the old file or directory
 	 * @param newFile the location of the new file or directory
 	 * @return true iff the operation succeeds without errors
 	 */
 	boolean copyFileStructure(File oldFile, File newFile) {
 		if (oldFile == null || newFile == null) return false;
-		
+
 		// ensure that newFile is not a child of oldFile or a dupe
 		File searchFile = newFile;
 		do {
 			if (oldFile.equals(searchFile)) return false;
 			searchFile = searchFile.getParentFile();
 		} while (searchFile != null);
-		
+
 		if (oldFile.isDirectory()) {
 			/*
 			 * Copy a directory
@@ -1391,7 +1391,7 @@ public class FileViewer {
 				try {
 					in = new FileReader(oldFile);
 					out = new FileWriter(newFile);
-			
+
 					int count;
 					while ((count = in.read()) != -1) out.write(count);
 				} catch (FileNotFoundException e) {
@@ -1413,12 +1413,12 @@ public class FileViewer {
 
 	/**
 	 * Deletes a file or entire directory structure.
-	 * 
+	 *
 	 * @param oldFile the location of the old file or directory
 	 * @return true iff the operation succeeds without errors
 	 */
 	boolean deleteFileStructure(File oldFile) {
-		if (oldFile == null) return false;		
+		if (oldFile == null) return false;
 		if (oldFile.isDirectory()) {
 			/*
 			 * Delete a directory
@@ -1448,10 +1448,10 @@ public class FileViewer {
 		}
 		return oldFile.delete();
 	}
-	
+
 	/**
 	 * Sorts files lexicographically by name.
-	 * 
+	 *
 	 * @param files the array of Files to be sorted
 	 */
 	static void sortFiles(File[] files) {
@@ -1464,8 +1464,8 @@ public class FileViewer {
 			for (int i = end; i > start; --i) {
 				for (int j = end; j > start; --j)  {
 					if (compareFiles(files[j - 1], files[j]) > 0) {
-					    final File temp = files[j]; 
-					    files[j] = files[j-1]; 
+					    final File temp = files[j];
+					    files[j] = files[j-1];
 					    files[j-1] = temp;
 					}
 			    }
@@ -1497,7 +1497,7 @@ public class FileViewer {
 		if (compare == 0) compare = a.getName().compareTo(b.getName());
 		return compare;
 	}
-	
+
 	/*
 	 * This worker updates the table with file information in the background.
 	 * <p>
@@ -1529,7 +1529,7 @@ public class FileViewer {
 	/**
 	 * Notifies the worker that it should update itself with new data.
 	 * Cancels any previous operation and begins a new one.
-	 * 
+	 *
 	 * @param dir the new base directory for the table, null is ignored
 	 * @param force if true causes a refresh even if the data is the same
 	 */
@@ -1571,7 +1571,7 @@ public class FileViewer {
 		// (see workerStop())
 		display.wake();
 	};
-	
+
 	/**
 	 * Updates the table's contents
 	 */
@@ -1585,13 +1585,13 @@ public class FileViewer {
 			table.setData(TABLEDATA_DIR, workerStateDir);
 		});
 		dirList = getDirectoryList(workerStateDir);
-		
+
 		for (int i = 0; (! workerCancelled) && (i < dirList.length); i++) {
 			workerAddFileDetails(dirList[i]);
 		}
 
 	}
-		
+
 	/**
 	 * Adds a file's detail information to the directory list
 	 */
@@ -1601,7 +1601,7 @@ public class FileViewer {
 		final String sizeString;
 		final String typeString;
 		final Image iconImage;
-		
+
 		if (file.isDirectory()) {
 			typeString = getResourceString("filetype.Folder");
 			sizeString = "";
@@ -1609,7 +1609,7 @@ public class FileViewer {
 		} else {
 			sizeString = getResourceString("filesize.KB",
 				new Object[] { new Long((file.length() + 512) / 1024) });
-			
+
 			int dot = nameString.lastIndexOf('.');
 			if (dot != -1) {
 				String extension = nameString.substring(dot);
@@ -1637,7 +1637,7 @@ public class FileViewer {
 			tableItem.setData(TABLEITEMDATA_FILE, file);
 		});
 	}
-	
+
 	/**
 	 * Instances of this class manage a progress dialog for file operations.
 	 */
@@ -1657,10 +1657,10 @@ public class FileViewer {
 			"Delete",
 			"Move"
 		};
-	
+
 		/**
 		 * Creates a progress dialog but does not open it immediately.
-		 * 
+		 *
 		 * @param parent the parent Shell
 		 * @param style one of COPY, MOVE
 		 */
@@ -1675,21 +1675,21 @@ public class FileViewer {
 					isCancelled = true;
 				}
 			});
-			
+
 			messageLabel = new Label(shell, SWT.HORIZONTAL);
 			messageLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 			messageLabel.setText(getResourceString("progressDialog." + operationKeyName[style] + ".description"));
-			
+
 			progressBar = new ProgressBar(shell, SWT.HORIZONTAL | SWT.WRAP);
 			progressBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 			progressBar.setMinimum(0);
 			progressBar.setMaximum(0);
-			
+
 			detailLabel = new Label(shell, SWT.HORIZONTAL);
 			GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
 			gridData.widthHint = 400;
 			detailLabel.setLayoutData(gridData);
-			
+
 			cancelButton = new Button(shell, SWT.PUSH);
 			cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_FILL));
 			cancelButton.setText(getResourceString("progressDialog.cancelButton.text"));
@@ -1704,7 +1704,7 @@ public class FileViewer {
 		/**
 		 * Sets the detail text to show the filename along with a string
 		 * representing the operation being performed on that file.
-		 * 
+		 *
 		 * @param file the file to be detailed
 		 * @param operation one of COPY, DELETE
 		 */
@@ -1714,7 +1714,7 @@ public class FileViewer {
 		}
 		/**
 		 * Returns true if the Cancel button was been clicked.
-		 * 
+		 *
 		 * @return true if the Cancel button was clicked.
 		 */
 		public boolean isCancelled() {
@@ -1722,7 +1722,7 @@ public class FileViewer {
 		}
 		/**
 		 * Sets the total number of work units to be performed.
-		 * 
+		 *
 		 * @param work the total number of work units
 		 */
 		public void setTotalWorkUnits(int work) {
@@ -1730,7 +1730,7 @@ public class FileViewer {
 		}
 		/**
 		 * Adds to the total number of work units to be performed.
-		 * 
+		 *
 		 * @param work the number of work units to add
 		 */
 		public void addWorkUnits(int work) {
@@ -1738,7 +1738,7 @@ public class FileViewer {
 		}
 		/**
 		 * Sets the progress of completion of the total work units.
-		 * 
+		 *
 		 * @param work the total number of work units completed
 		 */
 		public void setProgress(int work) {
@@ -1747,7 +1747,7 @@ public class FileViewer {
 		}
 		/**
 		 * Adds to the progress of completion of the total work units.
-		 * 
+		 *
 		 * @param work the number of work units completed to add
 		 */
 		public void addProgress(int work) {

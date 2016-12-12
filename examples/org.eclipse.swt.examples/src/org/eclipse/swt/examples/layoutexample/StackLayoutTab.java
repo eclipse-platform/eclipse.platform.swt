@@ -30,14 +30,14 @@ class StackLayoutTab extends Tab {
 	Text nameText;
 	final int NAME_COL = 0;
 	final int TOTAL_COLS = 2;
-	
+
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
 	StackLayoutTab(LayoutExample instance) {
 		super(instance);
 	}
-	
+
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
@@ -45,36 +45,36 @@ class StackLayoutTab extends Tab {
 	void createChildWidgets() {
 		/* Add common controls */
 		super.createChildWidgets();
-		
+
 		/* Add TableEditors */
 		comboEditor = new TableEditor(table);
 		nameEditor = new TableEditor(table);
 		table.addMouseListener (new MouseAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) { 	
+			public void mouseDown(MouseEvent e) {
 				resetEditors();
 				index = table.getSelectionIndex();
 				if (index == -1) return;
 				//set top layer of stack to the selected item
 				setTopControl (index);
-				
+
 				TableItem oldItem = comboEditor.getItem();
 				newItem = table.getItem(index);
 				if (newItem == oldItem || newItem != lastSelected) {
 					lastSelected = newItem;
 					return;
 				}
-				table.showSelection();				
-				combo = new CCombo(table, SWT.READ_ONLY);				
+				table.showSelection();
+				combo = new CCombo(table, SWT.READ_ONLY);
 				createComboEditor(combo, comboEditor);
-				
+
 				nameText = new Text(table, SWT.SINGLE);
 				nameText.setText(data.get(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 			}
-		});		
+		});
 	}
-	
+
 	/**
 	 * Creates the control widgets.
 	 */
@@ -105,7 +105,7 @@ class StackLayoutTab extends Tab {
 			public void widgetSelected(SelectionEvent e) {
 		    	setTopControl (currentLayer + 1);
 	        }
-		});		
+		});
 
 		/* Controls the margins of the StackLayout */
 		Group marginGroup = new Group(controlGroup, SWT.NONE);
@@ -121,11 +121,11 @@ class StackLayoutTab extends Tab {
 		marginHeight.setSelection(0);
 		marginHeight.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		marginHeight.addSelectionListener(selectionListener);
-		
+
 		/* Add common controls */
 		super.createControlWidgets();
 	}
-	
+
 	/**
 	 * Creates the example layout.
 	 */
@@ -134,15 +134,15 @@ class StackLayoutTab extends Tab {
 		stackLayout = new StackLayout();
 		layoutComposite.setLayout(stackLayout);
 	}
-	
+
 	@Override
 	void createLayoutComposite() {
 		layoutComposite = new Composite(layoutGroup, SWT.BORDER);
 		layoutComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		createLayout();
 	}
-	
-	/** 
+
+	/**
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
@@ -152,7 +152,7 @@ class StackLayoutTab extends Tab {
 		combo.dispose();
 		nameText.dispose();
 	}
-	
+
 	/**
 	 * Generates code for the example layout.
 	 */
@@ -176,7 +176,7 @@ class StackLayoutTab extends Tab {
 		}
 		return code;
 	}
-	
+
 	@Override
 	boolean needsCustom() {
 		return true;
@@ -197,7 +197,7 @@ class StackLayoutTab extends Tab {
 	String[] getLayoutDataFieldNames() {
 		return new String[] {"Control Name", "Control Type"};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -205,7 +205,7 @@ class StackLayoutTab extends Tab {
 	String getTabText() {
 		return "StackLayout";
 	}
-	
+
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
@@ -215,7 +215,7 @@ class StackLayoutTab extends Tab {
 		comboEditor.setEditor (null, null, -1);
 		if (oldItem != null) {
 			int row = table.indexOf (oldItem);
-			try {				
+			try {
 				new String (nameText.getText ());
 			} catch (NumberFormatException e) {
 				nameText.setText (oldItem.getText (NAME_COL));
@@ -231,7 +231,7 @@ class StackLayoutTab extends Tab {
 		refreshLayoutComposite ();
 		setTopControl (currentLayer);
 		layoutGroup.layout (true);
-	}	
+	}
 
 	void setTopControl (int index) {
 		if (index == -1 || children.length == 0) {
@@ -254,9 +254,9 @@ class StackLayoutTab extends Tab {
 	@Override
 	void setLayoutState() {
 		/* Set the margins and spacing */
-		stackLayout.marginWidth = marginWidth.getSelection();		
-		stackLayout.marginHeight = marginHeight.getSelection();		
-	}	
-	
+		stackLayout.marginWidth = marginWidth.getSelection();
+		stackLayout.marginHeight = marginHeight.getSelection();
+	}
+
 }
 

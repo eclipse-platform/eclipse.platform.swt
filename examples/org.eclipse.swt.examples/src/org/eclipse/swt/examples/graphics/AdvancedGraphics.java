@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-/* 
+/*
  * Drawing with transformations, paths and alpha blending
  *
  * For a list of all SWT example snippets see
@@ -35,9 +35,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 public class AdvancedGraphics {
-	
+
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics");
-	
+
 	static Image loadImage (Device device, Class<AdvancedGraphics> clazz, String string) {
 		InputStream stream = clazz.getResourceAsStream (string);
 		if (stream == null) return null;
@@ -72,7 +72,7 @@ public class AdvancedGraphics {
 		final Image image = loadImage(display, AdvancedGraphics.class, "irmaos.jpg");
 		final Rectangle rect = image.getBounds();
 		shell.addListener(SWT.Paint, event -> {
-			GC gc = event.gc;				
+			GC gc = event.gc;
 			Transform tr = new Transform(display);
 			tr.translate(rect.width / 4, rect.height / 2);
 			tr.rotate(-30);
@@ -95,10 +95,10 @@ public class AdvancedGraphics {
 		shell.addListener(SWT.Dispose, event -> {
 			if (image != null) image.dispose();
 			font.dispose();
-		});	
+		});
 		return shell;
 	}
-	
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new AdvancedGraphics().open(display);

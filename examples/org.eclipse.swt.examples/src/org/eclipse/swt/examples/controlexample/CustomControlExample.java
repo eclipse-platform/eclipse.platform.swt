@@ -19,13 +19,13 @@ public class CustomControlExample extends ControlExample {
 	/**
 	 * Creates an instance of a CustomControlExample embedded
 	 * inside the supplied parent Composite.
-	 * 
+	 *
 	 * @param parent the container of the example
 	 */
 	public CustomControlExample(Composite parent) {
 		super (parent);
 	}
-	
+
 	/**
 	 * Answers the set of example Tabs
 	 */
@@ -39,7 +39,7 @@ public class CustomControlExample extends ControlExample {
 			new StyledTextTab (this),
 		};
 	}
-	
+
 	/**
 	 * Invokes as a standalone program.
 	 */

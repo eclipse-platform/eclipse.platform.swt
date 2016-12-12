@@ -22,7 +22,7 @@ class SashFormTab extends Tab {
 	SashForm form;
 	List list1, list2;
 	Text text;
-	
+
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton, smoothButton;
 
@@ -34,7 +34,7 @@ class SashFormTab extends Tab {
 								  ControlExample.getResourceString("ListData0_5"), //$NON-NLS-1$
 								  ControlExample.getResourceString("ListData0_6"), //$NON-NLS-1$
 								  ControlExample.getResourceString("ListData0_7")}; //$NON-NLS-1$
-								  
+
 	static String [] ListData1 = {ControlExample.getResourceString("ListData1_0"), //$NON-NLS-1$
 								  ControlExample.getResourceString("ListData1_1"), //$NON-NLS-1$
 								  ControlExample.getResourceString("ListData1_2"), //$NON-NLS-1$
@@ -54,7 +54,7 @@ class SashFormTab extends Tab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		
+
 		/* Create a group for the sashform widget */
 		sashFormGroup = new Group (exampleGroup, SWT.NONE);
 		sashFormGroup.setLayout (new GridLayout ());
@@ -63,13 +63,13 @@ class SashFormTab extends Tab {
 	}
 	@Override
 	void createExampleWidgets () {
-		
+
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
 		if (smoothButton.getSelection ()) style |= SWT.SMOOTH;
-		
+
 		/* Create the example widgets */
 		form = new SashForm (sashFormGroup, style);
 		list1 = new List (form, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -86,7 +86,7 @@ class SashFormTab extends Tab {
 	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
-	
+
 		/* Create the extra widgets */
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
 		horizontalButton.setText ("SWT.HORIZONTAL");
@@ -98,7 +98,7 @@ class SashFormTab extends Tab {
 		smoothButton.setText ("SWT.SMOOTH");
 		smoothButton.setSelection(false);
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -106,7 +106,7 @@ class SashFormTab extends Tab {
 	Widget [] getExampleWidgets () {
 		return new Widget [] {form};
 	}
-	
+
 	/**
 	 * Gets the text for the tab folder item.
 	 */
@@ -114,7 +114,7 @@ class SashFormTab extends Tab {
 	String getTabText () {
 		return "SashForm"; //$NON-NLS-1$
 	}
-	
+
 		/**
 	 * Sets the state of the "Example" widgets.
 	 */

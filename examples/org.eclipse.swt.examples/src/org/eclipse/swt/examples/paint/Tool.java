@@ -20,7 +20,7 @@ public class Tool {
 	public Runnable action;
 	public Image image = null;
 	public Object data;
-	
+
 	public Tool(int id, String name, String group, int type) {
 		super();
 		this.id = id;
