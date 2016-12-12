@@ -1039,25 +1039,24 @@ public class TextEditor {
 
 	void disposeRanges(StyleRange[] ranges) {
 		StyleRange[] allRanges = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-		for (StyleRange style : ranges) {
+		for (StyleRange rangeToDispose : ranges) {
 			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
-
-			for (StyleRange s : allRanges) {
-				if (disposeFont && style.font == s.font) disposeFont = false;
-				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
-				if (disposeBg && style.background == s.background) disposeBg = false;
-				if (disposeStrike && style.strikeoutColor == s.strikeoutColor) disposeStrike = false;
-				if (disposeUnder && style.underlineColor == s.underlineColor) disposeUnder = false;
-				if (disposeBorder && style.borderColor == s.borderColor) disposeBorder =  false;
+			for (StyleRange range : allRanges) {
+				if (disposeFont && rangeToDispose.font == range.font) disposeFont = false;
+				if (disposeFg && rangeToDispose.foreground == range.foreground) disposeFg = false;
+				if (disposeBg && rangeToDispose.background == range.background) disposeBg = false;
+				if (disposeStrike && rangeToDispose.strikeoutColor == range.strikeoutColor) disposeStrike = false;
+				if (disposeUnder && rangeToDispose.underlineColor == range.underlineColor) disposeUnder = false;
+				if (disposeBorder && rangeToDispose.borderColor == range.borderColor) disposeBorder =  false;
 			}
-			if (disposeFont && style.font != textFont && style.font != null)  style.font.dispose();
-			if (disposeFg && style.foreground != textForeground && style.foreground != null) style.foreground.dispose();
-			if (disposeBg && style.background != textBackground && style.background != null) style.background.dispose();
-			if (disposeStrike && style.strikeoutColor != strikeoutColor && style.strikeoutColor != null) style.strikeoutColor.dispose();
-			if (disposeUnder && style.underlineColor != underlineColor && style.underlineColor != null) style.underlineColor.dispose();
-			if (disposeBorder && style.borderColor != borderColor && style.borderColor != null) style.borderColor.dispose();
+			if (disposeFont && rangeToDispose.font != textFont && rangeToDispose.font != null)  rangeToDispose.font.dispose();
+			if (disposeFg && rangeToDispose.foreground != textForeground && rangeToDispose.foreground != null) rangeToDispose.foreground.dispose();
+			if (disposeBg && rangeToDispose.background != textBackground && rangeToDispose.background != null) rangeToDispose.background.dispose();
+			if (disposeStrike && rangeToDispose.strikeoutColor != strikeoutColor && rangeToDispose.strikeoutColor != null) rangeToDispose.strikeoutColor.dispose();
+			if (disposeUnder && rangeToDispose.underlineColor != underlineColor && rangeToDispose.underlineColor != null) rangeToDispose.underlineColor.dispose();
+			if (disposeBorder && rangeToDispose.borderColor != borderColor && rangeToDispose.borderColor != null) rangeToDispose.borderColor.dispose();
 
-			Object data = style.data;
+			Object data = rangeToDispose.data;
 			if (data != null) {
 				if (data instanceof Image) ((Image)data).dispose();
 				if (data instanceof Control) ((Control)data).dispose();

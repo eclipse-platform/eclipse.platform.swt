@@ -418,12 +418,12 @@ public void clear (int [] indices) {
 		}
 	}
 
-	for (int indice : indices) {
-		items [indice].clear ();
+	for (int index : indices) {
+		items [index].clear ();
 	}
 	updateHorizontalBar ();
-	for (int indice : indices) {
-		redrawItem (indice, false);
+	for (int index : indices) {
+		redrawItem (index, false);
 	}
 }
 /**
@@ -668,8 +668,8 @@ public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-	for (int indice : indices) {
-		deselect (indice);
+	for (int index : indices) {
+		deselect (index);
 	}
 }
 /**
@@ -3635,16 +3635,15 @@ public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0 || ((getStyle () & SWT.SINGLE) != 0 && indices.length > 1)) return;
-
-	for (int indice : indices) {
-		if (0 <= indice && indice < itemsCount) {
-			selectItem (items [indice], (getStyle () & SWT.MULTI) != 0);
+	for (int index : indices) {
+		if (0 <= index && index < itemsCount) {
+			selectItem (items [index], (getStyle () & SWT.MULTI) != 0);
 		}
 	}
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
-		for (int indice : indices) {
-			if (0 <= indice && indice < itemsCount) {
-				redrawItem (indice, false);
+		for (int index : indices) {
+			if (0 <= index && index < itemsCount) {
+				redrawItem (index, false);
 			}
 		}
 	}

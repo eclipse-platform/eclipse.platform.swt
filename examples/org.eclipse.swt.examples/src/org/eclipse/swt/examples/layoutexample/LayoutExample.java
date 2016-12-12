@@ -11,13 +11,19 @@
 package org.eclipse.swt.examples.layoutexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import java.text.*;
-import java.util.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 
 public class LayoutExample {
 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_layout");
@@ -73,8 +79,8 @@ public class LayoutExample {
 			@Override
 			public void shellClosed(ShellEvent e) {
 				Shell [] shells = display.getShells();
-				for (Shell shell2 : shells) {
-					if (shell2 != shell) shell2.close ();
+				for (Shell currentShell : shells) {
+					if (currentShell != shell) currentShell.close ();
 				}
 			}
 		});

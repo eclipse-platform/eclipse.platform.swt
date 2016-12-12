@@ -944,8 +944,8 @@ public class FileViewer {
 			// No guarantee that the items are sorted in any recognizable fashion, so we'll
 			// just sequential scan.  There shouldn't be more than a few thousand entries.
 			TreeItem item = null;
-			for (TreeItem item2 : items) {
-				item = item2;
+			for (TreeItem currentItem : items) {
+				item = currentItem;
 				if (item.isDisposed()) continue;
 				final File itemFile = (File) item.getData(TREEITEMDATA_FILE);
 				if (itemFile != null && itemFile.equals(pathElement)) break;

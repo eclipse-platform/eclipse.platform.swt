@@ -220,8 +220,8 @@ abstract class Tab {
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
 				children = layoutComposite.getChildren ();
-				for (Control element : children) {
-					element.dispose ();
+				for (Control child : children) {
+					child.dispose ();
 				}
 				table.removeAll ();
 				data.clear ();
@@ -649,8 +649,8 @@ abstract class Tab {
 	void refreshLayoutComposite () {
 		/* Remove children that are already laid out */
 		children = layoutComposite.getChildren ();
-		for (Control element : children) {
-			element.dispose ();
+		for (Control child : children) {
+			child.dispose ();
 		}
 		/* Add all children listed in the table */
 		TableItem [] items = table.getItems ();

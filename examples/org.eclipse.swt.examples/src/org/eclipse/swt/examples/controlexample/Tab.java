@@ -456,8 +456,8 @@ abstract class Tab {
 			font = null;
 			if (colorAndFontTable != null && !colorAndFontTable.isDisposed()) {
 				TableItem [] items = colorAndFontTable.getItems();
-				for (TableItem item2 : items) {
-					Image image = item2.getImage();
+				for (TableItem currentItem : items) {
+					Image image = currentItem.getImage();
 					if (image != null) image.dispose();
 				}
 			}

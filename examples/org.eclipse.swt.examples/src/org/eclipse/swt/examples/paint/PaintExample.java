@@ -368,8 +368,7 @@ public class PaintExample {
 	 * Frees the resource bundle resources.
 	 */
 	public void freeResources() {
-		for (Tool tool2 : tools) {
-			Tool tool = tool2;
+		for (Tool tool : tools) {
 			final Image image = tool.image;
 			if (image != null) image.dispose();
 			tool.image = null;

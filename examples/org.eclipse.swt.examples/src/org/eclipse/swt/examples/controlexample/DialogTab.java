@@ -11,12 +11,26 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.printing.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.printing.PrintDialog;
+import org.eclipse.swt.printing.PrinterData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 class DialogTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -142,8 +156,8 @@ class DialogTab extends Tab {
 			textWidget.append ("getRGBs() =" + Text.DELIMITER);
 			RGB[] rgbs = dialog.getRGBs();
 			if (rgbs != null) {
-				for (RGB rgb : rgbs) {
-					textWidget.append ("\t" + rgb + Text.DELIMITER);
+				for (RGB rgbColor : rgbs) {
+					textWidget.append ("\t" + rgbColor + Text.DELIMITER);
 				}
 			}
 			textWidget.append (Text.DELIMITER);
@@ -206,8 +220,8 @@ class DialogTab extends Tab {
 			textWidget.append ("getFontList() =" + Text.DELIMITER);
 			FontData [] fonts = dialog.getFontList ();
 			if (fonts != null) {
-				for (FontData font2 : fonts) {
-					textWidget.append ("\t" + font2 + Text.DELIMITER);
+				for (FontData font : fonts) {
+					textWidget.append ("\t" + font + Text.DELIMITER);
 				}
 			}
 			textWidget.append ("getEffectsVisible() = " + dialog.getEffectsVisible() + Text.DELIMITER);
