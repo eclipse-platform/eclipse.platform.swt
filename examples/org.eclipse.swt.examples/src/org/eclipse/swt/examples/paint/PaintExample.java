@@ -354,8 +354,7 @@ public class PaintExample {
 	public void dispose() {
 		if (paintSurface != null) paintSurface.dispose();
 		if (paintColors != null) {
-			for (int i = 0; i < paintColors.length; ++i) {
-				final Color color = paintColors[i];
+			for (final Color color : paintColors) {
 				if (color != null) color.dispose();
 			}
 		}
@@ -369,8 +368,8 @@ public class PaintExample {
 	 * Frees the resource bundle resources.
 	 */
 	public void freeResources() {
-		for (int i = 0; i < tools.length; ++i) {
-			Tool tool = tools[i];
+		for (Tool tool2 : tools) {
+			Tool tool = tool2;
 			final Image image = tool.image;
 			if (image != null) image.dispose();
 			tool.image = null;
@@ -445,8 +444,8 @@ public class PaintExample {
 	 * Sets the action field of the tools
 	 */
 	private void initActions() {
-		for (int i = 0; i < tools.length; ++i) {
-			final Tool tool = tools[i];
+		for (Tool tool2 : tools) {
+			final Tool tool = tool2;
 			String group = tool.group;
 			if (group.equals("tool")) {
 				tool.action = () -> setPaintTool(tool.id);
@@ -486,8 +485,8 @@ public class PaintExample {
 		final Class<PaintExample> clazz = PaintExample.class;
 		if (resourceBundle != null) {
 			try {
-				for (int i = 0; i < tools.length; ++i) {
-					Tool tool = tools[i];
+				for (Tool tool2 : tools) {
+					Tool tool = tool2;
 					String id = tool.group + '.' + tool.name;
 					InputStream sourceStream = clazz.getResourceAsStream(getResourceString(id + ".image"));
 					ImageData source = new ImageData(sourceStream);

@@ -368,8 +368,8 @@ public class ImageAnalyzer {
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("X_scale"));
 		scaleXCombo = new Combo(group, SWT.DROP_DOWN);
-		for (int i = 0; i < values.length; i++) {
-			scaleXCombo.add(values[i]);
+		for (String value : values) {
+			scaleXCombo.add(value);
 		}
 		scaleXCombo.select(scaleXCombo.indexOf("1"));
 		scaleXCombo.addSelectionListener(new SelectionAdapter() {
@@ -384,8 +384,8 @@ public class ImageAnalyzer {
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Y_scale"));
 		scaleYCombo = new Combo(group, SWT.DROP_DOWN);
-		for (int i = 0; i < values.length; i++) {
-			scaleYCombo.add(values[i]);
+		for (String value : values) {
+			scaleYCombo.add(value);
 		}
 		scaleYCombo.select(scaleYCombo.indexOf("1"));
 		scaleYCombo.addSelectionListener(new SelectionAdapter() {

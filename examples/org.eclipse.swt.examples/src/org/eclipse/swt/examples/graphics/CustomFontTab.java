@@ -54,9 +54,9 @@ public CustomFontTab(GraphicsExample example) {
 	// create list of fonts for this platform
 	FontData [] fontData = Display.getCurrent().getFontList(null, true);
 	fontNames = new ArrayList<>();
-	for (int i=0; i < fontData.length; i++) {
+	for (FontData element : fontData) {
 		// remove duplicates and sort
-		String nextName = fontData[i].getName();
+		String nextName = element.getName();
 		if (!fontNames.contains(nextName)) {
 			int j = 0;
 			while(j < fontNames.size() && nextName.compareTo(fontNames.get(j)) > 0) {

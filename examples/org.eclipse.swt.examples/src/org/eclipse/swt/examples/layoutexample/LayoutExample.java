@@ -73,8 +73,8 @@ public class LayoutExample {
 			@Override
 			public void shellClosed(ShellEvent e) {
 				Shell [] shells = display.getShells();
-				for (int i = 0; i < shells.length; i++) {
-					if (shells [i] != shell) shells [i].close ();
+				for (Shell shell2 : shells) {
+					if (shell2 != shell) shell2.close ();
 				}
 			}
 		});

@@ -418,12 +418,12 @@ public void clear (int [] indices) {
 		}
 	}
 
-	for (int i = 0; i < indices.length; i++) {
-		items [indices [i]].clear ();
+	for (int indice : indices) {
+		items [indice].clear ();
 	}
 	updateHorizontalBar ();
-	for (int i = 0; i < indices.length; i++) {
-		redrawItem (indices [i], false);
+	for (int indice : indices) {
+		redrawItem (indice, false);
 	}
 }
 /**
@@ -668,8 +668,8 @@ public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-	for (int i = 0; i < indices.length; i++) {
-		deselect (indices [i]);
+	for (int indice : indices) {
+		deselect (indice);
 	}
 }
 /**
@@ -685,12 +685,12 @@ public void deselectAll () {
 	CTableItem[] oldSelection = selectedItems;
 	selectedItems = new CTableItem [0];
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
-		for (int i = 0; i < oldSelection.length; i++) {
-			redrawItem (oldSelection [i].index, true);
+		for (CTableItem element : oldSelection) {
+			redrawItem (element.index, true);
 		}
 	}
-	for (int i = 0; i < oldSelection.length; i++) {
-		oldSelection[i].getAccessible(getAccessible(), 0).selectionChanged();
+	for (CTableItem element : oldSelection) {
+		element.getAccessible(getAccessible(), 0).selectionChanged();
 	}
 	if (oldSelection.length > 0) getAccessible().selectionChanged();
 }
@@ -754,8 +754,8 @@ void destroyItem (CTableColumn column) {
 		updateHorizontalBar ();
 	} else {
 		int newWidth = 0;
-		for (int i = 0; i < columns.length; i++) {
-			newWidth += columns [i].width;
+		for (CTableColumn column2 : columns) {
+			newWidth += column2.width;
 		}
 		ScrollBar hBar = getHorizontalBar ();
 		if (hBar != null) {
@@ -885,9 +885,9 @@ public Control[] getChildren () {
 	Control[] result = new Control [controls.length - 1];
 	/* remove the Header from the returned set of children */
 	int index = 0;
-	for (int i = 0; i < controls.length; i++) {
-		 if (controls [i] != header) {
-		 	result [index++] = controls [i];
+	for (Control control : controls) {
+		 if (control != header) {
+		 	result [index++] = control;
 		 }
 	}
 	return result;
@@ -1452,8 +1452,8 @@ String headerGetToolTip (int x) {
 }
 void headerHideToolTip() {
 	if (toolTipShell == null) return;
-	for (int i = 0; i < toolTipEvents.length; i++) {
-		header.removeListener (toolTipEvents [i], toolTipListener);
+	for (int toolTipEvent : toolTipEvents) {
+		header.removeListener (toolTipEvent, toolTipListener);
 	}
 	toolTipShell.dispose ();
 	toolTipShell = null;
@@ -1500,8 +1500,7 @@ void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
 	CTableColumn[] orderedColumns = getOrderedColumns ();
 	int x = -horizontalOffset;
-	for (int i = 0; i < orderedColumns.length; i++) {
-		CTableColumn column = orderedColumns [i];
+	for (CTableColumn column : orderedColumns) {
 		x += column.width;
 		/* if close to a resizable column separator line then begin column resize */
 		if (column.resizable && Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
@@ -1583,8 +1582,7 @@ void headerOnMouseHover (Event event) {
 void headerOnMouseMove (Event event) {
 	if (resizeColumn == null) {
 		/* not currently resizing a column */
-		for (int i = 0; i < columns.length; i++) {
-			CTableColumn column = columns [i];
+		for (CTableColumn column : columns) {
 			int x = column.getX () + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 				if (column.resizable) {
@@ -1689,8 +1687,8 @@ void headerShowToolTip (int x) {
 		Display display = toolTipShell.getDisplay ();
 		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
 		toolTipLabel.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-		for (int i = 0; i < toolTipEvents.length; i++) {
-			header.addListener (toolTipEvents [i], toolTipListener);
+		for (int toolTipEvent : toolTipEvents) {
+			header.addListener (toolTipEvent, toolTipListener);
 		}
 	}
 	if (headerUpdateToolTip (x)) {
@@ -2399,8 +2397,8 @@ void onDispose (Event event) {
 	for (int i = 0; i < itemsCount; i++) {
 		items [i].dispose (false);
 	}
-	for (int i = 0; i < columns.length; i++) {
-		columns [i].dispose (false);
+	for (CTableColumn column : columns) {
+		column.dispose (false);
 	}
 	if (toolTipShell != null) {
 		toolTipShell.dispose ();
@@ -2491,8 +2489,8 @@ void onFocusIn () {
 		return;
 	}
 	if ((getStyle () & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
-		for (int i = 0; i < selectedItems.length; i++) {
-			redrawItem (selectedItems [i].index, true);
+		for (CTableItem selectedItem : selectedItems) {
+			redrawItem (selectedItem.index, true);
 		}
 	}
 	if (focusItem != null) {
@@ -2520,8 +2518,8 @@ void onFocusOut () {
 		redrawItem (focusItem.index, true);
 	}
 	if ((getStyle () & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
-		for (int i = 0; i < selectedItems.length; i++) {
-			redrawItem (selectedItems [i].index, true);
+		for (CTableItem selectedItem : selectedItems) {
+			redrawItem (selectedItem.index, true);
 		}
 	}
 }
@@ -3445,16 +3443,16 @@ public void remove (int [] indices) {
 	}
 	int lastRemovedIndex = -1;
 	int[] eventData = new int[5];
-	for (int i = 0; i < newIndices.length; i++) {
-		if (newIndices [i] != lastRemovedIndex) {
-			items [newIndices [i]].dispose ();
+	for (int newIndice : newIndices) {
+		if (newIndice != lastRemovedIndex) {
+			items [newIndice].dispose ();
 			eventData[0] = ACC.DELETE;
-			eventData[1] = newIndices[i];
+			eventData[1] = newIndice;
 			eventData[2] = 1;
 			eventData[3] = 0;
 			eventData[4] = 0;
 			getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
-			lastRemovedIndex = newIndices [i];
+			lastRemovedIndex = newIndice;
 		}
 	}
 }
@@ -3638,15 +3636,15 @@ public void select (int [] indices) {
 	if (indices == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0 || ((getStyle () & SWT.SINGLE) != 0 && indices.length > 1)) return;
 
-	for (int i = 0; i < indices.length; i++) {
-		if (0 <= indices [i] && indices [i] < itemsCount) {
-			selectItem (items [indices [i]], (getStyle () & SWT.MULTI) != 0);
+	for (int indice : indices) {
+		if (0 <= indice && indice < itemsCount) {
+			selectItem (items [indice], (getStyle () & SWT.MULTI) != 0);
 		}
 	}
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
-		for (int i = 0; i < indices.length; i++) {
-			if (0 <= indices [i] && indices [i] < itemsCount) {
-				redrawItem (indices [i], false);
+		for (int indice : indices) {
+			if (0 <= indice && indice < itemsCount) {
+				redrawItem (indice, false);
 			}
 		}
 	}
@@ -3671,8 +3669,8 @@ public void selectAll () {
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
 		redraw ();
 	}
-	for (int i = 0; i < selectedItems.length; i++) {
-		selectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+	for (CTableItem selectedItem : selectedItems) {
+		selectedItem.getAccessible(getAccessible(), 0).selectionChanged();
 	}
 	getAccessible().selectionChanged();
 }
@@ -3681,14 +3679,14 @@ void selectItem (CTableItem item, boolean addToSelection) {
 	if (!addToSelection || (getStyle () & SWT.SINGLE) != 0) {
 		selectedItems = new CTableItem[] {item};
 		if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
-			for (int i = 0; i < oldSelectedItems.length; i++) {
-				if (oldSelectedItems [i] != item) {
-					redrawItem (oldSelectedItems [i].index, true);
+			for (CTableItem oldSelectedItem : oldSelectedItems) {
+				if (oldSelectedItem != item) {
+					redrawItem (oldSelectedItem.index, true);
 				}
 			}
 		}
-		for (int i = 0; i < oldSelectedItems.length; i++) {
-			oldSelectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+		for (CTableItem oldSelectedItem : oldSelectedItems) {
+			oldSelectedItem.getAccessible(getAccessible(), 0).selectionChanged();
 		}
 	} else {
 		if (item.isSelected ()) return;
@@ -3765,8 +3763,8 @@ public void setColumnOrder (int [] order) {
 	for (int i = 0; i < order.length; i++) {
 		orderedColumns [i] = columns [order [i]];
 	}
-	for (int i = 0; i < orderedColumns.length; i++) {
-		CTableColumn column = orderedColumns [i];
+	for (CTableColumn orderedColumn : orderedColumns) {
+		CTableColumn column = orderedColumn;
 		if (!column.isDisposed () && column.getX () != oldX [column.getIndex ()]) {
 			column.notifyListeners (SWT.Move, new Event ());
 		}
@@ -3809,8 +3807,8 @@ public void setFont (Font value) {
 	 * Notify all columns and items of the font change so that elements that
 	 * use the receiver's font can recompute their cached string widths.
 	 */
-	for (int i = 0; i < columns.length; i++) {
-		columns [i].updateFont (gc);
+	for (CTableColumn column : columns) {
+		column.updateFont (gc);
 	}
 	for (int i = 0; i < itemsCount; i++) {
 		items [i].updateFont (gc);
@@ -3903,8 +3901,8 @@ public void setItemCount (int count) {
 			/* one or more selected items have been disposed */
 			CTableItem[] newSelectedItems = new CTableItem [newSelectedCount];
 			int pos = 0;
-			for (int i = 0; i < selectedItems.length; i++) {
-				CTableItem item = selectedItems [i];
+			for (CTableItem selectedItem : selectedItems) {
+				CTableItem item = selectedItem;
 				if (!item.isDisposed ()) {
 					newSelectedItems [pos++] = item;
 				}
@@ -4076,8 +4074,8 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 	/* remove null and duplicate items */
 	int index = 0;
 	selectedItems = new CTableItem [items.length];	/* assume all valid items */
-	for (int i = 0; i < items.length; i++) {
-		CTableItem item = items [i];
+	for (CTableItem item2 : items) {
+		CTableItem item = item2;
 		if (item != null && item.parent == this && !item.isSelected ()) {
 			selectedItems [index++] = item;
 		}
@@ -4102,9 +4100,9 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 				tableSelectionChanged = true;
 			}
 		}
-		for (int i = 0; i < selectedItems.length; i++) {
-			redrawItem (selectedItems [i].index, true);
-			selectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+		for (CTableItem selectedItem : selectedItems) {
+			redrawItem (selectedItem.index, true);
+			selectedItem.getAccessible(getAccessible(), 0).selectionChanged();
 			tableSelectionChanged = true;
 		}
 	}
@@ -4485,8 +4483,8 @@ void updateColumnWidth (CTableColumn column, int width) {
 	gc.dispose ();
 
 	int maximum = 0;
-	for (int i = 0; i < columns.length; i++) {
-		maximum += columns [i].width;
+	for (CTableColumn column2 : columns) {
+		maximum += column2.width;
 	}
 	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) {
@@ -4525,8 +4523,8 @@ void updateHorizontalBar () {
 
 	int maxX = 0;
 	if (columns.length > 0) {
-		for (int i = 0; i < columns.length; i++) {
-			maxX += columns [i].width;
+		for (CTableColumn column : columns) {
+			maxX += column.width;
 		}
 	} else {
 		for (int i = 0; i < itemsCount; i++) {

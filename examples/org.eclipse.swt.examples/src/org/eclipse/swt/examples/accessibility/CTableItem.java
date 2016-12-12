@@ -421,9 +421,9 @@ void dispose (boolean notifyParent) {
 }
 void disposeAccessibles() {
 	if (accessibles != null) {
-		for (int i = 0; i < accessibles.length; i++) {
-			if (accessibles[i] != null) {
-				accessibles[i].dispose();
+		for (Accessible accessible : accessibles) {
+			if (accessible != null) {
+				accessible.dispose();
 			}
 		}
 		accessibles = null;

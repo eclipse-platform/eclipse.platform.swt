@@ -32,11 +32,11 @@ public void javaToNative (Object object, TransferData transferData) {
 		// write data to a byte array and then ask super to convert to pMedium
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DataOutputStream writeOut = new DataOutputStream(out);
-		for (int i = 0, length = myTypes.length; i < length;  i++){
-			byte[] buffer = myTypes[i].firstName.getBytes();
+		for (MyType myType : myTypes) {
+			byte[] buffer = myType.firstName.getBytes();
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
-			buffer = myTypes[i].firstName.getBytes();
+			buffer = myType.firstName.getBytes();
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
 		}
@@ -92,12 +92,12 @@ protected int[] getTypeIds(){
 boolean checkMyType(Object object) {
 	if (object == null || !(object instanceof MyType[]) || ((MyType[])object).length == 0) return false;
 	MyType[] myTypes = (MyType[])object;
-	for (int i = 0; i < myTypes.length; i++) {
-		if (myTypes[i] == null ||
-			myTypes[i].firstName == null ||
-			myTypes[i].firstName.length() == 0 ||
-			myTypes[i].lastName == null ||
-			myTypes[i].lastName.length() == 0) return false;
+	for (MyType myType : myTypes) {
+		if (myType == null ||
+			myType.firstName == null ||
+			myType.firstName.length() == 0 ||
+			myType.lastName == null ||
+			myType.lastName.length() == 0) return false;
 	}
 	return true;
 }

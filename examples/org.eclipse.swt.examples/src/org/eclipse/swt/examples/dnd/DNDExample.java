@@ -237,8 +237,8 @@ private void createDragSource() {
 					case TABLE: {
 						Table table = (Table)dragControl;
 						TableItem[] items = table.getSelection();
-						for (int i = 0; i < items.length; i++) {
-							items[i].dispose();
+						for (TableItem item : items) {
+							item.dispose();
 						}
 						break;
 					}
@@ -250,8 +250,8 @@ private void createDragSource() {
 					case TREE: {
 						Tree tree = (Tree)dragControl;
 						TreeItem[] items = tree.getSelection();
-						for (int i = 0; i < items.length; i++) {
-							items[i].dispose();
+						for (TreeItem item : items) {
+							item.dispose();
 						}
 						break;
 					}
@@ -434,20 +434,20 @@ private void createDragSource() {
 				}
 			}
 
-			for (int i = 0; i < dragTypes.length; i++) {
-				if (dragTypes[i] instanceof TextTransfer && dragDataText == null) {
+			for (Transfer dragType : dragTypes) {
+				if (dragType instanceof TextTransfer && dragDataText == null) {
 					event.doit = false;
 				}
-				if (dragTypes[i] instanceof RTFTransfer && dragDataRTF == null) {
+				if (dragType instanceof RTFTransfer && dragDataRTF == null) {
 					event.doit = false;
 				}
-				if (dragTypes[i] instanceof HTMLTransfer && dragDataHTML == null) {
+				if (dragType instanceof HTMLTransfer && dragDataHTML == null) {
 					event.doit = false;
 				}
-				if (dragTypes[i] instanceof URLTransfer && dragDataURL == null) {
+				if (dragType instanceof URLTransfer && dragDataURL == null) {
 					event.doit = false;
 				}
-				if (dragTypes[i] instanceof FileTransfer && (dragDataFiles == null || dragDataFiles.length == 0)) {
+				if (dragType instanceof FileTransfer && (dragDataFiles == null || dragDataFiles.length == 0)) {
 					event.doit = false;
 				}
 			}
@@ -540,8 +540,8 @@ private void createDragTypes(Composite parent) {
 				String separator = System.getProperty("file.separator");
 				String path = dialog.getFilterPath();
 				String[] names = dialog.getFileNames();
-				for (int i = 0; i < names.length; i++) {
-					fileList.add(path+separator+names[i]);
+				for (String name : names) {
+					fileList.add(path+separator+name);
 				}
 			}
 		}
@@ -873,8 +873,8 @@ private void createDropTarget() {
 				}
 				case STYLED_TEXT: {
 					StyledText text = (StyledText)dropControl;
-					for(int i = 0; i < strings.length; i++) {
-						text.insert(strings[i]);
+					for (String string : strings) {
+						text.insert(string);
 					}
 					break;
 				}
@@ -883,21 +883,21 @@ private void createDropTarget() {
 					Point p = event.display.map(null, table, event.x, event.y);
 					TableItem dropItem = table.getItem(p);
 					int index = dropItem == null ? table.getItemCount() : table.indexOf(dropItem);
-					for(int i = 0; i < strings.length; i++) {
+					for (String string : strings) {
 						TableItem item = new TableItem(table, SWT.NONE, index);
-						item.setText(0, strings[i]);
+						item.setText(0, string);
 						item.setText(1, "dropped item");
 					}
 					TableColumn[] columns = table.getColumns();
-					for (int i = 0; i < columns.length; i++) {
-						columns[i].pack();
+					for (TableColumn column : columns) {
+						column.pack();
 					}
 					break;
 				}
 				case TEXT: {
 					Text text = (Text)dropControl;
-					for(int i = 0; i < strings.length; i++) {
-						text.append(strings[i]+"\n");
+					for (String string : strings) {
+						text.append(string+"\n");
 					}
 					break;
 				}
@@ -905,9 +905,9 @@ private void createDropTarget() {
 					Tree tree = (Tree)dropControl;
 					Point p = event.display.map(null, tree, event.x, event.y);
 					TreeItem parentItem = tree.getItem(p);
-					for(int i = 0; i < strings.length; i++) {
+					for (String string : strings) {
 						TreeItem item = parentItem != null ? new TreeItem(parentItem, SWT.NONE) : new TreeItem(tree, SWT.NONE);
-						item.setText(strings[i]);
+						item.setText(string);
 					}
 					break;
 				}
@@ -923,8 +923,8 @@ private void createDropTarget() {
 				}
 				case LIST: {
 					List list = (List)dropControl;
-					for(int i = 0; i < strings.length; i++) {
-						list.add(strings[i]);
+					for (String string : strings) {
+						list.add(string);
 					}
 					break;
 				}
@@ -1255,8 +1255,8 @@ private Control createWidget(int type, Composite parent, String prefix){
 						FontMetrics metrics = e.gc.getFontMetrics();
 						int height = metrics.getHeight();
 						int y = 5;
-						for(int i = 0; i < strings.length; i++) {
-							e.gc.drawString(strings[i], 5, y);
+						for (String string : strings) {
+							e.gc.drawString(string, 5, y);
 							y += height + 5;
 						}
 					}

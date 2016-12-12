@@ -456,8 +456,8 @@ abstract class Tab {
 			font = null;
 			if (colorAndFontTable != null && !colorAndFontTable.isDisposed()) {
 				TableItem [] items = colorAndFontTable.getItems();
-				for (int i = 0; i < items.length; i++) {
-					Image image = items[i].getImage();
+				for (TableItem item2 : items) {
+					Image image = item2.getImage();
 					if (image != null) image.dispose();
 				}
 			}
@@ -1184,12 +1184,12 @@ abstract class Tab {
 		String methodName = setMethodName(methodRoot);
 		String value = setText.getText();
 		Widget[] widgets = getExampleWidgets();
-		for (int i = 0; i < widgets.length; i++) {
+		for (Widget widget : widgets) {
 			try {
-				if (widgets[i] == null) {
+				if (widget == null) {
 					continue;
 				}
-				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, returnType);
+				java.lang.reflect.Method method = widget.getClass().getMethod(methodName, returnType);
 				String typeName = returnType.getName();
 				Object[] parameter = null;
 				if (value.equals("null")) {
@@ -1227,9 +1227,9 @@ abstract class Tab {
 				} else if (typeName.equals("[Ljava.lang.String;")) {
 					parameter = new Object[] {split(value, ',')};
 				} else {
-					parameter = parameterForType(typeName, value, widgets[i]);
+					parameter = parameterForType(typeName, value, widget);
 				}
-				method.invoke(widgets[i], parameter);
+				method.invoke(widget, parameter);
 			} catch (Exception e) {
 				Throwable cause = e.getCause();
 				String message = e.getMessage();

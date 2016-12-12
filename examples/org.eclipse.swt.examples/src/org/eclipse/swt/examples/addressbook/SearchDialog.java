@@ -183,8 +183,8 @@ public void open() {
 	searchText.setFocus();
 }
 public void setSearchAreaNames(String[] names) {
-	for (int i = 0; i < names.length; i++) {
-		searchArea.add(names[i]);
+	for (String name : names) {
+		searchArea.add(name);
 	}
 	searchArea.select(0);
 }

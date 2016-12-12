@@ -89,8 +89,8 @@ void initializeColors() {
 }
 
 void disposeColors() {
-	for (int i=0;i<colors.length;i++) {
-		colors[i].dispose();
+	for (Color color : colors) {
+		color.dispose();
 	}
 }
 

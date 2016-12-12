@@ -103,8 +103,8 @@ public class AccessibleTableExample {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CTableItem[] selectedItems = table1.getSelection();
-				for (int i = 0; i < selectedItems.length; i++) {
-					selectedItems[i].dispose();
+				for (CTableItem selectedItem : selectedItems) {
+					selectedItem.dispose();
 				}
 			}
 		});
@@ -138,9 +138,9 @@ public class AccessibleTableExample {
 		CTable table2 = new CTable(group, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 		table2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table2.setLinesVisible(true);
-		for (int row = 0; row < itemText.length; row++) {
+		for (String element : itemText) {
 			CTableItem item = new CTableItem(table2, SWT.NONE);
-			item.setText(itemText[row]);
+			item.setText(element);
 		}
 
 		shell.pack();

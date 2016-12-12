@@ -347,9 +347,9 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 				String separator = System.getProperty("file.separator");
 				String path = dialog.getFilterPath();
 				String[] names = dialog.getFileNames();
-				for (int i = 0; i < names.length; i++) {
+				for (String name : names) {
 					TableItem item = new TableItem(copyFileTable, SWT.NONE);
-					item.setText(path+separator+names[i]);
+					item.setText(path+separator+name);
 				}
 			}
 		}
@@ -404,9 +404,9 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 			if (data != null && data.length > 0) {
 				status.setText("");
 				pasteFileTable.removeAll();
-				for (int i = 0; i < data.length; i++) {
+				for (String element : data) {
 					TableItem item = new TableItem(pasteFileTable, SWT.NONE);
-					item.setText(data[i]);
+					item.setText(element);
 				}
 			} else {
 				status.setText("No file to paste");
@@ -707,8 +707,8 @@ void createAvailableTypes(Composite parent){
 		public void widgetSelected(SelectionEvent e) {
 			list.removeAll();
 			String[] names = clipboard.getAvailableTypeNames();
-			for (int i = 0; i < names.length; i++) {
-				list.add(names[i]);
+			for (String name : names) {
+				list.add(name);
 			}
 		}
 	});

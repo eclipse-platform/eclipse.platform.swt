@@ -144,19 +144,19 @@ public class BallTab extends AnimatedGraphicsTab {
 					new Color[] { device.getSystemColor(SWT.COLOR_MAGENTA) });
 		}
 
-		for (int j = 0; j < bc.length; j++) {
-			for (int i = 0; i < bc[j].prevx.size(); i++) {
+		for (BallCollection element : bc) {
+			for (int i = 0; i < element.prevx.size(); i++) {
 				Transform transform = new Transform(device);
-				transform.translate(bc[j].prevx.get(bc[j].prevx.size()
-						- (i + 1)).floatValue(), bc[j].prevy
-						.get(bc[j].prevy.size() - (i + 1)).floatValue());
+				transform.translate(element.prevx.get(element.prevx.size()
+						- (i + 1)).floatValue(), element.prevy
+						.get(element.prevy.size() - (i + 1)).floatValue());
 				gc.setTransform(transform);
 				transform.dispose();
 
 				Path path = new Path(device);
-				path.addArc(0, 0, bc[j].ball_size, bc[j].ball_size, 0, 360);
-				gc.setAlpha(255 - i * (255 / bc[j].capacity));
-				gc.setBackground(bc[j].colors[0]);
+				path.addArc(0, 0, element.ball_size, element.ball_size, 0, 360);
+				gc.setAlpha(255 - i * (255 / element.capacity));
+				gc.setBackground(element.colors[0]);
 				gc.fillPath(path);
 				gc.drawPath(path);
 				path.dispose();

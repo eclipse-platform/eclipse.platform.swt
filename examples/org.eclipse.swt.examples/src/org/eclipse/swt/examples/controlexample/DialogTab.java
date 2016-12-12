@@ -142,8 +142,8 @@ class DialogTab extends Tab {
 			textWidget.append ("getRGBs() =" + Text.DELIMITER);
 			RGB[] rgbs = dialog.getRGBs();
 			if (rgbs != null) {
-				for (int i=0; i<rgbs.length; i++) {
-					textWidget.append ("\t" + rgbs [i] + Text.DELIMITER);
+				for (RGB rgb : rgbs) {
+					textWidget.append ("\t" + rgb + Text.DELIMITER);
 				}
 			}
 			textWidget.append (Text.DELIMITER);
@@ -183,8 +183,8 @@ class DialogTab extends Tab {
 			textWidget.append ("getFileName() =" + dialog.getFileName() + Text.DELIMITER);
 			textWidget.append ("getFileNames() =" + Text.DELIMITER);
 			String [] files = dialog.getFileNames ();
-			for (int i=0; i<files.length; i++) {
-				textWidget.append ("\t" + files [i] + Text.DELIMITER);
+			for (String file : files) {
+				textWidget.append ("\t" + file + Text.DELIMITER);
 			}
 			textWidget.append (Text.DELIMITER);
 			fileDialogResult = result;
@@ -206,8 +206,8 @@ class DialogTab extends Tab {
 			textWidget.append ("getFontList() =" + Text.DELIMITER);
 			FontData [] fonts = dialog.getFontList ();
 			if (fonts != null) {
-				for (int i=0; i<fonts.length; i++) {
-					textWidget.append ("\t" + fonts [i] + Text.DELIMITER);
+				for (FontData font2 : fonts) {
+					textWidget.append ("\t" + font2 + Text.DELIMITER);
 				}
 			}
 			textWidget.append ("getEffectsVisible() = " + dialog.getEffectsVisible() + Text.DELIMITER);

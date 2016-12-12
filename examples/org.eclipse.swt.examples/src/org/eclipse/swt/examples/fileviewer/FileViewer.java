@@ -944,8 +944,8 @@ public class FileViewer {
 			// No guarantee that the items are sorted in any recognizable fashion, so we'll
 			// just sequential scan.  There shouldn't be more than a few thousand entries.
 			TreeItem item = null;
-			for (int k = 0; k < items.length; ++k) {
-				item = items[k];
+			for (TreeItem item2 : items) {
+				item = item2;
 				if (item.isDisposed()) continue;
 				final File itemFile = (File) item.getData(TREEITEMDATA_FILE);
 				if (itemFile != null && itemFile.equals(pathElement)) break;
@@ -974,8 +974,8 @@ public class FileViewer {
 			numObjectsLabel.setText(getResourceString("details.NumberOfSelectedFiles.text",
 				new Object[] { Integer.valueOf(files.length) }));
 			long fileSize = 0L;
-			for (int i = 0; i < files.length; ++i) {
-				fileSize += files[i].length();
+			for (File file : files) {
+				fileSize += file.length();
 			}
 			diskSpaceLabel.setText(getResourceString("details.FileSize.text",
 				new Object[] { new Long(fileSize) }));
@@ -1034,8 +1034,7 @@ public class FileViewer {
 		 */
 		boolean refreshTable = false;
 		if (files != null) {
-			for (int i = 0; i < files.length; ++i) {
-				final File file = files[i];
+			for (final File file : files) {
 				if (file.equals(currentDirectory)) {
 					refreshTable = true;
 					break;
@@ -1070,8 +1069,7 @@ public class FileViewer {
 			if (refreshCombo) {
 				combo.removeAll();
 				combo.setData(COMBODATA_ROOTS, roots);
-				for (int i = 0; i < roots.length; ++i) {
-					final File file = roots[i];
+				for (final File file : roots) {
 					combo.add(file.getPath());
 				}
 			}
@@ -1368,8 +1366,8 @@ public class FileViewer {
 				if (progressDialog != null) {
 					progressDialog.addWorkUnits(subFiles.length);
 				}
-				for (int i = 0; i < subFiles.length; i++) {
-					File oldSubFile = subFiles[i];
+				for (File subFile : subFiles) {
+					File oldSubFile = subFile;
 					File newSubFile = new File(newFile, oldSubFile.getName());
 					if (! copyFileStructure(oldSubFile, newSubFile)) return false;
 					if (progressDialog != null) {
@@ -1431,8 +1429,8 @@ public class FileViewer {
 				if (progressDialog != null) {
 					progressDialog.addWorkUnits(subFiles.length);
 				}
-				for (int i = 0; i < subFiles.length; i++) {
-					File oldSubFile = subFiles[i];
+				for (File subFile : subFiles) {
+					File oldSubFile = subFile;
 					if (! deleteFileStructure(oldSubFile)) return false;
 					if (progressDialog != null) {
 						progressDialog.addProgress(1);

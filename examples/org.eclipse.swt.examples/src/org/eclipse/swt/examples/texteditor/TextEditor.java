@@ -1021,8 +1021,7 @@ public class TextEditor {
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(composite);
 		CoolItem[] coolItems = coolBar.getItems();
-		for (int i = 0; i < coolItems.length; i++) {
-			CoolItem item = coolItems[i];
+		for (CoolItem item : coolItems) {
 			Control control = item.getControl();
 			Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			item.setMinimumSize(size);
@@ -1040,12 +1039,10 @@ public class TextEditor {
 
 	void disposeRanges(StyleRange[] ranges) {
 		StyleRange[] allRanges = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-		for (int i = 0; i < ranges.length; i++) {
-			StyleRange style = ranges[i];
+		for (StyleRange style : ranges) {
 			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
 
-			for (int j = 0; j < allRanges.length; j++) {
-				StyleRange s = allRanges[j];
+			for (StyleRange s : allRanges) {
 				if (disposeFont && style.font == s.font) disposeFont = false;
 				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
 				if (disposeBg && style.background == s.background) disposeBg = false;
@@ -1304,8 +1301,8 @@ public class TextEditor {
 		styledText.addPaintObjectListener(event -> handlePaintObject(event));
 		styledText.addListener(SWT.Dispose, event -> {
 			StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-			for (int i = 0; i < styles.length; i++) {
-				Object data = styles[i].data;
+			for (StyleRange style : styles) {
+				Object data = style.data;
 				if (data != null) {
 					if (data instanceof Image) ((Image)data).dispose();
 					if (data instanceof Control) ((Control)data).dispose();
@@ -1615,10 +1612,9 @@ public class TextEditor {
 			if (mergedRange.font != null && ((style & FONT) != 0 || (style & FONT_STYLE) != 0)) {
 				boolean change = false;
 				FontData[] fds = mergedRange.font.getFontData();
-				for (int j = 0; j < fds.length; j++) {
-					FontData fd = fds[j];
+				for (FontData fd : fds) {
 					if (fd.getStyle() != mergedRange.fontStyle) {
-						fds[j].setStyle(mergedRange.fontStyle);
+						fd.setStyle(mergedRange.fontStyle);
 						change = true;
 					}
 				}
@@ -1727,8 +1723,8 @@ public class TextEditor {
 			if (range.font != null) {
 				font = range.font;
 				FontData[] fds = font.getFontData();
-				for (int i = 0; i < fds.length; i++) {
-					int fontStyle = fds[i].getStyle();
+				for (FontData fd : fds) {
+					int fontStyle = fd.getStyle();
 					if (!bold && (fontStyle & SWT.BOLD) != 0) bold = true;
 					if (!italic && (fontStyle & SWT.ITALIC) != 0) italic = true;
 				}

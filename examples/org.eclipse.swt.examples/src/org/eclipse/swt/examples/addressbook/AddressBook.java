@@ -143,8 +143,8 @@ private boolean closeAddressBook() {
 	}
 
 	TableItem[] items = table.getItems();
-	for (int i = 0; i < items.length; i ++) {
-		items[i].dispose();
+	for (TableItem item : items) {
+		item.dispose();
 	}
 
 	return true;
@@ -336,8 +336,8 @@ private void openAddressBook() {
 
 	String[][] tableInfo = new String[data.length][table.getColumnCount()];
 	int writeIndex = 0;
-	for (int i = 0; i < data.length; i++) {
-		String[] line = decodeLine(data[i]);
+	for (String element : data) {
+		String[] line = decodeLine(element);
 		if (line != null) tableInfo[writeIndex++] = line;
 	}
 	if (writeIndex != data.length) {
@@ -347,9 +347,9 @@ private void openAddressBook() {
 	}
 	Arrays.sort(tableInfo, new RowComparator(0));
 
-	for (int i = 0; i < tableInfo.length; i++) {
+	for (String[] element : tableInfo) {
 		TableItem item = new TableItem(table, SWT.NONE);
-		item.setText(tableInfo[i]);
+		item.setText(element);
 	}
 	shell.setText(resAddressBook.getString("Title_bar")+fileDialog.getFileName());
 	isModified = false;
@@ -374,8 +374,8 @@ private boolean save() {
 	FileWriter fileWriter = null;
 	try {
 		fileWriter = new FileWriter(file.getAbsolutePath(), false);
-		for (int i = 0; i < lines.length; i++) {
-			fileWriter.write(lines[i]);
+		for (String line : lines) {
+			fileWriter.write(line);
 		}
 	} catch(FileNotFoundException e) {
 		displayError(resAddressBook.getString("File_not_found") + "\n" + file.getName());
