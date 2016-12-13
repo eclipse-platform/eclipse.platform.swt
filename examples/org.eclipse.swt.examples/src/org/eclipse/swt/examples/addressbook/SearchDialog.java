@@ -11,12 +11,12 @@
 package org.eclipse.swt.examples.addressbook;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 /* Imports */
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -128,28 +128,19 @@ public SearchDialog(Shell parent) {
 	findButton.setText(resAddressBook.getString("Dialog_find"));
 	findButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 	findButton.setEnabled(false);
-	findButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (!findHandler.find()){
-				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.PRIMARY_MODAL);
-				box.setText(shell.getText());
-				box.setMessage(resAddressBook.getString("Cannot_find") + "\"" + searchText.getText() + "\"");
-				box.open();
-			}
+	findButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		if (!findHandler.find()) {
+			MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.PRIMARY_MODAL);
+			box.setText(shell.getText());
+			box.setMessage(resAddressBook.getString("Cannot_find") + "\"" + searchText.getText() + "\"");
+			box.open();
 		}
-	});
+	}));
 
 	Button cancelButton = new Button(composite, SWT.PUSH);
 	cancelButton.setText(resAddressBook.getString("Cancel"));
 	cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
-	cancelButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			shell.setVisible(false);
-		}
-	});
-
+	cancelButton.addSelectionListener(widgetSelectedAdapter(e -> shell.setVisible(false)));
 	shell.pack();
 }
 public String getSearchAreaLabel(String label) {

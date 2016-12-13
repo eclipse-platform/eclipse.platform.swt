@@ -11,12 +11,12 @@
 package org.eclipse.swt.examples.addressbook;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 /* Imports */
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -60,22 +60,14 @@ private void createControlButtons() {
 
 	Button okButton = new Button(composite, SWT.PUSH);
 	okButton.setText(resAddressBook.getString("OK"));
-	okButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			shell.close();
-		}
-	});
+	okButton.addSelectionListener(widgetSelectedAdapter(e -> shell.close()));
 
 	Button cancelButton = new Button(composite, SWT.PUSH);
 	cancelButton.setText(resAddressBook.getString("Cancel"));
-	cancelButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			values = null;
-			shell.close();
-		}
-	});
+	cancelButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		values = null;
+		shell.close();
+	}));
 
 	shell.setDefaultButton(okButton);
 }
