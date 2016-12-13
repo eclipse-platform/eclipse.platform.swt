@@ -870,21 +870,12 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
  * @param event the gtk key press event that was fired.
  */
 void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
-
 	int keymask = gdk_event_get_state (event);
 	switch (key) {
 		case OS.GDK_Return:
-			//Send Default selection return only when no other modifier is pressed.
-			if ((keymask & (OS.GDK_MOD1_MASK | OS.GDK_SHIFT_MASK | OS.GDK_CONTROL_MASK
-							| OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
-				sendTreeDefaultSelection ();
-			}
-			break;
-		case OS.GDK_space:
-			//Shift + Space is a legal DefaultSelection event. (as per row-activation signal documentation).
-			//But do not send if another modifier is pressed.
-			if ((keymask & (OS.GDK_MOD1_MASK | OS.GDK_CONTROL_MASK
-							| OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
+			// Send DefaultSelectionEvent when: Enter, Shift+Enter, Ctrl+Enter, Alt+Enter are pressed.
+			// Not when (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk. Does not trigger on Win32 either.
+			if ((keymask & (OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;
