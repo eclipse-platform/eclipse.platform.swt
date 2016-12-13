@@ -108,7 +108,7 @@ class ColorTab extends Tab {
 		for (String columnTitle : columnTitles) {
 			TableColumn tableColumn = new TableColumn(colors, SWT.NONE);
 			tableColumn.setText(columnTitle);
-			tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitle}));
+			tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", columnTitle));
 		}
 		// fill in the Data. Put an empty line inbetween "Named" and "SWT" colors.
 		boolean emptyLineFlag=false;

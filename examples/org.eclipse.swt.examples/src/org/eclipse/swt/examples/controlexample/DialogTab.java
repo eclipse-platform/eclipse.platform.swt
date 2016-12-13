@@ -151,7 +151,7 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			RGB result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("ColorDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", "" + result) + Text.DELIMITER);
 			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER);
 			textWidget.append ("getRGBs() =" + Text.DELIMITER);
 			RGB[] rgbs = dialog.getRGBs();

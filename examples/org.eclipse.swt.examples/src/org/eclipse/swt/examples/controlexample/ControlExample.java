@@ -170,7 +170,7 @@ public class ControlExample {
 	 * with the given arguments. If the key is not found,
 	 * return the key.
 	 */
-	static String getResourceString(String key, Object[] args) {
+	static String getResourceString(String key, Object... args) {
 		try {
 			return MessageFormat.format(getResourceString(key), args);
 		} catch (MissingResourceException e) {

@@ -321,7 +321,7 @@ class TableTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
 				tableColumn.setText(columnTitles[i]);
-				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
+				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", columnTitles[i]));
 				if (headerImagesButton.getSelection()) tableColumn.setImage(instance.images [i % 3]);
 			}
 			table1.setSortColumn(table1.getColumn(0));

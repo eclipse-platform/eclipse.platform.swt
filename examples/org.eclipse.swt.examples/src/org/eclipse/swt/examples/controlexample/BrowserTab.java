@@ -104,7 +104,7 @@ class BrowserTab extends Tab {
 			}
 			MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
 			String resourceString = (style & SWT.MOZILLA) != 0 ? "MozillaNotFound" : "WebKitNotFound";
-			dialog.setMessage(ControlExample.getResourceString(resourceString, new String [] {e.getMessage()}));
+			dialog.setMessage(ControlExample.getResourceString(resourceString, e.getMessage()));
 			dialog.open();
 		}
 
@@ -209,7 +209,7 @@ class BrowserTab extends Tab {
 			public void widgetSelected(SelectionEvent e) {
 				if (errorMessage != null && tabFolder.getSelection()[0].getText().equals(getTabText())) {
 					MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-					dialog.setMessage(ControlExample.getResourceString("BrowserNotFound", new String [] {errorMessage}));
+					dialog.setMessage(ControlExample.getResourceString("BrowserNotFound", errorMessage));
 					dialog.open();
 				}
 			}

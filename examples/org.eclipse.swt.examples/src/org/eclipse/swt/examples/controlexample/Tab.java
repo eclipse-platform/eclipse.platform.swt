@@ -618,7 +618,7 @@ abstract class Tab {
 		dialog.setLayout(new GridLayout());
 		dialog.setText(ControlExample.getResourceString ("Edit_Event"));
 		Label label = new Label (dialog, SWT.NONE);
-		label.setText (ControlExample.getResourceString ("Edit_Event_Fields", new String [] {EVENT_INFO[index].name}));
+		label.setText (ControlExample.getResourceString ("Edit_Event_Fields", EVENT_INFO[index].name));
 
 		Group group = new Group (dialog, SWT.NONE);
 		group.setLayout(new GridLayout(2, false));
