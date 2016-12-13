@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
@@ -29,7 +29,7 @@ import java.util.*;
  * @see ImageLoaderEvent
  */
 
-public interface ImageLoaderListener extends EventListener {
+public interface ImageLoaderListener extends SWTEventListener {
 
 /**
  * Sent when image data is either partially or completely loaded.

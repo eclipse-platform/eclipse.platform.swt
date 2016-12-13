@@ -11,9 +11,8 @@
 package org.eclipse.swt.accessibility;
 
 
-import java.util.*;
-
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -32,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @since 3.0
  */
-public class AccessibleTextEvent extends EventObject {
+public class AccessibleTextEvent extends SWTEventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
 	/** @since 3.6 */

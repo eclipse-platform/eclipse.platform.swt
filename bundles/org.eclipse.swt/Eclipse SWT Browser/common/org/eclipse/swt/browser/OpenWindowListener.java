@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -25,7 +25,7 @@ import java.util.*;
  * @since 3.0
  */
 @FunctionalInterface
-public interface OpenWindowListener extends EventListener {
+public interface OpenWindowListener extends SWTEventListener {
 
 /**
  * This method is called when a new window needs to be created.

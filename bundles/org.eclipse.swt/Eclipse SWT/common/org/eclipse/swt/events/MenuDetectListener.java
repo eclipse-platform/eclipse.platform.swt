@@ -11,7 +11,8 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import java.util.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -32,7 +33,7 @@ import java.util.*;
  * @since 3.3
  */
 @FunctionalInterface
-public interface MenuDetectListener extends EventListener {
+public interface MenuDetectListener extends SWTEventListener {
 
 /**
  * Sent when the platform-dependent trigger for showing a menu item is detected.

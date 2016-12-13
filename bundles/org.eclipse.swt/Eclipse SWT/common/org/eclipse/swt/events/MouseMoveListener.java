@@ -11,7 +11,8 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import java.util.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -28,7 +29,7 @@ import java.util.*;
  * @see MouseEvent
  */
 @FunctionalInterface
-public interface MouseMoveListener extends EventListener {
+public interface MouseMoveListener extends SWTEventListener {
 
 /**
  * Sent when the mouse moves.

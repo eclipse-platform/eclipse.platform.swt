@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import java.util.*;
-
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -26,7 +25,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @since 3.6
  */
-public class AccessibleTextAttributeEvent extends EventObject {
+public class AccessibleTextAttributeEvent extends SWTEventObject {
 
 	/**
 	 * [in] the 0-based text offset for which to return attribute information

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -21,7 +21,7 @@ import java.util.*;
  *
  * @since 3.6
  */
-public class AccessibleAttributeEvent extends EventObject {
+public class AccessibleAttributeEvent extends SWTEventObject {
 
 	/**
 	 * [out] the top margin in pixels

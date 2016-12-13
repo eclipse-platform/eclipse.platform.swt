@@ -11,7 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.SWTEventObject;
 
 /**
  * Instances of this class are sent as a result of
@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @since 2.0
  */
-public class AccessibleControlEvent extends EventObject {
+public class AccessibleControlEvent extends SWTEventObject {
 	public int childID;			// IN/OUT
 	public Accessible accessible;	// OUT
 	public int x, y;				// IN/OUT

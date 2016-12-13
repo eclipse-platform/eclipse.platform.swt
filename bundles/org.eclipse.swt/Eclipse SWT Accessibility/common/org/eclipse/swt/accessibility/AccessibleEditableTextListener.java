@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import java.util.*;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @since 3.7
  */
-public interface AccessibleEditableTextListener extends EventListener {
+public interface AccessibleEditableTextListener extends SWTEventListener {
 	/**
 	 * Copies the substring beginning at the specified <code>start</code> offset
 	 * and extending to the character at offset <code>end - 1</code> to the clipboard.

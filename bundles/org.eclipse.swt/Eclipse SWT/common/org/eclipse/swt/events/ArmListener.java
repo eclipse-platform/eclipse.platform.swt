@@ -11,7 +11,8 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import java.util.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -28,7 +29,7 @@ import java.util.*;
  * @see ArmEvent
  */
 @FunctionalInterface
-public interface ArmListener extends EventListener {
+public interface ArmListener extends SWTEventListener {
 
 /**
  * Sent when a widget is armed, or 'about to be selected'.

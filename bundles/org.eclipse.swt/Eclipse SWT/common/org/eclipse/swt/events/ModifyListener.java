@@ -12,7 +12,7 @@
 package org.eclipse.swt.events;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -29,7 +29,7 @@ import java.util.*;
  * @see ModifyEvent
  */
 @FunctionalInterface
-public interface ModifyListener extends EventListener {
+public interface ModifyListener extends SWTEventListener {
 
 /**
  * Sent when the text is modified.

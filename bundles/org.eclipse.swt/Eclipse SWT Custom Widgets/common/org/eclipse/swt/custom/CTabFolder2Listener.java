@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @since 3.0
  */
-public interface CTabFolder2Listener extends EventListener {
+public interface CTabFolder2Listener extends SWTEventListener {
 
 /**
  * Sent when the user clicks on the close button of an item in the CTabFolder.

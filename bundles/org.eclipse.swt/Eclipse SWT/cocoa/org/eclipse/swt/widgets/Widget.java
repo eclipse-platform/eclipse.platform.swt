@@ -1433,7 +1433,7 @@ public void removeListener (int eventType, Listener listener) {
  * @noreference This method is not intended to be referenced by clients.
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
-protected void removeListener (int eventType, EventListener handler) {
+protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;

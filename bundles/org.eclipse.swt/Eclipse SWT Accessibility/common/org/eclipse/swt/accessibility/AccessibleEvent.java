@@ -11,7 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.SWTEventObject;
 
 /**
  * Instances of this class are sent as a result of
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @since 2.0
  */
-public class AccessibleEvent extends EventObject {
+public class AccessibleEvent extends SWTEventObject {
 	/**
 	 * The value of this field is set by an accessibility client
 	 * before the accessible listener method is called.

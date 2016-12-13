@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -21,7 +21,7 @@ import java.util.*;
  * @since 3.5
  */
 @FunctionalInterface
-public interface CaretListener extends EventListener {
+public interface CaretListener extends SWTEventListener {
 
 /**
  * This method is called after the caret offset is changed.

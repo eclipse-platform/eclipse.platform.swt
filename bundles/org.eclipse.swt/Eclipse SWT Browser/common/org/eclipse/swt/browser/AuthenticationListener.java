@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -23,7 +23,7 @@ import java.util.*;
  * @since 3.5
  */
 @FunctionalInterface
-public interface AuthenticationListener extends EventListener {
+public interface AuthenticationListener extends SWTEventListener {
 
 /**
  * This method is called when a page is navigated to that requires

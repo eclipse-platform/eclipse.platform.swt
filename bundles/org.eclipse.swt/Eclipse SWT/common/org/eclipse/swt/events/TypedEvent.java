@@ -11,9 +11,8 @@
 package org.eclipse.swt.events;
 
 
-import java.util.*;
-
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.SWTEventObject;
 
 /**
  * This is the super class for all typed event classes provided
@@ -23,7 +22,7 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.widgets.Event
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public class TypedEvent extends EventObject {
+public class TypedEvent extends SWTEventObject {
 
 	/**
 	 * the display where the event occurred
