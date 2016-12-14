@@ -282,11 +282,6 @@
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 
 // GTK3 only
-#define gtk_event_controller_handle_event_LIB LIB_GTK
-#define gtk_event_controller_set_propagation_phase_LIB LIB_GTK
-#define gtk_gesture_drag_new_LIB LIB_GTK
-#define gtk_gesture_drag_get_offset_LIB LIB_GTK
-#define gtk_gesture_single_set_button_LIB LIB_GTK
 #define gtk_widget_draw_LIB LIB_GTK
 #define gtk_widget_override_color_LIB LIB_GTK
 #define gtk_widget_override_background_color_LIB LIB_GTK

@@ -50,7 +50,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
-	long /*int*/ frameHandle, labelHandle, imageHandle, boxHandle;
+	long /*int*/ frameHandle, labelHandle, imageHandle;
 	ImageList imageList;
 	Image image;
 	String text;
@@ -221,19 +221,16 @@ void createHandle (int index) {
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = OS.gtk_event_box_new();
+		handle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
-		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		imageHandle = OS.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (handle, boxHandle);
-		OS.gtk_container_add (boxHandle, labelHandle);
-		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_START);
-		OS.gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
+		OS.gtk_container_add (handle, labelHandle);
+		OS.gtk_container_add (handle, imageHandle);
+		OS.gtk_box_set_child_packing(handle, labelHandle, true, true, 0, OS.GTK_PACK_START);
+		OS.gtk_box_set_child_packing(handle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 	}
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = OS.gtk_frame_new (null);
@@ -269,7 +266,6 @@ void deregister () {
 	if (frameHandle != 0) display.removeWidget (frameHandle);
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 	if (imageHandle != 0) display.removeWidget (imageHandle);
-	if (boxHandle != 0) display.removeWidget (boxHandle);
 }
 
 @Override
@@ -401,7 +397,6 @@ boolean mnemonicMatch (char key) {
 @Override
 void register () {
 	super.register ();
-	if (boxHandle != 0) display.addWidget (boxHandle, this);
 	if (frameHandle != 0) display.addWidget (frameHandle, this);
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 	if (imageHandle != 0) display.addWidget (imageHandle, this);
@@ -410,7 +405,7 @@ void register () {
 @Override
 void releaseHandle () {
 	super.releaseHandle ();
-	frameHandle = imageHandle = labelHandle = boxHandle = 0;
+	frameHandle = imageHandle = labelHandle = 0;
 }
 
 @Override
@@ -697,7 +692,6 @@ void showWidget () {
 	super.showWidget ();
 	if (frameHandle != 0) OS.gtk_widget_show (frameHandle);
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
-	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
 }
 
 long /*int*/ gtk_separator_new (int orientation) {

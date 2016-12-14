@@ -7739,33 +7739,9 @@ public static final void gtk_file_chooser_set_select_multiple(long /*int*/ choos
 	}
 }
 /**
- * @method flags=dynamic
+ * @param filter cast=(GtkFileFilter *)
+ * @param pattern cast=(const gchar *)
  */
-public static final native void _gtk_event_controller_set_propagation_phase(long /*int*/ controller, int phase);
-public static final void gtk_event_controller_set_propagation_phase(long /*int*/ controller, int phase) {
-	lock.lock();
-	try {
-		_gtk_event_controller_set_propagation_phase(controller, phase);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event);
-public static final void gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event) {
-	lock.lock();
-	try {
-		_gtk_event_controller_handle_event(gesture, event);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
-* @param filter cast=(GtkFileFilter *)
-* @param pattern cast=(const gchar *)
-*/
 public static final native void _gtk_file_filter_add_pattern(long /*int*/ filter, byte[] pattern);
 public static final void gtk_file_filter_add_pattern(long /*int*/ filter, byte[] pattern) {
 	lock.lock();
@@ -7827,43 +7803,6 @@ public static final long /*int*/ gtk_fixed_new() {
 	lock.lock();
 	try {
 		return _gtk_fixed_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param widget cast=(GtkWidget *)
- */
-public static final native long /*int*/ _gtk_gesture_drag_new(long /*int*/ widget);
-public static final long /*int*/ gtk_gesture_drag_new(long /*int*/ widget) {
-	lock.lock();
-	try {
-		return _gtk_gesture_drag_new(widget);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gtk_gesture_single_set_button(long /*int*/ gesture, int button);
-public static final void gtk_gesture_single_set_button(long /*int*/ gesture, int button) {
-	lock.lock();
-	try {
-		 _gtk_gesture_single_set_button(gesture, button);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gtk_gesture_drag_get_offset(long /*int*/ gesture, double[] x, double[] y);
-public static final void gtk_gesture_drag_get_offset(long /*int*/ gesture, double[] x, double[] y) {
-	lock.lock();
-	try {
-		_gtk_gesture_drag_get_offset(gesture, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -8212,16 +8151,6 @@ public static final void gtk_box_set_homogeneous(long /*int*/ box, boolean homog
 	lock.lock();
 	try {
 		_gtk_box_set_homogeneous(box, homogeneous);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native long /*int*/ _gtk_event_box_new();
-public static final long /*int*/ gtk_event_box_new() {
-	lock.lock();
-	try {
-		return _gtk_event_box_new();
 	} finally {
 		lock.unlock();
 	}
