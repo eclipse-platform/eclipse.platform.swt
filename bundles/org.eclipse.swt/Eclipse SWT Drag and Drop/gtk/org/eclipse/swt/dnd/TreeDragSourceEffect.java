@@ -115,8 +115,16 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				icons[i] = OS.gtk_tree_view_create_row_drag_icon(handle, path);
 				if (OS.GTK3) {
-					w[0] = Cairo.cairo_xlib_surface_get_width(icons[i]);
-					h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
+					switch (Cairo.cairo_surface_get_type(icons[i])) {
+					case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+						w[0] = Cairo.cairo_image_surface_get_width(icons[i]);
+						h[0] = Cairo.cairo_image_surface_get_height(icons[i]);
+						break;
+					case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+						w[0] = Cairo.cairo_xlib_surface_get_width(icons[i]);
+						h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
+						break;
+					}
 				} else {
 					OS.gdk_pixmap_get_size(icons[i], w, h);
 				}
