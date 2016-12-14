@@ -370,7 +370,6 @@ public static final long /*int*/ cairo_image_surface_create(int format, int widt
 	}
 }
 /**
- * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native long /*int*/ _cairo_image_surface_get_data(long /*int*/ surface);
@@ -383,7 +382,6 @@ public static final long /*int*/ cairo_image_surface_get_data(long /*int*/ surfa
 	}
 }
 /**
- * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native int _cairo_image_surface_get_format(long /*int*/ surface);
@@ -416,7 +414,6 @@ public static final int cairo_image_surface_get_width(long /*int*/ surface) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native int _cairo_image_surface_get_stride(long /*int*/ surface);
@@ -754,7 +751,6 @@ public static final void cairo_pdf_surface_set_size(long /*int*/ surface, double
 	}
 }
 /**
- * @method flags=dynamic
  * @param cairo cast=(cairo_t *)
  */
 public static final native void _cairo_push_group(long /*int*/ cairo);
@@ -767,7 +763,6 @@ public static final void cairo_push_group(long /*int*/ cairo) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param cairo cast=(cairo_t *)
  */
 public static final native void _cairo_pop_group_to_source(long /*int*/ cairo);
@@ -1108,7 +1103,6 @@ public static final void cairo_surface_finish(long /*int*/ surface) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native int _cairo_surface_get_type(long /*int*/ surface);
@@ -1121,7 +1115,6 @@ public static final int cairo_surface_get_type(long /*int*/ surface) {
 	}
 }
 /**
- * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native int _cairo_surface_get_content(long /*int*/ surface);

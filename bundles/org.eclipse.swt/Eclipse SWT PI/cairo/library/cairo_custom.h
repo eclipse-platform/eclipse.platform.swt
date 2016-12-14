@@ -28,17 +28,8 @@
 #define LIB_CAIRO "libcairo.so.2"
 #endif
 
-#define cairo_format_stride_for_width_LIB LIB_CAIRO
 #define cairo_pdf_surface_set_size_LIB LIB_CAIRO
 #define cairo_ps_surface_set_size_LIB LIB_CAIRO
-#define cairo_surface_set_fallback_resolution_LIB LIB_CAIRO
-#define cairo_surface_get_type_LIB LIB_CAIRO
-#define cairo_image_surface_get_data_LIB LIB_CAIRO
-#define cairo_image_surface_get_format_LIB LIB_CAIRO
-#define cairo_image_surface_get_stride_LIB LIB_CAIRO
-#define cairo_surface_get_content_LIB LIB_CAIRO
-#define cairo_push_group_LIB LIB_CAIRO
-#define cairo_pop_group_to_source_LIB LIB_CAIRO
 #define cairo_region_num_rectangles_LIB LIB_CAIRO
 #define cairo_region_get_rectangle_LIB LIB_CAIRO
 
