@@ -290,6 +290,19 @@ public static final void JSStringRelease (long /*int*/ string) {
 	}
 }
 
+// Signature: 	   void webkit_javascript_result_unref (WebKitJavascriptResult *js_result);
+// Type Note:      WebKitJavascriptResult -> gpointer -> jintLong
+/** @method flags=dynamic */
+public static final native void _webkit_javascript_result_unref(long /*int*/ js_result);
+public static final void webkit_javascript_result_unref(long /*int*/ js_result) {
+	lock.lock();
+	try {
+		_webkit_javascript_result_unref (js_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** @method flags=dynamic */
 public static final native int _JSValueGetType (long /*int*/ ctx, long /*int*/ value);
 public static final int JSValueGetType (long /*int*/ ctx, long /*int*/ value) {

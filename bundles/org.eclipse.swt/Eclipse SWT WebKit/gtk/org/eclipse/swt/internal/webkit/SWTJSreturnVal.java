@@ -26,27 +26,24 @@ public class SWTJSreturnVal {
 	 * Fields used to determine type of return value. These are like enums.
 	 * Note. SWT Tools doesn't auto generate setters/getters for static fields.
 	 */
-	public static final int BOOLEAN = 2;
-	public static final int NUMBER = 3;
-	public static final int STRING = 4;  // Value in returnPointer. Needs to be freed on Java side
-	public static final int NULL = 5;
-	public static final int ARRAY = 6;
-
-	// Note, the following are used but are defined in SWT.java:
+	public static final int VALUE = 1;    // as in return type is a value
+	// Note, the following two types are used but are defined in SWT.java:
 	// ERROR_FAILED_EVALUATE = 50;
 	// ERROR_INVALID_RETURN_VALUE = 51;
-
-	/** @field cast=(jintLong) */
-	public long /*int*/ returnPointer;
-
-	/** @field cast(double) */
-	public double returnDouble;
-
-	/** @field cast(jboolean) */
-	public boolean returnBoolean;
-
 	/** @field cast=(int) */
 	public int returnType;  //Uses types defined above.
+
+	/** @field cast=(jintLong) */
+	public long /*int*/ errorMsg;
+
+	/** @field cast=(jintLong) */
+	public long /*int*/ jsResultPointer;
+
+	/** @field cast=(jintLong) */
+	public long /*int*/ context;
+
+	/** @field cast=(jintLong) */
+	public long /*int*/ value;
 
 	public static final int sizeof = WebKitGTK.SWTJSreturnVal_sizeof();
 }

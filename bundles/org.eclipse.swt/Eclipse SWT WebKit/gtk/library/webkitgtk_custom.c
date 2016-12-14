@@ -39,19 +39,6 @@ dyn_WebKitJavascriptResult  (*fp_webkit_web_view_run_javascript_finish) 	 (dyn_W
 dyn_JSGlobalContextRef 		(*fp_webkit_javascript_result_get_global_context)(dyn_WebKitJavascriptResult);
 void 			(*fp_webkit_web_view_run_javascript) 	(dyn_WebKitWebView, const gchar * /*script*/, GCancellable*, GAsyncReadyCallback, gpointer /*user_data*/);
 dyn_JSValueRef  (*fp_webkit_javascript_result_get_value)(dyn_WebKitJavascriptResult);
-bool 			(*fp_JSValueIsString)					(dyn_JSContextRef, dyn_JSValueRef);
-dyn_JSStringRef (*fp_JSValueToStringCopy) 				(dyn_JSContextRef, dyn_JSValueRef, dyn_JSValueRef* /*exception*/);
-size_t 			(*fp_JSStringGetMaximumUTF8CStringSize) (dyn_JSStringRef);
-size_t			(*fp_JSStringGetUTF8CString)(dyn_JSStringRef, char*, size_t);
-void 			(*fp_JSStringRelease)(dyn_JSStringRef);
-void 			(*fp_webkit_javascript_result_unref)(dyn_WebKitJavascriptResult);
-bool			(*fp_JSValueIsNumber)(dyn_JSContextRef, dyn_JSValueRef);
-double 			(*fp_JSValueToNumber)(dyn_JSContextRef, dyn_JSValueRef, dyn_JSValueRef*);
-bool 			(*fp_JSValueIsBoolean)(dyn_JSContextRef, dyn_JSValueRef);
-bool 			(*fp_JSValueToBoolean)(dyn_JSContextRef, dyn_JSValueRef);
-bool 			(*fp_JSValueIsNull)(dyn_JSContextRef, dyn_JSValueRef);
-bool 			(*fp_JSValueIsUndefined)(dyn_JSContextRef, dyn_JSValueRef);
-bool 			(*fp_JSValueIsArray)(dyn_JSContextRef, dyn_JSValueRef);
 
 #define INIT_WEBKIT_FP(function) \
 		{ \
@@ -63,23 +50,11 @@ bool 			(*fp_JSValueIsArray)(dyn_JSContextRef, dyn_JSValueRef);
 		}
 
 void initFPs() {
-	INIT_WEBKIT_FP(webkit_web_view_run_javascript); // At compile time, these args are turned into strings by a macro.
 	INIT_WEBKIT_FP(webkit_web_view_run_javascript_finish);
 	INIT_WEBKIT_FP(webkit_javascript_result_get_global_context);
+	INIT_WEBKIT_FP(webkit_web_view_run_javascript);
 	INIT_WEBKIT_FP(webkit_javascript_result_get_value);
-	INIT_WEBKIT_FP(JSValueIsString);
-	INIT_WEBKIT_FP(JSValueToStringCopy);
-	INIT_WEBKIT_FP(JSStringGetMaximumUTF8CStringSize);
-	INIT_WEBKIT_FP(JSStringGetUTF8CString);
-	INIT_WEBKIT_FP(JSStringRelease);
-	INIT_WEBKIT_FP(webkit_javascript_result_unref);
-	INIT_WEBKIT_FP(JSValueIsNumber);
-	INIT_WEBKIT_FP(JSValueToNumber);
-	INIT_WEBKIT_FP(JSValueIsBoolean);
-	INIT_WEBKIT_FP(JSValueToBoolean);
-	INIT_WEBKIT_FP(JSValueIsNull);
-	INIT_WEBKIT_FP(JSValueIsUndefined);
-	INIT_WEBKIT_FP(JSValueIsArray);
+
 	fps_cached = 1;
 	return;
 
@@ -91,6 +66,7 @@ void initFPs() {
 /*
  Calling JS script and getting return value example copied and adapted to be dynamic from:
  https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-run-javascript-finish
+ Type conversion occurs on Java side.
 */
 static void
 web_view_javascript_finished_callback (GObject      *object,
@@ -103,10 +79,7 @@ web_view_javascript_finished_callback (GObject      *object,
     GError                 *error = NULL;
 
 	SWTJSreturnVal * swtjsreturnvalSTRUCT = (SWTJSreturnVal*) user_data;
-
-//  js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW (object), result, &error); // Static.
-    js_result = fp_webkit_web_view_run_javascript_finish ((jintLong) object, result, &error); // Dynamic
-
+    js_result = fp_webkit_web_view_run_javascript_finish ((jintLong) object, result, &error);
     if (!js_result) {
     	WEBKIT_DBG_MSG ("DEBUG: webkitgtk_custom.c: webkitgtk_custom.c: Error running javascript(1): %s", error->message);
         swtjsreturnvalSTRUCT->returnType = 50; //SWT.java:ERROR_FAILED_EVALUATE
@@ -114,51 +87,17 @@ web_view_javascript_finished_callback (GObject      *object,
         gsize err_msg_len = strlen(error->message);
         err_msg = malloc(err_msg_len + 1);
         strcpy(err_msg, error->message);
-        swtjsreturnvalSTRUCT->returnPointer = (jintLong) err_msg;
-
+        swtjsreturnvalSTRUCT->errorMsg = (jintLong) err_msg;
         g_error_free (error);
     } else {
+    	WEBKIT_DBG_MSG ("DEBUG: webkitgtk_custom.c: webkitgtk_custom.c: Javascript execution yielded a value");
 		context = fp_webkit_javascript_result_get_global_context (js_result);
 		value = fp_webkit_javascript_result_get_value (js_result);
-		if (fp_JSValueIsString (context, value)) {
-			dyn_JSStringRef js_str_value;
-			gchar      *str_value;  // Note: Freeing up of string *has* to be done on Java side
-			gsize       str_length;
-
-			js_str_value = fp_JSValueToStringCopy (context, value, NULL);
-			str_length = fp_JSStringGetMaximumUTF8CStringSize (js_str_value);
-			str_value = (gchar *)g_malloc (str_length);
-			fp_JSStringGetUTF8CString (js_str_value, str_value, str_length);
-			fp_JSStringRelease (js_str_value);
-			WEBKIT_DBG_MSG ("DEBUG: webkitgtk_custom.c: JS script result: %s\n", str_value);
-			swtjsreturnvalSTRUCT->returnPointer = (jintLong) str_value;
-			swtjsreturnvalSTRUCT->returnType = 4;
-		} else if (fp_JSValueIsNumber(context, value)){
-			double num = fp_JSValueToNumber(context, value, NULL);
-			WEBKIT_DBG_MSG("DEBUG: webkitgtk_custom.c: JS returned a number: %f", num);
-			swtjsreturnvalSTRUCT->returnDouble =  num;
-			swtjsreturnvalSTRUCT->returnType = 3;
-		} else if (fp_JSValueIsBoolean(context, value)) {
-			bool retBool = fp_JSValueToBoolean(context, value);
-			WEBKIT_DBG_MSG("DEBUG: webkitgtk_custom.c: JS returned a boolean: %d", retBool); // 1 = true. 0 = false.
-			swtjsreturnvalSTRUCT->returnBoolean = retBool;
-			swtjsreturnvalSTRUCT->returnType = 2;
-		} else if (fp_JSValueIsNull(context, value) || fp_JSValueIsUndefined(context, value)){
-			WEBKIT_DBG_MSG("DEBUG: webkitgtk_custom.c: Return value is null or undefined");
-			swtjsreturnvalSTRUCT->returnType = 5;
-		} else if (fp_JSValueIsArray(context, value)) {
-			WEBKIT_DBG_MSG("DEBUG: webkitgtk_custom.c: Return type is an array");
-			swtjsreturnvalSTRUCT->returnType = 6;
-			// TODO - TO BE IMPLEMENTED.
-			// -- SEE JSTypedArray.cpp
-			// -- int, bool, string array,
-			// -- returned array may contain arrays (nested arrays).
-			// -- Idea: use WebKit.java:convertToJava(..)
-		} else {
-			swtjsreturnvalSTRUCT->returnType = 51; // SWT.java:ERROR_INVALID_RETURN_VALUE
-			WEBKIT_DBG_MSG ("webkitgtk_custom.c: Error running javascript(2): unexpected return value");
-		}
-		fp_webkit_javascript_result_unref (js_result);
+		swtjsreturnvalSTRUCT->context = (jintLong) context;
+		swtjsreturnvalSTRUCT->value = (jintLong) value;
+		swtjsreturnvalSTRUCT->returnType = 1; // Return is a value to be converted.
+		swtjsreturnvalSTRUCT->jsResultPointer = (jintLong) js_result;
+		// Note: js_result is free up in WebKit.java:evalute().
     }
 
     // Note about exit points: this function must unlock the spinlock prior to returning.
@@ -189,9 +128,9 @@ JNIEXPORT void Java_org_eclipse_swt_internal_webkit_WebKitGTK__1swtWebkitEvaluat
 	SWTJSreturnVal swtjsreturnvalSTRUCT;
 	swtjsreturnvalSTRUCT.JsCallFinished = false;
 	swtjsreturnvalSTRUCT.returnType = 0;
-	swtjsreturnvalSTRUCT.returnPointer = 0;
-	swtjsreturnvalSTRUCT.returnBoolean = 0;
-	swtjsreturnvalSTRUCT.returnDouble = 0;
+	swtjsreturnvalSTRUCT.errorMsg = 0;
+	swtjsreturnvalSTRUCT.context = 0;
+	swtjsreturnvalSTRUCT.value = 0;
 
 	fp_webkit_web_view_run_javascript(webkit_handle,(const gchar *) cString, NULL, web_view_javascript_finished_callback, &swtjsreturnvalSTRUCT);
 

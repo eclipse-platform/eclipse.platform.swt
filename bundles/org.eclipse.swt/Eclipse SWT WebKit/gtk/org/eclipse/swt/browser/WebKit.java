@@ -947,35 +947,30 @@ public Object evaluate (String script) throws SWTException {
 		} else {
 			fixedScript = script;
 		}
-		SWTJSreturnVal jsRetVal = new SWTJSreturnVal();
-		WebKitGTK.swtWebkitEvaluateJavascript(webView, Converter.wcsToMbcs(fixedScript, true), jsRetVal);
+		SWTJSreturnVal jsReturnVal = new SWTJSreturnVal();
+		WebKitGTK.swtWebkitEvaluateJavascript(webView, Converter.wcsToMbcs(fixedScript, true), jsReturnVal);
 
-		switch (jsRetVal.returnType) {
-		case SWTJSreturnVal.STRING: {
-			return Converter.cCharPtrToJavaString(jsRetVal.returnPointer);
-		}
-		case SWTJSreturnVal.NUMBER:
-			return new Double((double) jsRetVal.returnDouble);
-		case SWTJSreturnVal.BOOLEAN:
-			return new Boolean(jsRetVal.returnBoolean);
-		case SWTJSreturnVal.NULL:
-			return null;
-		case SWTJSreturnVal.ARRAY:
-			// TODO - implement support for retunrning arrays.
-			System.err.println("Webkit2: Support for returning arrays not yet implemented. Returning null instead");
-			return null;
-		case SWT.ERROR_FAILED_EVALUATE: {
-			String err_msg = Converter.cCharPtrToJavaString(jsRetVal.returnPointer);
-			if (err_msg.length() > 0) {
-				throw new SWTException (SWT.ERROR_FAILED_EVALUATE, err_msg);
-			} else {
-				// With no error message, "Failed to evaluate javascript expression" is printed, which is better than "".
-				throw new SWTException (SWT.ERROR_FAILED_EVALUATE);
+		switch (jsReturnVal.returnType) {
+			case SWTJSreturnVal.VALUE:
+				Object retObj = null;
+				try {
+					retObj = convertToJava(jsReturnVal.context, jsReturnVal.value);
+				} catch (IllegalArgumentException invalid_arg) {
+					SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
+				} finally {
+					WebKitGTK.webkit_javascript_result_unref (jsReturnVal.jsResultPointer);
+				}
+				return retObj;
+			case SWT.ERROR_FAILED_EVALUATE: {
+				String err_msg = Converter.cCharPtrToJavaString(jsReturnVal.errorMsg);
+				if (err_msg.length() > 0) {
+					throw new SWTException (SWT.ERROR_FAILED_EVALUATE, err_msg);
+				} else {
+					// With no error message, "Failed to evaluate javascript expression" is printed, which is better than "".
+					throw new SWTException (SWT.ERROR_FAILED_EVALUATE);
+				}
+				}
 			}
-		}
-		case SWT.ERROR_INVALID_RETURN_VALUE:
-			throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
-		}
 		return null;
 	} else {
 		return super.evaluate(script);
@@ -2322,6 +2317,8 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObject, long /*int*/ argumentCount, long /*int*/ arguments, long /*int*/ exception) {
 	Object returnValue = null;
 	if (argumentCount == 3) {
+		// Javastring array: <int: function index>, <string: token>, <array: javascript args>
+		// 1st arg: Function index
 		long /*int*/[] result = new long /*int*/[1];
 		C.memmove (result, arguments, C.PTR_SIZEOF);
 		int type = WebKitGTK.JSValueGetType (ctx, result[0]);
@@ -2329,6 +2326,7 @@ long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObj
 			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
 			result[0] = 0;
 			Integer key = new Integer (index);
+			// 2nd arg: function token
 			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 			type = WebKitGTK.JSValueGetType (ctx, result[0]);
 			if (type == WebKitGTK.kJSTypeString) {
@@ -2336,6 +2334,7 @@ long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObj
 				BrowserFunction function = functions.get (key);
 				if (function != null && token.equals (function.token)) {
 					try {
+						// 3rd Arg: paramaters given from Javascript
 						C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
 						Object temp = convertToJava (ctx, result[0]);
 						if (temp instanceof Object[]) {

@@ -102,7 +102,7 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 typedef struct SWTJSreturnVal_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID returnPointer, returnDouble, returnBoolean, returnType;
+	jfieldID returnType, errorMsg, jsResultPointer, context, value;
 } SWTJSreturnVal_FID_CACHE;
 
 SWTJSreturnVal_FID_CACHE SWTJSreturnValFc;
@@ -111,30 +111,33 @@ void cacheSWTJSreturnValFields(JNIEnv *env, jobject lpObject)
 {
 	if (SWTJSreturnValFc.cached) return;
 	SWTJSreturnValFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	SWTJSreturnValFc.returnPointer = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnPointer", I_J);
-	SWTJSreturnValFc.returnDouble = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnDouble", "D");
-	SWTJSreturnValFc.returnBoolean = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnBoolean", "Z");
 	SWTJSreturnValFc.returnType = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnType", "I");
+	SWTJSreturnValFc.errorMsg = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "errorMsg", I_J);
+	SWTJSreturnValFc.jsResultPointer = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "jsResultPointer", I_J);
+	SWTJSreturnValFc.context = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "context", I_J);
+	SWTJSreturnValFc.value = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "value", I_J);
 	SWTJSreturnValFc.cached = 1;
 }
 
 SWTJSreturnVal *getSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
 {
 	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
-	lpStruct->returnPointer = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.returnPointer);
-	lpStruct->returnDouble = (*env)->GetDoubleField(env, lpObject, SWTJSreturnValFc.returnDouble);
-	lpStruct->returnBoolean = (*env)->GetBooleanField(env, lpObject, SWTJSreturnValFc.returnBoolean);
 	lpStruct->returnType = (int)(*env)->GetIntField(env, lpObject, SWTJSreturnValFc.returnType);
+	lpStruct->errorMsg = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.errorMsg);
+	lpStruct->jsResultPointer = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.jsResultPointer);
+	lpStruct->context = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.context);
+	lpStruct->value = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.value);
 	return lpStruct;
 }
 
 void setSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
 {
 	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.returnPointer, (jintLong)lpStruct->returnPointer);
-	(*env)->SetDoubleField(env, lpObject, SWTJSreturnValFc.returnDouble, (jdouble)lpStruct->returnDouble);
-	(*env)->SetBooleanField(env, lpObject, SWTJSreturnValFc.returnBoolean, (jboolean)lpStruct->returnBoolean);
 	(*env)->SetIntField(env, lpObject, SWTJSreturnValFc.returnType, (jint)lpStruct->returnType);
+	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.errorMsg, (jintLong)lpStruct->errorMsg);
+	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.jsResultPointer, (jintLong)lpStruct->jsResultPointer);
+	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.context, (jintLong)lpStruct->context);
+	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.value, (jintLong)lpStruct->value);
 }
 #endif
 

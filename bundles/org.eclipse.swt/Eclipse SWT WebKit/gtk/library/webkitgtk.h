@@ -155,10 +155,11 @@ typedef struct {
  * webkigtk_struct.c/h should be updated by auto-tools to add setters/getters.
  */
 typedef struct {
-	jintLong 	returnPointer;
+	jintLong 	errorMsg;
 	int 		returnType;
-	jboolean 	returnBoolean;
-	double 		returnDouble;
+	jintLong	context;
+	jintLong	value;
+	jintLong 	jsResultPointer;
 
 	jboolean 	JsCallFinished; // Custom field only used on C side. Not mirrored by Java.
 } SWTJSreturnVal;

@@ -1754,6 +1754,24 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1hit_1test_1result_1get_1li
 }
 #endif
 
+#ifndef NO__1webkit_1javascript_1result_1unref
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1javascript_1result_1unref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1javascript_1result_1unref_FUNC);
+/*
+	webkit_javascript_result_unref(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_javascript_result_unref)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1javascript_1result_1unref_FUNC);
+}
+#endif
+
 #ifndef NO__1webkit_1major_1version
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1webkit_1major_1version)
 	(JNIEnv *env, jclass that)

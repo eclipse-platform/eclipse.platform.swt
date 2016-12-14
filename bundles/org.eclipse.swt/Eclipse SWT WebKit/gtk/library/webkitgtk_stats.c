@@ -110,6 +110,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1hit_1test_1result_1context_1is_1link",
 	"_1webkit_1hit_1test_1result_1get_1link_1title",
 	"_1webkit_1hit_1test_1result_1get_1link_1uri",
+	"_1webkit_1javascript_1result_1unref",
 	"_1webkit_1major_1version",
 	"_1webkit_1micro_1version",
 	"_1webkit_1minor_1version",

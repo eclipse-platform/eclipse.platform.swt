@@ -120,6 +120,7 @@ typedef enum {
 	_1webkit_1hit_1test_1result_1context_1is_1link_FUNC,
 	_1webkit_1hit_1test_1result_1get_1link_1title_FUNC,
 	_1webkit_1hit_1test_1result_1get_1link_1uri_FUNC,
+	_1webkit_1javascript_1result_1unref_FUNC,
 	_1webkit_1major_1version_FUNC,
 	_1webkit_1micro_1version_FUNC,
 	_1webkit_1minor_1version_FUNC,
