@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.dnd;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -31,8 +33,6 @@ import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.URLTransfer;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -140,67 +140,58 @@ private void createDragOperations(Composite parent) {
 	parent.setLayout(new RowLayout(SWT.VERTICAL));
 	final Button moveButton = new Button(parent, SWT.CHECK);
 	moveButton.setText("DND.DROP_MOVE");
-	moveButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dragOperation |= DND.DROP_MOVE;
-			} else {
-				dragOperation = dragOperation &~DND.DROP_MOVE;
-				if (dragOperation == 0) {
-					dragOperation = DND.DROP_MOVE;
-					moveButton.setSelection(true);
-				}
-			}
-			if (dragEnabled) {
-				createDragSource();
+	moveButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			dragOperation |= DND.DROP_MOVE;
+		} else {
+			dragOperation = dragOperation & ~DND.DROP_MOVE;
+			if (dragOperation == 0) {
+				dragOperation = DND.DROP_MOVE;
+				moveButton.setSelection(true);
 			}
 		}
-	});
+		if (dragEnabled) {
+			createDragSource();
+		}
+	}));
 
 
 	Button copyButton = new Button(parent, SWT.CHECK);
 	copyButton.setText("DND.DROP_COPY");
-	copyButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dragOperation |= DND.DROP_COPY;
-			} else {
-				dragOperation = dragOperation &~DND.DROP_COPY;
-				if (dragOperation == 0) {
-					dragOperation = DND.DROP_MOVE;
-					moveButton.setSelection(true);
-				}
-			}
-			if (dragEnabled) {
-				createDragSource();
+	copyButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			dragOperation |= DND.DROP_COPY;
+		} else {
+			dragOperation = dragOperation & ~DND.DROP_COPY;
+			if (dragOperation == 0) {
+				dragOperation = DND.DROP_MOVE;
+				moveButton.setSelection(true);
 			}
 		}
-	});
+		if (dragEnabled) {
+			createDragSource();
+		}
+	}));
 
 	Button linkButton = new Button(parent, SWT.CHECK);
 	linkButton.setText("DND.DROP_LINK");
-	linkButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dragOperation |= DND.DROP_LINK;
-			} else {
-				dragOperation = dragOperation &~DND.DROP_LINK;
-				if (dragOperation == 0) {
-					dragOperation = DND.DROP_MOVE;
-					moveButton.setSelection(true);
-				}
-			}
-			if (dragEnabled) {
-				createDragSource();
+	linkButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			dragOperation |= DND.DROP_LINK;
+		} else {
+			dragOperation = dragOperation & ~DND.DROP_LINK;
+			if (dragOperation == 0) {
+				dragOperation = DND.DROP_MOVE;
+				moveButton.setSelection(true);
 			}
 		}
-	});
+		if (dragEnabled) {
+			createDragSource();
+		}
+	}));
 
 	//initialize state
 	moveButton.setSelection(true);
@@ -459,93 +450,75 @@ private void createDragTypes(Composite parent) {
 	parent.setLayout(new GridLayout());
 	Button textButton = new Button(parent, SWT.CHECK);
 	textButton.setText("Text Transfer");
-	textButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDragTransfer(TextTransfer.getInstance());
-			} else {
-				removeDragTransfer(TextTransfer.getInstance());
-			}
+	textButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			addDragTransfer(TextTransfer.getInstance());
+		} else {
+			removeDragTransfer(TextTransfer.getInstance());
 		}
-	});
+	}));
 
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("RTF Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDragTransfer(RTFTransfer.getInstance());
-			} else {
-				removeDragTransfer(RTFTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b1 = (Button) e.widget;
+		if (b1.getSelection()) {
+			addDragTransfer(RTFTransfer.getInstance());
+		} else {
+			removeDragTransfer(RTFTransfer.getInstance());
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("HTML Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDragTransfer(HTMLTransfer.getInstance());
-			} else {
-				removeDragTransfer(HTMLTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b2 = (Button) e.widget;
+		if (b2.getSelection()) {
+			addDragTransfer(HTMLTransfer.getInstance());
+		} else {
+			removeDragTransfer(HTMLTransfer.getInstance());
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("URL Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDragTransfer(URLTransfer.getInstance());
-			} else {
-				removeDragTransfer(URLTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b3 = (Button) e.widget;
+		if (b3.getSelection()) {
+			addDragTransfer(URLTransfer.getInstance());
+		} else {
+			removeDragTransfer(URLTransfer.getInstance());
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
 	b.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDragTransfer(FileTransfer.getInstance());
-			} else {
-				removeDragTransfer(FileTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b4 = (Button) e.widget;
+		if (b4.getSelection()) {
+			addDragTransfer(FileTransfer.getInstance());
+		} else {
+			removeDragTransfer(FileTransfer.getInstance());
 		}
-	});
+	}));
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Select File(s)");
 	b.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			FileDialog dialog = new FileDialog(fileList.getShell(), SWT.OPEN | SWT.MULTI);
-			String result = dialog.open();
-			if (result != null && result.length() > 0){
-				fileList.removeAll();
-				String separator = System.getProperty("file.separator");
-				String path = dialog.getFilterPath();
-				String[] names = dialog.getFileNames();
-				for (String name : names) {
-					fileList.add(path+separator+name);
-				}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		FileDialog dialog = new FileDialog(fileList.getShell(), SWT.OPEN | SWT.MULTI);
+		String result = dialog.open();
+		if (result != null && result.length() > 0) {
+			fileList.removeAll();
+			String separator = System.getProperty("file.separator");
+			String path = dialog.getFilterPath();
+			String[] names = dialog.getFileNames();
+			for (String name : names) {
+				fileList.add(path + separator + name);
 			}
 		}
-	});
+	}));
 	fileList = new List(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	GridData data = new GridData();
 	data.grabExcessHorizontalSpace = true;
@@ -566,38 +539,33 @@ private void createDragWidget(Composite parent) {
 	dragControlType = combo.getSelectionIndex();
 	dragControl = createWidget(dragControlType, parent, "Drag Source");
 
-	combo.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Object data = dragControl.getLayoutData();
-			Composite parent = dragControl.getParent();
-			dragControl.dispose();
-			Combo c = (Combo)e.widget;
-			dragControlType = c.getSelectionIndex();
-			dragControl = createWidget(dragControlType, parent, "Drag Source");
-			dragControl.setLayoutData(data);
-			if (dragEnabled) createDragSource();
-			parent.layout();
-		}
-	});
+	combo.addSelectionListener(widgetSelectedAdapter(e -> {
+		Object data = dragControl.getLayoutData();
+		Composite dragParent = dragControl.getParent();
+		dragControl.dispose();
+		Combo c = (Combo) e.widget;
+		dragControlType = c.getSelectionIndex();
+		dragControl = createWidget(dragControlType, dragParent, "Drag Source");
+		dragControl.setLayoutData(data);
+		if (dragEnabled)
+			createDragSource();
+		dragParent.layout();
+	}));
 
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DragSource");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			dragEnabled = b.getSelection();
-			if (dragEnabled) {
-				createDragSource();
-			} else {
-				if (dragSource != null){
-					dragSource.dispose();
-				}
-				dragSource = null;
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b1 = (Button) e.widget;
+		dragEnabled = b1.getSelection();
+		if (dragEnabled) {
+			createDragSource();
+		} else {
+			if (dragSource != null) {
+				dragSource.dispose();
 			}
+			dragSource = null;
 		}
-	});
+	}));
 	b.setSelection(true);
 	dragEnabled = true;
 
@@ -623,87 +591,75 @@ private void createDropOperations(Composite parent) {
 	parent.setLayout(new RowLayout(SWT.VERTICAL));
 	final Button moveButton = new Button(parent, SWT.CHECK);
 	moveButton.setText("DND.DROP_MOVE");
-	moveButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
+	moveButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			dropOperation |= DND.DROP_MOVE;
+		} else {
+			dropOperation = dropOperation & ~DND.DROP_MOVE;
+			if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_MOVE) != 0) {
 				dropOperation |= DND.DROP_MOVE;
-			} else {
-				dropOperation = dropOperation & ~DND.DROP_MOVE;
-				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_MOVE) != 0) {
-					dropOperation |= DND.DROP_MOVE;
-					moveButton.setSelection(true);
-				}
-			}
-			if (dropEnabled) {
-				createDropTarget();
+				moveButton.setSelection(true);
 			}
 		}
-	});
+		if (dropEnabled) {
+			createDropTarget();
+		}
+	}));
 
 
 	final Button copyButton = new Button(parent, SWT.CHECK);
 	copyButton.setText("DND.DROP_COPY");
-	copyButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropOperation |= DND.DROP_COPY;
-			} else {
-				dropOperation = dropOperation & ~DND.DROP_COPY;
-				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_COPY) != 0) {
-					dropOperation = DND.DROP_COPY;
-					copyButton.setSelection(true);
-				}
-			}
-			if (dropEnabled) {
-				createDropTarget();
+	copyButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			dropOperation |= DND.DROP_COPY;
+		} else {
+			dropOperation = dropOperation & ~DND.DROP_COPY;
+			if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_COPY) != 0) {
+				dropOperation = DND.DROP_COPY;
+				copyButton.setSelection(true);
 			}
 		}
-	});
+		if (dropEnabled) {
+			createDropTarget();
+		}
+	}));
 
 	final Button linkButton = new Button(parent, SWT.CHECK);
 	linkButton.setText("DND.DROP_LINK");
-	linkButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropOperation |= DND.DROP_LINK;
-			} else {
-				dropOperation = dropOperation & ~DND.DROP_LINK;
-				if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_LINK) != 0) {
-					dropOperation = DND.DROP_LINK;
-					linkButton.setSelection(true);
-				}
-			}
-			if (dropEnabled) {
-				createDropTarget();
+	linkButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropOperation |= DND.DROP_LINK;
+		} else {
+			dropOperation = dropOperation & ~DND.DROP_LINK;
+			if (dropOperation == 0 || (dropDefaultOperation & DND.DROP_LINK) != 0) {
+				dropOperation = DND.DROP_LINK;
+				linkButton.setSelection(true);
 			}
 		}
-	});
+		if (dropEnabled) {
+			createDropTarget();
+		}
+	}));
 
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DND.DROP_DEFAULT");
 	defaultParent = new Composite(parent, SWT.NONE);
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropOperation |= DND.DROP_DEFAULT;
-				defaultParent.setVisible(true);
-			} else {
-				dropOperation = dropOperation & ~DND.DROP_DEFAULT;
-				defaultParent.setVisible(false);
-			}
-			if (dropEnabled) {
-				createDropTarget();
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropOperation |= DND.DROP_DEFAULT;
+			defaultParent.setVisible(true);
+		} else {
+			dropOperation = dropOperation & ~DND.DROP_DEFAULT;
+			defaultParent.setVisible(false);
 		}
-	});
+		if (dropEnabled) {
+			createDropTarget();
+		}
+	}));
 
 	defaultParent.setVisible(false);
 	GridLayout layout = new GridLayout();
@@ -713,71 +669,59 @@ private void createDropOperations(Composite parent) {
 	label.setText("Value for default operation is:");
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_MOVE");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropDefaultOperation = DND.DROP_MOVE;
-				dropOperation |= DND.DROP_MOVE;
-				moveButton.setSelection(true);
-				if (dropEnabled) {
-					createDropTarget();
-				}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropDefaultOperation = DND.DROP_MOVE;
+			dropOperation |= DND.DROP_MOVE;
+			moveButton.setSelection(true);
+			if (dropEnabled) {
+				createDropTarget();
 			}
 		}
-	});
+	}));
 
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_COPY");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropDefaultOperation = DND.DROP_COPY;
-				dropOperation |= DND.DROP_COPY;
-				copyButton.setSelection(true);
-				if (dropEnabled) {
-					createDropTarget();
-				}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropDefaultOperation = DND.DROP_COPY;
+			dropOperation |= DND.DROP_COPY;
+			copyButton.setSelection(true);
+			if (dropEnabled) {
+				createDropTarget();
 			}
 		}
-	});
+	}));
 
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_LINK");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropDefaultOperation = DND.DROP_LINK;
-				dropOperation |= DND.DROP_LINK;
-				linkButton.setSelection(true);
-				if (dropEnabled) {
-					createDropTarget();
-				}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropDefaultOperation = DND.DROP_LINK;
+			dropOperation |= DND.DROP_LINK;
+			linkButton.setSelection(true);
+			if (dropEnabled) {
+				createDropTarget();
 			}
 		}
-	});
+	}));
 
 	b = new Button(defaultParent, SWT.RADIO);
 	b.setText("DND.DROP_NONE");
 	b.setSelection(true);
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropDefaultOperation = DND.DROP_NONE;
-				dropOperation &= ~DND.DROP_DEFAULT;
-				if (dropEnabled) {
-					createDropTarget();
-				}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropDefaultOperation = DND.DROP_NONE;
+			dropOperation &= ~DND.DROP_DEFAULT;
+			if (dropEnabled) {
+				createDropTarget();
 			}
 		}
-	});
+	}));
 
 	// initialize state
 	moveButton.setSelection(true);
@@ -949,148 +893,118 @@ private void createFeedbackTypes(Group parent) {
 	parent.setLayout(new RowLayout(SWT.VERTICAL));
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_SELECT");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_SELECT;
-			} else {
-				dropFeedback &= ~DND.FEEDBACK_SELECT;
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropFeedback |= DND.FEEDBACK_SELECT;
+		} else {
+			dropFeedback &= ~DND.FEEDBACK_SELECT;
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_SCROLL");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_SCROLL;
-			} else {
-				dropFeedback &= ~DND.FEEDBACK_SCROLL;
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropFeedback |= DND.FEEDBACK_SCROLL;
+		} else {
+			dropFeedback &= ~DND.FEEDBACK_SCROLL;
 		}
-	});
+	}));
 
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_INSERT_BEFORE");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;
-			} else {
-				dropFeedback &= ~DND.FEEDBACK_INSERT_BEFORE;
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;
+		} else {
+			dropFeedback &= ~DND.FEEDBACK_INSERT_BEFORE;
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_INSERT_AFTER");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_INSERT_AFTER;
-			} else {
-				dropFeedback &= ~DND.FEEDBACK_INSERT_AFTER;
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropFeedback |= DND.FEEDBACK_INSERT_AFTER;
+		} else {
+			dropFeedback &= ~DND.FEEDBACK_INSERT_AFTER;
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("FEEDBACK_EXPAND");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				dropFeedback |= DND.FEEDBACK_EXPAND;
-			} else {
-				dropFeedback &= ~DND.FEEDBACK_EXPAND;
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			dropFeedback |= DND.FEEDBACK_EXPAND;
+		} else {
+			dropFeedback &= ~DND.FEEDBACK_EXPAND;
 		}
-	});
+	}));
 }
 
 private void createDropTypes(Composite parent) {
 	parent.setLayout(new RowLayout(SWT.VERTICAL));
 	Button textButton = new Button(parent, SWT.CHECK);
 	textButton.setText("Text Transfer");
-	textButton.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDropTransfer(TextTransfer.getInstance());
-			} else {
-				removeDropTransfer(TextTransfer.getInstance());
-			}
+	textButton.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button b = (Button) e.widget;
+		if (b.getSelection()) {
+			addDropTransfer(TextTransfer.getInstance());
+		} else {
+			removeDropTransfer(TextTransfer.getInstance());
 		}
-	});
+	}));
 
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("RTF Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDropTransfer(RTFTransfer.getInstance());
-			} else {
-				removeDropTransfer(RTFTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			addDropTransfer(RTFTransfer.getInstance());
+		} else {
+			removeDropTransfer(RTFTransfer.getInstance());
 		}
-	});
+	}));
 
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("HTML Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDropTransfer(HTMLTransfer.getInstance());
-			} else {
-				removeDropTransfer(HTMLTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			addDropTransfer(HTMLTransfer.getInstance());
+		} else {
+			removeDropTransfer(HTMLTransfer.getInstance());
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("URL Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDropTransfer(URLTransfer.getInstance());
-			} else {
-				removeDropTransfer(URLTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			addDropTransfer(URLTransfer.getInstance());
+		} else {
+			removeDropTransfer(URLTransfer.getInstance());
 		}
-	});
+	}));
 
 	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			if (b.getSelection()) {
-				addDropTransfer(FileTransfer.getInstance());
-			} else {
-				removeDropTransfer(FileTransfer.getInstance());
-			}
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		if (eb.getSelection()) {
+			addDropTransfer(FileTransfer.getInstance());
+		} else {
+			removeDropTransfer(FileTransfer.getInstance());
 		}
-	});
+	}));
 
 	// initialize state
 	textButton.setSelection(true);
@@ -1104,38 +1018,33 @@ private void createDropWidget(Composite parent) {
 	combo.select(LABEL);
 	dropControlType = combo.getSelectionIndex();
 	dropControl = createWidget(dropControlType, parent, "Drop Target");
-	combo.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Object data = dropControl.getLayoutData();
-			Composite parent = dropControl.getParent();
-			dropControl.dispose();
-			Combo c = (Combo)e.widget;
-			dropControlType = c.getSelectionIndex();
-			dropControl = createWidget(dropControlType, parent, "Drop Target");
-			dropControl.setLayoutData(data);
-			if (dropEnabled) createDropTarget();
-			parent.layout();
-		}
-	});
+	combo.addSelectionListener(widgetSelectedAdapter(e -> {
+		Object data = dropControl.getLayoutData();
+		Composite dropParent = dropControl.getParent();
+		dropControl.dispose();
+		Combo c = (Combo) e.widget;
+		dropControlType = c.getSelectionIndex();
+		dropControl = createWidget(dropControlType, dropParent, "Drop Target");
+		dropControl.setLayoutData(data);
+		if (dropEnabled)
+			createDropTarget();
+		dropParent.layout();
+	}));
 
 	Button b = new Button(parent, SWT.CHECK);
 	b.setText("DropTarget");
-	b.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			Button b = (Button)e.widget;
-			dropEnabled = b.getSelection();
-			if (dropEnabled) {
-				createDropTarget();
-			} else {
-				if (dropTarget != null){
-					dropTarget.dispose();
-				}
-				dropTarget = null;
+	b.addSelectionListener(widgetSelectedAdapter(e -> {
+		Button eb = (Button) e.widget;
+		dropEnabled = eb.getSelection();
+		if (dropEnabled) {
+			createDropTarget();
+		} else {
+			if (dropTarget != null) {
+				dropTarget.dispose();
 			}
+			dropTarget = null;
 		}
-	});
+	}));
 	// initialize state
 	b.setSelection(true);
 	dropEnabled = true;
@@ -1321,21 +1230,13 @@ public void open(Display display) {
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
-	item.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			dragConsole.setText("");
-		}
-	});
+	item.addSelectionListener(widgetSelectedAdapter(e -> dragConsole.setText("")));
 	item = new MenuItem (menu, SWT.CHECK);
 	item.setText ("Show Event detail");
-	item.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			MenuItem item = (MenuItem)e.widget;
-			dragEventDetail = item.getSelection();
-		}
-	});
+	item.addSelectionListener(widgetSelectedAdapter(e -> {
+		MenuItem eItem = (MenuItem) e.widget;
+		dragEventDetail = eItem.getSelection();
+	}));
 	dragConsole.setMenu(menu);
 
 	Label dropLabel = new Label(parent, SWT.LEFT);
@@ -1366,21 +1267,14 @@ public void open(Display display) {
 	menu = new Menu (shell, SWT.POP_UP);
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
-	item.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			dropConsole.setText("");
-		}
-	});
+	item.addSelectionListener(widgetSelectedAdapter(e -> dropConsole.setText("")));
 	item = new MenuItem (menu, SWT.CHECK);
 	item.setText ("Show Event detail");
-	item.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			MenuItem item = (MenuItem)e.widget;
-			dropEventDetail = item.getSelection();
+	item.addSelectionListener(widgetSelectedAdapter(e -> {
+			MenuItem eItem = (MenuItem)e.widget;
+			dropEventDetail = eItem.getSelection();
 		}
-	});
+	));
 	dropConsole.setMenu(menu);
 
 	if (dragEnabled) createDragSource();
