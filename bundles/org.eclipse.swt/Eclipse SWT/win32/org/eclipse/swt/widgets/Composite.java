@@ -1928,15 +1928,21 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					if ((bits & OS.WS_EX_TOPMOST) != 0) break;
 				} while (true);
 				if (hwndParent != 0) break;
+				/*
+				 * Bug in Windows.  TTN_SHOW is sent for inactive shells.  When
+				 * SetWindowPos is called as a reaction, inactive shells can
+				 * wrongly end up on top.  The fix is to swallow such requests.
+				 *
+				 * A visible effect is that spurious tool tips can show up and
+				 * disappear in a split second.  This is a mostly harmless
+				 * feature that can also be observed in the Windows Explorer.
+				 * See bug 491627 for more details.
+				 */
+				if (display.getActiveShell () != getShell ()) return LRESULT.ONE;
+
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				/*
-				 * HWND_TOPMOST option places the window above all non-topmost
-				 * windows. The window maintains its topmost position even when
-				 * it is deactivated. Hence this option should be used only
-				 * on the active shell. See bug 491627 for more details.
-				 */
-				long /*int*/ hwndInsertAfter = (hdr.code == OS.TTN_SHOW && display.getActiveShell () == getShell ()) ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				long /*int*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
 				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
 				display.lockActiveWindow = false;
 				break;
