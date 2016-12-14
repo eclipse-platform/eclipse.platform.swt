@@ -288,7 +288,7 @@ class MenuTab extends Tab {
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + '2');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciTarget]);
 			item.setEnabled(enabledButton.getSelection());
-			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", new String[] {item.getText() }));
+			if (tooltipButton.getSelection()) item.setToolTipText(ControlExample.getResourceString("Tooltip", item.getText()));
 			hookListeners(item);
 		}
 

@@ -175,7 +175,7 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("DirectoryDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", "" + result) + Text.DELIMITER + Text.DELIMITER);
 			directoryDialogResult = result;
 			return;
 		}
@@ -191,7 +191,7 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open();
 			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", "" + result) + Text.DELIMITER);
 			textWidget.append ("getFilterIndex() =" + dialog.getFilterIndex() + Text.DELIMITER);
 			textWidget.append ("getFilterPath() =" + dialog.getFilterPath() + Text.DELIMITER);
 			textWidget.append ("getFileName() =" + dialog.getFileName() + Text.DELIMITER);
@@ -216,7 +216,7 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			FontData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("FontDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", "" + result) + Text.DELIMITER);
 			textWidget.append ("getFontList() =" + Text.DELIMITER);
 			FontData [] fonts = dialog.getFontList ();
 			if (fonts != null) {
@@ -239,7 +239,7 @@ class DialogTab extends Tab {
 			dialog.setText(ControlExample.getResourceString("Title"));
 			PrinterData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("PrintDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", "" + result) + Text.DELIMITER);
 			if (result != null) {
 				textWidget.append ("printerData.scope = " + (result.scope == PrinterData.PAGE_RANGE ? "PAGE_RANGE" : result.scope == PrinterData.SELECTION ? "SELECTION" : "ALL_PAGES") + Text.DELIMITER);
 				textWidget.append ("printerData.startPage = " + result.startPage + Text.DELIMITER);
@@ -268,28 +268,28 @@ class DialogTab extends Tab {
 			 */
 			switch (result) {
 				case SWT.OK:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.OK"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.OK"));
 					break;
 				case SWT.YES:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.YES"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.YES"));
 					break;
 				case SWT.NO:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.NO"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.NO"));
 					break;
 				case SWT.CANCEL:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.CANCEL"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.CANCEL"));
 					break;
 				case SWT.ABORT:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.ABORT"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.ABORT"));
 					break;
 				case SWT.RETRY:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.RETRY"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.RETRY"));
 					break;
 				case SWT.IGNORE:
-					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.IGNORE"}));
+					textWidget.append (ControlExample.getResourceString("Result", "SWT.IGNORE"));
 					break;
 				default:
-					textWidget.append(ControlExample.getResourceString("Result", new String [] {"" + result}));
+					textWidget.append(ControlExample.getResourceString("Result", "" + result));
 					break;
 			}
 			textWidget.append (Text.DELIMITER + Text.DELIMITER);
