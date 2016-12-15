@@ -1687,35 +1687,12 @@ public static final long /*int*/ PANGO_TYPE_LAYOUT() {
 		lock.unlock();
 	}
 }
-/** @param handle cast=(void *) */
-public static final native int _dlclose(long /*int*/ handle);
-public static final int dlclose(long /*int*/ handle) {
-	lock.lock();
-	try {
-		return _dlclose(handle);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param filename cast=(const char *) */
 public static final native long /*int*/ _dlopen(byte[] filename, int flag);
 public static final long /*int*/ dlopen(byte[] filename, int flag) {
 	lock.lock();
 	try {
 		return _dlopen(filename, flag);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param handle cast=(void *)
- * @param symbol cast=(const char *)
- */
-public static final native long /*int*/ _dlsym(long /*int*/ handle, byte[] symbol);
-public static final long /*int*/ dlsym(long /*int*/ handle, byte[] symbol) {
-	lock.lock();
-	try {
-		return _dlsym(handle, symbol);
 	} finally {
 		lock.unlock();
 	}

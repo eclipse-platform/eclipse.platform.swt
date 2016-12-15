@@ -188,9 +188,7 @@ typedef enum {
 	_1call__JJJJJJJJ_FUNC,
 #endif
 	_1call_1get_1size_FUNC,
-	_1dlclose_FUNC,
 	_1dlopen_FUNC,
-	_1dlsym_FUNC,
 	_1g_1app_1info_1create_1from_1commandline_FUNC,
 	_1g_1app_1info_1get_1all_FUNC,
 	_1g_1app_1info_1get_1default_1for_1type_FUNC,

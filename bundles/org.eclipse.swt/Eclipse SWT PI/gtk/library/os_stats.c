@@ -178,9 +178,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1call__JJJJJJJJ",
 #endif
 	"_1call_1get_1size",
-	"_1dlclose",
 	"_1dlopen",
-	"_1dlsym",
 	"_1g_1app_1info_1create_1from_1commandline",
 	"_1g_1app_1info_1get_1all",
 	"_1g_1app_1info_1get_1default_1for_1type",

@@ -1731,18 +1731,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__JJJJJJJJ)(JNIEnv *env, jclass that,
 }
 #endif
 
-#ifndef NO__1dlclose
-JNIEXPORT jint JNICALL OS_NATIVE(_1dlclose)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1dlclose_FUNC);
-	rc = (jint)dlclose((void *)arg0);
-	OS_NATIVE_EXIT(env, that, _1dlclose_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1dlopen
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1dlopen)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
@@ -1755,22 +1743,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1dlopen)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1dlopen_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1dlsym
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1dlsym)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1dlsym_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)dlsym((void *)arg0, (const char *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1dlsym_FUNC);
 	return rc;
 }
 #endif
