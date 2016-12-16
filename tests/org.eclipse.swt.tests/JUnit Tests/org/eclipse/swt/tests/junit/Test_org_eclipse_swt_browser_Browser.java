@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
@@ -767,7 +768,7 @@ boolean evaluate_number_helper(Double testNum) {
  */
 @Test
 public void test_evaluate_boolean() {
-	final AtomicReference<Boolean> returnValue = new AtomicReference<>();
+	final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
 		public void changed(ProgressEvent event) {
@@ -775,7 +776,7 @@ public void test_evaluate_boolean() {
 		@Override
 		public void completed(ProgressEvent event) {
 			Boolean evalResult = (Boolean) browser.evaluate("return true");
-			returnValue.set(evalResult);
+			atomicBoolean.set(evalResult);
 			if (browser_debug)
 				System.out.println("Node value: "+ evalResult);
 		}
@@ -785,8 +786,8 @@ public void test_evaluate_boolean() {
 	shell.open();
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
-		if (returnValue.get()) {
-			return; // passed
+		if (atomicBoolean.get()) {
+			return; // passed.
 		}
 	}
 }
