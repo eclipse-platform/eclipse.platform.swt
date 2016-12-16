@@ -17,7 +17,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -781,16 +783,12 @@ public void test_evaluate_boolean() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = false;
-	Boolean testbool = true;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
-		if (testbool.equals(returnValue.get())) {
-			passed = true;
-			break;
+		if (returnValue.get()) {
+			return; // passed
 		}
 	}
-	assertTrue(passed);
 }
 
 /**
@@ -817,15 +815,12 @@ public void test_evaluate_null() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = false;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if (returnValue.get() == null) {
-			passed = true;
-			break;
+			return; // passed
 		}
 	}
-	assertTrue(passed);
 }
 
 /**
@@ -899,19 +894,136 @@ public void test_evaluate_evaluation_failed_exception() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = false;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if (exception.get() != -1) {
 			if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
-				passed = true;
+				return; // passed
 			} else  {
 				System.err.println("test_evaluate_invalid_return_value - Invalid exception code");
 			}
 			break;
 		}
 	}
-	assertTrue(passed);
+}
+
+/**
+ * Test the evaluate() api that returns an array of numbers. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_array_numbers() {
+	// Small note:
+	// evaluate() returns 'Double' type. Java doesn't have AtomicDouble
+	// for convienience we simply convert double to int as we're dealing with integers anyway.
+	final AtomicIntegerArray atomicIntArray = new AtomicIntegerArray(3);
+	atomicIntArray.set(0, -1);
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Object[] evalResult = (Object[]) browser.evaluate("return new Array(1,2,3)");
+			atomicIntArray.set(0, ((Double) evalResult[0]).intValue());
+			atomicIntArray.set(1, ((Double) evalResult[1]).intValue());
+			atomicIntArray.set(2, ((Double) evalResult[2]).intValue());
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (atomicIntArray.get(0) != -1) {
+			if (atomicIntArray.get(0) == 1 && atomicIntArray.get(1) == 2 && atomicIntArray.get(2) == 3) {
+				return; // passed
+			} else {
+				System.err.println("ERROR: test_evaluate_array_numbers, resulting numbers not as expected");
+			}
+		}
+	}
+}
+
+/**
+ * Test the evaluate() api that returns an array of strings. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_array_strings () {
+	final AtomicReferenceArray<String> atomicStringArray = new AtomicReferenceArray<>(3);
+	atomicStringArray.set(0, "executing");
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", \"str2\", \"str3\")");
+			atomicStringArray.set(0, (String) evalResult[0]);
+			atomicStringArray.set(1, (String) evalResult[1]);
+			atomicStringArray.set(2, (String) evalResult[2]);
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (! "executing".equals(atomicStringArray.get(0))) {
+			if (atomicStringArray.get(0).equals("str1")
+					&& atomicStringArray.get(1).equals("str2")
+					&& atomicStringArray.get(2).equals("str3")) {
+				return; // passed
+			} else {
+				System.err.println("ERROR: test_evaluate_array_strings, resulting strings not as expected");
+			}
+		}
+	}
+}
+
+/**
+ * Test the evaluate() api that returns an array of mixed types. Functionality based on Snippet308.
+ * Only wait till success. Otherwise timeout after 3 seconds.
+ */
+@Test
+public void test_evaluate_array_mixedTypes () {
+	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3);
+	atomicArray.set(0, "executing");
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+			Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", 2, true)");
+			atomicArray.set(0, evalResult[0]);
+			atomicArray.set(1, evalResult[1]);
+			atomicArray.set(2, evalResult[2]);
+			if (browser_debug)
+				System.out.println("Node value: "+ evalResult);
+		}
+	});
+
+
+	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (! "executing".equals(atomicArray.get(0))) {
+			if (atomicArray.get(0).equals("str1")
+					&& ((Double) atomicArray.get(1)) == 2
+					&& ((Boolean) atomicArray.get(2))) {
+				return; //passed.
+			} else {
+				System.err.println("ERROR: test_evaluate_array_mixedTypes, resulting strings not as expected");
+			}
+		}
+	}
 }
 
 /* custom */
