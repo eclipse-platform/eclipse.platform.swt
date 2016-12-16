@@ -713,7 +713,7 @@ Image createButtonImage(Display display, int button) {
 	if (button == CTabFolderRenderer.PART_CHEVRON_BUTTON) {
 		transparent = new RGB(0xFF, 0xFF, 0xFF);
 	} else {
-		transparent = new RGB(0xFD, 0, 0);
+		transparent = new RGB(0xF7, 0, 0);
 	}
 	Color transColor = new Color(display, transparent);
 	gc.setBackground(transColor);
