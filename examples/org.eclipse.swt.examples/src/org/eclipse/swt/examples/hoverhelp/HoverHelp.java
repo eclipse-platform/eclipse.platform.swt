@@ -169,12 +169,9 @@ public class HoverHelp {
 			item.setText (getResourceString("ToolItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
-			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
-				@Override
-				public String getHelpText(Widget widget) {
-					Item item = (Item) widget;
-					return getResourceString("ToolItem.help", new Object[] { item.getText() });
-				}
+			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
+				Item item1 = (Item) widget;
+				return getResourceString("ToolItem.help", new Object[] { item1.getText() });
 			});
 		}
 		GridData gridData = new GridData();
@@ -190,12 +187,9 @@ public class HoverHelp {
 			item.setText (getResourceString("TableItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
 				new Object[] { item.getText(), helpKey }));
-			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
-				@Override
-				public String getHelpText(Widget widget) {
-					Item item = (Item) widget;
-					return getResourceString("TableItem.help", new Object[] { item.getText() });
-				}
+			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
+				Item item1 = (Item) widget;
+				return getResourceString("TableItem.help", new Object[] { item1.getText() });
 			});
 		}
 		table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));
@@ -209,12 +203,9 @@ public class HoverHelp {
 			item.setText (getResourceString("TreeItem.text", new Object[] { Integer.valueOf(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
 				new Object[] { item.getText(), helpKey}));
-			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
-				@Override
-				public String getHelpText(Widget widget) {
-					Item item = (Item) widget;
-					return getResourceString("TreeItem.help", new Object[] { item.getText() });
-				}
+			item.setData ("TIP_HELPTEXTHANDLER", (ToolTipHelpTextHandler) widget -> {
+				Item item1 = (Item) widget;
+				return getResourceString("TreeItem.help", new Object[] { item1.getText() });
 			});
 		}
 		tree.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL));

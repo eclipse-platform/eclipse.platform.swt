@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -382,12 +381,7 @@ static Image createImage(Device device, Color color) {
 
 void createTabList(Composite parent) {
 	tabList = new Tree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-	Arrays.sort(tabs, new Comparator<GraphicsTab>() {
-		@Override
-		public int compare(GraphicsTab tab0, GraphicsTab tab1) {
-			return tab0.getText().compareTo(tab1.getText());
-		}
-	});
+	Arrays.sort(tabs, (tab0, tab1) -> tab0.getText().compareTo(tab1.getText()));
 	HashSet<String> set = new HashSet<>();
 	for (GraphicsTab tab : tabs) {
 		set.add(tab.getCategory());
