@@ -64,16 +64,13 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 */
 	public StyledTextDropTargetEffect(StyledText styledText) {
 		super(styledText);
-		paintListener = new Listener () {
-			@Override
-			public void handleEvent (Event event) {
-				if (currentOffset != -1) {
-					StyledText text = (StyledText) getControl();
-					Point position = text.getLocationAtOffset(currentOffset);
-					int height = text.getLineHeight(currentOffset);
-					event.gc.setBackground(event.display.getSystemColor (SWT.COLOR_BLACK));
-					event.gc.fillRectangle(position.x, position.y, CARET_WIDTH, height);
-				}
+		paintListener = event -> {
+			if (currentOffset != -1) {
+				StyledText text = (StyledText) getControl();
+				Point position = text.getLocationAtOffset(currentOffset);
+				int height = text.getLineHeight(currentOffset);
+				event.gc.setBackground(event.display.getSystemColor (SWT.COLOR_BLACK));
+				event.gc.fillRectangle(position.x, position.y, CARET_WIDTH, height);
 			}
 		};
 	}
