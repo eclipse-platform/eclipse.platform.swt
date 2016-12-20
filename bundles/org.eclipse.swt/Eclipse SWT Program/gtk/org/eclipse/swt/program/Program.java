@@ -182,7 +182,11 @@ public ImageData getImageData() {
 					data.bytesPerLine = stride;
 				}
 			}
-			OS.gtk_icon_info_free(gicon_info);
+			if (OS.GTK_VERSION >= OS.VERSION(3, 8, 0)) {
+				OS.g_object_unref(gicon_info);
+			} else {
+				OS.gtk_icon_info_free(gicon_info);
+			}
 		}
 		OS.g_object_unref(gicon);
 	}
