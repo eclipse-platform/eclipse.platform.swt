@@ -37,10 +37,10 @@ public static void main(String [] args) {
 		display.dispose();
 		return;
 	}
-	final BrowserFunction function = new CustomFunction (browser, "mouseDownHappened");
 	browser.addProgressListener (new ProgressAdapter () {
 		@Override
 		public void completed (ProgressEvent event) {
+			final BrowserFunction function = new CustomFunction (browser, "mouseDownHappened");
 			browser.execute(SCRIPT);
 			browser.addLocationListener (new LocationAdapter () {
 				@Override
