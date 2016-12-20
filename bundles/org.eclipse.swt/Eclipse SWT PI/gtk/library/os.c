@@ -9847,22 +9847,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1icon_1factory_1lookup_1default
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1factory_1lookup_1default)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1factory_1lookup_1default_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_icon_factory_lookup_default((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1factory_1lookup_1default_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1icon_1info_1free
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1icon_1info_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -9893,46 +9877,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1info_1load_1icon)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1info_1load_1icon_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1icon_1set_1render_1icon
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1set_1render_1icon)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jintLong arg5, jintLong arg6)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1set_1render_1icon_FUNC);
-/*
-	rc = (jintLong)gtk_icon_set_render_icon((GtkIconSet *)arg0, (GtkStyle *)arg1, (GtkTextDirection)arg2, (GtkStateType)arg3, (GtkIconSize)arg4, (GtkWidget *)arg5, (const char *)arg6);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_icon_set_render_icon)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkIconSet *, GtkStyle *, GtkTextDirection, GtkStateType, GtkIconSize, GtkWidget *, const char *))fp)((GtkIconSet *)arg0, (GtkStyle *)arg1, (GtkTextDirection)arg2, (GtkStateType)arg3, (GtkIconSize)arg4, (GtkWidget *)arg5, (const char *)arg6);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1set_1render_1icon_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1icon_1set_1render_1icon_1pixbuf
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1set_1render_1icon_1pixbuf)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC);
-/*
-	rc = (jintLong)gtk_icon_set_render_icon_pixbuf(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_icon_set_render_icon_pixbuf)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint))fp)(arg0, arg1, arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC);
 	return rc;
 }
 #endif
@@ -10001,6 +9945,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1theme_1get_1default)
 	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1theme_1get_1default_FUNC);
 	rc = (jintLong)gtk_icon_theme_get_default();
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1theme_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1icon_1theme_1load_1icon
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1theme_1load_1icon)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2, jint arg3, jintLong arg4)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1theme_1load_1icon_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_icon_theme_load_icon((GtkIconTheme *)arg0, (const gchar *)lparg1, (gint)arg2, (GtkIconLookupFlags)arg3, (GError **)arg4);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1theme_1load_1icon_FUNC);
 	return rc;
 }
 #endif

@@ -1083,14 +1083,7 @@ void createDisplay (DeviceData data) {
 
 Image createImage (String name) {
 	byte[] buffer = Converter.wcsToMbcs (name, true);
-	long /*int*/ pixbuf, icon_set = OS.gtk_icon_factory_lookup_default (buffer);
-	if (OS.GTK3) {
-		pixbuf = OS.gtk_icon_set_render_icon_pixbuf(icon_set, OS.gtk_widget_get_style_context(shellHandle), OS.GTK_ICON_SIZE_DIALOG);
-	} else {
-		long /*int*/ style = OS.gtk_widget_get_default_style ();
-		pixbuf = OS.gtk_icon_set_render_icon (icon_set, style,
-			OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, OS.GTK_ICON_SIZE_DIALOG, 0, 0);
-	}
+	long /*int*/ pixbuf = OS.gtk_icon_theme_load_icon(OS.gtk_icon_theme_get_default(), buffer, 48, OS.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	if (pixbuf == 0) return null;
 	int width = OS.gdk_pixbuf_get_width (pixbuf);
 	int height = OS.gdk_pixbuf_get_height (pixbuf);
@@ -2672,23 +2665,23 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR:
 			if (errorImage == null) {
-				errorImage = createImage ("gtk-dialog-error"); //$NON-NLS-1$
+				errorImage = createImage ("dialog-error"); //$NON-NLS-1$
 			}
 			return errorImage;
 		case SWT.ICON_INFORMATION:
 		case SWT.ICON_WORKING:
 			if (infoImage == null) {
-				infoImage = createImage ("gtk-dialog-info"); //$NON-NLS-1$
+				infoImage = createImage ("dialog-information"); //$NON-NLS-1$
 			}
 			return infoImage;
 		case SWT.ICON_QUESTION:
 			if (questionImage == null) {
-				questionImage = createImage ("gtk-dialog-question"); //$NON-NLS-1$
+				questionImage = createImage ("dialog-question"); //$NON-NLS-1$
 			}
 			return questionImage;
 		case SWT.ICON_WARNING:
 			if (warningImage == null) {
-				warningImage = createImage ("gtk-dialog-warning"); //$NON-NLS-1$
+				warningImage = createImage ("dialog-warning"); //$NON-NLS-1$
 			}
 			return warningImage;
 	}

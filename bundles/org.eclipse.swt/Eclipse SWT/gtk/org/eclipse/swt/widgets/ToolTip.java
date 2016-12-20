@@ -496,18 +496,12 @@ void drawTooltip (long /*int*/ cr) {
 			byte[] buffer = null;
 			int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 			switch (id) {
-				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("gtk-dialog-error", true); break;
-				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("gtk-dialog-info", true); break;
-				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("gtk-dialog-warning", true); break;
+				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("dialog-error", true); break;
+				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("dialog-information", true); break;
+				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("dialog-warning", true); break;
 			}
 			if (buffer != null) {
-				long /*int*/ pixbuf, icon_set = OS.gtk_icon_factory_lookup_default (buffer);
-				if (OS.GTK3) {
-					pixbuf = OS.gtk_icon_set_render_icon_pixbuf(icon_set, OS.gtk_widget_get_style_context(handle), OS.GTK_ICON_SIZE_MENU);
-				} else {
-					long /*int*/ style = OS.gtk_widget_get_default_style ();
-					pixbuf = OS.gtk_icon_set_render_icon (icon_set, style, OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, OS.GTK_ICON_SIZE_MENU, 0, 0);
-				}
+				long /*int*/ pixbuf = OS.gtk_icon_theme_load_icon(OS.gtk_icon_theme_get_default(), buffer, OS.GTK_ICON_SIZE_MENU, 0, 0);
  				OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
  				Cairo.cairo_paint (cairo);
 				OS.g_object_unref (pixbuf);
@@ -539,20 +533,12 @@ void drawTooltip (long /*int*/ cr) {
 		byte[] buffer = null;
 		int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 		switch (id) {
-			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("gtk-dialog-error", true); break;
-			case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("gtk-dialog-info", true); break;
-			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("gtk-dialog-warning", true); break;
+			case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("dialog-error", true); break;
+			case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("dialog-information", true); break;
+			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("dialog-warning", true); break;
 		}
 		if (buffer != null) {
-			long /*int*/ style = OS.gtk_widget_get_default_style ();
-			long /*int*/ pixbuf = OS.gtk_icon_set_render_icon (
-				OS.gtk_icon_factory_lookup_default (buffer),
-				style,
-				OS.GTK_TEXT_DIR_NONE,
-				OS.GTK_STATE_NORMAL,
-				OS.GTK_ICON_SIZE_MENU,
-				0,
-				0);
+			long /*int*/ pixbuf = OS.gtk_icon_theme_load_icon(OS.gtk_icon_theme_get_default(), buffer, OS.GTK_ICON_SIZE_MENU, 0, 0);
 			OS.gdk_draw_pixbuf (window, gdkGC, pixbuf, 0, 0, x, y, IMAGE_SIZE, IMAGE_SIZE, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
 			OS.g_object_unref (pixbuf);
 			x += IMAGE_SIZE;

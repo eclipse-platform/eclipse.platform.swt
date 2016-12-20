@@ -348,6 +348,7 @@ public class OS extends C {
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_LARGE_TOOLBAR = 3;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
+	public static final int GTK_ICON_LOOKUP_FORCE_SIZE = 4;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;
@@ -8226,16 +8227,6 @@ public static final void gtk_icon_info_free(long /*int*/ icon_info) {
 		lock.unlock();
 	}
 }
-/** @param stock_id cast=(const gchar *) */
-public static final native long /*int*/ _gtk_icon_factory_lookup_default(byte[] stock_id);
-public static final long /*int*/ gtk_icon_factory_lookup_default(byte[] stock_id) {
-	lock.lock();
-	try {
-		return _gtk_icon_factory_lookup_default(stock_id);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
  * @param source cast=(GtkIconSource *)
@@ -8273,38 +8264,7 @@ public static final void gtk_icon_source_set_pixbuf(long /*int*/ source, long /*
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
- * @param icon_set cast=(GtkIconSet *)
- * @param style cast=(GtkStyle *)
- * @param direction cast=(GtkTextDirection)
- * @param state cast=(GtkStateType)
- * @param size cast=(GtkIconSize)
- * @param widget cast=(GtkWidget *)
- * @param detail cast=(const char *)
- */
-public static final native long /*int*/ _gtk_icon_set_render_icon(long /*int*/ icon_set, long /*int*/ style, int direction, int state, int size, long /*int*/ widget, long /*int*/ detail);
-public static final long /*int*/ gtk_icon_set_render_icon(long /*int*/ icon_set, long /*int*/ style, int direction, int state, int size, long /*int*/ widget, long /*int*/ detail) {
-	lock.lock();
-	try {
-		return _gtk_icon_set_render_icon(icon_set, style, direction, state, size, widget, detail);
-	} finally {
-		lock.unlock();
-	}
-}
 
-/**
- * @method flags=dynamic [GTK3; 3.10 deprecated]
- */
-public static final native long /*int*/ _gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size);
-public static final long /*int*/ gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size) {
-	lock.lock();
-	try {
-		return _gtk_icon_set_render_icon_pixbuf(icon_set, context, size);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @return cast=(GtkIconTheme *) */
 public static final native long /*int*/ _gtk_icon_theme_get_default();
 public static final long /*int*/ gtk_icon_theme_get_default() {
@@ -8326,6 +8286,22 @@ public static final long /*int*/ gtk_icon_theme_lookup_by_gicon(long /*int*/ ico
 	lock.lock();
 	try {
 		return _gtk_icon_theme_lookup_by_gicon (icon_theme, icon, size, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param icon_theme cast=(GtkIconTheme *)
+ * @param icon_name cast=(const gchar *)
+ * @param size cast=(gint)
+ * @param flags cast=(GtkIconLookupFlags)
+ * @param error cast=(GError **)
+ */
+public static final native long /*int*/ _gtk_icon_theme_load_icon(long /*int*/ icon_theme, byte[] icon_name, int size, int flags, long /*int*/ error);
+public static final long /*int*/ gtk_icon_theme_load_icon(long /*int*/ icon_theme, byte[] icon_name, int size, int flags, long /*int*/ error) {
+	lock.lock();
+	try {
+		return _gtk_icon_theme_load_icon (icon_theme, icon_name, size, flags, error);
 	} finally {
 		lock.unlock();
 	}

@@ -92,7 +92,6 @@
 #define gtk_font_selection_dialog_set_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_new_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
-#define gtk_icon_set_render_icon_LIB LIB_GTK
 #define gtk_icon_source_free_LIB LIB_GTK
 #define gtk_icon_source_new_LIB LIB_GTK
 #define gtk_icon_source_set_pixbuf_LIB LIB_GTK
@@ -306,7 +305,6 @@
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_css_provider_to_string_LIB LIB_GTK
 #define gtk_css_provider_get_named_LIB LIB_GTK
-#define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK
 #define gtk_drag_begin_with_coordinates_LIB LIB_GTK
