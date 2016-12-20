@@ -1179,7 +1179,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return label;
 		}
 		case LIST: {
-			List list = new List(parent, SWT.BORDER);
+			List list = new List(parent, SWT.BORDER|SWT.MULTI);
 			list.setItems(prefix+" Item a", prefix+" Item b",  prefix+" Item c",  prefix+" Item d");
 			return list;
 		}
