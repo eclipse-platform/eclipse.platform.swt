@@ -1555,7 +1555,6 @@ typedef enum {
 	g_1value_1set_1int64_FUNC,
 	g_1value_1unset_FUNC,
 	gdk_1threads_1leave_FUNC,
-	gdk_1threads_1set_1lock_1functions_FUNC,
 	imContextLast_FUNC,
 	imContextNewProc_1CALLBACK_FUNC,
 	localeconv_1decimal_1point_FUNC,

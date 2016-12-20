@@ -19056,24 +19056,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1leave)
 }
 #endif
 
-#ifndef NO_gdk_1threads_1set_1lock_1functions
-JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1set_1lock_1functions)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, gdk_1threads_1set_1lock_1functions_FUNC);
-/*
-	gdk_threads_set_lock_functions(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_threads_set_lock_functions)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, gdk_1threads_1set_1lock_1functions_FUNC);
-}
-#endif
-
 #ifndef NO_localeconv_1decimal_1point
 JNIEXPORT jintLong JNICALL OS_NATIVE(localeconv_1decimal_1point)
 	(JNIEnv *env, jclass that)

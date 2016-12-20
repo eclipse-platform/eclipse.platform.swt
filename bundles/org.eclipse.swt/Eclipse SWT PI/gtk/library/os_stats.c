@@ -1545,7 +1545,6 @@ char * OS_nativeFunctionNames[] = {
 	"g_1value_1set_1int64",
 	"g_1value_1unset",
 	"gdk_1threads_1leave",
-	"gdk_1threads_1set_1lock_1functions",
 	"imContextLast",
 	"imContextNewProc_1CALLBACK",
 	"localeconv_1decimal_1point",
