@@ -1046,6 +1046,18 @@ void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
 #define NMRGINFO_sizeof() 0
 #endif
 
+#ifndef NO_NMTBCUSTOMDRAW
+void cacheNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
+NMTBCUSTOMDRAW *getNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpStruct);
+void setNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpStruct);
+#define NMTBCUSTOMDRAW_sizeof() sizeof(NMTBCUSTOMDRAW)
+#else
+#define cacheNMTBCUSTOMDRAWFields(a,b)
+#define getNMTBCUSTOMDRAWFields(a,b,c) NULL
+#define setNMTBCUSTOMDRAWFields(a,b,c)
+#define NMTBCUSTOMDRAW_sizeof() 0
+#endif
+
 #ifndef NO_NMTBHOTITEM
 void cacheNMTBHOTITEMFields(JNIEnv *env, jobject lpObject);
 NMTBHOTITEM *getNMTBHOTITEMFields(JNIEnv *env, jobject lpObject, NMTBHOTITEM *lpStruct);

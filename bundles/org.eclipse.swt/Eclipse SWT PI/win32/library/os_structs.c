@@ -4675,6 +4675,94 @@ void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct)
 }
 #endif
 
+#ifndef NO_NMTBCUSTOMDRAW
+typedef struct NMTBCUSTOMDRAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID nmcd, hbrMonoDither, hbrLines, hpenLines, clrText, clrMark, clrTextHighlight, clrBtnFace, clrBtnHighlight, clrHighlightHotTrack, rcText_left, rcText_top, rcText_right, rcText_bottom, nStringBkMode, nHLStringBkMode, iListGap;
+} NMTBCUSTOMDRAW_FID_CACHE;
+
+NMTBCUSTOMDRAW_FID_CACHE NMTBCUSTOMDRAWFc;
+
+void cacheNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTBCUSTOMDRAWFc.cached) return;
+	cacheNMCUSTOMDRAWFields(env, lpObject);
+	NMTBCUSTOMDRAWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTBCUSTOMDRAWFc.nmcd = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "nmcd", "Lorg/eclipse/swt/internal/win32/NMCUSTOMDRAW;");
+	NMTBCUSTOMDRAWFc.hbrMonoDither = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hbrMonoDither", I_J);
+	NMTBCUSTOMDRAWFc.hbrLines = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hbrLines", I_J);
+	NMTBCUSTOMDRAWFc.hpenLines = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hpenLines", I_J);
+	NMTBCUSTOMDRAWFc.clrText = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrText", "I");
+	NMTBCUSTOMDRAWFc.clrMark = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrMark", "I");
+	NMTBCUSTOMDRAWFc.clrTextHighlight = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrTextHighlight", "I");
+	NMTBCUSTOMDRAWFc.clrBtnFace = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrBtnFace", "I");
+	NMTBCUSTOMDRAWFc.clrBtnHighlight = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrBtnHighlight", "I");
+	NMTBCUSTOMDRAWFc.clrHighlightHotTrack = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "clrHighlightHotTrack", "I");
+	NMTBCUSTOMDRAWFc.rcText_left = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "rcText_left", "I");
+	NMTBCUSTOMDRAWFc.rcText_top = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "rcText_top", "I");
+	NMTBCUSTOMDRAWFc.rcText_right = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "rcText_right", "I");
+	NMTBCUSTOMDRAWFc.rcText_bottom = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "rcText_bottom", "I");
+	NMTBCUSTOMDRAWFc.nStringBkMode = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "nStringBkMode", "I");
+	NMTBCUSTOMDRAWFc.nHLStringBkMode = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "nHLStringBkMode", "I");
+	NMTBCUSTOMDRAWFc.iListGap = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "iListGap", "I");
+	NMTBCUSTOMDRAWFc.cached = 1;
+}
+
+NMTBCUSTOMDRAW *getNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpStruct)
+{
+	if (!NMTBCUSTOMDRAWFc.cached) cacheNMTBCUSTOMDRAWFields(env, lpObject);
+	getNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTBCUSTOMDRAWFc.nmcd);
+	if (lpObject1 != NULL) getNMCUSTOMDRAWFields(env, lpObject1, &lpStruct->nmcd);
+	}
+	lpStruct->hbrMonoDither = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrMonoDither);
+	lpStruct->hbrLines = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrLines);
+	lpStruct->hpenLines = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines);
+	lpStruct->clrText = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrText);
+	lpStruct->clrMark = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrMark);
+	lpStruct->clrTextHighlight = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrTextHighlight);
+	lpStruct->clrBtnFace = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrBtnFace);
+	lpStruct->clrBtnHighlight = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrBtnHighlight);
+	lpStruct->clrHighlightHotTrack = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrHighlightHotTrack);
+	lpStruct->rcText.left = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_left);
+	lpStruct->rcText.top = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_top);
+	lpStruct->rcText.right = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_right);
+	lpStruct->rcText.bottom = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_bottom);
+	lpStruct->nStringBkMode = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.nStringBkMode);
+	lpStruct->nHLStringBkMode = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.nHLStringBkMode);
+	lpStruct->iListGap = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.iListGap);
+	return lpStruct;
+}
+
+void setNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpStruct)
+{
+	if (!NMTBCUSTOMDRAWFc.cached) cacheNMTBCUSTOMDRAWFields(env, lpObject);
+	setNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTBCUSTOMDRAWFc.nmcd);
+	if (lpObject1 != NULL) setNMCUSTOMDRAWFields(env, lpObject1, &lpStruct->nmcd);
+	}
+	(*env)->SetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrMonoDither, (jintLong)lpStruct->hbrMonoDither);
+	(*env)->SetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrLines, (jintLong)lpStruct->hbrLines);
+	(*env)->SetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines, (jintLong)lpStruct->hpenLines);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrText, (jint)lpStruct->clrText);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrMark, (jint)lpStruct->clrMark);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrTextHighlight, (jint)lpStruct->clrTextHighlight);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrBtnFace, (jint)lpStruct->clrBtnFace);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrBtnHighlight, (jint)lpStruct->clrBtnHighlight);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrHighlightHotTrack, (jint)lpStruct->clrHighlightHotTrack);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_left, (jint)lpStruct->rcText.left);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_top, (jint)lpStruct->rcText.top);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_right, (jint)lpStruct->rcText.right);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.rcText_bottom, (jint)lpStruct->rcText.bottom);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.nStringBkMode, (jint)lpStruct->nStringBkMode);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.nHLStringBkMode, (jint)lpStruct->nHLStringBkMode);
+	(*env)->SetIntField(env, lpObject, NMTBCUSTOMDRAWFc.iListGap, (jint)lpStruct->iListGap);
+}
+#endif
+
 #ifndef NO_NMTBHOTITEM
 typedef struct NMTBHOTITEM_FID_CACHE {
 	int cached;

@@ -786,6 +786,11 @@ typedef enum {
 	MoveMemory__JLorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
 #else
 	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
@@ -1037,6 +1042,11 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2JI_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2JI_FUNC,
@@ -1219,6 +1229,7 @@ typedef enum {
 	NMREBARCHEVRON_1sizeof_FUNC,
 	NMREBARCHILDSIZE_1sizeof_FUNC,
 	NMRGINFO_1sizeof_FUNC,
+	NMTBCUSTOMDRAW_1sizeof_FUNC,
 	NMTBHOTITEM_1sizeof_FUNC,
 	NMTOOLBAR_1sizeof_FUNC,
 	NMTREEVIEW_1sizeof_FUNC,

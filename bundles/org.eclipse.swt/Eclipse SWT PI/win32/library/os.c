@@ -9066,6 +9066,30 @@ fail:
 }
 #endif
 
+#if (!defined(NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I) && !defined(JNI64)) || (!defined(NO_MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#endif
+{
+	NMTBCUSTOMDRAW _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getNMTBCUSTOMDRAWFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I) && !defined(JNI64)) || (!defined(NO_MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
@@ -10328,6 +10352,31 @@ fail:
 }
 #endif
 
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#endif
+{
+	NMTBCUSTOMDRAW _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNMTBCUSTOMDRAWFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2JI) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
@@ -11390,6 +11439,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NMRGINFO_1sizeof)
 	OS_NATIVE_ENTER(env, that, NMRGINFO_1sizeof_FUNC);
 	rc = (jint)NMRGINFO_sizeof();
 	OS_NATIVE_EXIT(env, that, NMRGINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NMTBCUSTOMDRAW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(NMTBCUSTOMDRAW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NMTBCUSTOMDRAW_1sizeof_FUNC);
+	rc = (jint)NMTBCUSTOMDRAW_sizeof();
+	OS_NATIVE_EXIT(env, that, NMTBCUSTOMDRAW_1sizeof_FUNC);
 	return rc;
 }
 #endif

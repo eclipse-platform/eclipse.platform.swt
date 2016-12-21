@@ -776,6 +776,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I",
 #endif
 #ifndef JNI64
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I",
+#else
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I",
+#endif
+#ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I",
 #else
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I",
@@ -1027,6 +1032,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2JI",
 #endif
 #ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2JI",
+#endif
+#ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II",
 #else
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2JI",
@@ -1209,6 +1219,7 @@ char * OS_nativeFunctionNames[] = {
 	"NMREBARCHEVRON_1sizeof",
 	"NMREBARCHILDSIZE_1sizeof",
 	"NMRGINFO_1sizeof",
+	"NMTBCUSTOMDRAW_1sizeof",
 	"NMTBHOTITEM_1sizeof",
 	"NMTOOLBAR_1sizeof",
 	"NMTREEVIEW_1sizeof",

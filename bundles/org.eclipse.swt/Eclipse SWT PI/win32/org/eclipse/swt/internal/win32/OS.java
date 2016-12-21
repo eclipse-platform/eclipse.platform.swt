@@ -1656,6 +1656,14 @@ public class OS extends C {
 	public static final int TABP_TOPTABITEMBOTHEDGE = 8;
 	public static final int TABP_PANE = 9;
 	public static final int TABP_BODY = 10;
+	public static final int TBCDRF_BLENDICON = 0x200000;
+	public static final int TBCDRF_HILITEHOTTRACK = 0x20000;
+	public static final int TBCDRF_NOBACKGROUND = 0x400000;
+	public static final int TBCDRF_NOEDGES = 0x10000;
+	public static final int TBCDRF_NOETCHEDEFFECT = 0x100000;
+	public static final int TBCDRF_NOMARK = 0x80000;
+	public static final int TBCDRF_NOOFFSET = 0x40000;
+	public static final int TBCDRF_USECDCOLORS = 0x800000;
 	public static final int TBIF_COMMAND = 0x20;
 	public static final int TBIF_STATE = 0x4;
 	public static final int TBIF_IMAGE = 0x1;
@@ -2359,6 +2367,7 @@ public static final native int NMTOOLBAR_sizeof ();
 public static final native int NMTTDISPINFOA_sizeof ();
 public static final native int NMTTDISPINFOW_sizeof ();
 public static final native int NMTTCUSTOMDRAW_sizeof ();
+public static final native int NMTBCUSTOMDRAW_sizeof ();
 public static final native int NMTVCUSTOMDRAW_sizeof ();
 public static final native int NMTVDISPINFO_sizeof ();
 public static final native int NMTVITEMCHANGE_sizeof ();
@@ -5519,6 +5528,11 @@ public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, long /*i
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
+public static final native void MoveMemory (NMTBCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory (NMTBHOTITEM Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
@@ -5545,6 +5559,11 @@ public static final native void MoveMemory (NMUPDOWN Destination, long /*int*/ S
  * @param Source cast=(CONST VOID *),flags=no_out
  */
 public static final native void MoveMemory (long /*int*/ Destination, NMLVCUSTOMDRAW Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (long /*int*/ Destination, NMTBCUSTOMDRAW Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out

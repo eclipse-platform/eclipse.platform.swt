@@ -1573,6 +1573,10 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	return child.wmCommandChild (wParam, lParam);
 }
 
+private boolean customDrawing() {
+	return hasCustomBackground() || (hasCustomForeground() && OS.IsWindowEnabled(handle));
+}
+
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
@@ -1598,8 +1602,8 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			* from the default Blue theme.  The fix is to draw the
 			* background.
 			*/
-			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+			NMTBCUSTOMDRAW nmcd = new NMTBCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMTBCUSTOMDRAW.sizeof);
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
 //				if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
 //			}
@@ -1619,6 +1623,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						drawBackground (nmcd.hdc, rect);
 					}
 					return new LRESULT (OS.CDRF_SKIPDEFAULT);
+				}
+				case OS.CDDS_PREPAINT: {
+					return new LRESULT (customDrawing() ? OS.CDRF_NOTIFYITEMDRAW : OS.CDRF_DODEFAULT);
+				}
+				case OS.CDDS_ITEMPREPAINT: {
+					if (customDrawing()) {
+						nmcd.clrBtnFace = getBackgroundPixel();
+						nmcd.clrText = getForegroundPixel();
+						OS.MoveMemory(lParam, nmcd, NMTBCUSTOMDRAW.sizeof);
+						return new LRESULT(OS.TBCDRF_USECDCOLORS);
+					}
+					return new LRESULT (OS.CDRF_DODEFAULT);
 				}
 			}
 			break;
