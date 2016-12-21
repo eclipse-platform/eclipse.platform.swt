@@ -68,6 +68,10 @@ public class SwtTestUtil {
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
 	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
 
+	public final static boolean isRunningOnEclipseOrgHudsonGTK = isGTK
+			&& ("hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
+			|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
+
 	static {
 		testFontName = "Helvetica";
 	}

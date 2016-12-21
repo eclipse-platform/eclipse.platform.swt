@@ -14,8 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -60,6 +60,8 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 
 	boolean browser_debug = false;
 
+	boolean isWebkit1 = false;
+
 	/**
 	 * Normally, sleep in 1 ms intervals 1000 times. During browser_debug, sleep 1000 ms for 1 interval.
 	 * This allows one to see the browser shell for a few seconds, which would normally not be visible during
@@ -73,14 +75,38 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 public void setUp() {
 	super.setUp();
 
+	// Print test name if running on hudson. This makes it easier to tell in the logs which test case caused crash.
+	if (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK) {
+		System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
+	}
+
 	secondsToWaitTillFail = 3;
 	waitMS = browser_debug ? 1000 : 1;
 	loopMultipier = browser_debug ? 1 : 1000;
 
 	shell.setLayout(new FillLayout());
-	setTitle(shell);
-
 	browser = new Browser(shell, SWT.NONE);
+
+	String shellTitle = name.getMethodName();
+	if (SwtTestUtil.isGTK && browser.getBrowserType().equals("webkit")) {
+
+		// Note, webkitGtk version is only available once Browser is instantiated.
+		String webkitGtkVersionStr = System.getProperty("org.eclipse.swt.internal.webkitgtk.version"); //$NON-NLS-1$
+
+		shellTitle = shellTitle + " Webkit version: " + webkitGtkVersionStr;
+
+		String[] webkitGtkVersionStrParts = webkitGtkVersionStr.split("\\.");
+		int[] webkitGtkVersionInts = new int[3];
+		for (int i = 0; i < 3; i++) {
+			webkitGtkVersionInts[i] = Integer.parseInt(webkitGtkVersionStrParts[i]);
+		}
+
+		// webkitgtk 2.5 and onwards uses webkit2.
+		if (webkitGtkVersionInts[0] == 1 || (webkitGtkVersionInts[0] == 2 && webkitGtkVersionInts[1] <= 4)) {
+			isWebkit1 = true;
+		}
+	}
+	shell.setText(shellTitle);
 
 	/*
 	 * setWidget() is needed for Browser to occupy the whole shell.
@@ -94,25 +120,8 @@ public void setUp() {
 	if (! SwtTestUtil.isWindows) {
 		setWidget(browser);
 	}
-}
 
-/**
- * Append relevant information to the shell title.
- * On Gtk, we support multiple versions of Webkit. It's useful to know which webkit version the test runs on.
- * @param title
- */
-void setTitle(Shell shell) {
-	String title = name.getMethodName();
-	if (SwtTestUtil.isGTK) {
-		String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
-		Properties sp = System.getProperties();
-		String webkitGtkVer = sp.getProperty(SWT_WEBKITGTK_VERSION);
-		if (webkitGtkVer != null)
-			title = title + "  Webkit version: " + webkitGtkVer;
-	}
-	shell.setText(title);
 }
-
 
 
 /**
@@ -124,7 +133,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.dispose();
 	browser = new Browser(shell, SWT.BORDER);
-	System.out.println("Browser#getBrowserType(): " + browser.getBrowserType());
+	// System.out.println("Test_org_eclipse_swt_browser_Browser#test_Constructor*#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
 	try {
 		browser = new Browser(null, SWT.NONE);
@@ -216,6 +225,13 @@ public void test_listener_addProgressListenerLorg_eclipse_swt_browser_ProgressLi
 	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
+@Override
+@Test
+public void test_isVisible() {
+	// Note. This test sometimes crashes with webkit1 because shell.setVisible() calls g_main_context_iteration(). See Bug 509411
+	// To reproduce, try running test suite 20 times in a loop.
+	super.test_isVisible();
+}
 
 /**
  * Test that if addStatusTextListener() is called without a listener, IllegalArgumentException is thrown.
@@ -650,6 +666,8 @@ public void test_setTextLjava_lang_String() {
  */
 @Test
 public void test_setUrl() {
+	// Note, this test sometimes crashes on webkit1. See Bug 509411
+
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	assert(browser.setUrl("http://www.eclipse.org/swt"));
 	runLoopTimer(2000);
@@ -674,6 +692,8 @@ public void test_stop() {
  */
 @Test
 public void test_evaluate_string() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -705,6 +725,7 @@ public void test_evaluate_string() {
  */
 @Test
 public void test_evaluate_number_normal() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	Double testNum = 123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -716,6 +737,8 @@ public void test_evaluate_number_normal() {
  */
 @Test
 public void test_evaluate_number_negative() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	Double testNum = -123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -727,6 +750,8 @@ public void test_evaluate_number_negative() {
  */
 @Test
 public void test_evaluate_number_big() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	Double testNum = 10000000000.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue(passed);
@@ -766,6 +791,7 @@ boolean evaluate_number_helper(Double testNum) {
  */
 @Test
 public void test_evaluate_boolean() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -797,9 +823,9 @@ public void test_evaluate_boolean() {
  */
 @Test
 public void test_evaluate_null() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	 // Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(new Boolean(true));
-	System.out.println(returnValue);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
 		public void changed(ProgressEvent event) {
@@ -830,6 +856,8 @@ public void test_evaluate_null() {
  */
 @Test
 public void test_evaluate_invalid_return_value() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	if (SwtTestUtil.isWindows) {
 		/* Bug 508210 . Inconsistent beahiour on windows at the moment.
 		 * Fixing requires deeper investigation. Disabling newly added test for now.
@@ -878,6 +906,7 @@ public void test_evaluate_invalid_return_value() {
  */
 @Test
 public void test_evaluate_evaluation_failed_exception() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicInteger exception = new AtomicInteger(-1);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
@@ -914,6 +943,8 @@ public void test_evaluate_evaluation_failed_exception() {
  */
 @Test
 public void test_evaluate_array_numbers() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	// Small note:
 	// evaluate() returns 'Double' type. Java doesn't have AtomicDouble
 	// for convienience we simply convert double to int as we're dealing with integers anyway.
@@ -955,6 +986,8 @@ public void test_evaluate_array_numbers() {
  */
 @Test
 public void test_evaluate_array_strings () {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+
 	final AtomicReferenceArray<String> atomicStringArray = new AtomicReferenceArray<>(3);
 	atomicStringArray.set(0, "executing");
 	browser.addProgressListener(new ProgressListener() {
@@ -995,6 +1028,7 @@ public void test_evaluate_array_strings () {
  */
 @Test
 public void test_evaluate_array_mixedTypes () {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3);
 	atomicArray.set(0, "executing");
 	browser.addProgressListener(new ProgressListener() {
@@ -1051,4 +1085,9 @@ void runLoopTimer(final int milliseconds) {
 	Display display = Display.getCurrent();
 	while (!exit[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
 }
+
+private String webkit1SkipMsg() {
+	return "Test_org_eclipse_swt_browser. Bug 509411. Skipping test on Webkit1 due to sporadic crash: "+ name.getMethodName();
+}
+
 }
