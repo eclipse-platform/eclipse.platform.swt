@@ -92,9 +92,6 @@
 #define gtk_font_selection_dialog_set_font_name_LIB LIB_GTK
 #define gtk_font_selection_dialog_new_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
-#define gtk_icon_source_free_LIB LIB_GTK
-#define gtk_icon_source_new_LIB LIB_GTK
-#define gtk_icon_source_set_pixbuf_LIB LIB_GTK
 #define gtk_image_menu_item_set_image_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK

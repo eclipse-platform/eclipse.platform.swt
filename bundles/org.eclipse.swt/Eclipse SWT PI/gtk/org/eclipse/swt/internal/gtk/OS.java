@@ -8227,44 +8227,6 @@ public static final void gtk_icon_info_free(long /*int*/ icon_info) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
- * @param source cast=(GtkIconSource *)
- */
-public static final native void _gtk_icon_source_free(long /*int*/ source);
-public static final void gtk_icon_source_free(long /*int*/ source) {
-	lock.lock();
-	try {
-		_gtk_icon_source_free(source);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic [GTK2/GTK3; 3.10 deprecated] */
-public static final native long /*int*/ _gtk_icon_source_new();
-public static final long /*int*/ gtk_icon_source_new() {
-	lock.lock();
-	try {
-		return _gtk_icon_source_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic [GTK2/GTK3; 3.10 deprecated]
- * @param source cast=(GtkIconSource *)
- * @param pixbuf cast=(GdkPixbuf *)
- */
-public static final native void _gtk_icon_source_set_pixbuf(long /*int*/ source, long /*int*/ pixbuf);
-public static final void gtk_icon_source_set_pixbuf(long /*int*/ source, long /*int*/ pixbuf) {
-	lock.lock();
-	try {
-		_gtk_icon_source_set_pixbuf(source, pixbuf);
-	} finally {
-		lock.unlock();
-	}
-}
-
 /** @return cast=(GtkIconTheme *) */
 public static final native long /*int*/ _gtk_icon_theme_get_default();
 public static final long /*int*/ gtk_icon_theme_get_default() {
