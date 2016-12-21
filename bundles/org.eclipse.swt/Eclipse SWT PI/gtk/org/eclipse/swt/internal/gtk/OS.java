@@ -6060,16 +6060,6 @@ public static final void gtk_button_clicked(long /*int*/ button) {
 		lock.unlock();
 	}
 }
-/** @param button cast=(GtkButton *) */
-public static final native int _gtk_button_get_relief(long /*int*/ button);
-public static final int gtk_button_get_relief(long /*int*/ button) {
-	lock.lock();
-	try {
-		return _gtk_button_get_relief(button);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native long /*int*/ _gtk_button_new();
 public static final long /*int*/ gtk_button_new() {
 	lock.lock();
@@ -11116,123 +11106,6 @@ public static final void gtk_style_get_fg(long /*int*/ style, int index, GdkColo
 		lock.unlock();
 	}
 }
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **),flags=no_in
- */
-public static final native void _gtk_style_get_fg_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_fg_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_fg_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **),flags=no_in
- */
-public static final native void _gtk_style_get_bg_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_bg_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_bg_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **)
- */
-public static final native void _gtk_style_get_light_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_light_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_light_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **),flags=no_in
- */
-public static final native void _gtk_style_get_dark_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_dark_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_dark_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **)
- */
-public static final native void _gtk_style_get_mid_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_mid_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_mid_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **)
- */
-public static final native void _gtk_style_get_text_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_text_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_text_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **)
- */
-public static final native void _gtk_style_get_text_aa_gc(long /*int*/ style, int index, long /*int*/[] gc);
-public static final void gtk_style_get_text_aa_gc(long /*int*/ style, int index, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_text_aa_gc(style, index, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **),flags=no_in
- */
-public static final native void _gtk_style_get_black_gc(long /*int*/ style, long /*int*/[] gc);
-public static final void gtk_style_get_black_gc(long /*int*/ style, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_black_gc(style, gc);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param gc cast=(GdkGC **)
- */
-public static final native void _gtk_style_get_white_gc(long /*int*/ style, long /*int*/[] gc);
-public static final void gtk_style_get_white_gc(long /*int*/ style, long /*int*/[] gc) {
-	lock.lock();
-	try {
-		_gtk_style_get_white_gc(style, gc);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param style cast=(GtkStyle *) */
 public static final native long /*int*/ _gtk_style_get_font_desc(long /*int*/ style);
 public static final long /*int*/ gtk_style_get_font_desc(long /*int*/ style) {
@@ -11285,18 +11158,6 @@ public static final int gtk_style_get_ythickness(long /*int*/ style) {
 	lock.lock();
 	try {
 		return _gtk_style_get_ythickness(style);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
- */
-public static final native long /*int*/ _gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail);
-public static final long /*int*/ gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail) {
-	lock.lock();
-	try {
-		return _gtk_style_render_icon(style, source, direction, state, size, widget, detail);
 	} finally {
 		lock.unlock();
 	}

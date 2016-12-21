@@ -7541,18 +7541,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1clicked)
 }
 #endif
 
-#ifndef NO__1gtk_1button_1get_1relief
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1button_1get_1relief)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1button_1get_1relief_FUNC);
-	rc = (jint)gtk_button_get_relief((GtkButton *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1button_1get_1relief_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1button_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -13034,20 +13022,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1style_1get_1bg_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1bg_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1bg_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_bg_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1bg_1gc_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1style_1get_1black
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -13059,20 +13033,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black)
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1black_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1black_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
-{
-	jintLong *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1black_1gc_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	gtk_style_get_black_gc((GtkStyle *)arg0, (GdkGC **)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1black_1gc_FUNC);
 }
 #endif
 
@@ -13090,20 +13050,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1style_1get_1dark_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1dark_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1dark_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_dark_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1dark_1gc_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1style_1get_1fg
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
@@ -13115,20 +13061,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg)
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1fg_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1fg_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1fg_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_fg_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1fg_1gc_FUNC);
 }
 #endif
 
@@ -13158,34 +13090,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1style_1get_1light_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1light_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1light_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_light_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1light_1gc_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1mid_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1mid_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1mid_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_mid_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1mid_1gc_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1style_1get_1text
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
@@ -13197,48 +13101,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text)
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1text_1aa_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text_1aa_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1text_1aa_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_text_aa_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_1aa_1gc_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1text_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2)
-{
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1text_1gc_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_style_get_text_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_1gc_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1white_1gc
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1white_1gc)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
-{
-	jintLong *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1white_1gc_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	gtk_style_get_white_gc((GtkStyle *)arg0, (GdkGC **)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1white_1gc_FUNC);
 }
 #endif
 
@@ -13262,30 +13124,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1style_1get_1ythickness)
 	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1ythickness_FUNC);
 	rc = (jint)gtk_style_get_ythickness((GtkStyle *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1ythickness_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1style_1render_1icon
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1style_1render_1icon)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jintLong arg5, jbyteArray arg6)
-{
-	jbyte *lparg6=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1style_1render_1icon_FUNC);
-	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_style_render_icon(arg0, arg1, arg2, arg3, arg4, arg5, lparg6);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_style_render_icon)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jint, jintLong, jbyte *))fp)(arg0, arg1, arg2, arg3, arg4, arg5, lparg6);
-		}
-	}
-fail:
-	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1style_1render_1icon_FUNC);
 	return rc;
 }
 #endif
