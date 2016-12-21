@@ -32,6 +32,8 @@
         <configuration>
           <testSuite>org.eclipse.swt.tests</testSuite>
           <testClass>org.eclipse.swt.tests.junit.AllTests</testClass>
+          <!-- Enforce skip tests as gerrit verification job is configured to run them in master.-->
+          <skipTests>true</skipTests>
         </configuration>
       </plugin>
     </plugins>
