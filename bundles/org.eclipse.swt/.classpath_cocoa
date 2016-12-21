@@ -34,6 +34,5 @@
     <classpathentry kind="src" path="components"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
-    <classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

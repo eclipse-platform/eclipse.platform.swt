@@ -156,7 +156,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
@@ -196,7 +195,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Printing/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
 			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
@@ -233,7 +231,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Printing/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Theme/win32/"/>
 			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
