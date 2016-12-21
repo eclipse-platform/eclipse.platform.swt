@@ -12400,24 +12400,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1render_1arrow
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1arrow)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1arrow_FUNC);
-/*
-	gtk_render_arrow(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_arrow)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, jdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1arrow_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1render_1background
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1background)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
@@ -12433,60 +12415,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1background)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1background_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1check
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1check)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1check_FUNC);
-/*
-	gtk_render_check(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_check)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1check_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1expander
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1expander)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1expander_FUNC);
-/*
-	gtk_render_expander(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_expander)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1expander_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1extension
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1extension)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jint arg6)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1extension_FUNC);
-/*
-	gtk_render_extension(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5, (GtkPositionType)arg6);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_extension)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble, GtkPositionType))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5, (GtkPositionType)arg6);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1extension_FUNC);
 }
 #endif
 
@@ -12526,24 +12454,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1frame)
 }
 #endif
 
-#ifndef NO__1gtk_1render_1frame_1gap
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1frame_1gap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jint arg6, jdouble arg7, jdouble arg8)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1frame_1gap_FUNC);
-/*
-	gtk_render_frame_gap(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5, arg6, (gdouble)arg7, (gdouble)arg8);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_frame_gap)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble, jint, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5, arg6, (gdouble)arg7, (gdouble)arg8);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1frame_1gap_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1render_1handle
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1handle)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
@@ -12559,60 +12469,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1handle)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1handle_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1layout
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1layout)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jintLong arg4)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1layout_FUNC);
-/*
-	gtk_render_layout(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (PangoLayout *)arg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_layout)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, PangoLayout *))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (PangoLayout *)arg4);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1layout_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1line
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1line)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1line_FUNC);
-/*
-	gtk_render_line(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_line)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1line_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1render_1option
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1option)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1render_1option_FUNC);
-/*
-	gtk_render_option(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_render_option)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1render_1option_FUNC);
 }
 #endif
 

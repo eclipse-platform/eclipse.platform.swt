@@ -9545,87 +9545,6 @@ public static final void gtk_render_frame(long /*int*/ context, long /*int*/ cr,
 }
 /**
  * @method flags=dynamic
- * @param angle cast=(gdouble)
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- */
-public static final native void _gtk_render_arrow(long /*int*/ context, long /*int*/ cr, double angle, double x , double y, double size);
-public static final void gtk_render_arrow(long /*int*/ context, long /*int*/ cr, double angle, double x , double y, double size) {
-	lock.lock();
-	try {
-		_gtk_render_arrow(context, cr, angle, x, y, size);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param width cast=(gdouble)
- * @param height cast=(gdouble)
- */
-public static final native void _gtk_render_expander(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
-public static final void gtk_render_expander(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
-	lock.lock();
-	try {
-		_gtk_render_expander(context, cr, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param width cast=(gdouble)
- * @param height cast=(gdouble)
- * @param xy0_gap cast=(gdouble)
- * @param xy1_gap cast=(gdouble)
- */
-public static final native void _gtk_render_frame_gap(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side, double xy0_gap, double xy1_gap);
-public static final void gtk_render_frame_gap(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side, double xy0_gap, double xy1_gap) {
-	lock.lock();
-	try {
-		_gtk_render_frame_gap(context, cr, x, y, width, height, gap_side, xy0_gap, xy1_gap);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param width cast=(gdouble)
- * @param height cast=(gdouble)
- * @param gap_side cast=(GtkPositionType)
- */
-public static final native void _gtk_render_extension(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side);
-public static final void gtk_render_extension(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side) {
-	lock.lock();
-	try {
-		_gtk_render_extension(context, cr, x, y, width, height, gap_side);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param layout cast=(PangoLayout *)
- */
-public static final native void _gtk_render_layout(long /*int*/ context, long /*int*/ cr, double x , double y, long /*int*/ layout);
-public static final void gtk_render_layout(long /*int*/ context, long /*int*/ cr, double x , double y, long /*int*/ layout) {
-	lock.lock();
-	try {
-		_gtk_render_layout(context, cr, x, y, layout);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
  * @param x cast=(gdouble)
  * @param y cast=(gdouble)
  * @param width cast=(gdouble)
@@ -9636,22 +9555,6 @@ public static final void gtk_render_background(long /*int*/ context, long /*int*
 	lock.lock();
 	try {
 		_gtk_render_background(context, cr, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param width cast=(gdouble)
- * @param height cast=(gdouble)
- */
-public static final native void _gtk_render_option(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
-public static final void gtk_render_option(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
-	lock.lock();
-	try {
-		_gtk_render_option(context, cr, x , y, width, height);
 	} finally {
 		lock.unlock();
 	}
@@ -9780,22 +9683,6 @@ public static final void gtk_paint_check(long /*int*/ style, long /*int*/ window
 	}
 }
 /**
- * @method flags=dynamic
- * @param x cast=(gdouble)
- * @param y cast=(gdouble)
- * @param width cast=(gdouble)
- * @param height cast=(gdouble)
- */
-public static final native void _gtk_render_check(long /*int*/ context, long /*int*/ cairo,  double x , double y, double width, double height);
-public static final void gtk_render_check(long /*int*/ context, long /*int*/ cairo,  double x , double y, double width, double height) {
-	lock.lock();
-	try {
-		_gtk_render_check(context,cairo,x,y,width,height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @method flags=dynamic [GTK2/GTK3; 3.0 deprecated]
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
@@ -9897,22 +9784,6 @@ public static final void gtk_paint_vline(long /*int*/ style, long /*int*/ window
 	lock.lock();
 	try {
 		_gtk_paint_vline(style, window, state_type, area, widget, detail, y1, y2, x);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x0 cast=(gdouble)
- * @param y0 cast=(gdouble)
- * @param x1 cast=(gdouble)
- * @param y1 cast=(gdouble)
- */
-public static final native void _gtk_render_line(long /*int*/ context, long /*int*/ cr, double x0, double y0, double x1, double y1);
-public static final void gtk_render_line(long /*int*/ context, long /*int*/ cr, double x0, double y0, double x1, double y1) {
-	lock.lock();
-	try {
-		_gtk_render_line(context, cr, x0, y0, x1, y1);
 	} finally {
 		lock.unlock();
 	}
