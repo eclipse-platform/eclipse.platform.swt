@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 509648
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -82,6 +83,7 @@ public class Table extends Composite {
 	GdkColor drawForeground;
 	GdkRGBA background, foreground;
 	Color headerBackground, headerForeground;
+	String headerCSSBackground, headerCSSForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
 	int maxWidth = 0;
 	int topIndex;
@@ -1432,7 +1434,7 @@ int getGridLineWidthInPixels () {
  */
 public Color getHeaderBackground () {
 	checkWidget ();
-	return headerBackground != null ? headerBackground : getBackground();
+	return headerBackground != null ? headerBackground : display.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 }
 
 /**
@@ -1448,7 +1450,7 @@ public Color getHeaderBackground () {
  */
 public Color getHeaderForeground () {
 	checkWidget ();
-	return headerForeground != null ? headerForeground : getForeground();
+	return headerForeground != null ? headerForeground : display.getSystemColor(SWT.COLOR_LIST_FOREGROUND);
 }
 
 /**
@@ -3353,16 +3355,38 @@ void setForegroundColor (GdkColor color) {
  * </ul>
  * @since 3.106
  */
-public void setHeaderBackground (Color color) {
+public void setHeaderBackground(Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		if (color.equals(headerBackground)) return;
-	} else if (headerBackground == null) return;
-	headerBackground = color;
-	if (getHeaderVisible()) {
-		redraw();
+		if (color.isDisposed())
+			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerBackground))
+			return;
 	}
+	headerBackground = color;
+	if (OS.GTK3) {
+		GdkRGBA background;
+		if (headerBackground != null) {
+			background = display.toGdkRGBA(headerBackground.handle);
+		} else {
+			background = display.toGdkRGBA(display.COLOR_LIST_BACKGROUND);
+		}
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+		// background works for 3.18 and later, background-color only as of 3.20
+		String css = name + " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+		headerCSSBackground = css;
+		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
+		for (TableColumn column : columns) {
+			long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+			// Create provider as we need it attached to the proper context which is not the widget one
+			long /*int*/ provider = OS.gtk_css_provider_new ();
+			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.g_object_unref (provider);
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+			OS.gtk_style_context_invalidate(context);
+		}
+	}
+	// redrawn not necessary, GTK handles the css update
 }
 
 /**
@@ -3385,13 +3409,34 @@ public void setHeaderBackground (Color color) {
 public void setHeaderForeground (Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		if (color.equals(headerForeground)) return;
-	} else if (headerForeground == null) return;
-	headerForeground = color;
-	if (getHeaderVisible()) {
-		redraw();
+		if (color.isDisposed())
+			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerForeground))
+			return;
 	}
+	headerForeground = color;
+	if (OS.GTK3) {
+		GdkRGBA foreground;
+		if (headerForeground != null) {
+			foreground = display.toGdkRGBA(headerForeground.handle);
+		} else {
+			foreground = display.toGdkRGBA(display.COLOR_LIST_FOREGROUND);
+		}
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+		String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
+		headerCSSForeground = css;
+		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
+		for (TableColumn column : columns) {
+			long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+			// Create provider as we need it attached to the proper context which is not the widget one
+			long /*int*/ provider = OS.gtk_css_provider_new ();
+			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.g_object_unref (provider);
+			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+			OS.gtk_style_context_invalidate(context);
+		}
+	}
+	// redrawn not necessary, GTK handles the css update
 }
 
 /**
