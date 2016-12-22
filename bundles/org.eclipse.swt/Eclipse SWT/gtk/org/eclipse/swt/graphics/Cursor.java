@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -135,6 +136,7 @@ Cursor (Device device) {
 public Cursor(Device device, int style) {
 	super(device);
 	int shape = 0;
+	byte[] name = null;
 	switch (style) {
 		case SWT.CURSOR_APPSTARTING:	break;
 		case SWT.CURSOR_ARROW:			shape = OS.GDK_LEFT_PTR; break;
@@ -157,7 +159,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZENW:			shape = OS.GDK_TOP_LEFT_CORNER; break;
 		case SWT.CURSOR_UPARROW:		shape = OS.GDK_SB_UP_ARROW; break;
 		case SWT.CURSOR_IBEAM:			shape = OS.GDK_XTERM; break;
-		case SWT.CURSOR_NO:				shape = OS.GDK_X_CURSOR; break;
+		case SWT.CURSOR_NO:				shape = OS.GDK_X_CURSOR; name=Converter.wcsToMbcs("not-allowed", true) ; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -168,7 +170,11 @@ public Cursor(Device device, int style) {
 		System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
 		handle = createCursor(src, mask, 32, 32, 2, 2, true);
 	} else {
-		handle = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), shape);
+		if (name != null) {
+			handle = OS.gdk_cursor_new_from_name (OS.gdk_display_get_default(), name);
+		} else {
+			handle = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), shape);
+		}
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();

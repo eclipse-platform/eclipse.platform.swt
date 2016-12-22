@@ -3570,6 +3570,18 @@ public static final long /*int*/ gdk_cursor_new_for_display(long /*int*/ display
 		lock.unlock();
 	}
 }
+/** @param display cast=(GdkDisplay *)
+ *  @param cursor_name cast=(const gchar *)
+ */
+public static final native long /*int*/ _gdk_cursor_new_from_name(long /*int*/ display, byte[] cursor_name);
+public static final long /*int*/ gdk_cursor_new_from_name(long /*int*/ display, byte[] cursor_name) {
+	lock.lock();
+	try {
+		return _gdk_cursor_new_from_name(display, cursor_name);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param fg cast=(GdkColor *),flags=no_out

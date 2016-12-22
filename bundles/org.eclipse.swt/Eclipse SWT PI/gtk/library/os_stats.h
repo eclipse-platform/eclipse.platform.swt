@@ -401,6 +401,7 @@ typedef enum {
 	_1gdk_1colormap_1free_1colors_FUNC,
 	_1gdk_1colormap_1get_1system_FUNC,
 	_1gdk_1cursor_1new_1for_1display_FUNC,
+	_1gdk_1cursor_1new_1from_1name_FUNC,
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
 	_1gdk_1cursor_1new_1from_1pixmap_FUNC,
 	_1gdk_1cursor_1unref_FUNC,

@@ -4005,6 +4005,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1for_1display)
 }
 #endif
 
+#ifndef NO__1gdk_1cursor_1new_1from_1name
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1name)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)gdk_cursor_new_from_name((GdkDisplay *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1cursor_1new_1from_1pixbuf
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
