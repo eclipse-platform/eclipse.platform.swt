@@ -386,7 +386,7 @@ void createImages () {
 	Color background = getBackground();
 
 	/* Plus image */
-	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), plusMinus.getRGB()});
+	PaletteData palette = new PaletteData(foreground.getRGB(), background.getRGB(), plusMinus.getRGB());
 	ImageData imageData = new ImageData(itemHeight, itemHeight, 4, palette);
 	imageData.transparentPixel = 1;
 	plusImage = new Image(getDisplay(), imageData);
@@ -401,7 +401,7 @@ void createImages () {
 	gc.dispose();
 
 	/* Minus image */
-	palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), plusMinus.getRGB()});
+	palette = new PaletteData(foreground.getRGB(), background.getRGB(), plusMinus.getRGB());
 	imageData = new ImageData(itemHeight, itemHeight, 4, palette);
 	imageData.transparentPixel = 1;
 	minusImage = new Image(getDisplay(), imageData);

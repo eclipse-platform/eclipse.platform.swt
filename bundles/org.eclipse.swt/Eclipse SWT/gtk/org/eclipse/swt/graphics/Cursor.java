@@ -439,7 +439,7 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 				((s & 0x01) << 7));
 			maskData[i] = (byte) ~maskData[i];
 		}
-		PaletteData palette = new PaletteData(new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)});
+		PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
 		ImageData source = new ImageData(width, height, 1, palette, 1, sourceData);
 		ImageData mask = new ImageData(width, height, 1, palette, 1, maskData);
 		byte[] data = new byte[source.width * source.height * 4];

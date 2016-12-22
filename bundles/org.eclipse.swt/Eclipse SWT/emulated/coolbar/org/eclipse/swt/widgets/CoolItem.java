@@ -253,7 +253,7 @@ Image createArrowImage (int width, int height) {
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	Color background = parent.getBackground ();
 
-	PaletteData palette = new PaletteData (new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	PaletteData palette = new PaletteData (foreground.getRGB(), background.getRGB(), black.getRGB());
 	ImageData imageData = new ImageData (width, height, 4, palette);
 	imageData.transparentPixel = 1;
 	Image image = new Image (display, imageData);

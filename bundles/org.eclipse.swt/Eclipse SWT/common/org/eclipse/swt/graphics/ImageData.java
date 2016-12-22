@@ -1591,7 +1591,7 @@ public void setPixels(int x, int y, int putWidth, int[] pixels, int startIndex) 
  * Returns a palette with 2 colors: black & white.
  */
 static PaletteData bwPalette() {
-	return new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)});
+	return new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
 }
 
 /**
@@ -1637,7 +1637,7 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 
 static final ImageData convertMask(ImageData mask) {
 	if (mask.depth == 1) return mask;
-	PaletteData palette = new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255,255,255)});
+	PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255,255,255));
 	ImageData newMask = new ImageData(mask.width, mask.height, 1, palette);
 	/* Find index of black in mask palette */
 	int blackIndex = 0;
@@ -3539,7 +3539,7 @@ static ImageData createGradientBand(
 		}
 	} else {
 		/* Dithered two tone */
-		paletteData = new PaletteData(new RGB[] { fromRGB, toRGB });
+		paletteData = new PaletteData(fromRGB, toRGB);
 		bitmapDepth = 8;
 		final int blendi;
 		if (vertical) {
