@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.browser.CloseWindowListener;
 import org.eclipse.swt.browser.LocationAdapter;
 import org.eclipse.swt.browser.LocationEvent;
@@ -651,6 +652,8 @@ public void test_refresh() {
  */
 @Test
 public void test_setTextLjava_lang_String() {
+	// Note, this test sometimes crashes on webkit1. See Bug 509411
+
 	String html = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
 	for (int i = 0; i < 1000; i++) {
 		html +="<P>That is a test line with the number "+i+"</P>";
@@ -1038,9 +1041,9 @@ public void test_evaluate_array_mixedTypes () {
 		@Override
 		public void completed(ProgressEvent event) {
 			Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", 2, true)");
-			atomicArray.set(0, evalResult[0]);
-			atomicArray.set(1, evalResult[1]);
 			atomicArray.set(2, evalResult[2]);
+			atomicArray.set(1, evalResult[1]);
+			atomicArray.set(0, evalResult[0]); // should be set last. to avoid loop below ending & failing to early.
 			if (browser_debug)
 				System.out.println("Node value: "+ evalResult);
 		}
@@ -1063,6 +1066,365 @@ public void test_evaluate_array_mixedTypes () {
 	}
 	fail("Expected evaluate to return an array of mixed types. But didn't receive a return value or return values didn't match.");
 }
+
+
+ProgressListener callCustomFunctionUponLoad = new ProgressListener() {
+	@Override
+	public void changed(ProgressEvent event) {}
+	@Override
+	public void completed(ProgressEvent event) {
+		browser.execute("callCustomFunction()");
+	}
+};
+
+/**
+ * Test that javascript can call java.
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			javaCallbackExecuted.set(true);
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "		jsCallbackToJava()\n"        // This calls the javafunction that we registered.
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "</html>\n";
+
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (javaCallbackExecuted.get()) {
+			return; // pass.
+		}
+	}
+	fail();
+}
+
+/**
+ * Test that javascript can call java and pass an integer to java.
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback_with_integer () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	AtomicInteger returnInt = new AtomicInteger(0);
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			Double returnedDouble = (Double) arguments[0];
+			returnInt.set(returnedDouble.intValue()); // 5.0 -> 5
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "		jsCallbackToJava(5)\n"        // This calls the javafunction that we registered ** with value of 5.
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "</html>\n";
+
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (returnInt.get() == 5) {
+			return; // pass.
+		}
+	}
+	fail();
+}
+
+
+
+/**
+ * Test that javascript can call java and pass a Boolean to java.
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback_with_boolean () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			Boolean returnBool = (Boolean) arguments[0];
+ 			javaCallbackExecuted.set(returnBool);
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "		jsCallbackToJava(true)\n"        // This calls the javafunction that we registered.
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "</html>\n";
+
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (javaCallbackExecuted.get()) {
+			return; // pass.
+		}
+	}
+	fail();
+}
+
+
+/**
+ * Test that javascript can call java and pass a String to java.
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback_with_String () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	final AtomicReference<String> returnValue = new AtomicReference<>();
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			String returnString = (String) arguments[0];
+			returnValue.set(returnString);
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "		jsCallbackToJava('hellojava')\n"        // This calls the javafunction that we registered.
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "</html>\n";
+
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if ("hellojava".equals(returnValue.get())) {
+			return; // pass.
+		}
+	}
+	fail();
+}
+
+
+/**
+ * Test that javascript can call java and pass multiple values to java.
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback_with_multipleValues () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3); // Strin, Double, Boolean
+	atomicArray.set(0, "executing");
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			atomicArray.set(1, arguments[1]);
+			atomicArray.set(2, arguments[2]);
+			atomicArray.set(0, arguments[0]); // item at index 0 should be set last for this test case.
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "		jsCallbackToJava('hellojava', 5, true)\n"        // This calls the javafunction that we registered.
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "</html>\n";
+
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if ("executing".equals(atomicArray.get(0))) {
+			continue;
+		} else {
+			if (atomicArray.get(0).equals("hellojava")
+					&& ((Double) atomicArray.get(1)) == 5
+					&& ((Boolean) atomicArray.get(2))) {
+				return; //passed.
+			}
+		}
+	}
+	fail();
+}
+
+
+/**
+ * Test that javascript can call java, java returns an Integer back to javascript.
+ *
+ * It's a bit tricky to tell if javascript actually received the correct value from java.
+ * Solution: make a second function/callback that is called with the value that javascript received from java.
+ *
+ * Logic:
+ *  1) Java registers function callCustomFunction() by setting html body.
+ *  2) which in turn calls JavascriptCallback, which returns value 42 back to javascript.
+ *  3) javascript then calls JavascriptCallback_javascriptReceivedJavaInt() and passes it value received from java.
+ *  4) Java validates that the correct value (42) was passed to javascript and was passed back to java.
+ *
+ * loosely based on Snippet307.
+ */
+@Test
+public void test_BrowserFunction_callback_with_javaReturningInt () {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	AtomicInteger returnInt = new AtomicInteger(0);
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			return 42;
+		}
+	}
+
+	class JavascriptCallback_javascriptReceivedJavaInt extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback_javascriptReceivedJavaInt(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			Double returnVal = (Double) arguments[0];
+			returnInt.set(returnVal.intValue());  // 4)
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "     var retVal = jsCallbackToJava()\n"  // 2)
+			+ "		document.write(retVal)\n"        // This calls the javafunction that we registered. Set HTML body to return value.
+			+ "     jsSuccess(retVal)\n"				// 3)
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> If you see this, javascript did not receive anything from Java. This page should just be '42' </body>\n"
+			+ "</html>\n";
+	// 1)
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+	new JavascriptCallback_javascriptReceivedJavaInt(browser, "jsSuccess");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (returnInt.get() == 42) { //4)
+			return; // pass.
+		}
+	}
+	fail();
+}
+
+
 
 /* custom */
 void runLoopTimer(final int milliseconds) {
