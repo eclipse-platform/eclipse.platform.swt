@@ -48,19 +48,17 @@ public class OS extends C {
 	}
 
 	private static String getEnvironmentalVariable (String envVarName) {
-		String envVarValue = System.getProperty(envVarName);
-		if (envVarValue == null) {
-			long /*int*/ ptr = OS.getenv(ascii(envVarName));
-			if (ptr != 0) {
-				int length = OS.strlen(ptr);
-				byte[] buffer = new byte[length];
-				OS.memmove(buffer, ptr, length);
-				char[] convertedChar = new char[buffer.length];
-				for (int i = 0; i < buffer.length; i++) {
-					convertedChar[i]=(char)buffer[i];
-				}
-				envVarValue = new String(convertedChar);
+		String envVarValue = null;
+		long /*int*/ ptr = OS.getenv(ascii(envVarName));
+		if (ptr != 0) {
+			int length = OS.strlen(ptr);
+			byte[] buffer = new byte[length];
+			OS.memmove(buffer, ptr, length);
+			char[] convertedChar = new char[buffer.length];
+			for (int i = 0; i < buffer.length; i++) {
+				convertedChar[i]=(char)buffer[i];
 			}
+			envVarValue = new String(convertedChar);
 		}
 		return envVarValue;
 	}
