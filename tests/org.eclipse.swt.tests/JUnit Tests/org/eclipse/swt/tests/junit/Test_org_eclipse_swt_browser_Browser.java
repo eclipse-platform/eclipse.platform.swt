@@ -690,15 +690,13 @@ public void test_evaluate_string() {
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-	boolean passed = false;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if ("HelloWorld".equals(returnValue.get())) {
-			passed = true;
-			break;
+			return; // passed.
 		}
 	}
-	assertTrue(passed);
+	fail();
 }
 
 /**
@@ -790,6 +788,7 @@ public void test_evaluate_boolean() {
 			return; // passed.
 		}
 	}
+	fail();
 }
 
 /**
@@ -822,6 +821,7 @@ public void test_evaluate_null() {
 			return; // passed
 		}
 	}
+	fail();
 }
 
 /**
@@ -853,16 +853,15 @@ public void test_evaluate_invalid_return_value() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = false;
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if (exception.get() != -1) {
 			if (exception.get() == SWT.ERROR_INVALID_RETURN_VALUE) {
-				passed = true;
+				return; // passed.
 			} else if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
 				System.err.println("SWT Warning: test_evaluate_invalid_return_value threw wrong exception code."
 						+ " Expected ERROR_INVALID_RETURN_VALUE but got ERROR_FAILED_EVALUATE");
-				passed = true;
+				return; // passed.
 				// Webkit1 is known to throw the wrong exception.
 			} else  {
 				System.err.println("test_evaluate_invalid_return_value - Invalid exception code : " + exception.get());
@@ -870,7 +869,7 @@ public void test_evaluate_invalid_return_value() {
 			break;
 		}
 	}
-	assertTrue(passed);
+	fail();
 }
 
 /**
@@ -906,6 +905,7 @@ public void test_evaluate_evaluation_failed_exception() {
 			break;
 		}
 	}
+	fail();
 }
 
 /**
@@ -946,6 +946,7 @@ public void test_evaluate_array_numbers() {
 			}
 		}
 	}
+	fail();
 }
 
 /**
@@ -985,6 +986,7 @@ public void test_evaluate_array_strings () {
 			}
 		}
 	}
+	fail();
 }
 
 /**
@@ -1025,6 +1027,7 @@ public void test_evaluate_array_mixedTypes () {
 			}
 		}
 	}
+	fail();
 }
 
 /* custom */
