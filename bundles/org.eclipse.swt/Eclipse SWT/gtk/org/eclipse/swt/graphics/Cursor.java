@@ -138,7 +138,7 @@ public Cursor(Device device, int style) {
 	int shape = 0;
 	byte[] name = null;
 	switch (style) {
-		case SWT.CURSOR_APPSTARTING:	break;
+		case SWT.CURSOR_APPSTARTING:	name = Converter.wcsToMbcs("progress", true) ; break;
 		case SWT.CURSOR_ARROW:			shape = OS.GDK_LEFT_PTR; break;
 		case SWT.CURSOR_WAIT:			shape = OS.GDK_WATCH; break;
 		case SWT.CURSOR_CROSS:			shape = OS.GDK_CROSS; break;
@@ -163,17 +163,18 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
-		byte[] src = new byte[APPSTARTING_SRC.length];
-		System.arraycopy(APPSTARTING_SRC, 0, src, 0, src.length);
-		byte[] mask = new byte[APPSTARTING_MASK.length];
-		System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
-		handle = createCursor(src, mask, 32, 32, 2, 2, true);
-	} else {
-		if (name != null) {
-			handle = OS.gdk_cursor_new_from_name (OS.gdk_display_get_default(), name);
+	if (name != null) {
+		handle = OS.gdk_cursor_new_from_name (OS.gdk_display_get_default(), name);
+	}
+	if (handle == 0) {
+		if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
+			byte[] src = new byte[APPSTARTING_SRC.length];
+			System.arraycopy(APPSTARTING_SRC, 0, src, 0, src.length);
+			byte[] mask = new byte[APPSTARTING_MASK.length];
+			System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
+			handle = createCursor(src, mask, 32, 32, 2, 2, true);
 		} else {
-			handle = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), shape);
+			handle = OS.gdk_cursor_new_for_display(OS.gdk_display_get_default(), shape);
 		}
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
