@@ -716,7 +716,7 @@ public void test_evaluate_string() {
 			return; // passed.
 		}
 	}
-	fail();
+	fail("Evaluation did not return a value. Or test timed out.");
 }
 
 /**
@@ -728,7 +728,7 @@ public void test_evaluate_number_normal() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	Double testNum = 123.0;
 	boolean passed = evaluate_number_helper(testNum);
-	assertTrue(passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
 }
 
 /**
@@ -741,7 +741,7 @@ public void test_evaluate_number_negative() {
 
 	Double testNum = -123.0;
 	boolean passed = evaluate_number_helper(testNum);
-	assertTrue(passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
 }
 
 /**
@@ -754,7 +754,7 @@ public void test_evaluate_number_big() {
 
 	Double testNum = 10000000000.0;
 	boolean passed = evaluate_number_helper(testNum);
-	assertTrue(passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
 }
 
 boolean evaluate_number_helper(Double testNum) {
@@ -814,7 +814,7 @@ public void test_evaluate_boolean() {
 			return; // passed.
 		}
 	}
-	fail();
+	fail("Evaluation did not return a boolean. Or test timed out.");
 }
 
 /**
@@ -847,7 +847,7 @@ public void test_evaluate_null() {
 			return; // passed
 		}
 	}
-	fail();
+	fail("Evaluate did not return a null. Timed out.");
 }
 
 /**
@@ -892,12 +892,12 @@ public void test_evaluate_invalid_return_value() {
 				return; // passed.
 				// Webkit1 is known to throw the wrong exception.
 			} else  {
-				System.err.println("test_evaluate_invalid_return_value - Invalid exception code : " + exception.get());
+				fail("Invalid exception code : " + exception.get());
 			}
 			break;
 		}
 	}
-	fail();
+	fail("This test tests for evaluation to return an invalid return value. An exception should have been thrown, but none was thrown. Or test timed out");
 }
 
 /**
@@ -929,12 +929,12 @@ public void test_evaluate_evaluation_failed_exception() {
 			if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
 				return; // passed
 			} else  {
-				System.err.println("test_evaluate_invalid_return_value - Invalid exception code");
+				fail("Invalid exception thrown: " + exception.get());
 			}
 			break;
 		}
 	}
-	fail();
+	fail("Expected exception to be thrown, but none was thrown. Test timed out.");
 }
 
 /**
@@ -973,11 +973,11 @@ public void test_evaluate_array_numbers() {
 			if (atomicIntArray.get(0) == 1 && atomicIntArray.get(1) == 2 && atomicIntArray.get(2) == 3) {
 				return; // passed
 			} else {
-				System.err.println("ERROR: test_evaluate_array_numbers, resulting numbers not as expected");
+				fail("Resulting numbers in the array are not as expected");
 			}
 		}
 	}
-	fail();
+	fail("Evaluation should have returned an array, but array not returned or values are not correct.");
 }
 
 /**
@@ -1015,11 +1015,11 @@ public void test_evaluate_array_strings () {
 					&& atomicStringArray.get(2).equals("str3")) {
 				return; // passed
 			} else {
-				System.err.println("ERROR: test_evaluate_array_strings, resulting strings not as expected");
+				fail("Resulting strings in array are not as expected");
 			}
 		}
 	}
-	fail();
+	fail("Expected an array of strings, but did not receive array or got the wrong result.");
 }
 
 /**
@@ -1057,11 +1057,11 @@ public void test_evaluate_array_mixedTypes () {
 					&& ((Boolean) atomicArray.get(2))) {
 				return; //passed.
 			} else {
-				System.err.println("ERROR: test_evaluate_array_mixedTypes, resulting strings not as expected");
+				fail("Resulting strings not as expected");
 			}
 		}
 	}
-	fail();
+	fail("Expected evaluate to return an array of mixed types. But didn't receive a return value or return values didn't match.");
 }
 
 /* custom */
