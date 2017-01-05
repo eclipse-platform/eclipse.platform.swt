@@ -465,6 +465,8 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget ();
+	Shell shell = parent._getShell ();
+	shell.setToolTipText (handle, string);
 	toolTipText = string;
 }
 
