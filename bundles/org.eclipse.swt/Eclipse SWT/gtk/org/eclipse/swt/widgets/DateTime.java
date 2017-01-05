@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -473,7 +473,7 @@ void createPopupShell (int year, int month, int day) {
 		}
 	};
 
-	int [] listeners = {SWT.Close, SWT.MouseUp, SWT.Paint};
+	int [] listeners = {SWT.Close, SWT.MouseUp};
 	for (int i=0; i < listeners.length; i++) {
 		popupShell.addListener (listeners [i], popupListener);
 	}
@@ -1253,13 +1253,6 @@ void handleFocus (int type) {
 
 void popupShellEvent (Event event) {
 	switch (event.type) {
-		case SWT.Paint:
-			/* Draw black rectangle around popupCalendar */
-			Rectangle bounds = popupCalendar.getBounds ();
-			Color black = getDisplay ().getSystemColor (SWT.COLOR_BLACK);
-			event.gc.setForeground (black);
-			event.gc.drawRectangle (0, 0, bounds.width + 1, bounds.height + 1);
-			break;
 		case SWT.Close:
 			event.doit = false;
 			dropDownCalendar (false);
