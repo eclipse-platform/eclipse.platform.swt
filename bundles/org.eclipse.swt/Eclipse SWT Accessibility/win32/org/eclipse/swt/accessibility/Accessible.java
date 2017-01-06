@@ -1555,11 +1555,11 @@ public class Accessible {
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) {
 			if (!UseIA2) return COM.E_NOINTERFACE;
-			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
-				accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
-				accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-				accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
-				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
+			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
+				accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
+				accessibleTableCellListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 ||
+				accessibleValueListeners.size() > 0 || getRelationCount() > 0
+				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIServiceProvider == null) createIServiceProvider();
 				COM.MoveMemory(ppvObject, new int /*long*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
@@ -1719,11 +1719,11 @@ public class Accessible {
 
 	int queryAccessible2Interfaces(GUID guid, int /*long*/ ppvObject) {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) {
-			if (accessibleActionListenersSize() > 0 || accessibleAttributeListenersSize() > 0 ||
-					accessibleHyperlinkListenersSize() > 0 || accessibleTableListenersSize() > 0 ||
-					accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
-					accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
-					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
+			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
+					accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
+					accessibleTableCellListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 ||
+					accessibleValueListeners.size() > 0 || getRelationCount() > 0
+					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIAccessible2 == null) createIAccessible2();
 				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
