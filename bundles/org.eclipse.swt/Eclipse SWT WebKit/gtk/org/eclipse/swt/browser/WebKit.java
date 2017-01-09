@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2016 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -663,6 +663,7 @@ public void create (Composite parent, int style) {
 
 	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
+	OS.g_object_set (settings, WebKitGTK.enable_webgl, 1, 0);
 
 	if (WEBKIT2){
 		OS.g_object_set (settings, WebKitGTK.default_charset, bytes, 0);

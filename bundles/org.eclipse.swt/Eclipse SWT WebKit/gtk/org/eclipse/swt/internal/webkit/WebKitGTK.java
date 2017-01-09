@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -78,7 +78,8 @@ public class WebKitGTK extends C {
 	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
 	public static final byte[] default_charset = ascii ("default-charset"); // $NON-NLS-1$
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$
-	public static final byte[] enable_plugins = ascii("enable-plugins");
+	public static final byte[] enable_plugins = ascii("enable-plugins"); // $NON-NLS-1$
+	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$
 	public static final byte[] height = ascii ("height"); // $NON-NLS-1$
 	public static final byte[] javascript_can_open_windows_automatically = ascii ("javascript-can-open-windows-automatically"); // $NON-NLS-1$
