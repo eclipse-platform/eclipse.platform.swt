@@ -688,7 +688,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 		init ();
 		ImageData data2x = imageDataProvider.getImageData (200);
 		if (data2x != null) {
-			NSBitmapImageRep rep = createRepresentation (data2x);
+			NSBitmapImageRep rep = createRepresentaion (data2x);
 			handle.addRepresentation(rep);
 			rep.release();
 		}
@@ -856,7 +856,7 @@ public Rectangle getBoundsInPixels() {
 	return bounds;
 }
 
-ImageData _getImageData (NSBitmapImageRep imageRep) {
+ImageData _getImageData(NSBitmapImageRep imageRep) {
 	long /*int*/ width = imageRep.pixelsWide();
 	long /*int*/ height = imageRep.pixelsHigh();
 	long /*int*/ bpr = imageRep.bytesPerRow();
@@ -939,12 +939,8 @@ public ImageData getImageData() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSBitmapImageRep imageRep = getRepresentation();
-		ImageData data =  _getImageData(imageRep);
-		if (imageFileNameProvider == null && imageDataProvider == null) {
-			return data;
-		}
-		return DPIUtil.autoScaleImageData(device, data, 100, DPIUtil.getDeviceZoom());
+		NSBitmapImageRep imageRep = getActualRepresentation();
+		return _getImageData(imageRep);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -971,12 +967,11 @@ public ImageData getImageDataAtCurrentZoom() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSBitmapImageRep imageRep = getRepresentation();
-		ImageData data = _getImageData(imageRep);
 		if (imageFileNameProvider != null || imageDataProvider != null) {
-			return data;
+			NSBitmapImageRep imageRep = getRepresentation();
+			return _getImageData(imageRep);
 		}
-		return DPIUtil.autoScaleImageData(device, data, DPIUtil.getDeviceZoom(), 100);
+		return DPIUtil.autoScaleImageData(device, getImageData(), DPIUtil.getDeviceZoom(), 100);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1003,6 +998,26 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	image.type = type;
 	image.handle = nsImage;
 	return image;
+}
+
+// Method to get the Image representation for the actual image without any scaling.
+NSBitmapImageRep getActualRepresentation () {
+	NSArray reps = handle.representations();
+	NSSize size = handle.size();
+	long /*int*/ count = reps.count();
+	for (int i = 0; i < count; i++) {
+		NSBitmapImageRep rep = new NSBitmapImageRep(reps.objectAtIndex(i));
+		if (((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
+			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
+				return rep;
+			}
+		}
+	}
+	NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	newRep = newRep.initWithData(handle.TIFFRepresentation());
+	handle.addRepresentation(newRep);
+	newRep.release();
+	return newRep;
 }
 
 NSBitmapImageRep getRepresentation () {
@@ -1090,13 +1105,13 @@ void init(ImageData image) {
 	this.width = image.width;
 	this.height = image.height;
 
-	NSBitmapImageRep rep = createRepresentation(image);
+	NSBitmapImageRep rep = createRepresentaion(image);
 	handle.addRepresentation(rep);
 	rep.release();
 	handle.setCacheMode(OS.NSImageCacheNever);
 }
 
-private NSBitmapImageRep createRepresentation(ImageData imageData) {
+private NSBitmapImageRep createRepresentaion(ImageData imageData) {
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 
 	PaletteData palette = imageData.palette;
