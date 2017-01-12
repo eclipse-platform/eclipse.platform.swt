@@ -27,71 +27,26 @@ requires.5.range = [$version$,$version$]
 requires.5.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86)(!(org.eclipse.swt.buildtime=true)))
 
 requires.6.namespace = org.eclipse.equinox.p2.iu
-requires.6.name = org.eclipse.swt.gtk.linux.s390x
+requires.6.name = org.eclipse.swt.gtk.linux.ppc
 requires.6.range = [$version$,$version$]
-requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=s390x)(!(org.eclipse.swt.buildtime=true)))
+requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc)(!(org.eclipse.swt.buildtime=true)))
 
 requires.7.namespace = org.eclipse.equinox.p2.iu
-requires.7.name = org.eclipse.swt.gtk.linux.s390
+requires.7.name = org.eclipse.swt.gtk.linux.ppc64
 requires.7.range = [$version$,$version$]
-requires.7.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=s390)(!(org.eclipse.swt.buildtime=true)))
+requires.7.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.8.namespace = org.eclipse.equinox.p2.iu
-requires.8.name = org.eclipse.swt.gtk.solaris.sparcv9
+requires.8.name = org.eclipse.swt.gtk.linux.x86_64
 requires.8.range = [$version$,$version$]
-requires.8.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=sparcv9)(!(org.eclipse.swt.buildtime=true)))
+requires.8.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.9.namespace = org.eclipse.equinox.p2.iu
-requires.9.name = org.eclipse.swt.gtk.solaris.x86_64
+requires.9.name = org.eclipse.swt.gtk.linux.ppc64le
 requires.9.range = [$version$,$version$]
-requires.9.filter = (&(osgi.os=solaris)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
+requires.9.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le)(!(org.eclipse.swt.buildtime=true)))
 
 requires.10.namespace = org.eclipse.equinox.p2.iu
-requires.10.name = org.eclipse.swt.gtk.linux.ppc
+requires.10.name = org.eclipse.swt.cocoa.macosx.x86_64
 requires.10.range = [$version$,$version$]
-requires.10.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc)(!(org.eclipse.swt.buildtime=true)))
-
-requires.11.namespace = org.eclipse.equinox.p2.iu
-requires.11.name = org.eclipse.swt.gtk.linux.ppc64
-requires.11.range = [$version$,$version$]
-requires.11.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.12.namespace = org.eclipse.equinox.p2.iu
-requires.12.name = org.eclipse.swt.gtk.linux.x86_64
-requires.12.range = [$version$,$version$]
-requires.12.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.13.namespace = org.eclipse.equinox.p2.iu
-requires.13.name = org.eclipse.swt.gtk.linux.ppc64le
-requires.13.range = [$version$,$version$]
-requires.13.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le)(!(org.eclipse.swt.buildtime=true)))
-
-requires.14.namespace = org.eclipse.equinox.p2.iu
-requires.14.name = org.eclipse.swt.cocoa.macosx.x86_64
-requires.14.range = [$version$,$version$]
-requires.14.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.15.namespace = org.eclipse.equinox.p2.iu
-requires.15.name = org.eclipse.swt.gtk.aix.ppc
-requires.15.range = [$version$,$version$]
-requires.15.filter = (&(osgi.os=aix)(osgi.ws=gtk)(osgi.arch=ppc)(!(org.eclipse.swt.buildtime=true)))
-
-requires.16.namespace = org.eclipse.equinox.p2.iu
-requires.16.name = org.eclipse.swt.gtk.aix.ppc64
-requires.16.range = [$version$,$version$]
-requires.16.filter = (&(osgi.os=aix)(osgi.ws=gtk)(osgi.arch=ppc64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.17.namespace = org.eclipse.equinox.p2.iu
-requires.17.name = org.eclipse.swt.gtk.hpux.ia64
-requires.17.range = [$version$,$version$]
-requires.17.filter = (&(osgi.os=hpux)(osgi.ws=gtk)(osgi.arch=ia64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.18.namespace = org.eclipse.equinox.p2.iu
-requires.18.name = org.eclipse.swt.gtk.linux.arm
-requires.18.range = [$version$,$version$]
-requires.18.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=arm)(!(org.eclipse.swt.buildtime=true)))
-
-requires.19.namespace = org.eclipse.equinox.p2.iu
-requires.19.name = org.eclipse.swt.gtk.linux.aarch64
-requires.19.range = [$version$,$version$]
-requires.19.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=aarch64)(!(org.eclipse.swt.buildtime=true)))
+requires.10.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
