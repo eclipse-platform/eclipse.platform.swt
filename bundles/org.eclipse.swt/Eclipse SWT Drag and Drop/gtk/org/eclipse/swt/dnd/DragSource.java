@@ -361,6 +361,14 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	event.doit = operation != 0;
 	event.detail = operation;
 	notifyListeners(DND.DragEnd, event);
+	/*
+	 * send a mouse Up signal for >GTK3.14 as Wayland (support as of 3.14)
+	 * does not trigger a MouseUp/Mouse_release_event on DragEnd.
+	 * See Bug 510446.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		control.notifyListeners(SWT.MouseUp, event);
+	}
 	moveData = false;
 }
 
