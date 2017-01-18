@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.lang.reflect.*;
+import java.util.function.*;
+
+import org.eclipse.swt.*;
 
 /**
  * Instances of this class represent entry points into Java
@@ -31,7 +35,8 @@ public class Callback {
 	long /*int*/ address, errorResult;
 	boolean isStatic, isArrayBased;
 
-	static final String PTR_SIGNATURE = C.PTR_SIZEOF == 4 ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
+	static final boolean is32Bit = C.PTR_SIZEOF == 4 ? true : false;
+	static final String PTR_SIGNATURE = is32Bit ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
 	static final String SIGNATURE_0 = getSignature(0);
 	static final String SIGNATURE_1 = getSignature(1);
 	static final String SIGNATURE_2 = getSignature(2);
@@ -45,6 +50,10 @@ public class Callback {
  * invoke and an argument count. Note that, if the object
  * is an instance of <code>Class</code> it is assumed that
  * the method is a static method on that class.
+ *
+ * <p>Note, do not use this if the method arguments have a double, as arguments will be
+ * shifted/corrupted. See Bug 510538. Instead use the following constructor: <br>
+ * <code> Callback (Object, String, Type, Type [])</code></p>
  *
  * @param object the object to send the message to
  * @param method the name of the method to invoke
@@ -62,6 +71,10 @@ public Callback (Object object, String method, int argCount) {
  * that, if the object is an instance of <code>Class</code>
  * it is assumed that the method is a static method on that
  * class.
+ *
+ * <p>Note, do not use this if the method arguments have a double, as arguments will be
+ * shifted/corrupted. See Bug 510538. Instead use the following constructor: <br>
+ * <code> Callback (Object, String, Type, Type [])</code></p>
  *
  * @param object the object to send the message to
  * @param method the name of the method to invoke
@@ -81,6 +94,10 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
  * the object is an instance of <code>Class</code>
  * it is assumed that the method is a static method on that
  * class.
+ *
+ * <p>Note, do not use this if the method arguments have a double, as arguments will be
+ * shifted/corrupted. See Bug 510538. Instead use the following constructor: <br>
+ * <code> Callback (Object, String, Type, Type [])</code></p>
  *
  * @param object the object to send the message to
  * @param method the name of the method to invoke
@@ -116,6 +133,103 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	/* Bind the address */
 	address = bind (this, object, method, signature, argCount, isStatic, isArrayBased, errorResult);
 }
+
+
+/**
+ * <p>Register the java method to be a C callback.
+ * I.e, C will be able to make a call to this java method directly (through callback.c)</p>
+ *
+ * <p>The other constructors hard-code int/long into the method signature:<br>
+ * <code> long method (long ...) </code><br>
+ * Which is suitable for int/long and pointers.<br>
+ * This constructor is used if you need to use a different return/argument type, e.g double. See Bug 510538 </p>
+ *
+ * <p> Note:
+ * <ul>
+ * <li> Array support is not implemented/supported by this constructor. Use other constructors.</li>
+ * <li> If the object is an instance of <code>Class</code> it is assumed that
+ * the method is a static method on that class. </li>
+ * <li> Note, long types are converted to ints on 32 bit system automatically to account for smaller pointers.
+ * This means if you use 'long', you need to cast int next to it. like: <code> long &#47;*int*&#47;</code> </li>
+ * </ul></p>
+ *
+ * <p>The following types are supported: <br>
+ * <ul>
+ * <li>void (for return values only) </li>
+ * <li>int</li>
+ * <li>long</li>
+ * <li>byte</li>
+ * <li>char</li>
+ * <li>double</li>
+ * <li>float</li>
+ * <li>short</li>
+ * <li>boolean</li>
+ * </ul>
+ *
+ * <p> For example if you want to link the following method: <br>
+ * <code> void myMethod(long &#47;*int*&#47; arg1, double arg2) </code> <br>
+ * Then you would call this callback like:<br>
+ * <code> Callback (this, "myMethod", void.class, new Type []{long.class, double.class}); </code>
+ * </p>
+ *
+ * @param object the object to send the message to
+ * @param method method the name of the method to invoke
+ * @param returnType specify the type like  <code>void.class, long.class, double.class </code>
+ * @param arguments specify the list of arguments like <code> new Type [] {long.class, double.class } </code>
+ */
+public Callback (Object object, String method, Type returnType, Type [] arguments) {
+	/* Set the callback fields */
+	this.object = object;
+	this.method = method;
+	this.argCount = arguments != null ? arguments.length : 0;
+	this.isStatic = object instanceof Class;
+	this.isArrayBased = false;
+	this.errorResult = 0;
+
+	Function <Type, String> getTypeLetter = type -> {
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2
+		if (int.class.equals(type)) {
+			return "I";
+		} else if (long.class.equals(type)) {
+			return "J";
+		} else if (void.class.equals(type)) { // for return type.
+			return "V";
+		} else if (byte.class.equals(type)) {
+			return "B";
+		} else if (char.class.equals(type)) {
+			return "C";
+		} else if (double.class.equals(type)) {
+			return "D";
+		} else if (float.class.equals(type)) {
+			return "F";
+		} else if (short.class.equals(type)) {
+			return "S";
+		} else if (boolean.class.equals(type)) {
+			return "Z";
+		}
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, type.toString() + "Not supported");
+		return null; // not reachable. Suppress warning.
+	};
+
+	StringBuilder signature = new StringBuilder("(");
+	for (Type t : arguments) {
+		if (t.equals(void.class)) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "void is not a valid argument");
+		}
+		signature.append(getTypeLetter.apply(t));
+	}
+	signature.append(")");
+	signature.append(getTypeLetter.apply(returnType));
+	this.signature = signature.toString();
+	if (is32Bit) {
+		this.signature = this.signature.replace("J", "I");
+	}
+
+	/* Bind the address */
+	address = bind (this, this.object, this.method, this.signature, this.argCount, this.isStatic, this.isArrayBased, this.errorResult);
+}
+
+
 
 /**
  * Allocates the native level resources associated with the
