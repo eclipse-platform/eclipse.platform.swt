@@ -872,6 +872,10 @@ public boolean close () {
 }
 
 boolean close (boolean showPrompters) {
+	if (WEBKIT2) {
+		// To be implemented for webkit2. Bug 510694
+		return false;
+	}
 	if (!jsEnabled) return true;
 
 	String message1 = Compatibility.getMessage("SWT_OnBeforeUnload_Message1"); // $NON-NLS-1$
@@ -936,6 +940,15 @@ public boolean execute (String script) {
 @Override
 public Object evaluate (String script) throws SWTException {
 	if (WEBKIT2){
+
+		if (script.contains(FUNCTIONNAME_CALLJAVA)) {
+			// Bug 508217 - Support for browser.funcction/close not yet implemented.
+			// trying to execute 'callJava' code currently can lead to infinite
+			// recursion/loops causing freeze ups. See Bug 510183.
+			// Disabling till function and close() implemented.
+			return null;
+		}
+
 		/* Webkit2: We remove the 'return' prefix that normally comes with the script.
 		 * The reason is that in Webkit1, script was wrapped into a function and if an exception occured
 		 * it was caught on Javascript side and a callback to java was made.
