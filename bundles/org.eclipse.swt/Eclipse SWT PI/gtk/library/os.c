@@ -9141,6 +9141,42 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1enumerate_1printers)
 }
 #endif
 
+#ifndef NO__1gtk_1event_1controller_1handle_1event
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1event_1controller_1handle_1event)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1handle_1event_FUNC);
+/*
+	gtk_event_controller_handle_event(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_event_controller_handle_event)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1handle_1event_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1event_1controller_1set_1propagation_1phase
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1event_1controller_1set_1propagation_1phase)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1set_1propagation_1phase_FUNC);
+/*
+	gtk_event_controller_set_propagation_phase(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_event_controller_set_propagation_phase)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1set_1propagation_1phase_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1expander_1get_1expanded
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -9684,6 +9720,377 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1frame_1set_1shadow_1type)
 	OS_NATIVE_ENTER(env, that, _1gtk_1frame_1set_1shadow_1type_FUNC);
 	gtk_frame_set_shadow_type((GtkFrame *)arg0, (GtkShadowType)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1frame_1set_1shadow_1type_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1drag_1get_1offset
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1gesture_1drag_1get_1offset)
+	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
+{
+	jdouble *lparg1=NULL;
+	jdouble *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1drag_1get_1offset_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_gesture_drag_get_offset(arg0, lparg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_drag_get_offset)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jdouble *, jdouble *))fp)(arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1drag_1get_1offset_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1drag_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1drag_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1drag_1new_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_drag_new((GtkWidget *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_drag_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1drag_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1get_1last_1event
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1get_1last_1event)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1get_1last_1event_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_get_last_event(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_get_last_event)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1get_1last_1event_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1get_1last_1updated_1sequence
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1get_1last_1updated_1sequence)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1get_1last_1updated_1sequence_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_get_last_updated_sequence(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_get_last_updated_sequence)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1get_1last_1updated_1sequence_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1get_1point
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1gesture_1get_1point)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdoubleArray arg2, jdoubleArray arg3)
+{
+	jdouble *lparg2=NULL;
+	jdouble *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1get_1point_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_gesture_get_point(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_get_point)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jintLong, jdouble *, jdouble *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1get_1point_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1get_1sequences
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1get_1sequences)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1get_1sequences_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_get_sequences(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_get_sequences)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1get_1sequences_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1group
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1gesture_1group)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1group_FUNC);
+/*
+	gtk_gesture_group(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_group)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1group_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1is_1recognized
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1gesture_1is_1recognized)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1is_1recognized_FUNC);
+/*
+	rc = (jboolean)gtk_gesture_is_recognized(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_is_recognized)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1is_1recognized_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1pan_1get_1orientation
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1pan_1get_1orientation)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1pan_1get_1orientation_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_pan_get_orientation(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_pan_get_orientation)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1pan_1get_1orientation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1pan_1new
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1gesture_1pan_1new)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1pan_1new_FUNC);
+/*
+	gtk_gesture_pan_new(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_pan_new)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1pan_1new_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1pan_1set_1orientation
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1gesture_1pan_1set_1orientation)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1pan_1set_1orientation_FUNC);
+/*
+	gtk_gesture_pan_set_orientation(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_pan_set_orientation)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1pan_1set_1orientation_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1rotate_1get_1angle_1delta
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1gesture_1rotate_1get_1angle_1delta)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1rotate_1get_1angle_1delta_FUNC);
+/*
+	rc = (jdouble)gtk_gesture_rotate_get_angle_delta(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_rotate_get_angle_delta)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1rotate_1get_1angle_1delta_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1rotate_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1rotate_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1rotate_1new_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_rotate_new(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_rotate_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1rotate_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1single_1set_1button
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1gesture_1single_1set_1button)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1single_1set_1button_FUNC);
+/*
+	gtk_gesture_single_set_button(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_single_set_button)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1single_1set_1button_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1swipe_1get_1velocity
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1gesture_1swipe_1get_1velocity)
+	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
+{
+	jdouble *lparg1=NULL;
+	jdouble *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1swipe_1get_1velocity_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_gesture_swipe_get_velocity(arg0, lparg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_swipe_get_velocity)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jdouble *, jdouble *))fp)(arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1swipe_1get_1velocity_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1swipe_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1swipe_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1swipe_1new_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_swipe_new(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_swipe_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1swipe_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1zoom_1get_1scale_1delta
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1gesture_1zoom_1get_1scale_1delta)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
+/*
+	rc = (jdouble)gtk_gesture_zoom_get_scale_delta(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_zoom_get_scale_delta)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1gesture_1zoom_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1gesture_1zoom_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1gesture_1zoom_1new_FUNC);
+/*
+	rc = (jintLong)gtk_gesture_zoom_new(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_gesture_zoom_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1gesture_1zoom_1new_FUNC);
+	return rc;
 }
 #endif
 

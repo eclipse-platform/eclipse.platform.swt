@@ -12,6 +12,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.lang.reflect.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -49,6 +51,7 @@ public abstract class Control extends Widget implements Drawable {
 	long /*int*/ redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
 	long /*int*/ enterNotifyEventId;
+	long /*int*/ dragGesture, zoomGesture, rotateGesture, panGesture;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -66,6 +69,25 @@ public abstract class Control extends Widget implements Drawable {
 	static int enterNotifyEventSignalId;
 	static int GTK_POINTER_WINDOW;
 	static int SWT_GRAB_WIDGET;
+
+	static Callback gestureZoom, gestureRotation, gestureSwipe, gestureBegin, gestureEnd;
+	static {
+		gestureZoom = new Callback (Control.class, "magnifyProc", void.class, new Type[] {
+				long.class, double.class, long.class}); //$NON-NLS-1$
+		if (gestureZoom.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		gestureRotation = new Callback (Control.class, "rotateProc", void.class, new Type[] {
+				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
+		if (gestureRotation.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		gestureSwipe = new Callback (Control.class, "swipeProc", void.class, new Type[] {
+				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
+		if (gestureSwipe.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		gestureBegin = new Callback (Control.class, "gestureBeginProc", void.class, new Type[] {
+				long.class, long.class, long.class}); //$NON-NLS-1$
+		if (gestureBegin.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		gestureEnd = new Callback (Control.class, "gestureEndProc", void.class, new Type[] {
+				long.class, long.class, long.class}); //$NON-NLS-1$
+		if (gestureEnd.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	}
 
 Control () {
 }
@@ -261,6 +283,10 @@ long /*int*/ fontHandle () {
 	return handle;
 }
 
+long /*int*/ gestureHandle () {
+	return handle;
+}
+
 /**
  * Returns the orientation of the receiver, which will be one of the
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
@@ -331,6 +357,11 @@ void hookEvents () {
 	OS.gtk_widget_add_events (enterExitHandle, enterExitMask);
 	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
+
+	/*Connect gesture signals */
+	setZoomGesture();
+	setDragGesture();
+	setRotateGesture();
 
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
@@ -4069,6 +4100,62 @@ void sendFocusEvent (int type) {
 	}
 }
 
+ boolean sendGestureEvent (int stateMask, int detail, int x, int y, double delta) {
+	switch (detail) {
+	case SWT.GESTURE_ROTATE: {
+		return sendGestureEvent(stateMask, detail, x, y, delta, 0, 0, 0);
+	}
+	case SWT.GESTURE_MAGNIFY: {
+		return sendGestureEvent(stateMask, detail, x, y, 0,0,0, delta);
+	}
+	case SWT.GESTURE_BEGIN: {
+		return sendGestureEvent(stateMask, detail, x, y, 0, 0, 0, delta);
+	}
+	case SWT.GESTURE_END: {
+		return sendGestureEvent(stateMask, detail, 0, 0, 0, 0, 0, 0);
+	}
+	default:
+		//case not supported.
+		return false;
+	}
+}
+
+boolean sendGestureEvent (int stateMask, int detail, int x, int y, double xDirection, double yDirection) {
+	if (detail == SWT.GESTURE_SWIPE) {
+		return sendGestureEvent(stateMask, detail, x, y, 0, (int)xDirection, (int)yDirection, 0);
+	} else return false;
+}
+
+boolean sendGestureEvent (int stateMask, int detail, int x, int y, double rotation, int xDirection, int yDirection, double magnification) {
+	Event event = new Event ();
+	event.stateMask = stateMask;
+	event.detail = detail;
+	event.x = x;
+	event.y = y;
+	switch (detail) {
+		case SWT.GESTURE_ROTATE: {
+			event.rotation = rotation;
+			break;
+		}
+		case SWT.GESTURE_MAGNIFY: {
+			event.magnification = magnification;
+			break;
+		}
+		case SWT.GESTURE_SWIPE: {
+			event.xDirection = xDirection;
+			event.yDirection = yDirection;
+			break;
+		}
+		case SWT.GESTURE_BEGIN:
+		case SWT.GESTURE_END: {
+			break;
+		}
+	}
+	postEvent(SWT.Gesture, event);
+	if (isDisposed ()) return false;
+	return event.doit;
+}
+
 boolean sendHelpEvent (long /*int*/ helpType) {
 	Control control = this;
 	while (control != null) {
@@ -4749,6 +4836,130 @@ void setInitialBounds () {
 	}
 }
 
+/*
+ * Sets the receivers Drag Gestures in order to do drag detection correctly for
+ * X11/Wayland window managers after GTK3.14.
+ * TODO currently phase is set to BUBBLE = 2. Look into using groups perhaps.
+ */
+private void setDragGesture () {
+        if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			dragGesture = OS.gtk_gesture_drag_new (handle);
+			OS.gtk_event_controller_set_propagation_phase (dragGesture,
+			        2);
+			OS.gtk_gesture_single_set_button (dragGesture, 0);
+			OS.g_signal_connect(dragGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+			OS.g_signal_connect(dragGesture, OS.end, gestureEnd.getAddress(), this.handle);
+			return;
+        }
+}
+
+private void setPanGesture () {
+/* TODO: Panning gesture requires a GtkOrientation object. Need to discuss what orientation should be default. */
+}
+
+private void setRotateGesture () {
+    if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		rotateGesture = OS.gtk_gesture_rotate_new(handle);
+		OS.gtk_event_controller_set_propagation_phase (rotateGesture,
+		        2);
+		OS.g_signal_connect (rotateGesture, OS.angle_changed, gestureRotation.getAddress(), this.handle);
+		OS.g_signal_connect(rotateGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+		OS.g_signal_connect(rotateGesture, OS.end, gestureEnd.getAddress(), this.handle);
+		return;
+    }
+}
+
+private void setZoomGesture () {
+        if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			zoomGesture = OS.gtk_gesture_zoom_new(handle);
+			OS.gtk_event_controller_set_propagation_phase (zoomGesture,
+			        2);
+			OS.g_signal_connect(zoomGesture, OS.scale_changed, gestureZoom.getAddress(), this.handle);
+			OS.g_signal_connect(zoomGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+			OS.g_signal_connect(zoomGesture, OS.end, gestureEnd.getAddress(), this.handle);
+			return;
+        }
+}
+
+static Control getControl(long /*int*/ handle) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display ==null || display.isDisposed()) return null;
+	Widget widget = display.findWidget(handle);
+	if (widget == null) return null;
+	return (Control) widget;
+}
+
+static void rotateProc(long /*int*/ gesture, double angle, double angle_delta, long /*int*/ user_data) {
+	if (OS.gtk_gesture_is_recognized(gesture)) {
+		int [] state = new int[1];
+		double [] x = new double[1];
+		double [] y = new double[1];
+		OS.gtk_get_current_event_state(state);
+		OS.gtk_gesture_get_point(gesture, OS.gtk_gesture_get_last_updated_sequence(gesture), x, y);
+		/*
+		 * Returning delta is off by two decimal points and is returning negative numbers on
+		 * counter clockwise rotations from GTK. From the java doc of GestureEvent.rotation,
+		 * we have to invert the rotation number so that positive/negative numbers are returned
+		 * correctly (inverted).
+		 */
+		double delta = -(OS.gtk_gesture_rotate_get_angle_delta(gesture)*100);
+		Control control = getControl(user_data);
+		control.sendGestureEvent(state[0], SWT.GESTURE_ROTATE, (int) x[0], (int) y[0], delta);
+	}
+}
+
+static void magnifyProc(long /*int*/ gesture, double zoom, long /*int*/ user_data) {
+	if (OS.gtk_gesture_is_recognized(gesture)) {
+		int [] state = new int[1];
+		double [] x = new double[1];
+		double [] y = new double[1];
+		OS.gtk_get_current_event_state(state);
+		OS.gtk_gesture_get_point(gesture, OS.gtk_gesture_get_last_updated_sequence(gesture), x, y);
+		double delta = OS.gtk_gesture_zoom_get_scale_delta(gesture);
+		Control control = getControl(user_data);
+		control.sendGestureEvent(state[0], SWT.GESTURE_MAGNIFY, (int) x[0], (int) y[0], delta);
+	}
+}
+
+static void swipeProc(long /*int*/ gesture, double velocity_x, double velocity_y, long /*int*/ user_data) {
+	if (OS.gtk_gesture_is_recognized(gesture)) {
+		double [] xVelocity = new double [1];
+		double [] yVelocity = new double [1];
+		if (OS.gtk_gesture_swipe_get_velocity(gesture, xVelocity, yVelocity)) {
+			int [] state = new int[1];
+			double [] x = new double[1];
+			double [] y = new double[1];
+			OS.gtk_get_current_event_state(state);
+			OS.gtk_gesture_get_point(gesture, OS.gtk_gesture_get_last_updated_sequence(gesture), x, y);
+			Control control = getControl(user_data);
+			control.sendGestureEvent(state[0], SWT.GESTURE_SWIPE, (int) x[0], (int) y[0], xVelocity[0], yVelocity[0]);
+		}
+	}
+}
+
+static void gestureBeginProc(long /*int*/ gesture, long /*int*/ sequence, long /*int*/ user_data) {
+	if (OS.gtk_gesture_is_recognized(gesture)) {
+		int [] state = new int[1];
+		double [] x = new double[1];
+		double [] y = new double[1];
+		OS.gtk_get_current_event_state(state);
+		OS.gtk_gesture_get_point(gesture, sequence, x, y);
+		Control control = getControl(user_data);
+		control.sendGestureEvent(state[0], SWT.GESTURE_BEGIN, (int) x[0], (int) y[0], 0);
+	}
+}
+
+static void gestureEndProc(long /*int*/ gesture, long /*int*/ sequence, long /*int*/ user_data) {
+	if (OS.gtk_gesture_is_recognized(gesture)) {
+		int [] state = new int[1];
+		double [] x = new double[1];
+		double [] y = new double[1];
+		OS.gtk_get_current_event_state(state);
+		OS.gtk_gesture_get_point(gesture, OS.gtk_gesture_get_last_updated_sequence(gesture), x, y);
+		Control control = getControl(user_data);
+		control.sendGestureEvent(state[0], SWT.GESTURE_END, (int) x[0], (int) y[0], 0);
+	}
+}
 /**
  * Sets the receiver's pop up menu to the argument.
  * All controls may optionally have a pop up

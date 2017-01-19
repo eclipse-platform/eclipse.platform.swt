@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -726,6 +726,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1entry_1set_1width_1chars",
 	"_1gtk_1entry_1text_1index_1to_1layout_1index",
 	"_1gtk_1enumerate_1printers",
+	"_1gtk_1event_1controller_1handle_1event",
+	"_1gtk_1event_1controller_1set_1propagation_1phase",
 	"_1gtk_1expander_1get_1expanded",
 	"_1gtk_1expander_1new",
 	"_1gtk_1expander_1set_1expanded",
@@ -772,6 +774,24 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1frame_1new",
 	"_1gtk_1frame_1set_1label_1widget",
 	"_1gtk_1frame_1set_1shadow_1type",
+	"_1gtk_1gesture_1drag_1get_1offset",
+	"_1gtk_1gesture_1drag_1new",
+	"_1gtk_1gesture_1get_1last_1event",
+	"_1gtk_1gesture_1get_1last_1updated_1sequence",
+	"_1gtk_1gesture_1get_1point",
+	"_1gtk_1gesture_1get_1sequences",
+	"_1gtk_1gesture_1group",
+	"_1gtk_1gesture_1is_1recognized",
+	"_1gtk_1gesture_1pan_1get_1orientation",
+	"_1gtk_1gesture_1pan_1new",
+	"_1gtk_1gesture_1pan_1set_1orientation",
+	"_1gtk_1gesture_1rotate_1get_1angle_1delta",
+	"_1gtk_1gesture_1rotate_1new",
+	"_1gtk_1gesture_1single_1set_1button",
+	"_1gtk_1gesture_1swipe_1get_1velocity",
+	"_1gtk_1gesture_1swipe_1new",
+	"_1gtk_1gesture_1zoom_1get_1scale_1delta",
+	"_1gtk_1gesture_1zoom_1new",
 	"_1gtk_1get_1current_1event",
 	"_1gtk_1get_1current_1event_1state",
 	"_1gtk_1get_1default_1language",

@@ -523,7 +523,9 @@ public class OS extends C {
 	/** Signals */
 	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");
 	public static final byte[] activate = ascii("activate");
+	public static final byte[] angle_changed = ascii("angle_changed");
 	public static final byte[] backspace = ascii("backspace");
+	public static final byte[] begin = ascii("begin");
 	public static final byte[] button_press_event = ascii("button-press-event");
 	public static final byte[] button_release_event = ascii("button-release-event");
 	public static final byte[] changed = ascii("changed");
@@ -550,6 +552,7 @@ public class OS extends C {
 	public static final byte[] drag_leave = ascii("drag_leave");
 	public static final byte[] drag_motion = ascii("drag_motion");
 	public static final byte[] draw = ascii("draw");
+	public static final byte[] end = ascii("end");
 	public static final byte[] enter_notify_event = ascii("enter-notify-event");
 	public static final byte[] event = ascii("event");
 	public static final byte[] event_after = ascii("event-after");
@@ -586,6 +589,7 @@ public class OS extends C {
 	public static final byte[] row_has_child_toggled = ascii("row-has-child-toggled");
 	public static final byte[] row_inserted = ascii("row-inserted");
 	public static final byte[] row_deleted = ascii("row-deleted");
+	public static final byte[] scale_changed = ascii("scale-changed");
 	public static final byte[] scroll_child = ascii("scroll-child");
 	public static final byte[] scroll_event = ascii("scroll-event");
 	public static final byte[] select = ascii("select");
@@ -596,6 +600,7 @@ public class OS extends C {
 	public static final byte[] size_request = ascii("size-request");
 	public static final byte[] start_interactive_search = ascii("start-interactive-search");
 	public static final byte[] style_set = ascii("style-set");
+	public static final byte[] swipe = ascii("swipe");
 	public static final byte[] switch_page = ascii("switch-page");
 	public static final byte[] test_collapse_row = ascii("test-collapse-row");
 	public static final byte[] test_expand_row = ascii("test-expand-row");
@@ -7724,6 +7729,31 @@ public static final void gtk_file_chooser_set_select_multiple(long /*int*/ choos
 	}
 }
 /**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_event_controller_set_propagation_phase(long /*int*/ controller, int phase);
+public static final void gtk_event_controller_set_propagation_phase(long /*int*/ controller, int phase) {
+        lock.lock();
+        try {
+                _gtk_event_controller_set_propagation_phase(controller, phase);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event);
+public static final void gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event) {
+        lock.lock();
+        try {
+                _gtk_event_controller_handle_event(gesture, event);
+        } finally {
+                lock.unlock();
+        }
+}
+
+/**
  * @param filter cast=(GtkFileFilter *)
  * @param pattern cast=(const gchar *)
  */
@@ -7792,6 +7822,227 @@ public static final long /*int*/ gtk_fixed_new() {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean _gtk_gesture_is_recognized(long /*int*/ gesture);
+public static final boolean gtk_gesture_is_recognized(long /*int*/ gesture) {
+	lock.lock();
+	try {
+		return _gtk_gesture_is_recognized(gesture);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native long /*int*/ _gtk_gesture_drag_new(long /*int*/ widget);
+public static final long /*int*/ gtk_gesture_drag_new(long /*int*/ widget) {
+        lock.lock();
+        try {
+                return _gtk_gesture_drag_new(widget);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_get_last_event(long /*int*/ gesture, long /*int*/ sequence);
+public static final long /*int*/ gtk_gesture_get_last_event(long /*int*/ gesture, long /*int*/ sequence) {
+		lock.lock();
+		try {
+			return _gtk_gesture_get_last_event(gesture,sequence);
+		} finally {
+			lock.unlock();
+		}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_get_last_updated_sequence(long /*int*/ gesture);
+public static final long /*int*/ gtk_gesture_get_last_updated_sequence(long /*int*/ gesture) {
+		lock.lock();
+		try {
+			return _gtk_gesture_get_last_updated_sequence(gesture);
+		} finally {
+			lock.unlock();
+		}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean _gtk_gesture_get_point(long /*int*/ gesture, long /*int*/ sequence, double[] x, double [] y);
+public static final boolean gtk_gesture_get_point(long /*int*/ gesture, long /*int*/ sequence, double[] x, double [] y) {
+		lock.lock();
+		try {
+			return _gtk_gesture_get_point(gesture, sequence, x, y);
+		} finally {
+			lock.unlock();
+		}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_get_sequences(long /*int*/ gesture);
+public static final long /*int*/ gtk_gesture_get_sequences(long /*int*/ gesture) {
+		lock.lock();
+		try {
+			return _gtk_gesture_get_sequences(gesture);
+		} finally {
+			lock.unlock();
+		}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_gesture_group (long /*int*/ group_gesture, long /*int*/ gesture);
+public static final void gtk_gesture_group (long /*int*/ group_gesture, long /*int*/ gesture) {
+        lock.lock();
+        try {
+                 _gtk_gesture_group(group_gesture, gesture);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_gesture_pan_set_orientation(long /*int*/ orientation);
+public static final void gtk_gesture_pan_set_orientation(long /*int*/ orientation) {
+	lock.lock();
+	try {
+		 _gtk_gesture_pan_set_orientation(orientation);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_pan_get_orientation(long /*int*/ gesture);
+public static final long /*int*/ gtk_gesture_pan_get_orientation(long /*int*/ gesture) {
+	lock.lock();
+	try {
+		return _gtk_gesture_pan_get_orientation(gesture);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_gesture_pan_new (long /*int*/ widget, long /*int*/ orientation);
+public static final void gtk_gesture_pan_new (long /*int*/ widget, long /*int*/ orientation) {
+	lock.lock();
+	try {
+		_gtk_gesture_pan_new(widget, orientation);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_gesture_single_set_button(long /*int*/ gesture, int button);
+public static final void gtk_gesture_single_set_button(long /*int*/ gesture, int button) {
+        lock.lock();
+        try {
+                 _gtk_gesture_single_set_button(gesture, button);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native boolean _gtk_gesture_swipe_get_velocity(long /*int*/ gesture, double [] velocity_x, double[] velocity_y);
+public static final boolean gtk_gesture_swipe_get_velocity(long /*int*/ gesture, double [] velocity_x, double[] velocity_y) {
+	lock.lock();
+	try {
+		return _gtk_gesture_swipe_get_velocity(gesture, velocity_x, velocity_y);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_swipe_new (long /*int*/ widget);
+public static final long /*int*/ gtk_gesture_swipe_new (long /*int*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_gesture_swipe_new(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_gesture_drag_get_offset(long /*int*/ gesture, double[] x, double[] y);
+public static final void gtk_gesture_drag_get_offset(long /*int*/ gesture, double[] x, double[] y) {
+        lock.lock();
+        try {
+                _gtk_gesture_drag_get_offset(gesture, x, y);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+
+public static final native double _gtk_gesture_rotate_get_angle_delta (long /*int*/ gesture);
+public static final double gtk_gesture_rotate_get_angle_delta (long /*int*/ gesture) {
+	lock.lock();
+	try {
+			return _gtk_gesture_rotate_get_angle_delta(gesture);
+	} finally {
+			lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+
+public static final native long /*int*/ _gtk_gesture_rotate_new(long /*int*/ widget);
+public static final long /*int*/ gtk_gesture_rotate_new(long /*int*/ widget) {
+        lock.lock();
+        try {
+                return _gtk_gesture_rotate_new(widget);
+        } finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_gesture_zoom_new(long /*int*/ widget);
+public static final long /*int*/ gtk_gesture_zoom_new(long /*int*/ widget) {
+        lock.lock();
+        try {
+                return _gtk_gesture_zoom_new(widget);
+        } finally {
+                lock.unlock();
+        }
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native double _gtk_gesture_zoom_get_scale_delta (long /*int*/ gesture);
+public static final double gtk_gesture_zoom_get_scale_delta (long /*int*/ gesture) {
+        lock.lock();
+        try {
+                return _gtk_gesture_zoom_get_scale_delta(gesture);
+        } finally {
+                lock.unlock();
+        }
+}
+
 /**
  * @param widget cast=(GtkWidget *)
  * @param has_window cast=(gboolean)

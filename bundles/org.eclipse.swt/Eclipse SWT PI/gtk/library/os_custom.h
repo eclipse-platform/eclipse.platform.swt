@@ -258,6 +258,27 @@
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 
 // GTK3 only
+#define gtk_event_controller_handle_event_LIB LIB_GTK
+#define gtk_event_controller_set_propagation_phase_LIB LIB_GTK
+#define gtk_file_filter_add_pattern_LIB LIB_GTK
+#define gtk_gesture_drag_new_LIB LIB_GTK
+#define gtk_gesture_drag_get_offset_LIB LIB_GTK
+#define gtk_gesture_get_last_event_LIB LIB_GTK
+#define gtk_gesture_get_last_updated_sequence_LIB LIB_GTK
+#define gtk_gesture_get_point_LIB LIB_GTK
+#define gtk_gesture_get_sequences_LIB LIB_GTK
+#define gtk_gesture_group_LIB LIB_GTK
+#define gtk_gesture_is_recognized_LIB LIB_GTK
+#define gtk_gesture_pan_get_orientation_LIB LIB_GTK
+#define gtk_gesture_pan_set_orientation_LIB LIB_GTK
+#define gtk_gesture_pan_new_LIB LIB_GTK
+#define gtk_gesture_rotate_get_angle_delta_LIB LIB_GTK
+#define gtk_gesture_rotate_new_LIB LIB_GTK
+#define gtk_gesture_swipe_get_velocity_LIB LIB_GTK
+#define gtk_gesture_swipe_new_LIB LIB_GTK
+#define gtk_gesture_zoom_get_scale_delta_LIB LIB_GTK
+#define gtk_gesture_zoom_new_LIB LIB_GTK
+#define gtk_gesture_single_set_button_LIB LIB_GTK
 #define gtk_widget_draw_LIB LIB_GTK
 #define gtk_widget_override_color_LIB LIB_GTK
 #define gtk_widget_override_background_color_LIB LIB_GTK

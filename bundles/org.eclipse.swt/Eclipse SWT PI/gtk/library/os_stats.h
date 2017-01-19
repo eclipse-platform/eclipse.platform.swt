@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -736,6 +736,8 @@ typedef enum {
 	_1gtk_1entry_1set_1width_1chars_FUNC,
 	_1gtk_1entry_1text_1index_1to_1layout_1index_FUNC,
 	_1gtk_1enumerate_1printers_FUNC,
+	_1gtk_1event_1controller_1handle_1event_FUNC,
+	_1gtk_1event_1controller_1set_1propagation_1phase_FUNC,
 	_1gtk_1expander_1get_1expanded_FUNC,
 	_1gtk_1expander_1new_FUNC,
 	_1gtk_1expander_1set_1expanded_FUNC,
@@ -782,6 +784,24 @@ typedef enum {
 	_1gtk_1frame_1new_FUNC,
 	_1gtk_1frame_1set_1label_1widget_FUNC,
 	_1gtk_1frame_1set_1shadow_1type_FUNC,
+	_1gtk_1gesture_1drag_1get_1offset_FUNC,
+	_1gtk_1gesture_1drag_1new_FUNC,
+	_1gtk_1gesture_1get_1last_1event_FUNC,
+	_1gtk_1gesture_1get_1last_1updated_1sequence_FUNC,
+	_1gtk_1gesture_1get_1point_FUNC,
+	_1gtk_1gesture_1get_1sequences_FUNC,
+	_1gtk_1gesture_1group_FUNC,
+	_1gtk_1gesture_1is_1recognized_FUNC,
+	_1gtk_1gesture_1pan_1get_1orientation_FUNC,
+	_1gtk_1gesture_1pan_1new_FUNC,
+	_1gtk_1gesture_1pan_1set_1orientation_FUNC,
+	_1gtk_1gesture_1rotate_1get_1angle_1delta_FUNC,
+	_1gtk_1gesture_1rotate_1new_FUNC,
+	_1gtk_1gesture_1single_1set_1button_FUNC,
+	_1gtk_1gesture_1swipe_1get_1velocity_FUNC,
+	_1gtk_1gesture_1swipe_1new_FUNC,
+	_1gtk_1gesture_1zoom_1get_1scale_1delta_FUNC,
+	_1gtk_1gesture_1zoom_1new_FUNC,
 	_1gtk_1get_1current_1event_FUNC,
 	_1gtk_1get_1current_1event_1state_FUNC,
 	_1gtk_1get_1default_1language_FUNC,
