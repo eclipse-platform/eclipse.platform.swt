@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
@@ -34,7 +35,7 @@ public class TypedListener implements Listener {
 	/**
 	 * The receiver's event listener
 	 */
-	protected SWTEventListener eventListener;
+	protected EventListener eventListener;
 
 /**
  * Constructs a new instance of this class for the given event listener.
@@ -49,7 +50,7 @@ public class TypedListener implements Listener {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public TypedListener (SWTEventListener listener) {
+public TypedListener (EventListener listener) {
 	eventListener = listener;
 }
 
@@ -66,7 +67,7 @@ public TypedListener (SWTEventListener listener) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public SWTEventListener getEventListener () {
+public EventListener getEventListener () {
 	return eventListener;
 }
 
