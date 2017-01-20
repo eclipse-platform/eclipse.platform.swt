@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2011 IBM Corporation and others.
+ * Copyright (c) 2009, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
+import java.util.*;
+
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -25,7 +26,7 @@ import org.eclipse.swt.internal.*;
  *
  * @since 3.6
  */
-public class AccessibleTextAttributeEvent extends SWTEventObject {
+public class AccessibleTextAttributeEvent extends EventObject {
 
 	/**
 	 * [in] the 0-based text offset for which to return attribute information

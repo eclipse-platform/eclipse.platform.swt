@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
-import org.eclipse.swt.internal.SWTEventObject;
+import java.util.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  *
  * @since 2.0
  */
-public class AccessibleControlEvent extends SWTEventObject {
+public class AccessibleControlEvent extends EventObject {
 	public int childID;			// IN/OUT
 	public Accessible accessible;	// OUT
 	public int x, y;				// IN/OUT

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.swt.accessibility;
 
 
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.*;
+import java.util.*;
+
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -31,7 +32,7 @@ import org.eclipse.swt.internal.*;
  *
  * @since 3.0
  */
-public class AccessibleTextEvent extends SWTEventObject {
+public class AccessibleTextEvent extends EventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
 	/** @since 3.6 */

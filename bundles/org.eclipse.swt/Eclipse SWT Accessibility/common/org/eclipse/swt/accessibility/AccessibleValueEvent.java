@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.*;
+import java.util.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.*;
  *
  * @since 3.6
  */
-public class AccessibleValueEvent extends SWTEventObject {
+public class AccessibleValueEvent extends EventObject {
 
 	public Number value;
 

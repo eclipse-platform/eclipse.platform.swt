@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
+
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.SWTEventObject;
 
 /**
  * This is the super class for all typed event classes provided
@@ -22,7 +23,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see org.eclipse.swt.widgets.Event
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public class TypedEvent extends SWTEventObject {
+public class TypedEvent extends EventObject {
 
 	/**
 	 * the display where the event occurred
