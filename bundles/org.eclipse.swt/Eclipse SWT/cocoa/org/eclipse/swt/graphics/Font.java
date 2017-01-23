@@ -325,20 +325,20 @@ void init(String name, float height, int style, String nsName) {
 		NSString family = NSString.stringWith(name);
 		handle = NSFont.fontWithName(family, size);
 	}
-	initTraits(style);
+	initTraits(style, systemFont);
 	handle.retain();
 }
 
-private void initTraits(int style) {
+private void initTraits(int style, NSFont systemFont) {
 	NSFontManager manager = NSFontManager.sharedFontManager();
 	if (handle != null && (manager.traitsOfFont(handle) & OS.NSBoldFontMask) == 0 && ((style & SWT.BOLD) != 0)) {
 		handle = manager.convertFont(handle, OS.NSBoldFontMask);
 	}
-	if ((manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0 && ((style & SWT.ITALIC) != 0)) {
+	if (handle != null && (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0 && ((style & SWT.ITALIC) != 0)) {
 		handle = manager.convertFont(handle, OS.NSItalicFontMask);
 	}
 	if (handle == null) {
-		handle = device.systemFont.handle;
+		handle = systemFont;
 	}
 	if ((style & SWT.ITALIC) != 0 && (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0) {
 		extraTraits |= OS.NSItalicFontMask;
