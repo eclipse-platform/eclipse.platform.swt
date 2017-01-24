@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
@@ -32,10 +33,14 @@ class WebKit extends WebBrowser {
 	String[] headers;
 	boolean ignoreDispose, loadingText, untrustedText;
 	byte[] htmlBytes;
-	BrowserFunction eventFunction;
+	BrowserFunction eventFunction; //Webkit1 only.
 
 	static int DisabledJSCount;
-	static long /*int*/ ExternalClass, PostString, WebViewType;
+
+	/** Webkit1 only. Used for callJava. See JSObjectHasPropertyProc */
+	static long /*int*/ ExternalClass;
+
+	static long /*int*/ PostString, WebViewType;
 	static boolean IsWebKit14orNewer, LibraryLoaded;
 	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
 
@@ -98,7 +103,23 @@ class WebKit extends WebBrowser {
 
 	/* the following Callbacks are never freed */
 	static Callback Proc2, Proc3, Proc4, Proc5, Proc6;
-	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc;
+
+
+	/**
+	 * Webkit1  only: For javascript to call java via it's 'callJava'.
+	 * For webkit2, see Webkit2JavaCallback.
+	 *
+	 * Webkit1: - callJava is implemented via an external object
+	 * - Creates an object 'external' on javascipt side.
+	 * 	 -- see create(..) where it's initialized
+	 *   -- see webkit_window_object_cleared where it re-creates it on page-reloads
+	 * - Javascript will call 'external.callJava' (where callJava is a property of 'external').
+	 *    this triggers JSObjectGetPropertyProc(..) callback, which initializes callJava function.
+	 *    Then the external.callJava reaches JSObjectCallAsFunctionProc(..) and subsequently WebKit.java:callJava(..) is called.
+	 */
+	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc; // webkit1 only.
+
+	/** Webkit1 & Webkit2, Process key/mouse events from javascript. */
 	static Callback JSDOMEventProc;
 
 	static boolean WEBKIT2;
@@ -130,12 +151,19 @@ class WebKit extends WebBrowser {
 			if (Proc5.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc6 = new Callback (WebKit.class, "Proc", 6); //$NON-NLS-1$
 			if (Proc6.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
-			if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			JSObjectGetPropertyProc = new Callback (WebKit.class, "JSObjectGetPropertyProc", 4); //$NON-NLS-1$
-			if (JSObjectGetPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
-			if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+
+			if (WEBKIT2) {
+				new Webkit2JavaCallback();
+			} else {
+				JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
+				if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+				JSObjectGetPropertyProc = new Callback (WebKit.class, "JSObjectGetPropertyProc", 4); //$NON-NLS-1$
+				if (JSObjectGetPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+				JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
+				if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			}
+
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
 			if (JSDOMEventProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
@@ -225,6 +253,104 @@ class WebKit extends WebBrowser {
 	}
 
 	/**
+	 * For javascript to call java.
+	 * This callback is special in that we link Javascript to a C function and a C function to
+	 * the SWT java function.
+	 *
+	 * Note there is an architecture difference how callJava is implemented in Webkit1 vs Webkit2:
+	 *
+	 * Webkit1: See JSObjectHasPropertyProc.
+	 *
+	 * Webkit2: - callJava is implemented by connecting and calling a webkit signal:
+	 *  - webkit2JavaCallProc is linked from C to java.
+	 *  - Each webkit instance connects a signal (Webkit2JavaCallback.signal) to Webkit2JavaCallback.webkit2JavaCallProc
+	 *    via Webkit2JavaCallback.connectSignal(..)
+	 *  - (Note, webView is created with user_content_manager on webkit2.)
+	 *  - callJava is a wrapper that calls window.webkit.messageHandlers.webkit2JavaCallProc.postMessage([index,token, args]),
+	 *  	 which triggers the script-message-received::webkit2JavaCallProc signal and is forwarded to webkit2JavaCallProc.
+	 **/
+	static class Webkit2JavaCallback {
+		private static final String JavaScriptFunctionName = "webkit2JavaCallProc";  // $NON-NLS-1$
+		private static final String Signal = "script-message-received::" + JavaScriptFunctionName; // $NON-NLS-1$
+
+		static final String JavaScriptFunctionDeclaration =
+				"if (!window.callJava) {\n"
+				+ "		window.callJava = function callJava(index, token, args) {\n"
+				+ "         window.webkit.messageHandlers." + JavaScriptFunctionName + ".postMessage([index,token, args]);\n"
+				+ "		}\n"
+				+ "};\n";
+
+		private static Callback callback;
+		static {
+			callback = new Callback (Webkit2JavaCallback.class, JavaScriptFunctionName, void.class, new Type[] {long.class, long.class, long.class});
+			if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
+
+		/**
+		 * This method is called directly from javascript via something like: <br>
+		 * 	   window.webkit.messageHandlers.webkit2JavaCallProc.postMessage('helloWorld') <br>
+		 * - Note, this method is async when called from javascript.  <br>
+		 * - This method name MUST match: this.JavaScriptFunctionName <br>
+		 * - This method somewhat mirrors 'long callJava(ctx,func...)'. Except that it doesn't return a value.
+		 * Docu: <br>
+		 * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitUserContentManager.html#WebKitUserContentManager-script-message-received
+		 * */
+		@SuppressWarnings("unused")  // Method is called only directly from javascript.
+		private static void webkit2JavaCallProc (long /*int*/ WebKitUserContentManagerPtr, long /*int*/ WebKitJavascriptResultPtr, long /*int*/ webViewPtr) {
+			try {
+				long /*int*/ context = WebKitGTK.webkit_javascript_result_get_global_context (WebKitJavascriptResultPtr);
+				long /*int*/ value = WebKitGTK.webkit_javascript_result_get_value (WebKitJavascriptResultPtr);
+				Object[] arguments = (Object[]) convertToJava(context, value);
+				if (arguments.length != 3) throw new IllegalArgumentException("Expected 3 args. Received: " + arguments.length);
+
+				Double index = (Double) arguments[0];
+				String token = (String) arguments[1];
+
+				Browser browser = FindBrowser(webViewPtr);
+				if (browser == null) throw new NullPointerException("Could not find assosiated browser instance for handle: " + webViewPtr);
+
+				BrowserFunction function = browser.webBrowser.functions.get(index.intValue());
+
+				if (function == null) throw new NullPointerException("Could not find function with index: " + index);
+				if (!token.equals(function.token)) throw new IllegalStateException("Function token missmatch. Expected:" + function.token + " actual:" + token);
+				if (! (arguments[2] instanceof Object[])) {
+					throw new IllegalArgumentException("Javascript did not provide any arguments. An empty callback [like call()] should still provide an empty array");
+				}
+
+				try {
+					// TODO someday : Support return values. See Bug 510905
+					function.function ((Object[]) arguments[2]);
+				} catch (Exception e) {
+					// Exception in user function.
+					// Normally we would return an error to javascript. See callJava(..).
+					// But support for returning item back to java not implemented yet.
+				}
+
+			} catch (RuntimeException e) {
+				System.err.println("\nSWT Webkit2 internal error: Javascript callback from Webkit to Java encountered an error while processing the callback:");
+				System.err.println("Please report this via: https://bugs.eclipse.org/bugs/enter_bug.cgi?alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact=&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=&version=4.7");
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		/** Connect an instance of a webkit to the callback. */
+		static void connectSignal(long /*int*/ WebKitUserContentManager, long /*int*/ webView) {
+			OS.g_signal_connect (WebKitUserContentManager, Converter.wcsToMbcs (Signal, true), callback.getAddress (), webView);
+			WebKitGTK.webkit_user_content_manager_register_script_message_handler(WebKitUserContentManager, Converter.wcsToMbcs(JavaScriptFunctionName, true));
+		}
+	}
+
+	@Override
+	String getJavaCallDeclaration() {
+		if (WEBKIT2) {
+			return Webkit2JavaCallback.JavaScriptFunctionDeclaration;
+		} else {
+			return super.getJavaCallDeclaration();
+		}
+	}
+
+	/**
 	 * Gets the webkit version, within an <code>int[3]</code> array with
 	 * <code>{major, minor, micro}</code> version
 	 */
@@ -273,7 +399,16 @@ static boolean IsInstalled () {
 		(major == MIN_VERSION[0] && minor == MIN_VERSION[1] && micro >= MIN_VERSION[2]);
 }
 
+/**
+ * Webkit1 callback. Used when external.callJava is called in javascript.
+ * Not used by Webkit2.
+ */
 static long /*int*/ JSObjectCallAsFunctionProc (long /*int*/ ctx, long /*int*/ function, long /*int*/ thisObject, long /*int*/ argumentCount, long /*int*/ arguments, long /*int*/ exception) {
+	if (WEBKIT2) {
+		System.err.println("Internal error: SWT JSObjectCallAsFunctionProc. This should never have been called on webkit2.");
+		return 0;
+	}
+
 	if (WebKitGTK.JSValueIsObjectOfClass (ctx, thisObject, ExternalClass) == 0) {
 		return WebKitGTK.JSValueMakeUndefined (ctx);
 	}
@@ -286,7 +421,16 @@ static long /*int*/ JSObjectCallAsFunctionProc (long /*int*/ ctx, long /*int*/ f
 	return webkit.callJava (ctx, function, thisObject, argumentCount, arguments, exception);
 }
 
+/**
+ * This callback is only being ran by webkit1. Only for 'callJava'.
+ * It's used to initialize the 'callJava' function pointer in the 'external' object,
+ * such that external.callJava reaches Java land.
+ */
 static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName, long /*int*/ exception) {
+	if (WEBKIT2) {
+		System.err.println("Internal error: SWT WebKit.java:JSObjectGetPropertyProc. This should never have been called on webkit2.");
+		return 0;
+	}
 	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	long /*int*/ function = WebKitGTK.JSObjectMakeFunctionWithCallback (ctx, name, JSObjectCallAsFunctionProc.getAddress ());
@@ -294,7 +438,14 @@ static long /*int*/ JSObjectGetPropertyProc (long /*int*/ ctx, long /*int*/ obje
 	return function;
 }
 
+/**
+ * Webkit1: Check if the 'external' object regiseterd earlied has the 'callJava' property.
+ */
 static long /*int*/ JSObjectHasPropertyProc (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName) {
+	if (WEBKIT2) {
+		System.err.println("Internal error: SWT JSObjectHasPropertyProc. This should never have been called on webkit2.");
+		return 0;
+	}
 	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 	return WebKitGTK.JSStringIsEqualToUTF8CString (propertyName, bytes);
 }
@@ -558,17 +709,22 @@ public void create (Composite parent, int style) {
 		if (Device.DEBUG) {
 			System.out.println(String.format("WebKit version %s.%s.%s", vers[0], vers[1], vers[2])); //$NON-NLS-1$
 		}
-		JSClassDefinition jsClassDefinition = new JSClassDefinition ();
-		byte[] bytes = Converter.wcsToMbcs (CLASSNAME_EXTERNAL, true);
-		jsClassDefinition.className = C.malloc (bytes.length);
-		OS.memmove (jsClassDefinition.className, bytes, bytes.length);
-		jsClassDefinition.hasProperty = JSObjectHasPropertyProc.getAddress ();
-		jsClassDefinition.getProperty = JSObjectGetPropertyProc.getAddress ();
-		long /*int*/ classDefinitionPtr = C.malloc (JSClassDefinition.sizeof);
-		WebKitGTK.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
-		ExternalClass = WebKitGTK.JSClassCreate (classDefinitionPtr);
 
-		bytes = Converter.wcsToMbcs ("POST", true); //$NON-NLS-1$
+		if (!WEBKIT2) { // 'external' object only used on webkit1 for javaCall. Webkit2 has a different mechanism.
+			JSClassDefinition jsClassDefinition = new JSClassDefinition ();
+			byte[] bytes = Converter.wcsToMbcs (CLASSNAME_EXTERNAL, true);
+			jsClassDefinition.className = C.malloc (bytes.length);
+			OS.memmove (jsClassDefinition.className, bytes, bytes.length);
+
+			jsClassDefinition.hasProperty = JSObjectHasPropertyProc.getAddress ();
+			jsClassDefinition.getProperty = JSObjectGetPropertyProc.getAddress ();
+			long /*int*/ classDefinitionPtr = C.malloc (JSClassDefinition.sizeof);
+			WebKitGTK.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
+
+			ExternalClass = WebKitGTK.JSClassCreate (classDefinitionPtr);
+		}
+
+		byte [] bytes = Converter.wcsToMbcs ("POST", true); //$NON-NLS-1$
 		PostString = C.malloc (bytes.length);
 		C.memmove (PostString, bytes, bytes.length);
 
@@ -593,7 +749,15 @@ public void create (Composite parent, int style) {
 		OS.gtk_scrolled_window_set_policy (scrolledWindow, OS.GTK_POLICY_AUTOMATIC, OS.GTK_POLICY_AUTOMATIC);
 	}
 
-	webView = WebKitGTK.webkit_web_view_new ();
+	if (WEBKIT2) {
+			// On Webkit2, webView has to be created with  UserContentManager so that Javascript callbacks work. See #508217
+			long /*int*/ WebKitUserContentManager = WebKitGTK.webkit_user_content_manager_new();
+			webView = WebKitGTK.webkit_web_view_new_with_user_content_manager (WebKitUserContentManager);
+			Webkit2JavaCallback.connectSignal(WebKitUserContentManager, webView);
+		} else { // Webkit1
+		  webView = WebKitGTK.webkit_web_view_new ();
+		}
+
 	webViewData = C.malloc (C.PTR_SIZEOF);
 	C.memmove (webViewData, new long /*int*/[] {webView}, C.PTR_SIZEOF);
 
@@ -746,12 +910,14 @@ public void create (Composite parent, int style) {
 		}
 	}
 
-	eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
-		@Override
-		public Object function(Object[] arguments) {
-			return handleEventFromFunction (arguments) ? Boolean.TRUE : Boolean.FALSE;
-		}
-	};
+	if (!WEBKIT2) { // HandleWebKitEvent registration. Pre Webkit 1.4 way of handling mouse/keyboard events. Webkit2 uses dom.
+		eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
+			@Override
+			public Object function(Object[] arguments) {
+				return handleEventFromFunction (arguments) ? Boolean.TRUE : Boolean.FALSE;
+			}
+		};
+	}
 
 	/*
 	* Bug in WebKitGTK.  MouseOver/MouseLeave events are not consistently sent from
@@ -812,51 +978,54 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 		return;
 	}
 
-	/* install the JS call-out to the registered BrowserFunction */
-	StringBuffer buffer = new StringBuffer ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
-	buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
-	execute (buffer.toString ());
-	buffer = new StringBuffer ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
-	buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
-	execute (buffer.toString ());
 
-	if (top) {
-		/* DOM API is not available, so add listener to top-level document */
-		buffer = new StringBuffer ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('keypress', SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('keyup', SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mouseup', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mousemove', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mousewheel', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('dragstart', SWTmousehandler, true);"); //$NON-NLS-1$
-
-		/*
-		* The following two lines are intentionally commented because they cannot be used to
-		* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
-		* is fixed.
-		*/
-		//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
-		//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
-
+	if (!WEBKIT2) { // add HandleWebKitEvent key/mouse handlers
+		/* install the JS call-out to the registered BrowserFunction */
+		StringBuffer buffer = new StringBuffer ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
+		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
 		execute (buffer.toString ());
-		return;
-	}
+		buffer = new StringBuffer ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
+		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
+		execute (buffer.toString ());
 
-	/* add JS event listener in frames */
-	buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('keydown', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('keypress', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('keyup', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mousedown', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mouseup', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mousemove', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mouseover', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mouseout', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('mousewheel', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ("frames[i].document.addEventListener('dragstart', window.SWTmousehandler, true);"); //$NON-NLS-1$
-	buffer.append ('}');
-	execute (buffer.toString ());
+		if (top) {
+			/* DOM API is not available, so add listener to top-level document */
+			buffer = new StringBuffer ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('keypress', SWTkeyhandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('keyup', SWTkeyhandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('mouseup', SWTmousehandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('mousemove', SWTmousehandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('mousewheel', SWTmousehandler, true);"); //$NON-NLS-1$
+			buffer.append ("document.addEventListener('dragstart', SWTmousehandler, true);"); //$NON-NLS-1$
+
+			/*
+			* The following two lines are intentionally commented because they cannot be used to
+			* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
+			* is fixed.
+			*/
+			//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
+			//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
+
+			execute (buffer.toString ());
+			return;
+		}
+
+		/* add JS event listener in frames */
+		buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('keydown', window.SWTkeyhandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('keypress', window.SWTkeyhandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('keyup', window.SWTkeyhandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mousedown', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mouseup', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mousemove', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mouseover', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mouseout', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('mousewheel', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ("frames[i].document.addEventListener('dragstart', window.SWTmousehandler, true);"); //$NON-NLS-1$
+		buffer.append ('}');
+		execute (buffer.toString ());
+	}
 }
 
 @Override
@@ -940,15 +1109,6 @@ public boolean execute (String script) {
 @Override
 public Object evaluate (String script) throws SWTException {
 	if (WEBKIT2){
-
-		if (script.contains(FUNCTIONNAME_CALLJAVA)) {
-			// Bug 508217 - Support for browser.funcction/close not yet implemented.
-			// trying to execute 'callJava' code currently can lead to infinite
-			// recursion/loops causing freeze ups. See Bug 510183.
-			// Disabling till function and close() implemented.
-			return null;
-		}
-
 		/* Webkit2: We remove the 'return' prefix that normally comes with the script.
 		 * The reason is that in Webkit1, script was wrapped into a function and if an exception occured
 		 * it was caught on Javascript side and a callback to java was made.
@@ -2066,6 +2226,10 @@ long /*int*/ webkit_notify_load_status (long /*int*/ web_view, long /*int*/ pspe
 	return 0;
 }
 
+/**
+ * This method is only called by Webkit2.
+ * The webkit1 equivalent is webkit_window_object_cleared;
+ */
 long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_data) {
 	switch (status) {
 		case WebKitGTK.WEBKIT2_LOAD_COMMITTED: {
@@ -2073,6 +2237,10 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 			return handleLoadCommitted (uri, true);
 		}
 		case WebKitGTK.WEBKIT2_LOAD_FINISHED: {
+
+			registerBrowserFunctions(); 	// Bug 508217
+			addEventHandlers (web_view, true);
+
 			long /*int*/ title = WebKitGTK.webkit_web_view_get_title (webView);
 			if (title == 0) {
 				long /*int*/ uri = WebKitGTK.webkit_web_view_get_uri (webView);
@@ -2318,6 +2486,10 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 	return 0;
 }
 
+/**
+ * This method is only called by Webkit1.
+ * The webkit2 equivalent is webkit_load_changed(..):caseWEBKIT2__LOAD_FINISHED
+ */
 long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ frame, long /*int*/ context, long /*int*/ window_object) {
 	long /*int*/ globalObject = WebKitGTK.JSContextGetGlobalObject (context);
 	long /*int*/ externalObject = WebKitGTK.JSObjectMake (context, ExternalClass, webViewData);
@@ -2325,17 +2497,25 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 	long /*int*/ name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
 	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKitGTK.JSStringRelease (name);
-	Iterator<BrowserFunction> elements = functions.values().iterator ();
-	while (elements.hasNext ()) {
-		BrowserFunction current = elements.next ();
-		execute (current.functionString);
-	}
+
+	registerBrowserFunctions(); // Bug 508217
 	long /*int*/ mainFrame = WebKitGTK.webkit_web_view_get_main_frame (webView);
 	boolean top = mainFrame == frame;
 	addEventHandlers (web_view, top);
 	return 0;
 }
 
+private void registerBrowserFunctions() {
+	Iterator<BrowserFunction> elements = functions.values().iterator ();
+	while (elements.hasNext ()) {
+		BrowserFunction current = elements.next ();
+		execute (current.functionString);
+	}
+}
+
+/**
+ * Webkit1 callback for javascript to call java.
+ */
 long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObject, long /*int*/ argumentCount, long /*int*/ arguments, long /*int*/ exception) {
 	Object returnValue = null;
 	if (argumentCount == 3) {
@@ -2415,7 +2595,7 @@ long /*int*/ convertToJS (long /*int*/ ctx, Object value) {
 	return 0;
 }
 
-Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
+static Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
 	int type = WebKitGTK.JSValueGetType (ctx, value);
 	switch (type) {
 		case WebKitGTK.kJSTypeBoolean: {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -110,6 +110,8 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1hit_1test_1result_1context_1is_1link",
 	"_1webkit_1hit_1test_1result_1get_1link_1title",
 	"_1webkit_1hit_1test_1result_1get_1link_1uri",
+	"_1webkit_1javascript_1result_1get_1global_1context",
+	"_1webkit_1javascript_1result_1get_1value",
 	"_1webkit_1javascript_1result_1unref",
 	"_1webkit_1major_1version",
 	"_1webkit_1micro_1version",
@@ -127,6 +129,8 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1uri_1request_1get_1uri",
 	"_1webkit_1uri_1request_1new",
 	"_1webkit_1uri_1response_1get_1mime_1type",
+	"_1webkit_1user_1content_1manager_1new",
+	"_1webkit_1user_1content_1manager_1register_1script_1message_1handler",
 	"_1webkit_1web_1context_1get_1default",
 	"_1webkit_1web_1context_1set_1favicon_1database_1directory",
 	"_1webkit_1web_1data_1source_1get_1data",
@@ -162,6 +166,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1load_1string",
 	"_1webkit_1web_1view_1load_1uri",
 	"_1webkit_1web_1view_1new",
+	"_1webkit_1web_1view_1new_1with_1user_1content_1manager",
 	"_1webkit_1web_1view_1reload",
 	"_1webkit_1web_1view_1run_1javascript",
 	"_1webkit_1web_1view_1stop_1loading",

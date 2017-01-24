@@ -346,8 +346,10 @@ public void createFunction (BrowserFunction function) {
 	functionBuffer.append (ERROR_ID.length ());
 	functionBuffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
 
-	StringBuffer buffer = new StringBuffer ("if (!window.callJava) {window.callJava = function callJava(index, token, args) {"); //$NON-NLS-1$
-	buffer.append ("return external.callJava(index,token,args);}};"); //$NON-NLS-1$
+	String javaCallDeclaration = getJavaCallDeclaration();
+
+	StringBuffer buffer = new StringBuffer (); //$NON-NLS-1$
+	buffer.append (javaCallDeclaration); //$NON-NLS-1$
 	if (function.top) {
 		buffer.append (functionBuffer.toString ());
 	}
@@ -375,6 +377,18 @@ public void createFunction (BrowserFunction function) {
 	execute (function.functionString);
 }
 
+/**
+ * Designed to be overriden.
+ * @return javaScrit code that defines the 'callJava' syntax for javascript.
+ */
+String getJavaCallDeclaration() {
+	return    "if (!window.callJava) {\n"
+			+ "		window.callJava = function callJava(index, token, args) {\n"
+			+ "			return external.callJava(index,token,args);\n"
+			+ "		}\n"
+			+ "};\n";
+}
+
 void deregisterFunction (BrowserFunction function) {
 	functions.remove (function.index);
 }
@@ -396,6 +410,9 @@ public Object evaluate (String script, boolean trusted) throws SWTException {
 }
 
 public Object evaluate (String script) throws SWTException {
+	// Developer note:
+	// Webkit1 & Mozilla use this mechanism.
+	// Webkit2 uses a different mechanism. See WebKit:evaluate();
 	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
 	int index = getNextFunctionIndex ();
 	function.index = index;

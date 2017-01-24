@@ -63,6 +63,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	boolean browser_debug = false;
 
 	boolean isWebkit1 = false;
+	boolean isWebkit2 = false;
 
 	/**
 	 * Normally, sleep in 1 ms intervals 1000 times. During browser_debug, sleep 1000 ms for 1 interval.
@@ -106,6 +107,8 @@ public void setUp() {
 		// webkitgtk 2.5 and onwards uses webkit2.
 		if (webkitGtkVersionInts[0] == 1 || (webkitGtkVersionInts[0] == 2 && webkitGtkVersionInts[1] <= 4)) {
 			isWebkit1 = true;
+		} else if (webkitGtkVersionInts[0] == 2 && webkitGtkVersionInts[1] > 4) {
+			isWebkit2 = true;
 		}
 	}
 	shell.setText(shellTitle);
@@ -785,7 +788,9 @@ public void test_execute_and_closeListener () {
  */
 @Test
 public void test_evaluate_string() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
+	// Run locally, skip on hudson. see Bug 509411
+	// This test sometimes crashes on webkit1, but it's useful to test at least one 'evaluate' situation.
+	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1));
 
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(new ProgressListener() {
@@ -1227,7 +1232,8 @@ public void test_BrowserFunction_callback_with_integer () {
 	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
 	// culprit seems to be the main_context_iteration() call in shell.setVisible().
 	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
+	// It's useful to run at least one function test on webkit1 locally.
+	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1)); // run locally. Skip on hudson that runs webkit1.
 
 	AtomicInteger returnInt = new AtomicInteger(0);
 
@@ -1459,6 +1465,9 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 	// See Bug 509587.  Solution: Webkit2.
 	assumeFalse(webkit1SkipMsg(), isWebkit1);
 
+	// Skip till Bug 510905 is implemented.
+	assumeFalse("Skipping test_BrowserFunction_callback_with_javaReturningInt. Java's callback to Javascript doesn't support return yet", isWebkit2);
+
 	AtomicInteger returnInt = new AtomicInteger(0);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -1514,6 +1523,71 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 	fail();
 }
 
+
+/**
+ * Test that a callback works even after a new page is loaded.
+ * I.e, BrowserFunctions should have to be re-initialized after a page load.
+ *
+ * Logic:
+ * - load a page.
+ * - Register java callback.
+ * - call java callback from javascript. (exec)
+ *
+ * - java callback instantiates new page load.
+ * - new page load triggers 'completed' listener
+ * - completed listener calls the registered function again.
+ *
+ * - once regiseterd function is called a 2nd time, it sets the test to pass.
+ */
+@Test
+public void test_BrowserFunction_callback_afterPageReload() {
+	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
+	// culprit seems to be the main_context_iteration() call in shell.setVisible().
+	// See Bug 509587.  Solution: Webkit2.
+	assumeFalse(webkit1SkipMsg(), isWebkit1);
+
+	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
+	AtomicInteger callCount = new AtomicInteger(0);
+
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			if (callCount.get() == 0) {
+				callCount.set(1);
+				browser.setText("2nd page load");
+			} else {
+				javaCallbackExecuted.set(true);
+			}
+			return null;
+		}
+	}
+	browser.setText("1st (initial) page load");
+	new JavascriptCallback(browser, "jsCallbackToJava");
+	browser.execute("jsCallbackToJava()");
+
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void completed(ProgressEvent event) {
+			// see if function still works after a page change:
+			browser.execute("jsCallbackToJava()");
+		}
+		@Override
+		public void changed(ProgressEvent event) {}
+	});
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (javaCallbackExecuted.get()) {
+			return; // pass.
+		}
+	}
+	fail();
+}
 
 
 /* custom */

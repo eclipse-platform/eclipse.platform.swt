@@ -46,6 +46,7 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_FOR_SESSION = 1;
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_PERMANENT = 2;
 
+
 	/** Signals */
 	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$
 	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$
@@ -58,6 +59,7 @@ public class WebKitGTK extends C {
 	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$
 	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$
+	/** Webkit2 only, to implement equivalent of webkit1 window_object_cleared*/
 	public static final byte[] load_changed = ascii ("load-changed"); // $NON-NLS-1$
 	public static final byte[] mime_type_policy_decision_requested = ascii ("mime-type-policy-decision-requested"); // $NON-NLS-1$
 	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$
@@ -74,7 +76,9 @@ public class WebKitGTK extends C {
 	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
 	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
+	/** Webkit1 only. On Webkit2 this is found in a webextension. Instead 'load_changed' is used on webkit2 **/
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
+
 
 	/** Properties */
 	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
@@ -1517,6 +1521,69 @@ public static final long /*int*/ webkit_web_view_new () {
 	lock.lock();
 	try {
 		return _webkit_web_view_new ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_user_content_manager_new();
+public static final long /*int*/ webkit_user_content_manager_new() {
+	lock.lock();
+	try {
+		return _webkit_user_content_manager_new ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param js_result cast=(gpointer)
+ */
+public static final native long /*int*/ _webkit_javascript_result_get_global_context(long /*int*/ js_result);
+/** JSGlobalContextRef webkit_javascript_result_get_global_context (WebKitJavascriptResult *js_result);  */
+public static final long /*int*/ webkit_javascript_result_get_global_context(long /*int*/ js_result) {
+	lock.lock();
+	try {
+		return _webkit_javascript_result_get_global_context (js_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param js_result cast=(gpointer)
+ */
+public static final native long /*int*/ _webkit_javascript_result_get_value(long /*int*/ js_result);
+/** JSValueRef webkit_javascript_result_get_value (WebKitJavascriptResult *js_result); */
+public static final long /*int*/ webkit_javascript_result_get_value(long /*int*/ js_result) {
+	lock.lock();
+	try {
+		return _webkit_javascript_result_get_value (js_result);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native boolean _webkit_user_content_manager_register_script_message_handler(long /*int*/ WebKitUserContentManager, byte[] name);
+public static final boolean webkit_user_content_manager_register_script_message_handler(long /*int*/ WebKitUserContentManager, byte[] name) {
+	lock.lock();
+	try {
+		return _webkit_user_content_manager_register_script_message_handler (WebKitUserContentManager, name);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_view_new_with_user_content_manager (long /*int*/ WebKitUserContentManager);
+public static final long /*int*/ webkit_web_view_new_with_user_content_manager (long /*int*/ WebKitUserContentManager) {
+	lock.lock();
+	try {
+		return _webkit_web_view_new_with_user_content_manager (WebKitUserContentManager);
 	} finally {
 		lock.unlock();
 	}

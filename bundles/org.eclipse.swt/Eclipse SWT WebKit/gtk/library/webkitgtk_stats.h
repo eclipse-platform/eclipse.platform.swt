@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -120,6 +120,8 @@ typedef enum {
 	_1webkit_1hit_1test_1result_1context_1is_1link_FUNC,
 	_1webkit_1hit_1test_1result_1get_1link_1title_FUNC,
 	_1webkit_1hit_1test_1result_1get_1link_1uri_FUNC,
+	_1webkit_1javascript_1result_1get_1global_1context_FUNC,
+	_1webkit_1javascript_1result_1get_1value_FUNC,
 	_1webkit_1javascript_1result_1unref_FUNC,
 	_1webkit_1major_1version_FUNC,
 	_1webkit_1micro_1version_FUNC,
@@ -137,6 +139,8 @@ typedef enum {
 	_1webkit_1uri_1request_1get_1uri_FUNC,
 	_1webkit_1uri_1request_1new_FUNC,
 	_1webkit_1uri_1response_1get_1mime_1type_FUNC,
+	_1webkit_1user_1content_1manager_1new_FUNC,
+	_1webkit_1user_1content_1manager_1register_1script_1message_1handler_FUNC,
 	_1webkit_1web_1context_1get_1default_FUNC,
 	_1webkit_1web_1context_1set_1favicon_1database_1directory_FUNC,
 	_1webkit_1web_1data_1source_1get_1data_FUNC,
@@ -172,6 +176,7 @@ typedef enum {
 	_1webkit_1web_1view_1load_1string_FUNC,
 	_1webkit_1web_1view_1load_1uri_FUNC,
 	_1webkit_1web_1view_1new_FUNC,
+	_1webkit_1web_1view_1new_1with_1user_1content_1manager_FUNC,
 	_1webkit_1web_1view_1reload_FUNC,
 	_1webkit_1web_1view_1run_1javascript_FUNC,
 	_1webkit_1web_1view_1stop_1loading_FUNC,
