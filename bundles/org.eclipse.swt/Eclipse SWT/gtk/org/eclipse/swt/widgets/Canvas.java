@@ -176,9 +176,8 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		if (isFocus) caret.setFocus ();
 	} else {
 		result = super.gtk_draw (widget, cairo);
-		if (caret != null && caret.isDrawing) {
+		if (caret != null) {
 			drawCaret(widget,cairo);
-			caret.isDrawing = false;
 		}
 	}
 	return result;

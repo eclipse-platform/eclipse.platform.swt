@@ -38,7 +38,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Caret extends Widget {
 	Canvas parent;
 	int x, y, width, height;
-	boolean isVisible, isShowing, isDrawing;
+	boolean isVisible, isShowing;
 	int blinkRate;
 	Image image;
 	Font font;
@@ -160,13 +160,8 @@ boolean drawCaret () {
 		OS.gdk_colormap_free_colors (colormap, color, 1);
 		return true;
 	} else {
-		if (isDrawing) {
-			return false;
-		} else {
-			isDrawing = true;
-			OS.gtk_widget_queue_draw(parent.handle);
-			return true;
-		}
+		OS.gtk_widget_queue_draw(parent.handle);
+		return true;
 	}
 }
 
