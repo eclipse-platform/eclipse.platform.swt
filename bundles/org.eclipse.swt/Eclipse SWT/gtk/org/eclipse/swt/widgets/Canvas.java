@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
+	private boolean drawFlag;
 
 Canvas () {}
 
@@ -167,11 +168,61 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	long /*int*/ result = super.gtk_draw (widget, cairo);
-	if (isFocus) caret.setFocus ();
+	long /*int*/ result;
+	if ( OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+		boolean isFocus = caret != null && caret.isFocusCaret ();
+		if (isFocus) caret.killFocus ();
+		 result = super.gtk_draw (widget, cairo);
+		if (isFocus) caret.setFocus ();
+	} else {
+		result = super.gtk_draw (widget, cairo);
+		if (caret != null && caret.isDrawing) {
+			drawCaret(widget,cairo);
+			caret.isDrawing = false;
+		}
+	}
 	return result;
+}
+
+private void drawCaret (long /*int*/ widget, long /*int*/ cairo) {
+	if(this.isDisposed()) return;
+	if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
+	if (!drawFlag) {
+		Cairo.cairo_save(cairo);
+		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
+			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
+			long /*int*/ surface = Cairo.cairo_get_target(cairo);
+			int nWidth = 0;
+			switch (Cairo.cairo_surface_get_type(surface)) {
+				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+					nWidth = Cairo.cairo_image_surface_get_width(surface);
+					break;
+				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+					nWidth = Cairo.cairo_xlib_surface_get_width(surface);
+					break;
+			}
+			int nX = caret.x;
+			if ((style & SWT.MIRRORED) != 0) nX = getClientWidth () - nWidth - nX;
+			Cairo.cairo_translate(cairo, nX, caret.y);
+			Cairo.cairo_set_source_surface(cairo, caret.image.surface, 0, 0);
+			Cairo.cairo_paint(cairo);
+		} else {
+			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
+			int nWidth = caret.width, nHeight = caret.height;
+			if (nWidth <= 0) nWidth = Caret.DEFAULT_WIDTH;
+			int nX = caret.x;
+			if ((style & SWT.MIRRORED) != 0) nX = getClientWidth () - nWidth - nX;
+			Cairo.cairo_rectangle(cairo, nX, caret.y, nWidth, nHeight);
+			}
+		Cairo.cairo_fill(cairo);
+		Cairo.cairo_restore(cairo);
+		drawFlag = true;
+	} else {
+		drawFlag = false;
+		}
+	return;
 }
 
 @Override
