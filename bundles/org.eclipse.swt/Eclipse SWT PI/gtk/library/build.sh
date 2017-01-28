@@ -116,6 +116,10 @@ case $OS in
 		SWT_OS=freebsd
 		MAKEFILE=make_freebsd.mak
 		;;
+	"Windows_NT")
+		SWT_OS=win32
+		MAKEFILE=make_win32.mak
+		;;
 	*)
 		SWT_OS=`uname -s | tr -s '[:upper:]' '[:lower:]'`
 		MAKEFILE=make_linux.mak
@@ -539,8 +543,14 @@ if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${SWT_OS} != 'solaris' 
 fi
 
 # Find AWT if available
+if [ ${SWT_OS} = 'win32' ]; then
+	AWT_LIB_EXPR="jawt.dll"
+else
+	AWT_LIB_EXPR="libjawt.*"
+fi
+
 if [ -z "${AWT_LIB_PATH}" ]; then
-	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.* ]; then
+	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/${AWT_LIB_EXPR} ]; then
 		AWT_LIB_PATH=${JAVA_HOME}/jre/lib/${AWT_ARCH}
 		export AWT_LIB_PATH
 	else
@@ -549,7 +559,7 @@ if [ -z "${AWT_LIB_PATH}" ]; then
 	fi
 fi
 
-if [ -f ${AWT_LIB_PATH}/libjawt.* ]; then
+if [ -f ${AWT_LIB_PATH}/${AWT_LIB_EXPR} ]; then
 	func_echo_plus "libjawt.so found, the SWT/AWT integration library will be compiled."
 	MAKE_AWT=make_awt
 else
