@@ -75,7 +75,7 @@ static String os() {
 }
 
 static void chmod(String permision, String path) {
-	if (Platform.PLATFORM.equals ("win32")) return; //$NON-NLS-1$
+	if (os().equals ("win32")) return; //$NON-NLS-1$
 	try {
 		Runtime.getRuntime ().exec (new String []{"chmod", permision, path}).waitFor(); //$NON-NLS-1$
 	} catch (Throwable e) {}
