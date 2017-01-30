@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -2494,7 +2494,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1prepare)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1prepare_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jboolean)g_main_context_prepare((GMainContext *)arg0, lparg1);
+	rc = (jboolean)g_main_context_prepare((GMainContext *)arg0, (gint *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1prepare_FUNC);
@@ -2510,7 +2510,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1g_1main_1context_1query)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1query_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)g_main_context_query((GMainContext *)arg0, arg1, lparg2, (GPollFD *)arg3, arg4);
+	rc = (jint)g_main_context_query((GMainContext *)arg0, arg1, (gint *)lparg2, (GPollFD *)arg3, arg4);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1query_FUNC);
@@ -5266,7 +5266,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pango_1layout_1get_1clip_1region)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1pango_1layout_1get_1clip_1region_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jintLong)gdk_pango_layout_get_clip_region((PangoLayout *)arg0, arg1, arg2, lparg3, arg4);
+	rc = (jintLong)gdk_pango_layout_get_clip_region((PangoLayout *)arg0, arg1, arg2, (gint *)lparg3, arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1pango_1layout_1get_1clip_1region_FUNC);
@@ -8943,7 +8943,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1get_1layout_1offsets)
 	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1layout_1offsets_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_entry_get_layout_offsets((GtkEntry *)arg0, lparg1, lparg2);
+	gtk_entry_get_layout_offsets((GtkEntry *)arg0, (gint *)lparg1, (gint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -16623,7 +16623,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1translate_1coordinates)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1translate_1coordinates_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, lparg4, lparg5);
+	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (gint *)lparg4, (gint *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -17130,7 +17130,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1iterator_1range)
 	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1range_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	pango_attr_iterator_range((PangoAttrIterator *)arg0, lparg1, lparg2);
+	pango_attr_iterator_range((PangoAttrIterator *)arg0, (gint *)lparg1, (gint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);

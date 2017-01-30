@@ -2093,7 +2093,10 @@ public static final long /*int*/ g_main_context_get_poll_func(long /*int*/ conte
 		lock.unlock();
 	}
 }
-/** @param context cast=(GMainContext *) */
+/**
+ * @param context cast=(GMainContext *)
+ * @param priority cast=(gint *)
+ */
 public static final native boolean _g_main_context_prepare(long /*int*/ context, int[] priority);
 public static final boolean g_main_context_prepare(long /*int*/ context, int[] priority) {
 	lock.lock();
@@ -2106,6 +2109,7 @@ public static final boolean g_main_context_prepare(long /*int*/ context, int[] p
 /**
  * @param context cast=(GMainContext *)
  * @param fds cast=(GPollFD *)
+ * @param timeout_ cast=(gint *)
  */
 public static final native int _g_main_context_query(long /*int*/ context, int max_priority, int[] timeout_, long /*int*/ fds, int n_fds);
 public static final int g_main_context_query(long /*int*/ context, int max_priority, int[] timeout_, long /*int*/ fds, int n_fds) {
@@ -4411,7 +4415,10 @@ public static final long /*int*/ gdk_pango_context_get() {
 		lock.unlock();
 	}
 }
-/** @param layout cast=(PangoLayout *) */
+/**
+ * @param layout cast=(PangoLayout *)
+ * @param index_ranges cast=(gint *)
+ */
 public static final native long /*int*/ _gdk_pango_layout_get_clip_region(long /*int*/ layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges);
 public static final long /*int*/ gdk_pango_layout_get_clip_region(long /*int*/ layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges) {
 	lock.lock();
@@ -7237,7 +7244,11 @@ public static final long /*int*/ gtk_entry_get_layout (long /*int*/ entry) {
 		lock.unlock();
 	}
 }
-/** @param entry cast=(GtkEntry *) */
+/**
+ * @param entry cast=(GtkEntry *)
+ * @param x cast=(gint *)
+ * @param y cast=(gint *)
+ */
 public static final native void _gtk_entry_get_layout_offsets (long /*int*/ entry, int[] x, int[] y);
 public static final void gtk_entry_get_layout_offsets (long /*int*/ entry, int[] x, int[] y) {
 	lock.lock();
@@ -14136,6 +14147,8 @@ public static final void gtk_widget_style_get(long /*int*/ widget, byte[] proper
 /**
  * @param src_widget cast=(GtkWidget *)
  * @param dest_widget cast=(GtkWidget *)
+ * @param dest_x cast=(gint *)
+ * @param dest_y cast=(gint *)
  */
 public static final native boolean _gtk_widget_translate_coordinates(long /*int*/ src_widget, long /*int*/ dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y);
 public static final boolean gtk_widget_translate_coordinates(long /*int*/ src_widget, long /*int*/ dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y) {
@@ -14914,7 +14927,11 @@ public static final boolean pango_attr_iterator_next(long /*int*/ iterator) {
 		lock.unlock();
 	}
 }
-/** @param iterator cast=(PangoAttrIterator *) */
+/**
+ * @param iterator cast=(PangoAttrIterator *)
+ * @param start cast=(gint *)
+ * @param end cast=(gint *)
+ */
 public static final native void _pango_attr_iterator_range(long /*int*/ iterator, int[] start, int[] end);
 public static final void pango_attr_iterator_range(long /*int*/ iterator, int[] start, int[] end) {
 	lock.lock();
