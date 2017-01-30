@@ -82,11 +82,15 @@
 #define NO__1gdk_x11_atom_to_xatom
 #define NO__1gdk_1x11_1atom_1to_1xatom
 #define NO__1gdk_1x11_1display_1get_1xdisplay
+#define NO__1gdk_1x11_1display_1utf8_1to_1compound_1text
 #define NO__1gdk_1x11_1drawable_1get_1xdisplay
 #define NO__1gdk_1x11_1drawable_1get_1xid
 #define NO__1gdk_1x11_1get_1default_1xdisplay
+#define NO__1gdk_1x11_1screen_1get_1window_1manager_1name
 #define NO__1gdk_1x11_1screen_1lookup_1visual
 #define NO__1gdk_1x11_1visual_1get_1xvisual
+#define NO__1gdk_1x11_1window_1get_1xid
+#define NO__1gdk_1x11_1window_1lookup_1for_1display
 #define NO__1gdk_window_lookup
 #define NO__1gdk_window_add_filter
 #define NO__1GTK_1IS_1PLUG
