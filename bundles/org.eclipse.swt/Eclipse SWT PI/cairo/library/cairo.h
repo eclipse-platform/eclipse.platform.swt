@@ -31,7 +31,12 @@
 #define NO__1cairo_1xlib_1surface_1get_1width 
 #endif
 #include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 
 #include "cairo_custom.h"
 

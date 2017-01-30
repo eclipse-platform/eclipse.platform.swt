@@ -19,9 +19,36 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
 public class OS extends C {
+	/** OS Constants */
+	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, IsWin32, BIG_ENDIAN;
 	static {
-		String scalingProperty = "GDK_SCALE";
-		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
+
+		/* Initialize the OS flags and locale constants */
+		String osName = System.getProperty ("os.name");
+		boolean isAIX = false, isSunOS = false, isLinux = false, isHPUX = false, isWin32 = false;
+		if (osName.equals ("Linux")) isLinux = true;
+		if (osName.equals ("AIX")) isAIX = true;
+		if (osName.equals ("Solaris")) isSunOS = true;
+		if (osName.equals ("SunOS")) isSunOS = true;
+		if (osName.equals ("HP-UX")) isHPUX = true;
+		if (osName.startsWith("Windows")) isWin32 = true;
+		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX; IsWin32 = isWin32;
+
+		byte[] buffer = new byte[4];
+		long /*int*/ ptr = OS.malloc(4);
+		OS.memmove(ptr, new int[]{1}, 4);
+		OS.memmove(buffer, ptr, 1);
+		OS.free(ptr);
+		BIG_ENDIAN = buffer[0] == 0;
+	}
+
+	/** Initialization; load native libraries */
+	static {
+		if (!OS.IsWin32) {
+			// only applicable for X11 but OS.isX11() is not available yet
+			String scalingProperty = "GDK_SCALE";
+			OS.setenv(ascii(scalingProperty), ascii("1"), 1);
+		}
 		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
@@ -61,27 +88,6 @@ public class OS extends C {
 			envVarValue = new String(convertedChar);
 		}
 		return envVarValue;
-	}
-	/** OS Constants */
-	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, BIG_ENDIAN;
-	static {
-
-		/* Initialize the OS flags and locale constants */
-		String osName = System.getProperty ("os.name");
-		boolean isAIX = false, isSunOS = false, isLinux = false, isHPUX = false;
-		if (osName.equals ("Linux")) isLinux = true;
-		if (osName.equals ("AIX")) isAIX = true;
-		if (osName.equals ("Solaris")) isSunOS = true;
-		if (osName.equals ("SunOS")) isSunOS = true;
-		if (osName.equals ("HP-UX")) isHPUX = true;
-		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
-
-		byte[] buffer = new byte[4];
-		long /*int*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(buffer, ptr, 1);
-		OS.free(ptr);
-		BIG_ENDIAN = buffer[0] == 0;
 	}
 
 	/** Constants */
@@ -515,10 +521,10 @@ public class OS extends C {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
-	public static final int RTLD_GLOBAL = OS.RTLD_GLOBAL();
-	public static final int RTLD_LAZY = OS.RTLD_LAZY();
+	public static final int RTLD_GLOBAL = OS.IsWin32 ? 0 : OS.RTLD_GLOBAL();
+	public static final int RTLD_LAZY = OS.IsWin32 ? 0 : OS.RTLD_LAZY();
 	public static final int RTLD_MEMBER = 0x00040000;
-	public static final int RTLD_NOW = OS.RTLD_NOW();
+	public static final int RTLD_NOW = OS.IsWin32 ? 0 : OS.RTLD_NOW();
 
 	/** Signals */
 	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");

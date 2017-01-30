@@ -29,13 +29,43 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#include <gtk/gtkunixprint.h>
 #include <pango/pango.h>
 #include <pango/pango-font.h>
 #include <string.h>
-#include <dlfcn.h>
 #include <locale.h>
 #include <unistd.h>
+
+#ifndef _WIN32
+#include <dlfcn.h>
+#include <gtk/gtkunixprint.h>
+#else
+#include <windows.h>
+#define NO_realpath // TODO [win32] use GetFullPathName instead; 
+#define NO_RTLD_1GLOBAL
+#define NO_RTLD_1LAZY
+#define NO_RTLD_1NOW
+#define NO__1dlclose
+#define NO__1dlopen
+#define NO__1dlsym
+
+#define NO__1gtk_1enumerate_1printers
+#define NO__1gtk_1printer_1get_1name
+#define NO__1gtk_1printer_1is_1default
+#define NO__1gtk_1print_1job_1get_1surface
+#define NO__1gtk_1print_1unix_1dialog_1get_1current_1page
+#define NO__1gtk_1print_1unix_1dialog_1get_1selected_1printer
+#define NO__1gtk_1print_1unix_1dialog_1get_1settings
+#define NO__1gtk_1print_1unix_1dialog_1set_1settings
+#define NO__1gtk_1print_1unix_1dialog_1get_1page_1setup
+#define NO__1gtk_1print_1unix_1dialog_1set_1page_1setup
+#define NO__1gtk_1printer_1get_1backend
+#define NO__1gtk_1print_1unix_1dialog_1new
+#define NO__1gtk_1print_1job_1new
+#define NO__1gtk_1print_1job_1send
+#define NO__1gtk_1print_1unix_1dialog_1set_1current_1page
+#define NO__1gtk_1print_1unix_1dialog_1set_1embed_1page_1setup
+#define NO__1gtk_1print_1unix_1dialog_1set_1manual_1capabilities
+#endif
 
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
 

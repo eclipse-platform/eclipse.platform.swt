@@ -3454,11 +3454,13 @@ void initializeSubclasses () {
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
 		OS.g_type_class_unref (pangoFontFaceClass);
 
-		long /*int*/ printerOptionWidgetType = OS.gtk_printer_option_widget_get_type();
-		long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
-		printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
-		OS.g_type_class_unref (printerOptionWidgetClass);
+		if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
+			long /*int*/ printerOptionWidgetType = OS.gtk_printer_option_widget_get_type();
+			long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+			printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
+			OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
+			OS.g_type_class_unref (printerOptionWidgetClass);
+		}
 	}
 }
 
