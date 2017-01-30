@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -202,7 +202,7 @@ void accessibilitySetValue_forAttribute(long /*int*/ id, long /*int*/ sel, long 
 String getClipboardText () {
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
 	if (pasteboard == null) return "";
-	NSString string = pasteboard.stringForType (OS.NSStringPboardType);
+	NSString string = pasteboard.stringForType (OS.NSPasteboardTypeString);
 	return string != null ? string.getString () : null;
 }
 
@@ -608,8 +608,8 @@ void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
 	if (pasteboard == null) return;
-	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSStringPboardType), null);
-	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSStringPboardType);
+	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSPasteboardTypeString), null);
+	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSPasteboardTypeString);
 }
 
 void createHandle () {
@@ -1043,7 +1043,7 @@ boolean isActive () {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see SWT#AUTO_TEXT_DIRECTION
  *
  * @since 3.105

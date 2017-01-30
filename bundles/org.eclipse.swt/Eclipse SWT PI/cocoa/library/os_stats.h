@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -368,7 +368,6 @@ typedef enum {
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
 	NSGetSizeAndAlignment_FUNC,
-	NSHTMLPboardType_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLigatureAttributeName_FUNC,
 	NSLinkAttributeName_FUNC,
@@ -378,6 +377,9 @@ typedef enum {
 	NSObliquenessAttributeName_FUNC,
 	NSOutlineViewColumnDidMoveNotification_FUNC,
 	NSParagraphStyleAttributeName_FUNC,
+	NSPasteboardTypeHTML_FUNC,
+	NSPasteboardTypeRTF_FUNC,
+	NSPasteboardTypeString_FUNC,
 	NSPointInRect_FUNC,
 	NSPoint_1sizeof_FUNC,
 	NSPrintAllPages_FUNC,
@@ -392,7 +394,6 @@ typedef enum {
 	NSPrintSavePath_FUNC,
 	NSPrintScalingFactor_FUNC,
 	NSPrintSpoolJob_FUNC,
-	NSRTFPboardType_FUNC,
 	NSRange_1sizeof_FUNC,
 	NSRectFillUsingOperation_FUNC,
 	NSRect_1sizeof_FUNC,
@@ -401,7 +402,6 @@ typedef enum {
 	NSSpellingStateAttributeName_FUNC,
 	NSStrikethroughColorAttributeName_FUNC,
 	NSStrikethroughStyleAttributeName_FUNC,
-	NSStringPboardType_FUNC,
 	NSStrokeWidthAttributeName_FUNC,
 	NSSystemColorsDidChangeNotification_FUNC,
 	NSTIFFPboardType_FUNC,

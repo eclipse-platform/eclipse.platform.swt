@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,10 +27,6 @@ public NSURL(id id) {
 public static NSURL URLFromPasteboard(NSPasteboard pasteBoard) {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLFromPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
 	return result != 0 ? new NSURL(result) : null;
-}
-
-public void writeToPasteboard(NSPasteboard pasteBoard) {
-	OS.objc_msgSend(this.id, OS.sel_writeToPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
 }
 
 public static NSURL URLWithString(NSString URLString) {

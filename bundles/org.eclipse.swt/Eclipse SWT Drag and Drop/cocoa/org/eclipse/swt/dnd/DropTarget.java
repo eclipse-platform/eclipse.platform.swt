@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -685,9 +685,9 @@ boolean drop(NSObject sender) {
 
 	if (type != null) {
 		tdata.type = Transfer.registerType(type.getString());
-		if (type.isEqual(OS.NSStringPboardType) ||
-				type.isEqual(OS.NSHTMLPboardType) ||
-				type.isEqual(OS.NSRTFPboardType)) {
+		if (type.isEqual(OS.NSPasteboardTypeString) ||
+				type.isEqual(OS.NSPasteboardTypeHTML) ||
+				type.isEqual(OS.NSPasteboardTypeRTF)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSURLPboardType) || type.isEqual(OS.kUTTypeURL)) {
 			tdata.data = NSURL.URLFromPasteboard(pasteboard);

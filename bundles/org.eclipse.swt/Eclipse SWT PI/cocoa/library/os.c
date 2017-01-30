@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4759,18 +4759,6 @@ fail:
 }
 #endif
 
-#ifndef NO_NSHTMLPboardType
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSHTMLPboardType)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSHTMLPboardType_FUNC);
-	rc = (jintLong)NSHTMLPboardType;
-	OS_NATIVE_EXIT(env, that, NSHTMLPboardType_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSLigatureAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSLigatureAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4863,6 +4851,42 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 	OS_NATIVE_ENTER(env, that, NSParagraphStyleAttributeName_FUNC);
 	rc = (jintLong)NSParagraphStyleAttributeName;
 	OS_NATIVE_EXIT(env, that, NSParagraphStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPasteboardTypeHTML
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPasteboardTypeHTML)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPasteboardTypeHTML_FUNC);
+	rc = (jintLong)NSPasteboardTypeHTML;
+	OS_NATIVE_EXIT(env, that, NSPasteboardTypeHTML_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPasteboardTypeRTF
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPasteboardTypeRTF)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPasteboardTypeRTF_FUNC);
+	rc = (jintLong)NSPasteboardTypeRTF;
+	OS_NATIVE_EXIT(env, that, NSPasteboardTypeRTF_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPasteboardTypeString
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPasteboardTypeString)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPasteboardTypeString_FUNC);
+	rc = (jintLong)NSPasteboardTypeString;
+	OS_NATIVE_EXIT(env, that, NSPasteboardTypeString_FUNC);
 	return rc;
 }
 #endif
@@ -5042,18 +5066,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSpoolJob)
 }
 #endif
 
-#ifndef NO_NSRTFPboardType
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSRTFPboardType)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSRTFPboardType_FUNC);
-	rc = (jintLong)NSRTFPboardType;
-	OS_NATIVE_EXIT(env, that, NSRTFPboardType_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSRange_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(NSRange_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -5148,18 +5160,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSStrikethroughStyleAttributeName)
 	OS_NATIVE_ENTER(env, that, NSStrikethroughStyleAttributeName_FUNC);
 	rc = (jintLong)NSStrikethroughStyleAttributeName;
 	OS_NATIVE_EXIT(env, that, NSStrikethroughStyleAttributeName_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSStringPboardType
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSStringPboardType)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSStringPboardType_FUNC);
-	rc = (jintLong)NSStringPboardType;
-	OS_NATIVE_EXIT(env, that, NSStringPboardType_FUNC);
 	return rc;
 }
 #endif

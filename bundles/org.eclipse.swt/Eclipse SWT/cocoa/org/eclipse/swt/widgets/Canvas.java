@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,7 +50,7 @@ public class Canvas extends Composite {
 		// This array is leaked.
 		supportedPboardTypes = NSMutableArray.arrayWithCapacity(1);
 		supportedPboardTypes.retain();
-		supportedPboardTypes.addObject(OS.NSStringPboardType);
+		supportedPboardTypes.addObject(OS.NSPasteboardTypeString);
 		//supportedPboardTypes.addObject(OS.NSRTFPboardType);
 	};
 
@@ -319,8 +319,8 @@ boolean readSelectionFromPasteboard(long /*int*/ id, long /*int*/ sel, long /*in
 boolean readSelectionFromPasteboard(NSPasteboard pboard, NSString type) {
     boolean result = false;
     NSString newSelection = null;
-    if (type.isEqualToString(OS.NSStringPboardType)) {
-        NSString string = pboard.stringForType(OS.NSStringPboardType);
+    if (type.isEqualToString(OS.NSPasteboardTypeString)) {
+        NSString string = pboard.stringForType(OS.NSPasteboardTypeString);
         if (string != null && string.length() > 0) {
         	newSelection = string;
         }
@@ -677,12 +677,12 @@ boolean writeSelectionToPasteboard(long /*int*/ id, long /*int*/ sel, long /*int
 boolean writeSelectionToPasteboard(NSPasteboard pboard, NSString type) {
 	boolean result = false;
 
-	if (type.isEqualToString(OS.NSStringPboardType)) {
+	if (type.isEqualToString(OS.NSPasteboardTypeString)) {
 		Accessible acc = getAccessible();
 		id selection = acc.internal_accessibilityAttributeValue(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
 		if (selection != null) {
 			NSString selectionString = new NSString(selection);
-			if (selectionString.length() > 0) result = pboard.setString(selectionString, OS.NSStringPboardType);
+			if (selectionString.length() > 0) result = pboard.setString(selectionString, OS.NSPasteboardTypeString);
 		}
 	}
 

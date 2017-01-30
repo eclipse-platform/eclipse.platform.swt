@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -744,13 +744,13 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 
 	NSObject tdata = transferData.data;
 
-	if (dataType.isEqual(OS.NSStringPboardType) ||
-			dataType.isEqual(OS.NSHTMLPboardType) ||
-			dataType.isEqual(OS.NSRTFPboardType)) {
+	if (dataType.isEqual(OS.NSPasteboardTypeString) ||
+			dataType.isEqual(OS.NSPasteboardTypeHTML) ||
+			dataType.isEqual(OS.NSPasteboardTypeRTF)) {
 		pasteboard.setString((NSString) tdata, dataType);
 	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 		NSURL url = (NSURL) tdata;
-		url.writeToPasteboard(pasteboard);
+		pasteboard.writeObjects(NSArray.arrayWithObject(url));
 	} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.isEqual(OS.kUTTypeFileURL)) {
 		NSArray array = (NSArray) transferData.data;
 		int count = (int) /*64*/ array.count();
