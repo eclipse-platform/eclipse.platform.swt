@@ -93,13 +93,6 @@ public void testBrowser8() {
 	manualTearDown();
 }
 
-@Test
-public void testBrowser9() {
-	manualSetUp();
-	assertTrue(Browser9_execute_fromFile.test());
-	manualTearDown();
-}
-
 //Bug 509658. Display.dispose can cause webkit1 to crash in some cases.
 // Thus we have a situation where the setup causes a crash even in test cases
 // that are marked not to be run on hudson. This is very confusing.

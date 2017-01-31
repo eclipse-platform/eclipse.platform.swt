@@ -76,7 +76,7 @@ class WebKit extends WebBrowser {
 	static final int NAVIGATION_POLICY_DECISION_REQUESTED = 3;
 	static final int NOTIFY_TITLE = 4;
 	static final int POPULATE_POPUP = 5;
-	static final int STATUS_BAR_TEXT_CHANGED = 6;
+	static final int STATUS_BAR_TEXT_CHANGED = 6; // webkit1 only.
 	static final int CREATE_WEB_VIEW = 7;
 	static final int WEB_VIEW_READY = 8;
 	static final int NOTIFY_LOAD_STATUS = 9;
@@ -516,7 +516,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);
 		case NOTIFY_TITLE: return webkit_notify_title (handle, arg0);
 		case POPULATE_POPUP: return webkit_populate_popup (handle, arg0);
-		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0);
+		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0); // Webkit1 only.
 		case AUTHENTICATE: return webkit_authenticate (handle, arg0);
 		default: return 0;
 	}
@@ -2253,6 +2253,14 @@ long /*int*/ webkit_resource_request_starting (long /*int*/ web_view, long /*int
 	return 0;
 }
 
+/**
+ * Webkit1 only.
+ * Normally triggered by javascript that runs "window.status=txt".
+ *
+ * On webkit2 this signal doesn't exist anymore.
+ * In general, window.status=text is not supported on most newer browsers anymore.
+ * status bar now only changes when you hover you mouse over it.
+ */
 long /*int*/ webkit_status_bar_text_changed (long /*int*/ web_view, long /*int*/ text) {
 	int length = OS.strlen (text);
 	byte[] bytes = new byte[length];

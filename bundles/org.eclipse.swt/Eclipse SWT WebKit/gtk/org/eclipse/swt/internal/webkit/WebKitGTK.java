@@ -69,6 +69,8 @@ public class WebKitGTK extends C {
 	public static final byte[] populate_popup = ascii ("populate-popup"); // $NON-NLS-1$
 	public static final byte[] resource_request_starting = ascii ("resource-request-starting"); // $NON-NLS-1$
 	public static final byte[] resource_load_started = ascii ("resource-load-started"); // $NON-NLS-1$
+	/** Webkit1 only. On webkit2 & newer browsers 'window.status=txt' has no effect anymore.
+	 *  Status bar only updated when you hover mouse over hyperlink.*/
 	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
 	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$

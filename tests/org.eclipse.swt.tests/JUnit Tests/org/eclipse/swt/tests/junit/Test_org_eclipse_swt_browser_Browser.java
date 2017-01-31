@@ -39,6 +39,7 @@ import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.browser.VisibilityWindowAdapter;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -494,14 +495,75 @@ public void test_listener_changedLorg_eclipse_swt_browser_ProgressEvent() {
 	shell.close();
 }
 
+/**
+ * Test if hovering over a hyperlink triggers status Text change listener.
+ * Logic:
+ * 1) Create a page that has a hyper link (covering the whole page)
+ * 2) Move shell to top left corner
+ * 3) Upon compleation of page load, move cursor across whole shell.
+ *    (Note, in current jUnit, browser sometimes only takes up half the shell).
+ * 4) StatusTextListener should get triggered. Test passes.
+ * 5) Else timeout & fail.
+ *
+ * Set variable "browser_debug" to true to see this being performed at human-observable speed.
+ *
+ * Note: Historically one could execute some javascript to change status bar (window.status=txt).
+ * But most browsers don't support this anymore. Only hovering over a hyperlink changes status.
+ *
+ * StatusTextListener may be triggerd upon page load also. So this test can pass if
+ * a page load sets the status text (on older browsers) or passes when the mouse hovers
+ * over the hyperlink (newer Webkit2+) browser.
+ */
 @Test
 public void test_listener_changedLorg_eclipse_swt_browser_StatusTextEvent() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
+	AtomicBoolean statusChanged = new AtomicBoolean(false);
+	int size = 500;
+
+	// 1) Create a page that has a hyper link (covering the whole page)
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addStatusTextListener(event -> {
+	StringBuilder longhtml = new StringBuilder();
+	for (int i = 0; i < 200; i++) {
+		longhtml.append("text text text text text text text text text text text text text text text text text text text text text text text text<br>");
+	}
+	browser.setText("<a href='http://localhost'>" + longhtml + "</a>");
+
+	// 2) Move shell to top left corner
+	shell.setLocation(0, 0);
+	shell.setSize(size, size);
+
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void completed(ProgressEvent event) {
+			// * 3) Upon compleation of page load, move cursor across whole shell.
+			// *    (Note, in current jUnit, browser sometimes only takes up half the shell).
+			Display display = event.display;
+			Point cachedLocation = display.getCursorLocation();
+			display.setCursorLocation(20, 10);
+			browser.getBounds();
+			for (int i = 0; i < size; i++) {
+				display.setCursorLocation(i, i);
+				runLoopTimer(browser_debug ? 3 : 0);
+			}
+			display.setCursorLocation(cachedLocation); // for convenience of developer. Not needed for test.
+
+		}
+		@Override
+		public void changed(ProgressEvent event) {}
 	});
-	shell.close();
+
+	browser.addStatusTextListener(event -> {
+		statusChanged.set(true);
+	});
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (statusChanged.get()) {
+			return; //passed.
+		}
+	}
+	//5) Else timeout & fail.
+	fail();
 }
 
 @Test
@@ -688,6 +750,34 @@ public void test_stop() {
 	runLoopTimer(1000);
 	browser.stop();
 }
+
+/**
+ * Test execute and windowCloseListener.
+ * Close listener used to tell if execute actually worked in some meaningful way.
+ */
+@Test
+public void test_execute_and_closeListener () {
+	AtomicBoolean hasClosed = new AtomicBoolean(false);
+
+	browser.setText("You should not see this page, it should have been closed by javascript");
+	browser.addCloseWindowListener(e -> {
+		hasClosed.set(true);
+	});
+
+	browser.execute("window.close()");
+
+	shell.open();
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (hasClosed.get()) {
+			disposedIntentionally = true;
+			return; // passed.
+		}
+	}
+	fail("Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if "
+			+ "browser looks disposed, but test still fails.");
+}
+
 
 /**
  * Test the evaluate() api that returns a String type. Functionality based on Snippet308.
