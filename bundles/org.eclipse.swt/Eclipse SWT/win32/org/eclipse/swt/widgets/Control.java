@@ -1618,8 +1618,7 @@ Point getSizeInPixels () {
 }
 
 /**
- * calculates a slightly different color, e.g. for highlighting the sort column
- * in a column or the hot state of a button.
+ * Calculates a slightly different color, e.g. for the hot state of a button.
  * @param pixel the color to start with
  */
 int getSlightlyDifferentColor(int pixel) {
@@ -1627,7 +1626,7 @@ int getSlightlyDifferentColor(int pixel) {
 }
 
 /**
- * calculates a different color, e.g. for the checked state of a toggle button
+ * Calculates a different color, e.g. for the checked state of a toggle button
  * or to highlight a selected button.
  * @param pixel the color to start with
  */
@@ -1654,6 +1653,22 @@ long /* int */ calcDiff(int component, double factor) {
 	} else {
 		return Math.round((255 - component) * factor);
 	}
+}
+
+/**
+ * Calculates a slightly different background color, e.g. for highlighting the sort column
+ * in a table or tree. This method produces less contrast that {@link #getSlightlyDifferentColor(int)}.
+ * @param pixel the color to start with
+ */
+int getSlightlyDifferentBackgroundColor(int pixel) {
+	int offset = 8;
+	int red = pixel & 0xFF;
+	int green = (pixel & 0xFF00) >> 8;
+	int blue = (pixel & 0xFF0000) >> 16;
+	red = red > 127 ? red-offset : red+offset;
+	green = green > 127 ? green-offset : green+offset;
+	blue = blue > 127 ? blue-offset : blue+offset;
+	return (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 }
 
 /**

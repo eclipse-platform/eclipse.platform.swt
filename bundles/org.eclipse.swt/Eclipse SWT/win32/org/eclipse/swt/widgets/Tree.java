@@ -3663,7 +3663,7 @@ public TreeColumn getSortColumn () {
 
 int getSortColumnPixel () {
 	int pixel = OS.IsWindowEnabled (handle) || hasCustomBackground() ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
-	return getSlightlyDifferentColor(pixel);
+	return getSlightlyDifferentBackgroundColor(pixel);
 }
 
 /**
