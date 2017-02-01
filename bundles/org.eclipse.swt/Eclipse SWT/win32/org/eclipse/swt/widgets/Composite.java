@@ -1938,7 +1938,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				 * feature that can also be observed in the Windows Explorer.
 				 * See bug 491627 for more details.
 				 */
-				if (display.getActiveShell () != getShell ()) return LRESULT.ONE;
+				if (display.getActiveShell () == null) return LRESULT.ONE;
 
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
