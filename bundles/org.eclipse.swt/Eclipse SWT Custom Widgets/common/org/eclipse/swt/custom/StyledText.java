@@ -8116,32 +8116,29 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		if (verticalBar != null && adjustScrollBar) {
 			verticalBar.setSelection(verticalScrollOffset + pixels);
 		}
-		int scrollWidth = clientAreaWidth - leftMargin - rightMargin;
+		int deltaY = 0;
 		if (pixels > 0) {
 			int sourceY = topMargin + pixels;
 			int scrollHeight = clientAreaHeight - sourceY - bottomMargin;
 			if (scrollHeight > 0) {
-				scroll(leftMargin, topMargin, leftMargin, sourceY, scrollWidth, scrollHeight, true);
-			}
-			if (sourceY > scrollHeight) {
-				int redrawY = Math.max(0, topMargin + scrollHeight);
-				int redrawHeight = Math.min(clientAreaHeight, pixels - scrollHeight);
-				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
+				deltaY = -pixels;
 			}
 		} else {
 			int destinationY = topMargin - pixels;
 			int scrollHeight = clientAreaHeight - destinationY - bottomMargin;
 			if (scrollHeight > 0) {
-				scroll(leftMargin, destinationY, leftMargin, topMargin, scrollWidth, scrollHeight, true);
+				deltaY = -pixels;
 			}
-			if (destinationY > scrollHeight) {
-				int redrawY = Math.max(0, topMargin + scrollHeight);
-				int redrawHeight = Math.min(clientAreaHeight, -pixels - scrollHeight);
-				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
-			}
+		}
+		Control[] children = getChildren();
+		for (int i=0; i<children.length; i++) {
+			Control child = children[i];
+			Rectangle rect = child.getBounds();
+			child.setLocation(rect.x, rect.y + deltaY);
 		}
 		verticalScrollOffset += pixels;
 		calculateTopIndex(pixels);
+		super.redraw();
 	} else {
 		calculateTopIndex(pixels);
 		super.redraw();
