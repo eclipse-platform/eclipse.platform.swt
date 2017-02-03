@@ -11,7 +11,9 @@
 package org.eclipse.swt.accessibility;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes that implement this interface provide methods
@@ -123,4 +125,72 @@ public interface AccessibleListener extends SWTEventListener {
 	 * </ul>
 	 */
 	public void getDescription(AccessibleEvent e);
+
+	/**
+	 * Static helper method to create a accessible listener for the
+	 * {@link #getName(AccessibleEvent e)}) method with a lambda expression.
+	 *
+	 * @param c the consumer of the event
+	 * @return AccessibleListener
+	 * @since 3.106
+	*/
+	public static AccessibleListener getNameAdapter(Consumer<AccessibleEvent> c) {
+		return new AccessibleAdapter() {
+			@Override
+			public void getName(AccessibleEvent e) {
+				c.accept(e);
+			}
+		};
+	}
+
+	/**
+	 * Static helper method to create a accessible listener for the
+	 * {@link #getHelp(AccessibleEvent e)}) method with a lambda expression.
+	 *
+	 * @param c the consumer of the event
+	 * @return AccessibleListener
+	 * @since 3.106
+	*/
+	public static AccessibleListener getHelpAdapter(Consumer<AccessibleEvent> c) {
+		return new AccessibleAdapter() {
+			@Override
+			public void getHelp(AccessibleEvent e) {
+				c.accept(e);
+			}
+		};
+	}
+
+	/**
+	 * Static helper method to create a accessible listener for the
+	 * {@link #getKeyboardShortcut(AccessibleEvent e)}) method with a lambda expression.
+	 *
+	 * @param c the consumer of the event
+	 * @return AccessibleListener
+	 * @since 3.106
+	*/
+	public static AccessibleListener getKeyboardShortcutAdapter(Consumer<AccessibleEvent> c) {
+		return new AccessibleAdapter() {
+			@Override
+			public void getKeyboardShortcut(AccessibleEvent e) {
+				c.accept(e);
+			}
+		};
+	}
+
+	/**
+	 * Static helper method to create a accessible listener for the
+	 * {@link #getDescription(AccessibleEvent e)}) method with a lambda expression.
+	 *
+	 * @param c the consumer of the event
+	 * @return AccessibleListener
+	 * @since 3.106
+	*/
+	public static AccessibleListener getDescription(Consumer<AccessibleEvent> c) {
+		return new AccessibleAdapter() {
+			@Override
+			public void getDescription(AccessibleEvent e) {
+				c.accept(e);
+			}
+		};
+	}
 }
