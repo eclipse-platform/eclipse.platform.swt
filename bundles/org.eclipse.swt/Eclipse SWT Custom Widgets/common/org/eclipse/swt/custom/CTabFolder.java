@@ -212,6 +212,7 @@ public class CTabFolder extends Composite {
 	boolean hovering;
 	boolean hoverTimerRunning;
 	boolean highlight;
+	boolean highlightEnabled = true;
 
 	boolean showChevron = false;
 	Menu showMenu;
@@ -366,6 +367,9 @@ void init(int style) {
 	initAccessible();
 }
 void onDeactivate(Event event) {
+	if (!highlightEnabled) {
+		return;
+	}
 	Composite current = this;
 	while (current != null) {
 		if (current instanceof CTabFolder) {
@@ -377,6 +381,9 @@ void onDeactivate(Event event) {
 }
 
 void onActivate(Event event) {
+	if (!highlightEnabled) {
+		return;
+	}
 	Composite current = this;
 	while (current != null) {
 		if (current instanceof CTabFolder) {
@@ -4072,7 +4079,52 @@ int getWrappedHeight (Point size) {
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 }
 
-boolean shouldHighlight() {
-	return this.highlight;
-}
+	boolean shouldHighlight() {
+		return this.highlight && highlightEnabled;
+	}
+
+	/**
+	 * Sets whether the selected tab is rendered as highlighted.
+	 *
+	 * @param enabled
+	 *            {@code true} to enable highlighting of selected tabs,
+	 *            {@code false} to disable it
+	 * @exception SWTException
+	 *                <ul>
+	 *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                disposed</li>
+	 *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+	 *                thread that created the receiver</li>
+	 *                </ul>
+	 * @since 3.106
+	 */
+	public void setHighlightEnabled(boolean enabled) {
+		checkWidget();
+		if (highlightEnabled == enabled) {
+			return;
+		}
+		highlightEnabled = enabled;
+		updateFolder(REDRAW);
+	}
+
+	/**
+	 * Returns <code>true</code> if the selected CTabFolder tab is rendered as
+	 * highlighted.
+	 *
+	 * @return <code>true</code> if the selected CTabFolder tab is rendered as
+	 *         highlighted
+	 *
+	 * @exception SWTException
+	 *                <ul>
+	 *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                disposed</li>
+	 *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+	 *                thread that created the receiver</li>
+	 *                </ul>
+	 * @since 3.106
+	 */
+	public boolean getHighlightEnabled() {
+		checkWidget();
+		return highlightEnabled;
+	}
 }
