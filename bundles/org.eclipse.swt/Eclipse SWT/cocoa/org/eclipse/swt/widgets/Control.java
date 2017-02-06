@@ -2835,6 +2835,10 @@ public void requestLayout () {
  * as needing to be redrawn. The next time a paint request
  * is processed, the control will be completely painted,
  * including the background.
+ * <p>
+ * Schedules a paint request if the invalidated area is visible
+ * or becomes visible later. It is not necessary for the caller
+ * to explicitly repaint the control after calling this method.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2869,6 +2873,10 @@ void redraw (boolean children) {
  * area will also paint their intersecting areas. If the
  * <code>all</code> flag is <code>false</code>, the children
  * will not be painted.
+ * <p>
+ * Schedules a paint request if the invalidated area is visible
+ * or becomes visible later. It is not necessary for the caller
+ * to explicitly repaint the control after calling this method.
  *
  * @param x the x coordinate of the area to draw
  * @param y the y coordinate of the area to draw
