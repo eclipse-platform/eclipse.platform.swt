@@ -133,49 +133,35 @@ public void setUp() {
  * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
  */
 @Override
-@Test
+@Test(expected = IllegalArgumentException.class)
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.dispose();
 	browser = new Browser(shell, SWT.BORDER);
 	// System.out.println("Test_org_eclipse_swt_browser_Browser#test_Constructor*#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
-	try {
-		browser = new Browser(null, SWT.NONE);
-		fail("No exception thrown for parent == null");
-	}	catch (IllegalArgumentException e) {
-	}
+	browser = new Browser(null, SWT.NONE); // Should throw.
 }
-/**
- * Test that if you invoke the addWindowListener without a listener, a proper IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
-	try {
-		browser.addCloseWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
 
-	CloseWindowListener listener = event -> {
-	};
+@Test(expected = IllegalArgumentException.class)
+public void test_CloseWindowListener_addWithNullArg() {
+	browser.addCloseWindowListener(null);
+}
+
+@Test
+public void test_CloseWindowListener_addAndRemove () {
+	CloseWindowListener listener = event -> {};
 	for (int i = 0; i < 100; i++) browser.addCloseWindowListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
 }
 
-/**
- * Test that addLocationListener() throws a IllegalArgumentException if no arument given.
- */
-@Test
-public void test_listener_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	try {
-		browser.addLocationListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+@Test(expected = IllegalArgumentException.class)
+public void test_LocationListener_addWithNullArg() {
+	browser.addLocationListener(null);
+}
 
+@Test
+public void test_LocationListener_addAndRemove() {
 	LocationListener listener = new LocationListener() {
 		@Override
 		public void changed(LocationEvent event) {
@@ -188,36 +174,26 @@ public void test_listener_addLocationListenerLorg_eclipse_swt_browser_LocationLi
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
-/**
- * Tests that when addOpenWindowListener() is called without an argument, a IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
-	try {
-		browser.addOpenWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
 
-	OpenWindowListener listener = event -> {
-	};
+@Test(expected = IllegalArgumentException.class)
+public void test_OpenWindowListener_addWithNulArg() {
+	browser.addOpenWindowListener(null);
+}
+
+@Test
+public void test_OpenWindowListener_addAndRemove() {
+	OpenWindowListener listener = event -> {};
 	for (int i = 0; i < 100; i++) browser.addOpenWindowListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
-/**
- * Test that if addProgressListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
-	try {
-		browser.addProgressListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+@Test(expected = IllegalArgumentException.class)
+public void test_ProgressListener_addWithNullArg() {
+	browser.addProgressListener(null);
+}
 
+@Test
+public void test_ProgressListener_addAndRemove() {
 	ProgressListener listener = new ProgressListener() {
 		@Override
 		public void changed(ProgressEvent event) {
@@ -238,54 +214,38 @@ public void test_isVisible() {
 	super.test_isVisible();
 }
 
-/**
- * Test that if addStatusTextListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
-	try {
-		browser.addStatusTextListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+@Test(expected = IllegalArgumentException.class)
+public void test_StatusTextListener_addWithNull() {
+	browser.addStatusTextListener(null);
+}
 
+@Test
+public void test_StatusTextListener_addAndRemove() {
 	StatusTextListener listener = event -> {
 	};
 	for (int i = 0; i < 100; i++) browser.addStatusTextListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
-/**
- * Test that if addTitleListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
-	try {
-		browser.addTitleListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+@Test(expected = IllegalArgumentException.class)
+public void test_TitleListener_addwithNull() {
+	browser.addTitleListener(null);
+}
 
-	TitleListener listener = event -> {
-	};
+@Test
+public void test_TitleListener_addAndRemove() {
+	TitleListener listener = event -> {};
 	for (int i = 0; i < 100; i++) browser.addTitleListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
 }
 
-/**
- * Test that if addTitleListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
-	try {
-		browser.addVisibilityWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+@Test(expected = IllegalArgumentException.class)
+public void test_VisibilityWindowListener_addWithNull() {
+	browser.addVisibilityWindowListener(null);
+}
 
+@Test
+public void test_VisibilityWindowListener_addAndRemove() {
 	VisibilityWindowListener listener = new VisibilityWindowListener() {
 		@Override
 		public void hide(WindowEvent event) {
@@ -301,15 +261,9 @@ public void test_listener_addVisibilityWindowListenerLorg_eclipse_swt_browser_Vi
 /**
  * Test that if execute() is called with 'null' as argument, IllegalArgumentException is thrown.
  */
-@Test
+@Test(expected = IllegalArgumentException.class)
 public void test_listener_executeLjava_lang_String() {
-	try {
-		browser.execute(null);
-		fail("No exception thrown for script == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-
+	browser.execute(null);
 	/* Real testing is done in the tests that run the event loop
 	 * since a document must have been loaded to execute a script on it.
 	 */
