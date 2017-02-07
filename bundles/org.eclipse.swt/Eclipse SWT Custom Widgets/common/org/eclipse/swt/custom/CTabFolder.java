@@ -3779,9 +3779,9 @@ boolean updateItems (int showIndex) {
 	}
 
 	boolean oldShowChevron = showChevron;
-	setButtonBounds(gc);
 	boolean changed = setItemSize(gc);
 	changed |= setItemLocation(gc);
+	setButtonBounds(gc);
 	changed |= showChevron != oldShowChevron;
 	if (changed && getToolTipText() != null) {
 		Point pt = getDisplay().getCursorLocation();
