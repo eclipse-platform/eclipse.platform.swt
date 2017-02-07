@@ -4853,9 +4853,9 @@ private void setDragGesture () {
         }
 }
 
-private void setPanGesture () {
-/* TODO: Panning gesture requires a GtkOrientation object. Need to discuss what orientation should be default. */
-}
+//private void setPanGesture () {
+///* TODO: Panning gesture requires a GtkOrientation object. Need to discuss what orientation should be default. */
+//}
 
 private void setRotateGesture () {
     if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
