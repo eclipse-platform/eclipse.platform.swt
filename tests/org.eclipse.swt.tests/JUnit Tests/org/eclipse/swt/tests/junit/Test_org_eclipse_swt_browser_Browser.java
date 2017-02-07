@@ -760,6 +760,9 @@ public void test_stop() {
  */
 @Test
 public void test_execute_and_closeListener () {
+	// This test appears to be failing only on OSX.
+	// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=511874
+
 	AtomicBoolean hasClosed = new AtomicBoolean(false);
 
 	browser.setText("You should not see this page, it should have been closed by javascript");
