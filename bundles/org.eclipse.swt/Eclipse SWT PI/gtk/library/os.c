@@ -9151,6 +9151,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1enumerate_1printers)
 }
 #endif
 
+#ifndef NO__1gtk_1event_1box_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1event_1box_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1event_1box_1new_FUNC);
+	rc = (jintLong)gtk_event_box_new();
+	OS_NATIVE_EXIT(env, that, _1gtk_1event_1box_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1event_1controller_1handle_1event
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1event_1controller_1handle_1event)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -14686,6 +14698,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1selection_1count_1selected_1rows)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1selection_1get_1select_1function
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1selection_1get_1select_1function)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1get_1select_1function_FUNC);
+	rc = (jintLong)gtk_tree_selection_get_select_function((GtkTreeSelection *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1get_1select_1function_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1selection_1get_1selected_1rows
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1selection_1get_1selected_1rows)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
@@ -14734,6 +14758,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1select_1iter)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1selection_1select_1path
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1select_1path)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1select_1path_FUNC);
+	gtk_tree_selection_select_path((GtkTreeSelection *)arg0, (GtkTreePath *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1select_1path_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1selection_1set_1mode
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1set_1mode)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -14741,6 +14775,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1set_1mode)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1set_1mode_FUNC);
 	gtk_tree_selection_set_mode((GtkTreeSelection *)arg0, (GtkSelectionMode)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1set_1mode_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1selection_1set_1select_1function
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1set_1select_1function)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1set_1select_1function_FUNC);
+	gtk_tree_selection_set_select_function((GtkTreeSelection *)arg0, (GtkTreeSelectionFunc *)arg1, (gpointer)arg2, (GDestroyNotify)arg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1set_1select_1function_FUNC);
 }
 #endif
 
@@ -14761,6 +14805,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1unselect_1iter)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1unselect_1iter_FUNC);
 	gtk_tree_selection_unselect_iter((GtkTreeSelection *)arg0, (GtkTreeIter *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1unselect_1iter_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1selection_1unselect_1path
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1unselect_1path)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1unselect_1path_FUNC);
+	gtk_tree_selection_unselect_path((GtkTreeSelection *)arg0, (GtkTreePath *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1unselect_1path_FUNC);
 }
 #endif
 

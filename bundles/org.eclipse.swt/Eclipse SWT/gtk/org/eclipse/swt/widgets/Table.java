@@ -72,6 +72,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Table extends Composite {
 	long /*int*/ modelHandle, checkRenderer;
 	int itemCount, columnCount, lastIndexOf, sortDirection;
+	int selectionCountOnPress,selectionCountOnRelease;
 	long /*int*/ ignoreCell;
 	TableItem [] items;
 	TableColumn [] columns;
@@ -1129,6 +1130,14 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 }
 
 @Override
+long /*int*/ dragEndReleaseSelection (long /*int*/ widget, long /*int*/ context) {
+	// free up the selection function on dragEnd.
+	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.gtk_tree_selection_set_select_function(selection,0,0,0);
+	return 0;
+}
+
+@Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
 }
@@ -1981,6 +1990,32 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
+	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
+	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
+	 * in GTK in the case that additional items aren't being added (CTRL_MASK or SHIFT_MASK) and the item being dragged is already
+	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3,14,0)) {
+		long /*int*/ [] path = new long /*int*/ [1];
+		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+				path[0] != 0) {
+			//  selection count is used in the case of clicking an already selected item while holding Control
+			selectionCountOnPress = getSelectionCount();
+			if (OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
+				if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
+						((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
+					/**
+					 * disable selection on a mouse click if there are multiple items already selected. Also,
+					 * if control is currently being held down, we will designate the selection logic over to release
+					 * instead by first disabling the selection.
+					 */
+					OS.gtk_tree_selection_set_select_function(selection,display.selectionProc,0,0);
+				}
+			}
+		}
+	}
+	/*
 	* Feature in GTK.  In a multi-select table view, when multiple items are already
 	* selected, the selection state of the item is toggled and the previous selection
 	* is cleared. This is not the desired behaviour when bringing up a popup menu.
@@ -2075,8 +2110,34 @@ void sendTreeDefaultSelection() {
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ window = OS.GDK_EVENT_WINDOW (event);
-	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	/*
+	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
+	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
+	 * in GTK in the case that additional items aren't being added (CTRL_MASK or SHIFT_MASK) and the item being dragged is already
+	 * selected, we can give the DnD handling to MOTION-NOTIFY. On release, we can then re-enable the selection method
+	 * and also select the item in the tree by moving the selection logic to release instead. See Bug 503431.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		long /*int*/ [] path = new long /*int*/ [1];
+		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+		// free up the selection function on release.
+		OS.gtk_tree_selection_set_select_function(selection,0,0,0);
+		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+				path[0] != 0 && OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
+			selectionCountOnRelease = getSelectionCount();
+			if ((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) {
+				OS.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
+			}
+			 // Check to see if there has been a new tree item selected when holding Control in Path.
+			 // If not, deselect the item.
+			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
+				OS.gtk_tree_selection_unselect_path (selection,path[0]);
+			}
+		}
+	}
 	return super.gtk_button_release_event (widget, event);
 }
 

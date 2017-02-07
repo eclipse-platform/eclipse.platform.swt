@@ -2497,87 +2497,108 @@ public boolean dragDetect (MouseEvent event) {
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	if (button != 1 || count != 1) return false;
-	if (!dragDetect (x, y, false, true, null)) return false;
+	/*
+	 * Bug 503431: Some applications use CTabFolder that isn't handling DND
+	 * correctly in this condition.
+	 */
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0) && !dragDetect (x, y, false, true, null)) {
+		return false;
+	}
 	return sendDragEvent (button, stateMask, x, y, true);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	boolean quit = false, dragging = false;
+	boolean dragging = false;
+	/*
+	 * Feature in GTK: In order to support both X.11/Wayland, GTKGestures are used
+	 *  as of GTK3.14 in order to acquire mouse position offsets to decide on dragging.
+	 *  See Bug 503431.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		double [] px = new double[1];
+		double [] py = new double [1];
+		OS.gtk_gesture_drag_get_offset(dragGesture, px, py);
+		if (OS.gtk_drag_check_threshold(handle, x, y, x + (int) px[0], y + (int) py[0])) {
+			dragging = true;
+		}
+	} else {
+		boolean quit = false;
 
-	//428852 DND workaround for GTk3.
-	//Gtk3 no longer sends motion events on the same control during thread sleep
-	//before a drag started. This is due to underlying gdk changes.
-	//Thus for gtk3 we check mouse coords manually
-	//Note, input params x/y are relative, the two points below are absolute coords.
-	Point startPos = null;
-	Point currPos = null;
-	if (OS.GTK3) {
-		startPos = display.getCursorLocationInPixels();
-	}
+		//428852 DND workaround for GTk3.
+		//Gtk3 no longer sends motion events on the same control during thread sleep
+		//before a drag started. This is due to underlying gdk changes.
+		//Thus for gtk3 we check mouse coords manually
+		//Note, input params x/y are relative, the two points below are absolute coords.
+		Point startPos = null;
+		Point currPos = null;
+		if (OS.GTK3) {
+			startPos = display.getCursorLocationInPixels();
+		}
 
-	while (!quit) {
-		long /*int*/ eventPtr = 0;
-		/*
-		* There should be an event on the queue already, but
-		* in cases where there isn't one, stop trying after
-		* half a second.
-		*/
-		long timeout = System.currentTimeMillis() + 500;
-		display.sendPreExternalEventDispatchEvent();
-		while (System.currentTimeMillis() < timeout) {
-			eventPtr = OS.gdk_event_get ();
-			if (eventPtr != 0) {
-				break;
-			} else {
-				if (OS.GTK3) { //428852
-					currPos = display.getCursorLocationInPixels();
-					dragging = OS.gtk_drag_check_threshold (handle,
-								startPos.x, startPos.y, currPos.x, currPos.y);
-					if (dragging) break;
+		while (!quit) {
+			long /*int*/ eventPtr = 0;
+			/*
+			* There should be an event on the queue already, but
+			* in cases where there isn't one, stop trying after
+			* half a second.
+			*/
+			long timeout = System.currentTimeMillis() + 500;
+			display.sendPreExternalEventDispatchEvent();
+			while (System.currentTimeMillis() < timeout) {
+				eventPtr = OS.gdk_event_get ();
+				if (eventPtr != 0) {
+					break;
 				} else {
-				try {Thread.sleep(50);}
-				catch (Exception ex) {}
+					if (OS.GTK3) { //428852
+						currPos = display.getCursorLocationInPixels();
+						dragging = OS.gtk_drag_check_threshold (handle,
+									startPos.x, startPos.y, currPos.x, currPos.y);
+						if (dragging) break;
+					} else {
+					try {Thread.sleep(50);}
+					catch (Exception ex) {}
+					}
 				}
 			}
-		}
-		display.sendPostExternalEventDispatchEvent();
-		if (dragging) return true;  //428852
-		if (eventPtr == 0) return dragOnTimeout;
-		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
-			case OS.GDK_MOTION_NOTIFY: {
-				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
-				OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
-				if ((gdkMotionEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
-					if (OS.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
-						dragging = true;
+			display.sendPostExternalEventDispatchEvent();
+			if (dragging) return true;  //428852
+			if (eventPtr == 0) return dragOnTimeout;
+			switch (OS.GDK_EVENT_TYPE (eventPtr)) {
+				case OS.GDK_MOTION_NOTIFY: {
+					GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
+					OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
+					if ((gdkMotionEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+						if (OS.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
+							dragging = true;
+							quit = true;
+						}
+					} else {
 						quit = true;
 					}
-				} else {
-					quit = true;
+					int [] newX = new int [1], newY = new int [1];
+					gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
+					break;
 				}
-				int [] newX = new int [1], newY = new int [1];
-				gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
-				break;
+				case OS.GDK_KEY_PRESS:
+				case OS.GDK_KEY_RELEASE: {
+					GdkEventKey gdkEvent = new GdkEventKey ();
+					OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+					if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
+					break;
+				}
+				case OS.GDK_BUTTON_RELEASE:
+				case OS.GDK_BUTTON_PRESS:
+				case OS.GDK_2BUTTON_PRESS:
+				case OS.GDK_3BUTTON_PRESS: {
+					OS.gdk_event_put (eventPtr);
+					quit = true;
+					break;
+				}
+				default:
+					OS.gtk_main_do_event (eventPtr);
 			}
-			case OS.GDK_KEY_PRESS:
-			case OS.GDK_KEY_RELEASE: {
-				GdkEventKey gdkEvent = new GdkEventKey ();
-				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-				if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
-				break;
-			}
-			case OS.GDK_BUTTON_RELEASE:
-			case OS.GDK_BUTTON_PRESS:
-			case OS.GDK_2BUTTON_PRESS:
-			case OS.GDK_3BUTTON_PRESS: {
-				OS.gdk_event_put (eventPtr);
-				quit = true;
-				break;
-			}
-			default:
-				OS.gtk_main_do_event (eventPtr);
+			OS.gdk_event_free (eventPtr);
 		}
-		OS.gdk_event_free (eventPtr);
 	}
 	return dragging;
 }
@@ -3199,6 +3220,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	}
 	long /*int*/ result = 0;
 	if (gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		boolean dragging = false;
 		display.clickCount = 1;
 		long /*int*/ nextEvent = OS.gdk_event_peek ();
 		if (nextEvent != 0) {
@@ -3207,24 +3229,35 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 			if (eventType == OS.GDK_3BUTTON_PRESS) display.clickCount = 3;
 			OS.gdk_event_free (nextEvent);
 		}
-		boolean dragging = false;
-		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-			if (gdkEvent.button == 1) {
-				boolean [] consume = new boolean [1];
-				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
-					dragging = true;
-					if (consume [0]) result = 1;
+		/*
+		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
+		 * instead of mouse click event as of GTK3.14. See Bug 503431.
+		 */
+		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+				if (gdkEvent.button == 1) {
+					boolean [] consume = new boolean [1];
+					if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
+						dragging = true;
+						if (consume [0]) result = 1;
+					}
+					if (isDisposed ()) return 1;
 				}
-				if (isDisposed ()) return 1;
 			}
 		}
 		if (sendMouseDown && !sendMouseEvent (SWT.MouseDown, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state)) {
 			result = 1;
 		}
 		if (isDisposed ()) return 1;
-		if (dragging) {
-			sendDragEvent (gdkEvent.button, gdkEvent.state, (int) gdkEvent.x, (int) gdkEvent.y, false);
-			if (isDisposed ()) return 1;
+		/*
+		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
+		 * instead of mouse click event as of GTK3.14. See Bug 503431.
+		 */
+		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+			if (dragging) {
+				sendDragEvent (gdkEvent.button, gdkEvent.state, (int) gdkEvent.x, (int) gdkEvent.y, false);
+				if (isDisposed ()) return 1;
+			}
 		}
 		/*
 		* Pop up the context menu in the button press event for widgets
@@ -3538,8 +3571,34 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 
 @Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
+	int result;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
+	/*
+	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
+	 * instead of mouse click event as of GTK3.14. See Bug 503431.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+		boolean dragging = false;
+		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+				boolean [] consume = new boolean [1];
+				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
+					dragging = true;
+					if (consume [0]) result = 1;
+				if (isDisposed ()) return 1;
+			} else {
+			}
+		}
+		if (dragging) {
+			OS.gtk_event_controller_handle_event(dragGesture,event);
+			GdkEventButton gdkEvent1 = new GdkEventButton ();
+			OS.memmove (gdkEvent1, event, GdkEventButton.sizeof);
+			if (gdkEvent1.type == OS.GDK_3BUTTON_PRESS) return 0;
+			if (sendDragEvent (gdkEvent1.button, gdkEvent1.state, (int) gdkEvent1.x, (int) gdkEvent1.y, false)){
+				return 1;
+		}
+	}
+}
 	if (this == display.currentControl && (hooks (SWT.MouseHover) || filters (SWT.MouseHover))) {
 		display.addMouseHoverTimeout (handle);
 	}
@@ -3564,7 +3623,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state);
 		}
 	}
-	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
+	result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
 	return result;
 }
 
@@ -6045,5 +6104,15 @@ Point getWindowOrigin () {
 	OS.gdk_window_get_origin (window, x, y);
 
 	return new Point (x [0], y [0]);
+}
+
+/*
+ * This method is meant to be overridden by widgets that have multiselection and
+ * are draggable (e.g. tree, list, table). Documentation from GTK states that a dragEnd
+ * signal is actually a Void method, but we will be using a long in order to keep
+ * our callback working. Refer to Bug 503431.
+ */
+long /*int*/ dragEndReleaseSelection (long /*int*/ widget, long /*int*/ context) {
+	return 0;
 }
 }

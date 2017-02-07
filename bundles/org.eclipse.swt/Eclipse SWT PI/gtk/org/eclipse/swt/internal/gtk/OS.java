@@ -8411,6 +8411,16 @@ public static final void gtk_box_set_homogeneous(long /*int*/ box, boolean homog
 		lock.unlock();
 	}
 }
+
+public static final native long /*int*/ _gtk_event_box_new();
+public static final long /*int*/ gtk_event_box_new() {
+	lock.lock();
+	try {
+		return _gtk_event_box_new();
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  *  @method flags=dynamic [GTK2/GTK3; 3.2 deprecated]
  *  @param adjustment cast=(GtkAdjustment *)
@@ -12554,6 +12564,48 @@ public static final void gtk_tree_selection_select_iter(long /*int*/ selection, 
 }
 /**
  * @param selection cast=(GtkTreeSelection *)
+ */
+public static final native long /*int*/ _gtk_tree_selection_get_select_function(long /*int*/ selection);
+public static final long /*int*/ gtk_tree_selection_get_select_function(long /*int*/ selection) {
+	lock.lock();
+	try {
+		return _gtk_tree_selection_get_select_function(selection);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param selection cast=(GtkTreeSelection *)
+ * @param func cast=(GtkTreeSelectionFunc *)
+ * @param data cast=(gpointer)
+ * @param destroy cast=(GDestroyNotify)
+ */
+public static final native void _gtk_tree_selection_set_select_function(long /*int*/ selection, long /*int*/ func, long /*int*/ data, long /*int*/ destroy);
+public static final void gtk_tree_selection_set_select_function(long /*int*/ selection, long /*int*/ func, long /*int*/ data, long /*int*/ destroy) {
+	lock.lock();
+	try {
+		_gtk_tree_selection_set_select_function(selection, func, data, destroy);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+/**
+ * @param selection cast=(GtkTreeSelection *)
+ * @param path cast=(GtkTreePath *)
+ */
+public static final native void _gtk_tree_selection_select_path(long /*int*/ selection, long /*int*/ path);
+public static final  void gtk_tree_selection_select_path(long /*int*/ selection, long /*int*/ path) {
+	lock.lock();
+	try {
+		_gtk_tree_selection_select_path(selection, path);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param selection cast=(GtkTreeSelection *)
  * @param mode cast=(GtkSelectionMode)
  */
 public static final native void _gtk_tree_selection_set_mode(long /*int*/ selection, int mode);
@@ -12561,6 +12613,19 @@ public static final void gtk_tree_selection_set_mode(long /*int*/ selection, int
 	lock.lock();
 	try {
 		_gtk_tree_selection_set_mode(selection, mode);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param selection cast=(GtkTreeSelection *)
+ * @param path cast=(GtkTreePath *)
+ */
+public static final native void _gtk_tree_selection_unselect_path(long /*int*/ selection, long /*int*/ path);
+public static final  void gtk_tree_selection_unselect_path(long /*int*/ selection, long /*int*/ path) {
+	lock.lock();
+	try {
+		_gtk_tree_selection_unselect_path(selection, path);
 	} finally {
 		lock.unlock();
 	}
