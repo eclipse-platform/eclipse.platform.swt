@@ -3897,7 +3897,10 @@ public void requestLayout () {
  * <p>
  * Schedules a paint request if the invalidated area is visible
  * or becomes visible later. It is not necessary for the caller
- * to explicitly repaint the control after calling this method.
+ * to explicitly call {@link #update()} after calling this method,
+ * but depending on the platform, the automatic repaints may be
+ * delayed considerably.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3936,7 +3939,10 @@ void redraw (boolean all) {
  * <p>
  * Schedules a paint request if the invalidated area is visible
  * or becomes visible later. It is not necessary for the caller
- * to explicitly repaint the control after calling this method.
+ * to explicitly call {@link #update()} after calling this method,
+ * but depending on the platform, the automatic repaints may be
+ * delayed considerably.
+ * </p>
  *
  * @param x the x coordinate of the area to draw
  * @param y the y coordinate of the area to draw
