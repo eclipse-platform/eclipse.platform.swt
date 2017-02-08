@@ -143,9 +143,23 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	browser = new Browser(null, SWT.NONE); // Should throw.
 }
 
+@Test
+public void test_CloseWindowListener_closeShell() {
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addCloseWindowListener(event -> {}); // shouldn't throw
+	shell.close();
+}
+
 @Test(expected = IllegalArgumentException.class)
 public void test_CloseWindowListener_addWithNullArg() {
 	browser.addCloseWindowListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_CloseWindowListener_removeWithNullArg() {
+	browser.removeCloseWindowListener(null);
 }
 
 @Test
@@ -155,9 +169,24 @@ public void test_CloseWindowListener_addAndRemove () {
 	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
 }
 
+@Test
+public void test_LocationListener_adapter_closeShell() {
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	LocationAdapter adapter = new LocationAdapter() {};
+	browser.addLocationListener(adapter); // shouldn't throw
+	shell.close();
+}
+
 @Test(expected = IllegalArgumentException.class)
 public void test_LocationListener_addWithNullArg() {
 	browser.addLocationListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_LocationListener_removeWithNullArg() {
+	browser.removeLocationListener(null);
 }
 
 @Test
@@ -174,10 +203,23 @@ public void test_LocationListener_addAndRemove() {
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
+@Test
+public void test_OpenWindowListener_closeShell() {
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addOpenWindowListener(event -> {});
+	shell.close();
+}
 
 @Test(expected = IllegalArgumentException.class)
 public void test_OpenWindowListener_addWithNulArg() {
 	browser.addOpenWindowListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_OpenWindowListener_removeWithNullArg() {
+	browser.removeOpenWindowListener(null);
 }
 
 @Test
@@ -187,9 +229,44 @@ public void test_OpenWindowListener_addAndRemove() {
 	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
+@Test
+public void test_ProgressListener_newProgressAdapter() {
+	new ProgressAdapter() {};
+}
+
+@Test
+public void test_ProgressListener_newProgressAdapter_closeShell() {
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addProgressListener(new ProgressAdapter() {});
+	shell.close();
+}
+
+@Test
+public void test_ProgressListener_newListener_closeShell() {
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addProgressListener(new ProgressListener() {
+		@Override
+		public void changed(ProgressEvent event) {
+		}
+		@Override
+		public void completed(ProgressEvent event) {
+		}
+	});
+	shell.close();
+}
+
 @Test(expected = IllegalArgumentException.class)
 public void test_ProgressListener_addWithNullArg() {
 	browser.addProgressListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_ProgressListener_removeWithNullArg() {
+	browser.removeProgressListener(null);
 }
 
 @Test
@@ -206,17 +283,14 @@ public void test_ProgressListener_addAndRemove() {
 	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
-@Override
-@Test
-public void test_isVisible() {
-	// Note. This test sometimes crashes with webkit1 because shell.setVisible() calls g_main_context_iteration(). See Bug 509411
-	// To reproduce, try running test suite 20 times in a loop.
-	super.test_isVisible();
-}
-
 @Test(expected = IllegalArgumentException.class)
 public void test_StatusTextListener_addWithNull() {
 	browser.addStatusTextListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_StatusTextListener_removeWithNullArg() {
+	browser.removeStatusTextListener(null);
 }
 
 @Test
@@ -225,231 +299,6 @@ public void test_StatusTextListener_addAndRemove() {
 	};
 	for (int i = 0; i < 100; i++) browser.addStatusTextListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
-}
-
-@Test(expected = IllegalArgumentException.class)
-public void test_TitleListener_addwithNull() {
-	browser.addTitleListener(null);
-}
-
-@Test
-public void test_TitleListener_addAndRemove() {
-	TitleListener listener = event -> {};
-	for (int i = 0; i < 100; i++) browser.addTitleListener(listener);
-	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
-}
-
-@Test(expected = IllegalArgumentException.class)
-public void test_VisibilityWindowListener_addWithNull() {
-	browser.addVisibilityWindowListener(null);
-}
-
-@Test
-public void test_VisibilityWindowListener_addAndRemove() {
-	VisibilityWindowListener listener = new VisibilityWindowListener() {
-		@Override
-		public void hide(WindowEvent event) {
-		}
-		@Override
-		public void show(WindowEvent event) {
-		}
-	};
-	for (int i = 0; i < 100; i++) browser.addVisibilityWindowListener(listener);
-	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
-}
-
-/**
- * Test that if execute() is called with 'null' as argument, IllegalArgumentException is thrown.
- */
-@Test(expected = IllegalArgumentException.class)
-public void test_listener_executeLjava_lang_String() {
-	browser.execute(null);
-	/* Real testing is done in the tests that run the event loop
-	 * since a document must have been loaded to execute a script on it.
-	 */
-}
-
-
-/**
- * Test that going back in history, when no new pages were visited, returns false.
- */
-@Test
-public void test_back() {
-	for (int i = 0; i < 2; i++) {
-		browser.back();
-	}
-	/* returning 10 times in history - expecting false is returned */
-	boolean result = browser.back();
-	assertFalse(result);
-}
-
-/**
- * Test that if removeLocationListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	try {
-		browser.removeLocationListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addLocationListener
-}
-
-/**
- * Test that if removeOpenWindowListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
-	try {
-		browser.removeOpenWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addOpenWindowListener
-}
-
-/**
- * Test that if removeProgressListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
-	try {
-		browser.removeProgressListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addProgressListener
-}
-
-/**
- * Test that if removeStatusTextListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
-	try {
-		browser.removeStatusTextListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addStatusTextListener
-}
-
-/**
- * Test that if removeTitleListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
-	try {
-		browser.removeTitleListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addTitleListener
-}
-
-/**
- * Test that if removeVisibilityWindowListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
-	try {
-		browser.removeVisibilityWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addVisibilityWindowListener
-}
-
-/**
- * Test that if removeCloseWindowListener() is called without a listener, IllegalArgumentException is thrown.
- */
-@Test
-public void test_listener_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
-	try {
-		browser.removeCloseWindowListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	// tested in addCloseWindowListener
-}
-
-
-
-/**
- * Test that addCloseWindowListener() doesn't throw an error.
- */
-@Test
-public void test_listener_closeLorg_eclipse_swt_browser_WindowEvent() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addCloseWindowListener(event -> {
-	});
-	shell.close();
-}
-
-/**
- * Test that addLocationListener() doesn't throw an error.
- */
-@Test
-public void test_listener_changedLorg_eclipse_swt_browser_LocationEvent() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
-	LocationAdapter adapter = new LocationAdapter() {
-	};
-	browser.addLocationListener(adapter);
-	shell.close();
-}
-
-
-@Test
-public void test_listener_openWindowLorg_eclipse_swt_browser_WindowEvent() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addOpenWindowListener(event -> {
-	});
-	shell.close();
-}
-
-@Test
-public void test_adapter_ProgressAdaptor() {
-	new ProgressAdapter() {};
-}
-
-@Test
-public void test_listener_changedLorg_eclipse_swt_browser_ProgressEvent_adapter() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addProgressListener(new ProgressAdapter() {});
-	shell.close();
-}
-
-
-@Test
-public void test_listener_changedLorg_eclipse_swt_browser_ProgressEvent() {
-	Display display = Display.getCurrent();
-	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-		}
-	});
-	shell.close();
 }
 
 /**
@@ -472,7 +321,7 @@ public void test_listener_changedLorg_eclipse_swt_browser_ProgressEvent() {
  * over the hyperlink (newer Webkit2+) browser.
  */
 @Test
-public void test_listener_changedLorg_eclipse_swt_browser_StatusTextEvent() {
+public void test_StatusTextListener_hoverMouseOverLink() {
 	AtomicBoolean statusChanged = new AtomicBoolean(false);
 	int size = 500;
 
@@ -524,7 +373,7 @@ public void test_listener_changedLorg_eclipse_swt_browser_StatusTextEvent() {
 }
 
 @Test
-public void test_listener_changedLorg_eclipse_swt_browser_TitleEvent() {
+public void test_TitleListener_addListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
@@ -533,13 +382,30 @@ public void test_listener_changedLorg_eclipse_swt_browser_TitleEvent() {
 	shell.close();
 }
 
+@Test(expected = IllegalArgumentException.class)
+public void test_TitleListener_addwithNull() {
+	browser.addTitleListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_TitleListener_removeWithNullArg() {
+	browser.removeTitleListener(null);
+}
+
 @Test
-public void test_adapter_VisibilityWindowAdapter_() {
+public void test_TitleListener_addAndRemove() {
+	TitleListener listener = event -> {};
+	for (int i = 0; i < 100; i++) browser.addTitleListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
+}
+
+@Test
+public void test_VisibilityWindowListener_newAdapter() {
 	new VisibilityWindowAdapter() {};
 }
 
 @Test
-public void test_listener_hideLorg_eclipse_swt_browser_WindowEvent_adapter() {
+public void test_VisibilityWindowListener_newAdapter_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
@@ -548,7 +414,7 @@ public void test_listener_hideLorg_eclipse_swt_browser_WindowEvent_adapter() {
 }
 
 @Test
-public void test_listener_hideLorg_eclipse_swt_browser_WindowEvent() {
+public void test_VisibilityWindowListener_newListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
@@ -563,30 +429,59 @@ public void test_listener_hideLorg_eclipse_swt_browser_WindowEvent() {
 	shell.close();
 }
 
-/**
- * Test that calling setText() with null as argument leads to IllegalArgumentException.
- */
+@Test(expected = IllegalArgumentException.class)
+public void test_VisibilityWindowListener_addWithNull() {
+	browser.addVisibilityWindowListener(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_VisibilityWindowListener_removeWithNullArg() {
+	browser.removeVisibilityWindowListener(null);
+}
+
 @Test
-public void test_setTextNull() {
-	try {
-		browser.setText(null);
-		fail("No exception thrown for text == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+public void test_VisibilityWindowListener_addAndRemove() {
+	VisibilityWindowListener listener = new VisibilityWindowListener() {
+		@Override
+		public void hide(WindowEvent event) {
+		}
+		@Override
+		public void show(WindowEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addVisibilityWindowListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
+}
+
+@Override
+@Test
+public void test_isVisible() {
+	// Note. This test sometimes crashes with webkit1 because shell.setVisible() calls g_main_context_iteration(). See Bug 509411
+	// To reproduce, try running test suite 20 times in a loop.
+	super.test_isVisible();
 }
 
 /**
- * Test that setText() without an argument throws a IllegalArgumentException.
+ * Test that going back in history, when no new pages were visited, returns false.
  */
 @Test
+public void test_back() {
+	for (int i = 0; i < 2; i++) {
+		browser.back();
+	}
+	/* returning 10 times in history - expecting false is returned */
+	boolean result = browser.back();
+	assertFalse(result);
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_setTextNull() {
+	browser.setText(null);
+}
+
+@Test(expected = IllegalArgumentException.class)
 public void test_setUrlWithNullArg() {
-	try {
-		browser.setUrl(null);
-		fail("No exception thrown for url == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	browser.setUrl(null);
 }
 
 
@@ -706,6 +601,11 @@ public void test_stop() {
 	browser.setUrl("http://www.eclipse.org/swt");
 	runLoopTimer(1000);
 	browser.stop();
+}
+
+@Test(expected = IllegalArgumentException.class)
+public void test_execute_withNullArg() {
+	browser.execute(null);
 }
 
 /**
