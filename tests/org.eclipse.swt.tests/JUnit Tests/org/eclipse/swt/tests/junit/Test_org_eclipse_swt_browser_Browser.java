@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -201,6 +202,77 @@ public void test_LocationListener_addAndRemove() {
 	};
 	for (int i = 0; i < 100; i++) browser.addLocationListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
+}
+
+@Test
+public void test_LocationListener_changing() {
+	AtomicBoolean changingFired = new AtomicBoolean(false);
+	browser.addLocationListener(new LocationAdapter() {
+		@Override
+		public void changing(LocationEvent event) {
+			changingFired.set(true);
+		}
+	});
+	shell.open();
+	browser.setText("Hello world");
+	boolean passed = waitForPassCondition(() -> changingFired.get());
+	assertTrue("LocationListener.changing() event was never fixed", passed);
+}
+@Test
+public void test_LocationListener_changed() {
+	AtomicBoolean changedFired = new AtomicBoolean(false);
+	browser.addLocationListener(new LocationAdapter() {
+		@Override
+		public void changed(LocationEvent event) {
+			changedFired.set(true);
+		}
+	});
+	shell.open();
+	browser.setText("Hello world");
+	boolean passed = waitForPassCondition(() -> changedFired.get());
+	assertTrue("LocationListener.changing() event was never fixed", passed);
+}
+@Test
+public void test_LocationListener_changingAndOnlyThenChanged() {
+	// Test proper order of events.
+	// Check that 'changed' is only fired after 'changing' has fired at least once.
+	AtomicBoolean changingFired = new AtomicBoolean(false);
+	AtomicBoolean changedFired = new AtomicBoolean(false);
+	AtomicBoolean changedFiredTooEarly = new AtomicBoolean(false);
+	AtomicBoolean finished = new AtomicBoolean(false);
+
+	browser.addLocationListener(new LocationListener() {
+		@Override
+		public void changing(LocationEvent event) { // Multiple changing events can occur during a load.
+				changingFired.set(true);
+		}
+		@Override
+		public void changed(LocationEvent event) {
+			if (!changingFired.get())
+				changedFiredTooEarly.set(true);
+
+			changedFired.set(true);
+			finished.set(true);
+		}
+	});
+	shell.open();
+	browser.setText("Hello world");
+	waitForPassCondition(() -> finished.get());
+
+	if (finished.get() && changingFired.get() && changedFired.get() && !changedFiredTooEarly.get()) {
+		return; // pass
+	} else if (!finished.get()) {
+		fail("Test timed out. 'changed()' never fired");
+	} else {
+		if (changedFiredTooEarly.get())
+			fail("changed() was fired before changing(). Wrong signal order");
+		else if (!changingFired.get())
+			fail("changing() was never fired");
+		else  {
+			fail("LocationListener test failed. changing():" + changingFired.get()
+			+ "  changed():" + changedFired.get() + " changedFiredTooEarly:" + changedFiredTooEarly.get());
+		}
+	}
 }
 
 @Test
@@ -1448,6 +1520,21 @@ public void test_BrowserFunction_callback_afterPageReload() {
 
 
 /* custom */
+/**
+ * Wait for passTest to return true. Timeout otherwise.
+ * @param passTest a Supplier lambda that returns true if pass condition is true. False otherwise.
+ * @return true if test passes, false on timeout.
+ */
+private boolean waitForPassCondition(Supplier<Boolean> passTest) {
+	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
+		runLoopTimer(waitMS);
+		if (passTest.get()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void runLoopTimer(final int milliseconds) {
 	final boolean[] exit = {false};
 	new Thread() {
