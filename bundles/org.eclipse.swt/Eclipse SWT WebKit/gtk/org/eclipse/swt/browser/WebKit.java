@@ -1075,10 +1075,6 @@ public boolean close () {
 }
 
 boolean close (boolean showPrompters) {
-	if (WEBKIT2) {
-		// To be implemented for webkit2. Bug 510694
-		return false;
-	}
 	if (!jsEnabled) return true;
 
 	String message1 = Compatibility.getMessage("SWT_OnBeforeUnload_Message1"); // $NON-NLS-1$
