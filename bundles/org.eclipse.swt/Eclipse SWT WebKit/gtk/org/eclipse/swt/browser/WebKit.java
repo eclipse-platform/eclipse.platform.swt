@@ -1599,14 +1599,18 @@ long /*int*/ handleLoadCommitted (long /*int*/ uri, boolean top) {
 		}
 	}
 
-	/*
-	* Each invocation of setText() causes webkit_notify_load_status to be invoked
-	* twice, once for the initial navigate to about:blank, and once for the auto-navigate
-	* to about:blank that WebKit does when webkit_web_view_load_string is invoked.  If
-	* this is the first webkit_notify_load_status callback received for a setText()
-	* invocation then do not send any events or re-install registered BrowserFunctions.
-	*/
-	if (top && url.startsWith(ABOUT_BLANK) && htmlBytes != null) return 0;
+	// Bug 511797 : On webkit2, this code is only reached once per page load.
+	if (!WEBKIT2) {
+		/*
+		* Webkit1:
+		* Each invocation of setText() causes webkit_notify_load_status to be invoked
+		* twice, once for the initial navigate to about:blank, and once for the auto-navigate
+		* to about:blank that WebKit does when webkit_web_view_load_string is invoked.  If
+		* this is the first webkit_notify_load_status callback received for a setText()
+		* invocation then do not send any events or re-install registered BrowserFunctions.
+		*/
+		if (top && url.startsWith(ABOUT_BLANK) && htmlBytes != null) return 0;
+	}
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
