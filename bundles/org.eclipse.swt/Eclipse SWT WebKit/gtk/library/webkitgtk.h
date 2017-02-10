@@ -147,21 +147,4 @@ typedef struct {
 #endif /*WEBKIT_DEBUG*/
 
 
-/**
- * Custom SWT Struct for passing return values from Javascript back to java.
- * Java: SWTJSReturnVal.java (class)
- * C:    SWTJSReturnVal (struct)
- * NOTE: If you need to modify fields, modify both the C part which is declared in webkitgtk.h and java part int SWTJSreturnVal.java
- * webkigtk_struct.c/h should be updated by auto-tools to add setters/getters.
- */
-typedef struct {
-	jintLong 	errorMsg;
-	int 		returnType;
-	jintLong	context;
-	jintLong	value;
-	jintLong 	jsResultPointer;
-
-	jboolean 	JsCallFinished; // Custom field only used on C side. Not mirrored by Java.
-} SWTJSreturnVal;
-
 #endif /* INC_webkitgtk_H */

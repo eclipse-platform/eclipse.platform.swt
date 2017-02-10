@@ -205,6 +205,7 @@ typedef enum {
 	_1g_1closure_1unref_FUNC,
 	_1g_1content_1type_1equals_FUNC,
 	_1g_1content_1type_1is_1a_FUNC,
+	_1g_1error_1free_FUNC,
 	_1g_1error_1get_1message_FUNC,
 	_1g_1file_1get_1uri_FUNC,
 	_1g_1file_1info_1get_1content_1type_FUNC,

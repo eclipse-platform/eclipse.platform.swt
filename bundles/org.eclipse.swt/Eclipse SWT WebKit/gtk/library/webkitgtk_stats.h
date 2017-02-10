@@ -33,7 +33,6 @@ extern char* WebKitGTK_nativeFunctionNames[];
 
 typedef enum {
 	JSClassDefinition_1sizeof_FUNC,
-	SWTJSreturnVal_1sizeof_FUNC,
 	_1JSClassCreate_FUNC,
 	_1JSContextGetGlobalObject_FUNC,
 	_1JSEvaluateScript_FUNC,
@@ -84,7 +83,6 @@ typedef enum {
 	_1soup_1uri_1free_FUNC,
 	_1soup_1uri_1new_FUNC,
 	_1soup_1uri_1to_1string_FUNC,
-	_1swtWebkitEvaluateJavascript_FUNC,
 	_1webkit_1authentication_1request_1authenticate_FUNC,
 	_1webkit_1authentication_1request_1cancel_FUNC,
 	_1webkit_1authentication_1request_1is_1retry_FUNC,
@@ -179,6 +177,7 @@ typedef enum {
 	_1webkit_1web_1view_1new_1with_1user_1content_1manager_FUNC,
 	_1webkit_1web_1view_1reload_FUNC,
 	_1webkit_1web_1view_1run_1javascript_FUNC,
+	_1webkit_1web_1view_1run_1javascript_1finish_FUNC,
 	_1webkit_1web_1view_1stop_1loading_FUNC,
 	memmove_FUNC,
 } WebKitGTK_FUNCS;

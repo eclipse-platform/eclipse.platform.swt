@@ -83,19 +83,25 @@ public static byte [] wcsToMbcs (String string, boolean terminate) {
 /**
  * This method takes a 'C' pointer (char *) or (gchar *), reads characters up to the terminating symbol '\0' and
  * converts it into a Java String.
- * Subsequently it frees up the memory used by 'C'.
  *
  * Note: In SWT we don't use JNI's native String functions because of the 3 vs 4 byte issue explained in Class description.
  * Instead we pass a character pointer from C to java and convert it to a String in Java manually.
  *
  * @param cCharPtr - A char * or a gchar *. Which will be freed up afterwards.
+ * @param freecCharPtr - "true" means free up memory pointed to by cCharPtr.
+ * 			CAREFUL! If this string is part of a struct (ex GError), and a specialized
+ * 			free function (like g_error_free(..) is called on the whole struct, then you
+ * 			should not free up individual struct members with this function,
+ * 			as otherwise you can get unpredictable behavior).
  * @return a Java String object.
  */
-public static String cCharPtrToJavaString(long /*int*/ cCharPtr) {
+public static String cCharPtrToJavaString(long /*int*/ cCharPtr, boolean freecCharPtr) {
 	int length = OS.strlen (cCharPtr);
 	byte[] buffer = new byte [length];
 	OS.memmove (buffer, cCharPtr, length);
-	OS.g_free (cCharPtr);
+	if (freecCharPtr) {
+		OS.g_free (cCharPtr);
+	}
 	return new String (mbcsToWcs (buffer));
 }
 

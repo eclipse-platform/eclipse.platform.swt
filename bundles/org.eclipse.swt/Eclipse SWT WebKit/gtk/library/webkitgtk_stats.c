@@ -23,7 +23,6 @@
 
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
-	"SWTJSreturnVal_1sizeof",
 	"_1JSClassCreate",
 	"_1JSContextGetGlobalObject",
 	"_1JSEvaluateScript",
@@ -74,7 +73,6 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1uri_1free",
 	"_1soup_1uri_1new",
 	"_1soup_1uri_1to_1string",
-	"_1swtWebkitEvaluateJavascript",
 	"_1webkit_1authentication_1request_1authenticate",
 	"_1webkit_1authentication_1request_1cancel",
 	"_1webkit_1authentication_1request_1is_1retry",
@@ -169,6 +167,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1new_1with_1user_1content_1manager",
 	"_1webkit_1web_1view_1reload",
 	"_1webkit_1web_1view_1run_1javascript",
+	"_1webkit_1web_1view_1run_1javascript_1finish",
 	"_1webkit_1web_1view_1stop_1loading",
 	"memmove",
 };

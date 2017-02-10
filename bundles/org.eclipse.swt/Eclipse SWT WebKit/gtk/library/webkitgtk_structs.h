@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -28,17 +28,5 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 #define getJSClassDefinitionFields(a,b,c) NULL
 #define setJSClassDefinitionFields(a,b,c)
 #define JSClassDefinition_sizeof() 0
-#endif
-
-#ifndef NO_SWTJSreturnVal
-void cacheSWTJSreturnValFields(JNIEnv *env, jobject lpObject);
-SWTJSreturnVal *getSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct);
-void setSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct);
-#define SWTJSreturnVal_sizeof() sizeof(SWTJSreturnVal)
-#else
-#define cacheSWTJSreturnValFields(a,b)
-#define getSWTJSreturnValFields(a,b,c) NULL
-#define setSWTJSreturnValFields(a,b,c)
-#define SWTJSreturnVal_sizeof() 0
 #endif
 

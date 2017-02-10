@@ -36,18 +36,6 @@ JNIEXPORT jint JNICALL WebKitGTK_NATIVE(JSClassDefinition_1sizeof)
 }
 #endif
 
-#ifndef NO_SWTJSreturnVal_1sizeof
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(SWTJSreturnVal_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, SWTJSreturnVal_1sizeof_FUNC);
-	rc = (jint)SWTJSreturnVal_sizeof();
-	WebKitGTK_NATIVE_EXIT(env, that, SWTJSreturnVal_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1JSClassCreate
 JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSClassCreate)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2947,6 +2935,30 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1run_1javascript_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1web_1view_1run_1javascript_1finish
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript_1finish)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+{
+	jintLong *lparg2=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1run_1javascript_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)webkit_web_view_run_javascript_finish(arg0, arg1, lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_run_javascript_finish)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1run_1javascript_1finish_FUNC);
+	return rc;
 }
 #endif
 

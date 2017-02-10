@@ -1839,6 +1839,20 @@ public static final long /*int*/ g_error_get_message (long /*int*/ error) {
 		lock.unlock();
 	}
 }
+
+/**
+ * @param gerror cast=(GError *)
+ */
+public static final native void _g_error_free(long /*int*/ gerror);
+public static final void g_error_free(long /*int*/ gerror) {
+	lock.lock();
+	try {
+		_g_error_free(gerror);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @param type1 cast=(gchar *)
  * @param type2 cast=(gchar *)

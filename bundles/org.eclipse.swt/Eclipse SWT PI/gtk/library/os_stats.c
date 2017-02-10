@@ -195,6 +195,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1closure_1unref",
 	"_1g_1content_1type_1equals",
 	"_1g_1content_1type_1is_1a",
+	"_1g_1error_1free",
 	"_1g_1error_1get_1message",
 	"_1g_1file_1get_1uri",
 	"_1g_1file_1info_1get_1content_1type",

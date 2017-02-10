@@ -14,8 +14,8 @@
 *******************************************************************************/
 
 /* Manually written code */
-#include <stdbool.h>
-#include <gio/gio.h>	       // For things like GAsyncResult
+//#include <stdbool.h>		   // for standard true/false
+//#include <gio/gio.h>	       // For things like GAsyncResult
 
 #include "swt.h"		       // For types like jintLong etc..
 
@@ -27,6 +27,13 @@
 
 
 /**
+ * This file provides functionality to execute custom functions dynamically in case this is needed.
+ * Some examples are provided. See dynamic type translation examples in webkitgtk_custom.h
+ * Careful not to include any webkit includes. All webkit calls should be dynamic.
+ */
+
+
+/**
  * Flag to indicate if function pointers are cached or not.
  * 0 - not cached, need caching.
  * 1 - cached.
@@ -35,10 +42,9 @@
 int fps_cached = 0;
 
 /** Dynamic Function pointer declarations */
-dyn_WebKitJavascriptResult  (*fp_webkit_web_view_run_javascript_finish) 	 (dyn_WebKitWebView, GAsyncResult*, GError**);
-dyn_JSGlobalContextRef 		(*fp_webkit_javascript_result_get_global_context)(dyn_WebKitJavascriptResult);
-void 			(*fp_webkit_web_view_run_javascript) 	(dyn_WebKitWebView, const gchar * /*script*/, GCancellable*, GAsyncReadyCallback, gpointer /*user_data*/);
-dyn_JSValueRef  (*fp_webkit_javascript_result_get_value)(dyn_WebKitJavascriptResult);
+// Example of a dynamic function declaration.
+// dyn_WebKitJavascriptResult  (*fp_webkit_web_view_run_javascript_finish) 	 (dyn_WebKitWebView, GAsyncResult*, GError**);
+// // example call of this function would be: fp_webkit_web_view_run_javascript_finish ((jintLong) object, result, &error);
 
 #define INIT_WEBKIT_FP(function) \
 		{ \
@@ -50,96 +56,28 @@ dyn_JSValueRef  (*fp_webkit_javascript_result_get_value)(dyn_WebKitJavascriptRes
 		}
 
 void initFPs() {
-	INIT_WEBKIT_FP(webkit_web_view_run_javascript_finish);
-	INIT_WEBKIT_FP(webkit_javascript_result_get_global_context);
-	INIT_WEBKIT_FP(webkit_web_view_run_javascript);
-	INIT_WEBKIT_FP(webkit_javascript_result_get_value);
+	// Example of a dynamic function initilization.
+//	INIT_WEBKIT_FP(webkit_web_view_run_javascript_finish);
 
 	fps_cached = 1;
 	return;
 
-	fail:
+//	fail: // uncomment this if you make use of this function.
 	fps_cached = -1;
 	g_critical("SWT webkitgtk_custom.c: Failed to load webkit function pointer(s)");
 }
 
-/*
- Calling JS script and getting return value example copied and adapted to be dynamic from:
- https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-run-javascript-finish
- Type conversion occurs on Java side.
-*/
-static void
-web_view_javascript_finished_callback (GObject      *object,
-                              GAsyncResult *result,
-                              gpointer      user_data)
-{
-	dyn_WebKitJavascriptResult js_result;
-	dyn_JSGlobalContextRef context;
-	dyn_JSValueRef value;
-    GError                 *error = NULL;
-
-	SWTJSreturnVal * swtjsreturnvalSTRUCT = (SWTJSreturnVal*) user_data;
-    js_result = fp_webkit_web_view_run_javascript_finish ((jintLong) object, result, &error);
-    if (!js_result) {
-    	WEBKIT_DBG_MSG ("DEBUG: webkitgtk_custom.c: webkitgtk_custom.c: Error running javascript(1): %s", error->message);
-        swtjsreturnvalSTRUCT->returnType = 50; //SWT.java:ERROR_FAILED_EVALUATE
-        gchar *err_msg;
-        gsize err_msg_len = strlen(error->message);
-        err_msg = malloc(err_msg_len + 1);
-        strcpy(err_msg, error->message);
-        swtjsreturnvalSTRUCT->errorMsg = (jintLong) err_msg;
-        g_error_free (error);
-    } else {
-    	WEBKIT_DBG_MSG ("DEBUG: webkitgtk_custom.c: webkitgtk_custom.c: Javascript execution yielded a value");
-		context = fp_webkit_javascript_result_get_global_context (js_result);
-		value = fp_webkit_javascript_result_get_value (js_result);
-		swtjsreturnvalSTRUCT->context = (jintLong) context;
-		swtjsreturnvalSTRUCT->value = (jintLong) value;
-		swtjsreturnvalSTRUCT->returnType = 1; // Return is a value to be converted.
-		swtjsreturnvalSTRUCT->jsResultPointer = (jintLong) js_result;
-		// Note: js_result is free up in WebKit.java:evalute().
-    }
-
-    // Note about exit points: this function must unlock the spinlock prior to returning.
-    // As such there should not be a 'return' in this function above the unlocking code
-	swtjsreturnvalSTRUCT->JsCallFinished = true;
-}
-
-
-/**
- * Convert the async function webkit_web_view_run_javascript(..) into a synchronous one
- * by spinning until the callback is completed.
- */
-JNIEXPORT void Java_org_eclipse_swt_internal_webkit_WebKitGTK__1swtWebkitEvaluateJavascript
-	(JNIEnv *env, jclass that, jintLong webkit_handle, jbyteArray javascriptStringBytes, jobject swtjsreturnvalOBJ)
-{
-	WebKitGTK_NATIVE_ENTER(env, that, _1swtWebkitEvaluateJavascript_FUNC); // For native stats tool.
-	if (fps_cached == 0)
-		initFPs();
-	if (fps_cached == -1)
-		return;
-
-	jbyte *cString = (*env)->GetByteArrayElements(env, javascriptStringBytes, NULL);
-	if (cString == NULL)
-		return; // Out of Memory
-
-	WEBKIT_DBG_MSG("DEBUG: C: Executing Script: %s", cString);
-
-	SWTJSreturnVal swtjsreturnvalSTRUCT;
-	swtjsreturnvalSTRUCT.JsCallFinished = false;
-	swtjsreturnvalSTRUCT.returnType = 0;
-	swtjsreturnvalSTRUCT.errorMsg = 0;
-	swtjsreturnvalSTRUCT.context = 0;
-	swtjsreturnvalSTRUCT.value = 0;
-
-	fp_webkit_web_view_run_javascript(webkit_handle,(const gchar *) cString, NULL, web_view_javascript_finished_callback, &swtjsreturnvalSTRUCT);
-
-	while (swtjsreturnvalSTRUCT.JsCallFinished == false) {
-		g_main_context_iteration(0, false);
-	}
-
-	setSWTJSreturnValFields(env,swtjsreturnvalOBJ, &swtjsreturnvalSTRUCT);
-	(*env)->ReleaseByteArrayElements(env, javascriptStringBytes, cString, 0);
-
-	WebKitGTK_NATIVE_EXIT(env, that, _1swtWebkitEvaluateJavascript_FUNC);
-}
+// Example of a function that makes dynamic calls.
+//JNIEXPORT void Java_org_eclipse_swt_internal_webkit_WebKitGTK__1swtWebkitEvaluateJavascript
+//	(JNIEnv *env, jclass that, jintLong webkit_handle, jbyteArray javascriptStringBytes, jobject swtjsreturnvalOBJ)
+//{
+//	WebKitGTK_NATIVE_ENTER(env, that, _1swtWebkitEvaluateJavascript_FUNC); // For native stats tool.
+//// In your custom function, you should first ensure function pointers are initiated:
+// if (fps_cached == 0)
+//		initFPs();
+//	if (fps_cached == -1)
+//		return;
+//
+//
+//	WebKitGTK_NATIVE_EXIT(env, that, _1swtWebkitEvaluateJavascript_FUNC);
+//}

@@ -35,6 +35,20 @@ class WebKit extends WebBrowser {
 	byte[] htmlBytes;
 	BrowserFunction eventFunction; //Webkit1 only.
 
+	/**
+	 * Webkit2: In a few situations, evaluate() should not wait for it's asynchronous callback to finish.
+	 * This is to avoid deadlocks, see Bug 512001.<br>
+	 * 0 means evaluate should wait for callback. <br>
+	 * >0 means evaluate should not block. In this case 'null' is returned. This condition is rare. <br>
+	 *
+	 * <p>Note: This has to be *static*.
+	 * Webkit2 seems to share one event queue, as such two webkit2 instances can interfere with each other.
+	 * An example of this interfering is when you open a link in a javadoc hover. The new webkit2 in the new tab
+	 * interferes with the old instance in the hoverbox.
+	 * As such, any locks should apply to all webkit2 instances.</p>
+	 */
+	private static int nonBlockingEvaluate = 0;
+
 	static int DisabledJSCount;
 
 	/** Webkit1 only. Used for callJava. See JSObjectHasPropertyProc */
@@ -152,6 +166,9 @@ class WebKit extends WebBrowser {
 			Proc6 = new Callback (WebKit.class, "Proc", 6); //$NON-NLS-1$
 			if (Proc6.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+			if (WEBKIT2) {
+				new Webkit2JavascriptEvaluator();
+			}
 
 			if (WEBKIT2) {
 				new Webkit2JavaCallback();
@@ -554,7 +571,7 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
 	long /*int*/ webView;
-	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.soup_session_get_type ())) {
+	if (!WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.soup_session_get_type ())) {
 		webView = user_data;
 	} else {
 		webView = handle;
@@ -562,10 +579,11 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 	Browser browser = FindBrowser (webView);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
-	if (webView == handle) {
-		return webkit.webViewProc (handle, arg0, arg1, arg2, user_data);
+
+	if (!WEBKIT2 && webView == user_data) {
+		return webkit.sessionProc (handle, arg0, arg1, arg2, user_data); // Webkit1's way of authentication.
 	} else {
-		return webkit.sessionProc (handle, arg0, arg1, arg2, user_data);
+		return webkit.webViewProc (handle, arg0, arg1, arg2, user_data);
 	}
 }
 
@@ -576,6 +594,7 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 	return webkit.webViewProc (handle, arg0, arg1, arg2, arg3, user_data);
 }
 
+/** Webkit1 only */
 long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ auth, long /*int*/ retrying, long /*int*/ user_data) {
 	/* authentication challenges are currently the only notification received from the session */
 	if (retrying == 0) {
@@ -611,6 +630,11 @@ long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ a
 	return 0;
 }
 
+/**
+ * Webkit2 only
+ * - gboolean user_function (WebKitWebView *web_view, WebKitAuthenticationRequest *request, gpointer user_data)
+ * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-authenticate
+ */
 long /*int*/ webkit_authenticate (long /*int*/ web_view, long /*int*/ request){
 
 	/* authentication challenges are currently the only notification received from the session */
@@ -625,7 +649,17 @@ long /*int*/ webkit_authenticate (long /*int*/ web_view, long /*int*/ request){
 	for (int i = 0; i < authenticationListeners.length; i++) {
 		AuthenticationEvent event = new AuthenticationEvent (browser);
 		event.location = location;
-		authenticationListeners[i].authenticate (event);
+
+		try { // to avoid deadlocks, evaluate() should not block during authentication listener. See Bug 512001
+			  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
+			nonBlockingEvaluate++;
+			authenticationListeners[i].authenticate (event);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			nonBlockingEvaluate--;
+		}
+
 		if (!event.doit) {
 			WebKitGTK.webkit_authentication_request_cancel (request);
 			return 0;
@@ -668,15 +702,15 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 		case NOTIFY_TITLE: return webkit_notify_title (handle, arg0);
 		case POPULATE_POPUP: return webkit_populate_popup (handle, arg0);
 		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0); // Webkit1 only.
-		case AUTHENTICATE: return webkit_authenticate (handle, arg0);
+		case AUTHENTICATE: return webkit_authenticate (handle, arg0);		// Webkit2 only.
 		default: return 0;
 	}
 }
 
 long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
-		case HOVERING_OVER_LINK: return webkit_hovering_over_link (handle, arg0, arg1);
-		case MOUSE_TARGET_CHANGED: return webkit_mouse_target_changed (handle, arg0, arg1);
+		case HOVERING_OVER_LINK: return webkit_hovering_over_link (handle, arg0, arg1);		// Webkit1 only
+		case MOUSE_TARGET_CHANGED: return webkit_mouse_target_changed (handle, arg0, arg1); // Webkit2 only.
 		case DECIDE_POLICY: return webkit_decide_policy(handle, arg0, (int)arg1, user_data);
 		default: return 0;
 	}
@@ -1105,15 +1139,86 @@ public boolean execute (String script) {
 	return result != 0;
 }
 
+/**
+ * Deals with evaluating Javascript in a webkit2 instance.
+ *
+ * Javascript execution is asynchronous in webkit2, so we map each call
+ * to it's callback and wait for callback to finish.
+ */
+private static class Webkit2JavascriptEvaluator {
 
-@Override
-public Object evaluate (String script) throws SWTException {
-	if (WEBKIT2){
+	private static Callback callback;
+	static {
+		callback = new Callback(Webkit2JavascriptEvaluator.class, "javascriptExecutionFinishedProc", void.class, new Type[] {long.class, long.class, long.class});
+		if (callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+
+	/** Object used to pass data from callback back to caller of evaluate() */
+	private static class Webkit2EvalReturnObj {
+		boolean callbackFinished = false;
+		Object returnValue;
+
+		/** 0=no error. >0 means error. **/
+		int errorNum = 0;
+		String errorMsg;
+	}
+
+	/**
+	 * Every callback is tagged with a unique ID.
+	 * The ID is used for the callback to find the object via which data is returned
+	 * and allow the original call to finish.
+	 *
+	 * Note: The reason each callback is tagged with an ID is because two(or more) subsequent
+	 * evaluate() calls can be started before the first callback comes back.
+	 * As such, there would be ambiguity as to which call a callback belongs to, which in turn causes deadlocks.
+	 * This is typically seen when a webkit2 signal (e.g closeListener) makes a call to evaluate(),
+	 * when the closeListener was triggered by evaluate("window.close()").
+	 * An example test case where this is seen is:
+	 * org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener()
+	 */
+	private static class CallBackMap {
+		private static HashMap<Long, Webkit2EvalReturnObj> callbackMap = new HashMap<>();
+
+		static long putObject(Webkit2EvalReturnObj obj) {
+			long id = getNextId();
+			callbackMap.put(id, obj);
+			return id;
+		}
+		static Webkit2EvalReturnObj getObj(long id) {
+			return callbackMap.get(id);
+		}
+		static void removeObject(long id) {
+			callbackMap.remove(id);
+			removeId(id);
+		}
+
+		// Mechanism to generate unique ID's
+		private static long nextCallbackId = 1;
+		private static HashSet<Long> usedCallbackIds = new HashSet<>();
+		private static long getNextId() {
+			long value = 0;
+			boolean unique = false;
+			while (unique == false) {
+				value = nextCallbackId;
+				unique = !usedCallbackIds.contains(value);
+				if (nextCallbackId != Long.MAX_VALUE)
+					nextCallbackId++;
+				else
+					nextCallbackId = 1;
+			}
+			usedCallbackIds.add(value);
+			return value;
+		}
+		private static void removeId(long id) {
+			usedCallbackIds.remove(id);
+		}
+	}
+
+	static Object evaluate(String script, Browser browser, long /*int*/ webView, boolean doNotBlock) {
 		/* Webkit2: We remove the 'return' prefix that normally comes with the script.
 		 * The reason is that in Webkit1, script was wrapped into a function and if an exception occured
 		 * it was caught on Javascript side and a callback to java was made.
-		 * In Webkit2, webkigtk_custom handles exceptions if they occur. No need to wrap
-		 * script into a temporary function anymore.
+		 * In Webkit2, we handle errors in the callback, no need to wrap them in a function anymore.
 		 */
 		String fixedScript;
 		if (script.length() > 7 && script.substring(0, 7).equals("return ")) {
@@ -1121,31 +1226,73 @@ public Object evaluate (String script) throws SWTException {
 		} else {
 			fixedScript = script;
 		}
-		SWTJSreturnVal jsReturnVal = new SWTJSreturnVal();
-		WebKitGTK.swtWebkitEvaluateJavascript(webView, Converter.wcsToMbcs(fixedScript, true), jsReturnVal);
 
-		switch (jsReturnVal.returnType) {
-			case SWTJSreturnVal.VALUE:
-				Object retObj = null;
-				try {
-					retObj = convertToJava(jsReturnVal.context, jsReturnVal.value);
-				} catch (IllegalArgumentException invalid_arg) {
-					SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
-				} finally {
-					WebKitGTK.webkit_javascript_result_unref (jsReturnVal.jsResultPointer);
-				}
-				return retObj;
-			case SWT.ERROR_FAILED_EVALUATE: {
-				String err_msg = Converter.cCharPtrToJavaString(jsReturnVal.errorMsg);
-				if (err_msg.length() > 0) {
-					throw new SWTException (SWT.ERROR_FAILED_EVALUATE, err_msg);
-				} else {
-					// With no error message, "Failed to evaluate javascript expression" is printed, which is better than "".
-					throw new SWTException (SWT.ERROR_FAILED_EVALUATE);
-				}
-				}
+		if (doNotBlock) {
+			// Execute script, but do not wait for async call to complete. (assume it does). Bug 512001.
+			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, 0, 0);
+			return null;
+		} else {
+			// Callback logic: Initiate an async callback and wait for it to finish.
+			// The callback comes back in javascriptExecutionFinishedProc(..) below.
+			Webkit2EvalReturnObj retObj = new Webkit2EvalReturnObj();
+			long callbackId = CallBackMap.putObject(retObj);
+			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, callback.getAddress(), callbackId);
+			Shell shell = browser.getShell();
+			Display display = browser.getDisplay();
+			while (!shell.isDisposed()) {
+				display.readAndDispatch();
+				if (retObj.callbackFinished)
+					break;
+				else
+					display.sleep();
 			}
-		return null;
+			CallBackMap.removeObject(callbackId);
+
+			if (retObj.errorNum != 0) {
+				throw new SWTException(retObj.errorNum, retObj.errorMsg);
+			} else {
+				return retObj.returnValue;
+			}
+		}
+	}
+
+	/** Callback that is called directly from Javascirpt. **/
+	@SuppressWarnings("unused")
+	private static void javascriptExecutionFinishedProc (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
+		Long callbackId = user_data;
+		Webkit2EvalReturnObj retObj = CallBackMap.getObj(callbackId);
+
+		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
+		long /*int*/ js_result = WebKitGTK.webkit_web_view_run_javascript_finish(GObject_source, GAsyncResult, gerror);
+
+		if (js_result == 0) {
+			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			String msg = Converter.cCharPtrToJavaString(errMsg, false);
+			OS.g_error_free(gerror[0]);
+
+			retObj.errorNum = SWT.ERROR_FAILED_EVALUATE;
+			retObj.errorMsg = msg != null ? msg : "";
+		} else {
+			long /*int*/ context = WebKitGTK.webkit_javascript_result_get_global_context (js_result);
+			long /*int*/ value = WebKitGTK.webkit_javascript_result_get_value (js_result);
+
+			try {
+				retObj.returnValue = convertToJava(context, value);
+			} catch (IllegalArgumentException ex) {
+				retObj.errorNum = SWT.ERROR_INVALID_RETURN_VALUE;
+				retObj.errorMsg = "Type of return value not is not valid. For supported types see: Browser.evaluate() JavaDoc";
+			}
+			WebKitGTK.webkit_javascript_result_unref (js_result);
+		}
+		retObj.callbackFinished = true;
+	}
+}
+
+@Override
+public Object evaluate (String script) throws SWTException {
+	if (WEBKIT2){
+		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
+		return Webkit2JavascriptEvaluator.evaluate(script, this.browser, webView, doNotBlock);
 	} else {
 		return super.evaluate(script);
 	}
@@ -1617,33 +1764,72 @@ long /*int*/ handleLoadCommitted (long /*int*/ uri, boolean top) {
 	event.widget = browser;
 	event.location = url;
 	event.top = top;
-	for (int i = 0; i < locationListeners.length; i++) {
-		locationListeners[i].changed (event);
+	Runnable fireLocationChanged = () ->  {
+		if (browser.isDisposed ()) return;
+		for (int i = 0; i < locationListeners.length; i++) {
+			locationListeners[i].changed (event);
+		}
+	};
+	if (WEBKIT2) {
+		browser.getDisplay().asyncExec(fireLocationChanged);
+	} else {
+		fireLocationChanged.run();
 	}
 	return 0;
 }
 
 private void fireNewTitleEvent(String title){
-	TitleEvent newEvent = new TitleEvent (browser);
-	newEvent.display = browser.getDisplay ();
-	newEvent.widget = browser;
-	newEvent.title = title;
-	for (int i = 0; i < titleListeners.length; i++) {
-		titleListeners[i].changed (newEvent);
+	if (!WEBKIT2) {
+		// titleListener is already handled/fired in webkit_notify_title()
+		// [which is triggered by 'notify::title'. No need to fire it twice.
+		//
+		// This function is called by load_change / notify_load_status, which doesn't necessarily mean the
+		// title has actually changed. Further title can also be changed by javascript on the same page,
+		// thus page_load is not a proper way to trigger title_change.
+		// It's not clear when notify::title was introduced, (sometime in Webkit1 by the looks?)
+		// thus keeping code below for webkit1/legacy reasons.
+		TitleEvent newEvent = new TitleEvent (browser);
+		newEvent.display = browser.getDisplay ();
+		newEvent.widget = browser;
+		newEvent.title = title;
+		for (int i = 0; i < titleListeners.length; i++) {
+			titleListeners[i].changed (newEvent);
+		}
 	}
 }
 
+/**
+ * This method is reached by:
+ * Webkit1: WebkitWebView notify::load-status
+ *  - simple change in property
+ * 	- https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--load-status
+ *
+ * Webkit2: WebKitWebView load-changed signal
+ * 	- void user_function (WebKitWebView  *web_view, WebKitLoadEvent load_event, gpointer user_data)
+ *  - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-load-changed
+ *  - Note: As there is no return value, safe to fire asynchronously.
+ */
 private void fireProgressCompletedEvent(){
-	ProgressEvent progress = new ProgressEvent (browser);
-	progress.display = browser.getDisplay ();
-	progress.widget = browser;
-	progress.current = MAX_PROGRESS;
-	progress.total = MAX_PROGRESS;
-	for (int i = 0; i < progressListeners.length; i++) {
-		progressListeners[i].completed (progress);
-	}
+	Runnable fireProgressEvents = () -> {
+		if (browser.isDisposed() || progressListeners == null) return;
+		ProgressEvent progress = new ProgressEvent (browser);
+		progress.display = browser.getDisplay ();
+		progress.widget = browser;
+		progress.current = MAX_PROGRESS;
+		progress.total = MAX_PROGRESS;
+		for (int i = 0; i < progressListeners.length; i++) {
+			progressListeners[i].completed (progress);
+		}
+	};
+	if (WEBKIT2)
+		browser.getDisplay().asyncExec(fireProgressEvents);
+	else
+		fireProgressEvents.run();
 }
 
+/** Webkit1 only.
+ *  (Webkit2 equivalent is webkit_load_changed())
+ */
 long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 	int length = OS.strlen (uri);
 	byte[] bytes = new byte[length];
@@ -1973,14 +2159,35 @@ long /*int*/ webframe_notify_load_status (long /*int*/ web_frame, long /*int*/ p
 	return 0;
 }
 
+/**
+ * Webkit1:
+ *  - WebkitWebView 'close-web-view' signal.
+ * 	- gboolean user_function (WebKitWebView *web_view, gpointer user_data);   // observe return value.
+ *	- https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-close-web-view
+ *
+ * Webkit2:
+ * 	- WebKitWebView 'close' signal
+ *  - void user_function (WebKitWebView *web_view, gpointer user_data); // observe *no* return value.
+ *  - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-close
+ */
 long /*int*/ webkit_close_web_view (long /*int*/ web_view) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		closeWindowListeners[i].close (newEvent);
+	Runnable fireCloseWindowListeners = () -> {
+		if (browser.isDisposed()) return;
+		for (int i = 0; i < closeWindowListeners.length; i++) {
+			closeWindowListeners[i].close (newEvent);
+		}
+		browser.dispose ();
+	};
+	if (WEBKIT2) {
+		 // There is a subtle difference in Webkit1 vs Webkit2, in that on webkit2 this signal doesn't expect a return value.
+		 // As such, we can safley execute the SWT listeners later to avoid deadlocks. See bug 512001
+		browser.getDisplay().asyncExec(fireCloseWindowListeners);
+	} else {
+		fireCloseWindowListeners.run();
 	}
-	browser.dispose ();
 	return 0;
 }
 
@@ -1993,10 +2200,24 @@ long /*int*/ webkit_create_web_view (long /*int*/ web_view, long /*int*/ frame) 
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 	newEvent.required = true;
-	if (openWindowListeners != null) {
-		for (int i = 0; i < openWindowListeners.length; i++) {
-			openWindowListeners[i].open (newEvent);
+	Runnable fireOpenWindowListeners = () -> {
+		if (openWindowListeners != null) {
+			for (int i = 0; i < openWindowListeners.length; i++) {
+				openWindowListeners[i].open (newEvent);
+			}
 		}
+	};
+	if (WEBKIT2) {
+		try {
+			nonBlockingEvaluate++; 	  // running evaluate() inside openWindowListener and waiting for return leads to deadlock. Bug 512001
+			fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
+		} catch (Exception e) {
+			throw e; // rethrow execption if thrown, but decrement counter first.
+		} finally {
+			nonBlockingEvaluate--;
+		}
+	} else {
+		fireOpenWindowListeners.run();
 	}
 	Browser browser = null;
 	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof WebKit) {
@@ -2045,6 +2266,11 @@ long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ down
 	return 1;
 }
 
+/**
+ *  Webkit2 only. WebkitWebView mouse-target-changed
+ * - void user_function (WebKitWebView *web_view, WebKitHitTestResult *hit_test_result, guint modifiers, gpointer user_data)
+ * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-mouse-target-changed
+ * */
 long /*int*/ webkit_mouse_target_changed (long /*int*/ web_view, long /*int*/ hit_test_result, long /*int*/ modifiers) {
 	if (WebKitGTK.webkit_hit_test_result_context_is_link(hit_test_result)){
 		long /*int*/ uri = WebKitGTK.webkit_hit_test_result_get_link_uri(hit_test_result);
@@ -2055,6 +2281,17 @@ long /*int*/ webkit_mouse_target_changed (long /*int*/ web_view, long /*int*/ hi
 	return 0;
 }
 
+/**
+ * Webkit1: WebkitWebView hovering-over-link signal
+ * - void user_function (WebKitWebView *web_view, gchar *title, gchar *uri, gpointer user_data)
+ * - https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-hovering-over-link
+ *
+ * Webkit2: WebkitWebView mouse-target-change
+ * - Normally this signal is called for many different events, e.g hoveing over an image.
+ *   But in our case, in webkit_mouse_target_changed() we filter out everything except mouse_over_link events.
+ *
+ *   Since there is no return value, it is safe to run asynchronously.
+ */
 long /*int*/ webkit_hovering_over_link (long /*int*/ web_view, long /*int*/ title, long /*int*/ uri) {
 	if (uri != 0) {
 		int length = OS.strlen (uri);
@@ -2065,9 +2302,16 @@ long /*int*/ webkit_hovering_over_link (long /*int*/ web_view, long /*int*/ titl
 		event.display = browser.getDisplay ();
 		event.widget = browser;
 		event.text = text;
-		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed (event);
-		}
+		Runnable fireStatusTextListener = () -> {
+			if (browser.isDisposed() || statusTextListeners == null) return;
+			for (int i = 0; i < statusTextListeners.length; i++) {
+				statusTextListeners[i].changed (event);
+			}
+		};
+		if (WEBKIT2)
+			browser.getDisplay().asyncExec(fireStatusTextListener);
+		else
+			fireStatusTextListener.run();
 	}
 	return 0;
 }
@@ -2081,6 +2325,7 @@ long /*int*/ webkit_mime_type_policy_decision_requested (long /*int*/ web_view, 
 	return 0;
 }
 
+/** Webkit1 only */
 long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view, long /*int*/ frame, long /*int*/ request, long /*int*/ navigation_action, long /*int*/ policy_decision) {
 	if (loadingText) {
 		/*
@@ -2153,6 +2398,7 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 	return 0;
 }
 
+/** Webkit2 only */
 long /*int*/ webkit_decide_policy (long /*int*/ web_view, long /*int*/ decision, int decision_type, long /*int*/ user_data) {
     switch (decision_type) {
     case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
@@ -2180,11 +2426,20 @@ long /*int*/ webkit_decide_policy (long /*int*/ web_view, long /*int*/ decision,
        newEvent.widget = browser;
        newEvent.location = url;
        newEvent.doit = true;
-       if (locationListeners != null) {
-          for (int i = 0; i < locationListeners.length; i++) {
-             locationListeners[i].changing (newEvent);
-          }
+
+       try {
+	       nonBlockingEvaluate++;
+	       if (locationListeners != null) {
+	          for (int i = 0; i < locationListeners.length; i++) {
+	             locationListeners[i].changing (newEvent);
+	          }
+	       }
+       } catch (Exception e) {
+    	   throw e;
+       } finally {
+    	  nonBlockingEvaluate--;
        }
+
        if (newEvent.doit && !browser.isDisposed ()) {
           if (jsEnabled != jsEnabledOnNextPage) {
              jsEnabled = jsEnabledOnNextPage;
@@ -2259,6 +2514,17 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 	return 0;
 }
 
+
+
+/**
+ * Triggered by a change in property. (both gdouble[0,1])
+ * Webkit1: WebkitWebview notify::progress
+ * 	https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--progress
+ * Webkit2: WebkitWebview notify::estimated-load-progress
+ *  https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--estimated-load-progress
+ *
+ *  No return value required. Thus safe to run asynchronously.
+ */
 long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) {
 	ProgressEvent event = new ProgressEvent (browser);
 	event.display = browser.getDisplay ();
@@ -2271,12 +2537,27 @@ long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) 
 	}
 	event.current = (int) (progress * MAX_PROGRESS);
 	event.total = MAX_PROGRESS;
-	for (int i = 0; i < progressListeners.length; i++) {
-		progressListeners[i].changed (event);
-	}
+	Runnable fireProgressChangedEvents = () -> {
+		if (browser.isDisposed() || progressListeners == null) return;
+		for (int i = 0; i < progressListeners.length; i++) {
+			progressListeners[i].changed (event);
+		}
+	};
+	if (WEBKIT2)
+		browser.getDisplay().asyncExec(fireProgressChangedEvents);
+	else
+		fireProgressChangedEvents.run();
 	return 0;
 }
 
+/**
+ * Webkit1 & Webkit2
+ * Triggerd by webkit's 'notify::title' signal and forwarded to this function.
+ * The signal doesn't have documentation (2.15.4), but is mentioned here:
+ * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-get-title
+ *
+ * It doesn't look it would require a return value, so running in asyncExec should be fine.
+ */
 long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
 	long /*int*/ title = WebKitGTK.webkit_web_view_get_title (webView);
 	String titleString;
@@ -2292,9 +2573,15 @@ long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
 	event.display = browser.getDisplay ();
 	event.widget = browser;
 	event.title = titleString;
-	for (int i = 0; i < titleListeners.length; i++) {
-		titleListeners[i].changed (event);
-	}
+	Runnable fireTitleListener = () -> {
+		for (int i = 0; i < titleListeners.length; i++) {
+			titleListeners[i].changed (event);
+		}
+	};
+	if (WEBKIT2)
+		browser.getDisplay().asyncExec(fireTitleListener);
+	else
+		fireTitleListener.run();
 	return 0;
 }
 
@@ -2447,6 +2734,15 @@ long /*int*/ webkit_status_bar_text_changed (long /*int*/ web_view, long /*int*/
 	return 0;
 }
 
+/**
+ * Emitted after “create” on the newly created WebKitWebView when it should be displayed to the user.
+ *
+ * Webkit1 signal: web-view-ready
+ *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
+ * Webkit2 signal: ready-to-show
+ *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
+ * Note in webkit2, no return value has to be provided in callback.
+ */
 long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
@@ -2484,8 +2780,19 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 	if (width != -1 && height != -1) {
 		newEvent.size = new Point (width,height);
 	}
-	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		visibilityWindowListeners[i].show (newEvent);
+	Runnable fireVisibilityListeners = () -> {
+		if (browser.isDisposed()) return;
+		for (int i = 0; i < visibilityWindowListeners.length; i++) {
+			visibilityWindowListeners[i].show (newEvent);
+		}
+	};
+	if (WEBKIT2) {
+		// Postpone execution of listener, to avoid deadlocks in case evaluate() is
+		// called in the listener while another signal is being handled. See bug 512001.
+		// evaluate() can safely be called in this listener with no adverse effects.
+		browser.getDisplay().asyncExec(fireVisibilityListeners);
+	} else {
+		fireVisibilityListeners.run();
 	}
 	return 0;
 }

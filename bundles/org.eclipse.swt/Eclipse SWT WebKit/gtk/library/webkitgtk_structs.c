@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -95,49 +95,6 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 	(*env)->SetIntLongField(env, lpObject, JSClassDefinitionFc.callAsConstructor, (jintLong)lpStruct->callAsConstructor);
 	(*env)->SetIntLongField(env, lpObject, JSClassDefinitionFc.hasInstance, (jintLong)lpStruct->hasInstance);
 	(*env)->SetIntLongField(env, lpObject, JSClassDefinitionFc.convertToType, (jintLong)lpStruct->convertToType);
-}
-#endif
-
-#ifndef NO_SWTJSreturnVal
-typedef struct SWTJSreturnVal_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID returnType, errorMsg, jsResultPointer, context, value;
-} SWTJSreturnVal_FID_CACHE;
-
-SWTJSreturnVal_FID_CACHE SWTJSreturnValFc;
-
-void cacheSWTJSreturnValFields(JNIEnv *env, jobject lpObject)
-{
-	if (SWTJSreturnValFc.cached) return;
-	SWTJSreturnValFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	SWTJSreturnValFc.returnType = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "returnType", "I");
-	SWTJSreturnValFc.errorMsg = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "errorMsg", I_J);
-	SWTJSreturnValFc.jsResultPointer = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "jsResultPointer", I_J);
-	SWTJSreturnValFc.context = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "context", I_J);
-	SWTJSreturnValFc.value = (*env)->GetFieldID(env, SWTJSreturnValFc.clazz, "value", I_J);
-	SWTJSreturnValFc.cached = 1;
-}
-
-SWTJSreturnVal *getSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
-{
-	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
-	lpStruct->returnType = (int)(*env)->GetIntField(env, lpObject, SWTJSreturnValFc.returnType);
-	lpStruct->errorMsg = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.errorMsg);
-	lpStruct->jsResultPointer = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.jsResultPointer);
-	lpStruct->context = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.context);
-	lpStruct->value = (jintLong)(*env)->GetIntLongField(env, lpObject, SWTJSreturnValFc.value);
-	return lpStruct;
-}
-
-void setSWTJSreturnValFields(JNIEnv *env, jobject lpObject, SWTJSreturnVal *lpStruct)
-{
-	if (!SWTJSreturnValFc.cached) cacheSWTJSreturnValFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, SWTJSreturnValFc.returnType, (jint)lpStruct->returnType);
-	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.errorMsg, (jintLong)lpStruct->errorMsg);
-	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.jsResultPointer, (jintLong)lpStruct->jsResultPointer);
-	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.context, (jintLong)lpStruct->context);
-	(*env)->SetIntLongField(env, lpObject, SWTJSreturnValFc.value, (jintLong)lpStruct->value);
 }
 #endif
 

@@ -48,7 +48,7 @@ public class WebKitGTK extends C {
 
 
 	/** Signals */
-	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$
+	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 (soup) & Webkit2 WebkitWebView
 	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$
 	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$
 	public static final byte[] context_menu = ascii ("context-menu"); // $NON-NLS-1$
@@ -58,15 +58,19 @@ public class WebKitGTK extends C {
 	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$
 	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$
 	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$
-	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$
+
+	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$   		// Webkit1 -> StatusTextListener.changed()
+	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$	// Webkit2 -> StatusTextListener.changed()
+
 	/** Webkit2 only, to implement equivalent of webkit1 window_object_cleared*/
 	public static final byte[] load_changed = ascii ("load-changed"); // $NON-NLS-1$
 	public static final byte[] mime_type_policy_decision_requested = ascii ("mime-type-policy-decision-requested"); // $NON-NLS-1$
-	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$
 	public static final byte[] navigation_policy_decision_requested = ascii ("navigation-policy-decision-requested"); // $NON-NLS-1$
 	public static final byte[] notify_load_status = ascii ("notify::load-status"); // $NON-NLS-1$
-	public static final byte[] notify_progress = ascii ("notify::progress"); // $NON-NLS-1$
-	public static final byte[] notify_estimated_load_progress = ascii ("notify::estimated-load-progress"); // $NON-NLS-1$
+
+	public static final byte[] notify_progress = ascii ("notify::progress"); // $NON-NLS-1$									// ->Webkit1 Progress.changed()
+	public static final byte[] notify_estimated_load_progress = ascii ("notify::estimated-load-progress"); // $NON-NLS-1$   // ->Webkit2 Progress.changed()
+
 	public static final byte[] notify_title = ascii ("notify::title"); // $NON-NLS-1$
 	public static final byte[] populate_popup = ascii ("populate-popup"); // $NON-NLS-1$
 	public static final byte[] resource_request_starting = ascii ("resource-request-starting"); // $NON-NLS-1$
@@ -78,6 +82,9 @@ public class WebKitGTK extends C {
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
 	/** Webkit1 only. On Webkit2 this is found in a webextension. Instead 'load_changed' is used on webkit2 **/
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
+
+
+
 
 
 	/** Properties */
@@ -1601,13 +1608,28 @@ public static final void webkit_web_view_reload (long /*int*/ web_view) {
 }
 
 
-//fyi: void webkit_web_view_run_javascript (WebKitWebView *web_view, const gchar *script, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data);
 /** @method flags=dynamic */
 public static final native void _webkit_web_view_run_javascript (long /*int*/ web_view, byte [] script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data);
+/** 			    void webkit_web_view_run_javascript (WebKitWebView *web_view, const gchar *script, GCancellable *cancellable, GAsyncReadyCallback callback, gpointer user_data); **/
 public static final void webkit_web_view_run_javascript (long /*int*/ web_view, byte[] script, long /*int*/ cancellable, long /*int*/  callback, long /*int*/ user_data) {
 	lock.lock();
 	try {
 		_webkit_web_view_run_javascript (web_view, script, cancellable, callback, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param gerror cast(GError **)
+ */
+public static final native long /*int*/ _webkit_web_view_run_javascript_finish(long /*int*/ web_view, long /*int*/ GAsyncResult, long /*int*/[] gerror);
+/**WebKitJavascriptResult * webkit_web_view_run_javascript_finish (WebKitWebView *web_view, GAsyncResult *result, GError **error);*/
+public static long /*int*/ webkit_web_view_run_javascript_finish(long /*int*/ web_view, long /*int*/ GAsyncResult, long /*int*/[] gerror) {
+	lock.lock();
+	try {
+		return _webkit_web_view_run_javascript_finish (web_view, GAsyncResult, gerror);
 	} finally {
 		lock.unlock();
 	}
@@ -1693,7 +1715,6 @@ public static final long /*int*/  webkit_uri_response_get_mime_type (long /*int*
 /* --------------------- start SWT natives --------------------- */
 
 public static final native int JSClassDefinition_sizeof ();
-public static final native int SWTJSreturnVal_sizeof ();
 
 
 /**
@@ -1759,18 +1780,4 @@ public static final long /*int*/ SoupMessage_request_headers (long /*int*/ messa
 		lock.unlock();
 	}
 }
-
-/* Custom method in webkitgtk_custom.c */
-/** @method flags=no_gen */
-public static final native void _swtWebkitEvaluateJavascript (long /*int*/ webkit_handle, byte[] script, SWTJSreturnVal retVal);
-public static final void swtWebkitEvaluateJavascript (long /*int*/ webkit_handle, byte[] script, SWTJSreturnVal retVal) {
-	lock.lock();
-	try {
-		_swtWebkitEvaluateJavascript (webkit_handle, script, retVal);
-	} finally {
-		lock.unlock();
-	}
-}
-
-
 }

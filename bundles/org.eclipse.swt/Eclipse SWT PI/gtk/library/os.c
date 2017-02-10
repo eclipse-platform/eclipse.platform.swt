@@ -1954,6 +1954,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1error_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1error_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1error_1free_FUNC);
+	g_error_free((GError *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1error_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1error_1get_1message
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1error_1get_1message)
 	(JNIEnv *env, jclass that, jintLong arg0)
