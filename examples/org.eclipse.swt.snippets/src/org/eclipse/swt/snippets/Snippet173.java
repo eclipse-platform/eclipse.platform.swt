@@ -44,7 +44,7 @@ public static void main(String[] args) {
 	initialize(display, browser);
 	shell.open();
 	/* any website with popups */
-	browser.setUrl("http://www.cnn.com");
+	browser.setUrl("http://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_win_open");
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
