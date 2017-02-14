@@ -211,7 +211,7 @@ public Rectangle getClientArea() {
 * @return the control in the content area of the pane or null
 */
 public Control getContent() {
-	//checkWidget();
+	checkWidget();
 	return content;
 }
 /**
@@ -221,7 +221,7 @@ public Control getContent() {
 * @return the control in the top center of the pane or null
 */
 public Control getTopCenter() {
-	//checkWidget();
+	checkWidget();
 	return topCenter;
 }
 /**
@@ -231,7 +231,7 @@ public Control getTopCenter() {
 * @return the control in the top left corner of the pane or null
 */
 public Control getTopLeft() {
-	//checkWidget();
+	checkWidget();
 	return topLeft;
 }
 /**
@@ -241,7 +241,7 @@ public Control getTopLeft() {
 * @return the control in the top right corner of the pane or null
 */
 public Control getTopRight() {
-	//checkWidget();
+	checkWidget();
 	return topRight;
 }
 void onDispose(Event event) {

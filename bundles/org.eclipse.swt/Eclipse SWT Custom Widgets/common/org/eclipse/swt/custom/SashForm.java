@@ -112,7 +112,7 @@ Sash createSash() {
  */
 @Override
 public int getOrientation() {
-	//checkWidget();
+	checkWidget();
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
 }
 /**
@@ -146,7 +146,7 @@ public int getStyle() {
  * @return the control that currently is maximized or null
  */
 public Control getMaximizedControl(){
-	//checkWidget();
+	checkWidget();
 	return this.maxControl;
 }
 /**

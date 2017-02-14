@@ -191,7 +191,7 @@ char _findMnemonic (String string) {
  * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
  */
 public int getAlignment() {
-	//checkWidget();
+	checkWidget();
 	return align;
 }
 /**
@@ -202,7 +202,7 @@ public int getAlignment() {
  * @since 3.6
  */
 public int getBottomMargin() {
-	//checkWidget();
+	checkWidget();
 	return bottomMargin;
 }
 /**
@@ -211,7 +211,7 @@ public int getBottomMargin() {
  * @return the image of the label or null
  */
 public Image getImage() {
-	//checkWidget();
+	checkWidget();
 	return image;
 }
 /**
@@ -222,7 +222,7 @@ public Image getImage() {
  * @since 3.6
  */
 public int getLeftMargin() {
-	//checkWidget();
+	checkWidget();
 	return leftMargin;
 }
 /**
@@ -233,7 +233,7 @@ public int getLeftMargin() {
  * @since 3.6
  */
 public int getRightMargin() {
-	//checkWidget();
+	checkWidget();
 	return rightMargin;
 }
 /**
@@ -278,7 +278,7 @@ public int getStyle () {
  * @return the text of the label or null
  */
 public String getText() {
-	//checkWidget();
+	checkWidget();
 	return text;
 }
 @Override
@@ -294,7 +294,7 @@ public String getToolTipText () {
  * @since 3.6
  */
 public int getTopMargin() {
-	//checkWidget();
+	checkWidget();
 	return topMargin;
 }
 private void initAccessible() {
