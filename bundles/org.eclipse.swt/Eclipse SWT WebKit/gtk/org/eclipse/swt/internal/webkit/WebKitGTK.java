@@ -1622,7 +1622,7 @@ public static final void webkit_web_view_run_javascript (long /*int*/ web_view, 
 
 /**
  * @method flags=dynamic
- * @param gerror cast(GError **)
+ * @param gerror cast=(GError **)
  */
 public static final native long /*int*/ _webkit_web_view_run_javascript_finish(long /*int*/ web_view, long /*int*/ GAsyncResult, long /*int*/[] gerror);
 /**WebKitJavascriptResult * webkit_web_view_run_javascript_finish (WebKitWebView *web_view, GAsyncResult *result, GError **error);*/

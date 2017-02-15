@@ -2947,12 +2947,12 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1run_1javascript_1finish_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)webkit_web_view_run_javascript_finish(arg0, arg1, lparg2);
+	rc = (jintLong)webkit_web_view_run_javascript_finish(arg0, arg1, (GError **)lparg2);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_run_javascript_finish)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong *))fp)(arg0, arg1, lparg2);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, GError **))fp)(arg0, arg1, (GError **)lparg2);
 		}
 	}
 fail:

@@ -1173,31 +1173,31 @@ private static class Webkit2JavascriptEvaluator {
 	 * org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener()
 	 */
 	private static class CallBackMap {
-		private static HashMap<Long, Webkit2EvalReturnObj> callbackMap = new HashMap<>();
+		private static HashMap<Integer, Webkit2EvalReturnObj> callbackMap = new HashMap<>();
 
-		static long putObject(Webkit2EvalReturnObj obj) {
-			long id = getNextId();
+		static int putObject(Webkit2EvalReturnObj obj) {
+			int id = getNextId();
 			callbackMap.put(id, obj);
 			return id;
 		}
-		static Webkit2EvalReturnObj getObj(long id) {
+		static Webkit2EvalReturnObj getObj(int id) {
 			return callbackMap.get(id);
 		}
-		static void removeObject(long id) {
+		static void removeObject(int id) {
 			callbackMap.remove(id);
 			removeId(id);
 		}
 
 		// Mechanism to generate unique ID's
-		private static long nextCallbackId = 1;
-		private static HashSet<Long> usedCallbackIds = new HashSet<>();
-		private static long getNextId() {
-			long value = 0;
+		private static int nextCallbackId = 1;
+		private static HashSet<Integer> usedCallbackIds = new HashSet<>();
+		private static int getNextId() {
+			int value = 0;
 			boolean unique = false;
 			while (unique == false) {
 				value = nextCallbackId;
 				unique = !usedCallbackIds.contains(value);
-				if (nextCallbackId != Long.MAX_VALUE)
+				if (nextCallbackId != Integer.MAX_VALUE)
 					nextCallbackId++;
 				else
 					nextCallbackId = 1;
@@ -1231,7 +1231,7 @@ private static class Webkit2JavascriptEvaluator {
 			// Callback logic: Initiate an async callback and wait for it to finish.
 			// The callback comes back in javascriptExecutionFinishedProc(..) below.
 			Webkit2EvalReturnObj retObj = new Webkit2EvalReturnObj();
-			long callbackId = CallBackMap.putObject(retObj);
+			int callbackId = CallBackMap.putObject(retObj);
 			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, callback.getAddress(), callbackId);
 			Shell shell = browser.getShell();
 			Display display = browser.getDisplay();
@@ -1255,7 +1255,7 @@ private static class Webkit2JavascriptEvaluator {
 	/** Callback that is called directly from Javascirpt. **/
 	@SuppressWarnings("unused")
 	private static void javascriptExecutionFinishedProc (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
-		Long callbackId = user_data;
+		int callbackId = (int) user_data;
 		Webkit2EvalReturnObj retObj = CallBackMap.getObj(callbackId);
 
 		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
