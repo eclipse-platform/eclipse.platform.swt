@@ -256,11 +256,6 @@ public class CTabFolder extends Composite {
 
 	//TODO: add setter for spacing?
 	static final int SPACING = 3;
-	static final boolean IS_GTK;
-	static {
-		String platform = SWT.getPlatform();
-		IS_GTK = "gtk".equals(platform);
-	}
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
