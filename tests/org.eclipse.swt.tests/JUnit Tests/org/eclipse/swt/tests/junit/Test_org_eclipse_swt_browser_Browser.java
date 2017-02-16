@@ -15,6 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -686,7 +687,8 @@ public void test_execute_withNullArg() {
  */
 @Test
 public void test_execute_and_closeListener () {
-	// This test appears to be failing only on OSX.
+	String skipMsg = "This test is unstable on Cocoa/Win32 at present. Skipping test on non webkit2 for now. To be fixed in Bug 511874";
+	assumeTrue(skipMsg, isWebkit1 || isWebkit2);
 	// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=511874
 
 	AtomicBoolean hasClosed = new AtomicBoolean(false);
