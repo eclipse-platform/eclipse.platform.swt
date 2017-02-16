@@ -871,7 +871,7 @@
 	</target>
 
 	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_libraries" depends="init_fragment">
+	<target name="build_libraries" depends="init_fragment,init_keyfile">
 		<property name="swt.arch" value=""/>
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -898,15 +898,12 @@
 				<isset property="port"/>
 			</not>
 		</condition>
-		<condition property="keyfileUSED" value="${keyfile}" else="${keyfilePPC}">
-			<isset property="port"/>
-		</condition>
 		<antcall target="init_build"/>
 		<antcall target="${build_task}">
 			<param name="build_targets" value="${targets}"/>
 			<param name="build_machine" value="${machine}"/>
 			<param name="port" value="${port}"/>
-			<param name="keyfile" value="${keyfileUSED}"/>
+			<param name="keyfile" value="${keyfile}"/>
 		</antcall>
 		<antcall target="build_gtk3"/>
 		<delete dir="${build_dir}" quiet="true"/>

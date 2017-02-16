@@ -266,7 +266,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64/jre5u10"
+			export JAVA_HOME=" /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-1.b14.fc24.ppc64"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64/mozilla/dist/sdk"
@@ -295,7 +295,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64LE/jre5u10"
+			export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.121-1.b14.fc24.ppc64le"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64le/mozilla/dist/sdk"
