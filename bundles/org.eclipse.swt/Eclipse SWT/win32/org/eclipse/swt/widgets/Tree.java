@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,10 +93,13 @@ public class Tree extends Composite {
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus;
 	boolean ignoreDrawSelection, ignoreDrawHot, ignoreFullSelection, explorerTheme;
 	boolean createdAsRTL;
+	boolean headerItemDragging;
 	int scrollWidth, selectionForeground;
 	long /*int*/ headerToolTipHandle, itemToolTipHandle;
 	long /*int*/ lastTimerID = -1;
 	int lastTimerCount;
+	int headerBackground = -1;
+	int headerForeground = -1;
 	static final boolean ENABLE_TVS_EX_FADEINOUTEXPANDOS = System.getProperty("org.eclipse.swt.internal.win32.enableFadeInOutExpandos") != null;
 	static final int TIMER_MAX_COUNT = 8;
 	static final int INSET = 3;
@@ -2341,6 +2344,10 @@ void createWidget () {
 	itemCount = -1;
 }
 
+private boolean customHeaderDrawing() {
+	return headerBackground != -1 || headerForeground != -1;
+}
+
 @Override
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
@@ -2929,6 +2936,46 @@ public int getGridLineWidth () {
 
 int getGridLineWidthInPixels () {
 	return GRID_WIDTH;
+}
+
+/**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	return Color.win32_new (display, getHeaderBackgroundPixel());
+}
+
+private int getHeaderBackgroundPixel() {
+	return headerBackground != -1 ? headerBackground : defaultBackground();
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	return Color.win32_new (display, getHeaderForegroundPixel());
+}
+
+private int getHeaderForegroundPixel() {
+	return headerForeground != -1 ? headerForeground : defaultForeground();
 }
 
 /**
@@ -4279,6 +4326,7 @@ public void setLinesVisible (boolean show) {
 	linesVisible = show;
 	if (hwndParent == 0 && linesVisible) customDraw = true;
 	OS.InvalidateRect (handle, null, true);
+	OS.InvalidateRect (hwndHeader, null, true);
 }
 
 @Override
@@ -4780,6 +4828,72 @@ void setForegroundPixel (int pixel) {
 		if (pixel == -1) pixel = defaultForeground ();
 	}
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == headerBackground) return;
+	headerBackground = pixel;
+	if (getHeaderVisible()) {
+		OS.InvalidateRect (hwndHeader, null, true);
+	}
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == headerForeground) return;
+	headerForeground = pixel;
+	if (getHeaderVisible()) {
+		OS.InvalidateRect (hwndHeader, null, true);
+	}
 }
 
 /**
@@ -7853,6 +7967,142 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
+		case OS.NM_CUSTOMDRAW: {
+			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW();
+			OS.MoveMemory(nmcd, lParam, NMCUSTOMDRAW.sizeof);
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT: {
+					/* Drawing here will be deleted by further drawing steps, even with OS.CDRF_SKIPDEFAULT.
+					   Changing the TextColor and returning OS.CDRF_NEWFONT has no effect. */
+					return new LRESULT (customHeaderDrawing() ? OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT : OS.CDRF_DODEFAULT);
+				}
+				case OS.CDDS_ITEMPREPAINT: {
+					// draw background
+					RECT rect = new RECT();
+					OS.SetRect(rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					int pixel = getHeaderBackgroundPixel();
+					if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
+						pixel = getDifferentColor(pixel);
+					} else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
+						pixel = getSlightlyDifferentColor(pixel);
+					}
+					long /*int*/ brush = OS.CreateSolidBrush(pixel);
+					OS.FillRect(nmcd.hdc, rect, brush);
+					OS.DeleteObject(brush);
+
+					return new LRESULT(OS.CDRF_SKIPDEFAULT); // if we got here, we will paint everything ourself
+				}
+				case OS.CDDS_POSTPAINT: {
+					// get the cursor position
+					POINT cursorPos = new POINT();
+					OS.GetCursorPos(cursorPos);
+					OS.MapWindowPoints(0, hwndHeader, cursorPos, 1);
+
+					// drawing all cells
+					int highlightedHeaderDividerX = -1;
+					int lastColumnRight = -1;
+					RECT [] rects = new RECT [columnCount];
+					for (int i=0; i<columnCount; i++) {
+						rects [i] = new RECT ();
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rects [i]);
+						if (rects[i].right > lastColumnRight) {
+							lastColumnRight = rects[i].right;
+						}
+
+						if (columns[i] == sortColumn && sortDirection != SWT.NONE) {
+							// the display.getSortImage looks terrible after scaling up.
+							long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor(OS.COLOR_3DDKSHADOW));
+							long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+							int center = rects[i].left + (rects[i].right - rects[i].left) / 2;
+							int leg = 3;
+							if (sortDirection == SWT.UP) {
+								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
+								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
+							} else if (sortDirection == SWT.DOWN) {
+								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1, center+1, 1+leg+1}, 2);
+								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1, center-1, 1+leg+1}, 2);
+							}
+							OS.SelectObject (nmcd.hdc, oldPen);
+							OS.DeleteObject (pen);
+						}
+
+						/* Windows 7 and 10 always draw a nearly invisible vertical line between the columns, even if lines are disabled.
+						   This line uses no fixed color constant, but calculates it from the background color.
+						   The method getSlightlyDifferentColor gives us a color, that is near enough to the windows algorithm. */
+						long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), getSlightlyDifferentColor(getHeaderBackgroundPixel()));
+						long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+						OS.Polyline(nmcd.hdc, new int[] {rects[i].right-1, rects[i].top, rects[i].right-1, rects[i].bottom}, 2);
+						OS.SelectObject (nmcd.hdc, oldPen);
+						OS.DeleteObject (pen);
+
+						if (linesVisible) {
+							pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
+							oldPen = OS.SelectObject (nmcd.hdc, pen);
+							OS.Polyline(nmcd.hdc, new int[] {rects[i].right, rects[i].top, rects[i].right, rects[i].bottom}, 2);
+							OS.SelectObject (nmcd.hdc, oldPen);
+							OS.DeleteObject (pen);
+						}
+
+						if (headerItemDragging && highlightedHeaderDividerX == -1) {
+							int distanceToLeftBorder = cursorPos.x - rects[i].left;
+							int distanceToRightBorder = rects[i].right - cursorPos.x;
+							if (distanceToLeftBorder >= 0 && distanceToRightBorder >= 0) {
+								// the cursor is in the current rectangle
+								highlightedHeaderDividerX = distanceToLeftBorder <= distanceToRightBorder ? rects[i].left-1 : rects[i].right;
+							}
+						}
+
+						int x = rects[i].left + INSET + 2;
+						if (columns[i].image != null) {
+							GCData data = new GCData();
+							data.device = display;
+							GC gc = GC.win32_new (nmcd.hdc, data);
+							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBoundsInPixels().height) / 2);
+							gc.drawImage (columns[i].image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
+							x += columns[i].image.getBoundsInPixels().width + 12;
+							gc.dispose ();
+						}
+
+						if (columns[i].text != null) {
+							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
+							if ((columns[i].style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+							if ((columns[i].style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+							TCHAR buffer = new TCHAR (getCodePage (), columns[i].text, false);
+							OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
+							OS.SetTextColor(nmcd.hdc, getHeaderForegroundPixel());
+							RECT textRect = new RECT();
+							textRect.left = x;
+							textRect.top = rects[i].top;
+							textRect.right = rects[i].right;
+							textRect.bottom = rects[i].bottom;
+							OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+						}
+					}
+
+					if (lastColumnRight < nmcd.right) {
+						// draw background of the 'no column' area
+						RECT rect = new RECT();
+						lastColumnRight += linesVisible ? 1 : 0;
+						OS.SetRect(rect, lastColumnRight, nmcd.top, nmcd.right, nmcd.bottom);
+						long /*int*/ brush = OS.CreateSolidBrush(getHeaderBackgroundPixel());
+						OS.FillRect(nmcd.hdc, rect, brush);
+						OS.DeleteObject(brush);
+					}
+
+					// always draw the highlighted border at the end, to avoid overdrawing by other borders.
+					if (highlightedHeaderDividerX != -1) {
+						long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 4, OS.GetSysColor(OS.COLOR_HIGHLIGHT));
+						long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
+						OS.Polyline(nmcd.hdc, new int[] {highlightedHeaderDividerX, nmcd.top, highlightedHeaderDividerX, nmcd.bottom}, 2);
+						OS.SelectObject (nmcd.hdc, oldPen);
+						OS.DeleteObject (pen);
+					}
+
+					return new LRESULT(OS.CDRF_DODEFAULT);
+				}
+			}
+			break;
+		}
 		case OS.NM_RELEASEDCAPTURE: {
 			if (!ignoreColumnMove) {
 				for (int i=0; i<columnCount; i++) {
@@ -7874,10 +8124,12 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					ignoreColumnMove = true;
 					return LRESULT.ONE;
 				}
+				headerItemDragging = true;
 			}
 			break;
 		}
 		case OS.HDN_ENDDRAG: {
+			headerItemDragging = false;
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			if (phdn.iItem != -1 && phdn.pitem != 0) {

@@ -3415,10 +3415,9 @@ void setForegroundColor (GdkColor color) {
  * Sets the header background color to the color specified
  * by the argument, or to the default system color if the argument is null.
  * <p>
- * Note: This is custom paint operation and only on Windows and GTK3
- * platforms table header background can be changed. If the native header
- * has a 3D look an feel (e.g. Windows 7), this method will cause the header
- * to look FLAT irrespective of the state of the table style.
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the table style.
  * </p>
  * @param color the new color (or null)
  *
@@ -3453,23 +3452,27 @@ public void setHeaderBackground(Color color) {
 		headerCSSBackground = css;
 		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
 		for (TableColumn column : columns) {
-			long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
-			// Create provider as we need it attached to the proper context which is not the widget one
-			long /*int*/ provider = OS.gtk_css_provider_new ();
-			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			OS.g_object_unref (provider);
-			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-			OS.gtk_style_context_invalidate(context);
+			if (column != null) {
+				long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+				// Create provider as we need it attached to the proper context which is not the widget one
+				long /*int*/ provider = OS.gtk_css_provider_new ();
+				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				OS.g_object_unref (provider);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+				OS.gtk_style_context_invalidate(context);
+			}
 		}
 	}
-	// redrawn not necessary, GTK handles the css update
+	// Redraw not necessary, GTK handles the CSS update.
 }
 
 /**
  * Sets the header foreground color to the color specified
  * by the argument, or to the default system color if the argument is null.
  * <p>
- * Note: This is custom paint operation and only Windows table header foreground can be changed.
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the table style.
  * </p>
  * @param color the new color (or null)
  *
@@ -3503,16 +3506,18 @@ public void setHeaderForeground (Color color) {
 		headerCSSForeground = css;
 		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
 		for (TableColumn column : columns) {
-			long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
-			// Create provider as we need it attached to the proper context which is not the widget one
-			long /*int*/ provider = OS.gtk_css_provider_new ();
-			OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			OS.g_object_unref (provider);
-			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-			OS.gtk_style_context_invalidate(context);
+			if (column != null) {
+				long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+				// Create provider as we need it attached to the proper context which is not the widget one
+				long /*int*/ provider = OS.gtk_css_provider_new ();
+				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				OS.g_object_unref (provider);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+				OS.gtk_style_context_invalidate(context);
+			}
 		}
 	}
-	// redrawn not necessary, GTK handles the css update
+	// Redraw not necessary, GTK handles the CSS update.
 }
 
 /**

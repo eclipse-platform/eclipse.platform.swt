@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -95,6 +95,8 @@ public class Tree extends Composite {
 	int pixbufHeight, pixbufWidth;
 	TreeItem topItem;
 	double cachedAdjustment, currentAdjustment;
+	Color headerBackground, headerForeground;
+	String headerCSSBackground, headerCSSForeground;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -1445,6 +1447,38 @@ public int getGridLineWidth () {
 int getGridLineWidthInPixels () {
 	checkWidget();
 	return 0;
+}
+
+/**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	return headerBackground != null ? headerBackground : display.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	return headerForeground != null ? headerForeground : display.getSystemColor(SWT.COLOR_LIST_FOREGROUND);
 }
 
 /**
@@ -3418,6 +3452,115 @@ void setForegroundColor (GdkColor color) {
 	} else {
 		setForegroundColor (handle, color, false);
 	}
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget();
+	if (color != null) {
+		if (color.isDisposed ())
+			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerBackground))
+			return;
+	} else if (headerBackground == null) return;
+	headerBackground = color;
+	if (OS.GTK3) {
+		GdkRGBA background;
+		if (headerBackground != null) {
+			background = display.toGdkRGBA(headerBackground.handle);
+		} else {
+			background = display.toGdkRGBA(display.COLOR_LIST_BACKGROUND);
+		}
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+		// background works for 3.18 and later, background-color only as of 3.20
+		String css = name + " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+		headerCSSBackground = css;
+		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
+		for (TreeColumn column : columns) {
+			if (column != null) {
+				long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+				// Create provider as we need it attached to the proper context which is not the widget one
+				long /*int*/ provider = OS.gtk_css_provider_new ();
+				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				OS.g_object_unref (provider);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+				OS.gtk_style_context_invalidate(context);
+			}
+		}
+	}
+	// Redraw not necessary, GTK handles the CSS update.
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a hint and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget();
+	if (color != null) {
+		if (color.isDisposed ())
+			error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerForeground))
+			return;
+	} else if (headerForeground == null) return;
+	headerForeground = color;
+	if (OS.GTK3) {
+		GdkRGBA foreground;
+		if (headerForeground != null) {
+			foreground = display.toGdkRGBA(headerForeground.handle);
+		} else {
+			foreground = display.toGdkRGBA(display.COLOR_LIST_FOREGROUND);
+		}
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+		String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
+		headerCSSForeground = css;
+		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
+		for (TreeColumn column : columns) {
+			if (column != null) {
+				long /*int*/ context = OS.gtk_widget_get_style_context(column.buttonHandle);
+				// Create provider as we need it attached to the proper context which is not the widget one
+				long /*int*/ provider = OS.gtk_css_provider_new ();
+				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				OS.g_object_unref (provider);
+				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+				OS.gtk_style_context_invalidate(context);
+			}
+		}
+	}
+	// Redraw not necessary, GTK handles the CSS update.
 }
 
 /**
