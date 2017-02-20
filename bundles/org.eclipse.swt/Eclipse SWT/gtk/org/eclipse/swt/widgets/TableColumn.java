@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -433,7 +433,13 @@ public void pack () {
 	int width = 0;
 	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		gtk_widget_get_preferred_size (buttonHandle, requisition);
+		if (parent.getHeaderVisible() && OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(buttonHandle)) {
+			OS.gtk_widget_show(buttonHandle);
+			gtk_widget_get_preferred_size (buttonHandle, requisition);
+			OS.gtk_widget_hide(buttonHandle);
+		} else {
+			gtk_widget_get_preferred_size (buttonHandle, requisition);
+		}
 		width = requisition.width;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {

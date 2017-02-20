@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1444,7 +1444,13 @@ int getHeaderHeightInPixels () {
 		for (int i=0; i<columnCount; i++) {
 			long /*int*/ buttonHandle = columns [i].buttonHandle;
 			if (buttonHandle != 0) {
-				gtk_widget_get_preferred_size (buttonHandle, requisition);
+				if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(buttonHandle))  {
+					OS.gtk_widget_show(buttonHandle);
+					gtk_widget_get_preferred_size (buttonHandle, requisition);
+					OS.gtk_widget_hide(buttonHandle);
+				} else {
+					gtk_widget_get_preferred_size (buttonHandle, requisition);
+				}
 				height = Math.max (height, requisition.height);
 			}
 		}
