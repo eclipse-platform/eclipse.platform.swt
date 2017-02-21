@@ -147,4 +147,13 @@ public void test_setHighlightEnabled () {
 	assertTrue(ctabFolder.getHighlightEnabled());
 }
 
+@Test
+public void test_setIgnoreMargin() {
+	assertFalse("By default, ignore margins should not be enabled", ctabFolder.getIgnoreMargins());
+	ctabFolder.setIgnoreMargins(true);
+	assertTrue(ctabFolder.getIgnoreMargins());
+	ctabFolder.setIgnoreMargins(false);
+	assertFalse(ctabFolder.getIgnoreMargins());
+}
+
 }

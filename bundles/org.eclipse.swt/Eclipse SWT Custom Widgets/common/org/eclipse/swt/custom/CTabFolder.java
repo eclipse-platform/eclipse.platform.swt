@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com - Bug 506081
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -120,6 +121,7 @@ public class CTabFolder extends Composite {
 	int tabHeight;
 	int minChars = 20;
 	boolean borderVisible = false;
+	boolean ignoreMargins = false;
 
 	/* item management */
 	CTabFolderRenderer renderer;
@@ -535,7 +537,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	boolean[] overflow = new boolean [controls.length];
 	//Left Control
 	int leftWidth = 0;
-	int x = borderLeft + SPACING;
+	int x = borderLeft + getSpacing();
 	int rightWidth = 0;
 	int allWidth = 0;
 	for (int i = 0; i < controls.length; i++) {
@@ -555,7 +557,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			allWidth += ctrlSize.x;
 		}
 	}
-	if (leftWidth > 0) leftWidth += SPACING * 2;
+	if (leftWidth > 0) leftWidth += getSpacing() * 2;
 
 	int itemWidth = 0;
 	for (int i = 0; i < items.length; i++) {
@@ -564,8 +566,8 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 
 	int maxWidth = size.x - borderLeft - leftWidth - borderRight;
 	int availableWidth = Math.max(0, maxWidth - itemWidth - rightWidth);
-	if (rightWidth > 0) availableWidth -= SPACING * 2;
-	x =  size.x  - borderRight - SPACING;
+	if (rightWidth > 0) availableWidth -= getSpacing() * 2;
+	x =  size.x  - borderRight - getSpacing();
 	if (itemWidth + allWidth <= maxWidth) {
 		//Everything fits
 		for (int i = 0; i < controls.length; i++) {
@@ -690,7 +692,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 		if (lastIndex == -1) lastIndex = selectedIndex;
 		if (lastIndex != -1) {
 			CTabItem lastItem = items[lastIndex];
-			int w = lastItem.x + lastItem.width + SPACING;
+			int w = lastItem.x + lastItem.width + getSpacing();
 			if (!simple && lastIndex == selectedIndex) w -= (renderer.curveIndent - 7);
 			rects[controls.length - 1].x = w;
 		}
@@ -979,7 +981,7 @@ int getLeftItemEdge (GC gc, int part){
 			width += controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 		}
 	}
-	if (width != 0) width += SPACING * 2;
+	if (width != 0) width += getSpacing() * 2;
 	x += width;
 	return Math.max(0, x);
 }
@@ -1156,7 +1158,7 @@ int getRightItemEdge (GC gc){
 			width += rightSize.x;
 		}
 	}
-	if (width != 0) width += SPACING * 2;
+	if (width != 0) width += getSpacing() * 2;
 	x -= width;
 	return Math.max(0, x);
 }
@@ -2088,7 +2090,7 @@ void onPaint(Event event) {
 	if (hoverTb) {
 		Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 		int x = getSize().x - (trim.width + trim.x);
-		hoverRect = new Rectangle(x - 16 - SPACING, 2, 16, getTabHeight() - 2);
+		hoverRect = new Rectangle(x - 16 - getSpacing(), 2, 16, getTabHeight() - 2);
 		gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 		x = hoverRect.x;
 		int y = hoverRect.y;
@@ -4127,4 +4129,31 @@ int getWrappedHeight (Point size) {
 		checkWidget();
 		return highlightEnabled;
 	}
+
+/**
+ * Allows to ignore margins and spacing
+ * by default the value of this flag is 'false' and CTabFolder doesn't ignoreMargins
+ *
+ * @param ignoreMargins defines if margins are ignored
+ * @since 3.106
+ */
+public void setIgnoreMargins(boolean ignoreMargins) {
+	checkWidget();
+	this.ignoreMargins = ignoreMargins;
+}
+
+/**
+ * Returns if margins are ignored
+ * by default the value of this flag is 'false' and CTabFolder doesn't ignoreMargins
+ *
+ * @since 3.106
+ */
+public boolean getIgnoreMargins() {
+	checkWidget();
+	return ignoreMargins;
+}
+
+int getSpacing() {
+	return ignoreMargins ? 0 : SPACING;
+}
 }
