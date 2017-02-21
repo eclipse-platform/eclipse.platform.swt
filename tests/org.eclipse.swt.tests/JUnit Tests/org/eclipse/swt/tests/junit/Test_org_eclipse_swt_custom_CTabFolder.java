@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,6 +136,15 @@ public void test_consistency_DragDetect () {
     createTabFolder(events);
     ctabFolder.setSelection(1);
     consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
+@Test
+public void test_setHighlightEnabled () {
+	assertTrue("By default, highlighting should be enabled", ctabFolder.getHighlightEnabled());
+	ctabFolder.setHighlightEnabled(false);
+	assertFalse(ctabFolder.getHighlightEnabled());
+	ctabFolder.setHighlightEnabled(true);
+	assertTrue(ctabFolder.getHighlightEnabled());
 }
 
 }
