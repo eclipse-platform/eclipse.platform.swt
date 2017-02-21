@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Simon Scholz <simon.scholz@vogella.com> - Bug 506081
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -75,8 +74,8 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			}
 		}
 	}
-	if (leftControl) width += folder.getSpacing()  * 2;
-	if (rightControl) width += folder.getSpacing() * 2;
+	if (leftControl) width += CTabFolder.SPACING * 2;
+	if (rightControl) width += CTabFolder.SPACING * 2;
 	tabW += width;
 
 	gc.dispose();
