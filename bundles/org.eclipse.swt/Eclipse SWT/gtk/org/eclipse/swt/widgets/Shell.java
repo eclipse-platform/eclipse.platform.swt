@@ -1669,8 +1669,9 @@ long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 public void open () {
 	checkWidget ();
 	bringToTop (false);
-	if (Shell.class.isInstance(getParent()) && !getParent().isVisible())
+	if (Shell.class.isInstance(getParent()) && !getParent().isVisible()) {
 		Shell.class.cast(getParent()).open();
+	}
 	setVisible (true);
 	if (isDisposed ()) return;
 	/*
@@ -2160,6 +2161,9 @@ public void setMinimized (boolean minimized) {
 	checkWidget();
 	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
+	if(OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(shellHandle)) {
+		OS.gtk_widget_show(shellHandle);
+	}
 	if (minimized) {
 		OS.gtk_window_iconify (shellHandle);
 	} else {
