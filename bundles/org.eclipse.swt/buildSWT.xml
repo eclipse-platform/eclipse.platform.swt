@@ -47,10 +47,9 @@
 	<property name="file_bin_parent_pom" value="bundles/binaries-parent/pom.xml"/>
 	
 	<target name="init_keyfile">
-		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/swt/swtbuild_dsa_private">
+		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/.ssh/id_rsa">
 			<os family="windows"/>
 		</condition>
-		<property name="keyfilePPC" value="/var/lib/hudson/.ssh/id_rsa"/>
 	</target>
 
 	<target name="check_libraries" depends="get_version">
@@ -189,7 +188,7 @@
 		<sshexec host="${m_linux_ppc64}"
 			port="2254"
 			username="swtbuild"
-			keyfile="${keyfilePPC}"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64_output"
@@ -197,7 +196,7 @@
 		<sshexec host="${m_linux_ppc64le}"
 			port="2256"
 			username="swtbuild"
-			keyfile="${keyfilePPC}"
+			keyfile="${keyfile}"
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64le_output"
