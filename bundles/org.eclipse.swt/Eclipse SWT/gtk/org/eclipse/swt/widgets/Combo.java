@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1597,8 +1597,21 @@ long /*int*/ paintWindow () {
 	long /*int*/ window = gtk_widget_get_window (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return window;
 	long /*int*/ children = OS.gdk_window_get_children (window);
-	if (children != 0) window = OS.g_list_data (children);
+	if (children != 0) {
+		/*
+		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
+		 * have to be traversed to get to the entry one.
+		 */
+		if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				do {
+					window = OS.g_list_data (children);
+				} while ((children = OS.g_list_next (children)) != 0);
+		} else {
+			window = OS.g_list_data (children);
+		}
+	}
 	OS.g_list_free (children);
+
 	return window;
 }
 
