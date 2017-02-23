@@ -748,6 +748,9 @@ void createHandle (int index) {
 				OS.gtk_widget_modify_bg (shellHandle, OS.GTK_STATE_NORMAL, color);
 			}
 		}
+		if ((style & SWT.NO_TRIM) != 0 ) {
+			OS.gtk_window_set_decorated(shellHandle, false);
+		}
 		if (isCustomResize ()) {
 			OS.gtk_container_set_border_width (shellHandle, BORDER);
 		}

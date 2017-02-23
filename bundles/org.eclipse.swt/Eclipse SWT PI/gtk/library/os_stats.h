@@ -1416,6 +1416,7 @@ typedef enum {
 	_1gtk_1window_1new_FUNC,
 	_1gtk_1window_1remove_1accel_1group_FUNC,
 	_1gtk_1window_1resize_FUNC,
+	_1gtk_1window_1set_1decorated_FUNC,
 	_1gtk_1window_1set_1default_FUNC,
 	_1gtk_1window_1set_1destroy_1with_1parent_FUNC,
 	_1gtk_1window_1set_1geometry_1hints_FUNC,

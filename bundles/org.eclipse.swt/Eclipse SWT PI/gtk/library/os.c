@@ -17323,6 +17323,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1resize)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1set_1decorated
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1decorated)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1decorated_FUNC);
+	gtk_window_set_decorated((GtkWindow *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1decorated_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1set_1default
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1default)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
