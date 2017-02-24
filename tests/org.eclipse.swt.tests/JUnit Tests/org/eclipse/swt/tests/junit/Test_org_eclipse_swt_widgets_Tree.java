@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -356,6 +358,28 @@ public void test_selectAll() {
 	assertEquals(0, tree.getSelectionCount());
 	tree.selectAll();
 	assertEquals(0, tree.getSelectionCount());
+}
+
+@Test
+public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
+	assertNotNull(tree.getHeaderBackground());
+	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	tree.setHeaderBackground(color);
+	assertEquals(color, tree.getHeaderBackground());
+	tree.setHeaderBackground(null);
+	assertFalse(tree.getHeaderBackground().equals(color));
+	color.dispose();
+}
+
+@Test
+public void test_setHeaderForegroundLorg_eclipse_swt_graphics_Color() {
+	assertNotNull(tree.getHeaderForeground());
+	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	tree.setHeaderForeground(color);
+	assertEquals(color, tree.getHeaderForeground());
+	tree.setHeaderForeground(null);
+	assertFalse(tree.getHeaderForeground().equals(color));
+	color.dispose();
 }
 
 @Test

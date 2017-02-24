@@ -14,6 +14,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -22,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -1337,6 +1339,28 @@ public void test_setColumnOrder$I() {
 @Override
 @Test
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
+}
+
+@Test
+public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
+	assertNotNull(table.getHeaderBackground());
+	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	table.setHeaderBackground(color);
+	assertEquals(color, table.getHeaderBackground());
+	table.setHeaderBackground(null);
+	assertFalse(table.getHeaderBackground().equals(color));
+	color.dispose();
+}
+
+@Test
+public void test_setHeaderForegroundLorg_eclipse_swt_graphics_Color() {
+	assertNotNull(table.getHeaderForeground());
+	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	table.setHeaderForeground(color);
+	assertEquals(color, table.getHeaderForeground());
+	table.setHeaderForeground(null);
+	assertFalse(table.getHeaderForeground().equals(color));
+	color.dispose();
 }
 
 @Test

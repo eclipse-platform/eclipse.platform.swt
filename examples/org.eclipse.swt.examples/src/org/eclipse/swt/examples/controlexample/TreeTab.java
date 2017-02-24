@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,7 +57,9 @@ class TreeTab extends ScrollableTab {
 	static final int CELL_FOREGROUND_COLOR = 6;
 	static final int CELL_BACKGROUND_COLOR = 7;
 	static final int CELL_FONT = 8;
-	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor;
+	static final int HEADER_FOREGROUND_COLOR = 9;
+	static final int HEADER_BACKGROUND_COLOR = 10;
+	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor, headerForegroundColor, headerBackgroundColor;
 	Font itemFont, cellFont;
 
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
@@ -107,6 +109,10 @@ class TreeTab extends ScrollableTab {
 		item.setText(ControlExample.getResourceString ("Cell_Background_Color"));
 		item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Cell_Font"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Header_Foreground_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Header_Background_Color"));
 
 		shell.addDisposeListener(event -> {
 			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
@@ -115,12 +121,16 @@ class TreeTab extends ScrollableTab {
 			if (cellBackgroundColor != null) cellBackgroundColor.dispose();
 			if (cellForegroundColor != null) cellForegroundColor.dispose();
 			if (cellFont != null) cellFont.dispose();
+			if (headerBackgroundColor != null) headerBackgroundColor.dispose();
+			if (headerForegroundColor != null) headerForegroundColor.dispose();
 			itemBackgroundColor = null;
 			itemForegroundColor = null;
 			itemFont = null;
 			cellBackgroundColor = null;
 			cellForegroundColor = null;
 			cellFont = null;
+			headerForegroundColor = null;
+			headerBackgroundColor = null;
 		});
 	}
 
@@ -201,6 +211,29 @@ class TreeTab extends ScrollableTab {
 			if (oldFont != null) oldFont.dispose ();
 		}
 		break;
+		case HEADER_FOREGROUND_COLOR: {
+			Color oldColor = headerForegroundColor;
+			if (oldColor == null) oldColor = tree1.getHeaderForeground();
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = headerForegroundColor;
+			headerForegroundColor = new Color (display, rgb);
+			setHeaderForeground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
+		break;
+		case HEADER_BACKGROUND_COLOR: {
+			Color oldColor = headerBackgroundColor;
+			if (oldColor == null) oldColor = tree1.getHeaderBackground();
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = headerBackgroundColor;
+			headerBackgroundColor = new Color (display, rgb);
+			setHeaderBackground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
 		default:
 			super.changeFontOrColor(index);
 		}
@@ -492,6 +525,36 @@ class TreeTab extends ScrollableTab {
 		}
 	}
 
+	void setHeaderBackground () {
+		if (!instance.startup) {
+			tree1.setHeaderBackground (headerBackgroundColor);
+			tree2.setHeaderBackground (headerBackgroundColor);
+		}
+		/* Set the header background color item's image to match the header background color. */
+		Color color = headerBackgroundColor;
+ 		if (color == null) color = tree1.getHeaderBackground();
+		TableItem item = colorAndFontTable.getItem(HEADER_BACKGROUND_COLOR);
+		Image oldImage1 = item.getImage();
+		if (oldImage1 != null) oldImage1.dispose();
+		item.setImage (colorImage(color));
+
+	}
+
+	void setHeaderForeground () {
+		if (!instance.startup) {
+			tree1.setHeaderForeground (headerForegroundColor);
+			tree2.setHeaderForeground (headerForegroundColor);
+		}
+		/* Set the header foreground color item's image to match the header foreground color. */
+		Color color = headerForegroundColor;
+		if (color == null) color = tree1.getHeaderForeground();
+		TableItem item =  colorAndFontTable.getItem(HEADER_FOREGROUND_COLOR);
+		Image oldImage1 = item.getImage();
+		if (oldImage1 != null) oldImage1.dispose();
+		item.setImage (colorImage(color));
+
+	}
+
 	/**
 	 * Sets the moveable columns state of the "Example" widgets.
 	 */
@@ -555,6 +618,15 @@ class TreeTab extends ScrollableTab {
 		cellFont = null;
 		setCellFont ();
 		if (oldFont != null) oldFont.dispose();
+		oldColor = headerBackgroundColor;
+		headerBackgroundColor = null;
+		setHeaderBackground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = headerForegroundColor;
+		headerForegroundColor = null;
+		setHeaderForeground ();
+		if (oldColor != null) oldColor.dispose();
+
 	}
 
 	/**
@@ -568,6 +640,8 @@ class TreeTab extends ScrollableTab {
 		setCellBackground ();
 		setCellForeground ();
 		setCellFont ();
+		setHeaderBackground ();
+		setHeaderForeground ();
 		if (!instance.startup) {
 			setColumnsMoveable ();
 			setColumnsResizable ();
