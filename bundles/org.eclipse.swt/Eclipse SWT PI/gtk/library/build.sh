@@ -508,6 +508,11 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	SWT_LFLAGS=-m32
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
+if [ ${MODEL} = 'ppc' -a ${SWT_OS} = 'linux' ]; then
+	SWT_PTR_CFLAGS="-m32"
+	SWT_LFLAGS=-m32
+	export SWT_LFLAGS SWT_PTR_CFLAGS
+fi
 
 
 if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then
