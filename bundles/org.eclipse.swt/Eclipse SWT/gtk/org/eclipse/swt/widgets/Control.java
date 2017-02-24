@@ -5047,8 +5047,7 @@ public void setOrientation (int orientation) {
 }
 
 /**
- * Changes the parent of the widget to be the one provided if
- * the underlying operating system supports this feature.
+ * Changes the parent of the widget to be the one provided.
  * Returns <code>true</code> if the parent is successfully changed.
  *
  * @param parent the new parent for the control.
