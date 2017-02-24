@@ -237,7 +237,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC/ibm-java2-ppc-50"
+			export JAVA_HOME="/home/swtbuild/ibm-java-ppc-80"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"
