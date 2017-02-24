@@ -4641,8 +4641,9 @@ void setForegroundPixel (int pixel) {
  * Sets the header background color to the color specified
  * by the argument, or to the default system color if the argument is null.
  * <p>
- * Note: This is custom paint operation and only Windows table header background can be changed.
- * If the native header has a 3D look an feel (e.g. Windows 7), this method will cause the header
+ * Note: This is custom paint operation and only on Windows and GTK3
+ * platforms table header background can be changed. If the native header
+ * has a 3D look an feel (e.g. Windows 7), this method will cause the header
  * to look FLAT irrespective of the state of the table style.
  * </p>
  * @param color the new color (or null)
