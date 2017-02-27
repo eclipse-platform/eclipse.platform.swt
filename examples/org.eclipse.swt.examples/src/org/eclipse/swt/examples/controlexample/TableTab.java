@@ -211,7 +211,7 @@ class TableTab extends ScrollableTab {
 		break;
 		case HEADER_FOREGROUND_COLOR: {
 			Color oldColor = headerForegroundColor;
-//			if (oldColor == null) oldColor = table1.getHeaderForeground();
+			if (oldColor == null) oldColor = table1.getHeaderForeground();
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
@@ -223,7 +223,7 @@ class TableTab extends ScrollableTab {
 		break;
 		case HEADER_BACKGROUND_COLOR: {
 			Color oldColor = headerBackgroundColor;
-//			if (oldColor == null) oldColor = table1.getHeaderBackground();
+			if (oldColor == null) oldColor = table1.getHeaderBackground();
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
@@ -647,11 +647,11 @@ class TableTab extends ScrollableTab {
 
 	void setHeaderBackground () {
 		if (!instance.startup) {
-//			table1.setHeaderBackground (headerBackgroundColor);
+			table1.setHeaderBackground (headerBackgroundColor);
 		}
 		/* Set the header background color item's image to match the header background color. */
 		Color color = headerBackgroundColor;
-//		if (color == null) color = table1.getHeaderBackground();
+		if (color == null) color = table1.getHeaderBackground();
 		TableItem item = colorAndFontTable.getItem(HEADER_BACKGROUND_COLOR);
 		Image oldImage = item.getImage();
 		if (oldImage != null) oldImage.dispose();
@@ -660,11 +660,11 @@ class TableTab extends ScrollableTab {
 
 	void setHeaderForeground () {
 		if (!instance.startup) {
-//			table1.setHeaderForeground (headerForegroundColor);
+			table1.setHeaderForeground (headerForegroundColor);
 		}
 		/* Set the header foreground color item's image to match the header foreground color. */
 		Color color = headerForegroundColor;
-//		if (color == null) color = table1.getHeaderForeground();
+		if (color == null) color = table1.getHeaderForeground();
 		TableItem item = colorAndFontTable.getItem(HEADER_FOREGROUND_COLOR);
 		Image oldImage = item.getImage();
 		if (oldImage != null) oldImage.dispose();
