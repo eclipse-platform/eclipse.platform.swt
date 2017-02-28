@@ -47,6 +47,7 @@ public class DPIUtil {
 	 *     but only uses integer multiples of 100%. The detected native zoom is
 	 *     generally rounded down (e.g. at 150%, will use 100%), unless close to
 	 *     the next integer multiple (currently at 175%, will use 200%).</li>
+	 * <li><b>integer200</b>: like <b>integer</b>, but the maximal zoom level is 200%.</li>
 	 * <li><b>quarter</b>: deviceZoom depends on the current display resolution,
 	 *     but only uses integer multiples of 25%. The detected native zoom is
 	 *     rounded to the closest permissible value.</li>
@@ -55,7 +56,7 @@ public class DPIUtil {
 	 * <li><i>&lt;value&gt;</i>: deviceZoom uses the given integer value in
 	 *     percent as zoom level.</li>
 	 * </ul>
-	 * The current default is "integer".
+	 * The current default is "integer200".
 	 */
 	private static final String SWT_AUTOSCALE = "swt.autoScale";
 
@@ -436,8 +437,12 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 			}
 		}
 	}
- 	if (deviceZoom == 0) { // || "integer".equalsIgnoreCase (value)
+ 	if (deviceZoom == 0) { // || "integer".equalsIgnoreCase (value) || "integer200".equalsIgnoreCase (value)
 		deviceZoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
+		if (!"integer".equalsIgnoreCase(value)) {
+			// integer200, or default
+			deviceZoom = Math.min (deviceZoom, 200);
+		}
 	}
 
 	DPIUtil.deviceZoom = deviceZoom;
