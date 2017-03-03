@@ -668,7 +668,7 @@ public void removeDropListener(DropTargetListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
  * </ul>
  */
-public void setTransfer(Transfer[] transferAgents){
+public void setTransfer(Transfer... transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 
 	if (this.transferAgents.length != 0) {

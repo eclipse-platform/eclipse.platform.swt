@@ -905,7 +905,7 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
  *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
  * </ul>
  */
-public void setTransfer(Transfer[] transferAgents){
+public void setTransfer(Transfer... transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	this.transferAgents = transferAgents;
 
