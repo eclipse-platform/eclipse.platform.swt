@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -59,7 +59,11 @@ public interface AccessibleTableListener extends SWTEventListener {
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - the caption for the table, or null if the table does not have a caption</li>
 	 * </ul>
+	 *
+	 * @deprecated IAccessibleTable2::caption is deprecated, instead use the
+	 * IA2_RELATION_LABELED_BY relation to create a relation between the table and its caption.
 	 */
+	@Deprecated
 	public void getCaption(AccessibleTableEvent e);
 
 	/**
@@ -257,7 +261,11 @@ public interface AccessibleTableListener extends SWTEventListener {
 	 * <li>[out] accessible - the summary for the table,
 	 * 		or null if the table does not have a summary</li>
 	 * </ul>
+	 *
+	 * @deprecated IAccessibleTable2::summary is deprecated, instead use the
+	 * IA2_RELATION_DESCRIBED_BY relation to create a relation between the table and its summary.
 	 */
+	@Deprecated
 	public void getSummary(AccessibleTableEvent e);
 
 	/**

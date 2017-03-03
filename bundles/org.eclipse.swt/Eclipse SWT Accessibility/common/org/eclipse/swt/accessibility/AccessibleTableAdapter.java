@@ -58,7 +58,11 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessible - the caption for the table, or null if the table does not have a caption</li>
 	 * </ul>
+	 *
+	 * @deprecated IAccessibleTable2::caption is deprecated, instead use the
+	 * IA2_RELATION_LABELED_BY relation to create a relation between the table and its caption.
 	 */
+	@Deprecated
 	@Override
 	public void getCaption(AccessibleTableEvent e) {}
 
@@ -276,7 +280,11 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * <li>[out] accessible - the summary for the table,
 	 * 		or null if the table does not have a summary</li>
 	 * </ul>
+	 *
+	 * @deprecated IAccessibleTable2::summary is deprecated, instead use the
+	 * IA2_RELATION_DESCRIBED_BY relation to create a relation between the table and its summary.
 	 */
+	@Deprecated
 	@Override
 	public void getSummary(AccessibleTableEvent e) {}
 
