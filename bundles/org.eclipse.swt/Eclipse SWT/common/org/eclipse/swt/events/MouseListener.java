@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,14 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com>  - Bug 513037
  *******************************************************************************/
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -54,4 +57,60 @@ public void mouseDown(MouseEvent e);
  * @param e an event containing information about the mouse button release
  */
 public void mouseUp(MouseEvent e);
+
+
+/**
+ * Static helper method to create a mouse listener for the
+ * {@link #mouseDoubleClick(MouseEvent e)}) method with a lambda expression.
+ *
+ * @param c the consumer of the event
+ * @return MouseListener
+ * @since 3.106
+ */
+
+public static MouseListener mouseDoubleClickAdapter(Consumer<MouseEvent> c) {
+	return new MouseAdapter() {
+		@Override
+		public void mouseDoubleClick(MouseEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a mouse listener for the
+ * {@link #mouseDown(MouseEvent e)}) method with a lambda expression.
+ *
+ * @param c the consumer of the event
+ * @return MouseListener
+ * @since 3.106
+ */
+
+public static MouseListener mouseDownAdapter(Consumer<MouseEvent> c) {
+	return new MouseAdapter() {
+		@Override
+		public void mouseDown(MouseEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a mouse listener for the
+ * {@link #mouseUp(MouseEvent e)}) method with a lambda expression.
+ *
+ * @param c the consumer of the event
+ * @return MouseListener
+ * @since 3.106
+ */
+
+public static MouseListener mouseUpAdapter(Consumer<MouseEvent> c) {
+	return new MouseAdapter() {
+		@Override
+		public void mouseUp(MouseEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
 }
