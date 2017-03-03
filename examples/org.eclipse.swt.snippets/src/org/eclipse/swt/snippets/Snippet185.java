@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,7 +52,7 @@ public static void main (String [] args) {
 		}
 	});
 	DropTarget dropTarget = new DropTarget(table, DND.DROP_COPY | DND.DROP_DEFAULT);
-	dropTarget.setTransfer(new Transfer[] {TextTransfer.getInstance(), FileTransfer.getInstance()});
+	dropTarget.setTransfer(TextTransfer.getInstance(), FileTransfer.getInstance());
 	dropTarget.addDropListener(new DropTargetAdapter() {
 		FileTransfer fileTransfer = FileTransfer.getInstance();
 		TextTransfer textTransfer = TextTransfer.getInstance();

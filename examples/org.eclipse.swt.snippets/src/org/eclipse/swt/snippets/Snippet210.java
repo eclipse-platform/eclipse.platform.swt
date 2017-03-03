@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -71,7 +71,7 @@ public static void main (String [] args) {
 	final StyledText text2 = new StyledText(shell, style);
 	text2.setText(string2);
 	DropTarget target = new DropTarget(text2, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
-	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+	target.setTransfer(TextTransfer.getInstance());
 	target.addDropListener(new DropTargetAdapter() {
 		@Override
 		public void dragEnter(DropTargetEvent e) {
