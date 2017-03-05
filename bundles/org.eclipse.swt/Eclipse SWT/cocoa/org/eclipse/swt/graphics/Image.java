@@ -1235,9 +1235,15 @@ public ImageData getImageDataAtCurrentZoom() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep imageRep = getRepresentation();
-		ImageData data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
-		if (imageFileNameProvider != null || imageDataProvider != null) {
-			return data;
+		ImageData data;
+		if ((imageFileNameProvider != null || imageDataProvider != null) && imageRep.equals(getActualRepresentation())) {
+			//FIXME: workaround for bug 513129
+			data = _getImageData(imageRep, this.alphaInfo_100);
+		} else {
+			data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
+			if (imageFileNameProvider != null || imageDataProvider != null) {
+				return data;
+			}
 		}
 		return DPIUtil.autoScaleImageData(device, data, DPIUtil.getDeviceZoom(), 100);
 	} finally {
