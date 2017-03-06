@@ -86,7 +86,7 @@ public void setUp() {
 		System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
 	}
 
-	secondsToWaitTillFail = 3;
+	secondsToWaitTillFail = 12;
 	waitMS = browser_debug ? 1000 : 1;
 	loopMultipier = browser_debug ? 1 : 1000;
 
