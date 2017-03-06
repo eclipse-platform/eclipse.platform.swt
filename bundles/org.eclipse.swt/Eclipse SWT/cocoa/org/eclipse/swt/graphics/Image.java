@@ -800,10 +800,10 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 private AlphaInfo _getAlphaInfoAtCurrentZoom (NSBitmapImageRep rep) {
 	int deviceZoom = DPIUtil.getDeviceZoom();
 	if (deviceZoom != 100 && (imageFileNameProvider != null || imageDataProvider != null)) {
-		if (alphaInfo_100.alphaData != null && alphaInfo_200 != null && alphaInfo_200.alphaData == null) {
-			initAlpha_200(rep);
+		if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+			if (alphaInfo_200.alphaData == null) initAlpha_200(rep);
+			return alphaInfo_200;
 		}
-		return alphaInfo_200;
 	}
 	return alphaInfo_100;
 }
@@ -1235,15 +1235,9 @@ public ImageData getImageDataAtCurrentZoom() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep imageRep = getRepresentation();
-		ImageData data;
-		if ((imageFileNameProvider != null || imageDataProvider != null) && imageRep.equals(getActualRepresentation())) {
-			//FIXME: workaround for bug 513129
-			data = _getImageData(imageRep, this.alphaInfo_100);
-		} else {
-			data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
-			if (imageFileNameProvider != null || imageDataProvider != null) {
-				return data;
-			}
+		ImageData data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
+		if (imageFileNameProvider != null || imageDataProvider != null) {
+			return data;
 		}
 		return DPIUtil.autoScaleImageData(device, data, DPIUtil.getDeviceZoom(), 100);
 	} finally {
