@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 513180
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
@@ -205,7 +206,11 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	int count = 0;
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
-		GridData data = (GridData) control.getLayoutData ();
+		Object o = control.getLayoutData ();
+		if (o != null && !(o instanceof GridData)) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " " + control.getClass().getName() + " must use GridData as layout data. Currently using: " + o);
+		}
+		GridData data = (GridData) o;
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
 		}
