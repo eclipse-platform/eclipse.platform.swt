@@ -45,6 +45,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.test.Screenshots;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1371,7 +1372,8 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 			}
 		}
 	}
-	fail();
+	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues");
+	fail(atomicArray.toString());
 }
 
 
