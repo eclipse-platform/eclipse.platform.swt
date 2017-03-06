@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -105,33 +105,30 @@ public static void main(String[] args) {
 	}));
 	// When the user double clicks in the TableCursor, pop up a text editor so that
 	// they can change the text of the cell.
-	cursor.addMouseListener(new MouseAdapter() {
-		@Override
-		public void mouseDown(MouseEvent e) {
-			final Text text = new Text(cursor, SWT.NONE);
-			TableItem row = cursor.getRow();
-			int column = cursor.getColumn();
-			text.setText(row.getText(column));
-			text.addKeyListener(keyPressedAdapter(event -> {
-					// close the text editor and copy the data over
-					// when the user hits "ENTER"
-					if (event.character == SWT.CR) {
-						TableItem localRow = cursor.getRow();
-						int localColumn = cursor.getColumn();
-						localRow.setText(localColumn, text.getText());
-						text.dispose();
-					}
-					// close the text editor when the user hits "ESC"
-					if (event.character == SWT.ESC) {
-						text.dispose();
-					}
-			}));
-			// close the text editor when the user clicks away
-			text.addFocusListener(focusLostAdapter(event-> text.dispose()));
-			editor.setEditor(text);
-			text.setFocus();
-		}
-	});
+	cursor.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+		final Text text = new Text(cursor, SWT.NONE);
+		TableItem row = cursor.getRow();
+		int column = cursor.getColumn();
+		text.setText(row.getText(column));
+		text.addKeyListener(keyPressedAdapter(event -> {
+			// close the text editor and copy the data over
+			// when the user hits "ENTER"
+			if (event.character == SWT.CR) {
+				TableItem localRow = cursor.getRow();
+				int localColumn = cursor.getColumn();
+				localRow.setText(localColumn, text.getText());
+				text.dispose();
+			}
+			// close the text editor when the user hits "ESC"
+			if (event.character == SWT.ESC) {
+				text.dispose();
+			}
+		}));
+		// close the text editor when the user clicks away
+		text.addFocusListener(focusLostAdapter(event -> text.dispose()));
+		editor.setEditor(text);
+		text.setFocus();
+	}));
 
 	// Show the TableCursor when the user releases the "SHIFT" or "CTRL" key.
 	// This signals the end of the multiple selection task.

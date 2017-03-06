@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,7 @@ package org.eclipse.swt.examples.layoutexample;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -112,164 +111,162 @@ class GridLayoutTab extends Tab {
 		minWidthEditor = new TableEditor (table);
 		minHeightEditor = new TableEditor (table);
 		excludeEditor = new TableEditor (table);
-		table.addMouseListener (new MouseAdapter () {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				resetEditors();
-				index = table.getSelectionIndex ();
-				Point pt = new Point (e.x, e.y);
-                newItem = table.getItem (pt);
-                if (newItem == null) return;
-                TableItem oldItem = comboEditor.getItem ();
-                if (newItem == oldItem || newItem != lastSelected) {
-					lastSelected = newItem;
-					return;
-				}
-				table.showSelection ();
-
-				nameText = new Text (table, SWT.SINGLE);
-				nameText.setText (data.get (index) [NAME_COL]);
-				createTextEditor (nameText, nameEditor, NAME_COL);
-
-				combo = new CCombo (table, SWT.READ_ONLY);
-				createComboEditor (combo, comboEditor);
-
-				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (data.get (index) [WIDTH_COL]);
-				createTextEditor (widthText, widthEditor, WIDTH_COL);
-
-				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (data.get (index) [HEIGHT_COL]);
-				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-
-				String [] alignValues = new String [] {"BEGINNING","CENTER","END","FILL"};
-				hAlign = new CCombo (table, SWT.NONE);
-				hAlign.setItems (alignValues);
-				hAlign.setText (newItem.getText (HALIGN_COL));
-				hAlignEditor.horizontalAlignment = SWT.LEFT;
-				hAlignEditor.grabHorizontal = true;
-				hAlignEditor.minimumWidth = 50;
-				hAlignEditor.setEditor (hAlign, newItem, HALIGN_COL);
-				hAlign.addTraverseListener (traverseListener);
-
-				vAlign = new CCombo (table, SWT.NONE);
-				vAlign.setItems (alignValues);
-				vAlign.setText (newItem.getText (VALIGN_COL));
-				vAlignEditor.horizontalAlignment = SWT.LEFT;
-				vAlignEditor.grabHorizontal = true;
-				vAlignEditor.minimumWidth = 50;
-				vAlignEditor.setEditor (vAlign, newItem, VALIGN_COL);
-				vAlign.addTraverseListener (traverseListener);
-
-				String [] boolValues = new String [] {"false", "true"};
-				hGrab = new CCombo (table, SWT.NONE);
-				hGrab.setItems (boolValues);
-				hGrab.setText (newItem.getText (HGRAB_COL));
-				hGrabEditor.horizontalAlignment = SWT.LEFT;
-				hGrabEditor.grabHorizontal = true;
-				hGrabEditor.minimumWidth = 50;
-				hGrabEditor.setEditor (hGrab, newItem, HGRAB_COL);
-				hGrab.addTraverseListener (traverseListener);
-
-				vGrab = new CCombo (table, SWT.NONE);
-				vGrab.setItems (boolValues);
-				vGrab.setText (newItem.getText (VGRAB_COL));
-				vGrabEditor.horizontalAlignment = SWT.LEFT;
-				vGrabEditor.grabHorizontal = true;
-				vGrabEditor.minimumWidth = 50;
-				vGrabEditor.setEditor (vGrab, newItem, VGRAB_COL);
-				vGrab.addTraverseListener (traverseListener);
-
-				hSpan = new Text (table, SWT.SINGLE);
-				hSpan.setText (data.get (index) [HSPAN_COL]);
-				createTextEditor (hSpan, hSpanEditor, HSPAN_COL);
-
-				vSpan = new Text (table, SWT.SINGLE);
-				vSpan.setText (data.get (index) [VSPAN_COL]);
-				createTextEditor (vSpan, vSpanEditor, VSPAN_COL);
-
-				hIndent = new Text (table, SWT.SINGLE);
-				hIndent.setText (data.get (index) [HINDENT_COL]);
-				createTextEditor (hIndent, hIndentEditor, HINDENT_COL);
-
-				vIndent = new Text (table, SWT.SINGLE);
-				vIndent.setText (data.get (index) [VINDENT_COL]);
-				createTextEditor (vIndent, vIndentEditor, VINDENT_COL);
-
-				minWidthText = new Text (table, SWT.SINGLE);
-				minWidthText.setText (data.get (index) [MINWIDTH_COL]);
-				createTextEditor (minWidthText, minWidthEditor, MINWIDTH_COL);
-
-				minHeightText = new Text (table, SWT.SINGLE);
-				minHeightText.setText (data.get (index) [MINHEIGHT_COL]);
-				createTextEditor (minHeightText, minHeightEditor, MINHEIGHT_COL);
-
-				exclude = new CCombo (table, SWT.NONE);
-				exclude.setItems (boolValues);
-				exclude.setText (newItem.getText (EXCLUDE_COL));
-				excludeEditor.horizontalAlignment = SWT.LEFT;
-				excludeEditor.grabHorizontal = true;
-				excludeEditor.minimumWidth = 50;
-				excludeEditor.setEditor (exclude, newItem, EXCLUDE_COL);
-				exclude.addTraverseListener (traverseListener);
-
-                for (int i=0; i<table.getColumnCount (); i++) {
-                	Rectangle rect = newItem.getBounds (i);
-                    if (rect.contains (pt)) {
-                    	switch (i) {
-                    		case NAME_COL:
-                    			nameText.setFocus ();
-                    			break;
-							case COMBO_COL :
-								combo.setFocus ();
-								break;
-							case WIDTH_COL :
-								widthText.setFocus ();
-								break;
-							case HEIGHT_COL :
-								heightText.setFocus ();
-								break;
-							case HALIGN_COL :
-								hAlign.setFocus ();
-								break;
-							case VALIGN_COL :
-								vAlign.setFocus ();
-								break;
-							case HGRAB_COL :
-								hGrab.setFocus ();
-								break;
-							case VGRAB_COL :
-								vGrab.setFocus ();
-								break;
-							case HSPAN_COL :
-								hSpan.setFocus ();
-								break;
-							case VSPAN_COL :
-								vSpan.setFocus ();
-								break;
-							case HINDENT_COL :
-								hIndent.setFocus ();
-								break;
-							case VINDENT_COL :
-								vIndent.setFocus ();
-								break;
-							case MINWIDTH_COL :
-								minWidthText.setFocus ();
-								break;
-							case MINHEIGHT_COL :
-								minHeightText.setFocus ();
-								break;
-							case EXCLUDE_COL :
-								exclude.setFocus ();
-								break;
-							default :
-								resetEditors ();
-								break;
-						}
-                    }
-                }
+		table.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			resetEditors();
+			index = table.getSelectionIndex();
+			Point pt = new Point(e.x, e.y);
+			newItem = table.getItem(pt);
+			if (newItem == null)
+				return;
+			TableItem oldItem = comboEditor.getItem();
+			if (newItem == oldItem || newItem != lastSelected) {
+				lastSelected = newItem;
+				return;
 			}
-		});
+			table.showSelection();
+
+			nameText = new Text(table, SWT.SINGLE);
+			nameText.setText(data.get(index)[NAME_COL]);
+			createTextEditor(nameText, nameEditor, NAME_COL);
+
+			combo = new CCombo(table, SWT.READ_ONLY);
+			createComboEditor(combo, comboEditor);
+
+			widthText = new Text(table, SWT.SINGLE);
+			widthText.setText(data.get(index)[WIDTH_COL]);
+			createTextEditor(widthText, widthEditor, WIDTH_COL);
+
+			heightText = new Text(table, SWT.SINGLE);
+			heightText.setText(data.get(index)[HEIGHT_COL]);
+			createTextEditor(heightText, heightEditor, HEIGHT_COL);
+
+			String[] alignValues = new String[] { "BEGINNING", "CENTER", "END", "FILL" };
+			hAlign = new CCombo(table, SWT.NONE);
+			hAlign.setItems(alignValues);
+			hAlign.setText(newItem.getText(HALIGN_COL));
+			hAlignEditor.horizontalAlignment = SWT.LEFT;
+			hAlignEditor.grabHorizontal = true;
+			hAlignEditor.minimumWidth = 50;
+			hAlignEditor.setEditor(hAlign, newItem, HALIGN_COL);
+			hAlign.addTraverseListener(traverseListener);
+
+			vAlign = new CCombo(table, SWT.NONE);
+			vAlign.setItems(alignValues);
+			vAlign.setText(newItem.getText(VALIGN_COL));
+			vAlignEditor.horizontalAlignment = SWT.LEFT;
+			vAlignEditor.grabHorizontal = true;
+			vAlignEditor.minimumWidth = 50;
+			vAlignEditor.setEditor(vAlign, newItem, VALIGN_COL);
+			vAlign.addTraverseListener(traverseListener);
+
+			String[] boolValues = new String[] { "false", "true" };
+			hGrab = new CCombo(table, SWT.NONE);
+			hGrab.setItems(boolValues);
+			hGrab.setText(newItem.getText(HGRAB_COL));
+			hGrabEditor.horizontalAlignment = SWT.LEFT;
+			hGrabEditor.grabHorizontal = true;
+			hGrabEditor.minimumWidth = 50;
+			hGrabEditor.setEditor(hGrab, newItem, HGRAB_COL);
+			hGrab.addTraverseListener(traverseListener);
+
+			vGrab = new CCombo(table, SWT.NONE);
+			vGrab.setItems(boolValues);
+			vGrab.setText(newItem.getText(VGRAB_COL));
+			vGrabEditor.horizontalAlignment = SWT.LEFT;
+			vGrabEditor.grabHorizontal = true;
+			vGrabEditor.minimumWidth = 50;
+			vGrabEditor.setEditor(vGrab, newItem, VGRAB_COL);
+			vGrab.addTraverseListener(traverseListener);
+
+			hSpan = new Text(table, SWT.SINGLE);
+			hSpan.setText(data.get(index)[HSPAN_COL]);
+			createTextEditor(hSpan, hSpanEditor, HSPAN_COL);
+
+			vSpan = new Text(table, SWT.SINGLE);
+			vSpan.setText(data.get(index)[VSPAN_COL]);
+			createTextEditor(vSpan, vSpanEditor, VSPAN_COL);
+
+			hIndent = new Text(table, SWT.SINGLE);
+			hIndent.setText(data.get(index)[HINDENT_COL]);
+			createTextEditor(hIndent, hIndentEditor, HINDENT_COL);
+
+			vIndent = new Text(table, SWT.SINGLE);
+			vIndent.setText(data.get(index)[VINDENT_COL]);
+			createTextEditor(vIndent, vIndentEditor, VINDENT_COL);
+
+			minWidthText = new Text(table, SWT.SINGLE);
+			minWidthText.setText(data.get(index)[MINWIDTH_COL]);
+			createTextEditor(minWidthText, minWidthEditor, MINWIDTH_COL);
+
+			minHeightText = new Text(table, SWT.SINGLE);
+			minHeightText.setText(data.get(index)[MINHEIGHT_COL]);
+			createTextEditor(minHeightText, minHeightEditor, MINHEIGHT_COL);
+
+			exclude = new CCombo(table, SWT.NONE);
+			exclude.setItems(boolValues);
+			exclude.setText(newItem.getText(EXCLUDE_COL));
+			excludeEditor.horizontalAlignment = SWT.LEFT;
+			excludeEditor.grabHorizontal = true;
+			excludeEditor.minimumWidth = 50;
+			excludeEditor.setEditor(exclude, newItem, EXCLUDE_COL);
+			exclude.addTraverseListener(traverseListener);
+
+			for (int i = 0; i < table.getColumnCount(); i++) {
+				Rectangle rect = newItem.getBounds(i);
+				if (rect.contains(pt)) {
+					switch (i) {
+					case NAME_COL:
+						nameText.setFocus();
+						break;
+					case COMBO_COL:
+						combo.setFocus();
+						break;
+					case WIDTH_COL:
+						widthText.setFocus();
+						break;
+					case HEIGHT_COL:
+						heightText.setFocus();
+						break;
+					case HALIGN_COL:
+						hAlign.setFocus();
+						break;
+					case VALIGN_COL:
+						vAlign.setFocus();
+						break;
+					case HGRAB_COL:
+						hGrab.setFocus();
+						break;
+					case VGRAB_COL:
+						vGrab.setFocus();
+						break;
+					case HSPAN_COL:
+						hSpan.setFocus();
+						break;
+					case VSPAN_COL:
+						vSpan.setFocus();
+						break;
+					case HINDENT_COL:
+						hIndent.setFocus();
+						break;
+					case VINDENT_COL:
+						vIndent.setFocus();
+						break;
+					case MINWIDTH_COL:
+						minWidthText.setFocus();
+						break;
+					case MINHEIGHT_COL:
+						minHeightText.setFocus();
+						break;
+					case EXCLUDE_COL:
+						exclude.setFocus();
+						break;
+					default:
+						resetEditors();
+						break;
+					}
+				}
+			}
+		}));
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,8 @@ package org.eclipse.swt.examples.layoutexample;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -134,136 +132,124 @@ class FormLayoutTab extends Tab {
 		rightEditor = new TableEditor (table);
 		topEditor = new TableEditor (table);
 		bottomEditor = new TableEditor (table);
-		table.addMouseListener (new MouseAdapter () {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				resetEditors();
-				index = table.getSelectionIndex ();
-				Point pt = new Point (e.x, e.y);
-                newItem = table.getItem (pt);
-                if (newItem == null) return;
-                TableItem oldItem = comboEditor.getItem ();
-                if (newItem == oldItem || newItem != lastSelected) {
-					lastSelected = newItem;
-					return;
-				}
-				table.showSelection ();
-
-				combo = new CCombo (table, SWT.READ_ONLY);
-				createComboEditor (combo, comboEditor);
-
-				nameText = new Text (table, SWT.SINGLE);
-				nameText.setText (data.get(index)[NAME_COL]);
-				createTextEditor(nameText, nameEditor, NAME_COL);
-
-				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (data.get (index) [WIDTH_COL]);
-				createTextEditor (widthText, widthEditor, WIDTH_COL);
-
-				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (data.get (index) [HEIGHT_COL]);
-				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-
-				leftAttach = new Button (table, SWT.PUSH);
-				leftAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
-				leftEditor.horizontalAlignment = SWT.LEFT;
-				leftEditor.grabHorizontal = true;
-				leftEditor.minimumWidth = leftAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
-				leftEditor.setEditor (leftAttach, newItem, LEFT_COL);
-				leftAttach.addSelectionListener (new SelectionAdapter () {
-					@Override
-					public void widgetSelected (SelectionEvent e) {
-						Shell shell = tabFolderPage.getShell ();
-						AttachDialog dialog = new AttachDialog (shell);
-						dialog.setText (LayoutExample.getResourceString ("Left_Attachment"));
-						dialog.setColumn (LEFT_COL);
-						String attach = dialog.open ();
-						newItem.setText (LEFT_COL, attach);
-						resetEditors ();
-					}
-				});
-
-				rightAttach = new Button (table, SWT.PUSH);
-				rightAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
-				rightEditor.horizontalAlignment = SWT.LEFT;
-				rightEditor.grabHorizontal = true;
-				rightEditor.minimumWidth = rightAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
-				rightEditor.setEditor (rightAttach, newItem, RIGHT_COL);
-				rightAttach.addSelectionListener (new SelectionAdapter () {
-					@Override
-					public void widgetSelected (SelectionEvent e) {
-						Shell shell = tabFolderPage.getShell ();
-						AttachDialog dialog = new AttachDialog (shell);
-						dialog.setText (LayoutExample.getResourceString ("Right_Attachment"));
-						dialog.setColumn (RIGHT_COL);
-						String attach = dialog.open ();
-						newItem.setText (RIGHT_COL, attach);
-						if (newItem.getText (LEFT_COL).endsWith (")")) newItem.setText (LEFT_COL, "");
-						resetEditors ();
-					}
-				});
-
-				topAttach = new Button (table, SWT.PUSH);
-				topAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
-				topEditor.horizontalAlignment = SWT.LEFT;
-				topEditor.grabHorizontal = true;
-				topEditor.minimumWidth = topAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
-				topEditor.setEditor (topAttach, newItem, TOP_COL);
-				topAttach.addSelectionListener (new SelectionAdapter () {
-					@Override
-					public void widgetSelected (SelectionEvent e) {
-						Shell shell = tabFolderPage.getShell ();
-						AttachDialog dialog = new AttachDialog (shell);
-						dialog.setText (LayoutExample.getResourceString ("Top_Attachment"));
-						dialog.setColumn (TOP_COL);
-						String attach = dialog.open ();
-						newItem.setText (TOP_COL, attach);
-						resetEditors ();
-					}
-				});
-				bottomAttach = new Button (table, SWT.PUSH);
-				bottomAttach.setText (LayoutExample.getResourceString ("Attach_Edit"));
-				bottomEditor.horizontalAlignment = SWT.LEFT;
-				bottomEditor.grabHorizontal = true;
-				bottomEditor.minimumWidth = bottomAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
-				bottomEditor.setEditor (bottomAttach, newItem, BOTTOM_COL);
-				bottomAttach.addSelectionListener (new SelectionAdapter () {
-					@Override
-					public void widgetSelected (SelectionEvent e) {
-						Shell shell = tabFolderPage.getShell ();
-						AttachDialog dialog = new AttachDialog (shell);
-						dialog.setText (LayoutExample.getResourceString ("Bottom_Attachment"));
-						dialog.setColumn (BOTTOM_COL);
-						String attach = dialog.open ();
-						newItem.setText (BOTTOM_COL, attach);
-						if (newItem.getText (TOP_COL).endsWith (")")) newItem.setText (TOP_COL, "");
-						resetEditors ();
-					}
-				});
-
-                for (int i=0; i<table.getColumnCount (); i++) {
-                	Rectangle rect = newItem.getBounds (i);
-                    if (rect.contains (pt)) {
-                    	switch (i) {
-                    		case 0:
-                    			resetEditors ();
-                    			break;
-							case COMBO_COL :
-								combo.setFocus ();
-								break;
-							case WIDTH_COL :
-								widthText.setFocus ();
-								break;
-							case HEIGHT_COL :
-								heightText.setFocus ();
-								break;
-							default :
-								break;
-						}
-                    }
-                }
+		table.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			resetEditors();
+			index = table.getSelectionIndex();
+			Point pt = new Point(e.x, e.y);
+			newItem = table.getItem(pt);
+			if (newItem == null)
+				return;
+			TableItem oldItem = comboEditor.getItem();
+			if (newItem == oldItem || newItem != lastSelected) {
+				lastSelected = newItem;
+				return;
 			}
-		});
+			table.showSelection();
+
+			combo = new CCombo(table, SWT.READ_ONLY);
+			createComboEditor(combo, comboEditor);
+
+			nameText = new Text(table, SWT.SINGLE);
+			nameText.setText(data.get(index)[NAME_COL]);
+			createTextEditor(nameText, nameEditor, NAME_COL);
+
+			widthText = new Text(table, SWT.SINGLE);
+			widthText.setText(data.get(index)[WIDTH_COL]);
+			createTextEditor(widthText, widthEditor, WIDTH_COL);
+
+			heightText = new Text(table, SWT.SINGLE);
+			heightText.setText(data.get(index)[HEIGHT_COL]);
+			createTextEditor(heightText, heightEditor, HEIGHT_COL);
+
+			leftAttach = new Button(table, SWT.PUSH);
+			leftAttach.setText(LayoutExample.getResourceString("Attach_Edit"));
+			leftEditor.horizontalAlignment = SWT.LEFT;
+			leftEditor.grabHorizontal = true;
+			leftEditor.minimumWidth = leftAttach.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			leftEditor.setEditor(leftAttach, newItem, LEFT_COL);
+			leftAttach.addSelectionListener(SelectionListener.widgetSelectedAdapter(e1 -> {
+				Shell shell = tabFolderPage.getShell();
+				AttachDialog dialog = new AttachDialog(shell);
+				dialog.setText(LayoutExample.getResourceString("Left_Attachment"));
+				dialog.setColumn(LEFT_COL);
+				String attach = dialog.open();
+				newItem.setText(LEFT_COL, attach);
+				resetEditors();
+			}));
+
+			rightAttach = new Button(table, SWT.PUSH);
+			rightAttach.setText(LayoutExample.getResourceString("Attach_Edit"));
+			rightEditor.horizontalAlignment = SWT.LEFT;
+			rightEditor.grabHorizontal = true;
+			rightEditor.minimumWidth = rightAttach.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			rightEditor.setEditor(rightAttach, newItem, RIGHT_COL);
+			rightAttach.addSelectionListener(SelectionListener.widgetSelectedAdapter(e1 -> {
+				Shell shell = tabFolderPage.getShell();
+				AttachDialog dialog = new AttachDialog(shell);
+				dialog.setText(LayoutExample.getResourceString("Right_Attachment"));
+				dialog.setColumn(RIGHT_COL);
+				String attach = dialog.open();
+				newItem.setText(RIGHT_COL, attach);
+				if (newItem.getText(LEFT_COL).endsWith(")"))
+					newItem.setText(LEFT_COL, "");
+				resetEditors();
+			}));
+
+			topAttach = new Button(table, SWT.PUSH);
+			topAttach.setText(LayoutExample.getResourceString("Attach_Edit"));
+			topEditor.horizontalAlignment = SWT.LEFT;
+			topEditor.grabHorizontal = true;
+			topEditor.minimumWidth = topAttach.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			topEditor.setEditor(topAttach, newItem, TOP_COL);
+			topAttach.addSelectionListener(SelectionListener.widgetSelectedAdapter(e1 -> {
+				Shell shell = tabFolderPage.getShell();
+				AttachDialog dialog = new AttachDialog(shell);
+				dialog.setText(LayoutExample.getResourceString("Top_Attachment"));
+				dialog.setColumn(TOP_COL);
+				String attach = dialog.open();
+				newItem.setText(TOP_COL, attach);
+				resetEditors();
+			}));
+			bottomAttach = new Button(table, SWT.PUSH);
+			bottomAttach.setText(LayoutExample.getResourceString("Attach_Edit"));
+			bottomEditor.horizontalAlignment = SWT.LEFT;
+			bottomEditor.grabHorizontal = true;
+			bottomEditor.minimumWidth = bottomAttach.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			bottomEditor.setEditor(bottomAttach, newItem, BOTTOM_COL);
+			bottomAttach.addSelectionListener(SelectionListener.widgetSelectedAdapter(e1 -> {
+				Shell shell = tabFolderPage.getShell();
+				AttachDialog dialog = new AttachDialog(shell);
+				dialog.setText(LayoutExample.getResourceString("Bottom_Attachment"));
+				dialog.setColumn(BOTTOM_COL);
+				String attach = dialog.open();
+				newItem.setText(BOTTOM_COL, attach);
+				if (newItem.getText(TOP_COL).endsWith(")"))
+					newItem.setText(TOP_COL, "");
+				resetEditors();
+			}));
+
+			for (int i = 0; i < table.getColumnCount(); i++) {
+				Rectangle rect = newItem.getBounds(i);
+				if (rect.contains(pt)) {
+					switch (i) {
+					case 0:
+						resetEditors();
+						break;
+					case COMBO_COL:
+						combo.setFocus();
+						break;
+					case WIDTH_COL:
+						widthText.setFocus();
+						break;
+					case HEIGHT_COL:
+						heightText.setFocus();
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}));
 	}
 
 	/**
@@ -729,72 +715,57 @@ class FormLayoutTab extends Tab {
 			offset.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 			/* Add listeners for choosing between position and control */
-			posButton.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					position.setEnabled (true);
-					control.setEnabled (false);
-					alignment.setEnabled (false);
-				}
-			});
-			contButton.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					position.setEnabled (false);
-					control.setEnabled (true);
-					alignment.setEnabled (true);
-				}
-			});
+			posButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+				position.setEnabled(true);
+				control.setEnabled(false);
+				alignment.setEnabled(false);
+			}));
+			contButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+				position.setEnabled(false);
+				control.setEnabled(true);
+				alignment.setEnabled(true);
+			}));
 
 			Button clear = new Button (shell, SWT.PUSH);
 			clear.setText (LayoutExample.getResourceString ("Clear"));
 			clear.setLayoutData (new GridData (SWT.END, SWT.CENTER, false, false));
-			clear.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					result = "";
-					shell.close ();
-				}
-			});
+			clear.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+				result = "";
+				shell.close();
+			}));
 			/* OK button sets data into table */
 			Button ok = new Button (shell, SWT.PUSH);
 			ok.setText (LayoutExample.getResourceString ("OK"));
 			ok.setLayoutData (new GridData (SWT.CENTER, SWT.CENTER, false, false));
-			ok.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					controlInput = control.getText ();
-					alignmentInput = alignment.getText ().substring (4);
-					positionInput = position.getText ();
-					if (positionInput.length () == 0) positionInput = "0";
-					try {
-						new Integer (positionInput).intValue ();
-					} catch (NumberFormatException except) {
-						positionInput = "0";
-					}
-					offsetInput = offset.getText ();
-					if (offsetInput.length () == 0) offsetInput = "0";
-					try {
-						new Integer (offsetInput).intValue ();
-					} catch (NumberFormatException except) {
-						offsetInput = "0";
-					}
-					if (posButton.getSelection() || controlInput.length () == 0) {
-						result = positionInput + "," + offsetInput;
-					} else {
-						result = controlInput + "," + offsetInput + ":" + alignmentInput;
-					}
-					shell.close ();
+			ok.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+				controlInput = control.getText();
+				alignmentInput = alignment.getText().substring(4);
+				positionInput = position.getText();
+				if (positionInput.length() == 0)
+					positionInput = "0";
+				try {
+					new Integer(positionInput).intValue();
+				} catch (NumberFormatException except) {
+					positionInput = "0";
 				}
-			});
+				offsetInput = offset.getText();
+				if (offsetInput.length() == 0)
+					offsetInput = "0";
+				try {
+					new Integer(offsetInput).intValue();
+				} catch (NumberFormatException except) {
+					offsetInput = "0";
+				}
+				if (posButton.getSelection() || controlInput.length() == 0) {
+					result = positionInput + "," + offsetInput;
+				} else {
+					result = controlInput + "," + offsetInput + ":" + alignmentInput;
+				}
+				shell.close();
+			}));
 			Button cancel = new Button (shell, SWT.PUSH);
 			cancel.setText (LayoutExample.getResourceString ("Cancel"));
-			cancel.addSelectionListener (new SelectionAdapter () {
-				@Override
-				public void widgetSelected (SelectionEvent e) {
-					shell.close ();
-				}
-			});
+			cancel.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> shell.close()));
 
 			shell.setDefaultButton (ok);
 			shell.pack ();

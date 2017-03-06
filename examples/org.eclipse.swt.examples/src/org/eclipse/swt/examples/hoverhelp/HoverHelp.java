@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -271,12 +271,10 @@ public class HoverHelp {
 			/*
 			 * Get out of the way if we attempt to activate the control underneath the tooltip
 			 */
-			control.addMouseListener(new MouseAdapter () {
-				@Override
-				public void mouseDown (MouseEvent e) {
-					if (tipShell.isVisible()) tipShell.setVisible(false);
-				}
-			});
+			control.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+				if (tipShell.isVisible())
+					tipShell.setVisible(false);
+			}));
 
 			/*
 			 * Trap hover events to pop-up tooltip

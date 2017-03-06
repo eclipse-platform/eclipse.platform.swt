@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.examples.imageanalyzer;
-
 
 import java.io.InputStream;
 import java.net.URL;
@@ -27,8 +26,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -700,14 +698,11 @@ public class ImageAnalyzer {
 		gridData.heightHint = 128;
 		gridData.grabExcessVerticalSpace = true;
 		dataText.setLayoutData(gridData);
-		dataText.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent event) {
-				if (image != null && event.button == 1) {
-					showColorForData();
-				}
+		dataText.addMouseListener(MouseListener.mouseDownAdapter(event -> {
+			if (image != null && event.button == 1) {
+				showColorForData();
 			}
-		});
+		}));
 		dataText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent event) {

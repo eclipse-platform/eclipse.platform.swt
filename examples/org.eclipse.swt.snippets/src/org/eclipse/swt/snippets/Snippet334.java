@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,10 +22,10 @@ package org.eclipse.swt.snippets;
 
 import static org.eclipse.swt.events.FocusListener.*;
 import static org.eclipse.swt.events.KeyListener.*;
+import static org.eclipse.swt.events.MouseListener.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -67,12 +67,7 @@ public static void main(String[] arg) {
 
 		canvas.addFocusListener(focusGainedAdapter(event-> canvas.redraw()));
 		canvas.addFocusListener(focusLostAdapter(event-> canvas.redraw()));
-		canvas.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				canvas.setFocus();
-			}
-		});
+		canvas.addMouseListener(mouseDownAdapter(e ->canvas.setFocus()));
 		Accessible acc = canvas.getAccessible();
 		acc.addRelation(ACC.RELATION_LABELLED_BY, label.getAccessible());
 		acc.addAccessibleControlListener(new AccessibleControlAdapter() {

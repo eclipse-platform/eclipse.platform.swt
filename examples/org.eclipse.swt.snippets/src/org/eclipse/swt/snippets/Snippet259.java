@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2016 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,9 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.3
  */
+import static org.eclipse.swt.events.MouseListener.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -41,30 +42,29 @@ static int checkStyle (int style) {
 public MyList (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	super.setDragDetect (false);
-	addMouseListener (new MouseAdapter () {
-		@Override
-		public void mouseDown (MouseEvent event) {
-			GC gc = new GC (MyList.this);
-			Rectangle client = getClientArea();
-			int index = 0, x = client.x + INSET_X, y = client.y + INSET_Y;
-			while (index < items.length) {
-				Point pt = gc.stringExtent(items [index]);
-				Rectangle item = new Rectangle (x, y, pt.x, pt.y);
-				if (item.contains (event.x, event.y)) break;
-				y += pt.y;
-				if (!client.contains (x, y)) return;
-				index++;
-			}
-			gc.dispose ();
-			if (index == items.length || !client.contains (x, y)) {
+	addMouseListener(mouseDownAdapter(event -> {
+		GC gc = new GC(MyList.this);
+		Rectangle client = getClientArea();
+		int index = 0, x = client.x + INSET_X, y = client.y + INSET_Y;
+		while (index < items.length) {
+			Point pt = gc.stringExtent(items[index]);
+			Rectangle item = new Rectangle(x, y, pt.x, pt.y);
+			if (item.contains(event.x, event.y))
+				break;
+			y += pt.y;
+			if (!client.contains(x, y))
 				return;
-			}
-			selection = index;
-			redraw ();
-			update ();
-			dragDetect (event);
+			index++;
 		}
-	});
+		gc.dispose();
+		if (index == items.length || !client.contains(x, y)) {
+			return;
+		}
+		selection = index;
+		redraw();
+		update();
+		dragDetect(event);
+	}));
 	addPaintListener (event -> {
 		GC gc = event.gc;
 		Color foreground = event.display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);

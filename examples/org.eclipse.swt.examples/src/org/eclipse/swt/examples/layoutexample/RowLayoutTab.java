@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,23 @@
 package org.eclipse.swt.examples.layoutexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.custom.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 class RowLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
@@ -59,72 +70,70 @@ class RowLayoutTab extends Tab {
 		widthEditor = new TableEditor (table);
 		heightEditor = new TableEditor (table);
 		excludeEditor = new TableEditor (table);
-		table.addMouseListener (new MouseAdapter () {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				resetEditors();
-				index = table.getSelectionIndex ();
-				Point pt = new Point (e.x, e.y);
-                newItem = table.getItem (pt);
-                if (newItem == null) return;
-                TableItem oldItem = comboEditor.getItem ();
-                if (newItem == oldItem || newItem != lastSelected) {
-					lastSelected = newItem;
-					return;
-				}
-				table.showSelection ();
-
-				combo = new CCombo (table, SWT.READ_ONLY);
-				createComboEditor (combo, comboEditor);
-
-				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(data.get(index)[NAME_COL]);
-				createTextEditor(nameText, nameEditor, NAME_COL);
-
-				widthText = new Text(table, SWT.SINGLE);
-				widthText.setText(data.get(index)[WIDTH_COL]);
-				createTextEditor(widthText, widthEditor, WIDTH_COL);
-
-				heightText = new Text(table, SWT.SINGLE);
-				heightText.setText (data.get (index) [HEIGHT_COL]);
-				createTextEditor (heightText, heightEditor, HEIGHT_COL);
-
-				String [] boolValues = new String [] {"false", "true"};
-				exclude = new CCombo (table, SWT.NONE);
-				exclude.setItems (boolValues);
-				exclude.setText (newItem.getText (EXCLUDE_COL));
-				excludeEditor.horizontalAlignment = SWT.LEFT;
-				excludeEditor.grabHorizontal = true;
-				excludeEditor.minimumWidth = 50;
-				excludeEditor.setEditor (exclude, newItem, EXCLUDE_COL);
-				exclude.addTraverseListener (traverseListener);
-
-				for (int i=0; i<table.getColumnCount (); i++) {
-                	Rectangle rect = newItem.getBounds (i);
-                    if (rect.contains (pt)) {
-                    	switch (i) {
-                    		case NAME_COL :
-                    			nameText.setFocus ();
-							case COMBO_COL :
-								combo.setFocus ();
-								break;
-							case WIDTH_COL :
-								widthText.setFocus ();
-								break;
-							case HEIGHT_COL :
-								heightText.setFocus ();
-								break;
-							case EXCLUDE_COL :
-								exclude.setFocus ();
-								break;
-							default :
-								resetEditors ();
-								break;
-						}
-                    }
-                }
+		table.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			resetEditors();
+			index = table.getSelectionIndex();
+			Point pt = new Point(e.x, e.y);
+			newItem = table.getItem(pt);
+			if (newItem == null)
+				return;
+			TableItem oldItem = comboEditor.getItem();
+			if (newItem == oldItem || newItem != lastSelected) {
+				lastSelected = newItem;
+				return;
 			}
-		});
+			table.showSelection();
+
+			combo = new CCombo(table, SWT.READ_ONLY);
+			createComboEditor(combo, comboEditor);
+
+			nameText = new Text(table, SWT.SINGLE);
+			nameText.setText(data.get(index)[NAME_COL]);
+			createTextEditor(nameText, nameEditor, NAME_COL);
+
+			widthText = new Text(table, SWT.SINGLE);
+			widthText.setText(data.get(index)[WIDTH_COL]);
+			createTextEditor(widthText, widthEditor, WIDTH_COL);
+
+			heightText = new Text(table, SWT.SINGLE);
+			heightText.setText(data.get(index)[HEIGHT_COL]);
+			createTextEditor(heightText, heightEditor, HEIGHT_COL);
+
+			String[] boolValues = new String[] { "false", "true" };
+			exclude = new CCombo(table, SWT.NONE);
+			exclude.setItems(boolValues);
+			exclude.setText(newItem.getText(EXCLUDE_COL));
+			excludeEditor.horizontalAlignment = SWT.LEFT;
+			excludeEditor.grabHorizontal = true;
+			excludeEditor.minimumWidth = 50;
+			excludeEditor.setEditor(exclude, newItem, EXCLUDE_COL);
+			exclude.addTraverseListener(traverseListener);
+
+			for (int i = 0; i < table.getColumnCount(); i++) {
+				Rectangle rect = newItem.getBounds(i);
+				if (rect.contains(pt)) {
+					switch (i) {
+					case NAME_COL:
+						nameText.setFocus();
+					case COMBO_COL:
+						combo.setFocus();
+						break;
+					case WIDTH_COL:
+						widthText.setFocus();
+						break;
+					case HEIGHT_COL:
+						heightText.setFocus();
+						break;
+					case EXCLUDE_COL:
+						exclude.setFocus();
+						break;
+					default:
+						resetEditors();
+						break;
+					}
+				}
+			}
+		}));
 	}
 
 	/**

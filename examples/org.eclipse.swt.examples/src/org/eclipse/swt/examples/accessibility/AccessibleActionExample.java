@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others.
+ * Copyright (c) 2008, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,7 @@ import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -80,13 +79,10 @@ public class AccessibleActionExample {
 			int y = clientArea.y + (clientArea.height - stringExtent.y) / 2;
 			e.gc.drawString(buttonText, x, y);
 		});
-		customButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				int actionIndex = (e.button == 1) ? 0 : 1;
-				customButtonAction(actionIndex);
-			}
-		});
+		customButton.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			int actionIndex = (e.button == 1) ? 0 : 1;
+			customButtonAction(actionIndex);
+		}));
 		customButton.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.layoutexample;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 class FillLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
@@ -48,28 +56,26 @@ class FillLayoutTab extends Tab {
 		/* Add TableEditors */
 		comboEditor = new TableEditor (table);
 		nameEditor = new TableEditor (table);
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				resetEditors ();
-				index = table.getSelectionIndex ();
-				if (index == -1) return;
-				TableItem oldItem = comboEditor.getItem ();
-				newItem = table.getItem (index);
-				if (newItem == oldItem || newItem != lastSelected) {
-					lastSelected = newItem;
-					return;
-				}
-				table.showSelection ();
-
-				combo = new CCombo (table, SWT.READ_ONLY);
-				createComboEditor (combo, comboEditor);
-
-				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(data.get(index)[NAME_COL]);
-				createTextEditor(nameText, nameEditor, NAME_COL);
+		table.addMouseListener(MouseListener.mouseDownAdapter(e -> {
+			resetEditors();
+			index = table.getSelectionIndex();
+			if (index == -1)
+				return;
+			TableItem oldItem = comboEditor.getItem();
+			newItem = table.getItem(index);
+			if (newItem == oldItem || newItem != lastSelected) {
+				lastSelected = newItem;
+				return;
 			}
-		});
+			table.showSelection();
+
+			combo = new CCombo(table, SWT.READ_ONLY);
+			createComboEditor(combo, comboEditor);
+
+			nameText = new Text(table, SWT.SINGLE);
+			nameText.setText(data.get(index)[NAME_COL]);
+			createTextEditor(nameText, nameEditor, NAME_COL);
+		}));
 	}
 
 	/**
