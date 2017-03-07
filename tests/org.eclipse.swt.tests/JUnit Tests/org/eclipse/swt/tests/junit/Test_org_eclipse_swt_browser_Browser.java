@@ -1360,6 +1360,13 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
+	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting"); // Bug 512627 Investigating Mac failures. Remove after.
+
+	if (SwtTestUtil.isCocoa) { // Bug 512627 Investigating Mac failures. Remove after.
+		waitMS = 1000; // Slow down wait mechanism, so that shell becomes visible. This should show some kind of 'red' background.
+		loopMultipier = 1;
+	}
+
 	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
 		runLoopTimer(waitMS);
 		if ("executing".equals(atomicArray.get(0))) {
@@ -1372,7 +1379,7 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 			}
 		}
 	}
-	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues");
+	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");  // Bug 512627 Investigating Mac failures. Remove after.
 	fail(atomicArray.toString());
 }
 
