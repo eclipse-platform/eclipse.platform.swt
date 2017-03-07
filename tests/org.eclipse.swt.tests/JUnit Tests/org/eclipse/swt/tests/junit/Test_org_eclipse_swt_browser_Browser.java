@@ -15,7 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -113,20 +112,7 @@ public void setUp() {
 		}
 	}
 	shell.setText(shellTitle);
-
-	/*
-	 * setWidget() is needed for Browser to occupy the whole shell.
-	 * (Without setWidget(), composite and browser receive half the shell each).
-	 *
-	 * However, on Win32 & IE, an OleFrame() child is created in Browser, which break the first
-	 * assertion in test_getChildren() ":a:: array lengths differed, expected.length=0 actual.length=1"
-	 *
-	 * See: Bug 499387
-	 */
-	if (! SwtTestUtil.isWindows) {
-		setWidget(browser);
-	}
-
+	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
 }
 
 
@@ -142,6 +128,20 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// System.out.println("Test_org_eclipse_swt_browser_Browser#test_Constructor*#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
 	browser = new Browser(null, SWT.NONE); // Should throw.
+}
+
+@Override
+@Test
+public void test_getChildren() {
+	// Win32's Browser is a special case. It has 1 child by default, the OleFrame.
+	// See Bug 499387 and Bug 511874
+	if (SwtTestUtil.isWindows) {
+		int childCount = composite.getChildren().length;
+		String msg = "Browser on Win32 is a special case, the first child is an OleFrame (ActiveX control). Actual child count is: " + childCount;
+		assertTrue(msg, childCount == 1);
+	} else {
+		super.test_getChildren();
+	}
 }
 
 @Test
@@ -681,10 +681,6 @@ public void test_execute_withNullArg() {
  */
 @Test
 public void test_execute_and_closeListener () {
-	String skipMsg = "This test is unstable on Cocoa/Win32 at present. Skipping test on non webkit2 for now. To be fixed in Bug 511874";
-	assumeTrue(skipMsg, isWebkit1 || isWebkit2);
-	// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=511874
-
 	AtomicBoolean hasClosed = new AtomicBoolean(false);
 
 	browser.setText("You should not see this page, it should have been closed by javascript");
