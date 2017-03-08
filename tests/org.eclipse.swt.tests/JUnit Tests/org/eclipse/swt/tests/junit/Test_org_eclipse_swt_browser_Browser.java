@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -58,22 +59,23 @@ import org.junit.rules.TestName;
  */
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
+	// CONFIG
+	/** This forces tests to display the shell/browser for a brief moment. Useful to see what's going on with broken jUnits */
+	boolean debug_show_browser = false;
+	int     debug_show_browser_timeout_seconds = 5;
+
+	boolean debug_print_test_names = true; // Useful to figure out which jUnit caused vm crash.
+	boolean debug_verbose_output = false;
+
+	int secondsToWaitTillFail = 5;
+	// CONFIG END
+
 	@Rule
 	public TestName name = new TestName();
 
 	Browser browser;
-
-	boolean browser_debug = false;
-
 	boolean isWebkit1 = false;
 	boolean isWebkit2 = false;
-
-	/**
-	 * Normally, sleep in 1 ms intervals 1000 times. During browser_debug, sleep 1000 ms for 1 interval.
-	 * This allows one to see the browser shell for a few seconds, which would normally not be visible during
-	 * automated testing.
-	 */
-	int secondsToWaitTillFail, waitMS, loopMultipier;
 
 
 @Override
@@ -81,14 +83,10 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 public void setUp() {
 	super.setUp();
 
-	// Print test name if running on hudson. This makes it easier to tell in the logs which test case caused crash.
-	if (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK) {
+//	 Print test name if running on hudson. This makes it easier to tell in the logs which test case caused crash.
+	if (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK || debug_print_test_names) {
 		System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
 	}
-
-	secondsToWaitTillFail = 12;
-	waitMS = browser_debug ? 1000 : 1;
-	loopMultipier = browser_debug ? 1 : 1000;
 
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
@@ -385,7 +383,7 @@ public void test_StatusTextListener_addAndRemove() {
  * 4) StatusTextListener should get triggered. Test passes.
  * 5) Else timeout & fail.
  *
- * Set variable "browser_debug" to true to see this being performed at human-observable speed.
+ * Set variable "debug_show_browser" to true to see this being performed at human-observable speed.
  *
  * Note: Historically one could execute some javascript to change status bar (window.status=txt).
  * But most browsers don't support this anymore. Only hovering over a hyperlink changes status.
@@ -420,9 +418,9 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 			Point cachedLocation = display.getCursorLocation();
 			display.setCursorLocation(20, 10);
 			browser.getBounds();
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < size; i=i+5) {
 				display.setCursorLocation(i, i);
-				runLoopTimer(browser_debug ? 3 : 0);
+				waitForMilliseconds(debug_show_browser ? 3 : 1); // Move mouse slower during debug.
 			}
 			display.setCursorLocation(cachedLocation); // for convenience of developer. Not needed for test.
 
@@ -436,14 +434,9 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 	});
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (statusChanged.get()) {
-			return; //passed.
-		}
-	}
-	//5) Else timeout & fail.
-	fail();
+	boolean passed = waitForPassCondition(()->statusChanged.get());
+	String msg = "Mouse movent over text was suppose to trigger StatusTextListener. But it didn't";
+	assertTrue(msg, passed);
 }
 
 @Test
@@ -649,7 +642,7 @@ public void test_setTextLjava_lang_String() {
 	html += "</BODY></HTML>";
 	boolean result = browser.setText(html);
 	assertTrue(result);
-	runLoopTimer(2000);
+	waitForMilliseconds(2000);
 }
 
 /**
@@ -661,7 +654,7 @@ public void test_setUrl() {
 
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	assert(browser.setUrl("http://www.eclipse.org/swt"));
-	runLoopTimer(2000);
+	waitForMilliseconds(2000);
 	// TODO - it would be good to verify that the page actually loaded. ex download the webpage etc..
 }
 
@@ -673,7 +666,7 @@ public void test_setUrl() {
 public void test_stop() {
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
-	runLoopTimer(1000);
+	waitForMilliseconds(1000);
 	browser.stop();
 }
 
@@ -702,15 +695,12 @@ public void test_execute_and_closeListener () {
 	browser.execute("window.close()");
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (hasClosed.get()) {
-			disposedIntentionally = true;
-			return; // passed.
-		}
-	}
-	fail("Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if "
-			+ "browser looks disposed, but test still fails.");
+	boolean passed = waitForPassCondition(() -> hasClosed.get());
+	if (passed)
+		disposedIntentionally = true;
+	String message = "Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if "
+			+ "browser looks disposed, but test still fails.";
+	assertTrue(message, passed);
 }
 
 
@@ -733,20 +723,15 @@ public void test_evaluate_string() {
 		public void completed(ProgressEvent event) {
 			String evalResult = (String) browser.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
 			returnValue.set(evalResult);
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if ("HelloWorld".equals(returnValue.get())) {
-			return; // passed.
-		}
-	}
-	fail("Evaluation did not return a value. Or test timed out.");
+	boolean passed = waitForPassCondition(()-> "HelloWorld".equals(returnValue.get()));
+	assertTrue("Evaluation did not return a value. Or test timed out.", passed);
 }
 
 /**
@@ -797,21 +782,14 @@ boolean evaluate_number_helper(Double testNum) {
 		public void completed(ProgressEvent event) {
 			Double evalResult = (Double) browser.evaluate("return " +testNum.toString());
 			returnValue.set(evalResult);
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = false;
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (testNum.equals(returnValue.get())) {
-			passed = true;
-			break;
-		}
-	}
+	boolean passed = waitForPassCondition(() -> testNum.equals(returnValue.get()));
 	return passed;
 }
 
@@ -831,20 +809,15 @@ public void test_evaluate_boolean() {
 		public void completed(ProgressEvent event) {
 			Boolean evalResult = (Boolean) browser.evaluate("return true");
 			atomicBoolean.set(evalResult);
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (atomicBoolean.get()) {
-			return; // passed.
-		}
-	}
-	fail("Evaluation did not return a boolean. Or test timed out.");
+	boolean passed = waitForPassCondition(() -> atomicBoolean.get());
+	assertTrue("Evaluation did not return a boolean. Or test timed out.", passed);
 }
 
 /**
@@ -864,20 +837,15 @@ public void test_evaluate_null() {
 		public void completed(ProgressEvent event) {
 			Object evalResult = browser.evaluate("return null");
 			returnValue.set(evalResult);
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (returnValue.get() == null) {
-			return; // passed
-		}
-	}
-	fail("Evaluate did not return a null. Timed out.");
+	boolean passed = waitForPassCondition(() -> returnValue.get() == null);
+	assertTrue("Evaluate did not return a null. Timed out.", passed);
 }
 
 /**
@@ -911,23 +879,25 @@ public void test_evaluate_invalid_return_value() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
+
+	AtomicBoolean wrongExceptionCode = new AtomicBoolean(false);
+	boolean passed = waitForPassCondition(() -> {
 		if (exception.get() != -1) {
 			if (exception.get() == SWT.ERROR_INVALID_RETURN_VALUE) {
-				return; // passed.
+				return true;
 			} else if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
-				System.err.println("SWT Warning: test_evaluate_invalid_return_value threw wrong exception code."
-						+ " Expected ERROR_INVALID_RETURN_VALUE but got ERROR_FAILED_EVALUATE");
-				return; // passed.
-				// Webkit1 is known to throw the wrong exception.
-			} else  {
-				fail("Invalid exception code : " + exception.get());
+				wrongExceptionCode.set(true);
+				return true;
 			}
-			break;
 		}
+		return false;
+	});
+	if (wrongExceptionCode.get()) {
+		System.err.println("SWT Warning: test_evaluate_invalid_return_value threw wrong exception code."
+				+ " Expected ERROR_INVALID_RETURN_VALUE but got ERROR_FAILED_EVALUATE");
 	}
-	fail("This test tests for evaluation to return an invalid return value. An exception should have been thrown, but none was thrown. Or test timed out");
+	String message = exception.get() == -1 ? "Exception was not thrown. Test timed out" : "Exception thrown, but wrong code: " + exception.get();
+	assertTrue(message, passed);
 }
 
 /**
@@ -953,18 +923,20 @@ public void test_evaluate_evaluation_failed_exception() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
+	AtomicReference<String> additionalErrorInfo = new AtomicReference<>("");
+	boolean passed = waitForPassCondition(() -> {
 		if (exception.get() != -1) {
 			if (exception.get() == SWT.ERROR_FAILED_EVALUATE) {
-				return; // passed
+				return true;
 			} else  {
-				fail("Invalid exception thrown: " + exception.get());
+				additionalErrorInfo.set("Invalid exception thrown: " + exception.get());
 			}
-			break;
 		}
-	}
-	fail("Expected exception to be thrown, but none was thrown. Test timed out.");
+		return false;
+	});
+	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not throw an error. Test timed out" :
+		"Javascript threw an error, but not the right one." + additionalErrorInfo.get();
+	assertTrue(message, passed);
 }
 
 /**
@@ -990,24 +962,26 @@ public void test_evaluate_array_numbers() {
 			atomicIntArray.set(0, ((Double) evalResult[0]).intValue());
 			atomicIntArray.set(1, ((Double) evalResult[1]).intValue());
 			atomicIntArray.set(2, ((Double) evalResult[2]).intValue());
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
+	AtomicReference<String> additionalErrorInfo = new AtomicReference<>("");
+	boolean passed = waitForPassCondition(() -> {
 		if (atomicIntArray.get(0) != -1) {
 			if (atomicIntArray.get(0) == 1 && atomicIntArray.get(1) == 2 && atomicIntArray.get(2) == 3) {
-				return; // passed
+				return true;
 			} else {
-				fail("Resulting numbers in the array are not as expected");
+				additionalErrorInfo.set("Resulting numbers in the array are not as expected");
 			}
 		}
-	}
-	fail("Evaluation should have returned an array, but array not returned or values are not correct.");
+		return false;
+	});
+	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" : "Javasscript called java, but passed wrong values: " + additionalErrorInfo.get();
+	assertTrue(message, passed);
 }
 
 /**
@@ -1030,26 +1004,29 @@ public void test_evaluate_array_strings () {
 			atomicStringArray.set(0, (String) evalResult[0]);
 			atomicStringArray.set(1, (String) evalResult[1]);
 			atomicStringArray.set(2, (String) evalResult[2]);
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
+	AtomicReference<String> additionalErrorInfo = new AtomicReference<>("");
+	boolean passed = waitForPassCondition(() -> {
 		if (! "executing".equals(atomicStringArray.get(0))) {
 			if (atomicStringArray.get(0).equals("str1")
 					&& atomicStringArray.get(1).equals("str2")
 					&& atomicStringArray.get(2).equals("str3")) {
-				return; // passed
-			} else {
-				fail("Resulting strings in array are not as expected");
-			}
+				return true;
+			} else
+				additionalErrorInfo.set("Resulting strings in array are not as expected");
 		}
-	}
-	fail("Expected an array of strings, but did not receive array or got the wrong result.");
+		return false;
+	});
+	String message = "".equals(additionalErrorInfo.get()) ?
+			"Expected an array of strings, but did not receive array or got the wrong result."
+			: "Received a callback from javascript, but: " + additionalErrorInfo.get() + " : " + atomicStringArray.toString();
+	assertTrue(message, passed);
 }
 
 /**
@@ -1071,7 +1048,7 @@ public void test_evaluate_array_mixedTypes () {
 			atomicArray.set(2, evalResult[2]);
 			atomicArray.set(1, evalResult[1]);
 			atomicArray.set(0, evalResult[0]); // should be set last. to avoid loop below ending & failing to early.
-			if (browser_debug)
+			if (debug_verbose_output)
 				System.out.println("Node value: "+ evalResult);
 		}
 	});
@@ -1079,19 +1056,20 @@ public void test_evaluate_array_mixedTypes () {
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
+	AtomicReference<String> additionalErrorInfo = new AtomicReference<>("");
+	boolean passed = waitForPassCondition(() -> {
 		if (! "executing".equals(atomicArray.get(0))) {
 			if (atomicArray.get(0).equals("str1")
 					&& ((Double) atomicArray.get(1)) == 2
 					&& ((Boolean) atomicArray.get(2))) {
-				return; //passed.
-			} else {
-				fail("Resulting strings not as expected");
-			}
+				return true;
+			} else
+				additionalErrorInfo.set("Resulting String are not as exected");
 		}
-	}
-	fail("Expected evaluate to return an array of mixed types. But didn't receive a return value or return values didn't match.");
+		return false;
+	});
+	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" : "Javascript called java but passed wrong values: " + atomicArray.toString();
+	assertTrue(message, passed);
 }
 
 
@@ -1146,13 +1124,9 @@ public void test_BrowserFunction_callback () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (javaCallbackExecuted.get()) {
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() ->  javaCallbackExecuted.get());
+	String message = "Java failed to get a callback from javascript. Test timed out";
+	assertTrue(message, passed);
 }
 
 /**
@@ -1199,13 +1173,9 @@ public void test_BrowserFunction_callback_with_integer () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (returnInt.get() == 5) {
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() -> returnInt.get() == 5);
+	String message = "Javascript should have passed an integer to java. But this did not happen";
+	assertTrue(message, passed);
 }
 
 
@@ -1253,13 +1223,9 @@ public void test_BrowserFunction_callback_with_boolean () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (javaCallbackExecuted.get()) {
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get());
+	String message = "Javascript did not pass a boolean back to java";
+	assertTrue(message, passed);
 }
 
 
@@ -1305,13 +1271,9 @@ public void test_BrowserFunction_callback_with_String () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if ("hellojava".equals(returnValue.get())) {
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() -> "hellojava".equals(returnValue.get()));
+	String message = "Javascript was suppose to call java with a String. But it seems java did not receive the call or wrong value was passed";
+	assertTrue(message, passed);
 }
 
 
@@ -1362,25 +1324,19 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 	shell.open();
 	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting"); // Bug 512627 Investigating Mac failures. Remove after.
 
-	if (SwtTestUtil.isCocoa) { // Bug 512627 Investigating Mac failures. Remove after.
-		waitMS = 1000; // Slow down wait mechanism, so that shell becomes visible. This should show some kind of 'red' background.
-		loopMultipier = 1;
-	}
-
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if ("executing".equals(atomicArray.get(0))) {
-			continue;
+	boolean passed = waitForPassCondition(() -> {
+		if (atomicArray.get(0).equals("hellojava")
+				&& ((Double) atomicArray.get(1)) == 5
+				&& ((Boolean) atomicArray.get(2))) {
+			return true;
 		} else {
-			if (atomicArray.get(0).equals("hellojava")
-					&& ((Double) atomicArray.get(1)) == 5
-					&& ((Boolean) atomicArray.get(2))) {
-				return; //passed.
-			}
+			return false;
 		}
-	}
+	});
 	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");  // Bug 512627 Investigating Mac failures. Remove after.
-	fail(atomicArray.toString());
+
+	String msg = "Values not set. Test timed out. Array should be [\"hellojava\", 5, true], but is: " + atomicArray.toString();
+	assertTrue(msg, passed);
 }
 
 
@@ -1454,13 +1410,9 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (returnInt.get() == 42) { //4)
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() -> returnInt.get() == 42);
+	String message = "Java should have returned something back to javascript. But something went wrong";
+	assertTrue(message, passed);
 }
 
 
@@ -1520,13 +1472,9 @@ public void test_BrowserFunction_callback_afterPageReload() {
 	});
 
 	shell.open();
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (javaCallbackExecuted.get()) {
-			return; // pass.
-		}
-	}
-	fail();
+	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get());
+	String message = "A javascript callback should work after a page has been reloaded. But something went wrong";
+	assertTrue(message, passed);
 }
 
 
@@ -1536,35 +1484,47 @@ public void test_BrowserFunction_callback_afterPageReload() {
  * @param passTest a Supplier lambda that returns true if pass condition is true. False otherwise.
  * @return true if test passes, false on timeout.
  */
-private boolean waitForPassCondition(Supplier<Boolean> passTest) {
-	for (int i = 0; i < (loopMultipier * secondsToWaitTillFail); i++) {  // Wait up to seconds before declaring test as failed.
-		runLoopTimer(waitMS);
-		if (passTest.get()) {
-			return true;
-		}
-	}
-	return false;
+private boolean waitForPassCondition(final Supplier<Boolean> passTest) {
+	return waitForPassCondition(passTest, 1000 * secondsToWaitTillFail);
 }
 
-void runLoopTimer(final int milliseconds) {
-	final boolean[] exit = {false};
-	new Thread() {
-		@Override
-		public void run() {
-			try {Thread.sleep(milliseconds);} catch (Exception e) {}
-			exit[0] = true;
-			/* wake up the event loop */
-			Display display = Display.getDefault();
-			if (!display.isDisposed()) {
-				display.asyncExec(() -> {
-					if (!shell.isDisposed()) shell.redraw();
-				});
+private boolean waitForPassCondition(final Supplier<Boolean> passTest, int millisecondsToWait) {
+	final AtomicBoolean passed = new AtomicBoolean(false);
+	final Instant timeOut = Instant.now().plusMillis(millisecondsToWait);
+	final Instant debug_showBrowserTimeout = Instant.now().plusSeconds(debug_show_browser_timeout_seconds);
+	final Display display = shell.getDisplay();
+
+	// This thread tests the pass-condition periodically. Triggers fail if timeout occurs.
+	new Thread(() -> {
+		while (Instant.now().isBefore(timeOut)) {
+			if (passTest.get()) {
+				passed.set(true);
+				break;
+			}
+			try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+		}
+		display.wake(); // timeout. Test failed by default.
+	}).start();
+
+	while (Instant.now().isBefore(timeOut)) {
+		if (passed.get()) { // Logic to show browser window for longer if enabled.
+			if (!debug_show_browser) break;
+			if (Instant.now().isAfter(debug_showBrowserTimeout)) break;
+		}
+
+		if (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
 			}
 		}
-	}.start();
-	shell.open();
-	Display display = Display.getCurrent();
-	while (!exit[0] && !shell.isDisposed()) if (!display.readAndDispatch()) display.sleep();
+	}
+	return passed.get();
+}
+
+/** Contrary to Thread.wait(), this method allows swt's display to carry out actions. */
+void waitForMilliseconds(final int milliseconds) {
+	waitForPassCondition(() -> false, milliseconds);
+
 }
 
 private String webkit1SkipMsg() {
