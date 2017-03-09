@@ -61,12 +61,12 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	// CONFIG
 	/** This forces tests to display the shell/browser for a brief moment. Useful to see what's going on with broken jUnits */
 	boolean debug_show_browser = false;
-	int     debug_show_browser_timeout_seconds = 5;
+	int     debug_show_browser_timeout_seconds = 2;
 
 	boolean debug_print_test_names = true; // Useful to figure out which jUnit caused vm crash.
 	boolean debug_verbose_output = false;
 
-	int secondsToWaitTillFail = 5;
+	int secondsToWaitTillFail = Math.max(5, debug_show_browser_timeout_seconds);
 	// CONFIG END
 
 	@Rule
@@ -551,6 +551,108 @@ public void test_setUrlWithNullArg() {
 	browser.setUrl(null);
 }
 
+
+/**
+ * Logic:
+ * - Load a page. Turn off javascript (which takes effect on next pageload)
+ * - Load a second page. Try to execute some javascript. If javascript is exectuted then fail.
+ */
+@Test
+public void test_setJavascriptEnabled() {
+	AtomicInteger pageLoadCount = new AtomicInteger(0);
+	AtomicBoolean testFinished = new AtomicBoolean(false);
+	AtomicBoolean testPassed = new AtomicBoolean(false);
+
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			pageLoadCount.incrementAndGet();
+			if (pageLoadCount.get() == 1) {
+				browser.setJavascriptEnabled(false);
+				browser.setText("Second page with javascript dissabled");
+			} else if (pageLoadCount.get() == 2) {
+				Boolean expectedNull = null;
+				try {
+					expectedNull = (Boolean) browser.evaluate("return true");
+				} catch (Exception e) {
+					fail("1) if javascript is dissabled, browser.evaluate() should return null. But an Exception was thrown");
+				}
+				assertTrue("2) Javascript should not have executed. But not-null was returned:"+expectedNull, expectedNull == null);
+
+				testPassed.set(true);
+				testFinished.set(true);
+			}
+		}
+	});
+
+	shell.open();
+	browser.setText("First page with javascript enabled. This should not be visiable as a second page should load");
+
+	waitForPassCondition(testFinished::get);
+	assertTrue("3) Javascript was executed on the second page. But it shouldn't have", testPassed.get());
+}
+
+/** Check that if there are two browser instances, turning off JS in one instance doesn't turn off JS in the other instance. */
+@Test
+public void test_setJavascriptEnabled_multipleInstances() {
+
+	AtomicInteger pageLoadCount = new AtomicInteger(1);
+	AtomicInteger pageLoadCountSecondInstance = new AtomicInteger(1);
+
+	AtomicBoolean instanceOneFinishedCorrectly = new AtomicBoolean(false);
+	AtomicBoolean instanceTwoFinishedCorrectly = new AtomicBoolean(false);
+
+
+	Browser browserSecondInsance = new Browser(shell, SWT.None);
+
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			if (pageLoadCount.get() == 1) {
+				browser.setJavascriptEnabled(false);
+
+				pageLoadCount.set(2);
+				browser.setText("First instance, second page (with javascript turned off)");
+
+				pageLoadCountSecondInstance.set(2);
+				browserSecondInsance.setText("Second instance, second page (javascript execution not changed)");
+			} else if (pageLoadCount.get() == 2) {
+				pageLoadCount.set(3);
+
+				Boolean shouldBeNull = (Boolean) browser.evaluate("return true");
+				assertTrue("1) Evaluate execution should be null, but 'true was returned'", shouldBeNull == null);
+				instanceOneFinishedCorrectly.set(true);
+			}
+		}
+	});
+
+	browserSecondInsance.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			if (pageLoadCountSecondInstance.get() == 2) {
+				pageLoadCountSecondInstance.set(3);
+
+				Boolean shouldBeTrue = (Boolean) browserSecondInsance.evaluate("return true");
+				assertTrue("2) Javascript should be executable in second instance (as javascript was not turned off), but it was not. "
+						+ "Expected:'someStr', Actual:"+shouldBeTrue, shouldBeTrue);
+				instanceTwoFinishedCorrectly.set(true);
+			}
+		}
+	});
+
+	browser.setText("First Instance, first page");
+	browserSecondInsance.setText("Second instance, first page");
+
+	shell.open();
+	boolean passed = waitForPassCondition(() -> {return instanceOneFinishedCorrectly.get() && instanceTwoFinishedCorrectly.get();});
+
+	String message = "3) Test timed out. Debug Info:\n" +
+			"InstanceOneFinishedCorrectly: " + instanceOneFinishedCorrectly.get() + "\n" +
+			"InstanceTwoFinishedCorrectly: " + instanceTwoFinishedCorrectly.get() + "\n" +
+			"Instance 1 & 2 page counts: " + pageLoadCount.get() + " & " + pageLoadCountSecondInstance.get();
+
+	assertTrue(message, passed);
+}
 
 /**
  * Test that going forward in history (without having gone back before) returns false.
@@ -1490,7 +1592,8 @@ private boolean waitForPassCondition(final Supplier<Boolean> passTest, int milli
 	final Instant debug_showBrowserTimeout = Instant.now().plusSeconds(debug_show_browser_timeout_seconds);
 	final Display display = shell.getDisplay();
 
-	// This thread tests the pass-condition periodically. Triggers fail if timeout occurs.
+	// This thread tests the pass-condition periodically.
+	// Triggers fail if timeout occurs.
 	new Thread(() -> {
 		while (Instant.now().isBefore(timeOut)) {
 			if (passTest.get()) {
@@ -1498,6 +1601,11 @@ private boolean waitForPassCondition(final Supplier<Boolean> passTest, int milli
 				break;
 			}
 			try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+		}
+
+		// If debug_show_browser is enabled, it only wakes up the display thread after the timeout occured.
+		while (debug_show_browser && Instant.now().isBefore(debug_showBrowserTimeout)) {
+			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		display.wake(); // timeout. Test failed by default.
 	}).start();
