@@ -87,10 +87,24 @@ public class WebKitGTK extends C {
 
 
 
-	/** Properties */
+	// Properties:
+	// Webkit1: https://webkitgtk.org/reference/webkitgtk/unstable/WebKitWebSettings.html#WebKitWebSettings.properties
+	// Webkit2: https://webkitgtk.org/reference/webkit2gtk/unstable/WebKitSettings.html#WebKitSettings.properties
+	//
+	// Developer Note:
+	// - Webkit1 documentation suggested to use g_object_(set|get) to modify properties.
+	// - Webkit2 documentation doesn't explicitly say if g_object_(set|get) is safe to use, but
+	//   I've confirmed with webkitgtk+ developers on IRC (freenode#webkitgtk+ <mcatanzaro>) that it is in fact still
+	//   safe to use g_object_(set|get) for updating properties.
+	//   Note:
+	//    - Some settings in Webkit2 have changed. It's not safe to use webkit1 settings on webkit2.
+	//    - On webkit2 you can also use the newly introduced functions for getting/setting settings as well as g_object_set().
 	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
 	public static final byte[] default_charset = ascii ("default-charset"); // $NON-NLS-1$
-	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$
+
+	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$		// Webkit1 only.
+	public static final byte[] enable_javascript = ascii ("enable-javascript"); // $NON-NLS-1$	// Webkit2 only
+
 	public static final byte[] enable_plugins = ascii("enable-plugins"); // $NON-NLS-1$
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$
@@ -1403,7 +1417,7 @@ public static final double webkit_web_view_get_progress (long /*int*/ web_view) 
 
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_view_get_settings (long /*int*/ web_view);
-public static final long /*int*/ webkit_web_view_get_settings (long /*int*/ web_view) {
+public static final long /*int*/ webkit_web_view_get_settings (long /*int*/ web_view) {	// Webkit1 & Webkit2
 	lock.lock();
 	try {
 		return _webkit_web_view_get_settings (web_view);

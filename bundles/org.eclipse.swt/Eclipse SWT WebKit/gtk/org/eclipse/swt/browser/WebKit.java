@@ -1287,6 +1287,13 @@ private static class Webkit2JavascriptEvaluator {
 @Override
 public Object evaluate (String script) throws SWTException {
 	if (WEBKIT2){
+        if (webkit_settings_get(WebKitGTK.enable_javascript) == 0) {
+        	// If you try to run javascript while scripts are turned off, then:
+        	// - on Webkit1: nothing happens.
+        	// - on Webkit2: an exception is thrown.
+        	// To ensure consistent behavior, do not even try to execute js on webkit2 if it's off.
+        	return null;
+        }
 		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
 		return Webkit2JavascriptEvaluator.evaluate(script, this.browser, webView, doNotBlock);
 	} else {
@@ -2323,6 +2330,7 @@ long /*int*/ webkit_mime_type_policy_decision_requested (long /*int*/ web_view, 
 
 /** Webkit1 only */
 long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view, long /*int*/ frame, long /*int*/ request, long /*int*/ navigation_action, long /*int*/ policy_decision) {
+	assert !WEBKIT2 : "Webkit1 only code was ran by webkit2";
 	if (loadingText) {
 		/*
 		 * WebKit is auto-navigating to about:blank in response to a
@@ -2366,8 +2374,7 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 		if (jsEnabled != jsEnabledOnNextPage) {
 			jsEnabled = jsEnabledOnNextPage;
 			DisabledJSCount += !jsEnabled ? 1 : -1;
-			long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
-			OS.g_object_set (settings, WebKitGTK.enable_scripts, jsEnabled ? 1 : 0, 0);
+			webkit_settings_set(WebKitGTK.enable_scripts, jsEnabled ? 1 : 0);
 		}
 
 		/* hook status change signal if frame is a newly-created sub-frame */
@@ -2396,7 +2403,8 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 
 /** Webkit2 only */
 long /*int*/ webkit_decide_policy (long /*int*/ web_view, long /*int*/ decision, int decision_type, long /*int*/ user_data) {
-    switch (decision_type) {
+	assert WEBKIT2 : "Webkit2 only code was ran by webkit1";
+	switch (decision_type) {
     case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
        long /*int*/ request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
        if (request == 0){
@@ -2440,8 +2448,7 @@ long /*int*/ webkit_decide_policy (long /*int*/ web_view, long /*int*/ decision,
           if (jsEnabled != jsEnabledOnNextPage) {
              jsEnabled = jsEnabledOnNextPage;
              DisabledJSCount += !jsEnabled ? 1 : -1;
-             long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
-             OS.g_object_set (settings, WebKitGTK.enable_scripts, jsEnabled ? 1 : 0, 0);
+             webkit_settings_set(WebKitGTK.enable_javascript, jsEnabled ? 1 : 0);
           }
        }
        if(!newEvent.doit){
@@ -2810,6 +2817,21 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 	boolean top = mainFrame == frame;
 	addEventHandlers (web_view, top);
 	return 0;
+}
+
+/** Webkit1 & Webkit2
+ * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
+private int webkit_settings_get(byte [] property) {
+	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
+	int[] result = new int[1];
+	OS.g_object_get (settings, property, result, 0);
+	return result[0];
+}
+
+/** Webkit1 & Webkit2 */
+private void webkit_settings_set(byte [] property, int value) {
+	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
+	OS.g_object_set(settings, property, value, 0);
 }
 
 private void registerBrowserFunctions() {
