@@ -103,8 +103,7 @@ public class WebKitGTK extends C {
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$		// Webkit1 only.
 	public static final byte[] enable_javascript = ascii ("enable-javascript"); // $NON-NLS-1$	// Webkit2 only
 
-	public static final byte[] enable_plugins = ascii("enable-plugins"); // $NON-NLS-1$
-	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$
+	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$				// Webkit1 & Webkit2
 
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$  // Webkit1
 	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2
