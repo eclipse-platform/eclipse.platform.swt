@@ -865,6 +865,7 @@ public void create (Composite parent, int style) {
 
 	if (WEBKIT2){
 		OS.g_object_set (settings, WebKitGTK.default_charset, bytes, 0);
+		OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
 	} else {
 		OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
 		OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);

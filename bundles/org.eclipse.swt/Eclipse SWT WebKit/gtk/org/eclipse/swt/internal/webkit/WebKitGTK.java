@@ -85,8 +85,6 @@ public class WebKitGTK extends C {
 
 
 
-
-
 	// Properties:
 	// Webkit1: https://webkitgtk.org/reference/webkitgtk/unstable/WebKitWebSettings.html#WebKitWebSettings.properties
 	// Webkit2: https://webkitgtk.org/reference/webkit2gtk/unstable/WebKitSettings.html#WebKitSettings.properties
@@ -99,15 +97,18 @@ public class WebKitGTK extends C {
 	//   Note:
 	//    - Some settings in Webkit2 have changed. It's not safe to use webkit1 settings on webkit2.
 	//    - On webkit2 you can also use the newly introduced functions for getting/setting settings as well as g_object_set().
-	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
-	public static final byte[] default_charset = ascii ("default-charset"); // $NON-NLS-1$
+	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$	// Webkit1 only
+	public static final byte[] default_charset = ascii ("default-charset"); // $NON-NLS-1$	    // Webkit2 only
 
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$		// Webkit1 only.
 	public static final byte[] enable_javascript = ascii ("enable-javascript"); // $NON-NLS-1$	// Webkit2 only
 
 	public static final byte[] enable_plugins = ascii("enable-plugins"); // $NON-NLS-1$
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$
-	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$
+
+	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$  // Webkit1
+	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2
+
 	public static final byte[] height = ascii ("height"); // $NON-NLS-1$
 	public static final byte[] javascript_can_open_windows_automatically = ascii ("javascript-can-open-windows-automatically"); // $NON-NLS-1$
 	public static final byte[] locationbar_visible = ascii ("locationbar-visible"); // $NON-NLS-1$
