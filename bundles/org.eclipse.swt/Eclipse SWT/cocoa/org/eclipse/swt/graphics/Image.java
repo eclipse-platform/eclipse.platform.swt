@@ -1238,8 +1238,19 @@ public ImageData getImageDataAtCurrentZoom() {
 		ImageData data;
 		boolean hasImageProvider = imageFileNameProvider != null || imageDataProvider != null;
 		if (hasImageProvider && imageRep.equals(getActualRepresentation())) {
-			// No HiDPI representation available: need to scale 100% rep. Workaround for bug 513129.
+			// FIXME: No HiDPI representation available: need to scale 100% rep. Workaround for bug 513129.
 			data = _getImageData(imageRep, this.alphaInfo_100);
+		} else if (imageRep.pixelsWide() != width || imageRep.pixelsHigh() != height) {
+			// FIXME: Handle HiDPI representation with deviceZoom == 100. Workaround for bug 513637.
+			AlphaInfo alphaInfo;
+			if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+				if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep);
+				alphaInfo = alphaInfo_200;
+			} else {
+				// XXX: unexpected, probably wrong, but I don't have a better idea...:
+				alphaInfo = alphaInfo_100;
+			}
+			data = _getImageData(imageRep, alphaInfo);
 		} else {
 			data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
 			if (hasImageProvider) {
