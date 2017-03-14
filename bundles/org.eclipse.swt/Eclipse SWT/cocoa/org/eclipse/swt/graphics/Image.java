@@ -342,109 +342,135 @@ public Image(Device device, Image srcImage, int flag) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		device = this.device;
 		this.type = srcImage.type;
 		/* Get source image size */
 		NSSize size = srcImage.handle.size();
-		int width = (int)size.width;
-		int height = (int)size.height;
-		NSBitmapImageRep srcRep = srcImage.getRepresentation();
-		long /*int*/ bpr = srcRep.bytesPerRow();
+		int srcWidth = (int)size.width;
+		int srcHeight = (int)size.height;
 
-		/* Copy transparent pixel and alpha data when necessary */
-		alphaInfo_100 = new AlphaInfo();
-		alphaInfo_100.transparentPixel = srcImage.alphaInfo_100.transparentPixel;
-		alphaInfo_100.alpha = srcImage.alphaInfo_100.alpha;
-		if (srcImage.alphaInfo_100.alphaData != null) {
-			alphaInfo_100.alphaData = new byte[srcImage.alphaInfo_100.alphaData.length];
-			System.arraycopy(srcImage.alphaInfo_100.alphaData, 0, alphaInfo_100.alphaData, 0, alphaInfo_100.alphaData.length);
+		/* Copy alpha information (transparent pixel and alpha data) for 100% & 200% image representations from source image*/
+		copyAlphaInfo(srcImage.alphaInfo_100, alphaInfo_100);
+		if (srcImage.alphaInfo_200 != null) {
+			copyAlphaInfo(srcImage.alphaInfo_200, alphaInfo_200);
 		}
-
-		long /*int*/ srcData = srcRep.bitmapData();
-		long /*int*/ format = srcRep.bitmapFormat();
-		long /*int*/ bpp = srcRep.bitsPerPixel();
 
 		/* Create the image */
 		handle = (NSImage)new NSImage().alloc();
 		handle = handle.initWithSize(size);
-		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, format, srcRep.bytesPerRow(), bpp);
-		handle.addRepresentation(rep);
-		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
 
-		long /*int*/ data = rep.bitmapData();
-		OS.memmove(data, srcData, width * height * 4);
-		if (flag != SWT.IMAGE_COPY) {
-			final int redOffset, greenOffset, blueOffset;
-			if (bpp == 32 && (format & OS.NSAlphaFirstBitmapFormat) == 0) {
-				redOffset = 0;
-				greenOffset = 1;
-				blueOffset = 2;
-			} else {
-				redOffset = 1;
-				greenOffset = 2;
-				blueOffset = 3;
-			}
-			/* Apply transformation */
-			switch (flag) {
-			case SWT.IMAGE_DISABLE: {
-				Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-				RGB zeroRGB = zeroColor.getRGB();
-				byte zeroRed = (byte)zeroRGB.red;
-				byte zeroGreen = (byte)zeroRGB.green;
-				byte zeroBlue = (byte)zeroRGB.blue;
-				Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-				RGB oneRGB = oneColor.getRGB();
-				byte oneRed = (byte)oneRGB.red;
-				byte oneGreen = (byte)oneRGB.green;
-				byte oneBlue = (byte)oneRGB.blue;
-				byte[] line = new byte[(int)/*64*/bpr];
-				for (int y=0; y<height; y++) {
-					OS.memmove(line, data + (y * bpr), bpr);
-					int offset = 0;
-					for (int x=0; x<width; x++) {
-						int red = line[offset+redOffset] & 0xFF;
-						int green = line[offset+greenOffset] & 0xFF;
-						int blue = line[offset+blueOffset] & 0xFF;
-						int intensity = red * red + green * green + blue * blue;
-						if (intensity < 98304) {
-							line[offset+redOffset] = zeroRed;
-							line[offset+greenOffset] = zeroGreen;
-							line[offset+blueOffset] = zeroBlue;
-						} else {
-							line[offset+redOffset] = oneRed;
-							line[offset+greenOffset] = oneGreen;
-							line[offset+blueOffset] = oneBlue;
-						}
-						offset += 4;
-					}
-					OS.memmove(data + (y * bpr), line, bpr);
-				}
-				break;
-			}
-			case SWT.IMAGE_GRAY: {
-				byte[] line = new byte[(int)/*64*/bpr];
-				for (int y=0; y<height; y++) {
-					OS.memmove(line, data + (y * bpr), bpr);
-					int offset = 0;
-					for (int x=0; x<width; x++) {
-						int red = line[offset+redOffset] & 0xFF;
-						int green = line[offset+greenOffset] & 0xFF;
-						int blue = line[offset+blueOffset] & 0xFF;
-						byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
-						line[offset+redOffset] = line[offset+greenOffset] = line[offset+blueOffset] = intensity;
-						offset += 4;
-					}
-					OS.memmove(data + (y * bpr), line, bpr);
-				}
-				break;
-			}
-			}
+		/* Create the 100% representation for the new image from source image & apply flag */
+		createRepFromSourceAndApplyFlag(srcImage.getRepresentation_100(), srcWidth, srcHeight, flag);
+
+		imageFileNameProvider = srcImage.imageFileNameProvider;
+		imageDataProvider = srcImage.imageDataProvider;
+		if (imageFileNameProvider != null || imageDataProvider != null) {
+			/* If source image has 200% representation then create the 200% representation for the new image & apply flag */
+			NSBitmapImageRep rep200 = srcImage.getRepresentation_200();
+			if (rep200 != null) createRepFromSourceAndApplyFlag(rep200, srcWidth * 2, srcHeight * 2, flag);
 		}
 		init();
 	} finally {
 		if (pool != null) pool.release();
+	}
+}
+
+/**
+ * Copies the AlphaInfo from source to destination.
+ */
+private void copyAlphaInfo(AlphaInfo src_alphaInfo, AlphaInfo dest_alphaInfo) {
+	dest_alphaInfo = new AlphaInfo();
+	dest_alphaInfo.transparentPixel = src_alphaInfo.transparentPixel;
+	dest_alphaInfo.alpha = src_alphaInfo.alpha;
+	if (src_alphaInfo.alphaData != null) {
+		dest_alphaInfo.alphaData = new byte[src_alphaInfo.alphaData.length];
+		System.arraycopy(src_alphaInfo.alphaData, 0, dest_alphaInfo.alphaData, 0, dest_alphaInfo.alphaData.length);
+	}
+}
+
+/**
+ * Creates a new NSBitmapImageRep image representation for the Image from the source NSBitmapImageRep representation and adds the rep to the Image.
+ * Applies the flag to the newly created representation. This method is invoked from the Image copy constructor.
+ */
+private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWidth, int srcHeight, int flag) {
+	long /*int*/ srcData = srcRep.bitmapData();
+	long /*int*/ srcBitmapFormat = srcRep.bitmapFormat();
+	long /*int*/ srcBpp = srcRep.bitsPerPixel();
+	long /*int*/ srcBpr = srcRep.bytesPerRow();
+
+	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	rep = rep.initWithBitmapDataPlanes(0, srcWidth, srcHeight, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, srcBitmapFormat, srcRep.bytesPerRow(), srcBpp);
+	handle.addRepresentation(rep);
+	rep.release();
+
+	long /*int*/ data = rep.bitmapData();
+	OS.memmove(data, srcData, srcWidth * srcHeight * 4);
+	if (flag != SWT.IMAGE_COPY) {
+		final int redOffset, greenOffset, blueOffset;
+		if (srcBpp == 32 && (srcBitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
+			redOffset = 0;
+			greenOffset = 1;
+			blueOffset = 2;
+		} else {
+			redOffset = 1;
+			greenOffset = 2;
+			blueOffset = 3;
+		}
+		/* Apply transformation */
+		switch (flag) {
+		case SWT.IMAGE_DISABLE: {
+			Color zeroColor = this.device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+			RGB zeroRGB = zeroColor.getRGB();
+			byte zeroRed = (byte)zeroRGB.red;
+			byte zeroGreen = (byte)zeroRGB.green;
+			byte zeroBlue = (byte)zeroRGB.blue;
+			Color oneColor = this.device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+			RGB oneRGB = oneColor.getRGB();
+			byte oneRed = (byte)oneRGB.red;
+			byte oneGreen = (byte)oneRGB.green;
+			byte oneBlue = (byte)oneRGB.blue;
+			byte[] line = new byte[(int)/*64*/srcBpr];
+			for (int y=0; y<srcHeight; y++) {
+				OS.memmove(line, data + (y * srcBpr), srcBpr);
+				int offset = 0;
+				for (int x=0; x<srcWidth; x++) {
+					int red = line[offset+redOffset] & 0xFF;
+					int green = line[offset+greenOffset] & 0xFF;
+					int blue = line[offset+blueOffset] & 0xFF;
+					int intensity = red * red + green * green + blue * blue;
+					if (intensity < 98304) {
+						line[offset+redOffset] = zeroRed;
+						line[offset+greenOffset] = zeroGreen;
+						line[offset+blueOffset] = zeroBlue;
+					} else {
+						line[offset+redOffset] = oneRed;
+						line[offset+greenOffset] = oneGreen;
+						line[offset+blueOffset] = oneBlue;
+					}
+					offset += 4;
+				}
+				OS.memmove(data + (y * srcBpr), line, srcBpr);
+			}
+			break;
+		}
+		case SWT.IMAGE_GRAY: {
+			byte[] line = new byte[(int)/*64*/srcBpr];
+			for (int y=0; y<srcHeight; y++) {
+				OS.memmove(line, data + (y * srcBpr), srcBpr);
+				int offset = 0;
+				for (int x=0; x<srcWidth; x++) {
+					int red = line[offset+redOffset] & 0xFF;
+					int green = line[offset+greenOffset] & 0xFF;
+					int blue = line[offset+blueOffset] & 0xFF;
+					byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
+					line[offset+redOffset] = line[offset+greenOffset] = line[offset+blueOffset] = intensity;
+					offset += 4;
+				}
+				OS.memmove(data + (y * srcBpr), line, srcBpr);
+			}
+			break;
+		}
+		}
 	}
 }
 
@@ -1083,8 +1109,10 @@ public boolean equals (Object object) {
 	}
 }
 
-/** Returns the image representation at 100%. Creates the representation if necessary. */
-NSBitmapImageRep getActualRepresentation () {
+/**
+ * Returns the image representation at 100%. Creates the representation if necessary.
+ */
+NSBitmapImageRep getRepresentation_100 () {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
 	long /*int*/ count = reps.count();
@@ -1104,8 +1132,10 @@ NSBitmapImageRep getActualRepresentation () {
 	return newRep;
 }
 
-/** Returns the image representation at 200%, or null if none is available. */
-NSBitmapImageRep getRepresentation200 () {
+/**
+ * Returns the image representation at 200%, or null if none is available.
+ */
+NSBitmapImageRep getRepresentation_200 () {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
 	long /*int*/ count = reps.count();
@@ -1226,7 +1256,7 @@ public ImageData getImageData() {
 		if (imageFileNameProvider == null && imageDataProvider == null) {
 			imageRep = getRepresentation();
 		} else {
-			imageRep = getActualRepresentation();
+			imageRep = getRepresentation_100();
 		}
 		return _getImageData(imageRep, this.alphaInfo_100);
 	} finally {
@@ -1278,7 +1308,7 @@ public ImageData getImageDataAtCurrentZoom() {
 		ImageData data;
 		boolean hasImageProvider = imageFileNameProvider != null || imageDataProvider != null;
 		if (hasImageProvider) {
-			NSBitmapImageRep imageRep200 = getRepresentation200();
+			NSBitmapImageRep imageRep200 = getRepresentation_200();
 			if (imageRep200 != null) {
 				if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
 					if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep);
