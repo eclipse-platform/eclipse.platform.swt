@@ -78,8 +78,10 @@ public class WebKitGTK extends C {
 	/** Webkit1 only. On webkit2 & newer browsers 'window.status=txt' has no effect anymore.
 	 *  Status bar only updated when you hover mouse over hyperlink.*/
 	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
-	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$
-	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$
+	
+	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$	// Webkit1
+	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$		// Webkit2
+	
 	/** Webkit1 only. On Webkit2 this is found in a webextension. Instead 'load_changed' is used on webkit2 **/
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
 
@@ -108,17 +110,22 @@ public class WebKitGTK extends C {
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$  // Webkit1
 	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2
 
-	public static final byte[] height = ascii ("height"); // $NON-NLS-1$
-	public static final byte[] javascript_can_open_windows_automatically = ascii ("javascript-can-open-windows-automatically"); // $NON-NLS-1$
-	public static final byte[] locationbar_visible = ascii ("locationbar-visible"); // $NON-NLS-1$
-	public static final byte[] menubar_visible = ascii ("menubar-visible"); // $NON-NLS-1$
-	public static final byte[] SOUP_SESSION_PROXY_URI = ascii ("proxy-uri"); // $NON-NLS-1$
-	public static final byte[] statusbar_visible = ascii ("statusbar-visible"); // $NON-NLS-1$
-	public static final byte[] toolbar_visible = ascii ("toolbar-visible"); // $NON-NLS-1$
-	public static final byte[] user_agent = ascii ("user-agent"); // $NON-NLS-1$
-	public static final byte[] width = ascii ("width"); // $NON-NLS-1$
-	public static final byte[] x = ascii ("x"); // $NON-NLS-1$
-	public static final byte[] y = ascii ("y"); // $NON-NLS-1$
+	public static final byte[] user_agent = ascii ("user-agent"); // $NON-NLS-1$				// Webkit1 & Webkit2
+
+	public static final byte[] javascript_can_open_windows_automatically = ascii ("javascript-can-open-windows-automatically"); // $NON-NLS-1$	// Webkit1 & Webit2
+
+	public static final byte[] locationbar_visible = ascii ("locationbar-visible"); // $NON-NLS-1$		// Webkit1 (Settings) & Webkit2 (Properties)
+	public static final byte[] menubar_visible = ascii ("menubar-visible"); // $NON-NLS-1$				// Webkit1 (Settings) & Webkit2 (Properties)
+	public static final byte[] statusbar_visible = ascii ("statusbar-visible"); // $NON-NLS-1$			// Webkit1 (Settings) & Webkit2 (Properties)
+	public static final byte[] toolbar_visible = ascii ("toolbar-visible"); // $NON-NLS-1$				// Webkit1 (Settings) & Webkit2 (Properties)
+
+	// Webki1 only (Settings). (In Webkit2 height/width/x/y are stored in "geometry" of 'Properties')
+	public static final byte[] height = ascii ("height"); // $NON-NLS-1$	// Webkit1 only
+	public static final byte[] width = ascii ("width"); // $NON-NLS-1$		// Wekbit1 only
+	public static final byte[] x = ascii ("x"); // $NON-NLS-1$				// Webkit1 only
+	public static final byte[] y = ascii ("y"); // $NON-NLS-1$				// Webkit1 only
+
+	public static final byte[] SOUP_SESSION_PROXY_URI = ascii ("proxy-uri"); // $NON-NLS-1$		// libsoup
 
 	/** DOM events */
 	public static final byte[] dragstart = ascii ("dragstart"); // $NON-NLS-1$
@@ -1459,6 +1466,7 @@ public static final long /*int*/ webkit_web_view_get_uri (long /*int*/ web_view)
 	}
 }
 
+// Webkit1 only.
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_view_get_window_features (long /*int*/ web_view);
 public static final long /*int*/ webkit_web_view_get_window_features (long /*int*/ web_view) {
@@ -1469,6 +1477,36 @@ public static final long /*int*/ webkit_web_view_get_window_features (long /*int
 		lock.unlock();
 	}
 }
+
+// Webkit2 only.
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_view_get_window_properties (long /*int*/ webView);
+/** WebKitWindowProperties * webkit_web_view_get_window_properties (WebKitWebView *web_view); */
+public static final long /*int*/ webkit_web_view_get_window_properties (long /*int*/ webView) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_window_properties (webView);
+	} finally {
+		lock.unlock();
+	}
+}
+
+// Webkit2 only.
+/**
+ * @method flags=dynamic
+ * @param rectangle cast=(GdkRectangle *),flags=no_in
+ */
+public static final native void _webkit_window_properties_get_geometry (long /*int*/ webKitWindowProperties, GdkRectangle rectangle);
+public static final void webkit_window_properties_get_geometry (long /*int*/ webKitWindowProperties, GdkRectangle rectangle ) {
+	lock.lock();
+	try {
+		_webkit_window_properties_get_geometry (webKitWindowProperties, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
 
 /** @method flags=dynamic */
 public static final native void _webkit_web_view_go_back (long /*int*/ web_view);
@@ -1729,7 +1767,7 @@ public static final long /*int*/  webkit_uri_response_get_mime_type (long /*int*
 /* --------------------- start SWT natives --------------------- */
 
 public static final native int JSClassDefinition_sizeof ();
-
+public static final native int GdkRectangle_sizeof();
 
 /**
  * @param dest cast=(void *)

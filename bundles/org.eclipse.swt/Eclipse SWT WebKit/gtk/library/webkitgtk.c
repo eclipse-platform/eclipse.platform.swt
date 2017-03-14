@@ -24,6 +24,18 @@
 #define WebKitGTK_NATIVE(func) Java_org_eclipse_swt_internal_webkit_WebKitGTK_##func
 #endif
 
+#ifndef NO_GdkRectangle_1sizeof
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(GdkRectangle_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, GdkRectangle_1sizeof_FUNC);
+	rc = (jint)GdkRectangle_sizeof();
+	WebKitGTK_NATIVE_EXIT(env, that, GdkRectangle_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_JSClassDefinition_1sizeof
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(JSClassDefinition_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2726,6 +2738,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1window_1fe
 }
 #endif
 
+#ifndef NO__1webkit_1web_1view_1get_1window_1properties
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1window_1properties)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1get_1window_1properties_FUNC);
+/*
+	rc = (jintLong)webkit_web_view_get_window_properties(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_get_window_properties)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1get_1window_1properties_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1web_1view_1go_1back
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1go_1back)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2977,6 +3009,28 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1stop_1loading)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1stop_1loading_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1window_1properties_1get_1geometry
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1window_1properties_1get_1geometry)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1window_1properties_1get_1geometry_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	webkit_window_properties_get_geometry(arg0, (GdkRectangle *)lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_window_properties_get_geometry)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, (GdkRectangle *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1window_1properties_1get_1geometry_FUNC);
 }
 #endif
 

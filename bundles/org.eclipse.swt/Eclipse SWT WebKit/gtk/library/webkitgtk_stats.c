@@ -22,6 +22,7 @@
 #ifdef NATIVE_STATS
 
 char * WebKitGTK_nativeFunctionNames[] = {
+	"GdkRectangle_1sizeof",
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
 	"_1JSContextGetGlobalObject",
@@ -157,6 +158,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1get_1type",
 	"_1webkit_1web_1view_1get_1uri",
 	"_1webkit_1web_1view_1get_1window_1features",
+	"_1webkit_1web_1view_1get_1window_1properties",
 	"_1webkit_1web_1view_1go_1back",
 	"_1webkit_1web_1view_1go_1forward",
 	"_1webkit_1web_1view_1load_1html",
@@ -169,6 +171,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1run_1javascript",
 	"_1webkit_1web_1view_1run_1javascript_1finish",
 	"_1webkit_1web_1view_1stop_1loading",
+	"_1webkit_1window_1properties_1get_1geometry",
 	"memmove",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(WebKitGTK_nativeFunctionNames) / sizeof(char*)

@@ -144,6 +144,16 @@ typedef struct {
 	void* response_body;
 	void* response_headers;
 } SoupMessage;
+
+// To avoid adding hard Gdk dependency and maintain dynamic nature of webkit calls, we re-define Gdk's struct here:
+// Alternativley one could include at the top:
+// #include <gdk/gdk.h>
+// and add GTKCFLAGS and GTKLIBS to WEBKITCFLAGS and WEBKITLIBS respectively in make_linux.mak.
+typedef struct {
+    int x, y;
+    int width, height;
+} GdkRectangle;
+
 #endif /*WEBKIT_DEBUG*/
 
 

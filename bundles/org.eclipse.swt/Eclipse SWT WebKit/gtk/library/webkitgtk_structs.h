@@ -18,6 +18,18 @@
 
 #include "webkitgtk.h"
 
+#ifndef NO_GdkRectangle
+void cacheGdkRectangleFields(JNIEnv *env, jobject lpObject);
+GdkRectangle *getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct);
+void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct);
+#define GdkRectangle_sizeof() sizeof(GdkRectangle)
+#else
+#define cacheGdkRectangleFields(a,b)
+#define getGdkRectangleFields(a,b,c) NULL
+#define setGdkRectangleFields(a,b,c)
+#define GdkRectangle_sizeof() 0
+#endif
+
 #ifndef NO_JSClassDefinition
 void cacheJSClassDefinitionFields(JNIEnv *env, jobject lpObject);
 JSClassDefinition *getJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition *lpStruct);

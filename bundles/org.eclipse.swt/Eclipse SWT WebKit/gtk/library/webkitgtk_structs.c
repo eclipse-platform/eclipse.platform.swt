@@ -19,6 +19,46 @@
 #include "swt.h"
 #include "webkitgtk_structs.h"
 
+#ifndef NO_GdkRectangle
+typedef struct GdkRectangle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} GdkRectangle_FID_CACHE;
+
+GdkRectangle_FID_CACHE GdkRectangleFc;
+
+void cacheGdkRectangleFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkRectangleFc.cached) return;
+	GdkRectangleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkRectangleFc.x = (*env)->GetFieldID(env, GdkRectangleFc.clazz, "x", "I");
+	GdkRectangleFc.y = (*env)->GetFieldID(env, GdkRectangleFc.clazz, "y", "I");
+	GdkRectangleFc.width = (*env)->GetFieldID(env, GdkRectangleFc.clazz, "width", "I");
+	GdkRectangleFc.height = (*env)->GetFieldID(env, GdkRectangleFc.clazz, "height", "I");
+	GdkRectangleFc.cached = 1;
+}
+
+GdkRectangle *getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct)
+{
+	if (!GdkRectangleFc.cached) cacheGdkRectangleFields(env, lpObject);
+	lpStruct->x = (gint)(*env)->GetIntField(env, lpObject, GdkRectangleFc.x);
+	lpStruct->y = (gint)(*env)->GetIntField(env, lpObject, GdkRectangleFc.y);
+	lpStruct->width = (gint)(*env)->GetIntField(env, lpObject, GdkRectangleFc.width);
+	lpStruct->height = (gint)(*env)->GetIntField(env, lpObject, GdkRectangleFc.height);
+	return lpStruct;
+}
+
+void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct)
+{
+	if (!GdkRectangleFc.cached) cacheGdkRectangleFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GdkRectangleFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, GdkRectangleFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, GdkRectangleFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, GdkRectangleFc.height, (jint)lpStruct->height);
+}
+#endif
+
 #ifndef NO_JSClassDefinition
 typedef struct JSClassDefinition_FID_CACHE {
 	int cached;

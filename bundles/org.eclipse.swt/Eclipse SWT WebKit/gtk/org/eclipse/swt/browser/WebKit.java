@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.webkit.*;
+import org.eclipse.swt.internal.webkit.GdkRectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -2752,38 +2753,45 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 
-	long /*int*/ settings = WebKitGTK.webkit_web_view_get_window_features (webView);
-	int[] result = new int[1];
-	OS.g_object_get (settings, WebKitGTK.locationbar_visible, result, 0);
-	newEvent.addressBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.menubar_visible, result, 0);
-	newEvent.menuBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.statusbar_visible, result, 0);
-	newEvent.statusBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.toolbar_visible, result, 0);
-	newEvent.toolBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.x, result, 0);
-	int x = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.y, result, 0);
-	int y = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.width, result, 0);
-	int width = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.height, result, 0);
-	int height = result[0];
-	result[0] = 0;
-	if (x != -1 && y != -1) {
-		newEvent.location = new Point (x,y);
+	if (!WEBKIT2) {
+		long /*int*/ settings = WebKitGTK.webkit_web_view_get_window_features (webView);
+		newEvent.addressBar = webkit_settings_get(settings, WebKitGTK.locationbar_visible) != 0;
+		newEvent.menuBar = webkit_settings_get(settings, WebKitGTK.menubar_visible) != 0;
+		newEvent.statusBar = webkit_settings_get(settings, WebKitGTK.statusbar_visible) != 0;
+		newEvent.addressBar = webkit_settings_get(settings, WebKitGTK.toolbar_visible) != 0;
+		int x =  webkit_settings_get(settings, WebKitGTK.x);
+		int y =  webkit_settings_get(settings, WebKitGTK.x);
+		int width =  webkit_settings_get(settings, WebKitGTK.width);
+		int height =  webkit_settings_get(settings, WebKitGTK.height);
+		if (x != -1 && y != -1)
+			newEvent.location = new Point (x,y);
+		if (width != -1 && height != -1)
+			newEvent.size = new Point (width,height);
+	} else { // Webkit2
+		long /*int*/ properties = WebKitGTK.webkit_web_view_get_window_properties(webView);
+		newEvent.addressBar = webkit_settings_get(properties, WebKitGTK.locationbar_visible) != 0;
+		newEvent.menuBar = webkit_settings_get(properties, WebKitGTK.menubar_visible) != 0;
+		newEvent.statusBar = webkit_settings_get(properties, WebKitGTK.statusbar_visible) != 0;
+		newEvent.toolBar = webkit_settings_get(properties, WebKitGTK.toolbar_visible) != 0;
+		GdkRectangle rect = new GdkRectangle();
+		WebKitGTK.webkit_window_properties_get_geometry(properties, rect);
+
+		newEvent.location = new Point(Math.max(0, rect.x),Math.max(0, rect.y));
+
+		int width = rect.width;
+		int height = rect.height;
+		if (height == 100 && width == 100) {
+			// On Webkit1, if no height/width is specified, reasonable defaults are given.
+			// On Webkit2, if no height/width is specified, then minimum (which is 100) is allocated to popus.
+			// This makes popups very small.
+			// For better cross-platform consistency (Win/Cocoa/Gtk), we give more reasonable defaults (2/3 the size of a screen).
+			Rectangle primaryMonitorBounds = browser.getDisplay ().getPrimaryMonitor().getBounds();
+			height = (int) (primaryMonitorBounds.height * 0.66);
+			width = (int) (primaryMonitorBounds.width * 0.66);
+		}
+		newEvent.size = new Point(width, height);
 	}
-	if (width != -1 && height != -1) {
-		newEvent.size = new Point (width,height);
-	}
+
 	Runnable fireVisibilityListeners = () -> {
 		if (browser.isDisposed()) return;
 		for (int i = 0; i < visibilityWindowListeners.length; i++) {
@@ -2824,6 +2832,12 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
  * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
 private int webkit_settings_get(byte [] property) {
 	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
+	return webkit_settings_get(settings, property);
+}
+
+/** Webkit1 & Webkit2
+ * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
+private int webkit_settings_get(long /*int*/ settings, byte[] property) {
 	int[] result = new int[1];
 	OS.g_object_get (settings, property, result, 0);
 	return result[0];

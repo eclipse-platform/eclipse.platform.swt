@@ -32,6 +32,7 @@ extern char* WebKitGTK_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	GdkRectangle_1sizeof_FUNC,
 	JSClassDefinition_1sizeof_FUNC,
 	_1JSClassCreate_FUNC,
 	_1JSContextGetGlobalObject_FUNC,
@@ -167,6 +168,7 @@ typedef enum {
 	_1webkit_1web_1view_1get_1type_FUNC,
 	_1webkit_1web_1view_1get_1uri_FUNC,
 	_1webkit_1web_1view_1get_1window_1features_FUNC,
+	_1webkit_1web_1view_1get_1window_1properties_FUNC,
 	_1webkit_1web_1view_1go_1back_FUNC,
 	_1webkit_1web_1view_1go_1forward_FUNC,
 	_1webkit_1web_1view_1load_1html_FUNC,
@@ -179,5 +181,6 @@ typedef enum {
 	_1webkit_1web_1view_1run_1javascript_FUNC,
 	_1webkit_1web_1view_1run_1javascript_1finish_FUNC,
 	_1webkit_1web_1view_1stop_1loading_FUNC,
+	_1webkit_1window_1properties_1get_1geometry_FUNC,
 	memmove_FUNC,
 } WebKitGTK_FUNCS;
