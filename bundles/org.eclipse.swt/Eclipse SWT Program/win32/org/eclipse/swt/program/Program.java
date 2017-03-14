@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,7 +90,21 @@ public static Program findProgram (String extension) {
 		int [] lpcbData = new int [1];
 		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
 		if (result == 0) {
-			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+			int length = lpcbData [0] / TCHAR.sizeof;
+			/*
+			 * Crash is seen when the size of REG_SZ entry in HKEY_CLASSES_ROOT
+			 * is not multiple of a Unicode byte length. The REG_SZ entry in
+			 * Windows registry may not have been stored with the proper
+			 * terminating null characters: e.g. non null terminated string or a
+			 * single byte null terminated. Refer below MSDN article on this:
+			 * https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884
+			 * %28v=vs.85%29.aspx Hence solution is to adjust the buffer length
+			 * accordingly. Refer Bug 157010 for more details.
+			 */
+			if (lpcbData [0] % TCHAR.sizeof != 0) {
+				length++;
+			}
+			TCHAR lpData = new TCHAR (0, length);
 			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
 			if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()), extension);
 		}
@@ -161,6 +175,19 @@ static String getKeyValue (String string, boolean expand) {
 	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, (TCHAR) null, lpcbData) == 0) {
 		result = "";
 		int length = lpcbData [0] / TCHAR.sizeof;
+		/*
+		 * Crash is seen when the size of REG_SZ entry in HKEY_CLASSES_ROOT
+		 * is not multiple of a Unicode byte length. The REG_SZ entry in
+		 * Windows registry may not have been stored with the proper
+		 * terminating null characters: e.g. non null terminated string or a
+		 * single byte null terminated. Refer below MSDN article on this:
+		 * https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884
+		 * %28v=vs.85%29.aspx Hence solution is to adjust the buffer length
+		 * accordingly. Refer Bug 157010 for more details.
+		 */
+		if (lpcbData [0] % TCHAR.sizeof != 0) {
+			length++;
+		}
 		if (length != 0) {
 			/* Use the character encoding for the default locale */
 			TCHAR lpData = new TCHAR (0, length);
