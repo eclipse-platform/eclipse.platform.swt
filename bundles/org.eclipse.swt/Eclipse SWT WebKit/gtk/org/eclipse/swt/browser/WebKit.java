@@ -1238,10 +1238,10 @@ private static class Webkit2JavascriptEvaluator {
 			Shell shell = browser.getShell();
 			Display display = browser.getDisplay();
 			while (!shell.isDisposed()) {
-				display.readAndDispatch();
+				boolean eventsDispatched = OS.g_main_context_iteration (0, false);
 				if (retObj.callbackFinished)
 					break;
-				else
+				else if (!eventsDispatched)
 					display.sleep();
 			}
 			CallBackMap.removeObject(callbackId);
@@ -1283,6 +1283,7 @@ private static class Webkit2JavascriptEvaluator {
 			WebKitGTK.webkit_javascript_result_unref (js_result);
 		}
 		retObj.callbackFinished = true;
+		Display.getCurrent().wake();
 	}
 }
 
