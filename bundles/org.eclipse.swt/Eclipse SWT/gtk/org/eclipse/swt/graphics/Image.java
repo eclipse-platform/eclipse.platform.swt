@@ -1293,7 +1293,10 @@ public Rectangle getBounds() {
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  * @since 3.105
+ * @deprecated This API doesn't make sense and will be replaced, see
+ *             <a href="https://bugs.eclipse.org/496409">bug 496409</a>
  */
+@Deprecated
 public Rectangle getBoundsInPixels() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width != -1 && height != -1) {
@@ -1329,6 +1332,12 @@ public ImageData getImageData () {
  * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
+ * <p>
+ * <b>Warning:</b> This API doesn't make sense and will be replaced, see
+ * <a href="https://bugs.eclipse.org/496409">bug 496409</a>.
+ * Until then, it will return an ImageData for the highest supported resolution
+ * (e.g. always the 200% version on macOS).
+ * </p>
  *
  * @return an <code>ImageData</code> containing the image's data
  * and attributes at the current zoom level.

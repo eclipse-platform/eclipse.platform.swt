@@ -1083,7 +1083,7 @@ public boolean equals (Object object) {
 	}
 }
 
-//Method to get the Image representation for the actual image without any scaling.
+/** Returns the image representation at 100%. Creates the representation if necessary. */
 NSBitmapImageRep getActualRepresentation () {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
@@ -1102,6 +1102,24 @@ NSBitmapImageRep getActualRepresentation () {
 	handle.addRepresentation(newRep);
 	newRep.release();
 	return newRep;
+}
+
+/** Returns the image representation at 200%, or null if none is available. */
+NSBitmapImageRep getRepresentation200 () {
+	NSArray reps = handle.representations();
+	NSSize size = handle.size();
+	long /*int*/ count = reps.count();
+	for (int i = 0; i < count; i++) {
+		NSBitmapImageRep rep = new NSBitmapImageRep(reps.objectAtIndex(i));
+		int width = (int)size.width * 2;
+		int height = (int)size.height * 2;
+		if ((width == rep.pixelsWide() && height == rep.pixelsHigh())) {
+			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
+				return rep;
+			}
+		}
+	}
+	return null;
 }
 
 /**
@@ -1172,7 +1190,10 @@ public Rectangle getBounds() {
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  * @since 3.105
+ * @deprecated This API doesn't make sense and will be replaced, see
+ *             <a href="https://bugs.eclipse.org/496409">bug 496409</a>
  */
+@Deprecated
 public Rectangle getBoundsInPixels() {
 	Rectangle bounds = getBounds();
 	int scaleFactor = (int) NSScreen.mainScreen().backingScaleFactor();
@@ -1217,6 +1238,12 @@ public ImageData getImageData() {
  * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
+ * <p>
+ * <b>Warning:</b> This API doesn't make sense and will be replaced, see
+ * <a href="https://bugs.eclipse.org/496409">bug 496409</a>.
+ * Until then, it will return an ImageData for the highest supported resolution
+ * (e.g. always the 200% version on macOS).
+ * </p>
  *
  * @return an <code>ImageData</code> containing the image's data
  * and attributes at the current zoom level.
@@ -1230,6 +1257,19 @@ public ImageData getImageData() {
  * @since 3.105
  */
 public ImageData getImageDataAtCurrentZoom() {
+	/*
+	 * Bug 496409 in SWT: getImageDataAtCurrentZoom() doesn't make sense.
+	 *
+	 * The current implementation on cocoa returns the 200% representation if there's an image provider,
+	 * even if DPIUtil.getDeviceZoom() == 100. That sounds wrong, but it's crucial for clients
+	 * that this behavior keeps working.
+	 *
+	 * Reason: The Image constructor wrongly creates 200% images even if
+	 * DPIUtil.getDeviceZoom() == 100 (bug 462555). A consequence of that bug is that
+	 * clients get callbacks to ImageDataProvider#getImageData(int) for zoom == 200.
+	 * To compute e.g. a composite image, clients need access to the 200% image data.
+	 * Currently, the only way to do that is via this method.
+	 */
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -1237,32 +1277,23 @@ public ImageData getImageDataAtCurrentZoom() {
 		NSBitmapImageRep imageRep = getRepresentation();
 		ImageData data;
 		boolean hasImageProvider = imageFileNameProvider != null || imageDataProvider != null;
-		if (hasImageProvider && imageRep.equals(getActualRepresentation())) {
-			// FIXME: No HiDPI representation available: need to scale 100% rep. Workaround for bug 513129.
-			data = _getImageData(imageRep, this.alphaInfo_100);
-		} else if (imageRep.pixelsWide() != width || imageRep.pixelsHigh() != height) {
-			// FIXME: Handle HiDPI representation with deviceZoom == 100. Workaround for bug 513637.
-			AlphaInfo alphaInfo;
-			if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
-				if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep);
-				alphaInfo = alphaInfo_200;
-			} else {
-				// XXX: unexpected, probably wrong, but I don't have a better idea...:
-				alphaInfo = alphaInfo_100;
-			}
-			data = _getImageData(imageRep, alphaInfo);
-		} else {
-			data = _getImageData(imageRep, _getAlphaInfoAtCurrentZoom(imageRep));
-			if (hasImageProvider) {
-				return data;
+		if (hasImageProvider) {
+			NSBitmapImageRep imageRep200 = getRepresentation200();
+			if (imageRep200 != null) {
+				if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+					if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep);
+				}
+				return _getImageData(imageRep, alphaInfo_200);
 			}
 		}
+		// XXX: No HiDPI representation available: Need to scale 100% rep. Workaround for bug 513129 and bug 513637.
+		data = _getImageData(imageRep, this.alphaInfo_100);
 		return DPIUtil.autoScaleImageData(device, data, DPIUtil.getDeviceZoom(), 100);
 	} finally {
 		if (pool != null) pool.release();
 	}
 }
-
+/** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
 NSBitmapImageRep getRepresentation () {
 	NSBitmapImageRep rep = new NSBitmapImageRep(handle.bestRepresentationForDevice(null));
 	if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
