@@ -15,6 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -651,6 +652,92 @@ public void test_setJavascriptEnabled_multipleInstances() {
 			"Instance 1 & 2 page counts: " + pageLoadCount.get() + " & " + pageLoadCountSecondInstance.get();
 
 	assertTrue(message, passed);
+}
+
+/**
+*  This test replicates what happens internally
+*  if you click on a link in a javadoc popup hoverbox.
+*  I.e, in a location listener, evaluation() is performed.
+*
+*  The goal of this test is to ensure there are no 'Freezes'/deadlocks if
+*  javascript evaluation is invoked inside an SWT listener.
+*
+*  At time of writing, it also highlights that evaluation inside SWT listeners
+*  is not consistent across browsers.
+*/
+@Test
+public void test_LocationListener_evaluateInCallback() {
+	assumeTrue(isWebkit2 || SwtTestUtil.isCocoa || SwtTestUtil.isWindows);
+	// On Webki1 this test works, but is prone to crashes. See Bug 509411
+
+	AtomicBoolean changingFinished = new AtomicBoolean(false);
+	AtomicBoolean changedFinished = new AtomicBoolean(false);
+	browser.addLocationListener(new LocationListener() {
+		@Override
+		public void changing(LocationEvent event) {
+			browser.evaluate("SWTchanging = true");  // Broken on Webkit1. I.e evaluate() in a 'changing()' signal doesn't do anything.
+			changingFinished.set(true);
+		}
+		@Override
+		public void changed(LocationEvent event) {
+			browser.evaluate("SWTchanged = true");
+			changedFinished.set(true);
+		}
+	});
+
+	browser.setText("<body>Hello <b>World</b></body>");
+
+	// Wait till both listeners were fired.
+	if (SwtTestUtil.isWindows) {
+		waitForPassCondition(changingFinished::get); // Windows doesn't reach changedFinished.get();
+	} else
+		waitForPassCondition(() -> (changingFinished.get() && changedFinished.get()));
+
+	// Inspect if evaluate() was executed correctly.
+	Boolean changed = false;
+	try { changed = (Boolean) browser.evaluate("return SWTchanged"); } catch (SWTException e) {}
+	Boolean changing = false;
+	try { changing = (Boolean) browser.evaluate("return SWTchanging"); } catch (SWTException e) {}
+
+
+	String errMsg = "\n  changing:  fired:" +  changingFinished.get() + "    evaluated:" + changing +
+				    "\n  changed:   fired:" + changedFinished.get() + "    evaluated:" + changed;
+	boolean passed = false;
+
+	if (isWebkit2) {
+		// Evaluation works in all cases.
+		passed = changingFinished.get() && changedFinished.get() && changed && changing;
+	} else if (isWebkit1) {
+		// On Webkit1, evaluation in 'changing' fails.
+		passed = changingFinished.get() && changedFinished.get() && changed; // && changing (broken)
+	} else if (SwtTestUtil.isCocoa) {
+		// On Cocoa, evaluation in 'changing' fails.
+		passed = changingFinished.get() && changedFinished.get() && changed; // && changing (broken)
+	} else if (SwtTestUtil.isWindows) {
+		// On Windows, evaluation inside SWT listeners fails altogether.
+		// Further, only 'changing' is fired if evaluation is invoked inside listeners.
+		passed = changingFinished.get();
+	}
+	assertTrue(errMsg, passed);
+}
+
+/** Verify that evaluation works inside an OpenWindowListener */
+@Test
+public void test_OpenWindowListener_evaluateInCallback() {
+	assumeTrue(!isWebkit1); // This works on Webkit1, but can sporadically fail, see Bug 509411
+	AtomicBoolean eventFired = new AtomicBoolean(false);
+	browser.addOpenWindowListener(event -> {
+		browser.evaluate("SWTopenListener = true");
+		eventFired.set(true);
+	});
+	shell.open();
+	browser.evaluate("window.open()");
+	boolean fired = waitForPassCondition(() -> eventFired.get());
+	boolean evaluated = false;
+	try { evaluated = (Boolean) browser.evaluate("return SWTopenListener"); } catch (SWTException e) {};
+	boolean passed = fired && evaluated;
+	String errMsg = "Event fired:" + fired + "   evaluated:" + evaluated;
+	assertTrue(errMsg, passed);
 }
 
 /**
