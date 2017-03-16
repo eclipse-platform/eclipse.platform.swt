@@ -45,7 +45,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.test.Screenshots;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1420,7 +1419,7 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting"); // Bug 512627 Investigating Mac failures. Remove after.
+//	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting"); // Useful if investigating build failures on Hudson
 
 	boolean passed = waitForPassCondition(() -> {
 		if (atomicArray.get(0).equals("hellojava")
@@ -1431,7 +1430,7 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 			return false;
 		}
 	});
-	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");  // Bug 512627 Investigating Mac failures. Remove after.
+//	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");  // Useful if investigating build failures on Hudson
 
 	String msg = "Values not set. Test timed out. Array should be [\"hellojava\", 5, true], but is: " + atomicArray.toString();
 	assertTrue(msg, passed);
