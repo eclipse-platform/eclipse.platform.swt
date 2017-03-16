@@ -37,6 +37,9 @@ public class Browser5_sizing_and_bounds {
 	static int cntClosed = 0;
 
 	public static boolean test1(String url) {
+		index = 0;
+		cntPassed = 0;
+		cntClosed = 0;
 		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+"\n  Expected Event Sequence: Visibility.show");
 		passed = false;
 
