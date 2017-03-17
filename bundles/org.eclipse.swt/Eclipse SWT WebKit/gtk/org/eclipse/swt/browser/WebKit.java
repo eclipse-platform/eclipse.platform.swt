@@ -2755,15 +2755,15 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 	newEvent.widget = browser;
 
 	if (!WEBKIT2) {
-		long /*int*/ settings = WebKitGTK.webkit_web_view_get_window_features (webView);
-		newEvent.addressBar = webkit_settings_get(settings, WebKitGTK.locationbar_visible) != 0;
-		newEvent.menuBar = webkit_settings_get(settings, WebKitGTK.menubar_visible) != 0;
-		newEvent.statusBar = webkit_settings_get(settings, WebKitGTK.statusbar_visible) != 0;
-		newEvent.addressBar = webkit_settings_get(settings, WebKitGTK.toolbar_visible) != 0;
-		int x =  webkit_settings_get(settings, WebKitGTK.x);
-		int y =  webkit_settings_get(settings, WebKitGTK.y);
-		int width =  webkit_settings_get(settings, WebKitGTK.width);
-		int height =  webkit_settings_get(settings, WebKitGTK.height);
+		long /*int*/ webKitWebWindowFeatures = WebKitGTK.webkit_web_view_get_window_features (webView);
+		newEvent.addressBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.locationbar_visible) != 0;
+		newEvent.menuBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.menubar_visible) != 0;
+		newEvent.statusBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.statusbar_visible) != 0;
+		newEvent.addressBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.toolbar_visible) != 0;
+		int x =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.x);
+		int y =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.y);
+		int width =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.width);
+		int height =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.height);
 		if (x != -1 && y != -1)
 			newEvent.location = new Point (x,y);
 		if (width != -1 && height != -1)
