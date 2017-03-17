@@ -9,6 +9,16 @@ import org.junit.runner.notification.Failure;
  * This java file is intended to be used with the bash script "gtk_version_tests.sh" normally found in:
  * ~/git/eclipse.platform.swt/tests/org.eclipse.swt.tests/
  *
+ * To run this from the command line:
+ * 1) Ensure 'junit' package is installed on your system. (ex: sudo dnf install junit junit-javadoc)
+ * 2) Run via: (Assuming your eclipse git repositories are in $HOME/git)
+REPO=$HOME/git
+ARG=AllNonBrowserTests
+java -Djava.library.path=$REPO/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.linux.x86_64   -Dfile.encoding=UTF-8   -classpath /usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar:$REPO/eclipse.platform.swt/bundles/org.eclipse.swt/bin:$REPO/eclipse.platform.swt/tests/org.eclipse.swt.tests/bin org.eclipse.swt.tests.junit.CmdLineInterface $ARG
+
+ * TODO someday: generalize this so that any class#method can be ran:
+ * http://stackoverflow.com/questions/9288107/run-single-test-from-a-junit-class-using-command-line
+ *
  * It is intended to run SWT JUnit tests on multiple GTK versions in batch. Ex GTK2.24, GTK3.14 GTK3.16 etc..
  * This is convenient for patch submissions/reviews.
  *
