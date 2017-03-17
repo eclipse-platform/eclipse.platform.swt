@@ -2761,7 +2761,7 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 		newEvent.statusBar = webkit_settings_get(settings, WebKitGTK.statusbar_visible) != 0;
 		newEvent.addressBar = webkit_settings_get(settings, WebKitGTK.toolbar_visible) != 0;
 		int x =  webkit_settings_get(settings, WebKitGTK.x);
-		int y =  webkit_settings_get(settings, WebKitGTK.x);
+		int y =  webkit_settings_get(settings, WebKitGTK.y);
 		int width =  webkit_settings_get(settings, WebKitGTK.width);
 		int height =  webkit_settings_get(settings, WebKitGTK.height);
 		if (x != -1 && y != -1)
@@ -2774,9 +2774,9 @@ long /*int*/ webkit_web_view_ready (long /*int*/ web_view) {
 		newEvent.menuBar = webkit_settings_get(properties, WebKitGTK.menubar_visible) != 0;
 		newEvent.statusBar = webkit_settings_get(properties, WebKitGTK.statusbar_visible) != 0;
 		newEvent.toolBar = webkit_settings_get(properties, WebKitGTK.toolbar_visible) != 0;
+
 		GdkRectangle rect = new GdkRectangle();
 		WebKitGTK.webkit_window_properties_get_geometry(properties, rect);
-
 		newEvent.location = new Point(Math.max(0, rect.x),Math.max(0, rect.y));
 
 		int width = rect.width;
