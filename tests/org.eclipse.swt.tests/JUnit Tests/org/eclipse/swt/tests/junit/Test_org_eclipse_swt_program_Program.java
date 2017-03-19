@@ -16,8 +16,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
@@ -144,24 +144,22 @@ public void test_getPrograms() {
 	Program[] programs = Program.getPrograms();
 
 	// The result is not well-documented, but it should
-	// be non-null and contain no null entries.
+	// be non-null and contain no null and no duplicated entries.
 
 	assertNotNull(programs);
 
-	Map<Integer, Program> lookup = new HashMap<>();
-	for (int i=0; i<programs.length; i++) {
+	Set<Program> lookup = new HashSet<>();
+	for (Program program : programs) {
 
 		// test non-null entry
-		assertNotNull(programs[i]);
+		assertNotNull(program);
 
-		// test unique hash code
-		int hashCode = programs[i].hashCode();
-		Integer key = Integer.valueOf(hashCode);
-		if (lookup.containsValue(key)) {
-			fail("Duplicate hash code for "+programs[i]+" (same as "+lookup.get(key)+")");
+		// test if the list contains same objects multiple times
+		if (lookup.contains(program)) {
+			fail("Duplicated list entry for " + program);
 		}
 		else {
-			lookup.put(key,programs[i]);
+			lookup.add(program);
 		}
 	}
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
+import java.util.*;
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -248,32 +250,22 @@ static Program getProgram (String key, String extension) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	Program [] programs = new Program [1024];
+	LinkedHashSet<Program> programs = new LinkedHashSet<>(1024);
 	/* Use the character encoding for the default locale */
 	TCHAR lpName = new TCHAR (0, 1024);
 	int [] lpcName = new int [] {lpName.length ()};
 	FILETIME ft = new FILETIME ();
-	int dwIndex = 0, count = 0;
+	int dwIndex = 0;
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
 		String path = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
 		Program program = getProgram (path, null);
 		if (program != null) {
-			if (count == programs.length) {
-				Program [] newPrograms = new Program [programs.length + 1024];
-				System.arraycopy (programs, 0, newPrograms, 0, programs.length);
-				programs = newPrograms;
-			}
-			programs [count++] = program;
+			programs.add(program);
 		}
 		dwIndex++;
 	}
-	if (count != programs.length) {
-		Program [] newPrograms = new Program [count];
-		System.arraycopy (programs, 0, newPrograms, 0, count);
-		programs = newPrograms;
-	}
-	return programs;
+	return programs.toArray(new Program[programs.size()]);
 }
 
 /**

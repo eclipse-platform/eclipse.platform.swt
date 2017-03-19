@@ -312,7 +312,7 @@ static Program[] getPrograms(Display display) {
 	long /*int*/ applicationList = OS.g_app_info_get_all ();
 	long /*int*/ list = applicationList;
 	Program program;
-	List<Program> programs = new ArrayList<>();
+	LinkedHashSet<Program> programs = new LinkedHashSet<>();
 	while (list != 0) {
 		long /*int*/ application = OS.g_list_data(list);
 		if (application != 0) {
@@ -325,11 +325,7 @@ static Program[] getPrograms(Display display) {
 		list = OS.g_list_next(list);
 	}
 	if (applicationList != 0) OS.g_list_free(applicationList);
-	Program[] programList = new Program[programs.size()];
-	for (int index = 0; index < programList.length; index++) {
-		programList[index] = programs.get(index);
-	}
-	return programList;
+	return programs.toArray(new Program[programs.size()]);
 }
 
 static boolean isExecutable(String fileName) {
@@ -516,7 +512,8 @@ public boolean equals(Object other) {
 	if (this == other) return true;
 	if (!(other instanceof Program)) return false;
 	Program program = (Program)other;
-	return display == program.display && name.equals(program.name) && command.equals(program.command);
+	return display == program.display && name.equals(program.name) && command.equals(program.command)
+			&& gioExpectUri == program.gioExpectUri;
 }
 
 /**
