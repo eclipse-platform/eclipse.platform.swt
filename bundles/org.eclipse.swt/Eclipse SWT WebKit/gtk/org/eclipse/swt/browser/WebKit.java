@@ -1207,7 +1207,7 @@ private static class Webkit2JavascriptEvaluator {
 			usedCallbackIds.add(value);
 			return value;
 		}
-		private static void removeId(long id) {
+		private static void removeId(int id) {
 			usedCallbackIds.remove(id);
 		}
 	}
