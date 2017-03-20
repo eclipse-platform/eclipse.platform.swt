@@ -170,18 +170,7 @@ public DragSource(Control control, int style) {
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
 
-	/*
-	 * Feature in GTK: release events are not signaled during the dragEnd phrase of a Drag and Drop
-	 * in Wayland. In order to work with the current logic for DnD in multiselection
-	 * Widgets (tree, table, list), the selection function needs to be set back to
-	 * true on dragEnd as well as release_event(). See bug 503431.
-	 */
 
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		Callback dragReleaseCb = new Callback(control, "dragEndReleaseSelection", 2); //$NON-NLS-1$
-		if (dragReleaseCb.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.g_signal_connect(control.handle, OS.drag_end, dragReleaseCb.getAddress(), 0);
-	}
 
 	controlListener = event -> {
 		if (event.type == SWT.Dispose) {
@@ -381,12 +370,26 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	event.doit = operation != 0;
 	event.detail = operation;
 	notifyListeners(DND.DragEnd, event);
-	/*
-	 * send a mouse Up signal for >GTK3.14 as Wayland (support as of 3.14)
-	 * does not trigger a MouseUp/Mouse_release_event on DragEnd.
-	 * See Bug 510446.
-	 */
+
 	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		/*
+		 * Feature in GTK: release events are not signaled during the dragEnd phrase of a Drag and Drop
+		 * in Wayland. In order to work with the current logic for DnD in multiselection
+		 * Widgets (tree, table, list), the selection function needs to be set back to
+		 * true on dragEnd as well as release_event(). See bug 503431.
+		 */
+		if (this.control instanceof Table
+				|| this.control instanceof Tree
+				|| this.control instanceof List) {
+			long /*int*/ selection = OS.gtk_tree_view_get_selection (widget);
+			OS.gtk_tree_selection_set_select_function(selection,0,0,0);
+		}
+		
+		/* 
+		 * send a mouse Up signal for >GTK3.14 as Wayland (support as of 3.14)
+		 * does not trigger a MouseUp/Mouse_release_event on DragEnd.
+		 * See Bug 510446. 
+		 */
 		control.notifyListeners(SWT.MouseUp, event);
 	}
 	moveData = false;

@@ -6106,13 +6106,4 @@ Point getWindowOrigin () {
 	return new Point (x [0], y [0]);
 }
 
-/*
- * This method is meant to be overridden by widgets that have multiselection and
- * are draggable (e.g. tree, list, table). Documentation from GTK states that a dragEnd
- * signal is actually a Void method, but we will be using a long in order to keep
- * our callback working. Refer to Bug 503431.
- */
-long /*int*/ dragEndReleaseSelection (long /*int*/ widget, long /*int*/ context) {
-	return 0;
-}
 }

@@ -415,13 +415,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return dragDetect;
 }
 
-@Override
-long /*int*/ dragEndReleaseSelection (long /*int*/ widget, long /*int*/ context) {
-	// free up the selection function on dragEnd.
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_set_select_function(selection,0,0,0);
-	return 0;
-}
 
 @Override
 long /*int*/ eventWindow () {
