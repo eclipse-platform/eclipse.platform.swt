@@ -28,7 +28,11 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class WebKit extends WebBrowser {
-	long /*int*/ webView, webViewData, scrolledWindow;
+	long /*int*/ webView, scrolledWindow;
+	
+	/** Webkit1 only. Used by the externalObject for javascript callback to java. */
+	long /*int*/ webViewData;
+	
 	int failureCount, lastKeyCode, lastCharCode;
 	String postData;
 	String[] headers;
@@ -793,8 +797,10 @@ public void create (Composite parent, int style) {
 		  webView = WebKitGTK.webkit_web_view_new ();
 		}
 
-	webViewData = C.malloc (C.PTR_SIZEOF);
-	C.memmove (webViewData, new long /*int*/[] {webView}, C.PTR_SIZEOF);
+	if (!WEBKIT2) {
+		webViewData = C.malloc (C.PTR_SIZEOF);
+		C.memmove (webViewData, new long /*int*/[] {webView}, C.PTR_SIZEOF);
+	}
 
 	if (!WEBKIT2){
 		OS.gtk_container_add (scrolledWindow, webView);
@@ -1928,12 +1934,15 @@ void onDispose (Event e) {
 	}
 	functions = null;
 
-	if (eventFunction != null) {
-		eventFunction.dispose (false);
-		eventFunction = null;
+	if (!WEBKIT2) {
+		// event function/external object only used by webkit1. For Webkit2, see Webkit2JavaCallback
+		if (eventFunction != null) {
+			eventFunction.dispose (false);
+			eventFunction = null;
+		}
+		C.free (webViewData);
 	}
 
-	C.free (webViewData);
 	postData = null;
 	headers = null;
 	htmlBytes = null;
