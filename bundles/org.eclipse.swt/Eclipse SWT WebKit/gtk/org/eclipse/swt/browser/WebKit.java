@@ -29,10 +29,10 @@ import org.eclipse.swt.widgets.*;
 
 class WebKit extends WebBrowser {
 	long /*int*/ webView, scrolledWindow;
-	
+
 	/** Webkit1 only. Used by the externalObject for javascript callback to java. */
 	long /*int*/ webViewData;
-	
+
 	int failureCount, lastKeyCode, lastCharCode;
 	String postData;
 	String[] headers;
@@ -1082,6 +1082,10 @@ public boolean close () {
 	return close (true);
 }
 
+// Developer note:
+// @return true = leads to disposal. In Browser.java, user is told widget is disposed. Ex in Snippe326 close button is grayed out.
+//         false = blocks disposal. In Browser.java, user is told widget was not disposed.
+// See Snippet326.
 boolean close (boolean showPrompters) {
 	if (!jsEnabled) return true;
 
@@ -1108,8 +1112,21 @@ boolean close (boolean showPrompters) {
 	buffer.append ("\n};"); // $NON-NLS-1$
 	execute (buffer.toString ());
 
-	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
-	if (result == null) return false;
+	Boolean result;
+	if (!WEBKIT2) {
+		result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+		if (result == null) return false; // Default to prevent disposal.
+	} else {
+		// Sometimes if a disposal is already underway (ex parent shell disposed), then
+		// Webkit1: Silently fails
+		// Webkit2: Javascript execution can throw. We have to account for that.
+		try {
+			result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+			if (result == null) return true; // Default to assume that webkit is disposed and allow disposal of Browser.
+		} catch (SWTException e) {
+			return true; // Permit browser to be disposed if javascript execution failed.
+		}
+	}
 	return result.booleanValue ();
 }
 
