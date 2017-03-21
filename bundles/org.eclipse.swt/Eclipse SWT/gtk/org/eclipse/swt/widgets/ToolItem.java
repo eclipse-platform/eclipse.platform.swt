@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -764,25 +764,26 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
-	/*
-	* Feature in GTK.  Usually, GTK widgets propagate all events to their
-	* parent when they are done their own processing.  However, in contrast
-	* to other widgets, the buttons that make up the tool items, do not propagate
-	* the mouse up/down events. It is interesting to note that they DO propagate
-	* mouse motion events.  The fix is to explicitly forward mouse up/down events
-	* to the parent.
-	*/
-	int mask =
-		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (eventHandle, mask);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
-
+	if (!OS.GTK3) {
+		/*
+		* Feature in GTK.  Usually, GTK widgets propagate all events to their
+		* parent when they are done their own processing.  However, in contrast
+		* to other widgets, the buttons that make up the tool items, do not propagate
+		* the mouse up/down events. It is interesting to note that they DO propagate
+		* mouse motion events.  The fix is to explicitly forward mouse up/down events
+		* to the parent.
+		*/
+		int mask =
+			OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
+			OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
+			OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
+			OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+			OS.GDK_FOCUS_CHANGE_MASK;
+		OS.gtk_widget_add_events (eventHandle, mask);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+	}
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
 }
