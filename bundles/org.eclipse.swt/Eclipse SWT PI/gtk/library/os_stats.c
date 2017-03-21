@@ -108,6 +108,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GDK_1PIXMAP_1XID",
 	"_1GDK_1TYPE_1COLOR",
 	"_1GDK_1TYPE_1PIXBUF",
+	"_1GET_1FUNCTION_1POINTER_1gtk_1false",
 	"_1GString_1len",
 	"_1GString_1str",
 	"_1GTK_1ACCESSIBLE",

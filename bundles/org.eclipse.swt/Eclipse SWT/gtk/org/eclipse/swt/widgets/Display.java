@@ -226,9 +226,6 @@ public class Display extends Device {
 	long /*int*/ cellDataProc;
 	Callback cellDataCallback;
 
-	/* GtkTreeSelection callbacks for multiselection DnD */
-	long /*int*/ selectionProc;
-	Callback selectionCallback;
 
 	/* Set direction callback */
 	long /*int*/ setDirectionProc;
@@ -809,12 +806,6 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
-/*
- * Feature in GTK. GtkTreeSelectionFunc*  will return false so that multiselection on tree items using DND will work. Refer to Bug 503431
- */
-long /*int*/ selectionProc (long /*int*/ selection, long /*int*/ model, long /*int*/ path, long /*int*/ path_currently_selected, long /*int*/ data) {
-	return 0;
-}
 
 @Override
 protected void checkDevice () {
@@ -3396,10 +3387,6 @@ void initializeCallbacks () {
 	cellDataCallback = new Callback (this, "cellDataProc", 5); //$NON-NLS-1$
 	cellDataProc = cellDataCallback.getAddress ();
 	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-	selectionCallback = new Callback (this, "selectionProc", 5); //$NON-NLS-1$
-	selectionProc = selectionCallback.getAddress ();
-	if (selectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	setDirectionCallback = new Callback (this, "setDirectionProc", 2); //$NON-NLS-1$
 	setDirectionProc = setDirectionCallback.getAddress ();

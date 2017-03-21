@@ -8498,6 +8498,9 @@ public static final long /*int*/ gtk_separator_new(int orientation) {
 		lock.unlock();
 	}
 }
+
+// Get function pointer to gtk_status_icon_position_menu
+// See os_custom.h
 public static final native long /*int*/ _gtk_status_icon_position_menu_func();
 public static final long /*int*/ gtk_status_icon_position_menu_func() {
 	lock.lock();
@@ -8507,6 +8510,19 @@ public static final long /*int*/ gtk_status_icon_position_menu_func() {
 		lock.unlock();
 	}
 }
+
+// See os_custom.h
+// Dynamically get's the function pointer to gtk_false(). Gtk2/Gtk3.
+public static final native long /*int*/ _GET_FUNCTION_POINTER_gtk_false();
+public static final long /*int*/ GET_FUNCTION_POINTER_gtk_false() {
+	lock.lock();
+	try {
+		return _GET_FUNCTION_POINTER_gtk_false();
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @method flags=dynamic [GTK2/GTK3; 3.8 deprecated]
  */

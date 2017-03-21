@@ -205,6 +205,7 @@
 #define gtk_scrolled_window_add_with_viewport_LIB LIB_GTK
 #define gtk_settings_set_string_property_LIB LIB_GTK
 #define gtk_status_icon_position_menu_LIB LIB_GTK
+#define gtk_false_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
@@ -400,6 +401,13 @@ struct _GtkAccelLabelPrivate
 #define gtk_style_get_xthickness(arg0) (arg0)->xthickness
 #define gtk_style_get_ythickness(arg0) (arg0)->ythickness
 #define localeconv_decimal_point() localeconv()->decimal_point
+
+// Mechanism to get function pointers of C/gtk functions back to java.
+// Idea is that you substitute the return value with the function pointer.
+// NOTE: functions like gtk_false need to be linked to a lib. Eg see gtk_false_LIB above.
+#define GET_FUNCTION_POINTER_gtk_false() 0; \
+OS_LOAD_FUNCTION(fp, gtk_false) \
+rc = (jintLong)fp;
 
 #define gtk_status_icon_position_menu_func() 0; \
 OS_LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \

@@ -966,6 +966,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1TYPE_1PIXBUF)
 }
 #endif
 
+#ifndef NO__1GET_1FUNCTION_1POINTER_1gtk_1false
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1GET_1FUNCTION_1POINTER_1gtk_1false)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GET_1FUNCTION_1POINTER_1gtk_1false_FUNC);
+	rc = (jintLong)GET_FUNCTION_POINTER_gtk_false();
+	OS_NATIVE_EXIT(env, that, _1GET_1FUNCTION_1POINTER_1gtk_1false_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GString_1len
 JNIEXPORT jint JNICALL OS_NATIVE(_1GString_1len)
 	(JNIEnv *env, jclass that, jintLong arg0)

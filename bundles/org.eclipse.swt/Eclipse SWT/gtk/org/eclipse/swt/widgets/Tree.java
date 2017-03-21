@@ -2000,11 +2000,14 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
 						((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
 					/**
-					 * disable selection on a mouse click if there are multiple items already selected. Also,
+					 * Disable selection on a mouse click if there are multiple items already selected. Also,
 					 * if control is currently being held down, we will designate the selection logic over to release
 					 * instead by first disabling the selection.
+					 * E.g to reproduce: Open DNDExample, select "Tree", select multiple items, try dragging.
+					 *   without line below, only one item is selected for drag.
 					 */
-					OS.gtk_tree_selection_set_select_function(selection,display.selectionProc,0,0);
+					long /*int*/ gtk_false_funcPtr = OS.GET_FUNCTION_POINTER_gtk_false();
+					OS.gtk_tree_selection_set_select_function(selection, gtk_false_funcPtr, 0, 0);
 				}
 			}
 		}
