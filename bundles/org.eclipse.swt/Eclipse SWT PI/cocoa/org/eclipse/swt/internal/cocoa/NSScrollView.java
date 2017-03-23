@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,40 +62,40 @@ public void reflectScrolledClipView(NSClipView cView) {
 	OS.objc_msgSend(this.id, OS.sel_reflectScrolledClipView_, cView != null ? cView.id : 0);
 }
 
-public void setAutohidesScrollers(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAutohidesScrollers_, flag);
+public void setAutohidesScrollers(boolean autohidesScrollers) {
+	OS.objc_msgSend(this.id, OS.sel_setAutohidesScrollers_, autohidesScrollers);
 }
 
-public void setBorderType(long /*int*/ aType) {
-	OS.objc_msgSend(this.id, OS.sel_setBorderType_, aType);
+public void setBorderType(long /*int*/ borderType) {
+	OS.objc_msgSend(this.id, OS.sel_setBorderType_, borderType);
 }
 
-public void setDocumentView(NSView aView) {
-	OS.objc_msgSend(this.id, OS.sel_setDocumentView_, aView != null ? aView.id : 0);
+public void setDocumentView(id documentView) {
+	OS.objc_msgSend(this.id, OS.sel_setDocumentView_, documentView != null ? documentView.id : 0);
 }
 
-public void setDrawsBackground(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
+public void setDrawsBackground(boolean drawsBackground) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, drawsBackground);
 }
 
-public void setHasHorizontalScroller(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHasHorizontalScroller_, flag);
+public void setHasHorizontalScroller(boolean hasHorizontalScroller) {
+	OS.objc_msgSend(this.id, OS.sel_setHasHorizontalScroller_, hasHorizontalScroller);
 }
 
-public void setHasVerticalScroller(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHasVerticalScroller_, flag);
+public void setHasVerticalScroller(boolean hasVerticalScroller) {
+	OS.objc_msgSend(this.id, OS.sel_setHasVerticalScroller_, hasVerticalScroller);
 }
 
-public void setHorizontalScroller(NSScroller anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setHorizontalScroller_, anObject != null ? anObject.id : 0);
+public void setHorizontalScroller(NSScroller horizontalScroller) {
+	OS.objc_msgSend(this.id, OS.sel_setHorizontalScroller_, horizontalScroller != null ? horizontalScroller.id : 0);
 }
 
-public void setVerticalScrollElasticity(long /*int*/ elasticity) {
-	OS.objc_msgSend(this.id, OS.sel_setVerticalScrollElasticity_, elasticity);
+public void setVerticalScrollElasticity(long /*int*/ verticalScrollElasticity) {
+	OS.objc_msgSend(this.id, OS.sel_setVerticalScrollElasticity_, verticalScrollElasticity);
 }
 
-public void setVerticalScroller(NSScroller anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setVerticalScroller_, anObject != null ? anObject.id : 0);
+public void setVerticalScroller(NSScroller verticalScroller) {
+	OS.objc_msgSend(this.id, OS.sel_setVerticalScroller_, verticalScroller != null ? verticalScroller.id : 0);
 }
 
 public void tile() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,16 +24,16 @@ public NSPanel(id id) {
 	super(id);
 }
 
-public void setBecomesKeyOnlyIfNeeded(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBecomesKeyOnlyIfNeeded_, flag);
+public void setBecomesKeyOnlyIfNeeded(boolean becomesKeyOnlyIfNeeded) {
+	OS.objc_msgSend(this.id, OS.sel_setBecomesKeyOnlyIfNeeded_, becomesKeyOnlyIfNeeded);
 }
 
-public void setFloatingPanel(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setFloatingPanel_, flag);
+public void setFloatingPanel(boolean floatingPanel) {
+	OS.objc_msgSend(this.id, OS.sel_setFloatingPanel_, floatingPanel);
 }
 
-public void setWorksWhenModal(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setWorksWhenModal_, flag);
+public void setWorksWhenModal(boolean worksWhenModal) {
+	OS.objc_msgSend(this.id, OS.sel_setWorksWhenModal_, worksWhenModal);
 }
 
 public boolean worksWhenModal() {

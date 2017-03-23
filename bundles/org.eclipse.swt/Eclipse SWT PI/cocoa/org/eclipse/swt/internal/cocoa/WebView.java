@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -70,36 +70,36 @@ public void reload(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_reload_, sender != null ? sender.id : 0);
 }
 
-public void setApplicationNameForUserAgent(NSString applicationName) {
-	OS.objc_msgSend(this.id, OS.sel_setApplicationNameForUserAgent_, applicationName != null ? applicationName.id : 0);
+public void setApplicationNameForUserAgent(NSString applicationNameForUserAgent) {
+	OS.objc_msgSend(this.id, OS.sel_setApplicationNameForUserAgent_, applicationNameForUserAgent != null ? applicationNameForUserAgent.id : 0);
 }
 
-public void setCustomUserAgent(NSString userAgentString) {
-	OS.objc_msgSend(this.id, OS.sel_setCustomUserAgent_, userAgentString != null ? userAgentString.id : 0);
+public void setCustomUserAgent(NSString customUserAgent) {
+	OS.objc_msgSend(this.id, OS.sel_setCustomUserAgent_, customUserAgent != null ? customUserAgent.id : 0);
 }
 
-public void setDownloadDelegate(id delegate) {
-	OS.objc_msgSend(this.id, OS.sel_setDownloadDelegate_, delegate != null ? delegate.id : 0);
+public void setDownloadDelegate(id downloadDelegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDownloadDelegate_, downloadDelegate != null ? downloadDelegate.id : 0);
 }
 
-public void setFrameLoadDelegate(id delegate) {
-	OS.objc_msgSend(this.id, OS.sel_setFrameLoadDelegate_, delegate != null ? delegate.id : 0);
+public void setFrameLoadDelegate(id frameLoadDelegate) {
+	OS.objc_msgSend(this.id, OS.sel_setFrameLoadDelegate_, frameLoadDelegate != null ? frameLoadDelegate.id : 0);
 }
 
-public void setPolicyDelegate(id delegate) {
-	OS.objc_msgSend(this.id, OS.sel_setPolicyDelegate_, delegate != null ? delegate.id : 0);
+public void setPolicyDelegate(id policyDelegate) {
+	OS.objc_msgSend(this.id, OS.sel_setPolicyDelegate_, policyDelegate != null ? policyDelegate.id : 0);
 }
 
-public void setPreferences(WebPreferences prefs) {
-	OS.objc_msgSend(this.id, OS.sel_setPreferences_, prefs != null ? prefs.id : 0);
+public void setPreferences(WebPreferences preferences) {
+	OS.objc_msgSend(this.id, OS.sel_setPreferences_, preferences != null ? preferences.id : 0);
 }
 
-public void setResourceLoadDelegate(id delegate) {
-	OS.objc_msgSend(this.id, OS.sel_setResourceLoadDelegate_, delegate != null ? delegate.id : 0);
+public void setResourceLoadDelegate(id resourceLoadDelegate) {
+	OS.objc_msgSend(this.id, OS.sel_setResourceLoadDelegate_, resourceLoadDelegate != null ? resourceLoadDelegate.id : 0);
 }
 
-public void setUIDelegate(id delegate) {
-	OS.objc_msgSend(this.id, OS.sel_setUIDelegate_, delegate != null ? delegate.id : 0);
+public void setUIDelegate(id UIDelegate) {
+	OS.objc_msgSend(this.id, OS.sel_setUIDelegate_, UIDelegate != null ? UIDelegate.id : 0);
 }
 
 public void stopLoading(id sender) {

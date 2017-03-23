@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,16 +63,16 @@ public boolean sendAction(long /*int*/ theAction, id theTarget) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0);
 }
 
-public void setAction(long /*int*/ aSelector) {
-	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
+public void setAction(long /*int*/ action) {
+	OS.objc_msgSend(this.id, OS.sel_setAction_, action);
 }
 
-public void setAlignment(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
+public void setAlignment(long /*int*/ alignment) {
+	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection) {
-	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
 public void setCell(NSCell aCell) {
@@ -83,28 +83,28 @@ public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSControl, OS.sel_setCellClass_, factoryId);
 }
 
-public void setDoubleValue(double aDouble) {
-	OS.objc_msgSend(this.id, OS.sel_setDoubleValue_, aDouble);
+public void setDoubleValue(double doubleValue) {
+	OS.objc_msgSend(this.id, OS.sel_setDoubleValue_, doubleValue);
 }
 
-public void setEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
+public void setEnabled(boolean enabled) {
+	OS.objc_msgSend(this.id, OS.sel_setEnabled_, enabled);
 }
 
-public void setFont(NSFont fontObj) {
-	OS.objc_msgSend(this.id, OS.sel_setFont_, fontObj != null ? fontObj.id : 0);
+public void setFont(NSFont font) {
+	OS.objc_msgSend(this.id, OS.sel_setFont_, font != null ? font.id : 0);
 }
 
-public void setFormatter(NSFormatter newFormatter) {
-	OS.objc_msgSend(this.id, OS.sel_setFormatter_, newFormatter != null ? newFormatter.id : 0);
+public void setFormatter(id formatter) {
+	OS.objc_msgSend(this.id, OS.sel_setFormatter_, formatter != null ? formatter.id : 0);
 }
 
-public void setStringValue(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setStringValue_, aString != null ? aString.id : 0);
+public void setStringValue(NSString stringValue) {
+	OS.objc_msgSend(this.id, OS.sel_setStringValue_, stringValue != null ? stringValue.id : 0);
 }
 
-public void setTarget(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setTarget_, anObject != null ? anObject.id : 0);
+public void setTarget(id target) {
+	OS.objc_msgSend(this.id, OS.sel_setTarget_, target != null ? target.id : 0);
 }
 
 public void sizeToFit() {

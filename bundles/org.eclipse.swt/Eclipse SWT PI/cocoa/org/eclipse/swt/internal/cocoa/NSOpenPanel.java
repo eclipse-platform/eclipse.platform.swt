@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,16 +34,16 @@ public static NSOpenPanel openPanel() {
 	return result != 0 ? new NSOpenPanel(result) : null;
 }
 
-public void setAllowsMultipleSelection(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsMultipleSelection_, flag);
+public void setAllowsMultipleSelection(boolean allowsMultipleSelection) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsMultipleSelection_, allowsMultipleSelection);
 }
 
-public void setCanChooseDirectories(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setCanChooseDirectories_, flag);
+public void setCanChooseDirectories(boolean canChooseDirectories) {
+	OS.objc_msgSend(this.id, OS.sel_setCanChooseDirectories_, canChooseDirectories);
 }
 
-public void setCanChooseFiles(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setCanChooseFiles_, flag);
+public void setCanChooseFiles(boolean canChooseFiles) {
+	OS.objc_msgSend(this.id, OS.sel_setCanChooseFiles_, canChooseFiles);
 }
 
 public static NSSavePanel savePanel() {

@@ -390,6 +390,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSSearchPathForDirectoriesInDomains",
 	"NSSize_1sizeof",
 	"NSSpellingStateAttributeName",
+	"NSSquareStatusItemLength",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
 	"NSStrokeWidthAttributeName",
@@ -947,7 +948,7 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"objc_1msgSend__II_3II",
 #else
-	"objc_1msgSend__JJ_3II",
+	"objc_1msgSend__JJ_3IJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__II_3III",

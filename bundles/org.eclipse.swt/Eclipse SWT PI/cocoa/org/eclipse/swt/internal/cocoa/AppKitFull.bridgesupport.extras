@@ -4739,6 +4739,7 @@
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
 	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
 	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>
+	<constant name="NSSquareStatusItemLength" swt_gen="true"></constant>
 	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
@@ -4941,7 +4942,6 @@
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSSquareStatusItemLength" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
 	<enum name="NSSubmenuWindowLevel" swt_gen="true"></enum>

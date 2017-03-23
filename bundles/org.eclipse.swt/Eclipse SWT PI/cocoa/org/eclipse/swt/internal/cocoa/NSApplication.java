@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -132,24 +132,24 @@ public boolean setActivationPolicy(long /*int*/ activationPolicy) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_setActivationPolicy_, activationPolicy);
 }
 
-public void setApplicationIconImage(NSImage image) {
-	OS.objc_msgSend(this.id, OS.sel_setApplicationIconImage_, image != null ? image.id : 0);
+public void setApplicationIconImage(NSImage applicationIconImage) {
+	OS.objc_msgSend(this.id, OS.sel_setApplicationIconImage_, applicationIconImage != null ? applicationIconImage.id : 0);
 }
 
-public void setDelegate(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+public void setDelegate(id delegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
 public void setHelpMenu(NSMenu helpMenu) {
 	OS.objc_msgSend(this.id, OS.sel_setHelpMenu_, helpMenu != null ? helpMenu.id : 0);
 }
 
-public void setMainMenu(NSMenu aMenu) {
-	OS.objc_msgSend(this.id, OS.sel_setMainMenu_, aMenu != null ? aMenu.id : 0);
+public void setMainMenu(NSMenu mainMenu) {
+	OS.objc_msgSend(this.id, OS.sel_setMainMenu_, mainMenu != null ? mainMenu.id : 0);
 }
 
-public void setServicesMenu(NSMenu aMenu) {
-	OS.objc_msgSend(this.id, OS.sel_setServicesMenu_, aMenu != null ? aMenu.id : 0);
+public void setServicesMenu(NSMenu servicesMenu) {
+	OS.objc_msgSend(this.id, OS.sel_setServicesMenu_, servicesMenu != null ? servicesMenu.id : 0);
 }
 
 public static NSApplication sharedApplication() {

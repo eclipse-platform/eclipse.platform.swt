@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -120,8 +120,8 @@ public void removeTemporaryAttribute(NSString attrName, NSRange charRange) {
 	OS.objc_msgSend(this.id, OS.sel_removeTemporaryAttribute_forCharacterRange_, attrName != null ? attrName.id : 0, charRange);
 }
 
-public void setBackgroundLayoutEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundLayoutEnabled_, flag);
+public void setBackgroundLayoutEnabled(boolean backgroundLayoutEnabled) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundLayoutEnabled_, backgroundLayoutEnabled);
 }
 
 public void setLineFragmentRect(NSRect fragmentRect, NSRange glyphRange, NSRect usedRect) {
@@ -132,8 +132,8 @@ public void setTextStorage(NSTextStorage textStorage) {
 	OS.objc_msgSend(this.id, OS.sel_setTextStorage_, textStorage != null ? textStorage.id : 0);
 }
 
-public void setUsesScreenFonts(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setUsesScreenFonts_, flag);
+public void setUsesScreenFonts(boolean usesScreenFonts) {
+	OS.objc_msgSend(this.id, OS.sel_setUsesScreenFonts_, usesScreenFonts);
 }
 
 public NSTypesetter typesetter() {

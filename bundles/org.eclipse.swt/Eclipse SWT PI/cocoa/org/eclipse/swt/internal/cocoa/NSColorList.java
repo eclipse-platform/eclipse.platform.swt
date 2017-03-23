@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,9 +39,9 @@ public NSColor colorWithKey(NSString key) {
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public id initWithName(NSString name) {
+public NSColorList initWithName(NSString name) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithName_, name != null ? name.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSColorList(result) : null);
 }
 
 public void insertColor(NSColor color, NSString key, long /*int*/ loc) {

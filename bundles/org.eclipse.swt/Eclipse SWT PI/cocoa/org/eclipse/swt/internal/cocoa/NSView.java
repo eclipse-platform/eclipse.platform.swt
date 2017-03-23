@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -260,28 +260,28 @@ public boolean scrollRectToVisible(NSRect aRect) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
 
-public void setAcceptsTouchEvents(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAcceptsTouchEvents_, flag);
+public void setAcceptsTouchEvents(boolean acceptsTouchEvents) {
+	OS.objc_msgSend(this.id, OS.sel_setAcceptsTouchEvents_, acceptsTouchEvents);
 }
 
-public void setAutoresizesSubviews(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_, flag);
+public void setAutoresizesSubviews(boolean autoresizesSubviews) {
+	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_, autoresizesSubviews);
 }
 
-public void setAutoresizingMask(long /*int*/ mask) {
-	OS.objc_msgSend(this.id, OS.sel_setAutoresizingMask_, mask);
+public void setAutoresizingMask(long /*int*/ autoresizingMask) {
+	OS.objc_msgSend(this.id, OS.sel_setAutoresizingMask_, autoresizingMask);
 }
 
-public void setBoundsRotation(double /*float*/ angle) {
-	OS.objc_msgSend(this.id, OS.sel_setBoundsRotation_, angle);
+public void setBoundsRotation(double /*float*/ boundsRotation) {
+	OS.objc_msgSend(this.id, OS.sel_setBoundsRotation_, boundsRotation);
 }
 
 public void setFocusRingType(long /*int*/ focusRingType) {
 	OS.objc_msgSend(this.id, OS.sel_setFocusRingType_, focusRingType);
 }
 
-public void setFrame(NSRect frameRect) {
-	OS.objc_msgSend(this.id, OS.sel_setFrame_, frameRect);
+public void setFrame(NSRect frame) {
+	OS.objc_msgSend(this.id, OS.sel_setFrame_, frame);
 }
 
 public void setFrameOrigin(NSPoint newOrigin) {
@@ -292,24 +292,24 @@ public void setFrameSize(NSSize newSize) {
 	OS.objc_msgSend(this.id, OS.sel_setFrameSize_, newSize);
 }
 
-public void setHidden(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHidden_, flag);
+public void setHidden(boolean hidden) {
+	OS.objc_msgSend(this.id, OS.sel_setHidden_, hidden);
 }
 
-public void setNeedsDisplay(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setNeedsDisplay_, flag);
+public void setNeedsDisplay(boolean needsDisplay) {
+	OS.objc_msgSend(this.id, OS.sel_setNeedsDisplay_, needsDisplay);
 }
 
 public void setNeedsDisplayInRect(NSRect invalidRect) {
 	OS.objc_msgSend(this.id, OS.sel_setNeedsDisplayInRect_, invalidRect);
 }
 
-public void setToolTip(NSString string) {
-	OS.objc_msgSend(this.id, OS.sel_setToolTip_, string != null ? string.id : 0);
+public void setToolTip(NSString toolTip) {
+	OS.objc_msgSend(this.id, OS.sel_setToolTip_, toolTip != null ? toolTip.id : 0);
 }
 
-public void setWantsRestingTouches(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setWantsRestingTouches_, flag);
+public void setWantsRestingTouches(boolean wantsRestingTouches) {
+	OS.objc_msgSend(this.id, OS.sel_setWantsRestingTouches_, wantsRestingTouches);
 }
 
 public boolean shouldDelayWindowOrderingForEvent(NSEvent theEvent) {

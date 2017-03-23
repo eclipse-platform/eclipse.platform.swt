@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,16 +35,16 @@ public NSTextContainer initWithContainerSize(NSSize size) {
 	return result == this.id ? this : (result != 0 ? new NSTextContainer(result) : null);
 }
 
-public void setContainerSize(NSSize size) {
-	OS.objc_msgSend(this.id, OS.sel_setContainerSize_, size);
+public void setContainerSize(NSSize containerSize) {
+	OS.objc_msgSend(this.id, OS.sel_setContainerSize_, containerSize);
 }
 
-public void setLineFragmentPadding(double /*float*/ pad) {
-	OS.objc_msgSend(this.id, OS.sel_setLineFragmentPadding_, pad);
+public void setLineFragmentPadding(double /*float*/ lineFragmentPadding) {
+	OS.objc_msgSend(this.id, OS.sel_setLineFragmentPadding_, lineFragmentPadding);
 }
 
-public void setWidthTracksTextView(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setWidthTracksTextView_, flag);
+public void setWidthTracksTextView(boolean widthTracksTextView) {
+	OS.objc_msgSend(this.id, OS.sel_setWidthTracksTextView_, widthTracksTextView);
 }
 
 }

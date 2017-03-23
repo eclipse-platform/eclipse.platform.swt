@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,36 +61,36 @@ public NSDictionary selectedTextAttributes() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
-public void setAllowsUndo(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsUndo_, flag);
+public void setAllowsUndo(boolean allowsUndo) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsUndo_, allowsUndo);
 }
 
 public void setBaseWritingDirection(long /*int*/ writingDirection, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
 }
 
-public void setDefaultParagraphStyle(NSParagraphStyle paragraphStyle) {
-	OS.objc_msgSend(this.id, OS.sel_setDefaultParagraphStyle_, paragraphStyle != null ? paragraphStyle.id : 0);
+public void setDefaultParagraphStyle(NSParagraphStyle defaultParagraphStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setDefaultParagraphStyle_, defaultParagraphStyle != null ? defaultParagraphStyle.id : 0);
 }
 
-public void setDisplaysLinkToolTips(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDisplaysLinkToolTips_, flag);
+public void setDisplaysLinkToolTips(boolean displaysLinkToolTips) {
+	OS.objc_msgSend(this.id, OS.sel_setDisplaysLinkToolTips_, displaysLinkToolTips);
 }
 
-public void setLinkTextAttributes(NSDictionary attributeDictionary) {
-	OS.objc_msgSend(this.id, OS.sel_setLinkTextAttributes_, attributeDictionary != null ? attributeDictionary.id : 0);
+public void setLinkTextAttributes(NSDictionary linkTextAttributes) {
+	OS.objc_msgSend(this.id, OS.sel_setLinkTextAttributes_, linkTextAttributes != null ? linkTextAttributes.id : 0);
 }
 
-public void setRichText(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setRichText_, flag);
+public void setRichText(boolean richText) {
+	OS.objc_msgSend(this.id, OS.sel_setRichText_, richText);
 }
 
-public void setSelectedTextAttributes(NSDictionary attributeDictionary) {
-	OS.objc_msgSend(this.id, OS.sel_setSelectedTextAttributes_, attributeDictionary != null ? attributeDictionary.id : 0);
+public void setSelectedTextAttributes(NSDictionary selectedTextAttributes) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectedTextAttributes_, selectedTextAttributes != null ? selectedTextAttributes.id : 0);
 }
 
-public void setUsesFontPanel(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setUsesFontPanel_, flag);
+public void setUsesFontPanel(boolean usesFontPanel) {
+	OS.objc_msgSend(this.id, OS.sel_setUsesFontPanel_, usesFontPanel);
 }
 
 public boolean shouldChangeTextInRange(NSRange affectedCharRange, NSString replacementString) {

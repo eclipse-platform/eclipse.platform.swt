@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -108,72 +108,72 @@ public long /*int*/ nextState() {
 	return OS.objc_msgSend(this.id, OS.sel_nextState);
 }
 
-public void setAlignment(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
+public void setAlignment(long /*int*/ alignment) {
+	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setAllowsMixedState(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, flag);
+public void setAllowsMixedState(boolean allowsMixedState) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, allowsMixedState);
 }
 
-public void setAttributedStringValue(NSAttributedString obj) {
-	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
+public void setAttributedStringValue(NSAttributedString attributedStringValue) {
+	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, attributedStringValue != null ? attributedStringValue.id : 0);
 }
 
-public void setBackgroundStyle(long /*int*/ style) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundStyle_, style);
+public void setBackgroundStyle(long /*int*/ backgroundStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundStyle_, backgroundStyle);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection) {
-	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
-public void setControlSize(long /*int*/ size) {
-	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
+public void setControlSize(long /*int*/ controlSize) {
+	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 
-public void setEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
+public void setEnabled(boolean enabled) {
+	OS.objc_msgSend(this.id, OS.sel_setEnabled_, enabled);
 }
 
-public void setFont(NSFont fontObj) {
-	OS.objc_msgSend(this.id, OS.sel_setFont_, fontObj != null ? fontObj.id : 0);
+public void setFont(NSFont font) {
+	OS.objc_msgSend(this.id, OS.sel_setFont_, font != null ? font.id : 0);
 }
 
-public void setFormatter(NSFormatter newFormatter) {
-	OS.objc_msgSend(this.id, OS.sel_setFormatter_, newFormatter != null ? newFormatter.id : 0);
+public void setFormatter(id formatter) {
+	OS.objc_msgSend(this.id, OS.sel_setFormatter_, formatter != null ? formatter.id : 0);
 }
 
-public void setHighlighted(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHighlighted_, flag);
+public void setHighlighted(boolean highlighted) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlighted_, highlighted);
 }
 
 public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setLineBreakMode(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
+public void setLineBreakMode(long /*int*/ lineBreakMode) {
+	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, lineBreakMode);
 }
 
-public void setObjectValue(id obj) {
-	OS.objc_msgSend(this.id, OS.sel_setObjectValue_, obj != null ? obj.id : 0);
+public void setObjectValue(id objectValue) {
+	OS.objc_msgSend(this.id, OS.sel_setObjectValue_, objectValue != null ? objectValue.id : 0);
 }
 
-public void setScrollable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setScrollable_, flag);
+public void setScrollable(boolean scrollable) {
+	OS.objc_msgSend(this.id, OS.sel_setScrollable_, scrollable);
 }
 
-public void setTitle(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
+public void setTitle(NSString title) {
+	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
-public void setUsesSingleLineMode(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setUsesSingleLineMode_, flag);
+public void setUsesSingleLineMode(boolean usesSingleLineMode) {
+	OS.objc_msgSend(this.id, OS.sel_setUsesSingleLineMode_, usesSingleLineMode);
 }
 
-public void setWraps(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setWraps_, flag);
+public void setWraps(boolean wraps) {
+	OS.objc_msgSend(this.id, OS.sel_setWraps_, wraps);
 }
 
 public NSString title() {

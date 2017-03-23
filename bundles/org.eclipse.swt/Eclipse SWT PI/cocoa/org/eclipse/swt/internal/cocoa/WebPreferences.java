@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,12 +24,12 @@ public WebPreferences(id id) {
 	super(id);
 }
 
-public void setJavaEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setJavaEnabled_, flag);
+public void setJavaEnabled(boolean javaEnabled) {
+	OS.objc_msgSend(this.id, OS.sel_setJavaEnabled_, javaEnabled);
 }
 
-public void setJavaScriptEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setJavaScriptEnabled_, flag);
+public void setJavaScriptEnabled(boolean javaScriptEnabled) {
+	OS.objc_msgSend(this.id, OS.sel_setJavaScriptEnabled_, javaScriptEnabled);
 }
 
 public static WebPreferences standardPreferences() {

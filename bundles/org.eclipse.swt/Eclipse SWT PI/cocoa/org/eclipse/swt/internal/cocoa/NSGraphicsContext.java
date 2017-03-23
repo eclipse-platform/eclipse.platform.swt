@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,24 +80,24 @@ public void saveGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
 }
 
-public void setCompositingOperation(long /*int*/ operation) {
-	OS.objc_msgSend(this.id, OS.sel_setCompositingOperation_, operation);
+public void setCompositingOperation(long /*int*/ compositingOperation) {
+	OS.objc_msgSend(this.id, OS.sel_setCompositingOperation_, compositingOperation);
 }
 
 public static void setCurrentContext(NSGraphicsContext context) {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_setCurrentContext_, context != null ? context.id : 0);
 }
 
-public void setImageInterpolation(long /*int*/ interpolation) {
-	OS.objc_msgSend(this.id, OS.sel_setImageInterpolation_, interpolation);
+public void setImageInterpolation(long /*int*/ imageInterpolation) {
+	OS.objc_msgSend(this.id, OS.sel_setImageInterpolation_, imageInterpolation);
 }
 
-public void setPatternPhase(NSPoint phase) {
-	OS.objc_msgSend(this.id, OS.sel_setPatternPhase_, phase);
+public void setPatternPhase(NSPoint patternPhase) {
+	OS.objc_msgSend(this.id, OS.sel_setPatternPhase_, patternPhase);
 }
 
-public void setShouldAntialias(boolean antialias) {
-	OS.objc_msgSend(this.id, OS.sel_setShouldAntialias_, antialias);
+public void setShouldAntialias(boolean shouldAntialias) {
+	OS.objc_msgSend(this.id, OS.sel_setShouldAntialias_, shouldAntialias);
 }
 
 public boolean shouldAntialias() {

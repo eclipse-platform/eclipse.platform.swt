@@ -58,26 +58,14 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="DOMWheelEvent" swt_gen="mixed">
-		<method selector="altKey" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="ctrlKey" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="metaKey" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="screenX" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="screenY" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="shiftKey" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
+	<class name="DOMWheelEvent" swt_gen="mixed" swt_superclass="DOMMouseEvent">
 		<method selector="wheelDelta" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="wheelDeltaX" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="wheelDeltaY" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>

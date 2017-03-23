@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,32 +28,32 @@ public void selectText(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_selectText_, sender != null ? sender.id : 0);
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setBordered(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBordered_, flag);
+public void setBordered(boolean bordered) {
+	OS.objc_msgSend(this.id, OS.sel_setBordered_, bordered);
 }
 
-public void setDelegate(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+public void setDelegate(id delegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDrawsBackground(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
+public void setDrawsBackground(boolean drawsBackground) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, drawsBackground);
 }
 
-public void setEditable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEditable_, flag);
+public void setEditable(boolean editable) {
+	OS.objc_msgSend(this.id, OS.sel_setEditable_, editable);
 }
 
-public void setSelectable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setSelectable_, flag);
+public void setSelectable(boolean selectable) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectable_, selectable);
 }
 
-public void setTextColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
+public void setTextColor(NSColor textColor) {
+	OS.objc_msgSend(this.id, OS.sel_setTextColor_, textColor != null ? textColor.id : 0);
 }
 
 public static long /*int*/ cellClass() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,9 +28,9 @@ public boolean characterIsMember(short aCharacter) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_characterIsMember_, aCharacter);
 }
 
-public static id decimalDigitCharacterSet() {
+public static NSCharacterSet decimalDigitCharacterSet() {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSCharacterSet, OS.sel_decimalDigitCharacterSet);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSCharacterSet(result) : null;
 }
 
 }

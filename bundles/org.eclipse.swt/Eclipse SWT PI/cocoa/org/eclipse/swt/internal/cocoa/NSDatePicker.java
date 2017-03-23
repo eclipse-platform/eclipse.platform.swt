@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,36 +29,36 @@ public NSDate dateValue() {
 	return result != 0 ? new NSDate(result) : null;
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setBezeled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBezeled_, flag);
+public void setBezeled(boolean bezeled) {
+	OS.objc_msgSend(this.id, OS.sel_setBezeled_, bezeled);
 }
 
-public void setBordered(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBordered_, flag);
+public void setBordered(boolean bordered) {
+	OS.objc_msgSend(this.id, OS.sel_setBordered_, bordered);
 }
 
-public void setDatePickerElements(long /*int*/ elementFlags) {
-	OS.objc_msgSend(this.id, OS.sel_setDatePickerElements_, elementFlags);
+public void setDatePickerElements(long /*int*/ datePickerElements) {
+	OS.objc_msgSend(this.id, OS.sel_setDatePickerElements_, datePickerElements);
 }
 
-public void setDatePickerStyle(long /*int*/ newStyle) {
-	OS.objc_msgSend(this.id, OS.sel_setDatePickerStyle_, newStyle);
+public void setDatePickerStyle(long /*int*/ datePickerStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setDatePickerStyle_, datePickerStyle);
 }
 
-public void setDateValue(NSDate newStartDate) {
-	OS.objc_msgSend(this.id, OS.sel_setDateValue_, newStartDate != null ? newStartDate.id : 0);
+public void setDateValue(NSDate dateValue) {
+	OS.objc_msgSend(this.id, OS.sel_setDateValue_, dateValue != null ? dateValue.id : 0);
 }
 
-public void setDrawsBackground(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
+public void setDrawsBackground(boolean drawsBackground) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, drawsBackground);
 }
 
-public void setTextColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
+public void setTextColor(NSColor textColor) {
+	OS.objc_msgSend(this.id, OS.sel_setTextColor_, textColor != null ? textColor.id : 0);
 }
 
 public static long /*int*/ cellClass() {

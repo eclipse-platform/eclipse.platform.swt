@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,8 +39,8 @@ public NSSize contentViewMargins() {
 	return result;
 }
 
-public void setBorderType(long /*int*/ aType) {
-	OS.objc_msgSend(this.id, OS.sel_setBorderType_, aType);
+public void setBorderType(long /*int*/ borderType) {
+	OS.objc_msgSend(this.id, OS.sel_setBorderType_, borderType);
 }
 
 public void setBorderWidth(double /*float*/ borderWidth) {
@@ -51,12 +51,12 @@ public void setBoxType(long /*int*/ boxType) {
 	OS.objc_msgSend(this.id, OS.sel_setBoxType_, boxType);
 }
 
-public void setContentView(NSView aView) {
-	OS.objc_msgSend(this.id, OS.sel_setContentView_, aView != null ? aView.id : 0);
+public void setContentView(id contentView) {
+	OS.objc_msgSend(this.id, OS.sel_setContentView_, contentView != null ? contentView.id : 0);
 }
 
-public void setContentViewMargins(NSSize offsetSize) {
-	OS.objc_msgSend(this.id, OS.sel_setContentViewMargins_, offsetSize);
+public void setContentViewMargins(NSSize contentViewMargins) {
+	OS.objc_msgSend(this.id, OS.sel_setContentViewMargins_, contentViewMargins);
 }
 
 public void setFillColor(NSColor fillColor) {
@@ -67,16 +67,16 @@ public void setFrameFromContentFrame(NSRect contentFrame) {
 	OS.objc_msgSend(this.id, OS.sel_setFrameFromContentFrame_, contentFrame);
 }
 
-public void setTitle(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
+public void setTitle(NSString title) {
+	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
-public void setTitleFont(NSFont fontObj) {
-	OS.objc_msgSend(this.id, OS.sel_setTitleFont_, fontObj != null ? fontObj.id : 0);
+public void setTitleFont(NSFont titleFont) {
+	OS.objc_msgSend(this.id, OS.sel_setTitleFont_, titleFont != null ? titleFont.id : 0);
 }
 
-public void setTitlePosition(long /*int*/ aPosition) {
-	OS.objc_msgSend(this.id, OS.sel_setTitlePosition_, aPosition);
+public void setTitlePosition(long /*int*/ titlePosition) {
+	OS.objc_msgSend(this.id, OS.sel_setTitlePosition_, titlePosition);
 }
 
 public void sizeToFit() {

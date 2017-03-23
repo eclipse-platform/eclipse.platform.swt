@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,8 @@ public NSColor highlightColorInView(NSView controlView) {
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public void setLeaf(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setLeaf_, flag);
+public void setLeaf(boolean leaf) {
+	OS.objc_msgSend(this.id, OS.sel_setLeaf_, leaf);
 }
 
 }

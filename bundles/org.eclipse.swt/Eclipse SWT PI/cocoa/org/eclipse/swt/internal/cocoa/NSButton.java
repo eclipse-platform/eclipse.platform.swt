@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,20 +29,20 @@ public NSAttributedString attributedTitle() {
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
-public void setAllowsMixedState(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, flag);
+public void setAllowsMixedState(boolean allowsMixedState) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, allowsMixedState);
 }
 
-public void setAttributedTitle(NSAttributedString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, aString != null ? aString.id : 0);
+public void setAttributedTitle(NSAttributedString attributedTitle) {
+	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, attributedTitle != null ? attributedTitle.id : 0);
 }
 
 public void setBezelStyle(long /*int*/ bezelStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setBezelStyle_, bezelStyle);
 }
 
-public void setBordered(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBordered_, flag);
+public void setBordered(boolean bordered) {
+	OS.objc_msgSend(this.id, OS.sel_setBordered_, bordered);
 }
 
 public void setButtonType(long /*int*/ aType) {
@@ -53,20 +53,20 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setImagePosition(long /*int*/ aPosition) {
-	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
+public void setImagePosition(long /*int*/ imagePosition) {
+	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, imagePosition);
 }
 
-public void setKeyEquivalent(NSString charCode) {
-	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, charCode != null ? charCode.id : 0);
+public void setKeyEquivalent(NSString keyEquivalent) {
+	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, keyEquivalent != null ? keyEquivalent.id : 0);
 }
 
-public void setState(long /*int*/ value) {
-	OS.objc_msgSend(this.id, OS.sel_setState_, value);
+public void setState(long /*int*/ state) {
+	OS.objc_msgSend(this.id, OS.sel_setState_, state);
 }
 
-public void setTitle(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
+public void setTitle(NSString title) {
+	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
 public long /*int*/ state() {

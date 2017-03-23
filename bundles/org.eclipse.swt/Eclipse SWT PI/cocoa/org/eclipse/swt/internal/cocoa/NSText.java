@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,60 +68,60 @@ public NSRange selectedRange() {
 	return result;
 }
 
-public void setAlignment(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
+public void setAlignment(long /*int*/ alignment) {
+	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection) {
-	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
-public void setDelegate(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+public void setDelegate(id delegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDrawsBackground(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
+public void setDrawsBackground(boolean drawsBackground) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, drawsBackground);
 }
 
-public void setEditable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEditable_, flag);
+public void setEditable(boolean editable) {
+	OS.objc_msgSend(this.id, OS.sel_setEditable_, editable);
 }
 
-public void setFont(NSFont obj) {
-	OS.objc_msgSend(this.id, OS.sel_setFont_, obj != null ? obj.id : 0);
+public void setFont(NSFont font) {
+	OS.objc_msgSend(this.id, OS.sel_setFont_, font != null ? font.id : 0);
 }
 
-public void setHorizontallyResizable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHorizontallyResizable_, flag);
+public void setHorizontallyResizable(boolean horizontallyResizable) {
+	OS.objc_msgSend(this.id, OS.sel_setHorizontallyResizable_, horizontallyResizable);
 }
 
-public void setMaxSize(NSSize newMaxSize) {
-	OS.objc_msgSend(this.id, OS.sel_setMaxSize_, newMaxSize);
+public void setMaxSize(NSSize maxSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMaxSize_, maxSize);
 }
 
-public void setMinSize(NSSize newMinSize) {
-	OS.objc_msgSend(this.id, OS.sel_setMinSize_, newMinSize);
+public void setMinSize(NSSize minSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMinSize_, minSize);
 }
 
-public void setSelectable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setSelectable_, flag);
+public void setSelectable(boolean selectable) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectable_, selectable);
 }
 
-public void setSelectedRange(NSRange range) {
-	OS.objc_msgSend(this.id, OS.sel_setSelectedRange_, range);
+public void setSelectedRange(NSRange selectedRange) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectedRange_, selectedRange);
 }
 
 public void setString(NSString string) {
 	OS.objc_msgSend(this.id, OS.sel_setString_, string != null ? string.id : 0);
 }
 
-public void setTextColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
+public void setTextColor(NSColor textColor) {
+	OS.objc_msgSend(this.id, OS.sel_setTextColor_, textColor != null ? textColor.id : 0);
 }
 
 public void sizeToFit() {

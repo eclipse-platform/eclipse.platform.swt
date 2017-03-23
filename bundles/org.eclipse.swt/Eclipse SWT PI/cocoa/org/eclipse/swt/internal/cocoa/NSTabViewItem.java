@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,9 +28,9 @@ public void drawLabel(boolean shouldTruncateLabel, NSRect labelRect) {
 	OS.objc_msgSend(this.id, OS.sel_drawLabel_inRect_, shouldTruncateLabel, labelRect);
 }
 
-public id initWithIdentifier(id identifier) {
+public NSTabViewItem initWithIdentifier(id identifier) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSTabViewItem(result) : null);
 }
 
 public void setLabel(NSString label) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,20 +42,20 @@ public static NSSavePanel savePanel() {
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
-public void setAccessoryView(NSView view) {
-	OS.objc_msgSend(this.id, OS.sel_setAccessoryView_, view != null ? view.id : 0);
+public void setAccessoryView(NSView accessoryView) {
+	OS.objc_msgSend(this.id, OS.sel_setAccessoryView_, accessoryView != null ? accessoryView.id : 0);
 }
 
-public void setAllowedFileTypes(NSArray types) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowedFileTypes_, types != null ? types.id : 0);
+public void setAllowedFileTypes(NSArray allowedFileTypes) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowedFileTypes_, allowedFileTypes != null ? allowedFileTypes.id : 0);
 }
 
-public void setAllowsOtherFileTypes(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsOtherFileTypes_, flag);
+public void setAllowsOtherFileTypes(boolean allowsOtherFileTypes) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsOtherFileTypes_, allowsOtherFileTypes);
 }
 
-public void setCanCreateDirectories(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setCanCreateDirectories_, flag);
+public void setCanCreateDirectories(boolean canCreateDirectories) {
+	OS.objc_msgSend(this.id, OS.sel_setCanCreateDirectories_, canCreateDirectories);
 }
 
 public void setDirectory(NSString path) {
@@ -66,13 +66,12 @@ public void setMessage(NSString message) {
 	OS.objc_msgSend(this.id, OS.sel_setMessage_, message != null ? message.id : 0);
 }
 
-@Override
 public void setTitle(NSString title) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
-public void setTreatsFilePackagesAsDirectories(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setTreatsFilePackagesAsDirectories_, flag);
+public void setTreatsFilePackagesAsDirectories(boolean treatsFilePackagesAsDirectories) {
+	OS.objc_msgSend(this.id, OS.sel_setTreatsFilePackagesAsDirectories_, treatsFilePackagesAsDirectories);
 }
 
 public void validateVisibleColumns() {

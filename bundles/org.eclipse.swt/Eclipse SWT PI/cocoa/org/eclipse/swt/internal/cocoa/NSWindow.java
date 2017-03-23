@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -260,36 +260,36 @@ public void sendEvent(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_sendEvent_, theEvent != null ? theEvent.id : 0);
 }
 
-public void setAcceptsMouseMovedEvents(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAcceptsMouseMovedEvents_, flag);
+public void setAcceptsMouseMovedEvents(boolean acceptsMouseMovedEvents) {
+	OS.objc_msgSend(this.id, OS.sel_setAcceptsMouseMovedEvents_, acceptsMouseMovedEvents);
 }
 
-public void setAlphaValue(double /*float*/ windowAlpha) {
-	OS.objc_msgSend(this.id, OS.sel_setAlphaValue_, windowAlpha);
+public void setAlphaValue(double /*float*/ alphaValue) {
+	OS.objc_msgSend(this.id, OS.sel_setAlphaValue_, alphaValue);
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setCollectionBehavior(long /*int*/ behavior) {
-	OS.objc_msgSend(this.id, OS.sel_setCollectionBehavior_, behavior);
+public void setCollectionBehavior(long /*int*/ collectionBehavior) {
+	OS.objc_msgSend(this.id, OS.sel_setCollectionBehavior_, collectionBehavior);
 }
 
-public void setContentView(NSView aView) {
-	OS.objc_msgSend(this.id, OS.sel_setContentView_, aView != null ? aView.id : 0);
+public void setContentView(id contentView) {
+	OS.objc_msgSend(this.id, OS.sel_setContentView_, contentView != null ? contentView.id : 0);
 }
 
 public void setDefaultButtonCell(NSButtonCell defButt) {
 	OS.objc_msgSend(this.id, OS.sel_setDefaultButtonCell_, defButt != null ? defButt.id : 0);
 }
 
-public void setDelegate(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+public void setDelegate(id delegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDocumentEdited(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDocumentEdited_, flag);
+public void setDocumentEdited(boolean documentEdited) {
+	OS.objc_msgSend(this.id, OS.sel_setDocumentEdited_, documentEdited);
 }
 
 public void setFrame(NSRect frameRect, boolean flag) {
@@ -304,48 +304,48 @@ public void setHasShadow(boolean hasShadow) {
 	OS.objc_msgSend(this.id, OS.sel_setHasShadow_, hasShadow);
 }
 
-public void setHidesOnDeactivate(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setHidesOnDeactivate_, flag);
+public void setHidesOnDeactivate(boolean hidesOnDeactivate) {
+	OS.objc_msgSend(this.id, OS.sel_setHidesOnDeactivate_, hidesOnDeactivate);
 }
 
-public void setLevel(long /*int*/ newLevel) {
-	OS.objc_msgSend(this.id, OS.sel_setLevel_, newLevel);
+public void setLevel(long /*int*/ level) {
+	OS.objc_msgSend(this.id, OS.sel_setLevel_, level);
 }
 
-public void setMinSize(NSSize size) {
-	OS.objc_msgSend(this.id, OS.sel_setMinSize_, size);
+public void setMinSize(NSSize minSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMinSize_, minSize);
 }
 
-public void setMovable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setMovable_, flag);
+public void setMovable(boolean movable) {
+	OS.objc_msgSend(this.id, OS.sel_setMovable_, movable);
 }
 
-public void setOpaque(boolean isOpaque) {
-	OS.objc_msgSend(this.id, OS.sel_setOpaque_, isOpaque);
+public void setOpaque(boolean opaque) {
+	OS.objc_msgSend(this.id, OS.sel_setOpaque_, opaque);
 }
 
-public void setReleasedWhenClosed(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, flag);
+public void setReleasedWhenClosed(boolean releasedWhenClosed) {
+	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, releasedWhenClosed);
 }
 
-public void setRepresentedFilename(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setRepresentedFilename_, aString != null ? aString.id : 0);
+public void setRepresentedFilename(NSString representedFilename) {
+	OS.objc_msgSend(this.id, OS.sel_setRepresentedFilename_, representedFilename != null ? representedFilename.id : 0);
 }
 
-public void setRepresentedURL(NSURL url) {
-	OS.objc_msgSend(this.id, OS.sel_setRepresentedURL_, url != null ? url.id : 0);
+public void setRepresentedURL(NSURL representedURL) {
+	OS.objc_msgSend(this.id, OS.sel_setRepresentedURL_, representedURL != null ? representedURL.id : 0);
 }
 
-public void setShowsResizeIndicator(boolean show) {
-	OS.objc_msgSend(this.id, OS.sel_setShowsResizeIndicator_, show);
+public void setShowsResizeIndicator(boolean showsResizeIndicator) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsResizeIndicator_, showsResizeIndicator);
 }
 
-public void setShowsToolbarButton(boolean show) {
-	OS.objc_msgSend(this.id, OS.sel_setShowsToolbarButton_, show);
+public void setShowsToolbarButton(boolean showsToolbarButton) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsToolbarButton_, showsToolbarButton);
 }
 
-public void setTitle(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
+public void setTitle(NSString title) {
+	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
 public void setToolbar(NSToolbar toolbar) {

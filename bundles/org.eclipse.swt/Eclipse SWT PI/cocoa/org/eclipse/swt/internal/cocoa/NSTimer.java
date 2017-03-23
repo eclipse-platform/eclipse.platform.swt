@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,8 +33,8 @@ public static NSTimer scheduledTimerWithTimeInterval(double ti, id aTarget, long
 	return result != 0 ? new NSTimer(result) : null;
 }
 
-public void setFireDate(NSDate date) {
-	OS.objc_msgSend(this.id, OS.sel_setFireDate_, date != null ? date.id : 0);
+public void setFireDate(NSDate fireDate) {
+	OS.objc_msgSend(this.id, OS.sel_setFireDate_, fireDate != null ? fireDate.id : 0);
 }
 
 public id userInfo() {

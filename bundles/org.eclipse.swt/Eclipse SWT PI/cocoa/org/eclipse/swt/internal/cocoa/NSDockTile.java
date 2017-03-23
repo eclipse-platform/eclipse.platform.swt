@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,8 @@ public NSString badgeLabel() {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public void setBadgeLabel(NSString string) {
-	OS.objc_msgSend(this.id, OS.sel_setBadgeLabel_, string != null ? string.id : 0);
+public void setBadgeLabel(NSString badgeLabel) {
+	OS.objc_msgSend(this.id, OS.sel_setBadgeLabel_, badgeLabel != null ? badgeLabel.id : 0);
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,16 +29,16 @@ public NSImage image() {
 	return result != 0 ? new NSImage(result) : null;
 }
 
-public void setImage(NSImage newImage) {
-	OS.objc_msgSend(this.id, OS.sel_setImage_, newImage != null ? newImage.id : 0);
+public void setImage(NSImage image) {
+	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setImageAlignment(long /*int*/ newAlign) {
-	OS.objc_msgSend(this.id, OS.sel_setImageAlignment_, newAlign);
+public void setImageAlignment(long /*int*/ imageAlignment) {
+	OS.objc_msgSend(this.id, OS.sel_setImageAlignment_, imageAlignment);
 }
 
-public void setImageScaling(long /*int*/ newScaling) {
-	OS.objc_msgSend(this.id, OS.sel_setImageScaling_, newScaling);
+public void setImageScaling(long /*int*/ imageScaling) {
+	OS.objc_msgSend(this.id, OS.sel_setImageScaling_, imageScaling);
 }
 
 public static long /*int*/ cellClass() {

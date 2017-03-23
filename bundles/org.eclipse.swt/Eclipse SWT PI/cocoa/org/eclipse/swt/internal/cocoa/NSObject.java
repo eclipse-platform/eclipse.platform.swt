@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -164,9 +164,9 @@ public boolean respondsToSelector(long /*int*/ aSelector) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_respondsToSelector_, aSelector);
 }
 
-public id retain() {
+public NSObject retain() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_retain);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
 public long /*int*/ retainCount() {

@@ -600,7 +600,7 @@ void updateImage () {
 		view.setImage (image.handle);
 		view.setNeedsDisplay (true);
 		if (visible) {
-			width = OS.NSSquareStatusItemLength;
+			width = OS.NSSquareStatusItemLength();
 		}
 	}
 	item.setLength (width);

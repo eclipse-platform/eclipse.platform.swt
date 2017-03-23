@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -183,20 +183,20 @@ public NSIndexSet selectedRowIndexes() {
 	return result != 0 ? new NSIndexSet(result) : null;
 }
 
-public void setAllowsColumnReordering(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsColumnReordering_, flag);
+public void setAllowsColumnReordering(boolean allowsColumnReordering) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsColumnReordering_, allowsColumnReordering);
 }
 
-public void setAllowsMultipleSelection(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsMultipleSelection_, flag);
+public void setAllowsMultipleSelection(boolean allowsMultipleSelection) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsMultipleSelection_, allowsMultipleSelection);
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setColumnAutoresizingStyle(long /*int*/ style) {
-	OS.objc_msgSend(this.id, OS.sel_setColumnAutoresizingStyle_, style);
+public void setColumnAutoresizingStyle(long /*int*/ columnAutoresizingStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setColumnAutoresizingStyle_, columnAutoresizingStyle);
 }
 
 public void setDataSource(id aSource) {
@@ -207,8 +207,8 @@ public void setDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDoubleAction(long /*int*/ aSelector) {
-	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, aSelector);
+public void setDoubleAction(long /*int*/ doubleAction) {
+	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, doubleAction);
 }
 
 public void setDropRow(long /*int*/ row, long /*int*/ op) {
@@ -231,16 +231,16 @@ public void setIndicatorImage(NSImage anImage, NSTableColumn tc) {
 	OS.objc_msgSend(this.id, OS.sel_setIndicatorImage_inTableColumn_, anImage != null ? anImage.id : 0, tc != null ? tc.id : 0);
 }
 
-public void setIntercellSpacing(NSSize aSize) {
-	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, aSize);
+public void setIntercellSpacing(NSSize intercellSpacing) {
+	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, intercellSpacing);
 }
 
 public void setRowHeight(double /*float*/ rowHeight) {
 	OS.objc_msgSend(this.id, OS.sel_setRowHeight_, rowHeight);
 }
 
-public void setUsesAlternatingRowBackgroundColors(boolean useAlternatingRowColors) {
-	OS.objc_msgSend(this.id, OS.sel_setUsesAlternatingRowBackgroundColors_, useAlternatingRowColors);
+public void setUsesAlternatingRowBackgroundColors(boolean usesAlternatingRowBackgroundColors) {
+	OS.objc_msgSend(this.id, OS.sel_setUsesAlternatingRowBackgroundColors_, usesAlternatingRowBackgroundColors);
 }
 
 public NSArray tableColumns() {

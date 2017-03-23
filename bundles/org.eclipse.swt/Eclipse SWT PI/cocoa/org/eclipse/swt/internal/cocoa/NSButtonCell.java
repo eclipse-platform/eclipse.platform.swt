@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,23 +39,22 @@ public NSRect drawTitle(NSAttributedString title, NSRect frame, NSView controlVi
 	return result;
 }
 
-public void setBackgroundColor(NSColor color) {
-	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+public void setBackgroundColor(NSColor backgroundColor) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
 public void setButtonType(long /*int*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setButtonType_, aType);
 }
 
-public void setHighlightsBy(long /*int*/ aType) {
-	OS.objc_msgSend(this.id, OS.sel_setHighlightsBy_, aType);
+public void setHighlightsBy(long /*int*/ highlightsBy) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlightsBy_, highlightsBy);
 }
 
-public void setImagePosition(long /*int*/ aPosition) {
-	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
+public void setImagePosition(long /*int*/ imagePosition) {
+	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, imagePosition);
 }
 
-@Override
 public NSString title() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,12 +63,12 @@ public void setJobTitle(NSString jobTitle) {
 	OS.objc_msgSend(this.id, OS.sel_setJobTitle_, jobTitle != null ? jobTitle.id : 0);
 }
 
-public void setShowsPrintPanel(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setShowsPrintPanel_, flag);
+public void setShowsPrintPanel(boolean showsPrintPanel) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsPrintPanel_, showsPrintPanel);
 }
 
-public void setShowsProgressPanel(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setShowsProgressPanel_, flag);
+public void setShowsProgressPanel(boolean showsProgressPanel) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsProgressPanel_, showsProgressPanel);
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,9 +29,9 @@ public NSString displayNameForKey(id key, id value) {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public id initWithLocaleIdentifier(NSString string) {
+public NSLocale initWithLocaleIdentifier(NSString string) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithLocaleIdentifier_, string != null ? string.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSLocale(result) : null);
 }
 
 }

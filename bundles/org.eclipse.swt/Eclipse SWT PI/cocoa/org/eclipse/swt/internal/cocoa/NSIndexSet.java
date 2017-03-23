@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,9 +40,9 @@ public long /*int*/ getIndexes(long[] /*int[]*/ indexBuffer, long /*int*/ buffer
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_maxCount_inIndexRange_, indexBuffer, bufferSize, range);
 }
 
-public static id indexSetWithIndex(long /*int*/ value) {
+public static NSIndexSet indexSetWithIndex(long /*int*/ value) {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSIndexSet, OS.sel_indexSetWithIndex_, value);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSIndexSet(result) : null;
 }
 
 public NSIndexSet initWithIndex(long /*int*/ value) {
@@ -50,9 +50,9 @@ public NSIndexSet initWithIndex(long /*int*/ value) {
 	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
 }
 
-public id initWithIndexSet(NSIndexSet indexSet) {
+public NSIndexSet initWithIndexSet(NSIndexSet indexSet) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndexSet_, indexSet != null ? indexSet.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
 }
 
 public NSIndexSet initWithIndexesInRange(NSRange range) {

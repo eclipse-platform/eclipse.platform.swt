@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -76,12 +76,12 @@ public long /*int*/ rowForItem(id item) {
 	return OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
 }
 
-public void setAutoresizesOutlineColumn(boolean resize) {
-	OS.objc_msgSend(this.id, OS.sel_setAutoresizesOutlineColumn_, resize);
+public void setAutoresizesOutlineColumn(boolean autoresizesOutlineColumn) {
+	OS.objc_msgSend(this.id, OS.sel_setAutoresizesOutlineColumn_, autoresizesOutlineColumn);
 }
 
-public void setAutosaveExpandedItems(boolean save) {
-	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
+public void setAutosaveExpandedItems(boolean autosaveExpandedItems) {
+	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, autosaveExpandedItems);
 }
 
 public void setDropItem(id item, long /*int*/ index) {

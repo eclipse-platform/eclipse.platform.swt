@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,8 +40,8 @@ public void setMenu(NSMenu menu, long /*int*/ segment) {
 	OS.objc_msgSend(this.id, OS.sel_setMenu_forSegment_, menu != null ? menu.id : 0, segment);
 }
 
-public void setSegmentCount(long /*int*/ count) {
-	OS.objc_msgSend(this.id, OS.sel_setSegmentCount_, count);
+public void setSegmentCount(long /*int*/ segmentCount) {
+	OS.objc_msgSend(this.id, OS.sel_setSegmentCount_, segmentCount);
 }
 
 public void setSegmentStyle(long /*int*/ segmentStyle) {

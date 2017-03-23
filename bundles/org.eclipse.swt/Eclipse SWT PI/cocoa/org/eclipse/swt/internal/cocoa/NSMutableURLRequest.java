@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,16 +24,16 @@ public NSMutableURLRequest(id id) {
 	super(id);
 }
 
-public void setCachePolicy(long /*int*/ policy) {
-	OS.objc_msgSend(this.id, OS.sel_setCachePolicy_, policy);
+public void setCachePolicy(long /*int*/ cachePolicy) {
+	OS.objc_msgSend(this.id, OS.sel_setCachePolicy_, cachePolicy);
 }
 
-public void setHTTPBody(NSData data) {
-	OS.objc_msgSend(this.id, OS.sel_setHTTPBody_, data != null ? data.id : 0);
+public void setHTTPBody(NSData HTTPBody) {
+	OS.objc_msgSend(this.id, OS.sel_setHTTPBody_, HTTPBody != null ? HTTPBody.id : 0);
 }
 
-public void setHTTPMethod(NSString method) {
-	OS.objc_msgSend(this.id, OS.sel_setHTTPMethod_, method != null ? method.id : 0);
+public void setHTTPMethod(NSString HTTPMethod) {
+	OS.objc_msgSend(this.id, OS.sel_setHTTPMethod_, HTTPMethod != null ? HTTPMethod.id : 0);
 }
 
 public void setURL(NSURL URL) {

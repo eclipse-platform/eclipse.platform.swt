@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,8 +41,8 @@ public void removeItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 
-public void setAllowsUserCustomization(boolean allowCustomization) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsUserCustomization_, allowCustomization);
+public void setAllowsUserCustomization(boolean allowsUserCustomization) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsUserCustomization_, allowsUserCustomization);
 }
 
 public void setDelegate(id delegate) {
@@ -53,12 +53,12 @@ public void setDisplayMode(long /*int*/ displayMode) {
 	OS.objc_msgSend(this.id, OS.sel_setDisplayMode_, displayMode);
 }
 
-public void setSelectedItemIdentifier(NSString itemIdentifier) {
-	OS.objc_msgSend(this.id, OS.sel_setSelectedItemIdentifier_, itemIdentifier != null ? itemIdentifier.id : 0);
+public void setSelectedItemIdentifier(NSString selectedItemIdentifier) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectedItemIdentifier_, selectedItemIdentifier != null ? selectedItemIdentifier.id : 0);
 }
 
-public void setVisible(boolean shown) {
-	OS.objc_msgSend(this.id, OS.sel_setVisible_, shown);
+public void setVisible(boolean visible) {
+	OS.objc_msgSend(this.id, OS.sel_setVisible_, visible);
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,16 +50,16 @@ public void setLabel(NSString label) {
 	OS.objc_msgSend(this.id, OS.sel_setLabel_, label != null ? label.id : 0);
 }
 
-public void setMaxSize(NSSize size) {
-	OS.objc_msgSend(this.id, OS.sel_setMaxSize_, size);
+public void setMaxSize(NSSize maxSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMaxSize_, maxSize);
 }
 
-public void setMenuFormRepresentation(NSMenuItem menuItem) {
-	OS.objc_msgSend(this.id, OS.sel_setMenuFormRepresentation_, menuItem != null ? menuItem.id : 0);
+public void setMenuFormRepresentation(NSMenuItem menuFormRepresentation) {
+	OS.objc_msgSend(this.id, OS.sel_setMenuFormRepresentation_, menuFormRepresentation != null ? menuFormRepresentation.id : 0);
 }
 
-public void setMinSize(NSSize size) {
-	OS.objc_msgSend(this.id, OS.sel_setMinSize_, size);
+public void setMinSize(NSSize minSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMinSize_, minSize);
 }
 
 public void setPaletteLabel(NSString paletteLabel) {

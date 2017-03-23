@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,9 +58,9 @@ public void getBitmapDataPlanes(long[] /*int[]*/ data) {
 	OS.objc_msgSend(this.id, OS.sel_getBitmapDataPlanes_, data);
 }
 
-public static id imageRepWithData(NSData data) {
+public static NSBitmapImageRep imageRepWithData(NSData data) {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSBitmapImageRep, OS.sel_imageRepWithData_, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSBitmapImageRep(result) : null;
 }
 
 public NSBitmapImageRep initWithBitmapDataPlanes(long /*int*/ planes, long /*int*/ width, long /*int*/ height, long /*int*/ bps, long /*int*/ spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, long /*int*/ bitmapFormat, long /*int*/ rBytes, long /*int*/ pBits) {

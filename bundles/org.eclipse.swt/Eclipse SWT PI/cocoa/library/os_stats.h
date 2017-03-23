@@ -400,6 +400,7 @@ typedef enum {
 	NSSearchPathForDirectoriesInDomains_FUNC,
 	NSSize_1sizeof_FUNC,
 	NSSpellingStateAttributeName_FUNC,
+	NSSquareStatusItemLength_FUNC,
 	NSStrikethroughColorAttributeName_FUNC,
 	NSStrikethroughStyleAttributeName_FUNC,
 	NSStrokeWidthAttributeName_FUNC,
@@ -957,7 +958,7 @@ typedef enum {
 #ifndef JNI64
 	objc_1msgSend__II_3II_FUNC,
 #else
-	objc_1msgSend__JJ_3II_FUNC,
+	objc_1msgSend__JJ_3IJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__II_3III_FUNC,

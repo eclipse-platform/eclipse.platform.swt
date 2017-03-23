@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,9 +61,9 @@ public NSImage initWithContentsOfFile(NSString fileName) {
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
-public id initWithData(NSData data) {
+public NSImage initWithData(NSData data) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
 public NSImage initWithIconRef(long /*int*/ iconRef) {
@@ -89,16 +89,16 @@ public NSArray representations() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public void setCacheMode(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setCacheMode_, mode);
+public void setCacheMode(long /*int*/ cacheMode) {
+	OS.objc_msgSend(this.id, OS.sel_setCacheMode_, cacheMode);
 }
 
 public void setScalesWhenResized(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setScalesWhenResized_, flag);
 }
 
-public void setSize(NSSize aSize) {
-	OS.objc_msgSend(this.id, OS.sel_setSize_, aSize);
+public void setSize(NSSize size) {
+	OS.objc_msgSend(this.id, OS.sel_setSize_, size);
 }
 
 public NSSize size() {

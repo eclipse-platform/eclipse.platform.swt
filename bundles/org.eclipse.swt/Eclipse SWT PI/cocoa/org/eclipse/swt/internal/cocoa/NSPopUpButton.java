@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -68,12 +68,12 @@ public void selectItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_selectItemAtIndex_, index);
 }
 
-public void setAutoenablesItems(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAutoenablesItems_, flag);
+public void setAutoenablesItems(boolean autoenablesItems) {
+	OS.objc_msgSend(this.id, OS.sel_setAutoenablesItems_, autoenablesItems);
 }
 
-public void setPullsDown(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setPullsDown_, flag);
+public void setPullsDown(boolean pullsDown) {
+	OS.objc_msgSend(this.id, OS.sel_setPullsDown_, pullsDown);
 }
 
 public NSString titleOfSelectedItem() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,16 +43,16 @@ public long /*int*/ resizingMask() {
 	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
-public void setDataCell(NSCell cell) {
-	OS.objc_msgSend(this.id, OS.sel_setDataCell_, cell != null ? cell.id : 0);
+public void setDataCell(id dataCell) {
+	OS.objc_msgSend(this.id, OS.sel_setDataCell_, dataCell != null ? dataCell.id : 0);
 }
 
-public void setEditable(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEditable_, flag);
+public void setEditable(boolean editable) {
+	OS.objc_msgSend(this.id, OS.sel_setEditable_, editable);
 }
 
-public void setHeaderCell(NSCell cell) {
-	OS.objc_msgSend(this.id, OS.sel_setHeaderCell_, cell != null ? cell.id : 0);
+public void setHeaderCell(id headerCell) {
+	OS.objc_msgSend(this.id, OS.sel_setHeaderCell_, headerCell != null ? headerCell.id : 0);
 }
 
 public void setIdentifier(NSString identifier) {

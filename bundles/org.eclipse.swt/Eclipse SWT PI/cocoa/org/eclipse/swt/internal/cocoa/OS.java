@@ -707,7 +707,7 @@ public static final native long /*int*/ CALLBACK_headerRectOfColumn_(long /*int*
 public static final native long /*int*/ CALLBACK_highlightSelectionInClipRect_(long /*int*/ func);
 /** @method callback_types=NSView*;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
 public static final native long /*int*/ CALLBACK_hitTest_(long /*int*/ func);
-/** @method callback_types=NSUInteger;id;SEL;NSEvent*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
+/** @method callback_types=NSCellHitResult;id;SEL;NSEvent*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
 public static final native long /*int*/ CALLBACK_hitTestForEvent_inRect_ofView_(long /*int*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRect;,callback_flags=struct;none;none;struct; */
 public static final native long /*int*/ CALLBACK_imageRectForBounds_(long /*int*/ func);
@@ -2305,6 +2305,8 @@ public static final long /*int*/ sel_webViewShow_ = sel_registerName("webViewSho
 public static final long /*int*/ sel_webViewUnfocus_ = sel_registerName("webViewUnfocus:");
 public static final long /*int*/ sel_weightOfFont_ = sel_registerName("weightOfFont:");
 public static final long /*int*/ sel_wheelDelta = sel_registerName("wheelDelta");
+public static final long /*int*/ sel_wheelDeltaX = sel_registerName("wheelDeltaX");
+public static final long /*int*/ sel_wheelDeltaY = sel_registerName("wheelDeltaY");
 public static final long /*int*/ sel_width = sel_registerName("width");
 public static final long /*int*/ sel_window = sel_registerName("window");
 public static final long /*int*/ sel_windowBackgroundColor = sel_registerName("windowBackgroundColor");
@@ -2507,7 +2509,6 @@ public static final int NSShadowlessSquareBezelStyle = 6;
 public static final int NSShiftKeyMask = 131072;
 public static final int NSSmallControlSize = 1;
 public static final int NSSquareLineCapStyle = 2;
-public static final int NSSquareStatusItemLength = -2;
 public static final int NSStatusWindowLevel = 25;
 public static final int NSStringDrawingUsesLineFragmentOrigin = 1;
 public static final int NSSubmenuWindowLevel = 3;
@@ -3112,6 +3113,8 @@ public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
 public static final native long /*int*/ NSSpellingStateAttributeName();
 public static final NSString NSSpellingStateAttributeName = new NSString(NSSpellingStateAttributeName());
 /** @method flags=const */
+public static final native double /*float*/ NSSquareStatusItemLength();
+/** @method flags=const */
 public static final native long /*int*/ NSStrikethroughColorAttributeName();
 public static final NSString NSStrikethroughColorAttributeName = new NSString(NSStrikethroughColorAttributeName());
 /** @method flags=const */
@@ -3698,7 +3701,7 @@ public static final native void CTLineDraw(long /*int*/ line, long /*int*/ conte
 public static final native double CTLineGetTypographicBounds(long /*int*/ line, double[] /*float[]*/ ascent, double[] /*float[]*/ descent, double[] /*float[]*/ leading);
 /**
  * @param settings cast=(CTParagraphStyleSetting*)
- * @param settingCount cast=(CFIndex)
+ * @param settingCount cast=(size_t)
  */
 public static final native long /*int*/ CTParagraphStyleCreate(long /*int*/ settings, long /*int*/ settingCount);
 /**
@@ -4161,7 +4164,7 @@ public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int
 /** @method flags=cast */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long[] /*int[]*/ arg0, int arg1, int arg2);
 /** @method flags=cast */
-public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, int[] arg0, int arg1);
+public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, int[] arg0, long /*int*/ arg1);
 /** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
 /** @method flags=cast */

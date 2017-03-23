@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,32 +32,32 @@ public void setAlignment(long /*int*/ alignment) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection) {
-	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
-public void setDefaultTabInterval(double /*float*/ aFloat) {
-	OS.objc_msgSend(this.id, OS.sel_setDefaultTabInterval_, aFloat);
+public void setDefaultTabInterval(double /*float*/ defaultTabInterval) {
+	OS.objc_msgSend(this.id, OS.sel_setDefaultTabInterval_, defaultTabInterval);
 }
 
-public void setFirstLineHeadIndent(double /*float*/ aFloat) {
-	OS.objc_msgSend(this.id, OS.sel_setFirstLineHeadIndent_, aFloat);
+public void setFirstLineHeadIndent(double /*float*/ firstLineHeadIndent) {
+	OS.objc_msgSend(this.id, OS.sel_setFirstLineHeadIndent_, firstLineHeadIndent);
 }
 
-public void setHeadIndent(double /*float*/ aFloat) {
-	OS.objc_msgSend(this.id, OS.sel_setHeadIndent_, aFloat);
+public void setHeadIndent(double /*float*/ headIndent) {
+	OS.objc_msgSend(this.id, OS.sel_setHeadIndent_, headIndent);
 }
 
-public void setLineBreakMode(long /*int*/ mode) {
-	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
+public void setLineBreakMode(long /*int*/ lineBreakMode) {
+	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, lineBreakMode);
 }
 
-public void setLineSpacing(double /*float*/ aFloat) {
-	OS.objc_msgSend(this.id, OS.sel_setLineSpacing_, aFloat);
+public void setLineSpacing(double /*float*/ lineSpacing) {
+	OS.objc_msgSend(this.id, OS.sel_setLineSpacing_, lineSpacing);
 }
 
-public void setTabStops(NSArray array) {
-	OS.objc_msgSend(this.id, OS.sel_setTabStops_, array != null ? array.id : 0);
+public void setTabStops(NSArray tabStops) {
+	OS.objc_msgSend(this.id, OS.sel_setTabStops_, tabStops != null ? tabStops.id : 0);
 }
 
 }

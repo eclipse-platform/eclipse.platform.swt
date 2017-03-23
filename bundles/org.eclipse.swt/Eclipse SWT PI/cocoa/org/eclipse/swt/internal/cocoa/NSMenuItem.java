@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,32 +65,32 @@ public static NSMenuItem separatorItem() {
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public void setAction(long /*int*/ aSelector) {
-	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
+public void setAction(long /*int*/ action) {
+	OS.objc_msgSend(this.id, OS.sel_setAction_, action);
 }
 
-public void setAttributedTitle(NSAttributedString string) {
-	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, string != null ? string.id : 0);
+public void setAttributedTitle(NSAttributedString attributedTitle) {
+	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, attributedTitle != null ? attributedTitle.id : 0);
 }
 
-public void setEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
+public void setEnabled(boolean enabled) {
+	OS.objc_msgSend(this.id, OS.sel_setEnabled_, enabled);
 }
 
 public void setHidden(boolean hidden) {
 	OS.objc_msgSend(this.id, OS.sel_setHidden_, hidden);
 }
 
-public void setImage(NSImage menuImage) {
-	OS.objc_msgSend(this.id, OS.sel_setImage_, menuImage != null ? menuImage.id : 0);
+public void setImage(NSImage image) {
+	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setKeyEquivalent(NSString aKeyEquivalent) {
-	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, aKeyEquivalent != null ? aKeyEquivalent.id : 0);
+public void setKeyEquivalent(NSString keyEquivalent) {
+	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, keyEquivalent != null ? keyEquivalent.id : 0);
 }
 
-public void setKeyEquivalentModifierMask(long /*int*/ mask) {
-	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalentModifierMask_, mask);
+public void setKeyEquivalentModifierMask(long /*int*/ keyEquivalentModifierMask) {
+	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalentModifierMask_, keyEquivalentModifierMask);
 }
 
 public void setMenu(NSMenu menu) {
@@ -105,16 +105,16 @@ public void setSubmenu(NSMenu submenu) {
 	OS.objc_msgSend(this.id, OS.sel_setSubmenu_, submenu != null ? submenu.id : 0);
 }
 
-public void setTag(long /*int*/ anInt) {
-	OS.objc_msgSend(this.id, OS.sel_setTag_, anInt);
+public void setTag(long /*int*/ tag) {
+	OS.objc_msgSend(this.id, OS.sel_setTag_, tag);
 }
 
-public void setTarget(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setTarget_, anObject != null ? anObject.id : 0);
+public void setTarget(id target) {
+	OS.objc_msgSend(this.id, OS.sel_setTarget_, target != null ? target.id : 0);
 }
 
-public void setTitle(NSString aString) {
-	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
+public void setTitle(NSString title) {
+	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
 public void setToolTip(NSString toolTip) {

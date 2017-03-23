@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,8 @@ public long /*int*/ runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
-public void setAlertStyle(long /*int*/ style) {
-	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, style);
+public void setAlertStyle(long /*int*/ alertStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, alertStyle);
 }
 
 public void setMessageText(NSString messageText) {

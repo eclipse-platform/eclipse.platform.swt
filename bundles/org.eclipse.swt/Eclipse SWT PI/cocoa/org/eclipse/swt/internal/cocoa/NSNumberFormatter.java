@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,40 +55,40 @@ public NSNumber minimum() {
 	return result != 0 ? new NSNumber(result) : null;
 }
 
-public void setAllowsFloats(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsFloats_, flag);
+public void setAllowsFloats(boolean allowsFloats) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsFloats_, allowsFloats);
 }
 
-public void setMaximum(NSNumber number) {
-	OS.objc_msgSend(this.id, OS.sel_setMaximum_, number != null ? number.id : 0);
+public void setMaximum(NSNumber maximum) {
+	OS.objc_msgSend(this.id, OS.sel_setMaximum_, maximum != null ? maximum.id : 0);
 }
 
-public void setMaximumFractionDigits(long /*int*/ number) {
-	OS.objc_msgSend(this.id, OS.sel_setMaximumFractionDigits_, number);
+public void setMaximumFractionDigits(long /*int*/ maximumFractionDigits) {
+	OS.objc_msgSend(this.id, OS.sel_setMaximumFractionDigits_, maximumFractionDigits);
 }
 
-public void setMaximumIntegerDigits(long /*int*/ number) {
-	OS.objc_msgSend(this.id, OS.sel_setMaximumIntegerDigits_, number);
+public void setMaximumIntegerDigits(long /*int*/ maximumIntegerDigits) {
+	OS.objc_msgSend(this.id, OS.sel_setMaximumIntegerDigits_, maximumIntegerDigits);
 }
 
-public void setMinimum(NSNumber number) {
-	OS.objc_msgSend(this.id, OS.sel_setMinimum_, number != null ? number.id : 0);
+public void setMinimum(NSNumber minimum) {
+	OS.objc_msgSend(this.id, OS.sel_setMinimum_, minimum != null ? minimum.id : 0);
 }
 
-public void setMinimumFractionDigits(long /*int*/ number) {
-	OS.objc_msgSend(this.id, OS.sel_setMinimumFractionDigits_, number);
+public void setMinimumFractionDigits(long /*int*/ minimumFractionDigits) {
+	OS.objc_msgSend(this.id, OS.sel_setMinimumFractionDigits_, minimumFractionDigits);
 }
 
-public void setMinimumIntegerDigits(long /*int*/ number) {
-	OS.objc_msgSend(this.id, OS.sel_setMinimumIntegerDigits_, number);
+public void setMinimumIntegerDigits(long /*int*/ minimumIntegerDigits) {
+	OS.objc_msgSend(this.id, OS.sel_setMinimumIntegerDigits_, minimumIntegerDigits);
 }
 
-public void setNumberStyle(long /*int*/ style) {
-	OS.objc_msgSend(this.id, OS.sel_setNumberStyle_, style);
+public void setNumberStyle(long /*int*/ numberStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setNumberStyle_, numberStyle);
 }
 
-public void setPartialStringValidationEnabled(boolean b) {
-	OS.objc_msgSend(this.id, OS.sel_setPartialStringValidationEnabled_, b);
+public void setPartialStringValidationEnabled(boolean partialStringValidationEnabled) {
+	OS.objc_msgSend(this.id, OS.sel_setPartialStringValidationEnabled_, partialStringValidationEnabled);
 }
 
 }

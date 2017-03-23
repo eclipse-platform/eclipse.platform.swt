@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,16 +37,16 @@ public void scrollToPoint(NSPoint newOrigin) {
 	OS.objc_msgSend(this.id, OS.sel_scrollToPoint_, newOrigin);
 }
 
-public void setCopiesOnScroll(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setCopiesOnScroll_, flag);
+public void setCopiesOnScroll(boolean copiesOnScroll) {
+	OS.objc_msgSend(this.id, OS.sel_setCopiesOnScroll_, copiesOnScroll);
 }
 
-public void setDocumentCursor(NSCursor anObj) {
-	OS.objc_msgSend(this.id, OS.sel_setDocumentCursor_, anObj != null ? anObj.id : 0);
+public void setDocumentCursor(NSCursor documentCursor) {
+	OS.objc_msgSend(this.id, OS.sel_setDocumentCursor_, documentCursor != null ? documentCursor.id : 0);
 }
 
-public void setDrawsBackground(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
+public void setDrawsBackground(boolean drawsBackground) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, drawsBackground);
 }
 
 }

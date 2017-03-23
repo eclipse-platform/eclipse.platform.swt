@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,8 +61,8 @@ public void setControlSize(long /*int*/ controlSize) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 
-public void setDelegate(id anObject) {
-	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+public void setDelegate(id delegate) {
+	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
 public void setFont(NSFont font) {
