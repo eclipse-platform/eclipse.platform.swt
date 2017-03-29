@@ -724,14 +724,12 @@ public void test_LocationListener_evaluateInCallback() {
 /** Verify that evaluation works inside an OpenWindowListener */
 @Test
 public void test_OpenWindowListener_evaluateInCallback() {
-	// This works on Webkit1, but can sporadically cause a vm crash, see Bug 509411.
-	// This technically works on OSX/Win32, but on Win32 this opens a native window that can conflict with other tests,
-	// where as on Gtk, it's closed when the parent is closed at the end of the test.
-	assumeTrue(isWebkit2);
+	assumeTrue(!isWebkit1); // This works on Webkit1, but can sporadically fail, see Bug 509411
 	AtomicBoolean eventFired = new AtomicBoolean(false);
 	browser.addOpenWindowListener(event -> {
 		browser.evaluate("SWTopenListener = true");
 		eventFired.set(true);
+		event.required = true;
 	});
 	shell.open();
 	browser.evaluate("window.open()");

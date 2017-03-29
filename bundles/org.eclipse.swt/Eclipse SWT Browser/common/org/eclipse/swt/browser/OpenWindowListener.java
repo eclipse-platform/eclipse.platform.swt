@@ -34,19 +34,19 @@ public interface OpenWindowListener extends SWTEventListener {
  * field to host the content of a new window.
  * <p>
  * A standalone system browser is used to host the new window
- * if the event.required field value is false and if the event.browser
+ * if the event.required field value is <code>false</code> and if the event.browser
  * field is left <code>null</code>. The event.required field
- * is true on platforms that don't support a standalone system browser for
+ * is <code>true</code> on platforms that don't support a standalone system browser for
  * new window requests.
  * <p>
  * The navigation is cancelled if the event.required field is set to
- * true and the event.browser field is left <code>null</code>.
+ * <code>true</code> and the event.browser field is left <code>null</code>.
  * <p>
  * <p>The following fields in the <code>WindowEvent</code> apply:
  * <ul>
- * <li>(in/out) required true if the platform requires the user to provide a
+ * <li>(in/out) {@link WindowEvent#required}: true if the platform requires the user to provide a
  * <code>Browser</code> to handle the new window or false otherwise.
- * <li>(out) browser the new (unique) <code>Browser</code> that will host the
+ * <li>(out) {@link WindowEvent#browser}: the new (unique) <code>Browser</code> that will host the
  * content of the new window.
  * <li>(in) widget the <code>Browser</code> that is requesting to open a
  * new window
