@@ -273,6 +273,7 @@
 #define gtk_event_controller_handle_event_LIB LIB_GTK
 #define gtk_event_controller_set_propagation_phase_LIB LIB_GTK
 #define gtk_file_filter_add_pattern_LIB LIB_GTK
+#define gtk_gesture_drag_get_start_point_LIB LIB_GTK
 #define gtk_gesture_drag_new_LIB LIB_GTK
 #define gtk_gesture_drag_get_offset_LIB LIB_GTK
 #define gtk_gesture_get_last_event_LIB LIB_GTK

@@ -7845,6 +7845,18 @@ public static final long /*int*/ gtk_fixed_new() {
 /**
  * @method flags=dynamic
  */
+public static final native boolean _gtk_gesture_drag_get_start_point(long /*int*/ gesture, double[] x, double [] y);
+public static final boolean gtk_gesture_drag_get_start_point(long /*int*/ gesture, double[] x, double [] y) {
+	lock.lock();
+	try {
+		return _gtk_gesture_drag_get_start_point(gesture, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
 public static final native boolean _gtk_gesture_is_recognized(long /*int*/ gesture);
 public static final boolean gtk_gesture_is_recognized(long /*int*/ gesture) {
 	lock.lock();

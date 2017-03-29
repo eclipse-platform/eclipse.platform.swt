@@ -2515,11 +2515,18 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	 *  See Bug 503431.
 	 */
 	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		double [] px = new double[1];
-		double [] py = new double [1];
-		OS.gtk_gesture_drag_get_offset(dragGesture, px, py);
-		if (OS.gtk_drag_check_threshold(handle, x, y, x + (int) px[0], y + (int) py[0])) {
-			dragging = true;
+  		double [] offsetX = new double[1];
+		double [] offsetY = new double [1];
+		double [] startX = new double[1];
+		double [] startY = new double [1];
+		if (OS.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
+			OS.gtk_gesture_drag_get_offset(dragGesture, offsetX, offsetY);
+			if (OS.gtk_drag_check_threshold(handle, (int)startX[0], (int) startY[0], (int) startX[0]
+					+ (int) offsetX[0], (int) startY[0] + (int) offsetY[0])) {
+				dragging = true;
+			}
+		} else {
+			return false;
 		}
 	} else {
 		boolean quit = false;

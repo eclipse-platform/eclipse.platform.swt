@@ -1108,21 +1108,39 @@ void destroyItem (TreeItem item) {
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
-	if (filter) {
-		long /*int*/ [] path = new long /*int*/ [1];
-		if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
-			if (path [0] != 0) {
-				long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-				if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
-				OS.gtk_tree_path_free (path [0]);
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+		if (filter) {
+			long /*int*/ [] path = new long /*int*/ [1];
+			if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
+				if (path [0] != 0) {
+					long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+					if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
+					OS.gtk_tree_path_free (path [0]);
+				}
+			} else {
+				return false;
 			}
-		} else {
-			return false;
+		}
+	} else {
+		double [] startX = new double[1];
+		double [] startY = new double [1];
+		long /*int*/ [] path = new long /*int*/ [1];
+		if (OS.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
+			if (getHeaderVisible()) {
+				startY[0]-= getHeaderHeightInPixels();
+			}
+			if (OS.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
+				if (path [0] != 0) {
+					boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
+					if (dragDetect && selected && consume != null) consume [0] = true;
+					return dragDetect;
+				}
+			} else {
+				return false;
+			}
 		}
 	}
-	boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
-	if (dragDetect && selected && consume != null) consume [0] = true;
-	return dragDetect;
+	return false;
 }
 
 

@@ -778,6 +778,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1frame_1set_1label_1widget",
 	"_1gtk_1frame_1set_1shadow_1type",
 	"_1gtk_1gesture_1drag_1get_1offset",
+	"_1gtk_1gesture_1drag_1get_1start_1point",
 	"_1gtk_1gesture_1drag_1new",
 	"_1gtk_1gesture_1get_1last_1event",
 	"_1gtk_1gesture_1get_1last_1updated_1sequence",
