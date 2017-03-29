@@ -14795,7 +14795,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1selection_1set_1select_1function)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1selection_1set_1select_1function_FUNC);
-	gtk_tree_selection_set_select_function((GtkTreeSelection *)arg0, (GtkTreeSelectionFunc *)arg1, (gpointer)arg2, (GDestroyNotify)arg3);
+	gtk_tree_selection_set_select_function((GtkTreeSelection *)arg0, (GtkTreeSelectionFunc)arg1, (gpointer)arg2, (GDestroyNotify)arg3);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1selection_1set_1select_1function_FUNC);
 }
 #endif

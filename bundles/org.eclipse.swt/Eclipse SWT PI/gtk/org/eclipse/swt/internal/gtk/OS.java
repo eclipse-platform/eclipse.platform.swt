@@ -12592,7 +12592,7 @@ public static final long /*int*/ gtk_tree_selection_get_select_function(long /*i
 }
 /**
  * @param selection cast=(GtkTreeSelection *)
- * @param func cast=(GtkTreeSelectionFunc *)
+ * @param func cast=(GtkTreeSelectionFunc)
  * @param data cast=(gpointer)
  * @param destroy cast=(GDestroyNotify)
  */
