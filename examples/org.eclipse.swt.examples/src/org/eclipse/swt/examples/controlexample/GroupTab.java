@@ -13,10 +13,12 @@ package org.eclipse.swt.examples.controlexample;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Widget;
 
 class GroupTab extends Tab {
 	Button titleButton;
