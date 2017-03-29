@@ -30,7 +30,6 @@ import java.awt.geom.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.awt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -95,53 +94,9 @@ public class Snippet361 {
 
 		Button printButton = new Button(shell, SWT.PUSH);
 		printButton.setText("&Print Image");
-		printButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Rectangle r = composite.getBounds();
-				Point p = shell.toDisplay(r.x, r.y);
-				org.eclipse.swt.graphics.Image snapshotImage
-					= new org.eclipse.swt.graphics.Image(display, r.width-2, r.height-2);
-				GC snapshotGC = new GC(display);
-				snapshotGC.copyArea(snapshotImage, p.x+1, p.y+1);
-				PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
-				PrinterData data = new PrinterData();
-				data.orientation = PrinterData.LANDSCAPE;
-				dialog.setPrinterData(data);
-				data = dialog.open();
-				if (data != null) {
-					Printer printer = new Printer(data);
-					Point screenDPI = display.getDPI();
-					Point printerDPI = printer.getDPI();
-					int scaleFactor = printerDPI.x / screenDPI.x;
-					Rectangle trim = printer.computeTrim(0, 0, 0, 0);
-					if (printer.startJob("Print Image")) {
-						ImageData imageData = snapshotImage.getImageData();
-						org.eclipse.swt.graphics.Image printerImage
-							= new org.eclipse.swt.graphics.Image(printer, imageData);
-						GC printerGC = new GC(printer);
-						if (printer.startPage()) {
-							printerGC.drawImage(
-								printerImage,
-								0,
-								0,
-								imageData.width,
-								imageData.height,
-								-trim.x,
-								-trim.y,
-								scaleFactor * imageData.width,
-								scaleFactor * imageData.height);
-							printer.endPage();
-						}
-						printerGC.dispose();
-						printer.endJob();
-					}
-					printer.dispose();
-				}
-				snapshotImage.dispose();
-				snapshotGC.dispose ();
-			}
-		});
+		printButton.addSelectionListener(widgetSelectedAdapter(e -> {
+			performPrintAction(display, shell);
+		}));
 
 		composite = new Composite(shell, SWT.EMBEDDED | SWT.BORDER);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1);
@@ -182,6 +137,51 @@ public class Snippet361 {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		display.dispose();
+	}
+
+	private static void performPrintAction(final Display display, final Shell shell) {
+		Rectangle r = composite.getBounds();
+		Point p = shell.toDisplay(r.x, r.y);
+		org.eclipse.swt.graphics.Image snapshotImage
+			= new org.eclipse.swt.graphics.Image(display, r.width-2, r.height-2);
+		GC snapshotGC = new GC(display);
+		snapshotGC.copyArea(snapshotImage, p.x+1, p.y+1);
+		PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
+		PrinterData data = new PrinterData();
+		data.orientation = PrinterData.LANDSCAPE;
+		dialog.setPrinterData(data);
+		data = dialog.open();
+		if (data != null) {
+			Printer printer = new Printer(data);
+			Point screenDPI = display.getDPI();
+			Point printerDPI = printer.getDPI();
+			int scaleFactor = printerDPI.x / screenDPI.x;
+			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
+			if (printer.startJob("Print Image")) {
+				ImageData imageData = snapshotImage.getImageData();
+				org.eclipse.swt.graphics.Image printerImage
+					= new org.eclipse.swt.graphics.Image(printer, imageData);
+				GC printerGC = new GC(printer);
+				if (printer.startPage()) {
+					printerGC.drawImage(
+						printerImage,
+						0,
+						0,
+						imageData.width,
+						imageData.height,
+						-trim.x,
+						-trim.y,
+						scaleFactor * imageData.width,
+						scaleFactor * imageData.height);
+					printer.endPage();
+				}
+				printerGC.dispose();
+				printer.endJob();
+			}
+			printer.dispose();
+		}
+		snapshotImage.dispose();
+		snapshotGC.dispose ();
 	}
 
 	static double numericValue(Combo combo) {
