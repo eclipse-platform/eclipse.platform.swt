@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.imageanalyzer;
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -28,7 +30,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
@@ -166,24 +167,16 @@ public class ImageAnalyzer {
 			data = new GridData();
 			data.widthHint = 75;
 			ok.setLayoutData(data);
-			ok.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					result = text.getText();
-					dialog.dispose();
-				}
-			});
+			ok.addSelectionListener(widgetSelectedAdapter(e -> {
+				result = text.getText();
+				dialog.dispose();
+			}));
 			Button cancel = new Button(buttons, SWT.PUSH);
 			cancel.setText(bundle.getString("Cancel"));
 			data = new GridData();
 			data.widthHint = 75;
 			cancel.setLayoutData(data);
-			cancel.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					dialog.dispose();
-				}
-			});
+			cancel.addSelectionListener(widgetSelectedAdapter(e -> dialog.dispose()));
 			dialog.setDefaultButton(ok);
 			dialog.pack();
 			dialog.open();
@@ -295,12 +288,7 @@ public class ImageAnalyzer {
 			bundle.getString("Green"),
 			bundle.getString("Blue"));
 		backgroundCombo.select(backgroundCombo.indexOf(bundle.getString("White")));
-		backgroundCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				changeBackground();
-			}
-		});
+		backgroundCombo.addSelectionListener(widgetSelectedAdapter(event -> changeBackground()));
 
 		// Combo to change the compression ratio.
 		group = new Group(controls, SWT.NONE);
@@ -312,41 +300,38 @@ public class ImageAnalyzer {
 			imageTypeCombo.add(type);
 		}
 		imageTypeCombo.select(imageTypeCombo.indexOf("JPEG"));
-		imageTypeCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				int index = imageTypeCombo.getSelectionIndex();
-				switch(index) {
-				case 0:
-					compressionCombo.setEnabled(true);
-					compressionRatioLabel.setEnabled(true);
-					if (compressionCombo.getItemCount() == 100) break;
-					compressionCombo.removeAll();
-					for (int i = 0; i < 100; i++) {
-						compressionCombo.add(String.valueOf(i + 1));
-					}
-					compressionCombo.select(compressionCombo.indexOf("75"));
-					break;
-				case 1:
-					compressionCombo.setEnabled(true);
-					compressionRatioLabel.setEnabled(true);
-					if (compressionCombo.getItemCount() == 10) break;
-					compressionCombo.removeAll();
-					for (int i = 0; i < 4; i++) {
-						compressionCombo.add(String.valueOf(i));
-					}
-					compressionCombo.select(0);
-					break;
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-					compressionCombo.setEnabled(false);
-					compressionRatioLabel.setEnabled(false);
-					break;
+		imageTypeCombo.addSelectionListener(widgetSelectedAdapter(event -> {
+			int index = imageTypeCombo.getSelectionIndex();
+			switch(index) {
+			case 0:
+				compressionCombo.setEnabled(true);
+				compressionRatioLabel.setEnabled(true);
+				if (compressionCombo.getItemCount() == 100) break;
+				compressionCombo.removeAll();
+				for (int i = 0; i < 100; i++) {
+					compressionCombo.add(String.valueOf(i + 1));
 				}
+				compressionCombo.select(compressionCombo.indexOf("75"));
+				break;
+			case 1:
+				compressionCombo.setEnabled(true);
+				compressionRatioLabel.setEnabled(true);
+				if (compressionCombo.getItemCount() == 10) break;
+				compressionCombo.removeAll();
+				for (int i = 0; i < 4; i++) {
+					compressionCombo.add(String.valueOf(i));
+				}
+				compressionCombo.select(0);
+				break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				compressionCombo.setEnabled(false);
+				compressionRatioLabel.setEnabled(false);
+				break;
 			}
-		});
+		}));
 		imageTypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		compressionRatioLabel = new Label(group, SWT.NONE);
 		compressionRatioLabel.setText(bundle.getString("Compression"));
@@ -370,12 +355,7 @@ public class ImageAnalyzer {
 			scaleXCombo.add(value);
 		}
 		scaleXCombo.select(scaleXCombo.indexOf("1"));
-		scaleXCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scaleX();
-			}
-		});
+		scaleXCombo.addSelectionListener(widgetSelectedAdapter(event -> scaleX()));
 
 		// Combo to change the y scale.
 		group = new Group(controls, SWT.NONE);
@@ -386,12 +366,7 @@ public class ImageAnalyzer {
 			scaleYCombo.add(value);
 		}
 		scaleYCombo.select(scaleYCombo.indexOf("1"));
-		scaleYCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scaleY();
-			}
-		});
+		scaleYCombo.addSelectionListener(widgetSelectedAdapter(event -> scaleY()));
 
 		// Combo to change the alpha value.
 		group = new Group(controls, SWT.NONE);
@@ -402,12 +377,7 @@ public class ImageAnalyzer {
 			alphaCombo.add(String.valueOf(i));
 		}
 		alphaCombo.select(alphaCombo.indexOf("255"));
-		alphaCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				alpha();
-			}
-		});
+		alphaCombo.addSelectionListener(widgetSelectedAdapter(event -> alpha()));
 
 		// Check box to request incremental display.
 		group = new Group(controls, SWT.NONE);
@@ -416,51 +386,35 @@ public class ImageAnalyzer {
 		incrementalCheck = new Button(group, SWT.CHECK);
 		incrementalCheck.setText(bundle.getString("Incremental"));
 		incrementalCheck.setSelection(incremental);
-		incrementalCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				incremental = ((Button)event.widget).getSelection();
-			}
-		});
+		incrementalCheck.addSelectionListener(widgetSelectedAdapter(event -> incremental = ((Button)event.widget).getSelection()));
 
 		// Check box to request transparent display.
 		transparentCheck = new Button(group, SWT.CHECK);
 		transparentCheck.setText(bundle.getString("Transparent"));
 		transparentCheck.setSelection(transparent);
-		transparentCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				transparent = ((Button)event.widget).getSelection();
-				if (image != null) {
-					imageCanvas.redraw();
-				}
+		transparentCheck.addSelectionListener(widgetSelectedAdapter(event -> {
+			transparent = ((Button)event.widget).getSelection();
+			if (image != null) {
+				imageCanvas.redraw();
 			}
-		});
+		}));
 
 		// Check box to request mask display.
 		maskCheck = new Button(group, SWT.CHECK);
 		maskCheck.setText(bundle.getString("Mask"));
 		maskCheck.setSelection(showMask);
-		maskCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				showMask = ((Button)event.widget).getSelection();
-				if (image != null) {
-					imageCanvas.redraw();
-				}
+		maskCheck.addSelectionListener(widgetSelectedAdapter(event -> {
+			showMask = ((Button)event.widget).getSelection();
+			if (image != null) {
+				imageCanvas.redraw();
 			}
-		});
+		}));
 
 		// Check box to request background display.
 		backgroundCheck = new Button(group, SWT.CHECK);
 		backgroundCheck.setText(bundle.getString("Background"));
 		backgroundCheck.setSelection(showBackground);
-		backgroundCheck.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				showBackground = ((Button)event.widget).getSelection();
-			}
-		});
+		backgroundCheck.addSelectionListener(widgetSelectedAdapter(event -> showBackground = ((Button)event.widget).getSelection()));
 
 		// Group the animation buttons.
 		group = new Group(controls, SWT.NONE);
@@ -471,34 +425,19 @@ public class ImageAnalyzer {
 		previousButton = new Button(group, SWT.PUSH);
 		previousButton.setText(bundle.getString("Previous"));
 		previousButton.setEnabled(false);
-		previousButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				previous();
-			}
-		});
+		previousButton.addSelectionListener(widgetSelectedAdapter(event -> previous()));
 
 		// Push button to display the next image in a multi-image file.
 		nextButton = new Button(group, SWT.PUSH);
 		nextButton.setText(bundle.getString("Next"));
 		nextButton.setEnabled(false);
-		nextButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				next();
-			}
-		});
+		nextButton.addSelectionListener(widgetSelectedAdapter(event -> next()));
 
 		// Push button to toggle animation of a multi-image file.
 		animateButton = new Button(group, SWT.PUSH);
 		animateButton.setText(bundle.getString("Animate"));
 		animateButton.setEnabled(false);
-		animateButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				animate();
-			}
-		});
+		animateButton.addSelectionListener(widgetSelectedAdapter(event -> animate()));
 
 		// Label to show the image file type.
 		typeLabel = new Label(shell, SWT.NONE);
@@ -535,22 +474,12 @@ public class ImageAnalyzer {
 		horizontal.setVisible(true);
 		horizontal.setMinimum(0);
 		horizontal.setEnabled(false);
-		horizontal.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scrollHorizontally((ScrollBar)event.widget);
-			}
-		});
+		horizontal.addSelectionListener(widgetSelectedAdapter(event -> scrollHorizontally((ScrollBar)event.widget)));
 		ScrollBar vertical = imageCanvas.getVerticalBar();
 		vertical.setVisible(true);
 		vertical.setMinimum(0);
 		vertical.setEnabled(false);
-		vertical.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scrollVertically((ScrollBar)event.widget);
-			}
-		});
+		vertical.addSelectionListener(widgetSelectedAdapter(event -> scrollVertically((ScrollBar)event.widget)));
 
 		// Label to show the image size.
 		sizeLabel = new Label(shell, SWT.NONE);
@@ -639,12 +568,7 @@ public class ImageAnalyzer {
 		vertical.setMinimum(0);
 		vertical.setIncrement(10);
 		vertical.setEnabled(false);
-		vertical.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scrollPalette((ScrollBar)event.widget);
-			}
-		});
+		vertical.addSelectionListener(widgetSelectedAdapter(event -> scrollPalette((ScrollBar)event.widget)));
 
 		// Sash to see more of image or image data.
 		sash = new Sash(shell, SWT.HORIZONTAL);
@@ -652,32 +576,29 @@ public class ImageAnalyzer {
 		gridData.horizontalSpan = 2;
 		gridData.horizontalAlignment = GridData.FILL;
 		sash.setLayoutData(gridData);
-		sash.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				if (event.detail != SWT.DRAG) {
-					((GridData)paletteCanvas.getLayoutData()).heightHint = SWT.DEFAULT;
-					Rectangle paletteCanvasBounds = paletteCanvas.getBounds();
-					int minY = paletteCanvasBounds.y + 20;
-					Rectangle dataLabelBounds = dataLabel.getBounds();
-					int maxY = statusLabel.getBounds().y - dataLabelBounds.height - 20;
-					if (event.y > minY && event.y < maxY) {
-						Rectangle oldSash = sash.getBounds();
-						sash.setBounds(event.x, event.y, event.width, event.height);
-						int diff = event.y - oldSash.y;
-						Rectangle bounds = imageCanvas.getBounds();
-						imageCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
-						bounds = paletteCanvasBounds;
-						paletteCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
-						bounds = dataLabelBounds;
-						dataLabel.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height);
-						bounds = dataText.getBounds();
-						dataText.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height - diff);
-						//shell.layout(true);
-					}
+		sash.addSelectionListener (widgetSelectedAdapter(event -> {
+			if (event.detail != SWT.DRAG) {
+				((GridData)paletteCanvas.getLayoutData()).heightHint = SWT.DEFAULT;
+				Rectangle paletteCanvasBounds = paletteCanvas.getBounds();
+				int minY = paletteCanvasBounds.y + 20;
+				Rectangle dataLabelBounds = dataLabel.getBounds();
+				int maxY = statusLabel.getBounds().y - dataLabelBounds.height - 20;
+				if (event.y > minY && event.y < maxY) {
+					Rectangle oldSash = sash.getBounds();
+					sash.setBounds(event.x, event.y, event.width, event.height);
+					int diff = event.y - oldSash.y;
+					Rectangle bounds = imageCanvas.getBounds();
+					imageCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
+					bounds = paletteCanvasBounds;
+					paletteCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
+					bounds = dataLabelBounds;
+					dataLabel.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height);
+					bounds = dataText.getBounds();
+					dataText.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height - diff);
+					//shell.layout(true);
 				}
 			}
-		});
+		}));
 
 		// Label to show data-specific fields.
 		dataLabel = new Label(shell, SWT.NONE);
@@ -741,33 +662,18 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("OpenFile"));
 		item.setAccelerator(SWT.MOD1 + 'O');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuOpenFile();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuOpenFile()));
 
 		// File -> Open URL...
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("OpenURL"));
 		item.setAccelerator(SWT.MOD1 + 'U');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuOpenURL();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuOpenURL()));
 
 		// File -> Reopen
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Reopen"));
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuReopen();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuReopen()));
 
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
@@ -775,12 +681,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("LoadFile"));
 		item.setAccelerator(SWT.MOD1 + 'L');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuLoad();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuLoad()));
 
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
@@ -788,32 +689,17 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save"));
 		item.setAccelerator(SWT.MOD1 + 'S');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuSave();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuSave()));
 
 		// File -> Save As...
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_as"));
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuSaveAs();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuSaveAs()));
 
 		// File -> Save Mask As...
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_mask_as"));
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuSaveMaskAs();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuSaveMaskAs()));
 
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
@@ -821,24 +707,14 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Print"));
 		item.setAccelerator(SWT.MOD1 + 'P');
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuPrint();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuPrint()));
 
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
 		// File -> Exit
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Exit"));
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				shell.close();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> shell.close()));
 
 	}
 
@@ -852,32 +728,17 @@ public class ImageAnalyzer {
 		// Alpha -> K
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("K");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuComposeAlpha(ALPHA_CONSTANT);
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuComposeAlpha(ALPHA_CONSTANT)));
 
 		// Alpha -> (K + x) % 256
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + x) % 256");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuComposeAlpha(ALPHA_X);
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuComposeAlpha(ALPHA_X)));
 
 		// Alpha -> (K + y) % 256
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + y) % 256");
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				menuComposeAlpha(ALPHA_Y);
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(event -> menuComposeAlpha(ALPHA_Y)));
 	}
 
 	void menuComposeAlpha(int alpha_op) {
@@ -2288,13 +2149,10 @@ public class ImageAnalyzer {
 	int showBMPDialog() {
 		final int [] bmpType = new int[1];
 		bmpType[0] = SWT.IMAGE_BMP;
-		SelectionListener radioSelected = new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				Button radio = (Button) event.widget;
-				if (radio.getSelection()) bmpType[0] = ((Integer)radio.getData()).intValue();
-			}
-		};
+		SelectionListener radioSelected = widgetSelectedAdapter(event -> {
+			Button radio = (Button) event.widget;
+			if (radio.getSelection()) bmpType[0] = ((Integer)radio.getData()).intValue();
+		});
 		// need to externalize strings
 		final Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
 
@@ -2329,12 +2187,7 @@ public class ImageAnalyzer {
 		data.horizontalAlignment = SWT.CENTER;
 		data.widthHint = 75;
 		ok.setLayoutData(data);
-		ok.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				dialog.close();
-			}
-		});
+		ok.addSelectionListener(widgetSelectedAdapter(e -> dialog.close()));
 
 		dialog.pack();
 		dialog.open();

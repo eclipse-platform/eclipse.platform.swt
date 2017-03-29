@@ -11,12 +11,13 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -149,80 +150,40 @@ class CTabFolderTab extends Tab {
 		simpleTabButton = new Button (otherGroup, SWT.CHECK);
 		simpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
 		simpleTabButton.setSelection(true);
-		simpleTabButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setSimpleTabs();
-			}
-		});
+		simpleTabButton.addSelectionListener (widgetSelectedAdapter(event -> setSimpleTabs()));
 
 		singleTabButton = new Button (otherGroup, SWT.CHECK);
 		singleTabButton.setText (ControlExample.getResourceString("Set_Single_Tabs"));
 		singleTabButton.setSelection(false);
-		singleTabButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setSingleTabs();
-			}
-		});
+		singleTabButton.addSelectionListener (widgetSelectedAdapter(event -> setSingleTabs()));
 
 		showMinButton = new Button (otherGroup, SWT.CHECK);
 		showMinButton.setText (ControlExample.getResourceString("Set_Min_Visible"));
 		showMinButton.setSelection(false);
-		showMinButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setMinimizeVisible();
-			}
-		});
+		showMinButton.addSelectionListener (widgetSelectedAdapter(event -> setMinimizeVisible()));
 
 		showMaxButton = new Button (otherGroup, SWT.CHECK);
 		showMaxButton.setText (ControlExample.getResourceString("Set_Max_Visible"));
 		showMaxButton.setSelection(false);
-		showMaxButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setMaximizeVisible();
-			}
-		});
+		showMaxButton.addSelectionListener (widgetSelectedAdapter(event -> setMaximizeVisible()));
 
 		topRightButton = new Button (otherGroup, SWT.CHECK);
 		topRightButton.setText (ControlExample.getResourceString("Set_Top_Right"));
 		topRightButton.setSelection(false);
-		topRightButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setTopRight();
-			}
-		});
+		topRightButton.addSelectionListener (widgetSelectedAdapter(event -> setTopRight()));
 
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Set_Image"));
-		imageButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setImages();
-			}
-		});
+		imageButton.addSelectionListener (widgetSelectedAdapter(event -> setImages()));
 
 		unselectedImageButton = new Button (otherGroup, SWT.CHECK);
 		unselectedImageButton.setText (ControlExample.getResourceString("Set_Unselected_Image_Visible"));
 		unselectedImageButton.setSelection(true);
-		unselectedImageButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setUnselectedImageVisible();
-			}
-		});
+		unselectedImageButton.addSelectionListener (widgetSelectedAdapter(event -> setUnselectedImageVisible()));
 		unselectedCloseButton = new Button (otherGroup, SWT.CHECK);
 		unselectedCloseButton.setText (ControlExample.getResourceString("Set_Unselected_Close_Visible"));
 		unselectedCloseButton.setSelection(true);
-		unselectedCloseButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setUnselectedCloseVisible();
-			}
-		});
+		unselectedCloseButton.addSelectionListener (widgetSelectedAdapter(event -> setUnselectedCloseVisible()));
 	}
 
 	/**

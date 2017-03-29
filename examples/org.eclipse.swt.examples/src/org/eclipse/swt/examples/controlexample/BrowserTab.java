@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +29,6 @@ import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -204,16 +205,13 @@ class BrowserTab extends Tab {
 		 * Add a selection listener to the tabFolder to bring up a
 		 * dialog if this platform does not support the Browser.
 		 */
-		tabFolder.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (errorMessage != null && tabFolder.getSelection()[0].getText().equals(getTabText())) {
-					MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-					dialog.setMessage(ControlExample.getResourceString("BrowserNotFound", errorMessage));
-					dialog.open();
-				}
+		tabFolder.addSelectionListener(widgetSelectedAdapter(e -> {
+			if (errorMessage != null && tabFolder.getSelection()[0].getText().equals(getTabText())) {
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
+				dialog.setMessage(ControlExample.getResourceString("BrowserNotFound", errorMessage));
+				dialog.open();
 			}
-		});
+		}));
 
 		return tabFolderPage;
 	}

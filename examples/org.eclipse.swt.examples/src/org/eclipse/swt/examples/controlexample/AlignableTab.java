@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
@@ -59,13 +61,10 @@ abstract class AlignableTab extends Tab {
 		rightButton.setText (ControlExample.getResourceString("Right"));
 
 		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (!((Button) event.widget).getSelection ()) return;
-				setExampleWidgetAlignment ();
-			}
-		};
+		SelectionListener selectionListener = widgetSelectedAdapter(event -> {
+			if (!((Button) event.widget).getSelection ()) return;
+			setExampleWidgetAlignment ();
+		});
 		leftButton.addSelectionListener (selectionListener);
 		centerButton.addSelectionListener (selectionListener);
 		rightButton.addSelectionListener (selectionListener);

@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
@@ -53,13 +55,10 @@ class ButtonTab extends AlignableTab {
 		downButton.setText (ControlExample.getResourceString("Down"));
 
 		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (!((Button) event.widget).getSelection()) return;
-				setExampleWidgetAlignment ();
-			}
-		};
+		SelectionListener selectionListener = widgetSelectedAdapter(event -> {
+			if (!((Button) event.widget).getSelection()) return;
+			setExampleWidgetAlignment ();
+		});
 		upButton.addSelectionListener(selectionListener);
 		downButton.addSelectionListener(selectionListener);
 	}

@@ -11,10 +11,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -85,12 +86,7 @@ class CanvasTab extends Tab {
 		fillDamageButton.setText (ControlExample.getResourceString("FillDamage"));
 
 		/* Add the listeners */
-		caretButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setCaret ();
-			}
-		});
+		caretButton.addSelectionListener (widgetSelectedAdapter(event -> setCaret ()));
 	}
 
 	/**
@@ -152,22 +148,12 @@ class CanvasTab extends Tab {
 		ScrollBar bar = canvas.getHorizontalBar();
 		if (bar != null) {
 			hookListeners (bar);
-			bar.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent event) {
-					scrollHorizontal ((ScrollBar)event.widget);
-				}
-			});
+			bar.addSelectionListener(widgetSelectedAdapter(event -> scrollHorizontal ((ScrollBar)event.widget)));
 		}
 		bar = canvas.getVerticalBar();
 		if (bar != null) {
 			hookListeners (bar);
-			bar.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent event) {
-					scrollVertical ((ScrollBar)event.widget);
-				}
-			});
+			bar.addSelectionListener(widgetSelectedAdapter(event -> scrollVertical ((ScrollBar)event.widget)));
 		}
 	}
 

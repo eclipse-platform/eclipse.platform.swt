@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -45,12 +47,7 @@ class GroupTab extends Tab {
 		titleButton.setText (ControlExample.getResourceString("Title_Text"));
 
 		/* Add the listeners */
-		titleButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setTitleText ();
-			}
-		});
+		titleButton.addSelectionListener (widgetSelectedAdapter(event -> setTitleText ()));
 	}
 
 	/**

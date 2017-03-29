@@ -11,8 +11,9 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.FontData;
@@ -441,24 +442,9 @@ class DialogTab extends Tab {
 		effectsVisibleButton.setText("FontDialog.setEffectsVisible");
 
 		/* Add the listeners */
-		dialogCombo.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				dialogSelected (event);
-			}
-		});
-		createButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				createButtonSelected (event);
-			}
-		});
-		SelectionListener buttonStyleListener = new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				buttonStyleSelected (event);
-			}
-		};
+		dialogCombo.addSelectionListener (widgetSelectedAdapter(event -> dialogSelected (event)));
+		createButton.addSelectionListener (widgetSelectedAdapter(event -> createButtonSelected (event)));
+		SelectionListener buttonStyleListener = widgetSelectedAdapter(event -> buttonStyleSelected (event));
 		okButton.addSelectionListener (buttonStyleListener);
 		cancelButton.addSelectionListener (buttonStyleListener);
 		yesButton.addSelectionListener (buttonStyleListener);

@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
@@ -70,12 +72,7 @@ class CoolBarTab extends Tab {
 		lockedButton.setText (ControlExample.getResourceString("Locked"));
 
 		/* Add the listeners */
-		lockedButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetLocked ();
-			}
-		});
+		lockedButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetLocked ()));
 	}
 
 	/**
@@ -364,12 +361,7 @@ class CoolBarTab extends Tab {
 						 * Add a menu selection listener so that the menu is hidden
 						 * when the user selects an item from the drop down menu.
 						 */
-						menuItem.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								setMenuVisible(false);
-							}
-						});
+						menuItem.addSelectionListener(widgetSelectedAdapter(e -> setMenuVisible(false)));
 					} else {
 						new MenuItem(menu, SWT.SEPARATOR);
 					}

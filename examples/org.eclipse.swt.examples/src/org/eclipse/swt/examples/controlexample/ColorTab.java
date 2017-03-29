@@ -12,10 +12,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -169,13 +170,10 @@ class ColorTab extends Tab {
 
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
-		packColumnsButton.addSelectionListener(new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent event) {
+		packColumnsButton.addSelectionListener(widgetSelectedAdapter(event -> {
 			packColumns ();
 			setExampleWidgetSize ();
-		}
-		});
+		}));
 	}
 
 	void packColumns () {
@@ -214,17 +212,14 @@ class ColorTab extends Tab {
 		createSizeGroup ();
 		createOrientationGroup ();
 
-		SelectionListener selectionListener = new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent event) {
+		SelectionListener selectionListener = widgetSelectedAdapter(event -> {
 			if ((event.widget.getStyle () & SWT.RADIO) != 0) {
 				if (!((Button) event.widget).getSelection ()) return;
 			}
 			if (!handleTextDirection (event.widget)) {
 				recreateExampleWidgets ();
 			}
-		}
-		};
+		});
 		// attach listeners to the Orientation buttons
 		rtlButton.addSelectionListener (selectionListener);
 		ltrButton.addSelectionListener (selectionListener);
