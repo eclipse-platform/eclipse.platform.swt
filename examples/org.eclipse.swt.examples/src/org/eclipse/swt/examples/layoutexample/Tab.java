@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.layoutexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
@@ -100,12 +100,7 @@ abstract class Tab {
 	final LayoutExample instance;
 
 	/* Listeners */
-	SelectionListener selectionListener = new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent e) {
-			resetEditors ();
-		}
-	};
+	SelectionListener selectionListener = widgetSelectedAdapter(e -> resetEditors ());
 
 	TraverseListener traverseListener = e -> {
 		if (e.detail == SWT.TRAVERSE_RETURN) {
@@ -136,155 +131,125 @@ abstract class Tab {
 		toolBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		add = new ToolItem(toolBar, SWT.DROP_DOWN);
 		add.setText(LayoutExample.getResourceString("Add"));
-		add.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW) {
-					ToolItem item = (ToolItem)event.widget;
-					ToolBar bar = item.getParent ();
-					final Menu menu = new Menu (shell, SWT.POP_UP);
-					for (int i = 0; i < OPTIONS.length; i++) {
-						final MenuItem newItem = new MenuItem (menu, SWT.RADIO);
-						newItem.setText (OPTIONS [i]);
-						newItem.addSelectionListener (new SelectionAdapter () {
-							@Override
-							public void widgetSelected (SelectionEvent event) {
-								MenuItem menuItem = (MenuItem)event.widget;
-								if (menuItem.getSelection ()) {
-									Menu menu  = menuItem.getParent ();
-									prevSelected = menu.indexOf (menuItem);
-									String controlType = menuItem.getText ();
-									String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
-									String [] insert = getInsertString (name, controlType);
-									if (insert != null) {
-										TableItem item = new TableItem (table, SWT.NONE);
-										item.setText (insert);
-										data.add (insert);
-									}
-									resetEditors ();
-								}
+		add.addSelectionListener (widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW) {
+				ToolItem item = (ToolItem)event.widget;
+				ToolBar bar = item.getParent ();
+				final Menu menu = new Menu (shell, SWT.POP_UP);
+				for (int i = 0; i < OPTIONS.length; i++) {
+					final MenuItem newItem = new MenuItem (menu, SWT.RADIO);
+					newItem.setText (OPTIONS [i]);
+					newItem.addSelectionListener (widgetSelectedAdapter(e -> {
+						MenuItem menuItem = (MenuItem)e.widget;
+						if (menuItem.getSelection ()) {
+							Menu menuParent  = menuItem.getParent ();
+							prevSelected = menuParent.indexOf (menuItem);
+							String controlType = menuItem.getText ();
+							String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
+							String [] insert = getInsertString (name, controlType);
+							if (insert != null) {
+								TableItem tableItem = new TableItem (table, SWT.NONE);
+								tableItem.setText (insert);
+								data.add (insert);
 							}
-						});
-						newItem.setSelection (i == prevSelected);
-					}
-					Point pt = display.map (bar, null, event.x, event.y);
-					menu.setLocation (pt.x, pt.y);
-					menu.setVisible (true);
-
-					while (menu != null && !menu.isDisposed () && menu.isVisible ()) {
-						if (!display.readAndDispatch ()) {
-							display.sleep ();
+							resetEditors ();
 						}
-					}
-					menu.dispose ();
-				} else {
-					String controlType = OPTIONS [prevSelected];
-					String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
-					String [] insert = getInsertString (name, controlType);
-					if (insert != null) {
-						TableItem item = new TableItem (table, 0);
-						item.setText (insert);
-						data.add (insert);
-					}
-					resetEditors ();
+					}));
+					newItem.setSelection (i == prevSelected);
 				}
+				Point pt = display.map (bar, null, event.x, event.y);
+				menu.setLocation (pt.x, pt.y);
+				menu.setVisible (true);
+
+				while (menu != null && !menu.isDisposed () && menu.isVisible ()) {
+					if (!display.readAndDispatch ()) {
+						display.sleep ();
+					}
+				}
+				menu.dispose ();
+			} else {
+				String controlType = OPTIONS [prevSelected];
+				String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
+				String [] insert = getInsertString (name, controlType);
+				if (insert != null) {
+					TableItem item = new TableItem (table, 0);
+					item.setText (insert);
+					data.add (insert);
+				}
+				resetEditors ();
 			}
-		});
+		}));
 
 		new ToolItem(toolBar,SWT.SEPARATOR);
 
 		delete = new ToolItem(toolBar, SWT.PUSH);
 		delete.setText (LayoutExample.getResourceString ("Delete"));
-		delete.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				resetEditors ();
-				int [] selected = table.getSelectionIndices ();
-				table.remove (selected);
-				/* Refresh the control indices of the table */
-				for (int i = 0; i < table.getItemCount(); i++) {
-					TableItem item = table.getItem (i);
-					item.setText (0, item.getText (0));
-				}
-				refreshLayoutComposite ();
-				layoutComposite.layout (true);
-				layoutGroup.layout (true);
+		delete.addSelectionListener (widgetSelectedAdapter(e -> {
+			resetEditors ();
+			int [] selected = table.getSelectionIndices ();
+			table.remove (selected);
+			/* Refresh the control indices of the table */
+			for (int i = 0; i < table.getItemCount(); i++) {
+				TableItem item = table.getItem (i);
+				item.setText (0, item.getText (0));
 			}
-		});
+			refreshLayoutComposite ();
+			layoutComposite.layout (true);
+			layoutGroup.layout (true);
+		}));
 
 		new ToolItem(toolBar,SWT.SEPARATOR);
 		clear = new ToolItem(toolBar, SWT.PUSH);
 		clear.setText (LayoutExample.getResourceString ("Clear"));
-		clear.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				resetEditors ();
-				children = layoutComposite.getChildren ();
-				for (Control child : children) {
-					child.dispose ();
-				}
-				table.removeAll ();
-				data.clear ();
-				children = new Control [0];
-				layoutGroup.layout (true);
+		clear.addSelectionListener (widgetSelectedAdapter(e -> {
+			resetEditors ();
+			children = layoutComposite.getChildren ();
+			for (Control child : children) {
+				child.dispose ();
 			}
-		});
+			table.removeAll ();
+			data.clear ();
+			children = new Control [0];
+			layoutGroup.layout (true);
+		}));
 		toolBar.pack();
 
 		new ToolItem (toolBar,SWT.SEPARATOR);
 		code = new ToolItem (toolBar, SWT.PUSH);
 		code.setText (LayoutExample.getResourceString ("Generate_Code"));
-		code.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				final Shell shell = new Shell();
-				shell.setText(LayoutExample.getResourceString("Generated_Code"));
-				shell.setLayout(new FillLayout());
-				final Text text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-				String layoutCode = generateCode().toString ();
-				if (layoutCode.length() == 0) return;
-				text.setText(layoutCode);
+		code.addSelectionListener(widgetSelectedAdapter(e -> {
+			final Shell shell = new Shell();
+			shell.setText(LayoutExample.getResourceString("Generated_Code"));
+			shell.setLayout(new FillLayout());
+			final Text text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			String layoutCode = generateCode().toString ();
+			if (layoutCode.length() == 0) return;
+			text.setText(layoutCode);
 
-				Menu bar = new Menu(shell, SWT.BAR);
-				shell.setMenuBar(bar);
-				MenuItem editItem = new MenuItem(bar, SWT.CASCADE);
-				editItem.setText(LayoutExample.getResourceString("Edit"));
-				Menu menu = new Menu(bar);
-				MenuItem select = new MenuItem(menu, SWT.PUSH);
-				select.setText(LayoutExample.getResourceString("Select_All"));
-				select.setAccelerator(SWT.MOD1 + 'A');
-				select.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						text.selectAll();
-					}
-				});
-				MenuItem copy = new MenuItem(menu, SWT.PUSH);
-				copy.setText(LayoutExample.getResourceString("Copy"));
-				copy.setAccelerator(SWT.MOD1 + 'C');
-				copy.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						text.copy();
-					}
-				});
-				MenuItem exit = new MenuItem(menu, SWT.PUSH);
-				exit.setText(LayoutExample.getResourceString("Exit"));
-				exit.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						shell.close();
-					}
-				});
-				editItem.setMenu(menu);
+			Menu bar = new Menu(shell, SWT.BAR);
+			shell.setMenuBar(bar);
+			MenuItem editItem = new MenuItem(bar, SWT.CASCADE);
+			editItem.setText(LayoutExample.getResourceString("Edit"));
+			Menu menu = new Menu(bar);
+			MenuItem select = new MenuItem(menu, SWT.PUSH);
+			select.setText(LayoutExample.getResourceString("Select_All"));
+			select.setAccelerator(SWT.MOD1 + 'A');
+			select.addSelectionListener(widgetSelectedAdapter(event -> text.selectAll()));
+			MenuItem copy = new MenuItem(menu, SWT.PUSH);
+			copy.setText(LayoutExample.getResourceString("Copy"));
+			copy.setAccelerator(SWT.MOD1 + 'C');
+			copy.addSelectionListener(widgetSelectedAdapter(event -> text.copy()));
+			MenuItem exit = new MenuItem(menu, SWT.PUSH);
+			exit.setText(LayoutExample.getResourceString("Exit"));
+			exit.addSelectionListener(widgetSelectedAdapter(event -> shell.close()));
+			editItem.setMenu(menu);
 
-				shell.pack();
-				shell.setSize(500, 600);
-				shell.open();
-				while(!shell.isDisposed())
-					if (!display.readAndDispatch()) display.sleep();
-			}
-		});
+			shell.pack();
+			shell.setSize(500, 600);
+			shell.open();
+			while(!shell.isDisposed())
+				if (!display.readAndDispatch()) display.sleep();
+		}));
 
 		createChildWidgets();
 	}
@@ -360,23 +325,20 @@ abstract class Tab {
 		final Button preferredButton = new Button (controlGroup, SWT.CHECK);
 		preferredButton.setText (LayoutExample.getResourceString ("Preferred_Size"));
 		preferredButton.setSelection (false);
-		preferredButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				resetEditors ();
-				GridData data = (GridData)layoutComposite.getLayoutData();
-				if (preferredButton.getSelection ()) {
-					data.heightHint = data.widthHint = SWT.DEFAULT;
-					data.verticalAlignment = data.horizontalAlignment = 0;
-					data.grabExcessVerticalSpace = data.grabExcessHorizontalSpace = false;
-				} else {
-					data.verticalAlignment = data.horizontalAlignment = SWT.FILL;
-					data.grabExcessVerticalSpace = data.grabExcessHorizontalSpace = true;
-				}
-				layoutComposite.setLayoutData (data);
-				layoutGroup.layout (true);
+		preferredButton.addSelectionListener (widgetSelectedAdapter(e -> {
+			resetEditors ();
+			GridData data = (GridData)layoutComposite.getLayoutData();
+			if (preferredButton.getSelection ()) {
+				data.heightHint = data.widthHint = SWT.DEFAULT;
+				data.verticalAlignment = data.horizontalAlignment = 0;
+				data.grabExcessVerticalSpace = data.grabExcessHorizontalSpace = false;
+			} else {
+				data.verticalAlignment = data.horizontalAlignment = SWT.FILL;
+				data.grabExcessVerticalSpace = data.grabExcessHorizontalSpace = true;
 			}
-		});
+			layoutComposite.setLayoutData (data);
+			layoutGroup.layout (true);
+		}));
 		preferredButton.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		createControlWidgets ();
 	}

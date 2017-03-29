@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.fileviewer;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -279,21 +281,11 @@ public class FileViewer {
 		final MenuItem simulateItem = new MenuItem(menu, SWT.CHECK);
 		simulateItem.setText(getResourceString("menu.File.SimulateOnly.text"));
 		simulateItem.setSelection(simulateOnly);
-		simulateItem.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				simulateOnly = simulateItem.getSelection();
-			}
-		});
+		simulateItem.addSelectionListener(widgetSelectedAdapter(e -> simulateOnly = simulateItem.getSelection()));
 
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.File.Close.text"));
-		item.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				shell.close();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e -> shell.close()));
 	}
 
 	/**
@@ -309,16 +301,13 @@ public class FileViewer {
 
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.Help.About.text"));
-		item.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-				box.setText(getResourceString("dialog.About.title"));
-				box.setMessage(getResourceString("dialog.About.description",
-					new Object[] { System.getProperty("os.name") }));
-				box.open();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e -> {
+			MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+			box.setText(getResourceString("dialog.About.title"));
+			box.setMessage(getResourceString("dialog.About.description",
+				new Object[] { System.getProperty("os.name") }));
+			box.open();
+		}));
 	}
 
 	/**
@@ -334,30 +323,17 @@ public class FileViewer {
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(iconCache.stockImages[iconCache.cmdParent]);
 		item.setToolTipText(getResourceString("tool.Parent.tiptext"));
-		item.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doParent();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e -> doParent()));
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(iconCache.stockImages[iconCache.cmdRefresh]);
 		item.setToolTipText(getResourceString("tool.Refresh.tiptext"));
-		item.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				doRefresh();
-			}
+		item.addSelectionListener(widgetSelectedAdapter(e -> doRefresh()));
+		SelectionListener unimplementedListener = widgetSelectedAdapter(e -> {
+			MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+			box.setText(getResourceString("dialog.NotImplemented.title"));
+			box.setMessage(getResourceString("dialog.ActionNotImplemented.description"));
+			box.open();
 		});
-		SelectionAdapter unimplementedListener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-				box.setText(getResourceString("dialog.NotImplemented.title"));
-				box.setMessage(getResourceString("dialog.ActionNotImplemented.description"));
-				box.open();
-			}
-		};
 
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
@@ -1690,13 +1666,10 @@ public class FileViewer {
 			cancelButton = new Button(shell, SWT.PUSH);
 			cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_FILL));
 			cancelButton.setText(getResourceString("progressDialog.cancelButton.text"));
-			cancelButton.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					isCancelled = true;
-					cancelButton.setEnabled(false);
-				}
-			});
+			cancelButton.addSelectionListener(widgetSelectedAdapter(e -> {
+				isCancelled = true;
+				cancelButton.setEnabled(false);
+			}));
 		}
 		/**
 		 * Sets the detail text to show the filename along with a string

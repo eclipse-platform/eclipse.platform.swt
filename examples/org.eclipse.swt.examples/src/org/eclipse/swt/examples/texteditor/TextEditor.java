@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.texteditor;
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -32,8 +34,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -235,39 +236,31 @@ public class TextEditor {
 
 		MenuItem openItem = new MenuItem(fileMenu, SWT.PUSH);
 		openItem.setText(getResourceString("Open_menuitem")); //$NON-NLS-1$
-		openItem.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
-				dialog.setFilterExtensions (new String [] {"*.txt"}); //$NON-NLS-1$
-		        String name = dialog.open();
-		        if (name == null)  return;
-		        fileName = name;
-		        FileInputStream file = null;
-		        try {
-		        	file = new FileInputStream(name);
-		        	styledText.setText(openFile(file));
-		        } catch (IOException e) {
-		        	showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
-		        } finally {
-		        	try {
-		        		if (file != null) file.close();
-		        	} catch (IOException e) {
-		        		showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
-		        	}
-		        }
-			}
-		});
+		openItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+			dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
+			dialog.setFilterExtensions (new String [] {"*.txt"}); //$NON-NLS-1$
+		    String name = dialog.open();
+		    if (name == null)  return;
+		    fileName = name;
+		    FileInputStream file = null;
+		    try {
+		    	file = new FileInputStream(name);
+		    	styledText.setText(openFile(file));
+		    } catch (IOException e) {
+		    	showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
+		    } finally {
+		    	try {
+		    		if (file != null) file.close();
+		    	} catch (IOException e) {
+		    		showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
+		    	}
+		    }
+		}));
 
 		final MenuItem saveItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveItem.setText(getResourceString("Save_menuitem")); //$NON-NLS-1$
-		saveItem.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				saveFile();
-			}
-		});
+		saveItem.addSelectionListener(widgetSelectedAdapter(event -> saveFile()));
 
 		fileMenu.addMenuListener(new MenuAdapter() {
 			@Override
@@ -278,31 +271,23 @@ public class TextEditor {
 
 		MenuItem saveAsItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveAsItem.setText(getResourceString("SaveAs_menuitem")); //$NON-NLS-1$
-		saveAsItem.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				FileDialog dialog = new FileDialog (shell, SWT.SAVE);
-				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
-				dialog.setFilterExtensions(new String [] {"*.txt"}); //$NON-NLS-1$
-				if (fileName != null) dialog.setFileName(fileName);
-				String name = dialog.open();
-				if (name != null) {
-					fileName = name;
-					saveFile();
-				}
+		saveAsItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			FileDialog dialog = new FileDialog (shell, SWT.SAVE);
+			dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
+			dialog.setFilterExtensions(new String [] {"*.txt"}); //$NON-NLS-1$
+			if (fileName != null) dialog.setFileName(fileName);
+			String name = dialog.open();
+			if (name != null) {
+				fileName = name;
+				saveFile();
 			}
-		});
+		}));
 
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
 		MenuItem exitItem = new MenuItem(fileMenu, SWT.PUSH);
 		exitItem.setText(getResourceString("Exit_menuitem")); //$NON-NLS-1$
-		exitItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				shell.dispose();
-			}
-		});
+		exitItem.addSelectionListener(widgetSelectedAdapter(event -> shell.dispose()));
 
 		MenuItem editItem = new MenuItem(menu, SWT.CASCADE);
 		final Menu editMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -312,45 +297,25 @@ public class TextEditor {
 		cutItem.setText(getResourceString("Cut_menuitem")); //$NON-NLS-1$
 		cutItem.setImage(iCut);
 		cutItem.setAccelerator(SWT.MOD1 | 'x');
-		cutItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.cut();
-			}
-		});
+		cutItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.cut()));
 
 		final MenuItem copyItem = new MenuItem(editMenu, SWT.PUSH);
 		copyItem.setText(getResourceString("Copy_menuitem")); //$NON-NLS-1$
 		copyItem.setImage(iCopy);
 		copyItem.setAccelerator(SWT.MOD1 | 'c');
-		copyItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.copy();
-			}
-		});
+		copyItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.copy()));
 
 		MenuItem pasteItem = new MenuItem(editMenu, SWT.PUSH);
 		pasteItem.setText(getResourceString("Paste_menuitem")); //$NON-NLS-1$
 		pasteItem.setImage(iPaste);
 		pasteItem.setAccelerator(SWT.MOD1 | 'v');
-		pasteItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.paste();
-			}
-		});
+		pasteItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.paste()));
 
 		new MenuItem(editMenu, SWT.SEPARATOR);
 		final MenuItem selectAllItem = new MenuItem(editMenu, SWT.PUSH);
 		selectAllItem.setText(getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
 		selectAllItem.setAccelerator(SWT.MOD1 | 'a');
-		selectAllItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.selectAll();
-			}
-		});
+		selectAllItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.selectAll()));
 
 		editMenu.addMenuListener(new MenuAdapter() {
 			@Override
@@ -364,51 +329,42 @@ public class TextEditor {
 
 		MenuItem wrapItem = new MenuItem(editMenu, SWT.CHECK);
 		wrapItem.setText(getResourceString("Wrap_menuitem")); //$NON-NLS-1$
-		wrapItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				MenuItem item = (MenuItem) event.widget;
-				boolean enabled = item.getSelection();
-				styledText.setWordWrap(enabled);
-				editMenu.getItem(6).setEnabled(enabled);
-				editMenu.getItem(8).setEnabled(enabled);
-				leftAlignmentItem.setEnabled(enabled);
-				centerAlignmentItem.setEnabled(enabled);
-				rightAlignmentItem.setEnabled(enabled);
-				justifyAlignmentItem.setEnabled(enabled);
-				blockSelectionItem.setEnabled(!enabled);
-			}
-		});
+		wrapItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			MenuItem item = (MenuItem) event.widget;
+			boolean enabled = item.getSelection();
+			styledText.setWordWrap(enabled);
+			editMenu.getItem(6).setEnabled(enabled);
+			editMenu.getItem(8).setEnabled(enabled);
+			leftAlignmentItem.setEnabled(enabled);
+			centerAlignmentItem.setEnabled(enabled);
+			rightAlignmentItem.setEnabled(enabled);
+			justifyAlignmentItem.setEnabled(enabled);
+			blockSelectionItem.setEnabled(!enabled);
+		}));
 
 		MenuItem justifyItem = new MenuItem(editMenu, SWT.CHECK);
 		justifyItem.setText(getResourceString("Justify_menuitem")); //$NON-NLS-1$
-		justifyItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				MenuItem item = (MenuItem) event.widget;
-				styledText.setJustify(item.getSelection());
-				updateToolBar();
-			}
-		});
+		justifyItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			MenuItem item = (MenuItem) event.widget;
+			styledText.setJustify(item.getSelection());
+			updateToolBar();
+		}));
 		justifyItem.setEnabled(false);
 
 		MenuItem setFontItem = new MenuItem(editMenu, SWT.PUSH);
 		setFontItem.setText(getResourceString("SetFont_menuitem")); //$NON-NLS-1$
-		setFontItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				FontDialog fontDialog = new FontDialog(shell);
-				fontDialog.setFontList(styledText.getFont().getFontData());
-				FontData data = fontDialog.open();
-				if (data != null) {
-					Font newFont = new Font(display, data);
-					styledText.setFont(newFont);
-					if (font != null) font.dispose();
-					font = newFont;
-					updateToolBar();
-				}
+		setFontItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			FontDialog fontDialog = new FontDialog(shell);
+			fontDialog.setFontList(styledText.getFont().getFontData());
+			FontData data = fontDialog.open();
+			if (data != null) {
+				Font newFont = new Font(display, data);
+				styledText.setFont(newFont);
+				if (font != null) font.dispose();
+				font = newFont;
+				updateToolBar();
 			}
-		});
+		}));
 
 		MenuItem alignmentItem = new MenuItem(editMenu, SWT.CASCADE);
 		alignmentItem.setText(getResourceString("Alignment_menuitem")); //$NON-NLS-1$
@@ -417,34 +373,25 @@ public class TextEditor {
 		final MenuItem leftAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
 		leftAlignmentItem.setText(getResourceString("Left_menuitem")); //$NON-NLS-1$
 		leftAlignmentItem.setSelection(true);
-		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.setAlignment(SWT.LEFT);
-				updateToolBar();
-			}
-		});
+		leftAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			styledText.setAlignment(SWT.LEFT);
+			updateToolBar();
+		}));
 		alignmentItem.setEnabled(false);
 
 		final MenuItem centerAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
 		centerAlignmentItem.setText(getResourceString("Center_menuitem")); //$NON-NLS-1$
-		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.setAlignment(SWT.CENTER);
-				updateToolBar();
-			}
-		});
+		centerAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			styledText.setAlignment(SWT.CENTER);
+			updateToolBar();
+		}));
 
 		MenuItem rightAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
 		rightAlignmentItem.setText(getResourceString("Right_menuitem")); //$NON-NLS-1$
-		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.setAlignment(SWT.RIGHT);
-				updateToolBar();
-			}
-		});
+		rightAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			styledText.setAlignment(SWT.RIGHT);
+			updateToolBar();
+		}));
 
 		MenuItem editOrientationItem = new MenuItem(editMenu, SWT.CASCADE);
 		editOrientationItem.setText(getResourceString("Orientation_menuitem")); //$NON-NLS-1$
@@ -453,22 +400,12 @@ public class TextEditor {
 
 		MenuItem leftToRightItem = new MenuItem(editOrientationMenu, SWT.RADIO);
 		leftToRightItem.setText(getResourceString("LeftToRight_menuitem")); //$NON-NLS-1$
-		leftToRightItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event){
-				styledText.setOrientation(SWT.LEFT_TO_RIGHT);
-			}
-		});
+		leftToRightItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.setOrientation(SWT.LEFT_TO_RIGHT)));
 		leftToRightItem.setSelection(true);
 
 		MenuItem rightToLeftItem = new MenuItem(editOrientationMenu, SWT.RADIO);
 		rightToLeftItem.setText(getResourceString("RightToLeft_menuitem")); //$NON-NLS-1$
-		rightToLeftItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.setOrientation(SWT.RIGHT_TO_LEFT);
-			}
-		});
+		rightToLeftItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.setOrientation(SWT.RIGHT_TO_LEFT)));
 
 		new MenuItem(editMenu, SWT.SEPARATOR);
 		MenuItem insertObjectItem = new MenuItem(editMenu, SWT.CASCADE);
@@ -486,42 +423,33 @@ public class TextEditor {
 		MenuItem comboItem = new MenuItem(controlChoice, SWT.PUSH);
 		comboItem.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
 
-		buttonItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Button button = new Button(styledText, SWT.PUSH);
-				button.setText(getResourceString("Button_menuitem")); //$NON-NLS-1$
-				addControl(button);
-			}
-		});
+		buttonItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Button button = new Button(styledText, SWT.PUSH);
+			button.setText(getResourceString("Button_menuitem")); //$NON-NLS-1$
+			addControl(button);
+		}));
 
-		comboItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Combo combo = new Combo(styledText, SWT.NONE);
-				combo.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
-				addControl(combo);
-			}
-		});
+		comboItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Combo combo = new Combo(styledText, SWT.NONE);
+			combo.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
+			addControl(combo);
+		}));
 
 		MenuItem insertImageItem = new MenuItem(insertObjectMenu, SWT.PUSH);
 		insertImageItem.setText(getResourceString("Image_menuitem")); //$NON-NLS-1$
 
-		insertImageItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-				String fileName = fileDialog.open();
-				if (fileName != null) {
-					try {
-						Image image = new Image(display, fileName);
-						addImage(image);
-					} catch (Exception e) {
-						showError(getResourceString("Bad_image"), e.getMessage()); //$NON-NLS-1$
-					}
+		insertImageItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+			String fileName = fileDialog.open();
+			if (fileName != null) {
+				try {
+					Image image = new Image(display, fileName);
+					addImage(image);
+				} catch (Exception e) {
+					showError(getResourceString("Bad_image"), e.getMessage()); //$NON-NLS-1$
 				}
 			}
-		});
+		}));
 
 		if (SAMPLE_TEXT) {
 			new MenuItem(editMenu, SWT.SEPARATOR);
@@ -529,13 +457,10 @@ public class TextEditor {
 			loadProfileItem.setText(getResourceString("LoadProfile_menuitem")); //$NON-NLS-1$
 			Menu loadProfileMenu = new Menu(shell, SWT.DROP_DOWN);
 			loadProfileItem.setMenu(loadProfileMenu);
-			SelectionAdapter adapter = new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent event) {
-					int profile = Integer.parseInt((String) event.widget.getData());
-					loadProfile(profile);
-				}
-			};
+			SelectionListener adapter = widgetSelectedAdapter(event -> {
+				int profile = Integer.parseInt((String) event.widget.getData());
+				loadProfile(profile);
+			});
 
 			MenuItem profileItem = new MenuItem(loadProfileMenu, SWT.PUSH);
 			profileItem.setText(getResourceString("Profile1_menuitem")); //$NON-NLS-1$
@@ -592,289 +517,226 @@ public class TextEditor {
 		boldControl = new ToolItem(styleToolBar, SWT.CHECK);
 		boldControl.setImage(iBold);
 		boldControl.setToolTipText(getResourceString("Bold")); //$NON-NLS-1$
-		boldControl.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setStyle(BOLD);
-			}
-		});
+		boldControl.addSelectionListener(widgetSelectedAdapter(event -> setStyle(BOLD)));
 
 		italicControl = new ToolItem(styleToolBar, SWT.CHECK);
 		italicControl.setImage(iItalic);
 		italicControl.setToolTipText(getResourceString("Italic")); //$NON-NLS-1$
-		italicControl.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setStyle(ITALIC);
-			}
-		});
+		italicControl.addSelectionListener(widgetSelectedAdapter(event -> setStyle(ITALIC)));
 
 		final Menu underlineMenu = new Menu(shell, SWT.POP_UP);
 		underlineSingleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineSingleItem.setText(getResourceString("Single_menuitem")); //$NON-NLS-1$
-		underlineSingleItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (underlineSingleItem.getSelection()) {
-					setStyle(UNDERLINE_SINGLE);
-				}
+		underlineSingleItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (underlineSingleItem.getSelection()) {
+				setStyle(UNDERLINE_SINGLE);
 			}
-		});
+		}));
 		underlineSingleItem.setSelection(true);
 
 		underlineDoubleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineDoubleItem.setText(getResourceString("Double_menuitem")); //$NON-NLS-1$
-		underlineDoubleItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (underlineDoubleItem.getSelection()) {
-					setStyle(UNDERLINE_DOUBLE);
-				}
+		underlineDoubleItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (underlineDoubleItem.getSelection()) {
+				setStyle(UNDERLINE_DOUBLE);
 			}
-		});
+		}));
 
 		underlineSquiggleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineSquiggleItem.setText(getResourceString("Squiggle_menuitem")); //$NON-NLS-1$
-		underlineSquiggleItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (underlineSquiggleItem.getSelection()) {
-					setStyle(UNDERLINE_SQUIGGLE);
-				}
+		underlineSquiggleItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (underlineSquiggleItem.getSelection()) {
+				setStyle(UNDERLINE_SQUIGGLE);
 			}
-		});
+		}));
 
 		underlineErrorItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineErrorItem.setText(getResourceString("Error_menuitem")); //$NON-NLS-1$
-		underlineErrorItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (underlineErrorItem.getSelection()) {
-					setStyle(UNDERLINE_ERROR);
-				}
+		underlineErrorItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (underlineErrorItem.getSelection()) {
+				setStyle(UNDERLINE_ERROR);
 			}
-		});
+		}));
 
 		MenuItem underlineColorItem = new MenuItem(underlineMenu, SWT.PUSH);
 		underlineColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
-		underlineColorItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				ColorDialog dialog = new ColorDialog(shell);
-				RGB rgb = underlineColor != null ? underlineColor.getRGB() : null;
-				dialog.setRGB(rgb);
-				RGB newRgb = dialog.open();
-				if (newRgb != null) {
-					if (!newRgb.equals(rgb)) {
-						disposeResource(underlineColor);
-						underlineColor = new Color(display, newRgb);
-					}
-					if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
-					else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
-					else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
-					else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
+		underlineColorItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			ColorDialog dialog = new ColorDialog(shell);
+			RGB rgb = underlineColor != null ? underlineColor.getRGB() : null;
+			dialog.setRGB(rgb);
+			RGB newRgb = dialog.open();
+			if (newRgb != null) {
+				if (!newRgb.equals(rgb)) {
+					disposeResource(underlineColor);
+					underlineColor = new Color(display, newRgb);
 				}
+				if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
+				else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
+				else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
+				else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
 			}
-		});
+		}));
 
 		final ToolItem underlineControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
 		underlineControl.setImage(iUnderline);
 		underlineControl.setToolTipText(getResourceString("Underline")); //$NON-NLS-1$
-		underlineControl.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW) {
-					Rectangle rect = underlineControl.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					underlineMenu.setLocation(display.map(underlineControl.getParent(), null, pt));
-					underlineMenu.setVisible(true);
-				} else {
-					if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
-					else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
-					else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
-					else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
-				}
+		underlineControl.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW) {
+				Rectangle rect = underlineControl.getBounds();
+				Point pt = new Point(rect.x, rect.y + rect.height);
+				underlineMenu.setLocation(display.map(underlineControl.getParent(), null, pt));
+				underlineMenu.setVisible(true);
+			} else {
+				if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
+				else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
+				else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
+				else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
 			}
-		});
+		}));
 
 		ToolItem strikeoutControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
 		strikeoutControl.setImage(iStrikeout);
 		strikeoutControl.setToolTipText(getResourceString("Strikeout")); //$NON-NLS-1$
-		strikeoutControl.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW) {
-					ColorDialog dialog = new ColorDialog(shell);
-					RGB rgb = strikeoutColor != null ? strikeoutColor.getRGB() : null;
-					dialog.setRGB(rgb);
-					RGB newRgb = dialog.open();
-					if (newRgb == null) return;
-					if (!newRgb.equals(rgb)) {
-						disposeResource(strikeoutColor);
-						strikeoutColor = new Color(display, newRgb);
-					}
+		strikeoutControl.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW) {
+				ColorDialog dialog = new ColorDialog(shell);
+				RGB rgb = strikeoutColor != null ? strikeoutColor.getRGB() : null;
+				dialog.setRGB(rgb);
+				RGB newRgb = dialog.open();
+				if (newRgb == null) return;
+				if (!newRgb.equals(rgb)) {
+					disposeResource(strikeoutColor);
+					strikeoutColor = new Color(display, newRgb);
 				}
-				setStyle(STRIKEOUT);
 			}
-		});
+			setStyle(STRIKEOUT);
+		}));
 
 		final Menu borderMenu = new Menu(shell, SWT.POP_UP);
 		borderSolidItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderSolidItem.setText(getResourceString("Solid")); //$NON-NLS-1$
-		borderSolidItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event){
-				if (borderSolidItem.getSelection()) {
-					setStyle(BORDER_SOLID);
-				}
+		borderSolidItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (borderSolidItem.getSelection()) {
+				setStyle(BORDER_SOLID);
 			}
-		});
+		}));
 		borderSolidItem.setSelection(true);
 
 		borderDashItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderDashItem.setText(getResourceString("Dash")); //$NON-NLS-1$
-		borderDashItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event){
-				if (borderDashItem.getSelection()) {
-					setStyle(BORDER_DASH);
-				}
+		borderDashItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (borderDashItem.getSelection()) {
+				setStyle(BORDER_DASH);
 			}
-		});
+		}));
 
 		borderDotItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderDotItem.setText(getResourceString("Dot")); //$NON-NLS-1$
-		borderDotItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event){
-				if (borderDotItem.getSelection()) {
-					setStyle(BORDER_DOT);
-				}
+		borderDotItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (borderDotItem.getSelection()) {
+				setStyle(BORDER_DOT);
 			}
-		});
+		}));
 
 		MenuItem borderColorItem = new MenuItem(borderMenu, SWT.PUSH);
 		borderColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
-		borderColorItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event){
-				ColorDialog dialog = new ColorDialog(shell);
-				RGB rgb = borderColor != null ? borderColor.getRGB() : null;
-				dialog.setRGB(rgb);
-				RGB newRgb = dialog.open();
-				if (newRgb != null) {
-					if (!newRgb.equals(rgb)) {
-						disposeResource(borderColor);
-						borderColor = new Color(display, newRgb);
-					}
-					if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
-					else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
-					else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
+		borderColorItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			ColorDialog dialog = new ColorDialog(shell);
+			RGB rgb = borderColor != null ? borderColor.getRGB() : null;
+			dialog.setRGB(rgb);
+			RGB newRgb = dialog.open();
+			if (newRgb != null) {
+				if (!newRgb.equals(rgb)) {
+					disposeResource(borderColor);
+					borderColor = new Color(display, newRgb);
 				}
+				if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
+				else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
+				else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
 			}
-		});
+		}));
 
 		final ToolItem borderControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
 		borderControl.setImage(iBorderStyle);
 		borderControl.setToolTipText(getResourceString("Box")); //$NON-NLS-1$
-		borderControl.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW) {
-					Rectangle rect = borderControl.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					borderMenu.setLocation(display.map(borderControl.getParent(), null, pt));
-					borderMenu.setVisible(true);
-				} else {
-					if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
-					else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
-					else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
-				}
+		borderControl.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW) {
+				Rectangle rect = borderControl.getBounds();
+				Point pt = new Point(rect.x, rect.y + rect.height);
+				borderMenu.setLocation(display.map(borderControl.getParent(), null, pt));
+				borderMenu.setVisible(true);
+			} else {
+				if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
+				else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
+				else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
 			}
-		});
+		}));
 
 		ToolItem foregroundItem = new ToolItem(styleToolBar, SWT.DROP_DOWN);
 		foregroundItem.setImage(iTextForeground);
 		foregroundItem.setToolTipText(getResourceString("TextForeground")); //$NON-NLS-1$
-		foregroundItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW || textForeground == null) {
-					ColorDialog dialog = new ColorDialog(shell);
-					RGB rgb = textForeground != null ? textForeground.getRGB() : null;
-					dialog.setRGB(rgb);
-					RGB newRgb = dialog.open();
-					if (newRgb == null) return;
-					if (!newRgb.equals(rgb)) {
-						disposeResource(textForeground);
-						textForeground = new Color(display, newRgb);
-					}
+		foregroundItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW || textForeground == null) {
+				ColorDialog dialog = new ColorDialog(shell);
+				RGB rgb = textForeground != null ? textForeground.getRGB() : null;
+				dialog.setRGB(rgb);
+				RGB newRgb = dialog.open();
+				if (newRgb == null) return;
+				if (!newRgb.equals(rgb)) {
+					disposeResource(textForeground);
+					textForeground = new Color(display, newRgb);
 				}
-				setStyle(FOREGROUND);
 			}
-		});
+			setStyle(FOREGROUND);
+		}));
 
 		ToolItem backgroundItem = new ToolItem(styleToolBar, SWT.DROP_DOWN);
 		backgroundItem.setImage(iTextBackground);
 		backgroundItem.setToolTipText(getResourceString("TextBackground")); //$NON-NLS-1$
-		backgroundItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail == SWT.ARROW || textBackground == null) {
-					ColorDialog dialog = new ColorDialog(shell);
-					RGB rgb = textBackground != null ? textBackground.getRGB() : null;
-					dialog.setRGB(rgb);
-					RGB newRgb = dialog.open();
-					if (newRgb == null) return;
-					if (!newRgb.equals(rgb)) {
-						disposeResource(textBackground);
-						textBackground = new Color(display, newRgb);
-					}
+		backgroundItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (event.detail == SWT.ARROW || textBackground == null) {
+				ColorDialog dialog = new ColorDialog(shell);
+				RGB rgb = textBackground != null ? textBackground.getRGB() : null;
+				dialog.setRGB(rgb);
+				RGB newRgb = dialog.open();
+				if (newRgb == null) return;
+				if (!newRgb.equals(rgb)) {
+					disposeResource(textBackground);
+					textBackground = new Color(display, newRgb);
 				}
-				setStyle(BACKGROUND);
 			}
-		});
+			setStyle(BACKGROUND);
+		}));
 
 		ToolItem baselineUpItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineUpItem.setImage(iBaselineUp);
 		String tooltip = "IncreaseFont"; //$NON-NLS-1$
 		if (USE_BASELINE) tooltip = "IncreaseBaseline"; //$NON-NLS-1$
 		baselineUpItem.setToolTipText(getResourceString(tooltip));
-		baselineUpItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (USE_BASELINE) {
-					setStyle(BASELINE_UP);
-				} else {
-					adjustFontSize(1);
-				}
+		baselineUpItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (USE_BASELINE) {
+				setStyle(BASELINE_UP);
+			} else {
+				adjustFontSize(1);
 			}
-		});
+		}));
 
 		ToolItem baselineDownItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineDownItem.setImage(iBaselineDown);
 		tooltip = "DecreaseFont"; //$NON-NLS-1$
 		if (USE_BASELINE) tooltip = "DecreaseBaseline"; //$NON-NLS-1$
 		baselineDownItem.setToolTipText(getResourceString(tooltip));
-		baselineDownItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (USE_BASELINE) {
-					setStyle(BASELINE_DOWN);
-				} else {
-					adjustFontSize(-1);
-				}
+		baselineDownItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			if (USE_BASELINE) {
+				setStyle(BASELINE_DOWN);
+			} else {
+				adjustFontSize(-1);
 			}
-		});
+		}));
 		ToolItem linkItem = new ToolItem(styleToolBar, SWT.PUSH);
 		linkItem.setImage(iLink);
 		linkItem.setToolTipText(getResourceString("Link")); //$NON-NLS-1$
-		linkItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setLink();
-			}
-		});
+		linkItem.addSelectionListener(widgetSelectedAdapter(event -> setLink()));
 
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(styleToolBar);
@@ -889,16 +751,13 @@ public class TextEditor {
 		fontSizeControl = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		fontSizeControl.setItems(FONT_SIZES);
 		fontSizeControl.setVisibleItemCount(8);
-		SelectionAdapter adapter = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				String name = fontNameControl.getText();
-				int size = Integer.parseInt(fontSizeControl.getText());
-				disposeResource(textFont);
-				textFont = new Font(display, name, size, SWT.NORMAL);
-				setStyle(FONT);
-			}
-		};
+		SelectionListener adapter = widgetSelectedAdapter(event -> {
+			String name = fontNameControl.getText();
+			int size = Integer.parseInt(fontSizeControl.getText());
+			disposeResource(textFont);
+			textFont = new Font(display, name, size, SWT.NORMAL);
+			setStyle(FONT);
+		});
 		fontSizeControl.addSelectionListener(adapter);
 		fontNameControl.addSelectionListener(adapter);
 		coolItem = new CoolItem(coolBar, SWT.NONE);
@@ -908,88 +767,62 @@ public class TextEditor {
 		blockSelectionItem = new ToolItem(alignmentToolBar, SWT.CHECK);
 		blockSelectionItem.setImage(iBlockSelection);
 		blockSelectionItem.setToolTipText(getResourceString("BlockSelection")); //$NON-NLS-1$
-		blockSelectionItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				styledText.invokeAction(ST.TOGGLE_BLOCKSELECTION);
-			}
-		});
+		blockSelectionItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.invokeAction(ST.TOGGLE_BLOCKSELECTION)));
 
 		leftAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
 		leftAlignmentItem.setImage(iLeftAlignment);
 		leftAlignmentItem.setToolTipText(getResourceString("AlignLeft")); //$NON-NLS-1$
 		leftAlignmentItem.setSelection(true);
-		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Point selection = styledText.getSelection();
-				int lineStart = styledText.getLineAtOffset(selection.x);
-				int lineEnd = styledText.getLineAtOffset(selection.y);
-				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.LEFT);
-			}
-		});
+		leftAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Point selection = styledText.getSelection();
+			int lineStart = styledText.getLineAtOffset(selection.x);
+			int lineEnd = styledText.getLineAtOffset(selection.y);
+			styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.LEFT);
+		}));
 		leftAlignmentItem.setEnabled(false);
 
 		centerAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
 		centerAlignmentItem.setImage(iCenterAlignment);
 		centerAlignmentItem.setToolTipText(getResourceString("Center_menuitem")); //$NON-NLS-1$
-		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Point selection = styledText.getSelection();
-				int lineStart = styledText.getLineAtOffset(selection.x);
-				int lineEnd = styledText.getLineAtOffset(selection.y);
-				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1, SWT.CENTER);
-			}
-		});
+		centerAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Point selection = styledText.getSelection();
+			int lineStart = styledText.getLineAtOffset(selection.x);
+			int lineEnd = styledText.getLineAtOffset(selection.y);
+			styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1, SWT.CENTER);
+		}));
 		centerAlignmentItem.setEnabled(false);
 
 		rightAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
 		rightAlignmentItem.setImage(iRightAlignment);
 		rightAlignmentItem.setToolTipText(getResourceString("AlignRight")); //$NON-NLS-1$
-		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Point selection = styledText.getSelection();
-				int lineStart = styledText.getLineAtOffset(selection.x);
-				int lineEnd = styledText.getLineAtOffset(selection.y);
-				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.RIGHT);
-			}
-		});
+		rightAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Point selection = styledText.getSelection();
+			int lineStart = styledText.getLineAtOffset(selection.x);
+			int lineEnd = styledText.getLineAtOffset(selection.y);
+			styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.RIGHT);
+		}));
 		rightAlignmentItem.setEnabled(false);
 
 		justifyAlignmentItem = new ToolItem(alignmentToolBar, SWT.CHECK);
 		justifyAlignmentItem.setImage(iJustifyAlignment);
 		justifyAlignmentItem.setToolTipText(getResourceString("Justify")); //$NON-NLS-1$
-		justifyAlignmentItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Point selection = styledText.getSelection();
-				int lineStart = styledText.getLineAtOffset(selection.x);
-				int lineEnd = styledText.getLineAtOffset(selection.y);
-				styledText.setLineJustify(lineStart, lineEnd - lineStart + 1, justifyAlignmentItem.getSelection());
-			}
-		});
+		justifyAlignmentItem.addSelectionListener(widgetSelectedAdapter(event -> {
+			Point selection = styledText.getSelection();
+			int lineStart = styledText.getLineAtOffset(selection.x);
+			int lineEnd = styledText.getLineAtOffset(selection.y);
+			styledText.setLineJustify(lineStart, lineEnd - lineStart + 1, justifyAlignmentItem.getSelection());
+		}));
 		justifyAlignmentItem.setEnabled(false);
 
 		ToolItem bulletListItem = new ToolItem(alignmentToolBar, SWT.PUSH);
 		bulletListItem.setImage(iBulletList);
 		bulletListItem.setToolTipText(getResourceString("BulletList")); //$NON-NLS-1$
-		bulletListItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setBullet(ST.BULLET_DOT);}
-		});
+		bulletListItem.addSelectionListener(widgetSelectedAdapter(event -> setBullet(ST.BULLET_DOT)));
 
 		ToolItem numberedListItem = new ToolItem(alignmentToolBar, SWT.PUSH);
 		numberedListItem.setImage(iNumberedList);
 		numberedListItem.setToolTipText(getResourceString("NumberedList")); //$NON-NLS-1$
-		numberedListItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setBullet(ST.BULLET_NUMBER | ST.BULLET_TEXT);
-			}
-		});
+		numberedListItem.addSelectionListener(widgetSelectedAdapter(event -> setBullet(ST.BULLET_NUMBER | ST.BULLET_TEXT)));
 
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(alignmentToolBar);
@@ -1000,23 +833,17 @@ public class TextEditor {
 		Label label = new Label(composite, SWT.NONE);
 		label.setText(getResourceString("Indent")); //$NON-NLS-1$
 		Spinner indent = new Spinner(composite, SWT.BORDER);
-		indent.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Spinner spinner = (Spinner) event.widget;
-				styledText.setIndent(spinner.getSelection());
-			}
-		});
+		indent.addSelectionListener(widgetSelectedAdapter(event -> {
+			Spinner spinner = (Spinner) event.widget;
+			styledText.setIndent(spinner.getSelection());
+		}));
 		label = new Label(composite, SWT.NONE);
 		label.setText(getResourceString("Spacing")); //$NON-NLS-1$
 		Spinner spacing = new Spinner(composite, SWT.BORDER);
-		spacing.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Spinner spinner = (Spinner) event.widget;
-				styledText.setLineSpacing(spinner.getSelection());
-			}
-		});
+		spacing.addSelectionListener(widgetSelectedAdapter(event -> {
+			Spinner spinner = (Spinner) event.widget;
+			styledText.setLineSpacing(spinner.getSelection());
+		}));
 
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(composite);
@@ -1319,7 +1146,7 @@ public class TextEditor {
 	Image loadImage(Display display, String fileName) {
 		Image image = null;
 		try {
-			InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$ //$NON-NLS-2$
+			InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$
 			ImageData source = new ImageData(sourceStream);
 			ImageData mask = source.getTransparencyMask();
 			image = new Image(display, source, mask);
