@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
@@ -97,12 +99,7 @@ class SpinnerTab extends RangeTab {
 		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		incrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				setWidgetIncrement ();
-			}
-		});
+		incrementSpinner.addSelectionListener (widgetSelectedAdapter(e -> setWidgetIncrement ()));
 	}
 
 	/**
@@ -126,12 +123,7 @@ class SpinnerTab extends RangeTab {
 		pageIncrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetPageIncrement ();
-			}
-		});
+		pageIncrementSpinner.addSelectionListener (widgetSelectedAdapter(event -> setWidgetPageIncrement ()));
 	}
 
 	/**
@@ -155,12 +147,7 @@ class SpinnerTab extends RangeTab {
 		digitsSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		digitsSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				setWidgetDigits ();
-			}
-		});
+		digitsSpinner.addSelectionListener (widgetSelectedAdapter(e -> setWidgetDigits ()));
 	}
 
 	/**

@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.paint;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -20,8 +22,6 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -163,12 +163,7 @@ public class PaintExample {
 		item.setText (getResourceString(id + ".label"));
 		item.setToolTipText(getResourceString(id + ".tooltip"));
 		item.setImage(tool.image);
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tool.action.run();
-			}
-		});
+		item.addSelectionListener(widgetSelectedAdapter(e -> tool.action.run()));
 		final int childID = toolbar.indexOf(item);
 		toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
 			@Override
@@ -322,13 +317,10 @@ public class PaintExample {
 		airbrushRadiusScale.setMaximum(50);
 		airbrushRadiusScale.setSelection(toolSettings.airbrushRadius);
 		airbrushRadiusScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
-		airbrushRadiusScale.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				toolSettings.airbrushRadius = airbrushRadiusScale.getSelection();
-				updateToolSettings();
-			}
-		});
+		airbrushRadiusScale.addSelectionListener(widgetSelectedAdapter(e -> {
+			toolSettings.airbrushRadius = airbrushRadiusScale.getSelection();
+			updateToolSettings();
+		}));
 
 		label = new Label(toolSettingsFrame, SWT.NONE);
 		label.setText(getResourceString("settings.AirbrushIntensity.text"));
@@ -338,13 +330,10 @@ public class PaintExample {
 		airbrushIntensityScale.setMaximum(100);
 		airbrushIntensityScale.setSelection(toolSettings.airbrushIntensity);
 		airbrushIntensityScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
-		airbrushIntensityScale.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				toolSettings.airbrushIntensity = airbrushIntensityScale.getSelection();
-				updateToolSettings();
-			}
-		});
+		airbrushIntensityScale.addSelectionListener(widgetSelectedAdapter(e -> {
+			toolSettings.airbrushIntensity = airbrushIntensityScale.getSelection();
+			updateToolSettings();
+		}));
 	}
 
 	/**

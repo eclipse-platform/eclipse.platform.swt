@@ -11,10 +11,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
 
 class ScaleTab extends RangeTab {
 	/* Example widgets and groups that contain them */
@@ -93,12 +94,7 @@ class ScaleTab extends RangeTab {
 		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		incrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				setWidgetIncrement ();
-			}
-		});
+		incrementSpinner.addSelectionListener (widgetSelectedAdapter(e -> setWidgetIncrement ()));
 	}
 
 	/**
@@ -122,12 +118,7 @@ class ScaleTab extends RangeTab {
 		pageIncrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetPageIncrement ();
-			}
-		});
+		pageIncrementSpinner.addSelectionListener (widgetSelectedAdapter(event -> setWidgetPageIncrement ()));
 	}
 
 	/**

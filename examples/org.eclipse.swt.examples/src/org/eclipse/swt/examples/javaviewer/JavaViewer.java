@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.javaviewer;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,8 +25,6 @@ import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
@@ -55,22 +55,12 @@ Menu createFileMenu() {
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Open_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'O');
-	item.addSelectionListener(new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent event) {
-			openFile();
-		}
-	});
+	item.addSelectionListener(widgetSelectedAdapter(event -> openFile()));
 
 	// Exit
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Exit_menuitem"));
-	item.addSelectionListener (new SelectionAdapter () {
-		@Override
-		public void widgetSelected (SelectionEvent e) {
-			menuFileExit ();
-		}
-	});
+	item.addSelectionListener (widgetSelectedAdapter(e -> menuFileExit ()));
 	return menu;
 }
 

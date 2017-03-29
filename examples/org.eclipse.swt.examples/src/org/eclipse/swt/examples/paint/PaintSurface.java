@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.paint;
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -167,20 +167,10 @@ public class PaintSurface {
 		/* Set up the paint canvas scroll bars */
 		ScrollBar horizontal = paintCanvas.getHorizontalBar();
 		horizontal.setVisible(true);
-		horizontal.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scrollHorizontally((ScrollBar)event.widget);
-			}
-		});
+		horizontal.addSelectionListener(widgetSelectedAdapter(event -> scrollHorizontally((ScrollBar)event.widget)));
 		ScrollBar vertical = paintCanvas.getVerticalBar();
 		vertical.setVisible(true);
-		vertical.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				scrollVertically((ScrollBar)event.widget);
-			}
-		});
+		vertical.addSelectionListener(widgetSelectedAdapter(event -> scrollVertically((ScrollBar)event.widget)));
 		handleResize();
 	}
 

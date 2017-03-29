@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
@@ -99,28 +101,22 @@ class SashTab extends Tab {
 		hSash = new Sash (sashComp, SWT.HORIZONTAL | style);
 
 		/* Add the listeners */
-		hSash.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				Rectangle rect = vSash.getParent().getClientArea();
-				event.y = Math.min (Math.max (event.y, SASH_LIMIT), rect.height - SASH_LIMIT);
-				if (event.detail != SWT.DRAG) {
-					hSash.setBounds (event.x, event.y, event.width, event.height);
-					layout ();
-				}
+		hSash.addSelectionListener (widgetSelectedAdapter(event -> {
+			Rectangle rect = vSash.getParent().getClientArea();
+			event.y = Math.min (Math.max (event.y, SASH_LIMIT), rect.height - SASH_LIMIT);
+			if (event.detail != SWT.DRAG) {
+				hSash.setBounds (event.x, event.y, event.width, event.height);
+				layout ();
 			}
-		});
-		vSash.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				Rectangle rect = vSash.getParent().getClientArea();
-				event.x = Math.min (Math.max (event.x, SASH_LIMIT), rect.width - SASH_LIMIT);
-				if (event.detail != SWT.DRAG) {
-					vSash.setBounds (event.x, event.y, event.width, event.height);
-					layout ();
-				}
+		}));
+		vSash.addSelectionListener (widgetSelectedAdapter(event -> {
+			Rectangle rect = vSash.getParent().getClientArea();
+			event.x = Math.min (Math.max (event.x, SASH_LIMIT), rect.width - SASH_LIMIT);
+			if (event.detail != SWT.DRAG) {
+				vSash.setBounds (event.x, event.y, event.width, event.height);
+				layout ();
 			}
-		});
+		}));
 		sashComp.addControlListener (new ControlAdapter () {
 			@Override
 			public void controlResized (ControlEvent event) {

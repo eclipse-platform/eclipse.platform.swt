@@ -11,10 +11,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
 
 abstract class RangeTab extends Tab {
 	/* Style widgets added to the "Style" group */
@@ -63,12 +64,7 @@ abstract class RangeTab extends Tab {
 		maximumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		maximumSpinner.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetMaximum ();
-			}
-		});
+		maximumSpinner.addSelectionListener(widgetSelectedAdapter(event -> setWidgetMaximum ()));
 	}
 
 	/**
@@ -92,12 +88,7 @@ abstract class RangeTab extends Tab {
 		minimumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		minimumSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetMinimum ();
-			}
-		});
+		minimumSpinner.addSelectionListener (widgetSelectedAdapter(event -> setWidgetMinimum ()));
 
 	}
 
@@ -123,12 +114,7 @@ abstract class RangeTab extends Tab {
 		selectionSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		selectionSpinner.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				setWidgetSelection ();
-			}
-		});
+		selectionSpinner.addSelectionListener(widgetSelectedAdapter(event -> setWidgetSelection ()));
 
 	}
 

@@ -11,8 +11,9 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -214,24 +215,9 @@ class MenuTab extends Tab {
 		closeAllButton.setText (ControlExample.getResourceString("Close_All_Shells"));
 
 		/* Add the listeners */
-		createButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				createButtonSelected(e);
-			}
-		});
-		closeAllButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				closeAllShells ();
-			}
-		});
-		subMenuButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				subSubMenuButton.setEnabled (subMenuButton.getSelection ());
-			}
-		});
+		createButton.addSelectionListener(widgetSelectedAdapter(e -> createButtonSelected(e)));
+		closeAllButton.addSelectionListener(widgetSelectedAdapter(e -> closeAllShells ()));
+		subMenuButton.addSelectionListener(widgetSelectedAdapter(e -> subSubMenuButton.setEnabled (subMenuButton.getSelection ())));
 
 		/* Set the default state */
 		barButton.setSelection (true);

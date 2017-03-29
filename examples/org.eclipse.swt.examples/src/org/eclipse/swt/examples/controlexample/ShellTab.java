@@ -11,8 +11,9 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -102,12 +103,7 @@ class ShellTab extends Tab {
 		final Button button = new Button(currentShell, SWT.CHECK);
 		button.setBounds(20, 20, 120, 30);
 		button.setText(ControlExample.getResourceString("FullScreen"));
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				currentShell.setFullScreen(button.getSelection());
-			}
-		});
+		button.addSelectionListener(widgetSelectedAdapter(e -> currentShell.setFullScreen(button.getSelection())));
 		Button close = new Button(currentShell, SWT.PUSH);
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
@@ -235,24 +231,9 @@ class ShellTab extends Tab {
 		closeAllButton.setLayoutData (gridData);
 
 		/* Add the listeners */
-		createButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				createButtonSelected(e);
-			}
-		});
-		closeAllButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				closeAllShells ();
-			}
-		});
-		SelectionListener decorationButtonListener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				decorationButtonSelected(event);
-			}
-		};
+		createButton.addSelectionListener(widgetSelectedAdapter(e -> createButtonSelected(e)));
+		closeAllButton.addSelectionListener(widgetSelectedAdapter(e -> closeAllShells ()));
+		SelectionListener decorationButtonListener = widgetSelectedAdapter(event -> decorationButtonSelected(event));
 		noTrimButton.addSelectionListener (decorationButtonListener);
 		noMoveButton.addSelectionListener(decorationButtonListener);
 		closeButton.addSelectionListener (decorationButtonListener);

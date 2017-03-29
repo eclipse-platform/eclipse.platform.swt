@@ -11,10 +11,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
 
 class SliderTab extends RangeTab {
 	/* Example widgets and groups that contain them */
@@ -93,12 +94,7 @@ class SliderTab extends RangeTab {
 		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		incrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				setWidgetIncrement ();
-			}
-		});
+		incrementSpinner.addSelectionListener (widgetSelectedAdapter(e -> setWidgetIncrement ()));
 	}
 
 	/**
@@ -122,12 +118,7 @@ class SliderTab extends RangeTab {
 		pageIncrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetPageIncrement ();
-			}
-		});
+		pageIncrementSpinner.addSelectionListener (widgetSelectedAdapter(event -> setWidgetPageIncrement ()));
 	}
 
 	/**
@@ -151,12 +142,7 @@ class SliderTab extends RangeTab {
 		thumbSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
-		thumbSpinner.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetThumb ();
-			}
-		});
+		thumbSpinner.addSelectionListener (widgetSelectedAdapter(event -> setWidgetThumb ()));
 	}
 
 	/**
