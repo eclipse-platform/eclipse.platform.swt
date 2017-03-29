@@ -11,11 +11,11 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -63,12 +63,7 @@ class ToolTipTab extends Tab {
 		toolTipGroup.setText ("ToolTip");
 		visibleButton = new Button(toolTipGroup, SWT.CHECK);
 		visibleButton.setText(ControlExample.getResourceString("Visible"));
-		visibleButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setExampleWidgetVisibility ();
-			}
-		});
+		visibleButton.addSelectionListener (widgetSelectedAdapter(event -> setExampleWidgetVisibility ()));
 	}
 
 	/**
@@ -158,18 +153,8 @@ class ToolTipTab extends Tab {
 		showInTrayButton.setEnabled(tray != null);
 
 		/* Add the listeners */
-		autoHideButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setExampleWidgetAutoHide ();
-			}
-		});
-		showInTrayButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				showExampleWidgetInTray ();
-			}
-		});
+		autoHideButton.addSelectionListener (widgetSelectedAdapter(event -> setExampleWidgetAutoHide ()));
+		showInTrayButton.addSelectionListener (widgetSelectedAdapter(event -> showExampleWidgetInTray ()));
 		shell.addDisposeListener(event -> disposeTrayItem());
 
 		/* Set the default state */

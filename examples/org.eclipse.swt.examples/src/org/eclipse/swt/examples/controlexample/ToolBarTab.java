@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -236,12 +238,7 @@ class ToolBarTab extends Tab {
 		comboChildButton.setText (ControlExample.getResourceString("Combo_child"));
 
 		/* Add the listeners */
-		comboChildButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
+		comboChildButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
 	}
 
 	/**

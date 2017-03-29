@@ -11,10 +11,10 @@
 package org.eclipse.swt.examples.paint;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -119,21 +119,13 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			Button ok = new Button(buttons, SWT.PUSH);
 			ok.setText(PaintExample.getResourceString("OK"));
 			ok.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-			ok.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					drawText = field.getText();
-					dialog.dispose();
-				}
-			});
+			ok.addSelectionListener(widgetSelectedAdapter(e -> {
+				drawText = field.getText();
+				dialog.dispose();
+			}));
 			Button cancel = new Button(buttons, SWT.PUSH);
 			cancel.setText(PaintExample.getResourceString("Cancel"));
-			cancel.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					dialog.dispose();
-				}
-			});
+			cancel.addSelectionListener(widgetSelectedAdapter(e -> dialog.dispose()));
 			dialog.setDefaultButton(ok);
 			dialog.pack();
 			dialog.open();

@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -24,8 +26,6 @@ import org.eclipse.swt.custom.TextChangedEvent;
 import org.eclipse.swt.custom.TextChangingEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -212,63 +212,57 @@ class StyledTextTab extends ScrollableTab {
 		label.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
 		yellowButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		yellowButton.setImage (yellowImage);
-		SelectionListener styleListener = new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				Point sel = styledText.getSelectionRange();
-				if ((sel == null) || (sel.y == 0)) return;
-				StyleRange style;
-				for (int i = sel.x; i<sel.x+sel.y; i++) {
-					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range != null && e.widget != resetButton) {
-						style = (StyleRange)range.clone();
-						style.start = i;
-						style.length = 1;
-					} else {
-						style = new StyleRange(i, 1, null, null, SWT.NORMAL);
-					}
-					if (e.widget == boldButton) {
-						style.fontStyle ^= SWT.BOLD;
-					} else if (e.widget == italicButton) {
-						style.fontStyle ^= SWT.ITALIC;
-					} else if (e.widget == underlineButton) {
-						style.underline = !style.underline;
-					} else if (e.widget == strikeoutButton) {
-						style.strikeout = !style.strikeout;
-					}
-					styledText.setStyleRange(style);
+		SelectionListener styleListener = widgetSelectedAdapter(e -> {
+			Point sel = styledText.getSelectionRange();
+			if ((sel == null) || (sel.y == 0)) return;
+			StyleRange style;
+			for (int i = sel.x; i<sel.x+sel.y; i++) {
+				StyleRange range = styledText.getStyleRangeAtOffset(i);
+				if (range != null && e.widget != resetButton) {
+					style = (StyleRange)range.clone();
+					style.start = i;
+					style.length = 1;
+				} else {
+					style = new StyleRange(i, 1, null, null, SWT.NORMAL);
 				}
-				styledText.setSelectionRange(sel.x + sel.y, 0);
+				if (e.widget == boldButton) {
+					style.fontStyle ^= SWT.BOLD;
+				} else if (e.widget == italicButton) {
+					style.fontStyle ^= SWT.ITALIC;
+				} else if (e.widget == underlineButton) {
+					style.underline = !style.underline;
+				} else if (e.widget == strikeoutButton) {
+					style.strikeout = !style.strikeout;
+				}
+				styledText.setStyleRange(style);
 			}
-		};
-		SelectionListener colorListener = new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent e) {
-				Point sel = styledText.getSelectionRange();
-				if ((sel == null) || (sel.y == 0)) return;
-				Color fg = null, bg = null;
-				if (e.widget == redButton) {
-					fg = display.getSystemColor (SWT.COLOR_RED);
-				} else if (e.widget == yellowButton) {
-					bg = display.getSystemColor (SWT.COLOR_YELLOW);
-				}
-				StyleRange style;
-				for (int i = sel.x; i<sel.x+sel.y; i++) {
-					StyleRange range = styledText.getStyleRangeAtOffset(i);
-					if (range != null) {
-						style = (StyleRange)range.clone();
-						style.start = i;
-						style.length = 1;
-						if (fg != null) style.foreground = style.foreground != null ? null : fg;
-						if (bg != null) style.background = style.background != null ? null : bg;
-					} else {
-						style = new StyleRange (i, 1, fg, bg, SWT.NORMAL);
-					}
-					styledText.setStyleRange(style);
-				}
-				styledText.setSelectionRange(sel.x + sel.y, 0);
+			styledText.setSelectionRange(sel.x + sel.y, 0);
+		});
+		SelectionListener colorListener = widgetSelectedAdapter(e -> {
+			Point sel = styledText.getSelectionRange();
+			if ((sel == null) || (sel.y == 0)) return;
+			Color fg = null, bg = null;
+			if (e.widget == redButton) {
+				fg = display.getSystemColor (SWT.COLOR_RED);
+			} else if (e.widget == yellowButton) {
+				bg = display.getSystemColor (SWT.COLOR_YELLOW);
 			}
-		};
+			StyleRange style;
+			for (int i = sel.x; i<sel.x+sel.y; i++) {
+				StyleRange range = styledText.getStyleRangeAtOffset(i);
+				if (range != null) {
+					style = (StyleRange)range.clone();
+					style.start = i;
+					style.length = 1;
+					if (fg != null) style.foreground = style.foreground != null ? null : fg;
+					if (bg != null) style.background = style.background != null ? null : bg;
+				} else {
+					style = new StyleRange (i, 1, fg, bg, SWT.NORMAL);
+				}
+				styledText.setStyleRange(style);
+			}
+			styledText.setSelectionRange(sel.x + sel.y, 0);
+		});
 		resetButton.addSelectionListener(styleListener);
 		boldButton.addSelectionListener(styleListener);
 		italicButton.addSelectionListener(styleListener);

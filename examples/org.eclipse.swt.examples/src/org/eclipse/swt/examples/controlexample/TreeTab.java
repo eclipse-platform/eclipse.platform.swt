@@ -11,9 +11,9 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -232,54 +232,14 @@ class TreeTab extends ScrollableTab {
 		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
 
 		/* Add the listeners */
-		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetLinesVisible ();
-			}
-		});
-		multipleColumns.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
-		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetHeaderVisible ();
-			}
-		});
-		sortIndicatorButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetSortIndicator ();
-			}
-		});
-		moveableColumns.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setColumnsMoveable ();
-			}
-		});
-		resizableColumns.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				setColumnsResizable ();
-			}
-		});
-		headerImagesButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
-		subImagesButton.addSelectionListener (new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
+		linesVisibleButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetLinesVisible ()));
+		multipleColumns.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
+		headerVisibleButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetHeaderVisible ()));
+		sortIndicatorButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetSortIndicator ()));
+		moveableColumns.addSelectionListener (widgetSelectedAdapter(event -> setColumnsMoveable ()));
+		resizableColumns.addSelectionListener (widgetSelectedAdapter(event -> setColumnsResizable ()));
+		headerImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
+		subImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
 	}
 
 	/**
@@ -426,14 +386,11 @@ class TreeTab extends ScrollableTab {
 
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
-		packColumnsButton.addSelectionListener(new SelectionAdapter () {
-			@Override
-			public void widgetSelected (SelectionEvent event) {
-				packColumns (tree1);
-				packColumns (tree2);
-				setExampleWidgetSize ();
-			}
-		});
+		packColumnsButton.addSelectionListener(widgetSelectedAdapter(event -> {
+			packColumns (tree1);
+			packColumns (tree2);
+			setExampleWidgetSize ();
+		}));
 	}
 
 	/**
@@ -769,22 +726,19 @@ class TreeTab extends ScrollableTab {
 		for (int i = 0; i < columns.length; i++) {
 			TreeColumn column = columns[i];
 			if (i == 0) tree.setSortColumn(column);
-			SelectionListener listener = new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					int sortDirection = SWT.DOWN;
-					if (e.widget == tree.getSortColumn()) {
-						/* If the sort column hasn't changed, cycle down -> up -> none. */
-						switch (tree.getSortDirection ()) {
-						case SWT.DOWN: sortDirection = SWT.UP; break;
-						case SWT.UP: sortDirection = SWT.NONE; break;
-						}
-					} else {
-						tree.setSortColumn((TreeColumn)e.widget);
+			SelectionListener listener = widgetSelectedAdapter(e -> {
+				int sortDirection = SWT.DOWN;
+				if (e.widget == tree.getSortColumn()) {
+					/* If the sort column hasn't changed, cycle down -> up -> none. */
+					switch (tree.getSortDirection ()) {
+					case SWT.DOWN: sortDirection = SWT.UP; break;
+					case SWT.UP: sortDirection = SWT.NONE; break;
 					}
-					tree.setSortDirection (sortDirection);
+				} else {
+					tree.setSortColumn((TreeColumn)e.widget);
 				}
-			};
+				tree.setSortDirection (sortDirection);
+			});
 			column.addSelectionListener(listener);
 			column.setData("SortListener", listener);	//$NON-NLS-1$
 		}
@@ -813,12 +767,9 @@ class TreeTab extends ScrollableTab {
     	item.setText("getItem(Point) on mouse coordinates");
     	final Tree t = (Tree) event.widget;
     	menuMouseCoords = t.toControl(new Point(event.x, event.y));
-    	item.addSelectionListener(new SelectionAdapter() {
-    		@Override
-			public void widgetSelected(SelectionEvent e) {
-    			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + t.getItem(menuMouseCoords));
-    			eventConsole.append ("\n");
-    		}
-    	});
+    	item.addSelectionListener(widgetSelectedAdapter(e -> {
+			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + t.getItem(menuMouseCoords));
+			eventConsole.append ("\n");
+		}));
 	}
 }
