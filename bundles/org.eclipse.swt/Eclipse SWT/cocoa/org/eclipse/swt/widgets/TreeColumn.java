@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -212,12 +211,31 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	 * Feature in Cocoa.  When the last column in a tree does not reach the
 	 * rightmost edge of the tree view, the cell that draws the rightmost-
 	 * column's header is also invoked to draw the header space between its
-	 * right edge and the tree's right edge.  If this case is detected then
-	 * nothing should be drawn.
+	 * right edge and the tree's right edge.  If this case is detected, then
+	 * only the headerBackground should be drawn.
 	 */
 	int columnIndex = parent.indexOf (nsColumn);
 	NSRect headerRect = parent.headerView.headerRectOfColumn (columnIndex);
-	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) return;
+	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) {
+		if (parent.headerBackground != null) {
+			NSGraphicsContext context = NSGraphicsContext.currentContext ();
+			context.saveGraphicsState ();
+			double /*float*/ [] colorRGB = parent.headerBackground;
+			NSColor color = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+			color.setFill();
+			/*
+			 * Before this method is invoked, the header cell's border is already drawn
+			 * with the system default color. Use headerRect's height & y values so that we
+			 * can draw over the header cell's borders with the header background color.
+			 */
+			NSRect rect = cellRect;
+			rect.height = headerRect.height;
+			rect.y = headerRect.y;
+			NSBezierPath.fillRect(rect);
+			context.restoreGraphicsState();
+		}
+		return;
+	}
 
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	context.saveGraphicsState ();
@@ -228,11 +246,42 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	NSTableHeaderCell headerCell = nsColumn.headerCell ();
 	if (displayText != null) {
 		Font font = Font.cocoa_new(display, headerCell.font ());
-		attrString = parent.createString(displayText, font, null, SWT.LEFT, false, (parent.state & DISABLED) == 0, false);
+		attrString = parent.createString(displayText, font, parent.headerForeground, SWT.LEFT, false, (parent.state & DISABLED) == 0, false);
 		stringSize = attrString.size ();
 		contentWidth += Math.ceil (stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
 	}
+
+	if (parent.headerBackground != null) {
+		// fill header background
+		context.saveGraphicsState();
+		double /*float*/ [] colorRGB = parent.headerBackground;
+		NSColor color1 = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+		color1.setFill();
+		/*
+		 * Before this method is invoked, the header cell's border is already drawn
+		 * with the system default color. Use headerRect instead of cellRect so that we
+		 * can draw over the header cell's borders with the header background color.
+		 */
+		NSBezierPath.fillRect(headerRect);
+
+		// draw column separator
+		if (parent.headerForeground != null) {
+			colorRGB = parent.headerForeground;
+			NSColor color = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 0.6f);
+			color.setStroke();
+		}
+		NSBezierPath path = NSBezierPath.bezierPath();
+		NSPoint pt = new NSPoint();
+		pt.x = cellRect.x + cellRect.width - 0.5;
+		pt.y = cellRect.y + 2;
+		path.moveToPoint(pt);
+		pt.y += cellRect.y + cellRect.height - 4;
+		path.lineToPoint(pt);
+		path.stroke();
+		context.restoreGraphicsState();
+	}
+
 	if (image != null) {
 		imageSize = image.handle.size ();
 		contentWidth += Math.ceil (imageSize.width);
@@ -240,7 +289,48 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 
 	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 		boolean ascending = parent.sortDirection == SWT.UP;
-		headerCell.drawSortIndicatorWithFrame (cellRect, new NSView(view), ascending, 0);
+		if (parent.headerBackground != null || parent.headerForeground != null) {
+			NSRect sortIndicatorRect = headerCell.sortIndicatorRectForBounds(cellRect);
+			context.saveGraphicsState();
+			if(parent.headerForeground != null) {
+				double /*float*/ [] colorRGB = parent.headerForeground;
+				NSColor color = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 0.9f);
+				color.setStroke();
+			}
+			NSBezierPath path = NSBezierPath.bezierPath();
+			path.setLineWidth(1.5);
+			NSPoint pt = new NSPoint();
+			final double y1 = sortIndicatorRect.y + sortIndicatorRect.height / 2 - 1.5;
+			final double y2 = sortIndicatorRect.y + sortIndicatorRect.height / 2 + 1.5;
+			final double x1 = sortIndicatorRect.x;
+			final double x2 = sortIndicatorRect.x + 3;
+			final double x3 = sortIndicatorRect.x + 6;
+			if (ascending) {
+				pt.x = x1;
+				pt.y = y2;
+				path.moveToPoint(pt);
+				pt.x = x2;
+				pt.y = y1;
+				path.lineToPoint(pt);
+				pt.x = x3;
+				pt.y = y2;
+				path.lineToPoint(pt);
+			} else {
+				pt.x = x1;
+				pt.y = y1;
+				path.moveToPoint(pt);
+				pt.x = x2;
+				pt.y = y2;
+				path.lineToPoint(pt);
+				pt.x = x3;
+				pt.y = y1;
+				path.lineToPoint(pt);
+			}
+			path.stroke();
+			context.restoreGraphicsState();
+		} else {
+			headerCell.drawSortIndicatorWithFrame (cellRect, new NSView(view), ascending, 0);
+		}
 		/* remove the arrow's space from the available drawing width */
 		NSRect sortRect = headerCell.sortIndicatorRectForBounds (cellRect);
 		cellRect.width = Math.max (0, sortRect.x - cellRect.x);
@@ -671,4 +761,5 @@ public void setWidth (int width) {
 String tooltipText () {
 	return toolTipText;
 }
+
 }

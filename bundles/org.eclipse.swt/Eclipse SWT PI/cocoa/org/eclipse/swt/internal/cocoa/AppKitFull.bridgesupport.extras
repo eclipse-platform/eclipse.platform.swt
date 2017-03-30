@@ -651,11 +651,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawWithFrame:inView:" swt_gen_custom_callback="true">
-			<arg></arg>
-			<arg></arg>
-			<retval></retval>
-		</method>
 		<method selector="drawingRectForBounds:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
