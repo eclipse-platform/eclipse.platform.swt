@@ -2041,27 +2041,33 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 * in GTK in the case that additional items aren't being added (CTRL_MASK or SHIFT_MASK) and the item being dragged is already
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3,14,0)) {
-		long /*int*/ [] path = new long /*int*/ [1];
-		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
-				path[0] != 0) {
-			//  selection count is used in the case of clicking an already selected item while holding Control
-			selectionCountOnPress = getSelectionCount();
-			if (OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
-				if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
-						((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
-					/**
-					 * Disable selection on a mouse click if there are multiple items already selected. Also,
-					 * if control is currently being held down, we will designate the selection logic over to release
-					 * instead by first disabling the selection.
-					 * E.g to reproduce: Open DNDExample, select "Tree", select multiple items, try dragging.
-					 *   without line below, only one item is selected for drag.
-					 */
-					long /*int*/ gtk_false_funcPtr = OS.GET_FUNCTION_POINTER_gtk_false();
-					OS.gtk_tree_selection_set_select_function(selection, gtk_false_funcPtr, 0, 0);
+	if (OS.GTK_VERSION >= OS.VERSION(3,14,0) && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
+		long /*int*/ nextEvent = OS.gdk_event_peek ();
+		if (nextEvent == 0) {
+			long /*int*/ [] path = new long /*int*/ [1];
+			long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+			if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+					path[0] != 0) {
+				//  selection count is used in the case of clicking an already selected item while holding Control
+				selectionCountOnPress = getSelectionCount();
+				if (OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
+					if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
+							((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
+						/**
+						 * Disable selection on a mouse click if there are multiple items already selected. Also,
+						 * if control is currently being held down, we will designate the selection logic over to release
+						 * instead by first disabling the selection.
+						 * E.g to reproduce: Open DNDExample, select "Tree", select multiple items, try dragging.
+						 *   without line below, only one item is selected for drag.
+						 */
+						long /*int*/ gtk_false_funcPtr = OS.GET_FUNCTION_POINTER_gtk_false();
+						OS.gtk_tree_selection_set_select_function(selection, gtk_false_funcPtr, 0, 0);
+					}
 				}
 			}
+		} else {
+			OS.gdk_event_free (nextEvent);
 		}
 	}
 	/*
