@@ -830,7 +830,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 */
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (OS.GTK_VERSION >= OS.VERSION(3,14,0) && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
+			OS.GTK_VERSION >= OS.VERSION(3,14,0) && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long /*int*/ nextEvent = OS.gdk_event_peek ();
 		if (nextEvent == 0) {
@@ -930,7 +931,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. On release, we can then re-enable the selection method
 	 * and also select the item in the tree by moving the selection logic to release instead. See Bug 503431.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		long /*int*/ [] path = new long /*int*/ [1];
 		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.
