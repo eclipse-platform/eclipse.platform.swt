@@ -11,8 +11,8 @@
 
 # Makefile for creating SWT libraries for Linux GTK
 
-# Uncomment to debug parts of SWT natives
-# SWT_DEBUG = -DWEBKIT_DEBUG
+# SWT debug flags
+# SWT_WEBKIT_DEBUG = -DWEBKIT_DEBUG
 
 include make_common.mak
 
@@ -97,7 +97,7 @@ XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
 WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`
 WEBKITCFLAGS = `pkg-config --cflags gio-2.0`
-ifdef SWT_DEBUG
+ifdef SWT_WEBKIT_DEBUG
 # don't use 'webkit2gtk-4.0' in production,  as some systems might not have those libs and we get crashes.
 WEBKITLIBS +=  `pkg-config --libs-only-l webkit2gtk-4.0`
 WEBKITCFLAGS +=  `pkg-config --cflags webkit2gtk-4.0`
@@ -119,6 +119,7 @@ CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		$(SWT_DEBUG) \
+		$(SWT_WEBKIT_DEBUG) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/linux \

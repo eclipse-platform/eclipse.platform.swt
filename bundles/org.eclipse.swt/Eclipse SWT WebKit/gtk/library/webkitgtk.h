@@ -69,7 +69,7 @@
 
 
 // Below 3 lines are useful to uncomment when developing, so that you get proper C/C++ indexing.
-// To activate this macro for actual compilation, uncomment 'SWT_DEBUG' in make_linux.mak
+// To activate this macro for actual compilation, uncomment 'SWT_WEBKIT_DEBUG' in make_linux.mak
 //#ifndef WEBKIT_DEBUG
 //#define WEBKIT_DEBUG
 //#endif
