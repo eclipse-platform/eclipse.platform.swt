@@ -11,8 +11,14 @@
 
 # Makefile for creating SWT libraries for Linux GTK
 
-# SWT debug flags
-# SWT_WEBKIT_DEBUG = -DWEBKIT_DEBUG
+# SWT debug flags for various SWT components.
+#SWT_WEBKIT_DEBUG = -DWEBKIT_DEBUG
+#SWT_LIB_DEBUG=1     # to debug glue code in /bundles/org.eclipse.swt/bin/library. E.g os_custom.c:swt_fixed_forall(..)
+
+ifdef SWT_LIB_DEBUG
+SWT_DEBUG = -O0 -g3 -ggdb3
+NO_STRIP=1
+endif
 
 include make_common.mak
 
@@ -128,6 +134,10 @@ CFLAGS = -O -Wall \
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 
 ifndef NO_STRIP
+	# -s = Remove all symbol table and relocation information from the executable.
+	#      i.e, more efficent code, but removes debug information. Should not be used if you want to debug.
+	#      https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html#Link-Options
+	#      http://stackoverflow.com/questions/14175040/effects-of-removing-all-symbol-table-and-relocation-information-from-an-executab
 	AWT_LFLAGS := $(AWT_LFLAGS) -s
 	MOZILLALFLAGS := $(MOZILLALFLAGS) -s
 	LFLAGS := $(LFLAGS) -s
