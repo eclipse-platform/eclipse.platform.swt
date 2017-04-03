@@ -2767,7 +2767,7 @@ long /*int*/ webkit_status_bar_text_changed (long /*int*/ web_view, long /*int*/
 }
 
 /**
- * Emitted after “create” on the newly created WebKitWebView when it should be displayed to the user.
+ * Emitted after "create" on the newly created WebKitWebView when it should be displayed to the user.
  *
  * Webkit1 signal: web-view-ready
  *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
