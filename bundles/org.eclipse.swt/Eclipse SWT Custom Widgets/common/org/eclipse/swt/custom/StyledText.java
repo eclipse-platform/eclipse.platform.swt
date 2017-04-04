@@ -171,11 +171,6 @@ public class StyledText extends Canvas {
 	int blockXAnchor = -1, blockYAnchor = -1;
 	int blockXLocation = -1, blockYLocation = -1;
 
-	/**
-	 * GTK specific DnD variables
-	 */
-	boolean blockSelected, movingSelection, isDragDetecting;
-
 	final static boolean IS_MAC, IS_GTK;
 	static {
 		String platform = SWT.getPlatform();
@@ -1994,9 +1989,6 @@ boolean checkDragDetect(Event event) {
 			return dragDetect(event);
 		}
 	} else {
-		if (IS_GTK && isInSelection(event)) {
-			return dragDetect(event);
-		}
 		if (selection.x == selection.y) return false;
 		int offset = getOffsetAtPoint(event.x, event.y, null, true);
 		if (selection.x <= offset && offset < selection.y) {
@@ -2007,18 +1999,6 @@ boolean checkDragDetect(Event event) {
 	return false;
 }
 
-private boolean checkDragDetectOnMove(Event event) {
-	if (!isListening(SWT.DragDetect)) return false;
-	if (blockSelection && blockXLocation != -1) {
-		Rectangle rect = getBlockSelectionRectangle();
-		if (rect.contains(event.x, event.y)) {
-			return dragDetect(event);
-		}
-	} else {
-		return dragDetect(event);
-	}
-	return false;
-}
 /**
  * Creates default key bindings.
  */
@@ -6097,7 +6077,7 @@ void handleMouseDown(Event event) {
 	forceFocus();
 
 	//drag detect
-	if (!IS_GTK && dragDetect && checkDragDetect(event)) return;
+	if (dragDetect && checkDragDetect(event)) return;
 
 	//paste clipboard selection
 	if (event.button == 2) {
@@ -6120,14 +6100,6 @@ void handleMouseDown(Event event) {
 	}
 	clickCount = event.count;
 	if (clickCount == 1) {
-		if (IS_GTK) {
-			if (isInSelection(event)) {
-				blockSelected = true;
-				return;
-			} else {
-				movingSelection = true;
-			}
-		}
 		boolean select = (event.stateMask & SWT.MOD2) != 0;
 		doMouseLocationChange(event.x, event.y, select);
 	} else {
@@ -6168,26 +6140,7 @@ void handleMouseMove(Event event) {
 	if (clickCount > 0) {
 		update();
 		doAutoScroll(event);
-		/* Bug 503431: Handle drag detection within mouse move instead
-		 * of mouse click. We are setting the event.button to 1 because
-		 * mouse movement events do not keep mouse status information
-		 * (whether you move the mouse or you hold a button while moving)
-		 * which is needed for DnD detection.
-		 */
-		if (IS_GTK) {
-			if (dragDetect && isInSelection(event) && !movingSelection) {
-				event.button = 1;
-				event.count = clickCount;
-				checkDragDetectOnMove(event);
-				isDragDetecting = true;
-				return;
-			}
-			if (!isDragDetecting) {
-				doMouseLocationChange(event.x, event.y, true);
-			}
-		} else {
-			doMouseLocationChange(event.x, event.y, true);
-		}
+		doMouseLocationChange(event.x, event.y, true);
 	}
 	if (renderer.hasLinks) {
 		doMouseLinkCursor(event.x, event.y);
@@ -6198,22 +6151,9 @@ void handleMouseMove(Event event) {
  */
 void handleMouseUp(Event event) {
 	clickCount = 0;
-	movingSelection = false;
 	endAutoScroll();
 	if (event.button == 1) {
 		copySelection(DND.SELECTION_CLIPBOARD);
-	}
-	// set cursor position on release. Related to Bug 503431.
-	if (IS_GTK) {
-		if (blockSelected) {
-			if (!isDragDetecting) {
-				Point caretPosition = defaultCaret.getLocation();
-				doMouseLocationChange(caretPosition.x, caretPosition.y, false);
-			} else {
-				isDragDetecting = false;
-			}
-			blockSelected = false;
-		}
 	}
 }
 /**
@@ -7360,19 +7300,6 @@ public boolean isTextSelected() {
  */
 boolean isSingleLine() {
 	return (getStyle() & SWT.SINGLE) != 0;
-}
-
-/**
- * Returns whether the current mouse click is in side a selected area
- *
- * @return true if the mouse click event position is inside the
- * selected area.
- */
-private boolean isInSelection(Event event) {
-	if (selection.x == selection.y) return false;
-	int offset = getOffsetAtPoint(event.x, event.y, null, true);
-	if (selection.x <= offset && offset < selection.y) return true;
-	return false;
 }
 
 /**

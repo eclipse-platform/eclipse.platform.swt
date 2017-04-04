@@ -398,7 +398,7 @@ public void deselectAll () {
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
-	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+	if (OS.isX11()) { //Wayland
 		if (filter) {
 			long /*int*/ [] path = new long /*int*/ [1];
 			if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
@@ -411,6 +411,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				return false;
 			}
 		}
+		boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
+		if (dragDetect && selected && consume != null) consume [0] = true;
+		return dragDetect;
 	} else {
 		double [] startX = new double[1];
 		double [] startY = new double [1];
@@ -831,7 +834,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			OS.GTK_VERSION >= OS.VERSION(3,14,0) && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+			!OS.isX11() && gdkEvent.type == OS.GDK_BUTTON_PRESS) { // Wayland
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long /*int*/ nextEvent = OS.gdk_event_peek ();
 		if (nextEvent == 0) {
@@ -931,7 +934,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. On release, we can then re-enable the selection method
 	 * and also select the item in the tree by moving the selection logic to release instead. See Bug 503431.
 	 */
-	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && !OS.isX11()) { // Wayland
 		long /*int*/ [] path = new long /*int*/ [1];
 		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.

@@ -346,7 +346,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		 */
 		if (OS.GTK3) {
 			action = OS.gdk_drag_context_get_selected_action(context);
-			if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+			if (OS.isX11()) { // Wayland
 				dest_window = OS.gdk_drag_context_get_dest_window(context);
 			}
 		} else {
@@ -355,7 +355,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 			dest_window = gdkDragContext.dest_window;
 			action = gdkDragContext.action;
 		}
-		if (dest_window != 0 || OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) { //NOTE: if dest_window is 0, drag was aborted
+		if (dest_window != 0 || !OS.isX11()) { // Wayland. NOTE: if dest_window is 0, drag was aborted
 			if (moveData) {
 				operation = DND.DROP_MOVE;
 			} else {
@@ -371,7 +371,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	event.detail = operation;
 	notifyListeners(DND.DragEnd, event);
 
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if (!OS.isX11()) { // Wayland
 		/*
 		 * Feature in GTK: release events are not signaled during the dragEnd phrase of a Drag and Drop
 		 * in Wayland. In order to work with the current logic for DnD in multiselection
@@ -384,11 +384,11 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 			long /*int*/ selection = OS.gtk_tree_view_get_selection (widget);
 			OS.gtk_tree_selection_set_select_function(selection,0,0,0);
 		}
-		
-		/* 
+
+		/*
 		 * send a mouse Up signal for >GTK3.14 as Wayland (support as of 3.14)
 		 * does not trigger a MouseUp/Mouse_release_event on DragEnd.
-		 * See Bug 510446. 
+		 * See Bug 510446.
 		 */
 		control.notifyListeners(SWT.MouseUp, event);
 	}

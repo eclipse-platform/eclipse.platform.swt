@@ -2501,7 +2501,7 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	 * Bug 503431: Some applications use CTabFolder that isn't handling DND
 	 * correctly in this condition.
 	 */
-	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0) && !dragDetect (x, y, false, true, null)) {
+	if (OS.isX11() && !dragDetect (x, y, false, true, null)) { // Not Wayland
 		return false;
 	}
 	return sendDragEvent (button, stateMask, x, y, true);
@@ -2514,7 +2514,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	 *  as of GTK3.14 in order to acquire mouse position offsets to decide on dragging.
 	 *  See Bug 503431.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if (!OS.isX11()) { // Wayland
   		double [] offsetX = new double[1];
 		double [] offsetY = new double [1];
 		double [] startX = new double[1];
@@ -2530,7 +2530,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		}
 	} else {
 		boolean quit = false;
-
 		//428852 DND workaround for GTk3.
 		//Gtk3 no longer sends motion events on the same control during thread sleep
 		//before a drag started. This is due to underlying gdk changes.
@@ -3238,9 +3237,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		}
 		/*
 		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-		 * instead of mouse click event as of GTK3.14. See Bug 503431.
+		 * instead of mouse click event. See Bug 503431.
 		 */
-		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+		if (OS.isX11()) { // Wayland
 			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				if (gdkEvent.button == 1) {
 					boolean [] consume = new boolean [1];
@@ -3258,9 +3257,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		if (isDisposed ()) return 1;
 		/*
 		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-		 * instead of mouse click event as of GTK3.14. See Bug 503431.
+		 * instead of mouse click event. See Bug 503431.
 		 */
-		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+		if (OS.isX11()) { // Wayland
 			if (dragging) {
 				sendDragEvent (gdkEvent.button, gdkEvent.state, (int) gdkEvent.x, (int) gdkEvent.y, false);
 				if (isDisposed ()) return 1;
@@ -3583,9 +3582,9 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	/*
 	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-	 * instead of mouse click event as of GTK3.14. See Bug 503431.
+	 * instead of mouse click event. See Bug 503431.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+	if (!OS.isX11()) { // Wayland
 		boolean dragging = false;
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				boolean [] consume = new boolean [1];
@@ -4601,7 +4600,7 @@ void setCursor (long /*int*/ cursor) {
 	long /*int*/ window = eventWindow ();
 	if (window != 0) {
 		OS.gdk_window_set_cursor (window, cursor);
-		if (!OS.isX11()) {
+		if (!OS.isX11()) { // Wayland
 			OS.gdk_flush ();
 		} else {
 			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
