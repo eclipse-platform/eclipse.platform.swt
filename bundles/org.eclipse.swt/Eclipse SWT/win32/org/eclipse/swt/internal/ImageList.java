@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -402,7 +402,7 @@ void set (int index, Image image, int count) {
 			* Note that the image size has to match the image list icon size.
 			*/
 			long /*int*/ hBitmap = 0, hMask = 0;
-			ImageData data = image.getImageDataAtCurrentZoom ();
+			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			switch (data.getTransparencyType ()) {
 				case SWT.TRANSPARENCY_ALPHA:
 					/*

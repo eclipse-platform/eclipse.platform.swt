@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -1009,7 +1010,7 @@ void setImages (Image image, Image [] images) {
 				System.arraycopy (images, 0, bestImages, 0, images.length);
 				datas = new ImageData [images.length];
 				for (int i=0; i<datas.length; i++) {
-					datas [i] = images [i].getImageDataAtCurrentZoom ();
+					datas [i] = images [i].getImageData (DPIUtil.getDeviceZoom ());
 				}
 				images = bestImages;
 				sort (images, datas, OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON), depth);

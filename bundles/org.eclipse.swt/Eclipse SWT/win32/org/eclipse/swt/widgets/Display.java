@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -443,15 +443,12 @@ public class Display extends Device {
 	* be removed in the future.
 	*/
 	static {
-		DeviceFinder = new Runnable () {
-			@Override
-			public void run () {
-				Device device = getCurrent ();
-				if (device == null) {
-					device = getDefault ();
-				}
-				setDevice (device);
+		DeviceFinder = () -> {
+			Device device = getCurrent ();
+			if (device == null) {
+				device = getDefault ();
 			}
+			setDevice (device);
 		};
 	}
 
@@ -862,7 +859,7 @@ static long /*int*/ create32bitDIB (Image image) {
 			hMask = info.hbmMask;
 			break;
 		case SWT.BITMAP:
-			ImageData data = image.getImageDataAtCurrentZoom ();
+			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			hBitmap = image.handle;
 			alpha = data.alpha;
 			alphaData = data.alphaData;
@@ -1091,7 +1088,7 @@ static long /*int*/ create32bitDIB (long /*int*/ hBitmap, int alpha, byte [] alp
 
 static Image createIcon (Image image) {
 	Device device = image.getDevice ();
-	ImageData data = image.getImageDataAtCurrentZoom ();
+	ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 	if (data.alpha == -1 && data.alphaData == null) {
 		ImageData mask = data.getTransparencyMask ();
 		return new Image (device, data, mask);

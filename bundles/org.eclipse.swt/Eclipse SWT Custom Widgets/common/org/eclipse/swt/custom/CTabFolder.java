@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -747,7 +747,7 @@ Image createButtonImage(Display display, int button) {
 	renderer.draw(button, SWT.NONE, new Rectangle(trim.x, trim.y, size.x, size.y), gc);
 	gc.dispose ();
 	transColor.dispose();
-	final ImageData imageData = image.getImageDataAtCurrentZoom();
+	final ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
 	imageData.transparentPixel = imageData.palette.getPixel(transparent);
 	image.dispose();
 	image = new Image(display, new AutoScaleImageDataProvider(display, imageData, DPIUtil.getDeviceZoom()));

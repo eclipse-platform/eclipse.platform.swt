@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent the system task bar.
@@ -195,9 +196,9 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 				ImageData data;
 				if (item.hBitmap != 0) {
 					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
-					data = image2.getImageDataAtCurrentZoom ();
+					data = image2.getImageData (DPIUtil.getDeviceZoom ());
 				} else {
-					data = image.getImageDataAtCurrentZoom ();
+					data = image.getImageData (DPIUtil.getDeviceZoom ());
 				}
 				ImageLoader loader = new ImageLoader ();
 				loader.data = new ImageData [] {data};

@@ -12,9 +12,10 @@ package org.eclipse.swt.program;
 
 import java.util.*;
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent programs and
@@ -394,7 +395,7 @@ public ImageData getImageData () {
 		OS.SHGetFileInfo (pszPath, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
 		if (shfi.hIcon != 0) {
 			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
-			ImageData imageData = image.getImageDataAtCurrentZoom ();
+			ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
 			image.dispose ();
 			return imageData;
 		}
@@ -421,7 +422,7 @@ public ImageData getImageData () {
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	ImageData imageData = image.getImageDataAtCurrentZoom ();
+	ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
 	image.dispose ();
 	return imageData;
 }

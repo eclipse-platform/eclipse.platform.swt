@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
 
 /**
  * The class <code>ImageTransfer</code> provides a platform specific mechanism
@@ -181,7 +182,7 @@ public Object nativeToJava(TransferData transferData) {
 				}
 			}
 			Image image = Image.win32_new(null, SWT.BITMAP, memDib);
-			ImageData data = image.getImageDataAtCurrentZoom();
+			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			OS.DeleteObject(memDib);
 			image.dispose();
 			return data;
