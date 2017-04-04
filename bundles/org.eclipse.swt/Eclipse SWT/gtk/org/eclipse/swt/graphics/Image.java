@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1335,8 +1335,6 @@ public ImageData getImageData () {
  * <p>
  * <b>Warning:</b> This API doesn't make sense and will be replaced, see
  * <a href="https://bugs.eclipse.org/496409">bug 496409</a>.
- * Until then, it will return an ImageData for the highest supported resolution
- * (e.g. always the 200% version on macOS).
  * </p>
  *
  * @return an <code>ImageData</code> containing the image's data
@@ -1349,7 +1347,9 @@ public ImageData getImageData () {
  *
  * @see ImageData
  * @since 3.105
+ * @deprecated use {@link #getImageData(int)} instead
  */
+@Deprecated
 public ImageData getImageDataAtCurrentZoom () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
@@ -1459,29 +1459,60 @@ public ImageData getImageDataAtCurrentZoom () {
 }
 
 /**
- * Returns an <code>ImageData</code> for specified zoom, based on the receiver
- * Modifications made to this <code>ImageData</code> will not affect the
- * Image.
+ * Returns an {@link ImageData} for the given zoom level based on the
+ * receiver.
+ * <p>
+ * Note that this method is mainly intended to be used by custom
+ * implementations of {@link ImageDataProvider} that draw a composite image
+ * at the requested zoom level based on other images. For custom zoom
+ * levels, the image data may be an auto-scaled version of the native image
+ * and may look more blurred or mangled than expected.
+ * </p>
+ * <p>
+ * Modifications made to the returned {@code ImageData} will not affect this
+ * {@code Image}.
+ * </p>
  *
  * @param zoom
  *            The zoom level in % of the standard resolution (which is 1
  *            physical monitor pixel == 1 SWT logical pixel). Typically 100,
  *            150, or 200.
  * @return an <code>ImageData</code> containing the image's data and
- *         attributes at specified zoom if present else null is returned.
+ *         attributes at the given zoom level
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  *
- * @see ImageData
- *
- * @since 3.105
+ * @since 3.106
  */
-ImageData getImageData (int zoom) {
+public ImageData getImageData (int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
+
+	if (zoom == currentDeviceZoom) {
+		return getImageDataAtCurrentZoom();
+	} else if (imageDataProvider != null) {
+		boolean[] found = new boolean[1];
+		ImageData data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom, found);
+		// exact image found
+		if (found[0]) {
+			return data;
+		}
+		// AutoScale the image at 100% zoom
+		return DPIUtil.autoScaleUp (device, data);
+	} else if (imageFileNameProvider != null) {
+		boolean[] found = new boolean[1];
+		String fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom, found);
+		// exact image found
+		if (found[0]) {
+			return new ImageData (fileName);
+		}
+		// AutoScale the image at 100% zoom
+		return DPIUtil.autoScaleUp (device, new ImageData (fileName));
+	} else {
+		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
+	}
 }
 
 /**

@@ -1248,20 +1248,7 @@ public Rectangle getBoundsInPixels() {
  * @see ImageData
  */
 public ImageData getImageData() {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSBitmapImageRep imageRep;
-		if (imageFileNameProvider == null && imageDataProvider == null) {
-			imageRep = getRepresentation();
-		} else {
-			imageRep = getRepresentation_100();
-		}
-		return _getImageData(imageRep, this.alphaInfo_100);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	return getImageData(100);
 }
 
 /**
@@ -1271,8 +1258,6 @@ public ImageData getImageData() {
  * <p>
  * <b>Warning:</b> This API doesn't make sense and will be replaced, see
  * <a href="https://bugs.eclipse.org/496409">bug 496409</a>.
- * Until then, it will return an ImageData for the highest supported resolution
- * (e.g. always the 200% version on macOS).
  * </p>
  *
  * @return an <code>ImageData</code> containing the image's data
@@ -1285,44 +1270,70 @@ public ImageData getImageData() {
  *
  * @see ImageData
  * @since 3.105
+ * @deprecated use {@link #getImageData(int)} instead
  */
+@Deprecated
 public ImageData getImageDataAtCurrentZoom() {
-	/*
-	 * Bug 496409 in SWT: getImageDataAtCurrentZoom() doesn't make sense.
-	 *
-	 * The current implementation on cocoa returns the 200% representation if there's an image provider,
-	 * even if DPIUtil.getDeviceZoom() == 100. That sounds wrong, but it's crucial for clients
-	 * that this behavior keeps working.
-	 *
-	 * Reason: The Image constructor wrongly creates 200% images even if
-	 * DPIUtil.getDeviceZoom() == 100 (bug 462555). A consequence of that bug is that
-	 * clients get callbacks to ImageDataProvider#getImageData(int) for zoom == 200.
-	 * To compute e.g. a composite image, clients need access to the 200% image data.
-	 * Currently, the only way to do that is via this method.
-	 */
+	return getImageData(DPIUtil.getDeviceZoom());
+}
+
+/**
+ * Returns an {@link ImageData} for the given zoom level based on the
+ * receiver.
+ * <p>
+ * Note that this method is mainly intended to be used by custom
+ * implementations of {@link ImageDataProvider} that draw a composite image
+ * at the requested zoom level based on other images. For custom zoom
+ * levels, the image data may be an auto-scaled version of the native image
+ * and may look more blurred or mangled than expected.
+ * </p>
+ * <p>
+ * Modifications made to the returned {@code ImageData} will not affect this
+ * {@code Image}.
+ * </p>
+ *
+ * @param zoom
+ *            The zoom level in % of the standard resolution (which is 1
+ *            physical monitor pixel == 1 SWT logical pixel). Typically 100,
+ *            150, or 200.
+ * @return an <code>ImageData</code> containing the image's data and
+ *         attributes at the given zoom level
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
+ * </ul>
+ *
+ * @since 3.106
+ */
+public ImageData getImageData(int zoom) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSBitmapImageRep imageRep = getRepresentation();
-		ImageData data;
 		boolean hasImageProvider = imageFileNameProvider != null || imageDataProvider != null;
-		if (hasImageProvider) {
-			NSBitmapImageRep imageRep200 = getRepresentation_200();
-			if (imageRep200 != null) {
-				if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
-					if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep);
+		if (zoom == 100) {
+			NSBitmapImageRep imageRep;
+			imageRep = hasImageProvider ? getRepresentation_100() : getRepresentation();
+			return _getImageData(imageRep, alphaInfo_100);
+		}
+		if (zoom == 200) {
+			if (hasImageProvider) {
+				NSBitmapImageRep imageRep200 = getRepresentation_200();
+				if (imageRep200 != null) {
+					if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+						if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
+					}
+					return _getImageData(imageRep200, alphaInfo_200);
 				}
-				return _getImageData(imageRep, alphaInfo_200);
 			}
 		}
-		// XXX: No HiDPI representation available: Need to scale 100% rep. Workaround for bug 513129 and bug 513637.
-		data = _getImageData(imageRep, this.alphaInfo_100);
-		return DPIUtil.autoScaleImageData(device, data, DPIUtil.getDeviceZoom(), 100);
 	} finally {
 		if (pool != null) pool.release();
 	}
+	return DPIUtil.autoScaleImageData (device, getImageData(), zoom, 100);
 }
+
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
 NSBitmapImageRep getRepresentation () {
 	NSBitmapImageRep rep = new NSBitmapImageRep(handle.bestRepresentationForDevice(null));

@@ -132,7 +132,7 @@ public static long /*int*/ createPixbuf(Image image) {
 			}
 			OS.g_object_unref(maskPixbuf);
 		} else {
-			ImageData data = image.getImageDataAtCurrentZoom ();
+			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			boolean hasAlpha = data.getTransparencyType () == SWT.TRANSPARENCY_ALPHA;
 			pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, w [0], h [0]);
 			if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);

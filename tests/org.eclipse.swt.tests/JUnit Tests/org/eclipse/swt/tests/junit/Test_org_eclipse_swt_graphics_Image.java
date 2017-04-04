@@ -798,6 +798,69 @@ public void test_getImageData() {
 }
 
 @Test
+public void test_getImageData_100() {
+	getImageData_int(100);
+}
+
+@Test
+public void test_getImageData_200() {
+	getImageData_int(200);
+}
+
+void getImageData_int(int zoom) {
+	Rectangle bounds = new Rectangle(0, 0, 10, 20);
+	Image image = new Image(display, bounds.width, bounds.height);
+	image.dispose();
+	try {
+		image.getImageData(zoom);
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+		assertSWTProblem("Incorrect exception thrown for disposed image", SWT.ERROR_GRAPHIC_DISPOSED, e);
+	}
+
+	// creates bitmap image and compare size of imageData
+	image = new Image(display, bounds.width, bounds.height);
+	ImageData imageDataAtZoom = image.getImageData(zoom);
+	image.dispose();
+	Rectangle boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
+	assertEquals(":a: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+
+	// create icon image and compare size of imageData
+	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(display, imageData);
+	imageDataAtZoom = image.getImageData(zoom);
+	image.dispose();
+	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
+	assertEquals(":b: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+
+	// create image with FileNameProvider
+	image = new Image(display, imageFileNameProvider);
+	imageDataAtZoom = image.getImageData(zoom);
+	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":c: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+
+	// create image with ImageDataProvider
+	image = new Image(display, imageDataProvider);
+	imageDataAtZoom = image.getImageData(zoom);
+	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":d: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+}
+
+public static Rectangle scaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
+	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
+	Rectangle returnRect = new Rectangle (0,0,0,0);
+	returnRect.x = Math.round (rect.x * scaleFactor);
+	returnRect.y = Math.round (rect.y * scaleFactor);
+	returnRect.width = Math.round (rect.width * scaleFactor);
+	returnRect.height = Math.round (rect.height * scaleFactor);
+	return returnRect;
+}
+
+@Test
 public void test_hashCode() {
 	Image image = null;
 	Image image1 = null;

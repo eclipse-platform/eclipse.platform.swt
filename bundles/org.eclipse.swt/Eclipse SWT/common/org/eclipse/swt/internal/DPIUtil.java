@@ -208,7 +208,7 @@ public static Rectangle autoScaleDown (Drawable drawable, Rectangle rect) {
  * Auto-scale image with ImageData
  */
 public static ImageData autoScaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
-	if (deviceZoom == 100 || imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
+	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
 	float scaleFactor = (float) targetZoom / (float) currentZoom;
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
