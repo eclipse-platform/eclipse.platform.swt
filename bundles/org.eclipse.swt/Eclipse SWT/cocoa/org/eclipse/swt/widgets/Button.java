@@ -48,6 +48,12 @@ public class Button extends Control {
 	Image image;
 	boolean grayed;
 
+	/**
+	 * On MacOS 10.8 and later Radiobuttons with the same parent view and action are automatically in group,
+	 * so the state of the NSButton cannot be used to detect if a selection event should be sent when a button is deselected.
+	 */
+	private boolean lastRadioState;
+
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
 	static final int IMAGE_GAP = 2;
@@ -833,7 +839,7 @@ public void setImage (Image image) {
 @Override
 boolean setRadioSelection (boolean value){
 	if ((style & SWT.RADIO) == 0) return false;
-	if (getSelection () != value) {
+	if (getSelection() != value || lastRadioState != value) {
 		setSelection (value);
 		sendSelectionEvent (SWT.Selection);
 	}
@@ -864,6 +870,7 @@ public void setSelection (boolean selected) {
 	} else {
 		((NSButton)view).setState (selected ? OS.NSOnState : OS.NSOffState);
 	}
+	lastRadioState = selected;
 }
 
 /**
