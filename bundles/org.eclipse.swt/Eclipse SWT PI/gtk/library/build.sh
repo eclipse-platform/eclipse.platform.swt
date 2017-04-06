@@ -28,6 +28,9 @@ One of the following 3:
 
 install  - copy *.so libraries to binary repository.
 
+--print-outputdir-and-exit - This simply echos the OUTPUT folder where .so libs are copied to,
+							 then exits the script. Used by external
+
 -- Examples:
 Most commonly used:
 ./build.sh -gtk-all install
@@ -597,6 +600,13 @@ for i in "$@"; do  # loop over all input paramaters
 	fi
 done
 
+for i in "$@"; do  # loop over all input paramaters
+	if [ "$i" = "--print-outputdir-and-exit" ]; then
+		# used by external scripts to find binary folder
+		echo "OUTPUT_DIR=" ${OUTPUT_DIR}
+		exit 0 # success
+	fi
+done
 
 func_clean_up () {
 	func_echo_plus "Cleaning up..."

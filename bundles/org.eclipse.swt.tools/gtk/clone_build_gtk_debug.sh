@@ -7,7 +7,7 @@
 # This script does the following:
 # *) If ~/git/gtk does not exist, it asks you if it should create it for you.
 # *) Clones git sources if not already cloned.
-# *) Configures gtk for debug and compiles gtk 
+# *) Configures gtk for debug and compiles gtk
 # *) Creates ~/gnomeso/curr if it doesn't exist. (This is where .so files will be)
 # *) Copies scattered '.so' files into folder above for use by eclipse snippets.
 # *) Prints next steps to console. (See bottom of script).
@@ -24,39 +24,20 @@ HELP_MSG="
 # Optional command line arguments:\n
  -y  - silently build gtk without asking about branch\n
  --nocleanup - do not cleanup git repository. Useful when modifying gtk itself, e.g add printf's.\n
- --noconfig - do not re-configure the project. Used with the above to make compile faster or custom configs.\n 
+ --noconfig - do not re-configure the project. Used with the above to make compile faster or custom configs.\n
 e.g\n
  clone_build_gtk_debug.sh   # Clones and builds gtk for you.\n
  clone_build_gtk_debug.sh -y --nocleanup --noconfig  # For quick rebuilds when modifying gtk sources.\n
 ------------------\n\n
 "
-
-# Utility functions
-func_echo_info () {
-	GREEN='\033[0;32m'
-	NC='\033[0m' # No Color
-	echo -e "${GREEN}${@}${NC}"
-}
-
-func_echo_input () {
-	PURPLE='\033[0;35m'
-	NC='\033[0m' # No Color
-	echo -e "${PURPLE}${@}${NC}"
-}
-
-func_echo_error () {
-	RED='\033[0;31m'
-	NC='\033[0m' # No Color
-echo -e "${RED}*** ${@}${NC}"
-}
-
+source common_functions.sh
 
 # Print help info to educate user
 func_echo_info $HELP_MSG
 
 # Parse arguments
 SILENT=false
-NOCLEANUP=false   # for when you make changes to gtk source code, e.g print statments etc.. 
+NOCLEANUP=false   # for when you make changes to gtk source code, e.g print statments etc..
 NOCONFIG=false    # faster build speeds.
 for arg in "$@"; do  # loop over all input parameters
 	if [ "$arg" == "-y" ]; then
@@ -113,22 +94,22 @@ To find out which version of Gtk3 is on your system, you can check your package 
 sudo dnf list installed | grep '^gtk3\.'
 To checkout a particular gtk branch:
   cd $GTK_SRC_DIR
-  git branch -r  | grep gtk-3 
+  git branch -r  | grep gtk-3
   git checkout origin/gtk-3-22
 Shall I continue (y)? (You can checkout the required branch in another terminal tab.
 (To avoid seesing this message, try running this script with '-y'"
 
 	read -p "[y/n]: "
-	if [ ! "$REPLY" == y ]; then 
+	if [ ! "$REPLY" == y ]; then
 		func_echo_error "Please run this script again after checking out a version"
 		exit 1 # failure
-	fi 
+	fi
 fi
 
 # Clean up old gtk bits.
-cd "$GTK_SRC_DIR" 
+cd "$GTK_SRC_DIR"
 if [ "$NOCLEANUP" == false ]; then
-	func_echo_info "Cleanup old gtk build files. 
+	func_echo_info "Cleanup old gtk build files.
 	This is needed if switching between gtk version to avoid compiliation issues."
 	git clean -xdf   # remove build files.
 	git reset --hard # undo changes to existing source files.
@@ -141,17 +122,17 @@ func_echo_info "Configuring gtk with debug support"
 GEN_COMPILE_ERROR_MSG="Autogen failed. Check that you have required packages. Try ./install_sysdeps.sh or checkout earlier gtk branch"
 if [ "$NOCONFIG" == false ]; then
 	./autogen.sh --enable-debug=yes # for more options, see: https://developer.gnome.org/gtk3/stable/gtk-building.html
-	if [ "$?" -eq -1 ]; then
-		func_echo_error $GEN_COMPILE_ERROR_MSG 	
+	if [ "$?" ne 0 ]; then
+		func_echo_error $GEN_COMPILE_ERROR_MSG
 		exit 1 #failed
 	fi
-fi	
+fi
 
-# Build gtk with some extra debug flags (enable macro expansion, turn off optimization..) 
+# Build gtk with some extra debug flags (enable macro expansion, turn off optimization..)
 # and enable multi-threading for faster build.
 func_echo_info "GTK build starting..."
 make CFLAGS="-g3 -ggdb3 -O0" -j8
-if [ "$?" -eq -1 ]; then
+if [ "$?" -ne 0 ]; then
 	func_echo_error $GEN_COMPILE_ERROR_MSG
 	exit 1 $failed
 fi
@@ -164,7 +145,7 @@ if [ ! -d "$COMPILED_SO_DIR" ]; then
 	mkdir -p "$COMPILED_SO_DIR"
 	# add a readme.
 	echo "This folder contains '.so' dynamic library files build by swt/gtk build scripts, intended to be
-used for running eclipse snippets with env vars: 'LD_LIBRARY_PATH=$COMPILED_SO_DIR'" > $COMPILED_SO_DIR/readme.md 
+used for running eclipse snippets with env vars: 'LD_LIBRARY_PATH=$COMPILED_SO_DIR'" > $COMPILED_SO_DIR/readme.md
 fi
 
 # copy compiled .so files into $COMPILED_SO_DIR
@@ -194,12 +175,12 @@ see: https://wiki.gnome.org/Projects/GTK+/Inspector
 To debug gtk from a java snippet:
 0) You should setup Eclipse CDT with Standalone debugger.
 1) In Eclipse, create a C makefile/library project in some folder. (not in $GTK_SRC_DIR)
-   In project settings, C/C++ General -> Paths and Symdols -> Source location, 
+   In project settings, C/C++ General -> Paths and Symdols -> Source location,
    link folder to $GTK_SRC_DIR. Allow C++ indexer to run.
-   (The reason for not creating project in $GTK_SRC_DIR is that this script cleans up 
+   (The reason for not creating project in $GTK_SRC_DIR is that this script cleans up
    the folder and removes the .project with 	it.)
 2) Set a breakpoint somewhere in gtk. I recommend:
-	gtkmain.c:gtk_main_do_event(..) 
+	gtkmain.c:gtk_main_do_event(..)
    because that get's ran when you do the main event loop.
 3) Set a java breakpoint at the first line of 'main' in your java app.
 4) Start snippet in debug mode (with LD_LIBRARY_PATH set), wait for it to break at java break point.
@@ -211,7 +192,5 @@ To debug gtk from a java snippet:
 
 In case things don't work, try 'gdb -p PID', it often tells you that you need to install some debug packages.
 
-Tip: 
+Tip:
 - You can move ~/gnomeso/curr to something like ~/gnomeso/GTK-3-xx to keep different versions of gtk."
-
-
