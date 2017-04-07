@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.lang.reflect.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
@@ -63,6 +64,8 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 	Control labelRelation;
 	String cssBackground, cssForeground = " ";
+
+	LinkedList <Event> dragDetectionQueue;
 
 	/* these class variables are for the workaround for bug #427776 */
 	static Callback enterNotifyEventFunc;
@@ -2497,11 +2500,7 @@ public boolean dragDetect (MouseEvent event) {
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	if (button != 1 || count != 1) return false;
-	/*
-	 * Bug 503431: Some applications use CTabFolder that isn't handling DND
-	 * correctly in this condition.
-	 */
-	if (OS.isX11() && !dragDetect (x, y, false, true, null)) { // Not Wayland
+	if (!dragDetect (x, y, false, true, null)) {
 		return false;
 	}
 	return sendDragEvent (button, stateMask, x, y, true);
@@ -4255,6 +4254,11 @@ boolean sendMouseEvent (int type, int button, int time, double x, double y, bool
 	return sendMouseEvent (type, button, 0, 0, false, time, x, y, is_hint, state);
 }
 
+/*
+ * @return
+ * 	true - event sending not canceled by user.
+ *  false - event sending canceled by user.
+ */
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state) {
 	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
@@ -4275,6 +4279,73 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	}
 	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.x;
 	setInputState (event, state);
+
+	/**
+	 * Bug 510446:
+	 * In the original gtk2 DnD architecture, Drag detection was done in mouseDown.
+	 * For Wayland support, Drag detection is now done in mouseMove (as does gtk internally).
+	 *
+	 * However, traditionally external widgets (e.g StyledText or non-SWT widgets) expect to
+	 * know if a drag has started by the time mouseDown is sent.
+	 * As such, for backwards compatibility with external widgets (e.g StyledText.java), we
+	 * delay sending of SWT.MouseDown (and also queue up SWT.MouseMove) until we know if a
+	 * drag started or not.
+	 *
+	 * Technical notes:
+	 * - To ensure we follow 'send/post' contract as per parameter, we
+	 *   temporarily utilize event.data to hold send/post flag.
+	 *   There's also logic in place such that mouseDown/mouseMotion is always sent before mouseUp.
+	 * - On Gtk2, mouseMove is sent during DnD. On Gtk3x11 it's not due to hacky implementation of DnD.
+	 *   On Wayland mouseMove is once again sent during DnD as per improved architecture.
+	 */
+	event.data = new Boolean(send);
+	if (!OS.isX11()) {
+		if (type == SWT.MouseDown) {
+			// Delay MouseDown
+			dragDetectionQueue = new LinkedList<>();
+			dragDetectionQueue.add(event);
+			return true; // event never canceled as not yet sent.
+		} else {
+			if (dragDetectionQueue != null) {
+				switch (type) {
+				case SWT.MouseMove:
+					if (dragDetect (event.x, event.y, false, true, null)) {
+						// Case where mouse motion triggered a DnD:
+						// Send only initial MouseDown but not the MouseMove events that were used
+						// to determine DnD threshold.
+						// This is to preserve backwards Cocoa/Win32 compatibility.
+						Event mouseDownEvent = dragDetectionQueue.getFirst();
+						mouseDownEvent.data = new Boolean(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
+						dragDetectionQueue = null;
+						sendOrPost(SWT.MouseDown, mouseDownEvent);
+					} else
+						dragDetectionQueue.add(event);
+					break;
+				case SWT.MouseUp:
+					// Case where mouse up was released before DnD threshold was hit.
+
+					// Decide if we should send or post the queued up MouseDown and MouseMovement events.
+					// If mouseUp is send, then send all. If mouseUp is post, then decide based on previous
+					// send flag.
+					boolean sendOrPostAll = send ? true : (Boolean) dragDetectionQueue.getFirst().data;
+					dragDetectionQueue.forEach(queuedEvent -> queuedEvent.data = new Boolean(sendOrPostAll));
+
+					// Flush queued up MouseDown/MouseMotion events, so they are triggered before MouseUp
+					sendOrPost(SWT.MouseDown, dragDetectionQueue.removeFirst());
+					dragDetectionQueue.forEach(queuedEvent -> sendOrPost(SWT.MouseMove, queuedEvent));
+					dragDetectionQueue = null;
+				}
+			}
+		}
+	}
+	return sendOrPost(type, event);
+}
+
+private boolean sendOrPost(int type, Event event) {
+	assert event.data != null : "event.data should have been a Boolean, but received null";
+	boolean send = (Boolean) event.data;
+	event.data = null;
+
 	if (send) {
 		sendEvent (type, event);
 		if (isDisposed ()) return false;
