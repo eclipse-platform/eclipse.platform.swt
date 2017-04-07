@@ -52,9 +52,12 @@ public class OS extends C {
 		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
-			Library.loadLibrary("swt-pi");
-		}
-		else {
+			try {
+				Library.loadLibrary("swt-pi");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi3");
+			}
+		} else {
 			try {
 				Library.loadLibrary("swt-pi3");
 			} catch (Throwable e) {
