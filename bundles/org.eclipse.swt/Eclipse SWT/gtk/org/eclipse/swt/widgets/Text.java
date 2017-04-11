@@ -66,6 +66,7 @@ public class Text extends Scrollable {
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
 	String message = "";
+	boolean blockSelected = false;
 
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
@@ -761,48 +762,14 @@ void deregister () {
 
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
+	boolean isDraggable = (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) ? insideBlockSelection(x, y) : blockSelected;
 	if (filter) {
-		int start = 0, end = 0;
-		if ((style & SWT.SINGLE) != 0) {
-			int [] s = new int [1], e = new int [1];
-			OS.gtk_editable_get_selection_bounds (handle, s, e);
-			start = s [0];
-			end = e [0];
-		} else {
-			byte [] s = new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
-			OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
-			start = OS.gtk_text_iter_get_offset (s);
-			end = OS.gtk_text_iter_get_offset (e);
+		if (isDraggable && super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
+			if (consume != null) consume [0] = true;
+			return true;
 		}
-		if (start != end) {
-			if (end < start) {
-				int temp = end;
-				end = start;
-				start = temp;
-			}
-			int position = -1;
-			if ((style & SWT.SINGLE) != 0) {
-				int [] index = new int [1];
-				int [] trailing = new int [1];
-				long /*int*/ layout = OS.gtk_entry_get_layout (handle);
-				OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-				long /*int*/ ptr = OS.pango_layout_get_text (layout);
-				position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
-			} else {
-				byte [] p = new byte [ITER_SIZEOF];
-				OS.gtk_text_view_get_iter_at_location (handle, p, x, y);
-				position = OS.gtk_text_iter_get_offset (p);
-			}
-			if (start <= position && position < end) {
-				if (super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
-					if (consume != null) consume [0] = true;
-					return true;
-				}
-			}
-		}
-		return false;
 	}
-	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
+	return false;
 }
 
 @Override
@@ -1486,8 +1453,11 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_button_press_event (widget, event);
-	if (result != 0) return result;
+	long /*int*/ result;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		result = super.gtk_button_press_event (widget, event);
+		if (result != 0) return result;
+	}
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (!doubleClick) {
@@ -1497,9 +1467,20 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				return 1;
 		}
 	}
+	// check if mouse press is inside a selected area
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+		blockSelected = (insideBlockSelection((int)gdkEvent.x, (int)gdkEvent.y)) ? true : false;
+	}
+	result = super.gtk_button_press_event (widget, event);
 	return result;
+
 }
 
+@Override
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	blockSelected = false;
+	return super.gtk_button_release_event (widget, event);
+}
 
 @Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
@@ -1977,6 +1958,48 @@ long /*int*/ imContext () {
 	}
 	return OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
 }
+
+
+private boolean insideBlockSelection (int x, int y) {
+	int start = 0, end = 0;
+	if ((style & SWT.SINGLE) != 0) {
+		int [] s = new int [1], e = new int [1];
+		OS.gtk_editable_get_selection_bounds (handle, s, e);
+		start = s [0];
+		end = e [0];
+	} else {
+		byte [] s = new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
+		start = OS.gtk_text_iter_get_offset (s);
+		end = OS.gtk_text_iter_get_offset (e);
+	}
+	if (start != end) {
+		if (end < start) {
+			int temp = end;
+			end = start;
+			start = temp;
+		}
+		int position = -1;
+		if ((style & SWT.SINGLE) != 0) {
+			int [] index = new int [1];
+			int [] trailing = new int [1];
+			long /*int*/ layout = OS.gtk_entry_get_layout (handle);
+			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+			long /*int*/ ptr = OS.pango_layout_get_text (layout);
+			position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+		} else {
+			byte [] p = new byte [ITER_SIZEOF];
+			OS.gtk_text_view_get_iter_at_location (handle, p, x, y);
+			position = OS.gtk_text_iter_get_offset (p);
+		}
+		if (start <= position && position < end) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 
 /**
  * Inserts a string.

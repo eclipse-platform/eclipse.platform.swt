@@ -114,10 +114,13 @@ public class DragSource extends Widget {
 
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 
+	static Callback DragBegin;
 	static Callback DragGetData;
 	static Callback DragEnd;
 	static Callback DragDataDelete;
 	static {
+		DragBegin = new Callback(DragSource.class, "DragBegin", 2);
+		if (DragBegin.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS); //$NON-NLS-1$
 		DragGetData = new Callback(DragSource.class, "DragGetData", 5);	 //$NON-NLS-1$
 		if (DragGetData.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragEnd = new Callback(DragSource.class, "DragEnd", 2); //$NON-NLS-1$
@@ -166,6 +169,7 @@ public DragSource(Control control, int style) {
 	}
 	control.setData(DND.DRAG_SOURCE_KEY, this);
 
+	OS.g_signal_connect(control.handle, OS.drag_begin, DragBegin.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
@@ -202,6 +206,13 @@ public DragSource(Control control, int style) {
 static int checkStyle (int style) {
 	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
+}
+
+static long /*int*/ DragBegin(long /*int*/ widget, long /*int*/ context){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	source.dragBegin(widget, context);
+	return 0;
 }
 
 static long /*int*/ DragDataDelete(long /*int*/ widget, long /*int*/ context){
@@ -308,6 +319,26 @@ void drag(Event dragEvent) {
 			long /*int*/ pixbuf = ImageList.createPixbuf(image);
 			OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
 			OS.g_object_unref(pixbuf);
+		}
+	}
+}
+
+void dragBegin(long /*int*/ widget, long /*int*/ context) {
+	/*
+	 * Bug 515035: GTK DnD hijacks the D&D logic we have in SWT.
+	 * When we recieve the signal from GTK of DragBegin, we will
+	 * notify SWT that a drag has occurred.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0) && this.control instanceof Text) {
+		DNDEvent event = new DNDEvent();
+		event.widget = this;
+		event.doit = true;
+		notifyListeners(DND.DragStart, event);
+		if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
+		if (targetList == 0) return;
+		Image image = event.image;
+		if (context != 0 && image != null) {
+			OS.gtk_drag_set_icon_surface(context, image.surface);
 		}
 	}
 }
