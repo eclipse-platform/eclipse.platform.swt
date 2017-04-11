@@ -274,6 +274,9 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	device = this.device;
 	this.type = srcImage.type;
+	this.imageDataProvider = srcImage.imageDataProvider;
+	this.imageFileNameProvider = srcImage.imageFileNameProvider;
+	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 
 	if (OS.USE_CAIRO) {
 		if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
@@ -386,7 +389,6 @@ public Image(Device device, Image srcImage, int flag) {
 			}
 		}
 		init();
-		currentDeviceZoom = DPIUtil.getDeviceZoom();
 		return;
 	}
 
@@ -501,7 +503,6 @@ public Image(Device device, Image srcImage, int flag) {
 		OS.g_object_unref(gdkGC);
 	}
 	init();
-	currentDeviceZoom = DPIUtil.getDeviceZoom();
 }
 
 /**
