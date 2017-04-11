@@ -228,9 +228,11 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 			 * with the system default color. Use headerRect's height & y values so that we
 			 * can draw over the header cell's borders with the header background color.
 			 */
-			NSRect rect = cellRect;
-			rect.height = headerRect.height;
+			NSRect rect = new NSRect();
+			rect.x = cellRect.x;
 			rect.y = headerRect.y;
+			rect.width = cellRect.width;
+			rect.height = headerRect.height;
 			NSBezierPath.fillRect(rect);
 			context.restoreGraphicsState();
 		}
