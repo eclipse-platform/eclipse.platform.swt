@@ -180,10 +180,15 @@ SUCCESS
 Gtk3 libs have been created. For a snippet/child eclipse to use the .so files, set environmental variable:
 LD_LIBRARY_PATH=$COMPILED_SO_DIR
 
-A good indicator that the libs have been loaded is when you start a snippet, you get warnings like:
-	Gtk-Message: Failed to load module 'canberra-gtk-module'
-Which are safe to ignore. (e.g printer,sound module not found etc..)
-Or see the gtk version in gtk inspector (ctrl+shift+i), which has to be enabled first thou.
+To tell if the running snippet uses the loaded libs, you can inspect which libraries are mapped:\n
+/proc/PID/maps | grep gnomeso
+see: http://stackoverflow.com/questions/2184775/getting-a-list-of-used-libraries-by-a-running-process-unix
+You can use 'jps' command to find PID of a SWT snippet. I combine things into a command like:
+cat /proc/$\(jps | grep -i NAME_OF_YOUR_SNIPPT | cut -f1 -d' ')/maps | grep gnomeso
+Output should list 'libgdk-3.so.0' and 'libgtk-3.so.0'.
+
+Also the gtk version in gtk inspector (ctrl+shift+i) will probably be a bit different (3.22.10 vs 3.22.11).
+Note, GTKInspector has to be enabled first thou.
 see: https://wiki.gnome.org/Projects/GTK+/Inspector
 
 To debug gtk from a java snippet:
