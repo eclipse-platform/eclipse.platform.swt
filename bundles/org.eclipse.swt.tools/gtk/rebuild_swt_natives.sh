@@ -19,7 +19,7 @@
 
 source common_functions.sh
 
-# 0) Find directory where this script is being executed from.
+# Find directory where this script is being executed from.
 #############################################################
 #    The method below works even if the script is called from somewhere else, or scrpit is symlinked.
 #    http://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
@@ -30,6 +30,33 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${SCRIPT_DIR}
+
+
+# 0) Fix '.classpath' for SWT project and for snippets.
+#######################################################
+# Sometimes .classpath_gtk is updated in commits, e.g when a class folder is added/removed.
+# Because renaming .classpath is done manually, this often leads to errors about missing source folders.
+# Fix: re-copy the .classpath on every lib rebuild.
+func_echo_info "\n[Step 0] Copying .classpath_gtk files to .classpath in SWT project & Snippets"
+# Navigate to /git/eclipse.platform.swt/bundles/org.eclipse.swt
+cd ../../org.eclipse.swt
+if [ -e .classpath_gtk ] && cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt" ; then
+	(set -x ; cp .classpath_gtk .classpath)
+else
+	func_echo_error "[Step 0] I was expecting to be in:\n/git/eclipse.platform.swt/bundles/org.eclipse.swt\nBut I'm in $(pwd)"
+	exit 1 # failed
+fi
+
+# Navigate to snippets.
+cd ../../examples/org.eclipse.swt.snippets/
+if [ -e .classpath_gtk ] &&  cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt.snippets"; then
+	(set -x ; cp .classpath_gtk .classpath)
+else
+	func_echo_error "[Step 0] I was expecting to be in snippet repository: /examples/org.eclipse.swt.snippets/ , but I'm in $(pwd)"
+	error 1 #failed
+fi
+cd ${SCRIPT_DIR}
 
 
 # 1) Find SWT's build.sh script
@@ -43,7 +70,7 @@ if [ ! -e "$BUILD_SH_DIR/build.sh" ]; then
 		func_echo_info "[Step 1] ** build.sh directory found via hardcoded path"
 		BUILD_SH_DIR="$HARD_CODED_PATH"
 	else
-		func_echo_error "[Step 1] Could not find 'build.sh' neither in: \n$BUILD_SH_DIR\nnor in:\n$HARD_CODED_PATH\nYou probably didn't build swt project."
+		func_echo_error "[Step 1] Could not find 'build.sh' neither in: \n$BUILD_SH_DIR\nnor in:\n$HARD_CODED_PATH\nYou probably need to build swt project."
 		exit 1;
 	fi
 else
@@ -101,7 +128,7 @@ fi
 export SWT_LIB_DEBUG=1
 temp_log_file=$(mktemp)  # Keep log so we can count warnings after.
 # 'script' command logs commands and their output.
-#  This is used instead of output redirection to preserve make colouring output, 
+#  This is used instead of output redirection to preserve make colouring output,
 #  while at the same time capture log for parsing.
 script --quiet --return --command " ./build.sh -gtk-all install" $temp_log_file   #"script" cmd preserves color coding during logging.
 if [ "$?" -ne 0 ]; then # Failed
@@ -113,31 +140,6 @@ else # Success
 	func_echo_info "[Step 3] Bindings compiled sucessfully"
 	func_echo_error "[Step 3] ** Warning count: $WARNING_COUNT "
 	rm $temp_log_file
-fi
-
-
-# 4) Fix '.classpath' for SWT project and for snippets.
-#######################################################
-# Sometimes .classpath_gtk is updated in commits, e.g when a class folder is added/removed.
-# Because renaming .classpath is done manually, this often leads to errors about missing source folders.
-# Fix: re-copy the .classpath on every lib rebuild.
-func_echo_info "\n[Step 4] Copying .classpath_gtk files to .classpath in SWT project & Snippets"
-# Navigate to /git/eclipse.platform.swt/bundles/org.eclipse.swt
-cd ../..
-if [ -e .classpath_gtk ] && cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt" ; then
-	(set -x ; cp .classpath_gtk .classpath)
-else
-	func_echo_error "[Step 4] I was expecting to be in:\n/git/eclipse.platform.swt/bundles/org.eclipse.swt\nBut I'm in $(pwd)"
-	exit 1 # failed
-fi
-
-# Navigate to snippets.
-cd ../../examples/org.eclipse.swt.snippets/
-if [ -e .classpath_gtk ] &&  cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt.snippets"; then
-	(set -x ; cp .classpath_gtk .classpath)
-else
-	func_echo_error "[Step 4] I was expecting to be in snippet repository: /examples/org.eclipse.swt.snippets/ , but I'm in $(pwd)"
-	error 1 #failed
 fi
 
 func_echo_info "Finished"
