@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,9 +30,10 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_events_SelectionEvent.class, Test_org_eclipse_swt_events_HelpEvent.class,
 		Test_org_eclipse_swt_events_FocusEvent.class, Test_org_eclipse_swt_events_MouseEvent.class,
 		Test_org_eclipse_swt_events_MenuEvent.class, Test_org_eclipse_swt_events_TreeEvent.class,
-		Test_org_eclipse_swt_printing_PrintDialog.class,
-		Test_org_eclipse_swt_printing_PrinterData.class, Test_org_eclipse_swt_printing_Printer.class,
-		Test_org_eclipse_swt_program_Program.class, Test_org_eclipse_swt_accessibility_Accessible.class,
+		Test_org_eclipse_swt_layout_FormAttachment.class, Test_org_eclipse_swt_layout_GridData.class,
+		Test_org_eclipse_swt_printing_PrintDialog.class, Test_org_eclipse_swt_printing_PrinterData.class,
+		Test_org_eclipse_swt_printing_Printer.class, Test_org_eclipse_swt_program_Program.class,
+		Test_org_eclipse_swt_accessibility_Accessible.class,
 		Test_org_eclipse_swt_accessibility_AccessibleControlEvent.class,
 		Test_org_eclipse_swt_accessibility_AccessibleEvent.class,
 		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class })
