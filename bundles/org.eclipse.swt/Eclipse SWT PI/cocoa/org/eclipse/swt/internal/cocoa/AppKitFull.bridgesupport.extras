@@ -552,6 +552,9 @@
 		<method selector="attributedTitle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="bezelStyle" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setAllowsMixedState:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -598,6 +601,11 @@
 	</class>
 	<class name="NSButtonCell" swt_gen="mixed" swt_superclass="NSActionCell">
 		<method selector="backgroundColor" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="drawBezelWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="drawImage:withFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
@@ -1056,6 +1064,9 @@
 		<method selector="isEnabled" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="isHighlighted" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="sendAction:to:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -1435,8 +1446,17 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="drawInBezierPath:angle:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="drawInRect:angle:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="initWithColors:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

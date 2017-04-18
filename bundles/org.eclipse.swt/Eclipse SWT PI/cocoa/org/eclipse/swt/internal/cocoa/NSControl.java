@@ -59,6 +59,10 @@ public boolean isEnabled() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isEnabled);
 }
 
+public boolean isHighlighted() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isHighlighted);
+}
+
 public boolean sendAction(long /*int*/ theAction, id theTarget) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0);
 }

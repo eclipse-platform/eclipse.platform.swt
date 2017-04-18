@@ -703,6 +703,8 @@ public static final native long /*int*/ CALLBACK_draggedImage_beganAt_(long /*in
 public static final native long /*int*/ CALLBACK_draggedImage_endedAt_operation_(long /*int*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native long /*int*/ CALLBACK_drawBackgroundInClipRect_(long /*int*/ func);
+/** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
+public static final native long /*int*/ CALLBACK_drawBezelWithFrame_inView_(long /*int*/ func);
 /** @method callback_types=void;id;SEL;NSImage*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
 public static final native long /*int*/ CALLBACK_drawImage_withFrame_inView_(long /*int*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
@@ -1077,6 +1079,7 @@ public static final long /*int*/ sel_beginSheetForWindow_modalDelegate_didEndSel
 public static final long /*int*/ sel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:");
 public static final long /*int*/ sel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:");
 public static final long /*int*/ sel_bestRepresentationForDevice_ = sel_registerName("bestRepresentationForDevice:");
+public static final long /*int*/ sel_bezelStyle = sel_registerName("bezelStyle");
 public static final long /*int*/ sel_bezierPath = sel_registerName("bezierPath");
 public static final long /*int*/ sel_bezierPathByFlatteningPath = sel_registerName("bezierPathByFlatteningPath");
 public static final long /*int*/ sel_bezierPathWithRect_ = sel_registerName("bezierPathWithRect:");
@@ -1309,9 +1312,11 @@ public static final long /*int*/ sel_drawAtPoint_ = sel_registerName("drawAtPoin
 public static final long /*int*/ sel_drawAtPoint_fromRect_operation_fraction_ = sel_registerName("drawAtPoint:fromRect:operation:fraction:");
 public static final long /*int*/ sel_drawBackgroundForGlyphRange_atPoint_ = sel_registerName("drawBackgroundForGlyphRange:atPoint:");
 public static final long /*int*/ sel_drawBackgroundInClipRect_ = sel_registerName("drawBackgroundInClipRect:");
+public static final long /*int*/ sel_drawBezelWithFrame_inView_ = sel_registerName("drawBezelWithFrame:inView:");
 public static final long /*int*/ sel_drawFromPoint_toPoint_options_ = sel_registerName("drawFromPoint:toPoint:options:");
 public static final long /*int*/ sel_drawGlyphsForGlyphRange_atPoint_ = sel_registerName("drawGlyphsForGlyphRange:atPoint:");
 public static final long /*int*/ sel_drawImage_withFrame_inView_ = sel_registerName("drawImage:withFrame:inView:");
+public static final long /*int*/ sel_drawInBezierPath_angle_ = sel_registerName("drawInBezierPath:angle:");
 public static final long /*int*/ sel_drawInRect_ = sel_registerName("drawInRect:");
 public static final long /*int*/ sel_drawInRect_angle_ = sel_registerName("drawInRect:angle:");
 public static final long /*int*/ sel_drawInRect_fromRect_operation_fraction_ = sel_registerName("drawInRect:fromRect:operation:fraction:");
@@ -1444,6 +1449,7 @@ public static final long /*int*/ sel_initWithBitmapDataPlanes_pixelsWide_pixelsH
 public static final long /*int*/ sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_ = sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:");
 public static final long /*int*/ sel_initWithCapacity_ = sel_registerName("initWithCapacity:");
 public static final long /*int*/ sel_initWithCharacters_length_ = sel_registerName("initWithCharacters:length:");
+public static final long /*int*/ sel_initWithColors_ = sel_registerName("initWithColors:");
 public static final long /*int*/ sel_initWithContainerSize_ = sel_registerName("initWithContainerSize:");
 public static final long /*int*/ sel_initWithContentRect_styleMask_backing_defer_ = sel_registerName("initWithContentRect:styleMask:backing:defer:");
 public static final long /*int*/ sel_initWithContentRect_styleMask_backing_defer_screen_ = sel_registerName("initWithContentRect:styleMask:backing:defer:screen:");

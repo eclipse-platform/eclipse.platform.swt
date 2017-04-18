@@ -29,6 +29,10 @@ public NSColor backgroundColor() {
 	return result != 0 ? new NSColor(result) : null;
 }
 
+public void drawBezelWithFrame(NSRect frame, NSView controlView) {
+	OS.objc_msgSend(this.id, OS.sel_drawBezelWithFrame_inView_, frame, controlView != null ? controlView.id : 0);
+}
+
 public void drawImage(NSImage image, NSRect frame, NSView controlView) {
 	OS.objc_msgSend(this.id, OS.sel_drawImage_withFrame_inView_, image != null ? image.id : 0, frame, controlView != null ? controlView.id : 0);
 }

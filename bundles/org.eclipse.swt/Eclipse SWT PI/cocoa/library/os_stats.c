@@ -34,6 +34,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1draggedImage_1beganAt_1",
 	"CALLBACK_1draggedImage_1endedAt_1operation_1",
 	"CALLBACK_1drawBackgroundInClipRect_1",
+	"CALLBACK_1drawBezelWithFrame_1inView_1",
 	"CALLBACK_1drawImage_1withFrame_1inView_1",
 	"CALLBACK_1drawInteriorWithFrame_1inView_1",
 	"CALLBACK_1drawLabel_1inRect_1",

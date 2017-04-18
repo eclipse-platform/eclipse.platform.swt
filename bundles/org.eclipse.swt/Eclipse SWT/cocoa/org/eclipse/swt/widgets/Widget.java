@@ -732,6 +732,9 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	callSuper(id, sel, cellFrame, view);
 }
 
+void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+	callSuper(id, sel, cellFrame, view);
+}
 
 void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	objc_super super_struct = new objc_super();

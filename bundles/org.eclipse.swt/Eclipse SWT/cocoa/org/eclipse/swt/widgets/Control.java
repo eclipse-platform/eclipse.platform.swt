@@ -5206,4 +5206,28 @@ void updateLayout (boolean all) {
 	/* Do nothing */
 }
 
+static double /*float*/ calcDiff (double /*float*/ component, double /*float*/ factor, boolean wantDarker) {
+	if (wantDarker) {
+		return component * -1 * factor;
+	} else {
+		return (1f - component) * factor;
+	}
+}
+
+static double /*float*/ [] getLighterOrDarkerColor (double /*float*/ [] pixel, double /*float*/ factor, boolean wantDarker) {
+	double /*float*/ red = pixel[0];
+	double /*float*/ green = pixel[1];
+	double /*float*/ blue = pixel[2];
+	red += calcDiff(red, factor, wantDarker);
+	green += calcDiff(green, factor, wantDarker);
+	blue += calcDiff(blue, factor, wantDarker);
+	return new double /*float*/ [] { red, green, blue, pixel[3] };
+}
+
+/**
+ * @return luma according to ITU BT.709: Y = 0.2126 R + 0.7152 G + 0.0722 B
+ */
+static double luma (double[] rgbColor) {
+	return 0.2126f * rgbColor[0] + 0.7152f * rgbColor[1] + 0.0722f * rgbColor[2];
+}
 }

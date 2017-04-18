@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2447,6 +2447,7 @@ void initClasses () {
 	long /*int*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	long /*int*/ drawRectProc = OS.CALLBACK_drawRect_(proc3);
 	long /*int*/ drawInteriorWithFrameInViewProc = OS.CALLBACK_drawInteriorWithFrame_inView_ (proc4);
+	long /*int*/ drawBezelWithFrameInViewProc = OS.CALLBACK_drawBezelWithFrame_inView_ (proc4);
 	long /*int*/ drawWithExpansionFrameProc = OS.CALLBACK_drawWithExpansionFrame_inView_ (proc4);
 	long /*int*/ imageRectForBoundsProc = OS.CALLBACK_imageRectForBounds_ (proc3);
 	long /*int*/ titleRectForBoundsProc = OS.CALLBACK_titleRectForBounds_ (proc3);
@@ -2514,6 +2515,7 @@ void initClasses () {
 	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSRect}@");
 	OS.class_addMethod (cls, OS.sel_drawTitle_withFrame_inView_, drawTitleWithFrameInViewProc, "@:@{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.class_addMethod(cls, OS.sel_drawBezelWithFrame_inView_, drawBezelWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_cellSizeForBounds_, cellSizeForBoundsProc, "@:{NSRect}");
 	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0)) {
@@ -6061,6 +6063,10 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		widget.drawWithExpansionFrame_inView (id, sel, rect, arg1);
+	} else if (sel == OS.sel_drawBezelWithFrame_inView_) {
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg0, NSRect.sizeof);
+		widget.drawBezelWithFrame_inView (id, sel, rect, arg1);
 	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {

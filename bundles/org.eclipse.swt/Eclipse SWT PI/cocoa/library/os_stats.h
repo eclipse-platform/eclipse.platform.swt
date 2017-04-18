@@ -44,6 +44,7 @@ typedef enum {
 	CALLBACK_1draggedImage_1beganAt_1_FUNC,
 	CALLBACK_1draggedImage_1endedAt_1operation_1_FUNC,
 	CALLBACK_1drawBackgroundInClipRect_1_FUNC,
+	CALLBACK_1drawBezelWithFrame_1inView_1_FUNC,
 	CALLBACK_1drawImage_1withFrame_1inView_1_FUNC,
 	CALLBACK_1drawInteriorWithFrame_1inView_1_FUNC,
 	CALLBACK_1drawLabel_1inRect_1_FUNC,

@@ -379,6 +379,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawBackgroundInClipRect_1)
 }
 #endif
 
+#ifndef NO_CALLBACK_1drawBezelWithFrame_1inView_1
+static jintLong CALLBACK_1drawBezelWithFrame_1inView_1;
+static void proc_CALLBACK_1drawBezelWithFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	((void (*)(id, SEL, NSRect*, NSView*))CALLBACK_1drawBezelWithFrame_1inView_1)(arg0, arg1, &arg2, arg3);
+}
+static jintLong CALLBACK_drawBezelWithFrame_inView_(jintLong func) {
+	CALLBACK_1drawBezelWithFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1drawBezelWithFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawBezelWithFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawBezelWithFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_drawBezelWithFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawBezelWithFrame_1inView_1_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1drawImage_1withFrame_1inView_1
 static jintLong CALLBACK_1drawImage_1withFrame_1inView_1;
 static void proc_CALLBACK_1drawImage_1withFrame_1inView_1(id arg0, SEL arg1, NSImage* arg2, NSRect arg3, NSView* arg4) {

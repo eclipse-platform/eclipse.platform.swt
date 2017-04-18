@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,8 @@ public class Button extends Control {
 	 * so the state of the NSButton cannot be used to detect if a selection event should be sent when a button is deselected.
 	 */
 	private boolean lastRadioState;
+
+	private static final double /*float*/ [] DEFAULT_DISABLED_FOREGROUND = new double /*float*/ [] { 0.6745f, 0.6745f, 0.6745f, 1.0f };
 
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
@@ -329,6 +331,108 @@ void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ i
 	super.drawImageWithFrameInView(id, sel, image, rect, view);
 }
 
+private static NSRect smallerRect (NSRect cellFrame, double dx, double dy1, double dy2, float lineWidth) {
+	if (lineWidth == 2) {
+		dx -= 0.5;
+		dy1 -= 0.5;
+		dy2 -= 0.5;
+	} else if (lineWidth == 0.5) {
+		dx += 0.25;
+		dy1 += 0.25;
+		dy2 += 0.25;
+	} else if (lineWidth == 0.75) {
+		dx += 0.125;
+		dy1 += 0.125;
+		dy2 += 0.125;
+	}
+	NSRect result = new NSRect();
+	result.x = cellFrame.x + dx;
+	result.y = cellFrame.y + dy1;
+	result.width = cellFrame.width - 2 * dx;
+	result.height = cellFrame.height - dy1 - dy2;
+	return result;
+}
+
+@Override
+void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+	if (this.background != null) {
+		NSButton button = (NSButton) view;
+
+		final boolean isHighlighted = (style & SWT.TOGGLE) == 0 ? button.isHighlighted() : ((NSButton) view).state() == OS.NSOnState;
+
+		final NSWindow window = button.window();
+		final NSButtonCell defaultButtonCell = window == null ? null : window.defaultButtonCell();
+		final boolean isDefault = defaultButtonCell != null && defaultButtonCell.id == id;
+
+		double /*float*/ [] borderRGB = getLighterOrDarkerColor(this.background, 0.3, luma(background) >= 0.5);
+		if (isHighlighted && (style & SWT.FLAT) != 0) {
+			borderRGB = getLighterOrDarkerColor(borderRGB, 0.2, true);
+		}
+
+		NSGraphicsContext gc = NSGraphicsContext.currentContext();
+		gc.saveGraphicsState();
+
+		NSBezierPath path;
+		final float lineWidth;
+		if (isDefault) {
+			lineWidth = 2f;
+		} else if ((style & SWT.FLAT) == 0) {
+			lineWidth = 0.75f;
+		} else {
+			lineWidth = 1f;
+		}
+		final long bezelStyle = button.bezelStyle();
+		if (bezelStyle == OS.NSRoundedBezelStyle) {
+			NSRect rect2 = smallerRect(cellFrame, 6.5f, 4.5f, 7.5f, lineWidth);
+			path = NSBezierPath.bezierPathWithRoundedRect(rect2, 3, 3);
+		} else if (bezelStyle == OS.NSRegularSquareBezelStyle) {
+			NSRect rect2 = smallerRect(cellFrame, 2.5f, 2.5f, 3.5f, lineWidth);
+			path = NSBezierPath.bezierPathWithRoundedRect(rect2, 3, 3);
+		} else {
+			NSRect rect2 = smallerRect(cellFrame, 0.5f, 0.5f, 0.5f, lineWidth);
+			path = NSBezierPath.bezierPathWithRect(rect2);
+		}
+		if (!isHighlighted) {
+			double /*float*/ [] backgroundRGB = this.background;
+			NSColor backgroundNSColor = NSColor.colorWithDeviceRed(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2], 1f);
+
+			if((style & SWT.FLAT) == 0) {
+				double /*float*/ [] topRGB = getLighterOrDarkerColor(this.background, 0.2, false);
+				NSColor topColor = NSColor.colorWithDeviceRed(topRGB[0], topRGB[1], topRGB[2], 1f);
+				double /*float*/ [] bottomRGB = getLighterOrDarkerColor(this.background, 0.1, true);
+				NSColor bottomColor = NSColor.colorWithDeviceRed(bottomRGB[0], bottomRGB[1], bottomRGB[2], 1f);
+
+				NSMutableArray ma = NSMutableArray.arrayWithCapacity(4);
+				ma.addObject(topColor);
+				ma.addObject(backgroundNSColor);
+				ma.addObject(backgroundNSColor);
+				ma.addObject(bottomColor);
+				NSGradient gradient = ((NSGradient) new NSGradient().alloc()).initWithColors(ma);
+				gradient.drawInBezierPath(path, 90);
+				gradient.release();
+			} else {
+				backgroundNSColor.setFill();
+				path.fill();
+			}
+		} else {
+			double /*float*/ [] colorRGB0 = getLighterOrDarkerColor(this.background, 0.1f, true);
+			NSColor color0 = NSColor.colorWithDeviceRed(colorRGB0[0], colorRGB0[1], colorRGB0[2], 1f);
+			color0.setFill();
+			path.fill();
+		}
+
+		// draw border
+		path.setLineWidth(lineWidth);
+		NSColor borderNSColor = NSColor.colorWithDeviceRed(borderRGB[0], borderRGB[1], borderRGB[2], 1f);
+		borderNSColor.setStroke();
+		path.stroke();
+
+		gc.restoreGraphicsState();
+		return;
+	}
+	super.drawBezelWithFrame_inView(id, sel, cellFrame, viewid);
+}
+
 @Override
 void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ viewid) {
 	if ((style & (SWT.CHECK|SWT.RADIO)) != 0 && backgroundImage != null) {
@@ -372,11 +476,20 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 @Override
 NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
 	boolean wrap = (style & SWT.WRAP) != 0 && text.length() != 0;
+	boolean isEnabled = isEnabled();
 	if (wrap) {
 		NSSize wrapSize = new NSSize();
 		wrapSize.width = titleRect.width;
 		wrapSize.height = MAX_SIZE;
-		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
+		final double[] foreground2;
+		if (isEnabled) {
+			foreground2 = foreground;
+		} else if (foreground == null) {
+			foreground2 = DEFAULT_DISABLED_FOREGROUND;
+		} else {
+			foreground2 = getLighterOrDarkerColor(foreground, 0.5, luma(foreground) >= 0.5);
+		}
+		NSAttributedString attribStr = createString(text, null, foreground2, style, true, true, true);
 		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
 		switch (style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) {
 			case SWT.LEFT:
@@ -393,6 +506,12 @@ NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/
 		attribStr.drawInRect(rect);
 		attribStr.release ();
 		return rect;
+	}
+	if (!isEnabled && foreground != null) {
+		NSAttributedString attribStr = createString(text, null, getLighterOrDarkerColor(foreground, 0.5, luma(foreground) >= 0.5), style, false, true, true);
+		final NSRect result = super.drawTitleWithFrameInView(id, sel, attribStr.id, titleRect, view);
+		attribStr.release();
+		return result;
 	}
 	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }

@@ -29,6 +29,10 @@ public NSAttributedString attributedTitle() {
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
+public long /*int*/ bezelStyle() {
+	return OS.objc_msgSend(this.id, OS.sel_bezelStyle);
+}
+
 public void setAllowsMixedState(boolean allowsMixedState) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, allowsMixedState);
 }
