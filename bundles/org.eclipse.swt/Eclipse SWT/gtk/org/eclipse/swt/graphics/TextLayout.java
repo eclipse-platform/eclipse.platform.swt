@@ -800,7 +800,7 @@ public Rectangle getBounds() {
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	int totalLineheight = 0;
 	for (int i = 0; i < lineCount; i++) {
-		totalLineheight += this.getLineBounds(i).height;
+		totalLineheight += this.getLineBounds(i).height + OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 	}
 	bounds.height = totalLineheight;
 	return bounds;
