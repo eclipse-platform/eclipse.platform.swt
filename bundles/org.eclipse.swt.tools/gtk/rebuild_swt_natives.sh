@@ -16,10 +16,7 @@
 #
 # [1] ~/git/eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/build.sh
 
-
-source common_functions.sh
-
-# Find directory where this script is being executed from.
+# [CONFIG] Find directory where this script is being executed from.
 #############################################################
 #    The method below works even if the script is called from somewhere else, or scrpit is symlinked.
 #    http://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
@@ -31,7 +28,9 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd ${SCRIPT_DIR}
+# [CONFIG END] ALL FUNCTIONAL CODE SHOULD BE BELOW THIS LINE. Otherwise it'll break if you run this script form a sym-link.
 
+source common_functions.sh
 
 # 0) Fix '.classpath' for SWT project and for snippets.
 #######################################################
