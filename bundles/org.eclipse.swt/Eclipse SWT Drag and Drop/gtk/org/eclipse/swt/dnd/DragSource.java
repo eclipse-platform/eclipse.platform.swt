@@ -120,8 +120,8 @@ public class DragSource extends Widget {
 	static Callback DragEnd;
 	static Callback DragDataDelete;
 	static {
-		DragBegin = new Callback(DragSource.class, "DragBegin", 2);
-		if (DragBegin.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS); //$NON-NLS-1$
+		DragBegin = new Callback(DragSource.class, "DragBegin", 2); //$NON-NLS-1$
+		if (DragBegin.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragGetData = new Callback(DragSource.class, "DragGetData", 5);	 //$NON-NLS-1$
 		if (DragGetData.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragEnd = new Callback(DragSource.class, "DragEnd", 2); //$NON-NLS-1$
@@ -334,8 +334,12 @@ void dragBegin(long /*int*/ widget, long /*int*/ context) {
 	 */
 	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0) && this.control instanceof Text) {
 		DNDEvent event = new DNDEvent();
+		Display display = Display.getCurrent();
+		Point loc = display.getCursorLocation();
 		event.widget = this;
 		event.doit = true;
+		event.x = loc.x;
+		event.y = loc.y;
 		notifyListeners(DND.DragStart, event);
 		if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 		if (targetList == 0) return;

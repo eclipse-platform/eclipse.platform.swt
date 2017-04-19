@@ -66,7 +66,6 @@ public class Text extends Scrollable {
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
 	String message = "";
-	boolean blockSelected = false;
 
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
@@ -762,7 +761,13 @@ void deregister () {
 
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	boolean isDraggable = (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) ? insideBlockSelection(x, y) : blockSelected;
+	/**
+	 * Drag detection on GTKText will not be done in SWT, but fully handled by GTK side.
+	 * Let GTK handle the DnD logic as it is inherent to that widget as of GTK3.14 and cannot
+	 * be removed without overriding it. It is better to take the signal from GTK and send it
+	 * back to SWT instead.
+	 */
+	boolean isDraggable = (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) ? insideBlockSelection(x, y) : false;
 	if (filter) {
 		if (isDraggable && super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
 			if (consume != null) consume [0] = true;
@@ -1454,10 +1459,8 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		result = super.gtk_button_press_event (widget, event);
-		if (result != 0) return result;
-	}
+	result = super.gtk_button_press_event (widget, event);
+	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (!doubleClick) {
@@ -1467,19 +1470,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				return 1;
 		}
 	}
-	// check if mouse press is inside a selected area
-	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		blockSelected = (insideBlockSelection((int)gdkEvent.x, (int)gdkEvent.y)) ? true : false;
-	}
-	result = super.gtk_button_press_event (widget, event);
 	return result;
-
-}
-
-@Override
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
-	blockSelected = false;
-	return super.gtk_button_release_event (widget, event);
 }
 
 @Override
