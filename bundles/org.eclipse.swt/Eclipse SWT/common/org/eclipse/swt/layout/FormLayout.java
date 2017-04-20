@@ -293,7 +293,6 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	Control [] children = composite.getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		checkLayoutData(child);
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new FormData ());
 		if (flushCache) data.flushCache ();
@@ -386,12 +385,5 @@ public String toString () {
  	string = string.trim();
  	string += "}";
  	return string;
-}
-
-private void checkLayoutData(Control child) {
-  Object layoutData = child.getLayoutData();
-  if (layoutData!= null  && !(layoutData instanceof FormData)) {
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " " + child.getClass().getName() + " must use FormData as layout data. Currently using: " + layoutData);
-  }
 }
 }
