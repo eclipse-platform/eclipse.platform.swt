@@ -84,6 +84,7 @@ public abstract class Widget {
 	static final int WEBKIT_EVENTS_FIX = 1<<20;
 	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
+	static final String STYLEDTEXT_KEY = "org.eclipse.swt.internal.cocoa.styledtext"; //$NON-NLS-1$
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
@@ -1605,11 +1606,18 @@ public void setData (Object data) {
 		state |= WEBKIT_EVENTS_FIX;
 		return;
 	}
+	if (STYLEDTEXT_KEY.equals(data)) {
+		setIsStyledText();
+		return;
+	}
 	if ((state & KEYED_DATA) != 0) {
 		((Object []) this.data) [0] = data;
 	} else {
 		this.data = data;
 	}
+}
+
+void setIsStyledText() {
 }
 
 /**

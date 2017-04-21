@@ -50,6 +50,7 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
+	private boolean isStyledText; // This field is set to true if Object is StyledText
 
 Composite () {
 	/* Do nothing */
@@ -564,10 +565,24 @@ public boolean isLayoutDeferred () {
 boolean isOpaque (long /*int*/ id, long /*int*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if (id == view.id) {
-			return region == null && background != null && background[3] == 1 && !isObscured ();
+			return region == null && isOpaque();
 		}
 	}
 	return super.isOpaque (id, sel);
+}
+
+boolean isOpaque() {
+	if (isStyledText) {
+		System.out.println("is here");
+		/*
+		 * When overlay scroll bars are used, Control.isObscured() always returns true,
+		 * causing isOpaque to return false. This causes performance problems while
+		 * redraw/scrolling. To workaround this, don't check for isObscured() here if the
+		 * object is StyledText.
+		 */
+		return background == null || backgroundAlpha == 255;
+	}
+	return background != null && background[3] == 1 && !isObscured ();
 }
 
 @Override
@@ -1075,6 +1090,11 @@ public boolean setFocus () {
 	return super.setFocus ();
 }
 
+@Override
+void setIsStyledText() {
+	isStyledText = true;
+}
+
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
@@ -1252,4 +1272,5 @@ void updateLayout (boolean all) {
 		}
 	}
 }
+
 }

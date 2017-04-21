@@ -93,6 +93,8 @@ public class StyledText extends Canvas {
 	static final int PREVIOUS_OFFSET_TRAILING = 0;
 	static final int OFFSET_LEADING = 1;
 
+	static final String STYLEDTEXT_KEY = "org.eclipse.swt.internal.cocoa.styledtext"; //$NON-NLS-1$
+
 	Color selectionBackground;	// selection background color
 	Color selectionForeground;	// selection foreground color
 	StyledTextContent content;			// native content (default or user specified)
@@ -1275,6 +1277,7 @@ public StyledText(Composite parent, int style) {
 	installListeners();
 	initializeAccessible();
 	setData("DEFAULT_DROP_TARGET_EFFECT", new StyledTextDropTargetEffect(this));
+	if (IS_MAC) setData(STYLEDTEXT_KEY);
 }
 /**
  * Adds an extended modify listener. An ExtendedModify event is sent by the
