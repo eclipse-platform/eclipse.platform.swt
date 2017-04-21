@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -144,7 +144,7 @@ protected void initializeColors() {
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	StyledText text = new StyledText(shell, SWT.READ_ONLY);
 
-	assertTrue(":a:", text.getEditable() == false);
+	assertFalse(":a:", text.getEditable());
 	text.dispose();
 
 	text = new StyledText(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE);
@@ -211,7 +211,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 	text.removeExtendedModifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -255,13 +255,13 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 		assertTrue("Listener not called", listenerCalled);
 	}
 	else {
-		assertTrue("Listener called when it shouldn't be", listenerCalled == false);
+		assertFalse("Listener called when it shouldn't be", listenerCalled);
 	}
 	listenerCalled = false;
 	text.removeBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener.
 	text.getLocationAtOffset(0);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -292,7 +292,7 @@ public void test_addLineBackgroundListenerLorg_eclipse_swt_custom_LineBackground
 	text.setText(line);
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -323,7 +323,7 @@ public void test_addLineStyleListenerLorg_eclipse_swt_custom_LineStyleListener()
 	text.setText(line);
 	text.setSelection(0, text.getCharCount());
 	text.copy();
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -363,7 +363,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	text.removeModifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -396,15 +396,15 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
 	assertTrue("Listener not called", listenerCalled);
-	assertTrue("Listener called unexpectedly", listener2Called == false);
+	assertFalse("Listener called unexpectedly", listener2Called);
 
 	listenerCalled = false;
 	listener2Called = false;
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener not removed", listenerCalled == false);
-	assertTrue("Listener called unexpectedly", listener2Called == false);
+	assertFalse("Listener not removed", listenerCalled);
+	assertFalse("Listener called unexpectedly", listener2Called);
 }
 
 
@@ -424,7 +424,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -437,13 +437,13 @@ public void test_addSelectionListenerWidgetDefaultSelectedAdapterLorg_eclipse_sw
 	text.addSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener called unexpectedly", listener2Called == false);
+	assertFalse("Listener called unexpectedly", listener2Called);
 
 	listener2Called = false;
 	text.removeSelectionListener(listener);
 	// cause StyledText to call the listener.
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertTrue("Listener called unexpectedly", listener2Called == false);
+	assertFalse("Listener called unexpectedly", listener2Called);
 }
 
 @Test
@@ -556,7 +556,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	text.removeVerifyListener(listener);
 	// cause StyledText to call the listener.
 	text.setText(line);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -821,28 +821,28 @@ public void test_getContent() {
 
 @Test
 public void test_getDoubleClickEnabled() {
-	assertTrue(":a:", text.getDoubleClickEnabled() == true);
+	assertTrue(":a:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(true);
-	assertTrue(":b:", text.getDoubleClickEnabled() == true);
+	assertTrue(":b:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(false);
-	assertTrue(":c:", text.getDoubleClickEnabled() == false);
+	assertFalse(":c:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(false);
-	assertTrue(":d:", text.getDoubleClickEnabled() == false);
+	assertFalse(":d:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(true);
-	assertTrue(":e:", text.getDoubleClickEnabled() == true);
+	assertTrue(":e:", text.getDoubleClickEnabled());
 }
 
 @Test
 public void test_getEditable() {
-	assertTrue(":a:", text.getEditable() == true);
+	assertTrue(":a:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":b:", text.getEditable() == true);
+	assertTrue(":b:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":c:", text.getEditable() == false);
+	assertFalse(":c:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":d:", text.getEditable() == false);
+	assertFalse(":d:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":e:", text.getEditable() == true);
+	assertTrue(":e:", text.getEditable());
 }
 
 @Test
@@ -1280,7 +1280,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":b:", exceptionThrown == true);
+	assertTrue(":b:", exceptionThrown);
 	exceptionThrown = false;
 
 	try {
@@ -1289,7 +1289,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":c:", exceptionThrown == true);
+	assertTrue(":c:", exceptionThrown);
 	exceptionThrown = false;
 
 	text.setText("Line0\r\nLine1");
@@ -1304,7 +1304,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":g:", exceptionThrown == true);
+	assertTrue(":g:", exceptionThrown);
 	exceptionThrown = false;
 
 	try {
@@ -1313,7 +1313,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":h:", exceptionThrown == true);
+	assertTrue(":h:", exceptionThrown);
 	exceptionThrown = false;
 
 	text.setTopIndex(1);
@@ -1981,13 +1981,13 @@ public void test_getTopPixel() {
 
 @Test
 public void test_getWordWrap() {
-	assertTrue(":a:", text.getWordWrap() == false);
+	assertFalse(":a:", text.getWordWrap());
 	text.setWordWrap(true);
 	assertTrue(":b:", text.getWordWrap());
 	text.setWordWrap(false);
-	assertTrue(":c:", text.getWordWrap() == false);
+	assertFalse(":c:", text.getWordWrap());
 	text.setWordWrap(false);
-	assertTrue(":d:", text.getWordWrap() == false);
+	assertFalse(":d:", text.getWordWrap());
 	text.setWordWrap(true);
 	assertTrue(":e:", text.getWordWrap());
 }
@@ -3254,25 +3254,25 @@ public void test_setContentLorg_eclipse_swt_custom_StyledTextContent() {
 @Test
 public void test_setDoubleClickEnabledZ(){
 	text.setDoubleClickEnabled(true);
-	assertTrue(":a:", text.getDoubleClickEnabled() == true);
+	assertTrue(":a:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(false);
-	assertTrue(":b:", text.getDoubleClickEnabled() == false);
+	assertFalse(":b:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(false);
-	assertTrue(":c:", text.getDoubleClickEnabled() == false);
+	assertFalse(":c:", text.getDoubleClickEnabled());
 	text.setDoubleClickEnabled(true);
-	assertTrue(":d:", text.getDoubleClickEnabled() == true);
+	assertTrue(":d:", text.getDoubleClickEnabled());
 }
 
 @Test
 public void test_setEditableZ(){
 	text.setEditable(true);
-	assertTrue(":a:", text.getEditable() == true);
+	assertTrue(":a:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":b:", text.getEditable() == false);
+	assertFalse(":b:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":c:", text.getEditable() == false);
+	assertFalse(":c:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":d:", text.getEditable() == true);
+	assertTrue(":d:", text.getEditable());
 }
 
 @Override
@@ -4690,9 +4690,9 @@ public void test_setWordWrapZ(){
 	text.setWordWrap(true);
 	assertTrue(":a:", text.getWordWrap());
 	text.setWordWrap(false);
-	assertTrue(":b:", text.getWordWrap() == false);
+	assertFalse(":b:", text.getWordWrap());
 	text.setWordWrap(false);
-	assertTrue(":c:", text.getWordWrap() == false);
+	assertFalse(":c:", text.getWordWrap());
 	text.setWordWrap(true);
 	assertTrue(":d:", text.getWordWrap());
 

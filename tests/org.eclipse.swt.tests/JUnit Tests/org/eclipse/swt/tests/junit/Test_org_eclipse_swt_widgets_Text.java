@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,7 +84,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	text.removeModifyListener(listener);
 	// cause to call the listener.
 	text.setText("line");
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 	try {
 		text.removeModifyListener(null);
 	}
@@ -137,7 +137,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 	text.addSelectionListener(listener);
 	text.setText("12345");
 	text.setSelection(1,3);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	text.removeSelectionListener(listener);
 }
 
@@ -204,7 +204,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
 	text.setText(line);
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 }
 
 @Test
@@ -521,15 +521,15 @@ public void test_getEchoChar() {
 
 @Test
 public void test_getEditable() {
-	assertTrue(":a:", text.getEditable() == true);
+	assertTrue(":a:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":b:", text.getEditable() == true);
+	assertTrue(":b:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":c:", text.getEditable() == false);
+	assertFalse(":c:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":d:", text.getEditable() == false);
+	assertFalse(":d:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":e:", text.getEditable() == true);
+	assertTrue(":e:", text.getEditable());
 }
 
 @Test
@@ -972,7 +972,7 @@ public void test_isVisible() {
 		shell.setVisible(true);
 		assertTrue("Window should be visible", control.isVisible());
 		shell.setVisible(false);
-		assertTrue("Window should not be visible", !control.isVisible());
+		assertFalse("Window should not be visible", control.isVisible());
 	}
 }
 
@@ -1127,13 +1127,13 @@ public void test_setEchoCharC() {
 @Test
 public void test_setEditableZ() {
 	text.setEditable(true);
-	assertTrue(":a:", text.getEditable() == true);
+	assertTrue(":a:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":b:", text.getEditable() == false);
+	assertFalse(":b:", text.getEditable());
 	text.setEditable(false);
-	assertTrue(":c:", text.getEditable() == false);
+	assertFalse(":c:", text.getEditable());
 	text.setEditable(true);
-	assertTrue(":d:", text.getEditable() == true);
+	assertTrue(":d:", text.getEditable());
 }
 
 @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -131,10 +131,10 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 @Test
 public void test_setMaximizedZ() {
 	decorations.setMaximized(false);
-	assertTrue(":1:", decorations.getMaximized() == false);
+	assertFalse(":1:", decorations.getMaximized());
 	decorations.setMaximized(true);
-	assertTrue(":2:", decorations.getMaximized() == true);
-	assertTrue(":3:", decorations.getMinimized() == false);
+	assertTrue(":2:", decorations.getMaximized());
+	assertFalse(":3:", decorations.getMinimized());
 }
 
 @Test
@@ -150,10 +150,10 @@ public void test_setMenuBarLorg_eclipse_swt_widgets_Menu() {
 @Test
 public void test_setMinimizedZ() {
 	decorations.setMinimized(false);
-	assertTrue(":1:", decorations.getMinimized() == false);
+	assertFalse(":1:", decorations.getMinimized());
 	decorations.setMinimized(true);
-	assertTrue(":2:", decorations.getMinimized() == true);
-	assertTrue(":3:", decorations.getMaximized() == false);
+	assertTrue(":2:", decorations.getMinimized());
+	assertFalse(":3:", decorations.getMaximized());
 }
 
 @Test

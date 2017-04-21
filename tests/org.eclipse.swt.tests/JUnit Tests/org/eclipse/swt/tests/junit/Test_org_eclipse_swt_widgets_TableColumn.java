@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -175,16 +175,16 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Test
 public void test_setMoveableZ() {
-	assertTrue(":a:", tableColumn.getMoveable() == false);
+	assertFalse(":a:", tableColumn.getMoveable());
 
 	tableColumn.setMoveable(true);
-	assertTrue(":b:", tableColumn.getMoveable() == true);
+	assertTrue(":b:", tableColumn.getMoveable());
 
 	tableColumn.setMoveable(true);
-	assertTrue(":c:", tableColumn.getMoveable() == true);
+	assertTrue(":c:", tableColumn.getMoveable());
 
 	tableColumn.setMoveable(false);
-	assertTrue(":d:", tableColumn.getMoveable() == false);
+	assertFalse(":d:", tableColumn.getMoveable());
 
 	TableColumn tableColumn2 = new TableColumn(tableColumn.getParent(), SWT.NONE);
 	tableColumn2.dispose();
@@ -200,16 +200,16 @@ public void test_setMoveableZ() {
 
 @Test
 public void test_setResizableZ() {
-	assertTrue(":a:", tableColumn.getResizable() == true);
+	assertTrue(":a:", tableColumn.getResizable());
 
 	tableColumn.setResizable(false);
-	assertTrue(":b:", tableColumn.getResizable() == false);
+	assertFalse(":b:", tableColumn.getResizable());
 
 	tableColumn.setResizable(false);
-	assertTrue(":c:", tableColumn.getResizable() == false);
+	assertFalse(":c:", tableColumn.getResizable());
 
 	tableColumn.setResizable(true);
-	assertTrue(":d:", tableColumn.getResizable() == true);
+	assertTrue(":d:", tableColumn.getResizable());
 }
 
 @Override

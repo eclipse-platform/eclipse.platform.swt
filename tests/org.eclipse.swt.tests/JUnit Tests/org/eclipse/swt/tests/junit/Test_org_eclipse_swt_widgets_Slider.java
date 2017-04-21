@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -78,7 +79,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	exceptionThrown = false;
 	slider.addSelectionListener(listener);
 	slider.setSelection(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	slider.removeSelectionListener(listener);
 	try {
 		slider.removeSelectionListener(null);
@@ -96,7 +97,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	slider.addSelectionListener(listener);
 	slider.setSelection(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	slider.removeSelectionListener(listener);
 }
 

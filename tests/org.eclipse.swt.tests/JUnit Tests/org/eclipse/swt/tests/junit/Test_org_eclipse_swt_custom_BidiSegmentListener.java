@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -69,13 +70,13 @@ private void testListener(final String message, final int[] segments, boolean ex
 		assertTrue(message + " expected exception not thrown", exceptionThrown);
 	}
 	else {
-		assertTrue(message + " unexpected exception thrown", exceptionThrown == false);
+		assertFalse(message + " unexpected exception thrown", exceptionThrown);
 	}
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(message + " listener not called", listenerCalled);
 	}
 	else {
-		assertTrue(message + " listener called when it shouldn't be", listenerCalled == false);
+		assertFalse(message + " listener called when it shouldn't be", listenerCalled);
 	}
 }
 private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
@@ -104,12 +105,12 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 	finally {
 		text.removeBidiSegmentListener(listener);
 	}
-	assertTrue(" unexpected exception thrown", exceptionThrown == false);
+	assertFalse(" unexpected exception thrown", exceptionThrown);
 	if (SwtTestUtil.isBidi()) {
 		assertTrue(" listener not called", listenerCalled);
 	}
 	else {
-		assertTrue(" listener called when it shouldn't be", listenerCalled == false);
+		assertFalse(" listener called when it shouldn't be", listenerCalled);
 	}
 }
 

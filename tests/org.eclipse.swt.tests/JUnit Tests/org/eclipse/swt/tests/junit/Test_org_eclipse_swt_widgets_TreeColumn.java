@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -174,16 +174,16 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Test
 public void test_setResizableZ() {
-	assertTrue(":a:", treeColumn.getResizable() == true);
+	assertTrue(":a:", treeColumn.getResizable());
 
 	treeColumn.setResizable(false);
-	assertTrue(":b:", treeColumn.getResizable() == false);
+	assertFalse(":b:", treeColumn.getResizable());
 
 	treeColumn.setResizable(false);
-	assertTrue(":c:", treeColumn.getResizable() == false);
+	assertFalse(":c:", treeColumn.getResizable());
 
 	treeColumn.setResizable(true);
-	assertTrue(":d:", treeColumn.getResizable() == true);
+	assertTrue(":d:", treeColumn.getResizable());
 }
 
 @Override

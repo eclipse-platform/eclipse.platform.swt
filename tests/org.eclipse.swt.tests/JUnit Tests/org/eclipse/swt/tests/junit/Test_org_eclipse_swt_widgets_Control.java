@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -368,11 +368,11 @@ public void test_isEnabled() {
 	assertTrue(control.isEnabled());
 
 	control.setEnabled(false);
-	assertTrue(!control.isEnabled());
+	assertFalse(control.isEnabled());
 }
 @Test
 public void test_isFocusControl() {
-	assertTrue(!control.isFocusControl());
+	assertFalse(control.isFocusControl());
 }
 @Test
 public void test_isReparentable() {
@@ -381,17 +381,17 @@ public void test_isReparentable() {
 @Test
 public void test_isVisible() {
 	control.setVisible(true);
-	assertTrue(!control.isVisible());  //because the shell is not visible
+	assertFalse(control.isVisible());  //because the shell is not visible
 
 	control.setVisible(false);
-	assertTrue(!control.isVisible());
+	assertFalse(control.isVisible());
 
 	if (!SwtTestUtil.isAIX) {
 		control.setVisible(true);
 		shell.setVisible(true);
 		assertTrue("Window should be visible", control.isVisible());
 		shell.setVisible(false);
-		assertTrue("Window should not be visible", !control.isVisible());
+		assertFalse("Window should not be visible", control.isVisible());
 	}
 }
 @Test
@@ -451,7 +451,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color)", color, control.getBackground());
 	control.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
+	assertFalse("getBackground unchanged after setBackground(null)", control.getBackground().equals(color));
 	// Skipping test run for GTK, already failing on GTK3. May be related to bug 421836
 	if (!"gtk".equals(SWT.getPlatform ())) {
 		// With alpha zero
@@ -459,7 +459,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		control.setBackground(color);
 		assertEquals("getBackground not equal color after setBackground(color) with 0 alpha", color, control.getBackground());
 		control.setBackground(null);
-		assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
+		assertFalse("getBackground unchanged after setBackground(null)", control.getBackground().equals(color));
 		color.dispose();
 	}
 	if ("gtk".equals(SWT.getPlatform ())) {
@@ -520,7 +520,7 @@ public void test_setEnabledZ() {
 	assertTrue(control.getEnabled());
 
 	control.setEnabled(false);
-	assertTrue(!control.getEnabled());
+	assertFalse(control.getEnabled());
 }
 @Test
 public void test_setTextDirection() {
@@ -574,7 +574,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
 	control.setForeground(null);
-	assertTrue(!control.getForeground().equals(color));
+	assertFalse(control.getForeground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(control.getDisplay(), 0, 255, 0);
 		control.setForeground(color);
@@ -652,7 +652,7 @@ public void test_setParentLorg_eclipse_swt_widgets_Composite() {
 		Button b = new Button(originalParent, SWT.PUSH);
 		b.setParent(newParent);
 		originalParent.dispose();
-		assertTrue(!b.isDisposed());
+		assertFalse(b.isDisposed());
 		newParent.dispose();
 	}
 }
@@ -714,7 +714,7 @@ public void test_setVisibleZ() {
 	assertTrue(control.getVisible());
 
 	control.setVisible(false);
-	assertTrue(!control.getVisible());
+	assertFalse(control.getVisible());
 }
 @Test
 public void test_toControlII() {

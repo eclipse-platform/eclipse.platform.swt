@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -62,7 +63,7 @@ public void test_getBounds() {
 
 	rect = new Rectangle(0,0,30,30);
 	caret.setBounds(rect);
-	assertTrue(!caret.getBounds().equals(new Rectangle (0,0,60,70)));
+	assertFalse(caret.getBounds().equals(new Rectangle (0,0,60,70)));
 }
 
 @Test
@@ -75,24 +76,24 @@ public void test_getParent() {
 @Test
 public void test_isVisible() {
 	caret.setVisible(true);
-	assertTrue(!caret.isVisible()); //because the shell is not visible
+	assertFalse(caret.isVisible()); //because the shell is not visible
 
 	caret.setVisible(false);
-	assertTrue(!caret.isVisible());
+	assertFalse(caret.isVisible());
 
 	caret.setVisible(true);
 	canvas.setVisible(true);
 	shell.setVisible(true);
-	assertTrue(caret.getVisible() == true);
+	assertTrue(caret.getVisible());
 	canvas.setVisible(false);
 	if (SwtTestUtil.fCheckVisibility) {
-		assertTrue(!caret.getVisible());
+		assertFalse(caret.getVisible());
 	}
 
 	shell.setVisible(false);
 	canvas.setVisible(false);
 	caret.setVisible(false);
-	assertTrue(!caret.getVisible());
+	assertFalse(caret.getVisible());
 }
 
 @Test
@@ -159,9 +160,9 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 @Test
 public void test_setVisibleZ() {
 	caret.setVisible(true);
-	assertTrue("Caret should be visible", caret.getVisible()==true);
+	assertTrue("Caret should be visible", caret.getVisible());
 
 	caret.setVisible(false);
-	assertTrue("Caret should not be visible", caret.getVisible()==false);
+	assertFalse("Caret should not be visible", caret.getVisible());
 }
 }

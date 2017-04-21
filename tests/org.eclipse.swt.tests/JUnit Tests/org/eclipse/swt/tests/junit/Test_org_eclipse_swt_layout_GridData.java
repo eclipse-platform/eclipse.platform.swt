@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,8 +38,8 @@ public void test_Constructor() {
 	assertTrue(data.horizontalIndent == 0);
 	assertTrue(data.horizontalSpan == 1);
 	assertTrue(data.verticalSpan == 1);
-	assertTrue(data.grabExcessHorizontalSpace == false);
-	assertTrue(data.grabExcessVerticalSpace == false);
+	assertFalse(data.grabExcessHorizontalSpace);
+	assertFalse(data.grabExcessVerticalSpace);
 }
 
 @Test
@@ -47,8 +48,8 @@ public void test_ConstructorI() {
 	assertNotNull(data);
 	assertTrue(data.verticalAlignment == GridData.FILL);
 	assertTrue(data.horizontalAlignment == GridData.FILL);
-	assertTrue(data.grabExcessHorizontalSpace == true);
-	assertTrue(data.grabExcessVerticalSpace == true);
+	assertTrue(data.grabExcessHorizontalSpace);
+	assertTrue(data.grabExcessVerticalSpace);
 }
 
 @Test

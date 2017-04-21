@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -178,7 +178,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	combo.removeModifyListener(listener);
 	// cause to call the listener.
 	combo.setText("line");
-	assertTrue("Listener not removed", listenerCalled == false);
+	assertFalse("Listener not removed", listenerCalled);
 	try {
 		combo.removeModifyListener(null);
 	}
@@ -211,7 +211,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	exceptionThrown = false;
 	combo.addSelectionListener(listener);
 	combo.select(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	combo.removeSelectionListener(listener);
 	try {
 		combo.removeSelectionListener(null);
@@ -229,12 +229,12 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	combo.addSelectionListener(listener);
 	combo.select(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 
 	combo.removeSelectionListener(listener);
 	listenerCalled = false;
 	combo.select(0);
-	assertTrue(listenerCalled == false);
+	assertFalse(listenerCalled);
 }
 
 @Test

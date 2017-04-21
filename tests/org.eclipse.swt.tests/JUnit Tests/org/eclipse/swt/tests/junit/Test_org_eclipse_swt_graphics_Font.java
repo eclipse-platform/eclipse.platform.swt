@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -244,12 +244,12 @@ public void test_equalsLjava_lang_Object() {
 	Font otherFont = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 	try {
 		// Test Font.equals(Object)
-		assertTrue("!font.equals((Object)null)", !font.equals((Object)null));
+		assertFalse("!font.equals((Object)null)", font.equals((Object)null));
 
 		// Test Font.equals(Font)
-		assertTrue("!font.equals((Font)null)", !font.equals((Font)null));
+		assertFalse("!font.equals((Font)null)", font.equals((Font)null));
 		assertTrue("font.equals(font)", font.equals(font));
-		assertTrue("!font.equals(otherFont)", !font.equals(otherFont));
+		assertFalse("!font.equals(otherFont)", font.equals(otherFont));
 	} finally {
 		font.dispose();
 		otherFont.dispose();
@@ -337,7 +337,7 @@ public void test_isDisposed() {
 	// Test Font.isDisposed() false
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	try {
-		assertTrue("Font should not be disposed", !font.isDisposed());
+		assertFalse("Font should not be disposed", font.isDisposed());
 	} finally {
 		// Test Font.isDisposed() true
 		font.dispose();

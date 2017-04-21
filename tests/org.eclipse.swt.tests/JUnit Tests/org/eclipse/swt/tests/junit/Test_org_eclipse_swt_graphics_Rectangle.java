@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -135,9 +136,9 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 //
 //	assertTrue("Rectangle should contain Point(4, 6)", r.contains(new Point(4, 6)));
 
-	assertTrue("Rectangle should not contain Point(9, 10)", !r.contains(new Point(9, 10)));
+	assertFalse("Rectangle should not contain Point(9, 10)", r.contains(new Point(9, 10)));
 
-	assertTrue("Rectangle should not contain point (-1, -1)", !r.contains(new Point(-1, -1)));
+	assertFalse("Rectangle should not contain point (-1, -1)", r.contains(new Point(-1, -1)));
 
 	try {
 		r.contains(null);
@@ -154,16 +155,16 @@ public void test_equalsLjava_lang_Object() {
 	assertTrue("Rectangles should be equal", r1.equals(r2));
 
 	r2 = new Rectangle(3, 4, 5, 6);
-	assertTrue("Rectangles should not be equal", !r1.equals(r2));
+	assertFalse("Rectangles should not be equal", r1.equals(r2));
 
 	r2 = new Rectangle(2, 3, 4, 5);
-	assertTrue("Rectangles should not be equal", !r1.equals(r2));
+	assertFalse("Rectangles should not be equal", r1.equals(r2));
 
 	r2 = new Rectangle(5, 4, 2, 3);
-	assertTrue("Rectangles should not be equal", !r1.equals(r2));
+	assertFalse("Rectangles should not be equal", r1.equals(r2));
 
 	r2 = new Rectangle(4, 5, 3, 2);
-	assertTrue("Rectangles should not be equal", !r1.equals(r2));
+	assertFalse("Rectangles should not be equal", r1.equals(r2));
 }
 
 @Test
@@ -227,16 +228,16 @@ public void test_intersectsIIII() {
 	assertTrue("Rectangle(2, 3, 7, 8) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(1, 2, 3, 4));
 
 	r2 = new Rectangle(200, 300, 400, 500);
-	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", !r1.intersects(200, 300, 400, 500));
-	assertTrue("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(1, 2, 3, 4));
+	assertFalse("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", r1.intersects(200, 300, 400, 500));
+	assertFalse("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", r2.intersects(1, 2, 3, 4));
 
 	r2 = new Rectangle(3, 3, 0, 0);
 	assertTrue("Rectangle(1, 2, 3, 4) should intersect Rectangle(3, 3, 0, 0)", r1.intersects(3, 3, 0, 0));
 	assertTrue("Rectangle(3, 3, 0, 0) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(1, 2, 3, 4));
 
 	r2 = new Rectangle(3, 3, -1, -1);
-	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(3, 3, -1, -1)", !r1.intersects(3, 3, -1, -1));
-	assertTrue("Rectangle(3, 3, -1, -1) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(1, 2, 3, 4));
+	assertFalse("Rectangle(1, 2, 3, 4) should not intersect Rectangle(3, 3, -1, -1)", r1.intersects(3, 3, -1, -1));
+	assertFalse("Rectangle(3, 3, -1, -1) should not intersect Rectangle(1, 2, 3, 4)", r2.intersects(1, 2, 3, 4));
 
 	try {
 		r1.intersects(null);
@@ -254,16 +255,16 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	assertTrue("Rectangle(2, 3, 7, 8) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(r1));
 
 	r2 = new Rectangle(200, 300, 400, 500);
-	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", !r1.intersects(r2));
-	assertTrue("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(r1));
+	assertFalse("Rectangle(1, 2, 3, 4) should not intersect Rectangle(200, 300, 400, 500)", r1.intersects(r2));
+	assertFalse("Rectangle(200, 300, 400, 500) should not intersect Rectangle(1, 2, 3, 4)", r2.intersects(r1));
 
 	r2 = new Rectangle(3, 3, 0, 0);
 	assertTrue("Rectangle(1, 2, 3, 4) should intersect Rectangle(3, 3, 0, 0)", r1.intersects(r2));
 	assertTrue("Rectangle(3, 3, 0, 0) should intersect Rectangle(1, 2, 3, 4)", r2.intersects(r1));
 
 	r2 = new Rectangle(3, 3, -1, -1);
-	assertTrue("Rectangle(1, 2, 3, 4) should not intersect Rectangle(3, 3, -1, -1)", !r1.intersects(r2));
-	assertTrue("Rectangle(3, 3, -1, -1) should not intersect Rectangle(1, 2, 3, 4)", !r2.intersects(r1));
+	assertFalse("Rectangle(1, 2, 3, 4) should not intersect Rectangle(3, 3, -1, -1)", r1.intersects(r2));
+	assertFalse("Rectangle(3, 3, -1, -1) should not intersect Rectangle(1, 2, 3, 4)", r2.intersects(r1));
 
 	try {
 		r1.intersects(null);
@@ -282,7 +283,7 @@ public void test_isEmpty() {
 	assertTrue("Rectangle is empty", r.isEmpty());
 
 	r = new Rectangle(1, 2, 3, 4);
-	assertTrue("Rectangle is not empty", !r.isEmpty());
+	assertFalse("Rectangle is not empty", r.isEmpty());
 }
 
 @Test
