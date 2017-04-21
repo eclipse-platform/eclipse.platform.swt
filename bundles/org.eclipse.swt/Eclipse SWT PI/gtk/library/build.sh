@@ -603,7 +603,7 @@ done
 for i in "$@"; do  # loop over all input paramaters
 	if [ "$i" = "--print-outputdir-and-exit" ]; then
 		# used by external scripts to find binary folder
-		echo "OUTPUT_DIR=" ${OUTPUT_DIR}
+		echo "OUTPUT_DIR=${OUTPUT_DIR}"
 		exit 0 # success
 	fi
 done

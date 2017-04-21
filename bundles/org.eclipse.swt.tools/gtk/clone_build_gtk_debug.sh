@@ -30,7 +30,24 @@ e.g\n
  clone_build_gtk_debug.sh -y --nocleanup --noconfig  # For quick rebuilds when modifying gtk sources.\n
 ------------------\n\n
 "
-source common_functions.sh
+
+func_echo_info () {
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+	echo -e "${GREEN}${@}${NC}"
+}
+
+func_echo_input () {
+	PURPLE='\033[0;35m'
+	NC='\033[0m' # No Color
+	echo -e "${PURPLE}${@}${NC}"
+}
+
+func_echo_error () {
+	RED='\033[0;31m'
+	NC='\033[0m' # No Color
+echo -e "${RED}*** ${@}${NC}"
+}
 
 # Print help info to educate user
 func_echo_info $HELP_MSG

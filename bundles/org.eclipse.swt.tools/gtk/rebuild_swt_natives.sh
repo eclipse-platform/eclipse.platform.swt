@@ -16,9 +16,12 @@
 #
 # [1] ~/git/eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/build.sh
 
+
+SCRIPT_VERSION=3
+
 # [CONFIG] Find directory where this script is being executed from.
 #############################################################
-#    The method below works even if the script is called from somewhere else, or scrpit is symlinked.
+#    The method below works even if the script is called via symlink
 #    http://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -30,16 +33,56 @@ SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd ${SCRIPT_DIR}
 # [CONFIG END] ALL FUNCTIONAL CODE SHOULD BE BELOW THIS LINE. Otherwise it'll break if you run this script form a sym-link.
 
-source common_functions.sh
 
-# 0) Fix '.classpath' for SWT project and for snippets.
+# Utility functions
+####################
+func_echo_info () {
+	GREEN='\033[0;32m'
+	NC='\033[0m' # No Color
+	echo -e "${GREEN}${@}${NC}"
+}
+
+func_echo_input () {
+	PURPLE='\033[0;35m'
+	NC='\033[0m' # No Color
+	echo -e "${PURPLE}${@}${NC}"
+}
+
+func_echo_error () {
+	RED='\033[0;31m'
+	NC='\033[0m' # No Color
+echo -e "${RED}*** ${@}${NC}"
+}
+
+func_echo_info "Starting SWT rebuild script version: $SCRIPT_VERSION"
+
+# 0) Find SWT's project directory
+###############################
+func_echo_info "\n[Step 1] Looking for SWT project directory"
+# Try relative path.
+SWT_PROJECT_DIR=$(readlink -e "../../org.eclipse.swt")  #get absolute path based on relative path.
+if [ -e "${SWT_PROJECT_DIR}/.classpath_gtk" ] && cat "${SWT_PROJECT_DIR}/META-INF/MANIFEST.MF" | grep "Bundle-SymbolicName: org.eclipse.swt" ; then
+	func_echo_info "[Step 1] ** Found SWT project directory: $SWT_PROJECT_DIR";
+else
+	# Try hard-coded path (in case script is moved)
+	HARD_CODED_PATH="${HOME}/git/eclipse.platform.swt/bundles/org.eclipse.swt"
+	if [ -e "${HARD_CODED_PATH}/.classpath_gtk" ] && cat "${HARD_CODED_PATH}/META-INF/MANIFEST.MF" | grep "Bundle-SymbolicName: org.eclipse.swt" ; then
+		func_echo_info "[Step 1] ** SWT project directory found via hard coded path"
+			SWT_PROJECT_DIR="$HARD_CODED_PATH";
+	else
+		func_echo_error "[Step 1] Could not find SWT project neither in: \n$SWT_PROJECT_DIR\nnor in:\n$HARD_CODED_PATH\nYou probably need to build swt project."
+		exit 1;
+	fi
+fi
+
+
+# 1) Fix '.classpath' for SWT project and for snippets.
 #######################################################
 # Sometimes .classpath_gtk is updated in commits, e.g when a class folder is added/removed.
 # Because renaming .classpath is done manually, this often leads to errors about missing source folders.
 # Fix: re-copy the .classpath on every lib rebuild.
 func_echo_info "\n[Step 0] Copying .classpath_gtk files to .classpath in SWT project & Snippets"
-# Navigate to /git/eclipse.platform.swt/bundles/org.eclipse.swt
-cd ../../org.eclipse.swt
+cd $SWT_PROJECT_DIR
 if [ -e .classpath_gtk ] && cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt" ; then
 	(set -x ; cp .classpath_gtk .classpath)
 else
@@ -48,60 +91,47 @@ else
 fi
 
 # Navigate to snippets.
-cd ../../examples/org.eclipse.swt.snippets/
+cd "../../examples/org.eclipse.swt.snippets/"
 if [ -e .classpath_gtk ] &&  cat META-INF/MANIFEST.MF | grep "Bundle-SymbolicName: org.eclipse.swt.snippets"; then
 	(set -x ; cp .classpath_gtk .classpath)
 else
 	func_echo_error "[Step 0] I was expecting to be in snippet repository: /examples/org.eclipse.swt.snippets/ , but I'm in $(pwd)"
 	error 1 #failed
 fi
-cd ${SCRIPT_DIR}
-
-
-# 1) Find SWT's build.sh script
-###############################
-func_echo_info "\n[Step 1] Looking for swt build.sh script"
-BUILD_SH_DIR=../../org.eclipse.swt/bin/library   #note, this is a relative path..
-if [ ! -e "$BUILD_SH_DIR/build.sh" ]; then
-	# Support the case where this script was moved outside SWT Tools. E.g for building older swt builds.
-	HARD_CODED_PATH=${HOME}/git/eclipse.platform.swt/bundles/org.eclipse.swt/bin/library
-	if [ -e "$HARD_CODED_PATH/build.sh" ]; then
-		func_echo_info "[Step 1] ** build.sh directory found via hardcoded path"
-		BUILD_SH_DIR="$HARD_CODED_PATH"
-	else
-		func_echo_error "[Step 1] Could not find 'build.sh' neither in: \n$BUILD_SH_DIR\nnor in:\n$HARD_CODED_PATH\nYou probably need to build swt project."
-		exit 1;
-	fi
-else
-	func_echo_info "[Step 1] ** Found build.sh script"
-fi
 
 
 
 # 2) Clean up old '.so' files from binary repository
 ####################################################
+cd "$SWT_PROJECT_DIR"
 func_echo_info "\n[Step 2] Cleaning up of old '.so' lib files from binary git repository"
-# 2.1) Find binary repo
-cd $BUILD_SH_DIR
+# 2.1) Find binary repo\
+if [ ! -e "${SWT_PROJECT_DIR}/bin/library/build.sh" ]; then
+	func_echo_error "[Step 2] Could not find 'build.sh'. You probably need to build swt project. This script fixed the classpath, so try building SWT and running this script again."
+	exit 1; # failed.
+fi
+cd "${SWT_PROJECT_DIR}/bin/library/"
+
 # We ask build.sh where OUTPUT is, because output is platform dependent.
-SO_OUTPUT_DIR=$(./build.sh --print-outputdir-and-exit | grep -i OUTPUT_DIR= | cut -f2 -d "=")  # no trailing '/'
+SO_OUTPUT_DIR="$(./build.sh --print-outputdir-and-exit | grep -i OUTPUT_DIR= | cut -f2 -d '=')"  # no trailing '/'
 if [ "$?" -ne 0 ]; then
 	func_echo_error "[Step 2] build.sh failed to provide OUTPUT directory"
+	exit 1; # Failure
 fi
 
 # Sanity check: Make sure swt binary repo exists and that it contains related MANIFEST. I look for 'SWT-Arch'
 # We don't want to run 'git clean -xdf' in some unexpected directory.
-if [ -e $SO_OUTPUT_DIR/META-INF/MANIFEST.MF ]; then
-	if [ $(cat $SO_OUTPUT_DIR/META-INF/MANIFEST.MF | grep "SWT\-Arch" | wc -l) = 1 ]; then
-		cd $SO_OUTPUT_DIR
+if [ -e "${SO_OUTPUT_DIR}/META-INF/MANIFEST.MF"  ]; then
+	if [ "$(cat $SO_OUTPUT_DIR/META-INF/MANIFEST.MF | grep 'SWT\-Arch' | wc -l)" = 1 ]; then
+		cd "$SO_OUTPUT_DIR"
 		func_echo_info "[Step 2] Found binary folder: $(pwd)"
 	else
 		func_echo_error "[Step 2] Found binary folder: \n$SO_OUTPUT_DIR \n but META-INF/MANIFEST.MF doesn't look like it belongs to SWT"
-		error 0 # Failure
+		exit 1 # Failure
 	fi
 else
 	func_echo_error "[Step 2] Could not find binary folder as indicated by build.sh:\n $SO_OUTPUT_DIR"
-	error 0 # Failure
+	exit 1 # Failure
 fi
 
 # 2.2) Clean up binary repo:
@@ -114,31 +144,30 @@ func_echo_info "[Step 2] ** 1/2] Undoing changes to existing files. (This remove
 # 3) Rebuild swt bindings. make_linux.mak should copy them to binary folder.
 #########################
 func_echo_info "\n[Step 3] Rebuilding SWT bindings and copying them into binary folder"
-cd $SCRIPT_DIR  # in case BUILD_SH_DIR is relative.
-cd $BUILD_SH_DIR
+cd "$SWT_PROJECT_DIR/bin/library/"
 
 #3.1) Check that we're in the right place
 if [ ! -e build.sh ]; then
-		func_echo_error "[Step 3] Hmmm. I got lost somewhere. Was looking for build.sh, but in $(pwd) I cannot find build.sh"
-	exit 0 # Fail
+	func_echo_error "[Step 3] Hmmm. I got lost somewhere. Was looking for build.sh file, which is normally in /eclipse.platform.swt/bundles/org.eclipse.swt/library/bin/. But currently I'm in $(pwd) , and I cannot find build.sh"
+	exit 1 # Fail
 fi
 
-#3.2) Rebuilg gtk bindings
+#3.2) Rebuilg gtk bindings with debug support enabled by default
 export SWT_LIB_DEBUG=1
-temp_log_file=$(mktemp)  # Keep log so we can count warnings after.
+temp_log_file="$(mktemp)"  # Keep log so we can count warnings after.
 # 'script' command logs commands and their output.
 #  This is used instead of output redirection to preserve make colouring output,
 #  while at the same time capture log for parsing.
 script --quiet --return --command " ./build.sh -gtk-all install" $temp_log_file   #"script" cmd preserves color coding during logging.
 if [ "$?" -ne 0 ]; then # Failed
 	func_echo_error "[Step 3] Building native glue code failed. Exiting"
-	rm $temp_log_file
-	exit 1
+	rm "$temp_log_file"
+	exit 1 # Failed
 else # Success
 	WARNING_COUNT=$(cat $temp_log_file | grep warning | wc -l)
 	func_echo_info "[Step 3] Bindings compiled sucessfully"
 	func_echo_error "[Step 3] ** Warning count: $WARNING_COUNT "
-	rm $temp_log_file
+	rm "$temp_log_file"
 fi
 
 func_echo_info "Finished"
