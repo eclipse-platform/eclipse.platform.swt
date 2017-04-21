@@ -105,19 +105,31 @@ fi
 ####################################################
 cd "$SWT_PROJECT_DIR"
 func_echo_info "\n[Step 2] Cleaning up of old '.so' lib files from binary git repository"
-# 2.1) Find binary repo\
+
+# Try to find output directory for 'so' files.
+# 2.1 First try to git binary folder from build.sh
+# 2.2 Failing that (e.g old SWT repo), try to guess.
+
+# 2.1
 if [ ! -e "${SWT_PROJECT_DIR}/bin/library/build.sh" ]; then
 	func_echo_error "[Step 2] Could not find 'build.sh'. You probably need to build swt project. This script fixed the classpath, so try building SWT and running this script again."
 	exit 1; # failed.
 fi
 cd "${SWT_PROJECT_DIR}/bin/library/"
 
-# We ask build.sh where OUTPUT is, because output is platform dependent.
-SO_OUTPUT_DIR="$(./build.sh --print-outputdir-and-exit | grep -i OUTPUT_DIR= | cut -f2 -d '=')"  # no trailing '/'
-if [ "$?" -ne 0 ]; then
-	func_echo_error "[Step 2] build.sh failed to provide OUTPUT directory"
-	exit 1; # Failure
+# Check if build.sh is new enough to produce OUTPUT dir (older versions didn't)
+if grep --quiet '\-\-print-outputdir-and-exit' build.sh ; then
+	# We ask build.sh where OUTPUT is, because output is platform dependent.
+	SO_OUTPUT_DIR="$(./build.sh --print-outputdir-and-exit | grep -i OUTPUT_DIR= | cut -f2 -d '=')"  # no trailing '/'
+	if [ "$?" -ne 0 ]; then
+		func_echo_error "[Step 2] build.sh failed to provide OUTPUT directory"
+		exit 1; # Failure
+	fi
+else
+	# 2.2 Try to guess the output directory.
+	SO_OUTPUT_DIR="$HOME/git/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.$(uname -s | tr '[:upper:]' '[:lower:]').$(uname -i)"
 fi
+
 
 # Sanity check: Make sure swt binary repo exists and that it contains related MANIFEST. I look for 'SWT-Arch'
 # We don't want to run 'git clean -xdf' in some unexpected directory.
@@ -158,6 +170,8 @@ temp_log_file="$(mktemp)"  # Keep log so we can count warnings after.
 # 'script' command logs commands and their output.
 #  This is used instead of output redirection to preserve make colouring output,
 #  while at the same time capture log for parsing.
+#  (Dev note: old 'build.sh' did not have '-gtk-all' paramater and 'install' was broken. 
+#   For really old SWT builds, may need to manually copy '.so' files and manually specify GTK3)
 script --quiet --return --command " ./build.sh -gtk-all install" $temp_log_file   #"script" cmd preserves color coding during logging.
 if [ "$?" -ne 0 ]; then # Failed
 	func_echo_error "[Step 3] Building native glue code failed. Exiting"
