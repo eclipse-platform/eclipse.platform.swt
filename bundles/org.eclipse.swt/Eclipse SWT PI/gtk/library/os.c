@@ -19285,7 +19285,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GTypeQue
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGTypeQueryFields(env, arg0, lparg0);
@@ -19310,7 +19311,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkColor
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkColorFields(env, arg0, lparg0);
@@ -19335,7 +19337,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragC
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkDragContextFields(env, arg0, lparg0);
@@ -19360,7 +19363,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventAnyFields(env, arg0, lparg0);
@@ -19385,7 +19389,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventButtonFields(env, arg0, lparg0);
@@ -19410,7 +19415,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventCrossingFields(env, arg0, lparg0);
@@ -19435,7 +19441,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventExposeFields(env, arg0, lparg0);
@@ -19460,7 +19467,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventFocusFields(env, arg0, lparg0);
@@ -19485,7 +19493,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventKeyFields(env, arg0, lparg0);
@@ -19510,7 +19519,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventMotionFields(env, arg0, lparg0);
@@ -19556,7 +19566,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventScrollFields(env, arg0, lparg0);
@@ -19581,7 +19592,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventWindowStateFields(env, arg0, lparg0);
@@ -19606,7 +19618,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkEventFields(env, arg0, lparg0);
@@ -19652,7 +19665,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRecta
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGdkRectangleFields(env, arg0, lparg0);
@@ -19698,7 +19712,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkBorde
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setGtkBorderFields(env, arg0, lparg0);
@@ -19786,7 +19801,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAtt
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoAttrColorFields(env, arg0, lparg0);
@@ -19811,7 +19827,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAtt
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoAttrIntFields(env, arg0, lparg0);
@@ -19836,7 +19853,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAtt
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoAttributeFields(env, arg0, lparg0);
@@ -19861,7 +19879,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoIte
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoItemFields(env, arg0, lparg0);
@@ -19886,7 +19905,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLay
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoLayoutLineFields(env, arg0, lparg0);
@@ -19911,7 +19931,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLay
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoLayoutRunFields(env, arg0, lparg0);
@@ -19936,7 +19957,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLog
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setPangoLogAttrFields(env, arg0, lparg0);
@@ -19961,7 +19983,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeE
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setXExposeEventFields(env, arg0, lparg0);
@@ -19986,7 +20009,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XFocusCh
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ_FUNC);
 #endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 	if (arg0 && lparg0) setXFocusChangeEventFields(env, arg0, lparg0);

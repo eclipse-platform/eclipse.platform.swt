@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat Inc. - stop generating pre 1.2 JNI code
+ * Martin Oberhuber (WindRiver) - [515610] Fix incorrect code for memmove()
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
@@ -264,9 +265,26 @@ boolean generateGetParameter(JNIMethod method, JNIParameter param, boolean criti
 	if (paramType.isPrimitive() || isSystemClass(paramType)) return false;
 	String iStr = String.valueOf(param.getParameter());
 	for (int j = 0; j < indent; j++) output("\t");
-	output("if (arg");
-	output(iStr);
-	output(") if ((lparg");
+	//if(!paramType.isArray() && !paramType.isType("java.lang.String") && param.getFlag(FLAG_NO_IN)) {
+	if("memmove".equals(method.getName()) && param.getFlag(FLAG_NO_IN)) {
+		// Bug 515610: Fix incorect fall-through for memmove().
+		// A similar issue might be present in other cases as well. 
+		// Keep diagnostic code (commented-out) below for diagnosing these.
+		output("if (!arg");
+		output(iStr);
+		output(") goto fail;\n");
+		//output(") {fprintf(stderr,\"fail: method=");
+		//output(method.getName());
+		//output(", arg");
+		//output(iStr);
+		//output("\\n\"); goto fail;}\n");
+		for (int j = 0; j < indent; j++) output("\t");
+		output("if ((lparg");
+	} else {
+		output("if (arg");
+		output(iStr);
+		output(") if ((lparg");
+	}
 	output(iStr);
 	output(" = ");
 	boolean isCPP = getCPP();
