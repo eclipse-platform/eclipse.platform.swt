@@ -644,6 +644,10 @@ func_build_gtk3 () {
 func_build_gtk2 () {
 	func_echo_plus "Building GTK2 bindings:"
 	export GTK_VERSION=2.0
+	if [ ${MODEL} = 'x86_64' ]; then
+		# Bug 515155: Avoid memcpy@GLIBC_2.14 (old Linux compatibility)
+		SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -fno-builtin-memmove"
+	fi
 	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA "$@"
 	RETURN_VALUE=$?
 	if [ "$RETURN_VALUE" -eq 0 ]; then
