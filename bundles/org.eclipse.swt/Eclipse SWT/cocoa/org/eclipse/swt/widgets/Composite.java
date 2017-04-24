@@ -573,7 +573,6 @@ boolean isOpaque (long /*int*/ id, long /*int*/ sel) {
 
 boolean isOpaque() {
 	if (isStyledText) {
-		System.out.println("is here");
 		/*
 		 * When overlay scroll bars are used, Control.isObscured() always returns true,
 		 * causing isOpaque to return false. This causes performance problems while
