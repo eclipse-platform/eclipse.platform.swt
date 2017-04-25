@@ -327,7 +327,7 @@ public void test_computeSizeIIZ() {
 @Test
 public void test_getAccessible() {
 	Accessible accessible = control.getAccessible();
-	assertTrue(":a:", accessible != null);
+	assertNotNull(":a:", accessible);
 }
 @Test
 public void test_getBorderWidth() {

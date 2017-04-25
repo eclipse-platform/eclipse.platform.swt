@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -65,12 +66,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(0, 0, 0);
 
-	assertTrue(":a:", colorDialog.getRGB() == null);
+	assertNull(":a:", colorDialog.getRGB());
 
 	colorDialog.setRGB(rgb);
 	assertTrue(":b:", colorDialog.getRGB() == rgb);
 
 	colorDialog.setRGB(null);
-	assertTrue(":c:", colorDialog.getRGB() == null);
+	assertNull(":c:", colorDialog.getRGB());
 }
 }

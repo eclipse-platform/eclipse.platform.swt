@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -95,13 +96,13 @@ public void test_getParent() {
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	Control control = new Table(tabFolder, SWT.NULL);
 
-	assertTrue(":a: ", tabItem.getControl() == null);
+	assertNull(":a: ", tabItem.getControl());
 
 	tabItem.setControl(control);
 	assertTrue(":b: ", tabItem.getControl() == control);
 
 	tabItem.setControl(null);
-	assertTrue(":c: ", tabItem.getControl() == null);
+	assertNull(":c: ", tabItem.getControl());
 }
 
 @Override
@@ -121,7 +122,7 @@ public void test_setToolTipTextLjava_lang_String() {
 	tabItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
 	assertTrue(":b: ", tabItem.getToolTipText().equals("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"));
 	tabItem.setToolTipText(null);
-	assertTrue(":c: ", tabItem.getToolTipText() == null);
+	assertNull(":c: ", tabItem.getToolTipText());
 }
 
 /* custom */

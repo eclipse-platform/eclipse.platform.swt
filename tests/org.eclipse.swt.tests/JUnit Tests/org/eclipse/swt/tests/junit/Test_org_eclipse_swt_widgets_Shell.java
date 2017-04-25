@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -318,7 +319,7 @@ public void test_setVisibleZ() {
 @Test
 public void test_getParent () {
 	// overriding Control.test_getParent
-	assertTrue(shell.getParent()==null);
+	assertNull(shell.getParent());
 	assertTrue(testShell.getParent() == shell);
 }
 
@@ -434,21 +435,21 @@ public void a_test_setRegion() {
 	Region region = new Region();
 	region.add(new Rectangle(10, 20, 100, 200));
 	// test shell without style SWT.NO_TRIM
-	assertTrue(":a:", shell.getRegion() == null);
+	assertNull(":a:", shell.getRegion());
 	shell.setRegion(region);
-	assertTrue(":b:", shell.getRegion() == null);
+	assertNull(":b:", shell.getRegion());
 	shell.setRegion(null);
-	assertTrue(":c:", shell.getRegion() == null);
+	assertNull(":c:", shell.getRegion());
 	// test shell with style SWT.NO_TRIM
 	Display display = shell.getDisplay();
 	Shell shell2 = new Shell(display, SWT.NO_TRIM);
-	assertTrue(":d:", shell2.getRegion() == null);
+	assertNull(":d:", shell2.getRegion());
 	shell2.setRegion(region);
 	assertTrue(":e:", shell2.getRegion().handle == region.handle);
 	region.dispose();
 	assertTrue(":f:", shell2.getRegion().isDisposed());
 	shell2.setRegion(null);
-	assertTrue(":g:", shell2.getRegion() == null);
+	assertNull(":g:", shell2.getRegion());
 }
 @Override
 @Test

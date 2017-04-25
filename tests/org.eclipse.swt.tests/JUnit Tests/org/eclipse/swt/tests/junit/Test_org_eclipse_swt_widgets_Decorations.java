@@ -85,7 +85,7 @@ public void test_getLocation() {
 
 @Test
 public void test_getMenuBar() {
-	assertTrue(":a:", decorations.getMenuBar() == null);
+	assertNull(":a:", decorations.getMenuBar());
 	Menu bar = new Menu (decorations, SWT.BAR);
 	decorations.setMenuBar (bar);
 	assertTrue(":b:", decorations.getMenuBar() == bar);

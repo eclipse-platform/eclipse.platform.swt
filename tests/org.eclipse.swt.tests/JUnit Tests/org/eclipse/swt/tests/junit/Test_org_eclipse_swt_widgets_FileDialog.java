@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -93,7 +94,7 @@ public void test_setFileNameLjava_lang_String() {
 	assertTrue(name.isEmpty());
 	fileDialog.setFileName(null);
 	name = fileDialog.getFileName();
-	assertTrue(name==null);
+	assertNull(name);
 	fileDialog.setFileName("somefile.test");
 	name = fileDialog.getFileName();
 	assertTrue(name.equals("somefile.test"));
@@ -111,7 +112,7 @@ public void test_setFilterExtensions$Ljava_lang_String() {
 	assertTrue(filters.length == 1);
 	fileDialog.setFilterExtensions(null);
 	filters = fileDialog.getFilterExtensions();
-	assertTrue(filters==null);
+	assertNull(filters);
 }
 
 @Test
@@ -126,7 +127,7 @@ public void test_setFilterNames$Ljava_lang_String() {
 	assertTrue(filters.length == 1);
 	fileDialog.setFilterNames(null);
 	filters = fileDialog.getFilterNames();
-	assertTrue(filters==null);
+	assertNull(filters);
 }
 
 @Test
@@ -138,7 +139,7 @@ public void test_setFilterPathLjava_lang_String() {
 	fileDialog.setFilterPath("");
 	assertTrue(":3:", fileDialog.getFilterPath().isEmpty());
 	fileDialog.setFilterPath(null);
-	assertTrue(":4:", fileDialog.getFilterPath() == null);
+	assertNull(":4:", fileDialog.getFilterPath());
 }
 /* custom */
 FileDialog fileDialog;

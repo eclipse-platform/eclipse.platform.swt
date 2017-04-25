@@ -15,6 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -148,8 +149,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	text.dispose();
 
 	text = new StyledText(shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE);
-	assertTrue(":b:", text.getVerticalBar() == null);
-	assertTrue(":c:", text.getHorizontalBar() == null);
+	assertNull(":b:", text.getVerticalBar());
+	assertNull(":c:", text.getHorizontalBar());
 	text.dispose();
 }
 
@@ -772,7 +773,7 @@ public void test_getCaretOffset() {
 public void test_getContent() {
 	StyledTextContent content = text.getContent();
 
-	assertTrue(content != null);
+	assertNotNull(content);
 	content = new StyledTextContent() {
 		@Override
 		public void addTextChangeListener(TextChangeListener listener) {
@@ -927,7 +928,7 @@ public void test_getCharCount() {
 public void test_getLineBackgroundI() {
 	String textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
-	assertTrue(":1:", text.getLineBackground(0) == null);
+	assertNull(":1:", text.getLineBackground(0));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.setLineBackground(2,1,getColor(BLUE));
 	assertTrue(":1:", text.getLineBackground(1) == getColor(YELLOW));
@@ -1598,13 +1599,13 @@ public void test_getSelection(){
 }
 @Test
 public void test_getSelectionBackground() {
-	assertTrue(":1:", text.getSelectionBackground() != null);
+	assertNotNull(":1:", text.getSelectionBackground());
 	text.setSelectionBackground(getColor(YELLOW));
 	assertTrue(":1:", text.getSelectionBackground() ==  getColor(YELLOW));
 }
 @Test
 public void test_getSelectionForeground() {
-	assertTrue(":1:", text.getSelectionForeground() != null);
+	assertNotNull(":1:", text.getSelectionForeground());
 	text.setSelectionForeground(getColor(RED));
 	assertTrue(":1:", text.getSelectionForeground() ==  getColor(RED));
 }
@@ -3427,27 +3428,27 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.replaceTextRange(0,5,"");
-	assertTrue(":0d1:", text.getLineBackground(0) == null);
+	assertNull(":0d1:", text.getLineBackground(0));
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.replaceTextRange(1,3,"");
 	assertTrue(":0e1:", text.getLineBackground(0) == getColor(RED));
-	assertTrue(":0e1:", text.getLineBackground(1) == null);
+	assertNull(":0e1:", text.getLineBackground(1));
 	textString = "L1\nL2";
 	text.setText(textString);
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.replaceTextRange(1,4,"");
-	assertTrue(":0f1:", text.getLineBackground(0) == null);
+	assertNull(":0f1:", text.getLineBackground(0));
 	text.setText(textString+"\n");
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.replaceTextRange(0,6,"");
-	assertTrue(":0g1:", text.getLineBackground(0) == null);
+	assertNull(":0g1:", text.getLineBackground(0));
 
 	text.setText(textString);
 	text.setLineBackground(0,0,getColor(RED));
-	assertTrue(":1:", text.getLineBackground(0) == null);
+	assertNull(":1:", text.getLineBackground(0));
 	text.setLineBackground(0,1,getColor(RED));
 	assertTrue(":1:", text.getLineBackground(0) == getColor(RED));
 
@@ -3456,7 +3457,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(0,2,getColor(RED));
 	text.setLineBackground(2,2,getColor(YELLOW));
 	text.replaceTextRange(0,0,"\n");
-	assertTrue(":2:", text.getLineBackground(0) == null);
+	assertNull(":2:", text.getLineBackground(0));
 	assertTrue(":2:", text.getLineBackground(1) == getColor(RED));
 	assertTrue(":2:", text.getLineBackground(2) == getColor(RED));
 	assertTrue(":2:", text.getLineBackground(3) == getColor(YELLOW));
@@ -3475,17 +3476,17 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(2,1,getColor(YELLOW));
 	text.replaceTextRange(0,18,"");
-	assertTrue(":4:", text.getLineBackground(0) == null);
+	assertNull(":4:", text.getLineBackground(0));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(2,1,getColor(YELLOW));
 	text.replaceTextRange(0,18,"L1\nL2\nL3\n");
-	assertTrue(":5:", text.getLineBackground(0) == null);
-	assertTrue(":5:", text.getLineBackground(1) == null);
-	assertTrue(":5:", text.getLineBackground(2) == null);
-	assertTrue(":5:", text.getLineBackground(3) == null);
+	assertNull(":5:", text.getLineBackground(0));
+	assertNull(":5:", text.getLineBackground(1));
+	assertNull(":5:", text.getLineBackground(2));
+	assertNull(":5:", text.getLineBackground(3));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
@@ -3495,7 +3496,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(3,9,"L1\nL2\n");
 	assertTrue(":6a:", text.getLineBackground(0) == getColor(RED));
-	assertTrue(":6a:", text.getLineBackground(1) == null);
+	assertNull(":6a:", text.getLineBackground(1));
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
@@ -3503,8 +3504,8 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(2,1,getColor(BLUE));
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(11,11,"L3\nL4");
-	assertTrue(":6b:", text.getLineBackground(2) == null);
-	assertTrue(":6b:", text.getLineBackground(3) == null);
+	assertNull(":6b:", text.getLineBackground(2));
+	assertNull(":6b:", text.getLineBackground(3));
 
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
@@ -3513,7 +3514,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(2,1,getColor(BLUE));
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(0,18,"L1\n");
-	assertTrue(":7:", text.getLineBackground(0) == null);
+	assertNull(":7:", text.getLineBackground(0));
 	assertTrue(":7:", text.getLineBackground(1) == getColor(GREEN));
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -359,7 +359,7 @@ public void test_getMonitors() {
 	assertNotNull(monitors);
 	assertTrue("at least one monitor should be returned", monitors.length >= 1);
 	for (int i = 0; i < monitors.length; i++)
-		assertTrue("monitor at index "+i+" should not be null", monitors[i] != null);
+		assertNotNull("monitor at index "+i+" should not be null", monitors[i]);
 	display.dispose();
 }
 

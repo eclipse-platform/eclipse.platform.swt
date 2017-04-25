@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -68,8 +69,8 @@ public void test_Constructor() {
 	StyleRange styleRange = new StyleRange();
 	assertTrue(":a:", styleRange.start == 0);
 	assertTrue(":a:", styleRange.length == 0);
-	assertTrue(":a:", styleRange.foreground == null);
-	assertTrue(":a:", styleRange.background == null);
+	assertNull(":a:", styleRange.foreground);
+	assertNull(":a:", styleRange.background);
 	assertTrue(":a:", styleRange.fontStyle == SWT.NORMAL);
 }
 

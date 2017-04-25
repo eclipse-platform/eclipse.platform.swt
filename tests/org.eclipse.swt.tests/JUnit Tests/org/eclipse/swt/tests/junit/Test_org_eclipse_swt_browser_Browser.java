@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -577,7 +579,7 @@ public void test_setJavascriptEnabled() {
 				} catch (Exception e) {
 					fail("1) if javascript is dissabled, browser.evaluate() should return null. But an Exception was thrown");
 				}
-				assertTrue("2) Javascript should not have executed. But not-null was returned:"+expectedNull, expectedNull == null);
+				assertNull("2) Javascript should not have executed. But not-null was returned:"+expectedNull, expectedNull);
 
 				testPassed.set(true);
 				testFinished.set(true);
@@ -620,7 +622,7 @@ public void test_setJavascriptEnabled_multipleInstances() {
 				pageLoadCount.set(3);
 
 				Boolean shouldBeNull = (Boolean) browser.evaluate("return true");
-				assertTrue("1) Evaluate execution should be null, but 'true was returned'", shouldBeNull == null);
+				assertNull("1) Evaluate execution should be null, but 'true was returned'", shouldBeNull);
 				instanceOneFinishedCorrectly.set(true);
 			}
 		}
@@ -760,7 +762,7 @@ public void test_forward() {
 @Test
 public void test_getUrl() {
 	String string = browser.getUrl();
-	assertTrue(string != null);
+	assertNotNull(string);
 }
 
 
