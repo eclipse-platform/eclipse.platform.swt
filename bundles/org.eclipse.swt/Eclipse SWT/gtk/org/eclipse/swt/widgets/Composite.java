@@ -309,8 +309,10 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 	if ((style & SWT.EMBEDDED) != 0) {
 		if (!OS.isX11()) {
-			new SWTError(SWT.ERROR_INVALID_ARGUMENT,"SWT.EMBEDDED is currently not yet supported in Wayland. \nPlease "
-				+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();
+			if (Device.DEBUG) {
+				new SWTError(SWT.ERROR_INVALID_ARGUMENT,"SWT.EMBEDDED is currently not yet supported in Wayland. \nPlease "
+					+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();
+			}
 		} else {
 			socketHandle = OS.gtk_socket_new ();
 			if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
