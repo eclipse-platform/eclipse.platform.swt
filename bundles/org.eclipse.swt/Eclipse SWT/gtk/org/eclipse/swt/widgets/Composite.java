@@ -308,9 +308,14 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		}
 	}
 	if ((style & SWT.EMBEDDED) != 0) {
-		socketHandle = OS.gtk_socket_new ();
-		if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (handle, socketHandle);
+		if (!OS.isX11()) {
+			new SWTError(SWT.ERROR_INVALID_ARGUMENT,"SWT.EMBEDDED is currently not yet supported in Wayland. \nPlease "
+				+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();
+		} else {
+			socketHandle = OS.gtk_socket_new ();
+			if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_container_add (handle, socketHandle);
+		}
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
