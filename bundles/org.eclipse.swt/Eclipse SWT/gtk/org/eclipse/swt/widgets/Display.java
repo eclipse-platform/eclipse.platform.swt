@@ -1612,6 +1612,26 @@ Point getCursorLocationInPixels () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
 	gdk_window_get_device_position (0, x, y, null);
+	/*
+	 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
+	 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
+	 * the return position is relative to the new popup window and not relative to the parent if its
+	 * active. Using that as an offset and adding all parent shell relative coordinates will give the
+	 * user the correct mouse position in Wayland. This only supports popups that are type
+	 * SWT.ON_TOP as any other type of window is not tied to the parent window through
+	 * a subsurface. There is currently no support for global coordinates
+	 * in Wayland. See Bug 514483.
+	 */
+	if (!OS.isX11() && activeShell != null) {
+		Shell tempShell = activeShell;
+		int [] offsetX = new int [1], offsetY = new int [1];
+		while (tempShell.getParent() != null) {
+			OS.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
+			x[0]+= offsetX[0];
+			y[0]+= offsetY[0];
+			tempShell = tempShell.getParent().getShell();
+		}
+	}
 	return new Point (x [0], y [0]);
 }
 
