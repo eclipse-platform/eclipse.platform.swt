@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -471,14 +471,14 @@ int computeLeftMargin () {
 					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
 						flags = OS.DT_CALCRECT | OS.DT_WORDBREAK;
 						rect.right = wHint - width - 2 * border;
-						if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+						if (isRadioOrCheck()) {
 							rect.right -= CHECK_WIDTH + 3;
 						} else {
 							rect.right -= 6;
 						}
 						if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 							rect.right -= 2;
-							if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+							if (isRadioOrCheck()) {
 								rect.right -= 2;
 							}
 						}
@@ -490,7 +490,7 @@ int computeLeftMargin () {
 				if (newFont != 0) OS.SelectObject (hDC, oldFont);
 				OS.ReleaseDC (handle, hDC);
 			}
-			if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			if (isRadioOrCheck()) {
 				width += CHECK_WIDTH + extra;
 				height = Math.max (height, CHECK_HEIGHT + 3);
 			}
@@ -1555,8 +1555,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						 * text-padding as per OS Native DPI level to fix bug 506371
 						 */
 						int radioOrCheckTextPadding = DPIUtil.autoScaleUpUsingNativeDPI(16);
-						int left = nmcd.left + 2; // subtract border
-						int right = nmcd.right - 2; // subtract border
+						int border = isRadioOrCheck() ? 0 : 3;
+						int left = nmcd.left + border;
+						int right = nmcd.right - border;
 						if (image != null) {
 							GCData data = new GCData();
 							data.device = display;
@@ -1564,56 +1565,64 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 
 							int margin = computeLeftMargin();
 							int imageWidth = image.getBoundsInPixels().width;
-							left += (imageWidth + MARGIN); // for SWT.RIGHT_TO_LEFT right and left are inverted
+							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
 
-							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 0);
+							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 3);
 							int y = Math.max (0, (nmcd.bottom - image.getBoundsInPixels().height) / 2);
 							gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
 							gc.dispose ();
 						}
 
 						left += isRadioOrCheck() ? radioOrCheckTextPadding : 0;
-						RECT rect = new RECT ();
-						OS.SetRect (rect, left, nmcd.top, right, nmcd.bottom);
-						long /*int*/ hdc = nmcd.hdc;
+						RECT textRect = new RECT ();
+						OS.SetRect (textRect, left, nmcd.top + border, right, nmcd.bottom - border);
 
 						// draw text
-						int flags = OS.DT_VCENTER;
+						TCHAR buffer = new TCHAR (getCodePage (), text, false);
+						int flags = 0;
 						if ((style & SWT.WRAP) != 0) {
-							// Feature in Windows: WORDBREAK ignores VCENTER. So we have to calculate
 							flags |= OS.DT_WORDBREAK;
-							// Defining a height hint, returns the height hint:
-							Point textSize = computeSizeInPixels(rect.right, SWT.DEFAULT, false);
-							int yTop = ((nmcd.bottom - nmcd.top) - textSize.y) / 2 + MARGIN;
-							OS.SetRect (rect, left, yTop, right, nmcd.bottom);
+							if (!isRadioOrCheck() && image != null) {
+								textRect.right -= MARGIN;
+							}
 						} else {
 							flags |= OS.DT_SINGLELINE; // TODO: this always draws the prefix
 						}
-						if (image != null){
+						OS.DrawText(nmcd.hdc, buffer, buffer.length(), textRect, flags | OS.DT_CALCRECT);
+						OS.OffsetRect(textRect, 0, Math.max(0, (nmcd.bottom  - textRect.bottom - border) / 2));
+						if (image != null) {
 							// The default button with an image doesn't respect the text alignment. So we do the same for styled buttons.
-							flags |= OS.DT_CENTER;
+							flags |= OS.DT_LEFT;
+							if (!isRadioOrCheck()) {
+								OS.OffsetRect(textRect, Math.max(MARGIN, (right - textRect.right) / 2 + 1), 0);
+							}
 						} else if ((style & SWT.LEFT) != 0) {
 							flags |= OS.DT_LEFT;
 						} else if ((style & SWT.RIGHT) != 0) {
 							flags |= OS.DT_RIGHT;
+							OS.OffsetRect(textRect, right - textRect.right, 0);
 						} else {
 							flags |= OS.DT_CENTER;
+							OS.OffsetRect(textRect, (right - textRect.right) / 2, 0);
 						}
-						TCHAR buffer = new TCHAR (getCodePage (), text, false);
-						OS.SetBkMode(hdc, OS.TRANSPARENT);
-						OS.SetTextColor(hdc, foreground);
-						OS.DrawText(hdc, buffer, buffer.length(), rect, flags);
+						OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
+						OS.SetTextColor(nmcd.hdc, foreground);
+						OS.DrawText(nmcd.hdc, buffer, buffer.length(), textRect, flags);
 
 						// draw focus rect
 						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
 							RECT focusRect = new RECT ();
 							if (isRadioOrCheck()) {
-								/*
-								 * With custom foreground, draw focus rectangle for CheckBox
-								 * and Radio buttons considering the native text padding
-								 * value(which is DPI aware). See bug 508141 for details.
-								 */
-								OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom-1);
+								if (text.length() > 0) {
+									OS.SetRect(focusRect, textRect.left-1, textRect.top, Math.min(nmcd.right, textRect.right+1), textRect.bottom+1);
+								} else {
+									/*
+									 * With custom foreground, draw focus rectangle for CheckBox
+									 * and Radio buttons considering the native text padding
+									 * value(which is DPI aware). See bug 508141 for details.
+									 */
+									OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom-1);
+								}
 							} else {
 								OS.SetRect (focusRect, nmcd.left+3, nmcd.top+3, nmcd.right-3, nmcd.bottom-3);
 							}
