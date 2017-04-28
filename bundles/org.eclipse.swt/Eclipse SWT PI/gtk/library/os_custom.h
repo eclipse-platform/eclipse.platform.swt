@@ -122,6 +122,7 @@
 #define gdk_display_get_device_manager_LIB LIB_GDK
 #define gdk_device_get_associated_device_LIB LIB_GDK
 #define gdk_display_get_default_LIB LIB_GDK
+#define gdk_display_get_default_seat_LIB LIB_GDK
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
 #define gdk_drag_context_get_actions_LIB LIB_GDK
 #define gdk_drag_context_get_dest_window_LIB LIB_GDK
@@ -288,11 +289,14 @@
 #define gtk_style_context_get_LIB LIB_GTK
 #define gtk_style_context_invalidate_LIB LIB_GTK
 #define gdk_screen_get_monitor_workarea_LIB LIB_GDK
+#define gdk_seat_grab_LIB LIB_GDK
+#define gdk_seat_ungrab_LIB LIB_GDK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
 #define gtk_widget_input_shape_combine_region_LIB LIB_GTK
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK
 #define gtk_entry_get_icon_area_LIB LIB_GTK
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
+#define gdk_event_get_seat_LIB LIB_GDK
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK

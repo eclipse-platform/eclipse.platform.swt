@@ -3865,6 +3865,20 @@ public static final long /*int*/ gdk_display_get_default() {
 		lock.unlock();
 	}
 }
+
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gdk_display_get_default_seat(long /*int*/ display);
+public static final long /*int*/ gdk_display_get_default_seat(long /*int*/ display) {
+	lock.lock();
+	try {
+		return _gdk_display_get_default_seat(display);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  *  @method flags=dynamic
  *  @param window cast=(GdkWindow *)
@@ -4175,6 +4189,19 @@ public static final boolean gdk_event_get_scroll_deltas(long /*int*/ event, doub
 	lock.lock();
 	try {
 		return _gdk_event_get_scroll_deltas(event, delta_x, delta_y);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gdk_event_get_seat(long /*int*/ event);
+public static final long /*int*/ gdk_event_get_seat(long /*int*/ event) {
+	lock.lock();
+	try {
+		return _gdk_event_get_seat(event);
 	} finally {
 		lock.unlock();
 	}
@@ -5165,7 +5192,30 @@ public static final int gdk_screen_get_monitor_width_mm(long /*int*/ screen, int
 		lock.unlock();
 	}
 }
-
+/**
+ * @method flags=dynamic
+ */
+public static final native int _gdk_seat_grab(long /*int*/ seat, long /*int*/ window, int capabilities, boolean owner_events, long /*int*/ cursor, long /*int*/ event, long /*int*/ func, long /*int*/ func_data);
+public static final int gdk_seat_grab(long /*int*/ seat, long /*int*/ window, int capabilities, boolean owner_events, long /*int*/ cursor, long /*int*/ event, long /*int*/ func, long /*int*/ func_data) {
+	lock.lock();
+	try {
+		return _gdk_seat_grab(seat, window, capabilities, owner_events, cursor, event, func, func_data);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gdk_seat_ungrab(long /*int*/ seat);
+public static final void gdk_seat_ungrab(long /*int*/ seat) {
+	lock.lock();
+	try {
+		_gdk_seat_ungrab(seat);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param program_class cast=(const char *) */
 public static final native void _gdk_set_program_class(byte[] program_class);
 public static final void gdk_set_program_class(byte[] program_class) {
@@ -8329,6 +8379,18 @@ public static final long /*int*/ gtk_get_event_widget(long /*int*/ event) {
 		lock.unlock();
 	}
 }
+
+/** @param widget cast=(GtkWidget *) */
+public static final native void _gtk_grab_add(long /*int*/ widget);
+public static final void gtk_grab_add(long /*int*/ widget) {
+	lock.lock();
+	try {
+		_gtk_grab_add(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native long /*int*/ _gtk_grab_get_current();
 public static final long /*int*/ gtk_grab_get_current() {
 	lock.lock();
@@ -8338,6 +8400,17 @@ public static final long /*int*/ gtk_grab_get_current() {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(GtkWidget *) */
+public static final native void _gtk_grab_remove(long /*int*/ widget);
+public static final void gtk_grab_remove(long /*int*/ widget) {
+	lock.lock();
+	try {
+		_gtk_grab_remove(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @method flags=dynamic
  * @param homogeneous cast=(gboolean)

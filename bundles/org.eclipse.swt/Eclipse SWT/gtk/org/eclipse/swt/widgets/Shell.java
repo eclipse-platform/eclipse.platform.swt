@@ -568,7 +568,7 @@ void bringToTop (boolean force) {
 	* Feature in GTK.  When the shell is an override redirect
 	* window, gdk_window_focus() does not give focus to the
 	* window.  The fix is to use XSetInputFocus() to force
-	* the focus.
+	* the focus, or gtk_grab_add() for Wayland.
 	*/
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
@@ -585,8 +585,17 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			OS.gdk_error_trap_pop ();
 		} else {
-//	TODO find the proper fix as this doesn't seem to have effect
-//			OS.gtk_window_present(window);
+			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				if(OS.gtk_widget_get_visible(shellHandle)) {
+					OS.gtk_widget_hide(shellHandle);
+				}
+				Callback gdkSeatGrabCallback = new Callback(this, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
+				long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
+				if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+				OS.gtk_grab_add(shellHandle);
+				long /*int*/ seat = OS.gdk_display_get_default_seat(OS.gdk_window_get_display(window));
+				OS.gdk_seat_grab(seat, window, 1, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
+			}
 		}
 	} else {
 		/*
@@ -1261,7 +1270,7 @@ public Shell [] getShells () {
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
-			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			if (OS.isX11() && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
 				forceActive ();
 			}
 			GdkEventButton gdkEvent = new GdkEventButton ();
@@ -1277,6 +1286,17 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				OS.gtk_widget_get_allocation (shellHandle, allocation);
 				display.resizeBoundsWidth = allocation.width;
 				display.resizeBoundsHeight = allocation.height;
+			}
+		}
+		/**
+		 *  Feature in GTK: This handles ungrabbing the keyboard focus from a SWT.ON_TOP window
+		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
+		 */
+		if (!OS.isX11() && OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				OS.gtk_grab_remove(shellHandle);
+				OS.gdk_seat_ungrab(OS.gdk_event_get_seat(event));
+				OS.gtk_widget_hide(shellHandle);
 			}
 		}
 		return 0;
@@ -2405,6 +2425,10 @@ public void setVisible (boolean visible) {
 		* unminimized or shown on the desktop.
 		*/
 		mapped = false;
+		/**
+		 *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
+		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
+		 */
 		OS.gtk_widget_show (shellHandle);
 		if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
 		if (isDisposed ()) return;
@@ -2470,6 +2494,15 @@ public void setVisible (boolean visible) {
 		}
 	} else {
 		fixActiveShell ();
+		// Feature in Wayland: If the shell item is ON_TOP, remove its grab before hiding it, otherwise focus is locked to
+		// the hidden widget and can never be returned.
+		if (!OS.isX11() && OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				OS.gtk_grab_remove(shellHandle);
+				OS.gdk_seat_ungrab(OS.gdk_display_get_default_seat(
+							OS.gdk_window_get_display(OS.gtk_widget_get_window(shellHandle))));
+			}
+		}
 		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
@@ -2696,6 +2729,13 @@ public void dispose () {
 	*/
 	if (isDisposed()) return;
 	fixActiveShell ();
+	if (!OS.isX11() && OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			OS.gtk_grab_remove(shellHandle);
+			OS.gdk_seat_ungrab(OS.gdk_display_get_default_seat(
+				OS.gdk_window_get_display(OS.gtk_widget_get_window(shellHandle))));
+		}
+	}
 	OS.gtk_widget_hide (shellHandle);
 	super.dispose ();
 }
@@ -2831,5 +2871,10 @@ Point getWindowOrigin () {
 		return getLocationInPixels ();
 	}
 	return super.getWindowOrigin( );
+}
+
+long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ seat, long /*int*/ window, long /*int*/ data) {
+	OS.gtk_widget_show(data);
+	return 0;
 }
 }
