@@ -15,9 +15,9 @@ requires.5.range = 0.0.0
 requires.5.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86))
 
 requires.6.namespace = org.eclipse.equinox.p2.iu
-requires.6.name = org.eclipse.swt.gtk.linux.ppc
+requires.6.name = org.eclipse.swt.cocoa.macosx.x86_64
 requires.6.range = 0.0.0
-requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc))
+requires.6.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=x86_64))
 
 requires.7.namespace = org.eclipse.equinox.p2.iu
 requires.7.name = org.eclipse.swt.gtk.linux.ppc64
@@ -33,8 +33,3 @@ requires.9.namespace = org.eclipse.equinox.p2.iu
 requires.9.name = org.eclipse.swt.gtk.linux.ppc64le
 requires.9.range = 0.0.0
 requires.9.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le))
-
-requires.10.namespace = org.eclipse.equinox.p2.iu
-requires.10.name = org.eclipse.swt.cocoa.macosx.x86_64
-requires.10.range = 0.0.0
-requires.10.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=x86_64))
