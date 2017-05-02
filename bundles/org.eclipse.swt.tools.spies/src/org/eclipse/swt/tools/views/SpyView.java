@@ -30,11 +30,11 @@ public class SpyView extends ViewPart {
 	private Runnable timer;
 	private Control lastControl;
 	private Field field;
-	
+
 	static final int TIMEOUT = 100;
 
 	private static final ImageDescriptor SPY_IMAGE_DESCRIPTOR = ImageDescriptor.createFromURL(
-			FileLocator.find(Platform.getBundle(SpiesPlugin.PLUGIN_ID), new Path("icons/spy.gif"), null));
+			FileLocator.find(Platform.getBundle(SpiesPlugin.PLUGIN_ID), new Path("icons/spy.png"), null));
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
@@ -42,7 +42,7 @@ public class SpyView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		output = new StyledText(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
-		
+
 		keyFilter = e -> {
 			// If this accelerator changes, change the tooltip text
 			if (e.keyCode == '.' && e.stateMask == (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) {
@@ -56,7 +56,7 @@ public class SpyView extends ViewPart {
 			}
 		};
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);
-		
+
 		timer = new Runnable() {
 			@Override
 			public void run() {
@@ -126,14 +126,14 @@ public class SpyView extends ViewPart {
 					output.setText(text.toString());
 				}
 				lastControl = control;
-				display.timerExec(100, this);			
+				display.timerExec(100, this);
 			}
 		};
-		
+
 		makeActions();
 		contributeToActionBars();
 	}
-	
+
 	String getName(Object object) {
 		if (object == null) return "null";
 		String name = object.toString ();
@@ -145,7 +145,7 @@ public class SpyView extends ViewPart {
 		}
 		return name;
 	}
-	
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -153,7 +153,7 @@ public class SpyView extends ViewPart {
 	public void setFocus() {
 		if (output != null & !output.isDisposed()) output.setFocus();
 	}
-	
+
 	private String getOSHandle(Control control) {
 		if (field == null) {
 			String[] fieldNames = {"handle", "view"};
@@ -169,13 +169,13 @@ public class SpyView extends ViewPart {
 		} catch (Throwable e) {}
 		return "";
 	}
-	
+
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
-	
+
 	@Override
 	public void dispose() {
 		if (keyFilter != null) {
@@ -192,7 +192,7 @@ public class SpyView extends ViewPart {
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(spyAction);
 	}
-	
+
 	private void makeActions() {
 		spyAction = new Action("Spy", IAction.AS_CHECK_BOX) {
 			@Override
@@ -202,14 +202,14 @@ public class SpyView extends ViewPart {
 		};
 		spyAction.setToolTipText("Toggle Spy (CONTROL+ALT+SHIFT+.)");
 		spyAction.setImageDescriptor(SPY_IMAGE_DESCRIPTOR);
-		
+
 		fullyQualifiedAction = new Action("Fully Qualify Names", IAction.AS_CHECK_BOX) {
 			@Override
 			public void run() {
 			}
 		};
 	}
-	
+
 	private String getStyle(Widget w) {
 		//MODELESS = 0;
 		//BAR = 1 << 1;
@@ -219,7 +219,7 @@ public class SpyView extends ViewPart {
 		//INDETERMINATE = 1 << 1;
 		//DBCS = 1 << 1;
 		//ALPHA = 1 << 2;
-		//TOOL = 1 << 2; 
+		//TOOL = 1 << 2;
 		//SINGLE = 1 << 2;
 		//ARROW = 1 << 2;
 		//DROP_DOWN = 1 << 2;
@@ -258,7 +258,7 @@ public class SpyView extends ViewPart {
 		//BOTTOM             = DOWN;
 		//CALENDAR = 1 << 10;
 		//BORDER = 1 << 11;
-		//CLIP_CHILDREN = 1 << 12; 
+		//CLIP_CHILDREN = 1 << 12;
 		//BALLOON = 1 << 12;
 		//CLIP_SIBLINGS = 1 << 13;
 		//ON_TOP = 1 << 14;
@@ -272,7 +272,7 @@ public class SpyView extends ViewPart {
 		//SMOOTH = 1 << 16;
 		//APPLICATION_MODAL = 1 << 16;
 		//SYSTEM_MODAL = 1 << 17;
-		//TRAIL              = 1 << 17;	
+		//TRAIL              = 1 << 17;
 		//RIGHT              = TRAIL;
 		//NO_BACKGROUND = 1 << 18;
 		//NO_FOCUS = 1 << 19;
@@ -289,7 +289,7 @@ public class SpyView extends ViewPart {
 		//VIRTUAL = 1 << 28;
 		//LONG = 1 << 28;
 		//DOUBLE_BUFFERED = 1 << 29;
-		
+
 		int style = w.getStyle();
 		String result = "";
 		if (style == SWT.DEFAULT) {
@@ -307,7 +307,7 @@ public class SpyView extends ViewPart {
 			} else if (w instanceof ProgressBar) {
 				result += "INDETERMINATE | ";
 			} else {
-				result += "BAR or SEPARATOR or TOGGLE or MULTI or INDETERMINATE or DBCS | ";	
+				result += "BAR or SEPARATOR or TOGGLE or MULTI or INDETERMINATE or DBCS | ";
 			}
 		}
 		if ((style & 1 << 2) != 0) {
@@ -335,7 +335,7 @@ public class SpyView extends ViewPart {
 			} else if (w instanceof Label || w instanceof Group || w instanceof ToolBar) {
 				result += "SHADOW_OUT | ";
 			} else if (w instanceof Decorations) {
-				result += "NO_TRIM | ";	
+				result += "NO_TRIM | ";
 			} else {
 				result += "POP_UP or PUSH or READ_ONLY or SHADOW_OUT or NO_TRIM or NATIVE | ";
 			}

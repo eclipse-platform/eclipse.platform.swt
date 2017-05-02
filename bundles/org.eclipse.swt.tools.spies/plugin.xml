@@ -7,14 +7,14 @@
             allowMultiple="false"
             category="org.eclipse.swt.swt.tools"
             class="org.eclipse.swt.tools.views.SpyView"
-            icon="icons/spy.gif"
+            icon="icons/spy.png"
             id="org.eclipse.swt.tools.views.SpyView"
             name="%spyViewName">
       </view>
       <view
             category="org.eclipse.swt.swt.tools"
             class="org.eclipse.swt.tools.views.SleakView"
-            icon="icons/sleak.gif"
+            icon="icons/sleak.png"
             id="org.eclipse.swt.tools.views.SleakView"
             name="%sleakViewName">
       </view>
