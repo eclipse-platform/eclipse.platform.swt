@@ -14,7 +14,6 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -395,7 +394,8 @@ public ImageData getImageData () {
 		OS.SHGetFileInfo (pszPath, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
 		if (shfi.hIcon != 0) {
 			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
-			ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
+			/* Fetch the ImageData at 100% zoom and return */
+			ImageData imageData = image.getImageData ();
 			image.dispose ();
 			return imageData;
 		}
@@ -422,7 +422,8 @@ public ImageData getImageData () {
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
+	/* Fetch the ImageData at 100% zoom and return */
+	ImageData imageData = image.getImageData ();
 	image.dispose ();
 	return imageData;
 }
