@@ -394,7 +394,7 @@ public static ImageData validateAndGetImageDataAtZoom (ImageDataProvider provide
 	found [0] = (data != null);
 	/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
 	if (zoom != 100 && !found [0]) data = provider.getImageData (100);
-	if (data == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (data == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, ": ImageDataProvider implementation class[" + provider.getClass() + "] returns null ImageData at 100% zoom.");
 	return data;
 }
 
@@ -409,7 +409,7 @@ public static String validateAndGetImagePathAtZoom (ImageFileNameProvider provid
 	found [0] = (filename != null);
 	/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
 	if (zoom != 100 && !found [0]) filename = provider.getImagePath (100);
-	if (filename == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (filename == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, ": ImageFileNameProvider implementation class[" + provider.getClass() + "] returns null filename at 100% zoom.");
 	return filename;
 }
 
