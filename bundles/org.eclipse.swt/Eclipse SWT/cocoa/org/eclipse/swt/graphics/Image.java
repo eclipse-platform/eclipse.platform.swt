@@ -349,8 +349,10 @@ public Image(Device device, Image srcImage, int flag) {
 		int srcHeight = (int)size.height;
 
 		/* Copy alpha information (transparent pixel and alpha data) for 100% & 200% image representations from source image*/
+		alphaInfo_100 = new AlphaInfo();
 		copyAlphaInfo(srcImage.alphaInfo_100, alphaInfo_100);
 		if (srcImage.alphaInfo_200 != null) {
+			alphaInfo_200 = new AlphaInfo();
 			copyAlphaInfo(srcImage.alphaInfo_200, alphaInfo_200);
 		}
 
@@ -379,7 +381,6 @@ public Image(Device device, Image srcImage, int flag) {
  * Copies the AlphaInfo from source to destination.
  */
 private void copyAlphaInfo(AlphaInfo src_alphaInfo, AlphaInfo dest_alphaInfo) {
-	dest_alphaInfo = new AlphaInfo();
 	dest_alphaInfo.transparentPixel = src_alphaInfo.transparentPixel;
 	dest_alphaInfo.alpha = src_alphaInfo.alpha;
 	if (src_alphaInfo.alphaData != null) {
