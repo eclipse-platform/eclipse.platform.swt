@@ -621,6 +621,9 @@ void setOrientation (boolean create) {
  */
 public void setImage (Image image) {
 	checkWidget ();
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	if (imageList != null) imageList.dispose ();

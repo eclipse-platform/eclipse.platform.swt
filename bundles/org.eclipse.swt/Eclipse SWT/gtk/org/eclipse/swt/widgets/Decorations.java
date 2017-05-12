@@ -583,6 +583,9 @@ public void setDefaultButton (Button button) {
 public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
+	if (image != null && image.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	_setImages (image != null ? new Image [] {image} : null);
 }
 
