@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1221,8 +1221,8 @@ public Rectangle getBounds() {
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  * @since 3.105
- * @deprecated This API doesn't make sense and will be replaced, see
- *             <a href="https://bugs.eclipse.org/496409">bug 496409</a>
+ * @deprecated This API doesn't serve the purpose in an environment having
+ *             multiple monitors with different DPIs and hence deprecated.
  */
 @Deprecated
 public Rectangle getBoundsInPixels() {
@@ -1256,10 +1256,6 @@ public ImageData getImageData() {
  * Returns an <code>ImageData</code> based on the receiver.
  * Modifications made to this <code>ImageData</code> will not
  * affect the Image.
- * <p>
- * <b>Warning:</b> This API doesn't make sense and will be replaced, see
- * <a href="https://bugs.eclipse.org/496409">bug 496409</a>.
- * </p>
  *
  * @return an <code>ImageData</code> containing the image's data
  * and attributes at the current zoom level.
@@ -1271,7 +1267,9 @@ public ImageData getImageData() {
  *
  * @see ImageData
  * @since 3.105
- * @deprecated use {@link #getImageData(int)} instead
+ * @deprecated This API doesn't serve the purpose in an environment having
+ *             multiple monitors with different DPIs and hence deprecated, use
+ *             {@link #getImageData(int)} instead.
  */
 @Deprecated
 public ImageData getImageDataAtCurrentZoom() {
