@@ -216,6 +216,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	 */
 	int columnIndex = parent.indexOf (nsColumn);
 	NSRect headerRect = parent.headerView.headerRectOfColumn (columnIndex);
+	double borderWidth = parent.hasBorder() ? 0.5 : 0;
 	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) {
 		if (parent.headerBackground != null) {
 			NSGraphicsContext context = NSGraphicsContext.currentContext ();
@@ -227,12 +228,14 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 			 * Before this method is invoked, the header cell's border is already drawn
 			 * with the system default color. Use headerRect's height & y values so that we
 			 * can draw over the header cell's borders with the header background color.
+			 * Don't draw over the top border when the border style is set. Also, adjust rect
+			 * height so that separator line between header & first row is drawn.
 			 */
 			NSRect rect = new NSRect();
 			rect.x = cellRect.x;
-			rect.y = headerRect.y;
+			rect.y = headerRect.y + borderWidth;
 			rect.width = cellRect.width;
-			rect.height = headerRect.height;
+			rect.height = headerRect.height - borderWidth - 0.5; /* 0.5 -> header-row separator width */
 			NSBezierPath.fillRect(rect);
 			context.restoreGraphicsState();
 		}
@@ -264,8 +267,15 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 		 * Before this method is invoked, the header cell's border is already drawn
 		 * with the system default color. Use headerRect instead of cellRect so that we
 		 * can draw over the header cell's borders with the header background color.
+		 * Don't draw over the top border when the border style is set. Also, adjust rect
+		 * height so that separator line between header & first row is drawn.
 		 */
-		NSBezierPath.fillRect(headerRect);
+		NSRect rect = new NSRect();
+		rect.x = headerRect.x;
+		rect.y = headerRect.y + borderWidth;
+		rect.width = headerRect.width;
+		rect.height = headerRect.height - borderWidth - 0.5; /* 0.5 -> header-row separator width */
+		NSBezierPath.fillRect(rect);
 
 		// draw column separator
 		if (parent.headerForeground != null) {
