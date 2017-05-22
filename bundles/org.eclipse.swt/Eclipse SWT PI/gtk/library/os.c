@@ -3295,6 +3295,30 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1strfreev)
 }
 #endif
 
+#ifndef NO__1g_1string_1free
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1string_1free)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1string_1free_FUNC);
+	rc = (jintLong)g_string_free((GString *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1string_1free_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1string_1new_1len
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1string_1new_1len)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1string_1new_1len_FUNC);
+	rc = (jintLong)g_string_new_len((const gchar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1string_1new_1len_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1strtod
 JNIEXPORT jdouble JNICALL OS_NATIVE(_1g_1strtod)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)

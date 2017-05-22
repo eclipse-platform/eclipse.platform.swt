@@ -78,10 +78,10 @@ public class WebKitGTK extends C {
 	/** Webkit1 only. On webkit2 & newer browsers 'window.status=txt' has no effect anymore.
 	 *  Status bar only updated when you hover mouse over hyperlink.*/
 	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
-	
+
 	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$	// Webkit1
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$		// Webkit2
-	
+
 	/** Webkit1 only. On Webkit2 this is found in a webextension. Instead 'load_changed' is used on webkit2 **/
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
 
@@ -1335,6 +1335,17 @@ public static final int webkit_web_view_can_go_back (long /*int*/ web_view) {
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_view_get_main_resource (long /*int*/ web_view);
+public static final long /*int*/ webkit_web_view_get_main_resource (long /*int*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_main_resource (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int _webkit_web_view_can_go_forward (long /*int*/ web_view);
 public static final int webkit_web_view_can_go_forward (long /*int*/ web_view) {
 	lock.lock();
@@ -1671,6 +1682,29 @@ public static final void webkit_web_view_run_javascript (long /*int*/ web_view, 
 		lock.unlock();
 	}
 }
+
+/** @method flags=dynamic */
+public static final native void _webkit_web_resource_get_data (long /*int*/ webKitWebResource, long /*int*/ gCancellable, long /*int*/ GAsyncReadyCallback, long /*int*/ user_data);
+public static final void webkit_web_resource_get_data (long /*int*/ webKitWebResource, long /*int*/ gCancellable, long /*int*/ GAsyncReadyCallback, long /*int*/ user_data) {
+	lock.lock();
+	try {
+		_webkit_web_resource_get_data (webKitWebResource, gCancellable, GAsyncReadyCallback, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_resource_get_data_finish(long /*int*/ WebKitWebResource, long /*int*/ GAsyncResult, long /*int*/[] gsize, long /*int*/ GError[]);
+public static final long /*int*/ webkit_web_resource_get_data_finish(long /*int*/ WebKitWebResource, long /*int*/ GAsyncResult, long /*int*/[] gsize, long /*int*/ GError[]) {
+	lock.lock();
+	try {
+		return _webkit_web_resource_get_data_finish(WebKitWebResource, GAsyncResult, gsize, GError);
+	} finally {
+		lock.unlock();
+	}
+}
+
 
 /**
  * @method flags=dynamic

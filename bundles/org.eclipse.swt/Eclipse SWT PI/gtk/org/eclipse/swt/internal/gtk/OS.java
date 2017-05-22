@@ -3052,6 +3052,35 @@ public static final long /*int*/ GString_str(long /*int*/ string) {
 		lock.unlock();
 	}
 }
+
+/**
+ * @param init cast=(const gchar *)
+ */
+public static final native long /*int*/ _g_string_new_len(long /*int*/ init, long /*int*/ gssize);
+/** 				   GString * g_string_new_len (const gchar *init, gssize len); */
+public static final long /*int*/ g_string_new_len(long /*int*/ init, long /*int*/ gssize) {
+	lock.lock();
+	try {
+		return _g_string_new_len(init, gssize);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param GString cast=(GString *)
+ */
+public static final native long /*int*/ _g_string_free(long /*int*/ GString, int gboolen_free_segment);
+/** 					 gchar * g_string_free (GString *string, gboolean free_segment);*/
+public static final long /*int*/ g_string_free(long /*int*/ GString, int gboolen_free_segment) {
+	lock.lock();
+	try {
+		return _g_string_free(GString, gboolen_free_segment);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @param str cast=(const gchar *)
  * @param endptr cast=(gchar **)

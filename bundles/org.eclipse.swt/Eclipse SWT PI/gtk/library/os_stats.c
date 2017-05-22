@@ -340,6 +340,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1slist_1next",
 	"_1g_1source_1remove",
 	"_1g_1strfreev",
+	"_1g_1string_1free",
+	"_1g_1string_1new_1len",
 	"_1g_1strtod",
 	"_1g_1thread_1init",
 	"_1g_1thread_1supported",

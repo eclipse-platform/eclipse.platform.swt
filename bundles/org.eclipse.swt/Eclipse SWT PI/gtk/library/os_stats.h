@@ -350,6 +350,8 @@ typedef enum {
 	_1g_1slist_1next_FUNC,
 	_1g_1source_1remove_FUNC,
 	_1g_1strfreev_FUNC,
+	_1g_1string_1free_FUNC,
+	_1g_1string_1new_1len_FUNC,
 	_1g_1strtod_FUNC,
 	_1g_1thread_1init_FUNC,
 	_1g_1thread_1supported_FUNC,

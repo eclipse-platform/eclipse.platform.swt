@@ -17,6 +17,7 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -172,7 +173,7 @@ class WebKit extends WebBrowser {
 			if (Proc6.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 			if (WEBKIT2) {
-				new Webkit2JavascriptEvaluator();
+				new Webkit2AsyncToSync();
 			}
 
 			if (WEBKIT2) {
@@ -1161,21 +1162,24 @@ public boolean execute (String script) {
 }
 
 /**
- * Deals with evaluating Javascript in a webkit2 instance.
+ * Webkit2 introduces async api. However SWT has sync execution model. This class it to convert async api to sync.
  *
- * Javascript execution is asynchronous in webkit2, so we map each call
- * to it's callback and wait for callback to finish.
+ * The mechanism generates an ID for each callback and waits for that callback to complete.
  */
-private static class Webkit2JavascriptEvaluator {
+private static class Webkit2AsyncToSync {
 
-	private static Callback callback;
+	private static Callback evaluate_callback;
+	private static Callback getText_callback;
 	static {
-		callback = new Callback(Webkit2JavascriptEvaluator.class, "javascriptExecutionFinishedProc", void.class, new Type[] {long.class, long.class, long.class});
-		if (callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		evaluate_callback = new Callback(Webkit2AsyncToSync.class, "evaluate_callback", void.class, new Type[] {long.class, long.class, long.class});
+		if (evaluate_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		getText_callback = new Callback(Webkit2AsyncToSync.class, "getText_callback", void.class, new Type[] {long.class, long.class, long.class});
+		if (getText_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
-	/** Object used to pass data from callback back to caller of evaluate() */
-	private static class Webkit2EvalReturnObj {
+	/** Object used to return data from callback to original call */
+	private static class Webkit2AsyncReturnObj {
 		boolean callbackFinished = false;
 		Object returnValue;
 
@@ -1198,14 +1202,14 @@ private static class Webkit2JavascriptEvaluator {
 	 * org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener()
 	 */
 	private static class CallBackMap {
-		private static HashMap<Integer, Webkit2EvalReturnObj> callbackMap = new HashMap<>();
+		private static HashMap<Integer, Webkit2AsyncReturnObj> callbackMap = new HashMap<>();
 
-		static int putObject(Webkit2EvalReturnObj obj) {
+		static int putObject(Webkit2AsyncReturnObj obj) {
 			int id = getNextId();
 			callbackMap.put(id, obj);
 			return id;
 		}
-		static Webkit2EvalReturnObj getObj(int id) {
+		static Webkit2AsyncReturnObj getObj(int id) {
 			return callbackMap.get(id);
 		}
 		static void removeObject(int id) {
@@ -1254,20 +1258,10 @@ private static class Webkit2JavascriptEvaluator {
 			return null;
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
-			// The callback comes back in javascriptExecutionFinishedProc(..) below.
-			Webkit2EvalReturnObj retObj = new Webkit2EvalReturnObj();
-			int callbackId = CallBackMap.putObject(retObj);
-			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, callback.getAddress(), callbackId);
-			Shell shell = browser.getShell();
-			Display display = browser.getDisplay();
-			while (!shell.isDisposed()) {
-				boolean eventsDispatched = OS.g_main_context_iteration (0, false);
-				if (retObj.callbackFinished)
-					break;
-				else if (!eventsDispatched)
-					display.sleep();
-			}
-			CallBackMap.removeObject(callbackId);
+			// The callback comes back in evaluate_callback(..) below.
+
+			Consumer <Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, evaluate_callback.getAddress(), callbackId);
+			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
 
 			if (retObj.errorNum != 0) {
 				throw new SWTException(retObj.errorNum, retObj.errorMsg);
@@ -1277,11 +1271,10 @@ private static class Webkit2JavascriptEvaluator {
 		}
 	}
 
-	/** Callback that is called directly from Javascirpt. **/
-	@SuppressWarnings("unused")
-	private static void javascriptExecutionFinishedProc (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
+	@SuppressWarnings("unused") // Only called directly from C (from javascript).
+	private static void evaluate_callback (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
 		int callbackId = (int) user_data;
-		Webkit2EvalReturnObj retObj = CallBackMap.getObj(callbackId);
+		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
 		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
 		long /*int*/ js_result = WebKitGTK.webkit_web_view_run_javascript_finish(GObject_source, GAsyncResult, gerror);
@@ -1308,6 +1301,58 @@ private static class Webkit2JavascriptEvaluator {
 		retObj.callbackFinished = true;
 		Display.getCurrent().wake();
 	}
+
+	static String getText(Browser browser, long /*int*/ webView) {
+		long /*int*/ WebKitWebResource = WebKitGTK.webkit_web_view_get_main_resource(webView);
+		if (WebKitWebResource == 0) { // No page yet loaded.
+			return "";
+		}
+
+		Consumer<Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_resource_get_data(WebKitWebResource, 0, getText_callback.getAddress(), callbackId);
+		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
+
+		return (String) retObj.returnValue;
+	}
+
+	@SuppressWarnings("unused") // Callback only called only by C directly
+	private static void getText_callback(long /*int*/ WebResource, long /*int*/ GAsyncResult, long /*int*/ user_data) {
+		int callbackId = (int) user_data;
+		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
+
+		long /*int*/[] gsize_len = new long /*int*/ [1];
+		long /*int*/[] gerrorRes = new long /*int*/ [1]; // GError **
+		long /*int*/ guchar_data = WebKitGTK.webkit_web_resource_get_data_finish(WebResource, GAsyncResult, gsize_len, gerrorRes);
+		if (gerrorRes[0] != 0 || guchar_data == 0) {
+			OS.g_error_free(gerrorRes[0]);
+			retObj.returnValue = (String) "";
+		} else {
+			long /*int*/ GString;
+			GString = OS.g_string_new_len(guchar_data, gsize_len[0]); //(Str + len) -> (null terminated str)
+			String text = Converter.cCharPtrToJavaString(OS.GString_str(GString), false);
+			OS.g_string_free(GString, 1);
+			retObj.returnValue = (String) text;
+		}
+
+		retObj.callbackFinished = true;
+		Display.getCurrent().wake();
+	}
+
+	private static Webkit2AsyncReturnObj execAsyncAndWaitForReturn(Browser browser, Consumer<Integer> asyncFunc) {
+		Webkit2AsyncReturnObj retObj = new Webkit2AsyncReturnObj();
+		int callbackId = CallBackMap.putObject(retObj);
+		asyncFunc.accept(callbackId);
+		Shell shell = browser.getShell();
+		Display display = browser.getDisplay();
+		while (!shell.isDisposed()) {
+			boolean eventsDispatched = OS.g_main_context_iteration (0, false);
+			if (retObj.callbackFinished)
+				break;
+			else if (!eventsDispatched)
+				display.sleep();
+		}
+		CallBackMap.removeObject(callbackId);
+		return retObj;
+	}
 }
 
 @Override
@@ -1321,7 +1366,7 @@ public Object evaluate (String script) throws SWTException {
         	return null;
         }
 		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
-		return Webkit2JavascriptEvaluator.evaluate(script, this.browser, webView, doNotBlock);
+		return Webkit2AsyncToSync.evaluate(script, this.browser, webView, doNotBlock);
 	} else {
 		return super.evaluate(script);
 	}
@@ -1341,28 +1386,33 @@ public String getBrowserType () {
 
 @Override
 public String getText () {
-	long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-	long /*int*/ source = WebKitGTK.webkit_web_frame_get_data_source (frame);
-	if (source == 0) return "";	//$NON-NLS-1$
-	long /*int*/ data = WebKitGTK.webkit_web_data_source_get_data (source);
-	if (data == 0) return "";	//$NON-NLS-1$
+	if (WEBKIT2) {
+		return Webkit2AsyncToSync.getText(browser, webView);
+	} else  {
+		// Webkit1 only.
+		long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
+		long /*int*/ source = WebKitGTK.webkit_web_frame_get_data_source (frame);
+		if (source == 0) return "";	//$NON-NLS-1$
+		long /*int*/ data = WebKitGTK.webkit_web_data_source_get_data (source);
+		if (data == 0) return "";	//$NON-NLS-1$
 
-	long /*int*/ encoding = WebKitGTK.webkit_web_data_source_get_encoding (source);
-	int length = OS.strlen (encoding);
-	byte[] bytes = new byte [length];
-	OS.memmove (bytes, encoding, length);
-	String encodingString = new String (Converter.mbcsToWcs (bytes));
+		long /*int*/ encoding = WebKitGTK.webkit_web_data_source_get_encoding (source);
+		int length = OS.strlen (encoding);
+		byte[] bytes = new byte [length];
+		OS.memmove (bytes, encoding, length);
+		String encodingString = new String (Converter.mbcsToWcs (bytes));
 
-	length = OS.GString_len (data);
-	bytes = new byte[length];
-	long /*int*/ string = OS.GString_str (data);
-	C.memmove (bytes, string, length);
+		length = OS.GString_len (data);
+		bytes = new byte[length];
+		long /*int*/ string = OS.GString_str (data);
+		C.memmove (bytes, string, length);
 
-	try {
-		return new String (bytes, encodingString);
-	} catch (UnsupportedEncodingException e) {
+		try {
+			return new String (bytes, encodingString);
+		} catch (UnsupportedEncodingException e) {
+		}
+		return new String (Converter.mbcsToWcs (bytes));
 	}
-	return new String (Converter.mbcsToWcs (bytes));
 }
 
 @Override

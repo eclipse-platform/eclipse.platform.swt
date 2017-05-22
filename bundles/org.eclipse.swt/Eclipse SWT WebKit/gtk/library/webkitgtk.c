@@ -2456,6 +2456,51 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1policy_1decision_1ignore)
 }
 #endif
 
+#ifndef NO__1webkit_1web_1resource_1get_1data
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1resource_1get_1data)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1resource_1get_1data_FUNC);
+/*
+	webkit_web_resource_get_data(arg0, arg1, arg2, arg3);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_resource_get_data)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1resource_1get_1data_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1web_1resource_1get_1data_1finish
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1resource_1get_1data_1finish)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3)
+{
+	jintLong *lparg2=NULL;
+	jintLong *lparg3=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1resource_1get_1data_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)webkit_web_resource_get_data_finish(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_resource_get_data_finish)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong *, jintLong *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1resource_1get_1data_1finish_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1web_1view_1can_1go_1back
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1can_1go_1back)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2614,6 +2659,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1main_1fram
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1get_1main_1frame_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1web_1view_1get_1main_1resource
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1main_1resource)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1get_1main_1resource_FUNC);
+/*
+	rc = (jintLong)webkit_web_view_get_main_resource(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_get_main_resource)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1get_1main_1resource_FUNC);
 	return rc;
 }
 #endif
