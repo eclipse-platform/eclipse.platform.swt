@@ -893,6 +893,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1menu_1new",
 	"_1gtk_1menu_1popdown",
 	"_1gtk_1menu_1popup",
+	"_1gtk_1menu_1popup_1at_1pointer",
 	"_1gtk_1menu_1shell_1deactivate",
 	"_1gtk_1menu_1shell_1insert",
 	"_1gtk_1menu_1shell_1set_1take_1focus",

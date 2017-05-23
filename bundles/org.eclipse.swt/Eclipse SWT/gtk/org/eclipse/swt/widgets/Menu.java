@@ -206,28 +206,50 @@ void _setVisible (boolean visible) {
 			if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
 				OS.gtk_menu_shell_set_take_focus (handle, false);
 			}
-			long /*int*/ address = 0;
-			hasLocation = false;
-			long /*int*/ data = 0;
-			/*
-			* Popup-menu to the status icon should be aligned to
-			* Tray rather than to cursor position. There is a
-			* possibility (unlikely) that TrayItem might have
-			* been disposed in the listener, for which case
-			* the menu should be shown in the cursor position.
-			*/
-			TrayItem item = display.currentTrayItem;
-			if (item != null && !item.isDisposed()) {
-				 data = item.handle;
-				 address = OS.gtk_status_icon_position_menu_func ();
+			if (OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+				long /*int*/ address = 0;
+				hasLocation = false;
+				long /*int*/ data = 0;
+				/*
+				* Popup-menu to the status icon should be aligned to
+				* Tray rather than to cursor position. There is a
+				* possibility (unlikely) that TrayItem might have
+				* been disposed in the listener, for which case
+				* the menu should be shown in the cursor position.
+				*/
+				TrayItem item = display.currentTrayItem;
+				if (item != null && !item.isDisposed()) {
+					 data = item.handle;
+					 address = OS.gtk_status_icon_position_menu_func ();
+				}
+				/*
+				* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
+				* to perform an X pointer grab.  It cannot be zero, else the grab
+				* will fail.  The fix is to ensure that the timestamp of the last
+				* event processed is used.
+				*/
+				OS.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
 			}
-			/*
-			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
-			* to perform an X pointer grab.  It cannot be zero, else the grab
-			* will fail.  The fix is to ensure that the timestamp of the last
-			* event processed is used.
-			*/
-			OS.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
+			else {
+				/*
+				 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+				 *  immediately and not as a post event in display, requiring the current event.
+				 */
+				long /*int*/ eventPtr = OS.gtk_get_current_event();
+				if (eventPtr == 0) {
+					eventPtr = OS.gdk_event_new(OS.GDK_BUTTON_PRESS);
+					GdkEventButton event = new GdkEventButton ();
+					event.type = OS.GDK_BUTTON_PRESS;
+					event.window = OS.g_object_ref(OS.gtk_widget_get_window (getShell().handle));
+					long /*int*/ device_manager = OS.gdk_display_get_device_manager (OS.gdk_display_get_default ());
+					event.device = OS.gdk_device_manager_get_client_pointer (device_manager);
+					event.time = display.getLastEventTime ();
+					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+				}
+				OS.gtk_menu_popup_at_pointer (handle, eventPtr);
+				OS.gdk_event_free (eventPtr);
+			}
 		} else {
 			sendEvent (SWT.Hide);
 		}
@@ -1087,11 +1109,21 @@ void setOrientation (boolean create) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	if (visible) {
-		display.addPopup (this);
+	/*
+	 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+	 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+	 *  immediately and not as a post event in display.
+	 */
+	if (OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+		if (visible) {
+			display.addPopup (this);
+		} else {
+			display.removePopup (this);
+			_setVisible (false);
+		}
 	} else {
-		display.removePopup (this);
-		_setVisible (false);
+		_setVisible(visible);
 	}
 }
 }
+

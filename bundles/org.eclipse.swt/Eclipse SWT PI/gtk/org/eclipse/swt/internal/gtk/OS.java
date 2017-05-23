@@ -9349,7 +9349,10 @@ public static final void gtk_menu_popdown(long /*int*/ menu) {
 		lock.unlock();
 	}
 }
+
+// [GTK2/GTK3; 3.22 deprecated]
 /**
+ * @method flags=dynamic
  * @param menu cast=(GtkMenu *)
  * @param parent_menu_shell cast=(GtkWidget *)
  * @param parent_menu_item cast=(GtkWidget *)
@@ -9367,6 +9370,20 @@ public static final void gtk_menu_popup(long /*int*/ menu, long /*int*/ parent_m
 		lock.unlock();
 	}
 }
+
+/**
+ *  @method flags=dynamic
+ */
+public static final native void _gtk_menu_popup_at_pointer(long /*int*/ menu, long /*int*/ trigger_event);
+public static void gtk_menu_popup_at_pointer(long /*int*/ menu, long /*int*/ trigger_event) {
+	lock.lock();
+	try {
+		_gtk_menu_popup_at_pointer(menu, trigger_event);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** @param menu_shell cast=(GtkMenuShell *) */
 public static final native void _gtk_menu_shell_deactivate(long /*int*/ menu_shell);
 public static final void gtk_menu_shell_deactivate(long /*int*/ menu_shell) {

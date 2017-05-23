@@ -292,6 +292,8 @@
 #define gtk_gesture_zoom_get_scale_delta_LIB LIB_GTK
 #define gtk_gesture_zoom_new_LIB LIB_GTK
 #define gtk_gesture_single_set_button_LIB LIB_GTK
+#define gtk_menu_popup_LIB LIB_GTK
+#define gtk_menu_popup_at_pointer_LIB LIB_GTK
 #define gtk_widget_draw_LIB LIB_GTK
 #define gtk_widget_override_color_LIB LIB_GTK
 #define gtk_widget_override_background_color_LIB LIB_GTK
