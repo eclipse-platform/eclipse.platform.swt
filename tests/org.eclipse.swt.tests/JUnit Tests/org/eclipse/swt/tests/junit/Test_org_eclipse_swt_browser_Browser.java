@@ -849,6 +849,59 @@ public void test_setUrl() {
 	// TODO - it would be good to verify that the page actually loaded. ex download the webpage etc..
 }
 
+@Test
+public void test_getText() {
+	getText_helper("helloWorld");
+}
+
+@Test
+public void test_getText_html() {
+	getText_helper("<html><head></head><body>hello<b>World</b></body></html>");
+}
+
+/** Ensure we get webpage before javascript processed it.
+ *  E.g js would add 'style' tag to body after processing. */
+@Test
+public void test_getText_script() {
+	getText_helper("<html><head></head><body>hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>");
+}
+
+/** Ensure that 'DOCTYPE' is not stripped out of original string */
+@Test
+public void test_getText_doctype() {
+	getText_helper("<!DOCTYPE html><html><head></head><body>hello World</body></html>");
+}
+
+/** Ensure custom DOCTYPE is not stripped out of original string */
+@Test
+public void test_getText_doctype_custom() {
+	getText_helper("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
+			+ "\"http://www.w3.org/TR/html4/strict.dtd\"><html><head></head><body>hello World</body></html>");
+}
+
+private void getText_helper(String testString) {
+	AtomicReference<String> returnString= new AtomicReference<>("");
+	AtomicBoolean finished = new AtomicBoolean(false);
+	browser.setText(testString);
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			returnString.set(browser.getText());
+			if (debug_verbose_output)
+				System.out.println(returnString.get());
+			finished.set(true);
+		}
+	});
+	shell.open();
+	waitForPassCondition(() -> finished.get());
+	boolean passed = returnString.get().equals(testString);
+	String error_msg = finished.get() ?
+			"Test did not return correct string.\n"
+			+ "Expected:"+testString+"\n"
+			+ "Actual:"+returnString.get()
+			: "Test timed out";
+	assertTrue(error_msg, passed);
+}
 
 /**
  * Test that a page load an be stopped (stop()) without throwing an exception.
