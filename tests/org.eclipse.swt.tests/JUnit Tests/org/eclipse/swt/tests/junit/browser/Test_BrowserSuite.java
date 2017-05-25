@@ -33,13 +33,6 @@ String skipMsg() {
 	return "Test_BrowserSuite." + name.getMethodName() + "() skipped, see bug 499159, 509411";
 }
 
-@Test
-public void testBrowser1() {
-	assumeFalse(skipMsg(), SwtTestUtil.isRunningOnEclipseOrgHudsonGTK);
-	manualSetUp();
-	assertTrue(Browser1_location_progress_fromURL.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser2() {

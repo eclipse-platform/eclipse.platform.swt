@@ -278,6 +278,103 @@ public void test_LocationListener_changingAndOnlyThenChanged() {
 }
 
 @Test
+public void test_LocationListener_then_ProgressListener() {
+	AtomicBoolean locationChanged = new AtomicBoolean(false);
+	AtomicBoolean progressChanged = new AtomicBoolean(false);
+	AtomicBoolean progressChangedAfterLocationChanged = new AtomicBoolean(false);
+
+	browser.addLocationListener(new LocationAdapter() {
+		@Override
+		public void changed(LocationEvent event) {
+			locationChanged.set(true);
+		}
+	});
+
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			if (locationChanged.get()) {
+				progressChangedAfterLocationChanged.set(true);
+			}
+			progressChanged.set(true);
+		}
+	});
+
+	shell.open();
+	browser.setText("Hello world");
+
+	waitForPassCondition(() -> progressChanged.get());
+	String errorMsg = "\nUnexpected listener states. Expecting true for all, but have:\n"
+			+ "Location changed: " + locationChanged.get() + "\n"
+			+ "ProgressChangedAfterLocationChanged: " + progressChangedAfterLocationChanged.get() + "\n"
+			+ "progressChanged: " + progressChanged.get();
+
+	assertTrue(errorMsg, progressChangedAfterLocationChanged.get());
+}
+
+@Test
+/**
+ * "event.doit = false" in Location.changing() should stop 'Loction.changed & progress.completed' from getting fired.
+ */
+public void test_LocationListener_ProgressListener_cancledLoad () {
+
+	AtomicBoolean locationChanging = new AtomicBoolean(false);
+	AtomicBoolean unexpectedLocationChanged = new AtomicBoolean(false);
+	AtomicBoolean unexpectedProgressCompleted = new AtomicBoolean(false);
+
+	browser.addLocationListener(new LocationListener() {
+		@Override
+		public void changing(LocationEvent event) {
+			event.doit = false;
+			locationChanging.set(true);
+		}
+		@Override
+		public void changed(LocationEvent event) {
+			if (event.location.length() != 0) { // See footnote 1
+				unexpectedLocationChanged.set(true);
+			}
+		}
+	});
+
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			String location = browser.getUrl();
+			if (location.length() != 0) { // See footnote 1
+				unexpectedProgressCompleted.set(true);
+			}
+		}
+	});
+	shell.open();
+	browser.setText("You should not see this message.");
+
+	// We must wait for events *not* to fire.
+	// On Gtk, Quadcore (Intel i7-4870HQ pci-e SSD, all events fire after ~80ms.
+	// For stability, wait 1000 ms.
+	waitForMilliseconds(1000);
+
+	boolean passed = locationChanging.get() && !unexpectedLocationChanged.get() && !unexpectedProgressCompleted.get();
+	String errMsg = "\nUnexpected event fired. \n"
+			+ "LocationChanging (should be true): " + locationChanging.get() + "\n"
+			+ "LocationChanged unexpectedly (should be false): " + unexpectedLocationChanged.get() + "\n"
+			+ "ProgressChanged unexpectedly (should be false): " + unexpectedProgressCompleted.get() + "\n";
+
+
+	assertTrue(errMsg, passed);
+
+	/* FOOTNOTE 1
+	 *
+	 * Feature on Internet Explorer. If there is no current location, IE still fires a DocumentComplete
+	 * following the BeforeNavigate2 cancel event. This DocumentComplete event contains an empty URL
+	 * since the URL in BeforeNavigate2 was correctly cancelled.
+	 * The test considers it is OK to send a Location.changed and a Progress.completed events after
+	 * a Location.changing cancel true - at the condition that the current location is empty,
+	 * otherwise it is considered that the location was not successfully cancelled.
+	 */
+}
+
+
+@Test
 public void test_OpenWindowListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
