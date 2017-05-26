@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3993,6 +3993,11 @@ public boolean post (Event event) {
 					long /*int*/ gdkScreen = OS.gdk_screen_get_default();
 					long /*int*/ gdkWindow = OS.gdk_screen_get_active_window(gdkScreen);
 					int[] x = new int[1], y = new int[1];
+					if (gdkWindow == 0) {
+						// Under some window managers or wayland gdk can not determine the active window and passing null
+						// to gdk_test_simulate_button leads to crash.
+						return false;
+					}
 					if (OS.GTK3) {
 						long /*int*/ gdkDeviceManager = OS.gdk_display_get_device_manager(gdkDisplay);
 						long /*int*/ gdkPointer = OS.gdk_device_manager_get_client_pointer(gdkDeviceManager);
