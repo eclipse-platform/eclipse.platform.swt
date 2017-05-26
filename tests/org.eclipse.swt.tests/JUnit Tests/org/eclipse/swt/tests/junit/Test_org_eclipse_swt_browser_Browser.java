@@ -375,6 +375,41 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 
 
 @Test
+/** Ensue that only one changed and one completed event are fired for url changes */
+public void test_LocationListener_ProgressListener_noExtraEvents() {
+	AtomicInteger changedCount = new AtomicInteger(0);
+	AtomicInteger completedCount = new AtomicInteger(0);
+
+	browser.addLocationListener(new LocationAdapter() {
+		@Override
+		public void changed(LocationEvent event) {
+			changedCount.incrementAndGet();
+		}
+	});
+
+	browser.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			completedCount.incrementAndGet();
+		}
+	});
+
+	shell.open();
+	browser.setText("Hello world");
+
+	// We have to wait to check that no extra events are fired.
+	// On Gtk, Quad Core, pcie this takes 80 ms. ~1000ms for stability.
+	waitForMilliseconds(600);
+	boolean passed = changedCount.get() == 1 && completedCount.get() == 1;
+
+	String errorMsg = "\nIncorrect event sequences. Events missing or too many fired:"
+			+ "\nExpected one of each, but received:"
+			+ "\nChanged count: " + changedCount.get()
+			+ "\nCompleted count: " + completedCount.get();
+	assertTrue(errorMsg, passed);
+}
+
+@Test
 public void test_OpenWindowListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);

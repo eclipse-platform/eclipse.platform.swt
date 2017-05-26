@@ -34,12 +34,6 @@ String skipMsg() {
 }
 
 
-@Test
-public void testBrowser2() {
-	manualSetUp();
-	assertTrue(Browser2_location_and_progress_advanced.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser3() {
