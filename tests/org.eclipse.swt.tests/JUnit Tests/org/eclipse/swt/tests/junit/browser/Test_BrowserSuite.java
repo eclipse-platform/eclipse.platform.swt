@@ -35,14 +35,6 @@ String skipMsg() {
 
 
 
-@Test
-public void testBrowser3() {
-	assumeFalse(skipMsg(), SwtTestUtil.isRunningOnEclipseOrgHudsonGTK);
-	System.out.println("testbrowse3 starting " + SwtTestUtil.isRunningOnEclipseOrgHudsonGTK);
-	manualSetUp();
-	assertTrue(Browser3_window_open_visibility_listeners.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser4() {

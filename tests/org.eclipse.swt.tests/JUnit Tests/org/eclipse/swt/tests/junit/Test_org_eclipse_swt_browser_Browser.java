@@ -436,6 +436,122 @@ public void test_OpenWindowListener_addAndRemove() {
 }
 
 @Test
+public void test_OpenWindowListener_openHasValidEventDetails() {
+	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
+	final Browser browserChild = new Browser(shell, SWT.None);
+	browser.addOpenWindowListener(event -> {
+		assertTrue("Expected Browser1 instance, but have another instance", (Browser) event.widget == browser);
+		assertTrue("Expected event.browser to be null", event.browser == null);
+		openFiredCorrectly.set(true);
+		event.browser = browserChild;
+	});
+
+	shell.open();
+	browser.setText("<html><script type='text/javascript'>window.open()</script>\n" +
+			"<body>This test uses javascript to open a new window.</body></html>");
+
+	boolean passed = waitForPassCondition(() -> openFiredCorrectly.get());
+	assertTrue("Test timed out. OpenWindow event not fired.", passed);
+}
+
+/** Test that a script 'window.open()' opens a child popup shell. */
+@Test
+public void test_OpenWindowListener_open_ChildPopup() {
+	AtomicBoolean childCompleted = new AtomicBoolean(false);
+
+	Shell childShell = new Shell(shell, SWT.None);
+	childShell.setText("Child shell");
+	childShell.setLayout(new FillLayout());
+	final Browser browserChild = new Browser(childShell, SWT.NONE);
+
+	browser.addOpenWindowListener(event -> {
+		event.browser = browserChild;
+	});
+
+	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
+		@Override
+		public void show(WindowEvent event) {
+			childShell.open();
+			browserChild.setText("Child Browser");
+		}
+	});
+
+	browserChild.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			childCompleted.set(true); //Triggers test to finish.
+		}
+	});
+
+	shell.open();
+
+	browser.setText("<html>"
+			+ "<script type='text/javascript'>"
+			+ "var newWin = window.open();" // opens child window.
+			+ "</script>\n" +
+			"<body>This test uses javascript to open a new window.</body></html>");
+
+	boolean passed = waitForPassCondition(() -> childCompleted.get());
+
+	String errMsg = "\nTest timed out.";
+	assertTrue(errMsg, passed);
+}
+
+/** Validate event order : Child's visibility should come before progress completed event */
+@Test
+public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
+	AtomicBoolean windowOpenFired = new AtomicBoolean(false);
+	AtomicBoolean childCompleted = new AtomicBoolean(false);
+	AtomicBoolean visibilityShowed = new AtomicBoolean(false);
+
+	Shell childShell = new Shell(shell, SWT.None);
+	childShell.setText("Child shell");
+	childShell.setLayout(new FillLayout());
+	final Browser browserChild = new Browser(childShell, SWT.NONE);
+
+	browser.addOpenWindowListener(event -> {
+		event.browser = browserChild;
+		assertFalse("OpenWindowListenr should have been fired first", visibilityShowed.get() || childCompleted.get()); // Validate event order.
+		windowOpenFired.set(true);
+	});
+
+	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
+		@Override
+		public void show(WindowEvent event) {
+			childShell.open();
+			assertTrue("Child Visibility.show should have fired before progress completed", windowOpenFired.get() && !childCompleted.get()); // Validate event order.
+			visibilityShowed.set(true);
+		}
+	});
+
+	browserChild.addProgressListener(new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			assertTrue("Child's Progress Completed before parent's expected events", windowOpenFired.get() && visibilityShowed.get());  // Validate event order.
+			childCompleted.set(true); //Triggers test to finish.
+			browserChild.setText("Child Browser!");
+		}
+	});
+
+	shell.open();
+
+	browser.setText("<html>"
+			+ "<script type='text/javascript'>"
+			+ "var newWin = window.open();" // opens child window.
+			+ "</script>\n" +
+			"<body>This test uses javascript to open a new window.</body></html>");
+
+	boolean passed = waitForPassCondition(() -> windowOpenFired.get() && visibilityShowed.get() && childCompleted.get());
+
+	String errMsg = "\nTest timed out."
+			+"\nExpected true for the below, but have:"
+			+"\nWindoOpenFired:" + windowOpenFired.get()
+			+"\nVisibilityShowed:" + visibilityShowed.get()
+			+"\nChildCompleted:" + childCompleted.get();
+	assertTrue(errMsg, passed);
+}
+
+@Test
 public void test_ProgressListener_newProgressAdapter() {
 	new ProgressAdapter() {};
 }
