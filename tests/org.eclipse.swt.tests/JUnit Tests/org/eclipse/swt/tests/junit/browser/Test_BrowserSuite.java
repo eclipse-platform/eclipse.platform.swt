@@ -36,12 +36,6 @@ String skipMsg() {
 
 
 
-@Test
-public void testBrowser4() {
-	manualSetUp();
-	assertTrue(Browser4_window_close_listener.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser5() {

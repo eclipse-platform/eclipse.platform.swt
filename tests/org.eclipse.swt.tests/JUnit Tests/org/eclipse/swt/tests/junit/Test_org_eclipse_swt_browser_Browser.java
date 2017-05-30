@@ -173,6 +173,19 @@ public void test_CloseWindowListener_addAndRemove () {
 }
 
 @Test
+public void test_CloseWindowListener_close () {
+	AtomicBoolean browserCloseListenerFired = new AtomicBoolean(false);
+	browser.addCloseWindowListener(	e -> {
+		disposedIntentionally= true;
+		browserCloseListenerFired.set(true);
+	});
+	browser.setText("<script language='JavaScript'>window.close()</script>");
+	shell.open();
+	boolean passed = waitForPassCondition(() -> browserCloseListenerFired.get());
+	assertTrue("Test timed out.", passed);
+}
+
+@Test
 public void test_LocationListener_adapter_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
