@@ -2525,6 +2525,8 @@ public void setSelection (int start, int end) {
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
+		// Bug 197785: scroll widget to start of selection using gtk_text_view_scroll_to_iter().
+		OS.gtk_text_view_scroll_to_iter (handle, startIter, 0, true, 0, 0);
 		OS.gtk_text_buffer_select_range(bufferHandle, startIter, endIter);
 	}
 }
