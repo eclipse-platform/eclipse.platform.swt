@@ -393,13 +393,21 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (widget, widgetAllocation);
+	/*
+	 * GTK Feature: gtk_size_allocate is not a reliable signal to tell if the resizes are correct.
+	 * There is a phantom signal that is sent with size of 1x1 at x,y = 0,0 before sending out the
+	 * correct size allocation signal during a drag. This check will prevent any excessive firing of
+	 * control events. See bug 97863.
+	 */
+	boolean minimumResizeSignal = (widgetAllocation.width == 1 && widgetAllocation.height == 1);
+	boolean movingSignal = (widgetAllocation.x == 0 && widgetAllocation.y == 0);
 	int x = widgetAllocation.x;
 	int width = widgetAllocation.width;
-	if (x != lastX) {
+	if (x != lastX && !movingSignal) {
 		lastX = x;
 		sendEvent (SWT.Move);
 	}
-	if (width != lastWidth) {
+	if (width != lastWidth && !minimumResizeSignal) {
 		lastWidth = width;
 		sendEvent (SWT.Resize);
 	}
