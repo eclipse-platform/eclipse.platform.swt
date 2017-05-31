@@ -685,9 +685,11 @@ public class OS extends C {
 	/* Named icons.
 	 * See https://docs.google.com/spreadsheet/pub?key=0AsPAM3pPwxagdGF4THNMMUpjUW5xMXZfdUNzMXhEa2c&output=html
 	 * See http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html#names
+	 * Icon preview tool: gtk3-icon-browser
+	 * Snippets often demonstrate usage of these. E.x 309, 258.
 	 * */
-	public static final byte[] GTK_NAMED_ICON_FIND = ascii("edit-find");  //Replacement of GTK_STOCK_FIND
-	public static final byte[] GTK_NAMED_ICON_CLEAR = ascii("edit-clear"); //Replacement of GTK_STOCK_CLEAR
+	public static final byte[] GTK_NAMED_ICON_FIND = ascii("system-search-symbolic");  //Replacement of GTK_STOCK_FIND
+	public static final byte[] GTK_NAMED_ICON_CLEAR = ascii("edit-clear-symbolic"); //Replacement of GTK_STOCK_CLEAR
 
 
 	public static final byte[] GTK_NAMED_ICON_GO_UP = ascii ("go-up-symbolic");
