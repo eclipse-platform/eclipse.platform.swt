@@ -78,6 +78,9 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	boolean isWebkit1 = false;
 	boolean isWebkit2 = false;
 
+	/** Accumiliate logs, print only if test case fails. Cleared for each test case. */
+	StringBuffer testLog;
+
 
 @Override
 @Before
@@ -115,6 +118,8 @@ public void setUp() {
 	}
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
+
+	testLog = new StringBuffer("\nTest log:\n");
 }
 
 
@@ -781,6 +786,118 @@ public void test_VisibilityWindowListener_addAndRemove() {
 	};
 	for (int i = 0; i < 100; i++) browser.addVisibilityWindowListener(listener);
 	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
+}
+
+/** Verify that if multiple child shells are open, no duplicate visibility events are sent. */
+@Test
+public void test_VisibilityWindowListener_multiple_shells() {
+		AtomicBoolean secondChildCompleted = new AtomicBoolean(false);
+		AtomicInteger childCount = new AtomicInteger(0);
+
+		browser.addOpenWindowListener(event -> {
+			Shell childShell = new Shell(shell);
+			childShell.setText("Child shell " + childCount.get());
+			childShell.setLayout(new FillLayout());
+			Browser browserChild = new Browser(childShell, SWT.NONE);
+			event.browser = browserChild;
+			browserChild.setText("Child window");
+			browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
+				AtomicInteger invocationCount = new AtomicInteger(1);
+				AtomicInteger childID = new AtomicInteger(childCount.get());
+				@Override
+				public void show(WindowEvent event) {
+					if (childID.get() == 0 && invocationCount.get() >= 2) {
+						// Certain browsers fire multiple show events for no good reason. Further show events
+						// are considered 'legal' as long as they don't contain size and location information.
+						if (event.location != null || event.size != null) {
+							fail("Child browser's visibility show listener should only be fired once");
+						}
+					}
+					invocationCount.incrementAndGet();
+				}
+			});
+
+			if (childCount.get() == 1) {
+				browserChild.addProgressListener(new ProgressAdapter() {
+					@Override
+					public void completed(ProgressEvent event) {
+						secondChildCompleted.set(true);
+					}
+				});
+			}
+			childShell.open();
+			childCount.incrementAndGet();
+		});
+
+		shell.open();
+		browser.setText("<html>"
+				+ "<script type='text/javascript'>"
+				+ "window.open();" // opens child window.
+				+ "window.open();"
+				+ "</script>\n" +
+				"<body>This test uses javascript to open a new window.</body></html>");
+
+		boolean passed = waitForPassCondition(() -> secondChildCompleted.get());
+
+		String errMsg = "\nTest timed out.";
+		assertTrue(errMsg, passed);
+}
+
+/**
+ *  Validate that when javascript opens a new window and specifies size,
+ *  it's size is passed to the visibility event correctly.
+ */
+@Test
+public void test_VisibilityWindowListener_eventSize() {
+	shell.setSize(200,300);
+	AtomicBoolean childCompleted = new AtomicBoolean(false);
+	AtomicReference<Point> result = new AtomicReference<>(new Point(0,0));
+
+	Shell childShell = new Shell(shell);
+	childShell.setSize(250, 350);
+	childShell.setText("Child shell");
+	childShell.setLayout(new FillLayout());
+	final Browser browserChild = new Browser(childShell, SWT.NONE);
+
+	browser.addOpenWindowListener(event -> {
+		event.browser = browserChild;
+		testLog.append("openWindowListener fired");
+	});
+
+	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
+		@Override
+		public void show(WindowEvent event) {
+			testLog.append("Visibilty show eventfired.\nEvent size: " + event.size);
+			result.set(event.size);
+			childShell.open();
+			childCompleted.set(true);
+		}
+	});
+
+	shell.open();
+	browser.setText("<html>"
+			+ "<script type='text/javascript'>"
+			+ "window.open('javascript:\"Child Window\"','', \"height=200,width=300\")\n"
+			+ "</script>\n" +
+			"<body>This test uses javascript to open a new window.</body></html>");
+
+	boolean finishedWithoutTimeout = waitForPassCondition(() -> childCompleted.get());
+	browserChild.dispose();
+
+	boolean passed = false;
+	if (isWebkit1 || SwtTestUtil.isCocoa) {
+		// On webkit1, event.size doesn't work properly. Fields are differently. Solution: Webkit2.
+		// On Cocoa, event height/width aren't respected if declared by javascript.
+		passed = finishedWithoutTimeout && result.get().x != 0 && result.get().y != 0;
+	} else
+		passed = finishedWithoutTimeout && result.get().x == 300 && result.get().y == 200;
+
+	String errMsg = finishedWithoutTimeout ?
+			"Incorrect size received:"
+			+ "\nexpected width=300, actual:" + result.get().x
+			+ "\nexpected height=100, actual:" + result.get().y
+			: "test timed out. Child's visibility Window listener didn't trigger";
+	assertTrue(errMsg + testLog.toString(), passed);
 }
 
 @Override

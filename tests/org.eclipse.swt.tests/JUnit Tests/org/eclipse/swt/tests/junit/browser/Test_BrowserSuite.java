@@ -37,12 +37,6 @@ String skipMsg() {
 
 
 
-@Test
-public void testBrowser5() {
-	manualSetUp();
-	assertTrue(Browser5_sizing_and_bounds.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser6() {
