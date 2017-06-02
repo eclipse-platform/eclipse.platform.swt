@@ -735,6 +735,74 @@ public void test_TitleListener_addAndRemove() {
 }
 
 @Test
+public void test_TitleListener_event() {
+	AtomicBoolean titleListenerFired = new AtomicBoolean(false);
+	browser.addTitleListener(event -> titleListenerFired.set(true));
+	browser.setText("<html><title>Hello world</title><body>Page with a title</body></html>");
+	shell.open();
+	boolean passed = waitForPassCondition(() -> titleListenerFired.get());
+	String errMsg = "Title listener never fired. Test timed out.";
+	assertTrue(errMsg, passed);
+}
+
+
+@Test
+public void test_setText() {
+	String expectedTitle = "Website Title";
+	Runnable browserSetFunc = () -> {
+		String html = "<html><title>Website Title</title><body>Html page with custom title</body></html>";
+		boolean opSuccess = browser.setText(html);
+		assertTrue("Expecting setText() to return true", opSuccess);
+	};
+	validateTitleChanged(expectedTitle, browserSetFunc);
+}
+
+@Test
+public void test_setUrl_local() {
+	String expectedTitle = "Website Title";
+	Runnable browserSetFunc = () -> {
+		String url = Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
+		boolean opSuccess = browser.setUrl(url);
+		assertTrue("Expecting setUrl() to return true", opSuccess);
+	};
+	validateTitleChanged(expectedTitle, browserSetFunc);
+}
+
+/** This test requires working Internet connection */
+@Test
+public void test_setUrl_remote() {
+	String expectedTitle = "Example Domain";
+	Runnable browserSetFunc = () -> {
+		String url = "http://example.com"; // example.com loads very quickly and conveniently has a consistent title
+		boolean opSuccess = browser.setUrl(url);
+		assertTrue("Expecting setUrl() to return true", opSuccess);
+	};
+	validateTitleChanged(expectedTitle, browserSetFunc);
+}
+
+private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc) {
+	final AtomicReference<String> actualTitle = new AtomicReference<>("");
+	browser.addTitleListener(event ->  {
+		assertTrue("event title is empty", event.title != null);
+		actualTitle.set(event.title);
+	});
+	browserSetFunc.run();
+	shell.open();
+
+	boolean hasFinished = waitForPassCondition(() -> actualTitle.get().length() != 0);
+	boolean passed = hasFinished && actualTitle.get().equals(expectedTitle);
+	String errMsg = "";
+	if (!hasFinished)
+		errMsg = "Test timed out. TitleListener not fired";
+	else if (!actualTitle.get().equals(expectedTitle)) {
+		errMsg = "\nExpected title and actual title do not match."
+				+ "\nExpected: " + expectedTitle
+				+ "\nActual: " + actualTitle;
+	}
+	assertTrue(errMsg, passed);
+}
+
+@Test
 public void test_VisibilityWindowListener_newAdapter() {
 	new VisibilityWindowAdapter() {};
 }
@@ -1193,39 +1261,6 @@ public void test_refresh() {
 }
 
 
-
-/**
- * Test that HTML can be loaded into the browser.
- * Assertion is based on the return value of setText().
- * (A true return value doesn't neccessarily mean the text is actually rendered,
- * You should see a browser page with 'That is a test line...' printed many times.)
- */
-@Test
-public void test_setTextLjava_lang_String() {
-	// Note, this test sometimes crashes on webkit1. See Bug 509411
-
-	String html = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
-	for (int i = 0; i < 1000; i++) {
-		html +="<P>That is a test line with the number "+i+"</P>";
-	}
-	html += "</BODY></HTML>";
-	boolean result = browser.setText(html);
-	assertTrue(result);
-	waitForMilliseconds(2000);
-}
-
-/**
- * Test that setUrl() finishes without throwing an error.
- */
-@Test
-public void test_setUrl() {
-	// Note, this test sometimes crashes on webkit1. See Bug 509411
-
-	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
-	assert(browser.setUrl("http://www.eclipse.org/swt"));
-	waitForMilliseconds(2000);
-	// TODO - it would be good to verify that the page actually loaded. ex download the webpage etc..
-}
 
 /** Text without html tags */
 @Test

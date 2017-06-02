@@ -38,13 +38,6 @@ String skipMsg() {
 
 
 
-@Test
-public void testBrowser6() {
-	assumeFalse(skipMsg(), SwtTestUtil.isRunningOnEclipseOrgHudsonGTK);
-	manualSetUp();
-	assertTrue(Browser6_title_change_listener.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser7() {
