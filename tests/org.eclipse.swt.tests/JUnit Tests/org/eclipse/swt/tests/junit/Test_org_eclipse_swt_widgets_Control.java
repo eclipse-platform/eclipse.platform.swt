@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -449,19 +450,15 @@ public void test_requestLayoutL() {
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(control.getDisplay(), 255, 0, 0);
 	control.setBackground(color);
-	assertEquals("getBackground not equal color after setBackground(color)", color, control.getBackground());
+	assertEquals("getBackground not equal color after setBackground(color) for " + control, color, control.getBackground());
 	control.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null)", control.getBackground().equals(color));
-	// Skipping test run for GTK, already failing on GTK3. May be related to bug 421836
-	if (!"gtk".equals(SWT.getPlatform ())) {
-		// With alpha zero
-		color = new Color(control.getDisplay(), 255, 0, 0, 0);
-		control.setBackground(color);
-		assertEquals("getBackground not equal color after setBackground(color) with 0 alpha", color, control.getBackground());
-		control.setBackground(null);
-		assertFalse("getBackground unchanged after setBackground(null)", control.getBackground().equals(color));
-		color.dispose();
-	}
+	assertTrue("getBackground unchanged after setBackground(null) for " + control, !control.getBackground().equals(color));
+	color.dispose();
+	color = new Color(control.getDisplay(), 255, 0, 0, 0);
+	control.setBackground(color);
+	assertEquals("getBackground not equal color after setBackground(color) with 0 alpha for " + control + " " + control.getBackground(), color, control.getBackground());
+	control.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) alpha for " + control + " " + control.getBackground() + " " + control, !control.getBackground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(control.getDisplay(), 0, 255, 0);
 		control.setBackground(color);
@@ -472,6 +469,17 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 				fg, control.getForeground());
 	}
 	color.dispose();
+}
+@Test
+public void test_setBackgroundWithAlphaLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
+	control.setBackground(color);
+	assertEquals(color, control.getBackground());
+	Color fg = new Color(control.getDisplay(), 0, 255, 0, 0);
+	control.setForeground(fg);
+	assertEquals(color, control.getBackground());
+	color.dispose();
+	fg.dispose();
 }
 @Test
 public void test_setBoundsIIII() {
@@ -586,6 +594,20 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	}
 	color.dispose();
 }
+@Test
+public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2",
+			!SwtTestUtil.isGTK || SwtTestUtil.isGTK3());
+	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
+	control.setForeground(color);
+	assertEquals(color, control.getForeground());
+	Color bg = new Color(control.getDisplay(), 0, 255, 0, 0);
+	control.setBackground(bg);
+	assertEquals(color, control.getForeground());
+	color.dispose();
+	bg.dispose();
+}
+
 @Test
 public void test_setLayoutDataLjava_lang_Object() {
 	control.setLayoutData(this);
