@@ -1295,7 +1295,7 @@ public Rectangle getBounds() {
  * </ul>
  * @since 3.105
  * @deprecated This API doesn't serve the purpose in an environment having
- *             multiple monitors with different DPIs and hence deprecated.
+ *             multiple monitors with different DPIs, hence deprecated.
  */
 @Deprecated
 public Rectangle getBoundsInPixels() {
@@ -1345,7 +1345,7 @@ public ImageData getImageData () {
  * @see ImageData
  * @since 3.105
  * @deprecated This API doesn't serve the purpose in an environment having
- *             multiple monitors with different DPIs and hence deprecated, use
+ *             multiple monitors with different DPIs, hence deprecated. Use
  *             {@link #getImageData(int)} instead.
  */
 @Deprecated
