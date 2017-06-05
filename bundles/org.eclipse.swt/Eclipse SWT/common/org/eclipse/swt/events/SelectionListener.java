@@ -66,7 +66,7 @@ public void widgetDefaultSelected(SelectionEvent e);
 
 
 /**
- * Static helper method to create a selection listener for the
+ * Static helper method to create a <code>SelectionListener</code> for the
  * {@link #widgetSelected(SelectionEvent e)}) method, given a lambda expression
  * or a method reference.
  *
@@ -84,7 +84,7 @@ public static SelectionListener widgetSelectedAdapter(Consumer<SelectionEvent> c
 }
 
 /**
- * Static helper method to create a selection listener for the
+ * Static helper method to create a <code>SelectionListener</code> for the
  * {@link #widgetDefaultSelected(SelectionEvent e)}) method, given a lambda expression
  * or a method reference.
  *

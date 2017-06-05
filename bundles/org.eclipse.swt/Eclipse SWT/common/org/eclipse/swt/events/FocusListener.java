@@ -50,7 +50,7 @@ public void focusLost(FocusEvent e);
 
 
 /**
- * Static helper method to create a focus listener for the
+ * Static helper method to create a <code>FocusListener</code> for the
  * {@link #focusGained(FocusEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event
@@ -67,7 +67,7 @@ public static FocusListener focusGainedAdapter(Consumer<FocusEvent> c) {
 }
 
 /**
- * Static helper method to create a focus listener for the
+ * Static helper method to create a <code>FocusListener</code> for the
  * {@link #focusLost(FocusEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event

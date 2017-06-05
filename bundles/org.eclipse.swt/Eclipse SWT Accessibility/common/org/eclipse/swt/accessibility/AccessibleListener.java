@@ -127,7 +127,7 @@ public interface AccessibleListener extends SWTEventListener {
 	public void getDescription(AccessibleEvent e);
 
 	/**
-	 * Static helper method to create a accessible listener for the
+	 * Static helper method to create a <code>AccessibleListener</code> for the
 	 * {@link #getName(AccessibleEvent e)}) method with a lambda expression.
 	 *
 	 * @param c the consumer of the event
@@ -144,7 +144,7 @@ public interface AccessibleListener extends SWTEventListener {
 	}
 
 	/**
-	 * Static helper method to create a accessible listener for the
+	 * Static helper method to create a <code>AccessibleListener</code> for the
 	 * {@link #getHelp(AccessibleEvent e)}) method with a lambda expression.
 	 *
 	 * @param c the consumer of the event
@@ -161,7 +161,7 @@ public interface AccessibleListener extends SWTEventListener {
 	}
 
 	/**
-	 * Static helper method to create a accessible listener for the
+	 * Static helper method to create a <code>AccessibleListener</code> for the
 	 * {@link #getKeyboardShortcut(AccessibleEvent e)}) method with a lambda expression.
 	 *
 	 * @param c the consumer of the event
@@ -178,7 +178,7 @@ public interface AccessibleListener extends SWTEventListener {
 	}
 
 	/**
-	 * Static helper method to create a accessible listener for the
+	 * Static helper method to create a <code>AccessibleListener</code> for the
 	 * {@link #getDescription(AccessibleEvent e)}) method with a lambda expression.
 	 *
 	 * @param c the consumer of the event

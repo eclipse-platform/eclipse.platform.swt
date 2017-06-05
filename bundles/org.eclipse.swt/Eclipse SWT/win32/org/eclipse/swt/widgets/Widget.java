@@ -703,7 +703,7 @@ boolean hooks (int eventType) {
  * and <code>false</code> otherwise.
  *
  * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
- * 
+ *
  * @see SWT#AUTO_TEXT_DIRECTION
  *
  * @since 3.105

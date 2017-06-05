@@ -4083,48 +4083,48 @@ int getWrappedHeight (Point size) {
 		return this.highlight && highlightEnabled;
 	}
 
-	/**
-	 * Sets whether the selected tab is rendered as highlighted.
-	 *
-	 * @param enabled
-	 *            {@code true} to enable highlighting of selected tabs,
-	 *            {@code false} to disable it
-	 * @exception SWTException
-	 *                <ul>
-	 *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                disposed</li>
-	 *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
-	 *                thread that created the receiver</li>
-	 *                </ul>
-	 * @since 3.106
-	 */
-	public void setHighlightEnabled(boolean enabled) {
-		checkWidget();
-		if (highlightEnabled == enabled) {
-			return;
-		}
-		highlightEnabled = enabled;
-		updateFolder(REDRAW);
+/**
+ * Sets whether the selected tab is rendered as highlighted.
+ *
+ * @param enabled
+ *            {@code true} if the selected tab should be highlighted,
+ *            {@code false} otherwise.
+ * @exception SWTException
+ *                <ul>
+ *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+ *                disposed</li>
+ *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+ *                thread that created the receiver</li>
+ *                </ul>
+ * @since 3.106
+ */
+public void setHighlightEnabled(boolean enabled) {
+	checkWidget();
+	if (highlightEnabled == enabled) {
+		return;
 	}
+	highlightEnabled = enabled;
+	updateFolder(REDRAW);
+}
 
-	/**
-	 * Returns <code>true</code> if the selected CTabFolder tab is rendered as
-	 * highlighted.
-	 *
-	 * @return <code>true</code> if the selected CTabFolder tab is rendered as
-	 *         highlighted
-	 *
-	 * @exception SWTException
-	 *                <ul>
-	 *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
-	 *                disposed</li>
-	 *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
-	 *                thread that created the receiver</li>
-	 *                </ul>
-	 * @since 3.106
-	 */
-	public boolean getHighlightEnabled() {
-		checkWidget();
-		return highlightEnabled;
-	}
+/**
+ * Returns <code>true</code> if the selected tab is rendered as
+ * highlighted.
+ *
+ * @return <code>true</code> if the selected tab is rendered as
+ *         highlighted
+ *
+ * @exception SWTException
+ *                <ul>
+ *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+ *                disposed</li>
+ *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+ *                thread that created the receiver</li>
+ *                </ul>
+ * @since 3.106
+ */
+public boolean getHighlightEnabled() {
+	checkWidget();
+	return highlightEnabled;
+}
 }

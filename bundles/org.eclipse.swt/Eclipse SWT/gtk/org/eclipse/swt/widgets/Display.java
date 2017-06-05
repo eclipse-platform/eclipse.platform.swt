@@ -4941,7 +4941,7 @@ public final void setRuntimeExceptionHandler (Consumer<RuntimeException> runtime
  * handler (for example, during a unit test), it is common practice to invoke this method prior
  * to replacing the exception handler so that the old handler may be restored afterward.
  *
- * @return the current exception handler. Never null.
+ * @return the current exception handler. Never <code>null</code>.
  * @since 3.106
  */
 public final Consumer<RuntimeException> getRuntimeExceptionHandler () {
@@ -4970,7 +4970,7 @@ public final void setErrorHandler (Consumer<Error> errorHandler) {
  * handler (for example, during a unit test), it is common practice to invoke this method prior
  * to replacing the error handler so that the old handler may be restored afterward.
  *
- * @return the current error handler. Never null.
+ * @return the current error handler. Never <code>null</code>.
  * @since 3.106
  */
 public final Consumer<Error> getErrorHandler () {
