@@ -49,7 +49,7 @@ public void keyPressed(KeyEvent e);
 public void keyReleased(KeyEvent e);
 
 /**
- * Static helper method to create a key listener for the
+ * Static helper method to create a <code>KeyListener</code> for the
  * {@link #keyPressed(KeyEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event
@@ -66,7 +66,7 @@ public static KeyListener keyPressedAdapter(Consumer<KeyEvent> c) {
 }
 
 /**
- * Static helper method to create a key listener for the
+ * Static helper method to create a <code>KeyListener</code> for the
  * {@link #keyReleased(KeyEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event

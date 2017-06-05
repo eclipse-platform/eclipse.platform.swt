@@ -2621,7 +2621,7 @@ void setFont (NSFont font) {
  * Sets the header background color to the color specified
  * by the argument, or to the default system color if the argument is null.
  * <p>
- * Note: This operation is a hint and is not supported on all platforms. If
+ * Note: This operation is a <em>HINT</em> and is not supported on all platforms. If
  * the native header has a 3D look and feel (e.g. Windows 7), this method
  * will cause the header to look FLAT irrespective of the state of the table style.
  * </p>
@@ -2653,7 +2653,7 @@ public void setHeaderBackground (Color color) {
  * Sets the header foreground color to the color specified
  * by the argument, or to the default system color if the argument is null.
  * <p>
- * Note: This operation is a hint and is not supported on all platforms. If
+ * Note: This operation is a <em>HINT</em> and is not supported on all platforms. If
  * the native header has a 3D look and feel (e.g. Windows 7), this method
  * will cause the header to look FLAT irrespective of the state of the table style.
  * </p>

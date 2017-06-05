@@ -411,7 +411,6 @@ public class Accessible {
 	 *
 	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
-	 *
 	 * @exception IllegalArgumentException ERROR_NULL_ARGUMENT - if the Accessible target is null
 	 * @since 3.6
 	 */

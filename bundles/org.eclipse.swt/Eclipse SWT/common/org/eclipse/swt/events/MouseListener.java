@@ -60,7 +60,7 @@ public void mouseUp(MouseEvent e);
 
 
 /**
- * Static helper method to create a mouse listener for the
+ * Static helper method to create a <code>MouseListener</code> for the
  * {@link #mouseDoubleClick(MouseEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event
@@ -78,7 +78,7 @@ public static MouseListener mouseDoubleClickAdapter(Consumer<MouseEvent> c) {
 }
 
 /**
- * Static helper method to create a mouse listener for the
+ * Static helper method to create a <code>MouseListener</code> for the
  * {@link #mouseDown(MouseEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event
@@ -96,7 +96,7 @@ public static MouseListener mouseDownAdapter(Consumer<MouseEvent> c) {
 }
 
 /**
- * Static helper method to create a mouse listener for the
+ * Static helper method to create a <code>MouseListener</code> for the
  * {@link #mouseUp(MouseEvent e)}) method with a lambda expression.
  *
  * @param c the consumer of the event
