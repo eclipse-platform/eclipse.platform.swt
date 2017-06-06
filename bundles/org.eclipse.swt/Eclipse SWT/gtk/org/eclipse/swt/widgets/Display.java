@@ -1792,9 +1792,9 @@ String gtk_css_default_theme_values (int swt) {
 	if (length == 0) {
 		return "";
 	}
-	buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	String cssOutput = new String (Converter.mbcsToWcs (buffer));
+	byte [] themeBuffer = new byte [length];
+	OS.memmove (themeBuffer, str, length);
+	String cssOutput = new String (Converter.mbcsToWcs (themeBuffer));
 
 	// Parse the theme values based on the corresponding SWT value
 	// i.e. theme_selected_bg_color in GTK is SWT.COLOR_LIST_SELECTION in SWT
@@ -1883,6 +1883,14 @@ String gtk_css_default_theme_values (int swt) {
 				if (!color.isEmpty()) {
 					break;
 				}
+			}
+			break;
+		case SWT.COLOR_LINK_FOREGROUND:
+			tSelected = cssOutput.indexOf ("*:link {");
+			System.out.println("tSelected is " + tSelected);
+			if (tSelected != -1) {
+				COLOR_LINK_FOREGROUND = gtk_css_parse_foreground(themeProvider, "*:link {");
+				return "parsed";
 			}
 			break;
 		case SWT_COLOR_LIST_SELECTION_INACTIVE:
@@ -2798,25 +2806,6 @@ void initializeSystemColors () {
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	OS.gtk_widget_realize (tooltipShellHandle);
 
-	/* Initialize link foreground */
-	long /*int*/ linkWidget = OS.gtk_label_new (new byte[1]);
-	if (linkWidget == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (tooltipShellHandle, linkWidget);
-	long /*int*/ [] linkColor = new long /*int*/ [1];
-	OS.gtk_widget_style_get (linkWidget, OS.link_color, linkColor, 0);
-	GdkColor gdkColor = new GdkColor();
-	if (linkColor [0] != 0) {
-		OS.memmove (gdkColor, linkColor[0], GdkColor.sizeof);
-		OS.gdk_color_free (linkColor [0]);
-	} else {
-		gdkColor.blue = (short)0xeeee;
-	}
-	if (!OS.GTK3) {
-		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
-	}
-	COLOR_LINK_FOREGROUND = gdkColor;
-
 	if (OS.GTK3) {
 		/*
 		 * Feature in GTK: previously SWT fetched system colors using
@@ -2844,6 +2833,19 @@ void initializeSystemColors () {
 
 		// Initialize and create a list of X11 named colors
 		initializeColorList();
+
+		if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND);
+			if (!colorLinkForeground.isEmpty()) {
+				if (colorLinkForeground != "parsed") {
+					COLOR_LINK_FOREGROUND = initializeColorLinkForeground(tooltipShellHandle);
+				}
+			} else {
+				COLOR_LINK_FOREGROUND = initializeColorLinkForeground(tooltipShellHandle);
+			}
+		} else {
+			COLOR_LINK_FOREGROUND = initializeColorLinkForeground(tooltipShellHandle);
+		}
 
 		if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 			String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND);
@@ -3016,80 +3018,106 @@ void initializeSystemColors () {
 		COLOR_TITLE_INACTIVE_BACKGROUND = toGdkColor (rgba);
 		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
 		return;
+	} else {
+		COLOR_LINK_FOREGROUND = initializeColorLinkForeground(tooltipShellHandle);
+
+		long /*int*/ colormap = OS.gdk_colormap_get_system();
+		OS.gdk_colormap_alloc_color(colormap, COLOR_LINK_FOREGROUND, true, true);
+
+		/* Get Tooltip resources */
+		long /*int*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
+		GdkColor gdkColor = new GdkColor();
+		OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_INFO_FOREGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_INFO_BACKGROUND = gdkColor;
+		OS.gtk_widget_destroy (tooltipShellHandle);
+
+		/* Get Shell resources */
+		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_black (style, gdkColor);
+		COLOR_WIDGET_DARK_SHADOW = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_dark (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_light (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_WIDGET_FOREGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_WIDGET_BACKGROUND = gdkColor;
+		//gdkColor = new GdkColor();
+		//OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
+		//COLOR_TEXT_FOREGROUND = gdkColor;
+		//gdkColor = new GdkColor();
+		//OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
+		//COLOR_TEXT_BACKGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_LIST_FOREGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
+		COLOR_LIST_BACKGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_text (style, OS.GTK_STATE_SELECTED, gdkColor);
+		COLOR_LIST_SELECTION_TEXT = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_base (style, OS.GTK_STATE_SELECTED, gdkColor);
+		COLOR_LIST_SELECTION = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_text (style, OS.GTK_STATE_ACTIVE, gdkColor);
+		COLOR_LIST_SELECTION_TEXT_INACTIVE = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_base (style, OS.GTK_STATE_ACTIVE, gdkColor);
+		COLOR_LIST_SELECTION_INACTIVE = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_bg (style, OS.GTK_STATE_SELECTED, gdkColor);
+		COLOR_TITLE_BACKGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_fg (style, OS.GTK_STATE_SELECTED, gdkColor);
+		COLOR_TITLE_FOREGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_light (style, OS.GTK_STATE_SELECTED, gdkColor);
+		COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_bg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
+		COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_fg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
+		COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
+		gdkColor = new GdkColor();
+		OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
+		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
+
 	}
+}
 
-	/* Get Tooltip resources */
-	long /*int*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_INFO_FOREGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_INFO_BACKGROUND = gdkColor;
-	OS.gtk_widget_destroy (tooltipShellHandle);
-
-	/* Get Shell resources */
-	long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_black (style, gdkColor);
-	COLOR_WIDGET_DARK_SHADOW = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_dark (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_WIDGET_FOREGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_WIDGET_BACKGROUND = gdkColor;
-	//gdkColor = new GdkColor();
-	//OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
-	//COLOR_TEXT_FOREGROUND = gdkColor;
-	//gdkColor = new GdkColor();
-	//OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
-	//COLOR_TEXT_BACKGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_LIST_FOREGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_LIST_BACKGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, OS.GTK_STATE_SELECTED, gdkColor);
-	COLOR_LIST_SELECTION_TEXT = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, OS.GTK_STATE_SELECTED, gdkColor);
-	COLOR_LIST_SELECTION = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, OS.GTK_STATE_ACTIVE, gdkColor);
-	COLOR_LIST_SELECTION_TEXT_INACTIVE = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, OS.GTK_STATE_ACTIVE, gdkColor);
-	COLOR_LIST_SELECTION_INACTIVE = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, OS.GTK_STATE_SELECTED, gdkColor);
-	COLOR_TITLE_BACKGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, OS.GTK_STATE_SELECTED, gdkColor);
-	COLOR_TITLE_FOREGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, OS.GTK_STATE_SELECTED, gdkColor);
-	COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
-	COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
-	COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
-	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
+/*
+ * Initialize COLOR_LINK_FOREGROUND in a helper method to allow for calling on GTK2
+ * and GTK3.
+ */
+GdkColor initializeColorLinkForeground (long /*int*/ tooltipShellHandle) {
+	long /*int*/ linkWidget = OS.gtk_label_new (new byte[1]);
+	if (linkWidget == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (tooltipShellHandle, linkWidget);
+	long /*int*/ [] linkColor = new long /*int*/ [1];
+	OS.gtk_widget_style_get (linkWidget, OS.link_color, linkColor, 0);
+	GdkColor gdkColor = new GdkColor();
+	if (linkColor [0] != 0) {
+		OS.memmove (gdkColor, linkColor[0], GdkColor.sizeof);
+		OS.gdk_color_free (linkColor [0]);
+	} else {
+		gdkColor.blue = (short)0xeeee;
+	}
+	return gdkColor;
 }
 
 GdkRGBA styleContextGetColor(long /*int*/ context, int flag, GdkRGBA rgba) {
@@ -5326,7 +5354,7 @@ String simple_color_parser (String output, String value, int index) {
 	 * Because of this we strip out values that start with "@" and check
 	 * non rgb values against X11 named colors.
 	 *
-	 * The following would be invalid input:
+	 * I.e.: the following would be invalid input:
 	 *
 	 * shade(@bg_color, 0,7)
 	 * or
