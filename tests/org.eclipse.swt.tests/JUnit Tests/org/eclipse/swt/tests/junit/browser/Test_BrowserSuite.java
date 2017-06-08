@@ -39,12 +39,6 @@ String skipMsg() {
 
 
 
-@Test
-public void testBrowser7() {
-	manualSetUp();
-	assertTrue(Browser7_child_browsers.test());
-	manualTearDown();
-}
 
 @Test
 public void testBrowser8() {
