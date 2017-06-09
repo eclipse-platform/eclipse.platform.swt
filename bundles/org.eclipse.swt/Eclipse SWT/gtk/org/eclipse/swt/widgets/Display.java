@@ -1887,7 +1887,6 @@ String gtk_css_default_theme_values (int swt) {
 			break;
 		case SWT.COLOR_LINK_FOREGROUND:
 			tSelected = cssOutput.indexOf ("*:link {");
-			System.out.println("tSelected is " + tSelected);
 			if (tSelected != -1) {
 				COLOR_LINK_FOREGROUND = gtk_css_parse_foreground(themeProvider, "*:link {");
 				return "parsed";
