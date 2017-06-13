@@ -13861,6 +13861,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1text_1view_1get_1line_1yrange
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1line_1yrange)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1get_1line_1yrange_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	gtk_text_view_get_line_yrange((GtkTextView *)arg0, (GtkTextIter *)lparg1, (gint *)lparg2, (gint *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1get_1line_1yrange_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1text_1view_1get_1visible_1rect
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1visible_1rect)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)

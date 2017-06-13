@@ -11791,6 +11791,21 @@ public static final void gtk_text_view_get_line_at_y(long /*int*/ text_view, byt
 }
 /**
  * @param text_view cast=(GtkTextView *)
+ * @param target_iter cast=(GtkTextIter *)
+ * @param y cast=(gint *)
+ * @param height cast=(gint *)
+ */
+public static final native void _gtk_text_view_get_line_yrange(long /*int*/ text_view, byte[] target_iter, int[] y, int[] height);
+public static final void gtk_text_view_get_line_yrange(long /*int*/ text_view, byte[] target_iter, int[] y, int[] height) {
+	lock.lock();
+	try {
+		_gtk_text_view_get_line_yrange(text_view, target_iter, y, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param text_view cast=(GtkTextView *)
  * @param visible_rect cast=(GdkRectangle *),flags=no_in
  */
 public static final native void _gtk_text_view_get_visible_rect(long /*int*/ text_view, GdkRectangle visible_rect);

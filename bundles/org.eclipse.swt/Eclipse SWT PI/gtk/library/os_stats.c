@@ -1109,6 +1109,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1text_1view_1get_1iter_1at_1location",
 	"_1gtk_1text_1view_1get_1iter_1location",
 	"_1gtk_1text_1view_1get_1line_1at_1y",
+	"_1gtk_1text_1view_1get_1line_1yrange",
 	"_1gtk_1text_1view_1get_1visible_1rect",
 	"_1gtk_1text_1view_1get_1window",
 	"_1gtk_1text_1view_1new",

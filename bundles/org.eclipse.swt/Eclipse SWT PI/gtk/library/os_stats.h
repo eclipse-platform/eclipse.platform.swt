@@ -1119,6 +1119,7 @@ typedef enum {
 	_1gtk_1text_1view_1get_1iter_1at_1location_FUNC,
 	_1gtk_1text_1view_1get_1iter_1location_FUNC,
 	_1gtk_1text_1view_1get_1line_1at_1y_FUNC,
+	_1gtk_1text_1view_1get_1line_1yrange_FUNC,
 	_1gtk_1text_1view_1get_1visible_1rect_FUNC,
 	_1gtk_1text_1view_1get_1window_FUNC,
 	_1gtk_1text_1view_1new_FUNC,

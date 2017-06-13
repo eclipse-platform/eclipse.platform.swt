@@ -2027,10 +2027,70 @@ public void insert (String string) {
 		}
 		OS.gtk_text_buffer_insert (bufferHandle, start, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, start);
-		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
+		scrollIfNotVisible(start, null, true);
 	}
 	applySegments ();
+}
+
+
+/**
+ * Methods that insert or select text should not modify the topIndex
+ * of the viewer.
+ *
+ * To avoid this issue we calculate the visible area, positions of the
+ * topIndex, and the insertion/selection points. If the insertion/selection points
+ * are outside the visible area, then scroll to them. Otherwise do nothing,
+ * which preserves the topIndex.
+ *
+ * @param iter the GtkTextIter representing the insertion/selection point
+ * @param scrollTo the GtkTextIter representing the point to be scrolled to (can be null)
+ * @param insert true if insertion is being performed, false if selection
+ *
+ */
+private void scrollIfNotVisible(byte [] iter, byte [] scrollTo, boolean insert) {
+	GdkRectangle rect = new GdkRectangle ();
+	int distanceTopIndex, numLinesVisible, lineHeight;
+	int[] insertionCoordinates = new int [1];
+	int[] topIndexCoordinates = new int [1];
+	byte [] indexIter =  new byte [ITER_SIZEOF];
+
+	// Calculate the visible area
+	OS.gtk_text_view_get_visible_rect (handle, rect);
+	lineHeight = getLineHeight ();
+	numLinesVisible = rect.height / lineHeight;
+
+	// Get the coordinates of the insertion/selection point
+	OS.gtk_text_view_get_line_yrange (handle, iter, insertionCoordinates, null);
+
+	// If we have a topIndex, calculate whether the insertion/selection point
+	// is in the visible area
+	if (indexMark != 0) {
+		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, indexIter, indexMark);
+		OS.gtk_text_view_get_line_yrange (handle, indexIter, topIndexCoordinates, null);
+		distanceTopIndex = (insertionCoordinates [0] - topIndexCoordinates [0]) / lineHeight;
+
+		// If it is not in the visible area, scroll to the insertion/selection point
+		if (distanceTopIndex >= numLinesVisible) {
+			if (insert) {
+				long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+				OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
+			} else if (scrollTo != null) {
+				OS.gtk_text_view_scroll_to_iter (handle, scrollTo, 0, true, 0, 0);
+			}
+		}
+	} else {
+		// Set topIndex to 0 and perform visibility calculations based on that
+		topIndexCoordinates [0] = 0;
+		distanceTopIndex = (insertionCoordinates [0] - topIndexCoordinates [0]) / lineHeight;
+		if (distanceTopIndex >= numLinesVisible) {
+			if (scrollTo != null && !insert) {
+				OS.gtk_text_view_scroll_to_iter (handle, scrollTo, 0, true, 0, 0);
+			} else if (insert) {
+				long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+				OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
+			}
+		}
+	}
 }
 
 @Override
@@ -2461,8 +2521,7 @@ public void setSelection (int start) {
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, startIter);
-		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		OS.gtk_text_view_scroll_to_mark (handle, mark, 0, true, 0, 0);
+		scrollIfNotVisible(startIter, startIter, false);
 	}
 }
 
@@ -2511,8 +2570,7 @@ public void setSelection (int start, int end) {
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
-		// Bug 197785: scroll widget to start of selection using gtk_text_view_scroll_to_iter().
-		OS.gtk_text_view_scroll_to_iter (handle, startIter, 0, true, 0, 0);
+		scrollIfNotVisible(startIter, startIter, false);
 		OS.gtk_text_buffer_select_range(bufferHandle, startIter, endIter);
 	}
 }
