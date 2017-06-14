@@ -290,7 +290,14 @@ int getHeaderHeightInPixels () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (handle, allocation);
-	return allocation.height - (expanded ? height : 0);
+	// allocation.height normally returns the header height instead of the whole
+	// widget itself. This is to prevent situations where allocation.height actually
+	// returns the correct header height.
+	int headerHeight = allocation.height - (expanded ? height : 0);
+	if (expanded && headerHeight < 0) {
+		return allocation.height;
+	}
+	return headerHeight;
 }
 /**
  * Gets the height of the receiver.
