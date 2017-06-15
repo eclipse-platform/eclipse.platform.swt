@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2618,7 +2618,7 @@ boolean filterKey (int keyval, long /*int*/ event) {
 
 Control findBackgroundControl () {
 	if (((state & BACKGROUND) != 0 || backgroundImage != null) && backgroundAlpha > 0) return this;
-	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
+	return (parent != null && (state & PARENT_BACKGROUND) != 0) ? parent.findBackgroundControl () : null;
 }
 
 Menu [] findMenus (Control control) {
