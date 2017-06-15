@@ -18,6 +18,29 @@ package org.eclipse.swt.internal.gtk;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
+// Common type translation table:
+// C   ->  Java
+// --------------------
+// Primitives:
+// int   -> int
+// guint -> int
+// gint* -> int[]
+// boolean   -> int  ex setenv
+// gboolean  -> boolean
+//
+// Pointers:
+// gpointer -> long /*int*/
+// void *   -> long /*int*/    # C pointers (*) are normally long /*int*/
+//
+// Strings:
+// gchar *      -> long /*int*/
+// const char * -> byte[]  ex setenv
+// const gchar* -> byte[]  ex g_log_remove_handler
+//
+// Special types:
+// GQuark -> int
+// GError ** -> long /*int*/[]  ex g_filename_to_uri
+
 public class OS extends C {
 	/** OS Constants */
 	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, IsWin32, BIG_ENDIAN;
