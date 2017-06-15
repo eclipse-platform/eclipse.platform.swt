@@ -62,7 +62,22 @@ public abstract class Widget {
 	EventTable eventTable;
 	Object data;
 
-	/* Global state flags */
+	/* Global state flags
+	 *
+	 * Common code pattern:
+	 * & - think of AND as removing.
+	 * | - think of OR as adding.
+	 * state & ~flag  -- Think as "removing flag"
+	 * state |  flag  -- Think as "adding flag"
+	 *
+	 * state |= flag  -- Flag is being added to state.
+	 * state &= ~flag -- Flag is being removed from state.
+	 * state & flag != 0 -- true if flag is present (think >0 = true)
+	 * state & flag == 0 -- true if flag is absent  (think 0 = false)
+	 *
+	 * (state & (flag1 | flag2)) != 0 -- true if either of the flags are present.
+	 * (state & (flag1 | flag2)) == 0 -- true if both flag1 & flag2 are absent.
+	 */
 	static final int DISPOSED = 1<<0;
 	static final int CANVAS = 1<<1;
 	static final int KEYED_DATA = 1<<2;
