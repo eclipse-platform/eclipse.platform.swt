@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2012 Eclipse Foundation and others.
+  Copyright (c) 2012,2017 Eclipse Foundation and others.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Distribution License v1.0
   which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  
   Contributors:
      Igor Fedorenko - initial implementation
+	 Conrad Groth - add platform specific JUnit test bundles
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -64,6 +65,39 @@
         </plugin>
       </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+	  <modules>
+	    <module>tests/org.eclipse.swt.tests.cocoa</module>
+	  </modules>
+    </profile>
+    <profile>
+      <id>unix</id>
+      <activation>
+        <os>
+          <family>unix</family>
+        </os>
+      </activation>
+	  <modules>
+	    <module>tests/org.eclipse.swt.tests.gtk</module>
+	  </modules>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+	  <modules>
+	    <module>tests/org.eclipse.swt.tests.win32</module>
+	  </modules>
     </profile>
   </profiles>
 
