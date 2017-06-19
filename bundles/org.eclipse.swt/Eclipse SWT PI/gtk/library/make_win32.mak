@@ -86,7 +86,6 @@ LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 
 ifndef NO_STRIP
 	AWT_LFLAGS := $(AWT_LFLAGS) -s
-	MOZILLALFLAGS := $(MOZILLALFLAGS) -s
 	LFLAGS := $(LFLAGS) -s
 endif
 

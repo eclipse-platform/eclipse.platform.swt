@@ -36,9 +36,6 @@ SWTPI_PREFIX = swt-pi
 endif
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
-MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
-XULRUNNER_PREFIX = swt-xulrunner
-XPCOMINIT_PREFIX = swt-xpcominit
 WEBKIT_PREFIX = swt-webkit
 GLX_PREFIX = swt-glx
 
@@ -47,9 +44,6 @@ AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 WEBKIT_LIB = lib$(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
@@ -75,32 +69,6 @@ GLXLIBS = -lGL -lGLU -lm
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
-MOZILLACFLAGS = -O \
-	-DSWT_VERSION=$(SWT_VERSION) \
-	$(NATIVE_STATS) \
-	-DMOZILLA_STRICT_API=1 \
-	-fno-rtti \
-	-fno-exceptions \
-	-Wall \
-	-Wno-non-virtual-dtor \
-	-fPIC \
-	-I. \
-	-I$(JAVA_HOME)/include \
-	-I$(JAVA_HOME)/include/linux \
-	${SWT_PTR_CFLAGS}
-MOZILLALFLAGS = -shared ${SWT_LFLAGS} -Wl,--version-script=mozilla_exports -Bsymbolic
-MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
-	-DNO__1XPCOMGlueStartup \
-	-DNO__1XPCOMGlueLoadXULFunctions \
-	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
-	-DNO_memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J \
-	-DNO_nsDynamicFunctionLoad_1sizeof \
-	-DNO__1Call__IIIIII \
-	-DNO__1Call__JJJJJI \
-	-DNO_nsDynamicFunctionLoad
-XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
-
-
 WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`
 WEBKITCFLAGS = `pkg-config --cflags gio-2.0`
 ifdef SWT_WEBKIT_DEBUG
@@ -115,9 +83,6 @@ AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
-MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
-XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
-XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitgtk_custom.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
@@ -139,7 +104,6 @@ ifndef NO_STRIP
 	#      https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html#Link-Options
 	#      http://stackoverflow.com/questions/14175040/effects-of-removing-all-symbol-table-and-relocation-information-from-an-executab
 	AWT_LFLAGS := $(AWT_LFLAGS) -s
-	MOZILLALFLAGS := $(MOZILLALFLAGS) -s
 	LFLAGS := $(LFLAGS) -s
 endif
 
@@ -209,70 +173,6 @@ atk_custom.o: atk_custom.c atk_structs.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_custom.c
 atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_stats.c
-
-#
-# Mozilla lib
-#
-make_mozilla:$(MOZILLA_LIB)
-
-$(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALFLAGS) ${MOZILLA_LIBS}
-
-xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom.cpp
-
-xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
-	
-xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_custom.cpp
-
-xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_stats.cpp
-
-#
-# XULRunner libs
-#
-make_xulrunner:$(XULRUNNER_LIB)
-
-$(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
-	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALFLAGS) ${XULRUNNER_LIBS}
-
-xpcomxul.o: xpcom.cpp
-	$(CXX) -o xpcomxul.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
-
-xpcomxul_structs.o: xpcom_structs.cpp
-	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
-	
-xpcomxul_custom.o: xpcom_custom.cpp
-	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
-
-xpcomxul_stats.o: xpcom_stats.cpp
-	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
-
-#
-# libswt-xulrunner-fix10.so and libswt-xulrunner-fix31.so are not built each time, they have been built and committed to the repository
-# make_xulrunner_fix:
-#	echo -e "#include<stdlib.h>\nsize_t je_malloc_usable_size_in_advance(size_t n) {\nreturn n;\n}" | $(CXX) $(LFLAGS) $(CFLAGS) -xc - -o libswt-xulrunner-fix10.so
-#	echo -e "#include<stdlib.h>\nsize_t je_malloc_usable_size_in_advance(size_t n) {\nreturn n;\n}" | $(CXX) $(LFLAGS) $(CFLAGS) -L${XULRUNNER31_SDK}/lib -Wl,--whole-archive -lmozglue -Wl,--no-whole-archive -xc - -o libswt-xulrunner-fix31.so
-#
-
-#
-# XPCOMInit lib
-#
-make_xpcominit:$(XPCOMINIT_LIB)
-
-$(XPCOMINIT_LIB): $(XPCOMINIT_OBJECTS)
-	$(CXX) -o $(XPCOMINIT_LIB) $(XPCOMINIT_OBJECTS) $(MOZILLALFLAGS) ${XULRUNNER_LIBS}
-
-xpcominit.o: xpcominit.cpp
-	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit.cpp
-
-xpcominit_structs.o: xpcominit_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_structs.cpp
-	
-xpcominit_stats.o: xpcominit_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_stats.cpp
 
 #
 # WebKit lib
