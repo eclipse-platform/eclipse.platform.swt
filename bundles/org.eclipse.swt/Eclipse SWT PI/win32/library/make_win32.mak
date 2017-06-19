@@ -52,25 +52,6 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
-XULRUNNER_PREFIX = swt-xulrunner
-XULRUNNER_LIB = $(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
-XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj
-XPCOMINIT_OBJS = xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
-
-MOZILLACFLAGS = -c \
-	-O1 \
-	$(MOZILLACFLAGS) \
-	-DSWT_VERSION=$(SWT_VERSION) \
-	$(NATIVE_STATS) \
-	-MD \
-	-DMOZILLA_STRICT_API=1 \
-	-W3 \
-	-I. \
-	-I"$(JAVA_HOME)/include" \
-	-I"$(JAVA_HOME)/include/win32" \
-	-I"$(XULRUNNER_SDK)\include\mozilla-config.h" -I"$(XULRUNNER_SDK)\include"
-
 WEBKITCFLAGS = -c -O1\
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
@@ -96,21 +77,6 @@ webkit_win32_structs.obj: webkit_win32_structs.cpp
 	cl $(WEBKITCFLAGS) webkit_win32_structs.cpp
 webkit_win32.obj: webkit_win32.cpp
 	cl $(WEBKITCFLAGS) webkit_win32.cpp
-	
-xpcom_custom.obj: xpcom_custom.cpp
-	cl $(MOZILLACFLAGS) xpcom_custom.cpp
-xpcom_stats.obj: xpcom_stats.cpp
-	cl $(MOZILLACFLAGS) xpcom_stats.cpp
-xpcom_structs.obj: xpcom_structs.cpp
-	cl $(MOZILLACFLAGS) xpcom_structs.cpp
-xpcom.obj: xpcom.cpp
-	cl $(MOZILLACFLAGS) xpcom.cpp
-xpcominit_stats.obj: xpcominit_stats.cpp
-	cl $(MOZILLACFLAGS) xpcominit_stats.cpp
-xpcominit_structs.obj: xpcominit_structs.cpp
-	cl $(MOZILLACFLAGS) xpcominit_structs.cpp
-xpcominit.obj: xpcominit.cpp
-	cl $(MOZILLACFLAGS) xpcominit.cpp
 
 .c.obj:
 	cl $(CFLAGS) $*.c
@@ -162,25 +128,7 @@ make_wgl: $(WGL_OBJS) swt_wgl.res
 	echo -out:$(WGL_LIB) >>templrf
 	link @templrf
 	del templrf
-	
-make_xulrunner: $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) swt_xpcom.res
-	echo $(ldebug) $(dlllflags) >templrf
-	echo $(XULRUNNER_LIBS) >>templrf
-	echo $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) >>templrf
-	echo swt_xpcom.res >>templrf
-	echo -out:$(XULRUNNER_LIB) >>templrf
-	link @templrf
-	del templrf
 
-make_xulrunner_64: $(XULRUNNER_OBJS) swt_xpcom.res
-	echo /RELEASE $(dlllflags) >templrf
-	echo $(XULRUNNER_LIBS) >>templrf
-	echo $(XULRUNNER_OBJS) >>templrf
-	echo swt_xpcom.res >>templrf
-	echo -out:$(XULRUNNER_LIB) >>templrf
-	link @templrf
-	del templrf
-	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
@@ -195,12 +143,6 @@ swt_webkit.res:
 
 swt_wgl.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WGL_LIB)\" -r -fo swt_wgl.res swt_wgl.rc
-
-swt_xpcom.res:
-	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XULRUNNER_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
-
-swt_xpcominit.res:
-	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XPCOMINIT_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
 
 install:
 	copy *.dll "$(OUTPUT_DIR)"
