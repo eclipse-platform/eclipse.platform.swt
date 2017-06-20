@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -468,7 +468,11 @@ public int getSelectionIndex () {
 }
 
 int imageIndex (Image image) {
-	if (image == null) return OS.I_IMAGENONE;
+	/*
+	 * Bug 497387: Return -1 if there is no image for the tab, for more details
+	 * refer: https://msdn.microsoft.com/pt-br/library/windows/hardware/bb760554
+	 */
+	if (image == null) return -1;
 	if (imageList == null) {
 		Rectangle bounds = image.getBoundsInPixels ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
