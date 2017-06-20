@@ -11374,8 +11374,8 @@ public static final void gtk_style_context_get_padding(long /*int*/ context, int
  * @param property cast=(const gchar *),flags=no_out
  * @param terminator cast=(const gchar *),flags=sentinel
  */
-public static final native void _gtk_style_context_get(long /*int*/ context, int state, byte [] property, long[] value, long /*int*/ terminator);
-public static final void gtk_style_context_get(long /*int*/ context, int state, byte [] property, long[] value, long /*int*/ terminator) {
+public static final native void _gtk_style_context_get(long /*int*/ context, int state, byte [] property, long /*int*/ [] value, long /*int*/ terminator);
+public static final void gtk_style_context_get(long /*int*/ context, int state, byte [] property, long /*int*/ [] value, long /*int*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_style_context_get(context, state, property, value, terminator);

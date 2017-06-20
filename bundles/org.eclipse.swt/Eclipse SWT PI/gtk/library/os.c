@@ -13326,24 +13326,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1provider_1for_1scre
 
 #ifndef NO__1gtk_1style_1context_1get
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jlongArray arg3, jintLong arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jintLongArray arg3, jintLong arg4)
 {
 	jbyte *lparg2=NULL;
-	jlong *lparg3=NULL;
+	jintLong *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	gtk_style_context_get(arg0, arg1, (const gchar *)lparg2, lparg3, (const gchar *)NULL);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_style_context_get)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, const gchar *, jlong *, const gchar *))fp)(arg0, arg1, (const gchar *)lparg2, lparg3, (const gchar *)NULL);
+			((void (CALLING_CONVENTION*)(jintLong, jint, const gchar *, jintLong *, const gchar *))fp)(arg0, arg1, (const gchar *)lparg2, lparg3, (const gchar *)NULL);
 		}
 	}
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_FUNC);
 }
