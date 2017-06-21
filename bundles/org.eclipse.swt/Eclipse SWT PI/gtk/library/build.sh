@@ -176,17 +176,6 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
-	"linux.ppc")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/swtbuild/ibm-java-ppc-80"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"
-		fi
-		;;
 	"linux.ppc64")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -256,14 +245,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
-		fi
-		;;
-	"aix.ppc")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/aixj9_r5"
 		fi
 		;;
 	"aix.ppc64")

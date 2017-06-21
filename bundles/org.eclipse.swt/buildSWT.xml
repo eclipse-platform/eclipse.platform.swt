@@ -59,19 +59,11 @@
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="11"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="11"/>
