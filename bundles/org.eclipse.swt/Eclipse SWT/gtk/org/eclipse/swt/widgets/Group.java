@@ -441,8 +441,8 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 			 * these elements is < 0, allocate the preferred size instead.
 			 */
 			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				width = (requisition.width - width) < 0 ? requisition.width : width;
-				height = (requisition.height - height) < 0 ? requisition.height : height;
+				width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
+				height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
 			} else {
 				width = Math.max(requisition.width, width);
 			}
