@@ -2217,7 +2217,11 @@ public class SWT {
 	 * </ul></p>
 	 *
 	 * @since 3.3
+	 * @deprecated This style is deprecated and will be removed in the future.
+	 *             XULRunner as a browser renderer in no longer supported. Use
+	 *             <code>SWT.WEBKIT</code> or <code>SWT.NONE</code> instead.
 	 */
+	@Deprecated
 	public static final int MOZILLA = 1 << 15;
 
 	/**

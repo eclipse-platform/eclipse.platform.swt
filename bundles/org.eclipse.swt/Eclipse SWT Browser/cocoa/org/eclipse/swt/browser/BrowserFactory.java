@@ -10,14 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
-
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.MOZILLA) != 0) {
-		return new Mozilla ();
-	}
 	return new WebKit ();
 }
 

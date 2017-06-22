@@ -23,12 +23,12 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>MOZILLA, WEBKIT</dd>
+ * <dd>NONE, WEBKIT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>CloseWindowListener, LocationListener, OpenWindowListener, ProgressListener, StatusTextListener, TitleListener, VisibilityWindowListener</dd>
  * </dl>
  * <p>
- * Note: At most one of the styles MOZILLA and WEBKIT may be specified.
+ * Note: MOZILLA is deprecated and is no longer supported.
  * </p>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -124,18 +124,19 @@ static Composite checkParent (Composite parent) {
 	return parent;
 }
 
+@SuppressWarnings("deprecation")
 static int checkStyle(int style) {
 	String platform = SWT.getPlatform ();
 	if (DefaultType == SWT.DEFAULT) {
 		/*
-		* Some Browser clients that explicitly specify the native renderer to use
-		* (by creating a Browser with style SWT.MOZILLA or SWT.WEBKIT) may also
-		* need to specify that all "default" Browser instances (those created with
-		* style SWT.NONE) should use this renderer as well.  This may be needed in
-		* order to avoid incompatibilities that can arise from having multiple
-		* native renderers loaded within the same process.  A client can do this by
-		* setting the "org.eclipse.swt.browser.DefaultType" java system property to
-		* a value like "mozilla" or "webkit".
+		* Some Browser clients that explicitly specify the native renderer to use (by
+		* creating a Browser with SWT.WEBKIT) may also need to specify that all
+		* "default" Browser instances (those created with style SWT.NONE) should use
+		* this renderer as well. This may be needed in order to avoid incompatibilities
+		* that can arise from having multiple native renderers loaded within the same
+		* process. A client can do this by setting the
+		* "org.eclipse.swt.browser.DefaultType" java system property to a value like
+		* "ie" or "webkit". Value "mozilla" is ignored now.
 		*/
 
 		/*
@@ -163,10 +164,7 @@ static int checkStyle(int style) {
 					newIndex = length;
 				}
 				String current = value.substring(index, newIndex).trim();
-				if (current.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$
-					DefaultType = SWT.MOZILLA;
-					break;
-				} else if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
+				if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
 					DefaultType = SWT.WEBKIT;
 					break;
 				} else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -181,17 +179,20 @@ static int checkStyle(int style) {
 		}
 	}
 
-	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == 0) {
+	/* remove SWT.MOZILLA style if specified */
+	if ((style & SWT.MOZILLA) != 0) {
+		System.err.println ("Unsupported Browser Type: SWT.MOZILLA style is deprecated.\n" //$NON-NLS-1$
+				+ "It'll be removed from the user specified style. Browser will be created with the modified style "
+				+ "and if no other style bit is specified, browser with SWT.NONE style will be created"); //$NON-NLS-1$
+		style &= ~SWT.MOZILLA;
+	}
+
+	if ((style & SWT.WEBKIT) == 0) {
 		style |= DefaultType;
 	}
-
-	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == (SWT.MOZILLA | SWT.WEBKIT)) {
-		style &= ~SWT.WEBKIT;
-	}
-	if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
+	if ((style & SWT.WEBKIT) != 0) {
 		return style;
 	}
-
 	if ("win32".equals (platform)) { //$NON-NLS-1$
 		/*
 		* For IE on win32 the border is supplied by the embedded browser, so remove
@@ -776,7 +777,9 @@ public String getUrl () {
  * @return the receiver's JavaXPCOM <code>nsIWebBrowser</code> or <code>null</code>
  *
  * @since 3.3
+ * @deprecated SWT.MOZILLA is deprecated and XULRunner as a browser renderer in no longer supported.
  */
+@Deprecated
 public Object getWebBrowser () {
 	checkWidget();
 	return webBrowser.getWebBrowser ();

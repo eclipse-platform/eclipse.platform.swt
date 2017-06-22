@@ -16,12 +16,6 @@ import org.eclipse.swt.internal.win32.OS;
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
-	if (OS.IsWinCE && (style & (SWT.MOZILLA | SWT.WEBKIT)) != 0) {
-		throw new SWTError (SWT.ERROR_NO_HANDLES, "Unsupported Browser type"); //$NON-NLS-1$
-	}
-	if ((style & SWT.MOZILLA) != 0) {
-		return new Mozilla ();
-	}
 	if ((style & SWT.WEBKIT) != 0) {
 		return new WebKit ();
 	}
