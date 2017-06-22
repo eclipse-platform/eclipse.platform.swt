@@ -615,7 +615,8 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	if (length > 0) {
 		long /*int*/ [] endptr = new long /*int*/ [1];
 		double value = OS.g_strtod (str, endptr);
-		if ((endptr [0] == str + length) && String.valueOf((int)value).length() == length) {
+		int valueLength = (getDigits() == 0) ? String.valueOf((int)value).length() : String.valueOf(value).length();
+		if ((endptr [0] == str + length) && valueLength == length) {
 			long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 			GtkAdjustment adjustment = new GtkAdjustment ();
 			gtk_adjustment_get (hAdjustment, adjustment);
