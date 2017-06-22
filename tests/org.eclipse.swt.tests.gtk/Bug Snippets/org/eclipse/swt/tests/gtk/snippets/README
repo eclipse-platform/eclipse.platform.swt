@@ -1,0 +1,20 @@
+Place here all snippets that correspond to specific bugs. Naming format is Eclipse Bugzilla number + name, if applicable.
+
+For example: Bug486334_TableTest.java
+Non-bug specific snippets: TreeTest.java
+
+Please make snippets as clear as possible. At the very least, include a comment above the class definition
+that explains how the snippet works, what it does, and what the expected result is. For example:
+
+/*
+ * Title: Bug 166720 - [TableEditor] flickers quite a bit when scrolling - Linux GTK
+ * How to run: launch snippet and scroll TableEditor.
+ * Bug description: TableEditor flickers when scrolling.
+ * Expected results: TableEditor should scroll smoothly.
+ * GTK version(s): GTK2.x
+ */
+
+ Alternatively: code instructions into the snippet itself, so that users can simply run the snippet
+ and visually look at the instructions.
+
+ These snippets can also be used as references in code. For example "// See Gtk test Bug486334_TableTest.java"
