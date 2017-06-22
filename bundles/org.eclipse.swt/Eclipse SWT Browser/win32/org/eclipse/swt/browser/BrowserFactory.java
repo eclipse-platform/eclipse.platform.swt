@@ -11,7 +11,6 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.OS;
 
 class BrowserFactory {
 

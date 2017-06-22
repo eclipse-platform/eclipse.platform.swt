@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
-
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
