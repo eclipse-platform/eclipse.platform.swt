@@ -182,7 +182,7 @@ static int checkStyle(int style) {
 	/* remove SWT.MOZILLA style if specified */
 	if ((style & SWT.MOZILLA) != 0) {
 		System.err.println ("Unsupported Browser Type: SWT.MOZILLA style is deprecated.\n" //$NON-NLS-1$
-				+ "It'll be removed from the user specified style. Browser will be created with the modified style "
+				+ "It'll be removed from the user specified style. Browser will be created with the modified style " //$NON-NLS-1$
 				+ "and if no other style bit is specified, browser with SWT.NONE style will be created"); //$NON-NLS-1$
 		style &= ~SWT.MOZILLA;
 	}
