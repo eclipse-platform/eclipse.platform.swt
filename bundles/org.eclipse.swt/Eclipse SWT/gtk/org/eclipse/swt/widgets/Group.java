@@ -427,7 +427,6 @@ void showWidget () {
 
 @Override
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
-
 		if (OS.GTK3) {
 			// Work around for bug 470129.
 			// See also https://bugzilla.gnome.org/show_bug.cgi?id=754976 :
@@ -436,9 +435,18 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 			// GtkFrame does not handle well allocating less than its minimum size
 			GtkRequisition requisition = new GtkRequisition();
 			OS.gtk_widget_get_preferred_size(handle, requisition, null);
-			width = Math.max(requisition.width, width);
+			/*
+			 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
+			 * elements which we cannot access. If the to-be-allocated size minus
+			 * these elements is < 0, allocate the preferred size instead.
+			 */
+			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				width = (requisition.width - width) < 0 ? requisition.width : width;
+				height = (requisition.height - height) < 0 ? requisition.height : height;
+			} else {
+				width = Math.max(requisition.width, width);
+			}
 		}
-
 	return super.setBounds(x, y, width, height, move, resize);
 }
 
