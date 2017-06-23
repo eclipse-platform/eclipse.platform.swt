@@ -8038,7 +8038,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						if (linesVisible) {
 							pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
 							oldPen = OS.SelectObject (nmcd.hdc, pen);
-							OS.Polyline(nmcd.hdc, new int[] {rects[i].right, rects[i].top, rects[i].right, rects[i].bottom}, 2);
+							OS.Polyline(nmcd.hdc, new int[] {rects[i].right-1, rects[i].top, rects[i].right-1, rects[i].bottom}, 2);
 							OS.SelectObject (nmcd.hdc, oldPen);
 							OS.DeleteObject (pen);
 						}
@@ -8082,7 +8082,6 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					if (lastColumnRight < nmcd.right) {
 						// draw background of the 'no column' area
 						RECT rect = new RECT();
-						lastColumnRight += linesVisible ? 1 : 0;
 						OS.SetRect(rect, lastColumnRight, nmcd.top, nmcd.right, nmcd.bottom);
 						long /*int*/ brush = OS.CreateSolidBrush(getHeaderBackgroundPixel());
 						OS.FillRect(nmcd.hdc, rect, brush);
