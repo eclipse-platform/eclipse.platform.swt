@@ -1092,12 +1092,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		/*
 		 * The widget needs to be shown before its size is allocated
 		 * in GTK 3.8 otherwise its allocation return 0
+                 * See org.eclipse.swt.tests.gtk.snippets.Bug497705_setBoundsAfterSetVisible
 		 */
-		if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(handle))  {
-			OS.gtk_widget_show(handle);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(topHandle))  {
+			OS.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
 			OS.gtk_widget_size_allocate (topHandle, allocation);
-			OS.gtk_widget_hide(handle);
+			OS.gtk_widget_hide(topHandle);
 		} else {
 			OS.gtk_widget_size_allocate (topHandle, allocation);
 		}
