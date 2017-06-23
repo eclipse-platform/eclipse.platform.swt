@@ -777,7 +777,7 @@ public String getUrl () {
  * @return the receiver's JavaXPCOM <code>nsIWebBrowser</code> or <code>null</code>
  *
  * @since 3.3
- * @deprecated SWT.MOZILLA is deprecated and XULRunner as a browser renderer in no longer supported.
+ * @deprecated SWT.MOZILLA is deprecated and XULRunner as a browser renderer is no longer supported.
  */
 @Deprecated
 public Object getWebBrowser () {

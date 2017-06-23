@@ -2218,7 +2218,7 @@ public class SWT {
 	 *
 	 * @since 3.3
 	 * @deprecated This style is deprecated and will be removed in the future.
-	 *             XULRunner as a browser renderer in no longer supported. Use
+	 *             XULRunner as a browser renderer is no longer supported. Use
 	 *             <code>SWT.WEBKIT</code> or <code>SWT.NONE</code> instead.
 	 */
 	@Deprecated
