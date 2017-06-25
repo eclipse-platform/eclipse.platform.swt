@@ -882,35 +882,28 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ lP
 		}
 	}
 	if (OS.IsWindowVisible (handle)) {
-		boolean draw = true;
 		/*
 		* Feature in Windows.  On Vista using the explorer theme,
 		* Windows draws a vertical line to separate columns.  When
 		* there is only a single column, the line looks strange.
 		* The fix is to draw the background using custom draw.
 		*/
+		RECT rect = new RECT ();
+		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		if (explorerTheme && columnCount == 0) {
 			long /*int*/ hDC = nmcd.hdc;
-			RECT rect = new RECT ();
-			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+			if (OS.IsWindowEnabled (handle) || findImageControl () != null || hasCustomBackground()) {
 				drawBackground (hDC, rect);
 			} else {
 				fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
 			}
-			draw = false;
-		}
-		if (draw) {
+		} else {
 			Control control = findBackgroundControl ();
 			if (control != null && control.backgroundImage != null) {
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				fillImageBackground (nmcd.hdc, control, rect, 0, 0);
 			} else {
-				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-					if (OS.IsWindowEnabled (handle)) {
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE || hasCustomBackground()) {
+					if (OS.IsWindowEnabled (handle) || hasCustomBackground()) {
 						if (control == null) control = this;
 						fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
 						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
@@ -1041,7 +1034,8 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 	* image.  The fix is emulate LVS_EX_FULLROWSELECT by
 	* drawing the selection.
 	*/
-	if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+	final boolean isWindowEnabled = OS.IsWindowEnabled (handle);
+	if (OS.IsWindowVisible (handle) && isWindowEnabled) {
 		if (!explorerTheme && !ignoreDrawSelection && (style & SWT.FULL_SELECTION) != 0) {
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
@@ -1101,7 +1095,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 		if (hasAttributes) {
 			if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 			OS.SelectObject (hDC, hFont);
-			if (OS.IsWindowEnabled (handle)) {
+			if (isWindowEnabled) {
 				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 				if (clrTextBk == -1) {
 					nmcd.clrTextBk = OS.CLR_NONE;
@@ -1122,14 +1116,14 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 			code |= OS.CDRF_NEWFONT;
 		}
 	}
-	if (OS.IsWindowEnabled (handle)) {
+	if (isWindowEnabled || hasCustomBackground()) {
 		/*
 		* Feature in Windows.  When there is a sort column, the sort column
 		* color draws on top of the background color for an item.  The fix
 		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
 		* in CDDS_SUBITEMPOSTPAINT.
 		*/
-		if (clrTextBk != -1) {
+		if (clrTextBk != -1 || hasCustomBackground()) {
 			int oldColumn = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 			if (oldColumn != -1 && oldColumn == nmcd.iSubItem) {
 				int result = 0;
@@ -1147,14 +1141,15 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*i
 				code |= OS.CDRF_NOTIFYPOSTPAINT;
 			}
 		}
-	} else {
+	}
+	if (!isWindowEnabled || hasCustomBackground() || hasCustomForeground()) {
 		/*
 		* Feature in Windows.  When the table is disabled, it draws
 		* with a gray background but does not gray the text.  The fix
-		* is to explicitly gray the text.
+		* is to explicitly gray the text, but only, when it wasn't customized.
 		*/
-		nmcd.clrText = OS.GetSysColor (OS.COLOR_GRAYTEXT);
-		if (findImageControl () != null) {
+		nmcd.clrText = isWindowEnabled ? getForegroundPixel() : OS.GetSysColor (OS.COLOR_GRAYTEXT);
+		if (findImageControl () != null || hasCustomBackground() || isWindowEnabled) {
 			nmcd.clrTextBk = OS.CLR_NONE;
 		} else {
 			nmcd.clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
@@ -2892,7 +2887,7 @@ public TableColumn getSortColumn () {
 }
 
 int getSortColumnPixel () {
-	int pixel = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
+	int pixel = OS.IsWindowEnabled (handle) || hasCustomBackground() ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
 	return getSlightlyDifferentColor(pixel);
 }
 
@@ -2947,6 +2942,14 @@ boolean hasChildren () {
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
 	}
 	return false;
+}
+
+boolean hasCustomBackground() {
+	return background != -1;
+}
+
+boolean hasCustomForeground() {
+	return foreground != -1;
 }
 
 boolean hitTestSelection (int index, int x, int y) {
