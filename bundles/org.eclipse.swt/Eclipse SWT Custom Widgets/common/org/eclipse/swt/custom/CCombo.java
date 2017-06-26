@@ -145,7 +145,7 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 
-	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
+	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize, SWT.FocusOut};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 
 	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
@@ -419,6 +419,9 @@ void comboEvent (Event event) {
 			} else {
 				text.setFocus();
 			}
+			break;
+		case SWT.FocusOut:
+			text.clearSelection();
 			break;
 		case SWT.Move:
 			dropDown (false);
@@ -1162,7 +1165,7 @@ void listEvent (Event event) {
 			int index = list.getSelectionIndex ();
 			if (index == -1) return;
 			text.setText (list.getItem (index));
-			text.selectAll ();
+			if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 			list.setSelection (index);
 			Event e = new Event ();
 			e.time = event.time;
@@ -1451,7 +1454,7 @@ public void select (int index) {
 	if (0 <= index && index < list.getItemCount()) {
 		if (index != getSelectionIndex()) {
 			text.setText (list.getItem (index));
-			text.selectAll ();
+			if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 			list.select (index);
 			list.showSelection ();
 		}
@@ -1654,7 +1657,7 @@ public void setText (String string) {
 		return;
 	}
 	text.setText (string);
-	text.selectAll ();
+	if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 	list.setSelection (index);
 	list.showSelection ();
 }
@@ -1769,7 +1772,7 @@ void textEvent (Event event) {
 				event.doit = false;
 				if ((event.stateMask & SWT.ALT) != 0) {
 					boolean dropped = isDropped ();
-					text.selectAll ();
+					if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 					if (!dropped) setFocus ();
 					dropDown (!dropped);
 					break;
@@ -1844,7 +1847,7 @@ void textEvent (Event event) {
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
 			boolean dropped = isDropped ();
-			text.selectAll ();
+			if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 			if (!dropped) setFocus ();
 			dropDown (!dropped);
 			break;
@@ -1863,7 +1866,7 @@ void textEvent (Event event) {
 			if (!event.doit) break;
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
-			text.selectAll ();
+			if (text.getEditable() && text.isFocusControl()) text.selectAll ();
 			break;
 		}
 		case SWT.MouseWheel: {
