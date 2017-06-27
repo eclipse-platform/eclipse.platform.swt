@@ -90,7 +90,6 @@ public class JavadocBasher {
 				"Eclipse SWT Browser",
 				// "Eclipse SWT Custom Widgets",
 				"Eclipse SWT Drag and Drop", "Eclipse SWT Effects",
-				"Eclipse SWT Mozilla",
 				// "Eclipse SWT OLE Win32",
 				"Eclipse SWT OpenGL",
 				// "Eclipse SWT PI",
@@ -109,9 +108,7 @@ public class JavadocBasher {
 				"emulated/taskbar", // used by carbon, gtk
 				"emulated/tooltip", // used by cocoa (?!)
 				"glx", // used by gtk
-				"gtk",
-				"mozilla", // used by carbon, cocoa, gtk, win32
-		// "qt", // folder should be deleted
+				"gtk"
 		};
 
 		System.out.println("==== Start Bashing ====");
