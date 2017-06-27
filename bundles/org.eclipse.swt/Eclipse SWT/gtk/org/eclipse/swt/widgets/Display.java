@@ -2075,7 +2075,7 @@ GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	 * properties and filter out things like background-color, border-color,
 	 * etc.
 	 */
-	String pattern = "[^-]color: rgb[a]?\\([0-9]+,[\\s]?[0-9]+,[\\s]?[0-9]+[,[\\s]*[0-9]+]?\\)";
+	String pattern = "[^-]color: rgba?\\((\\d+(,\\s?)?){3,4}\\)";
 	Pattern r = Pattern.compile(pattern);
 	Matcher m = r.matcher(searched);
 	if (m.find()) {
