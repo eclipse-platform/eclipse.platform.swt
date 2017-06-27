@@ -25,9 +25,6 @@
 	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/win32"/>
-	<classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
-	<classpathentry kind="src" path="Eclipse SWT Mozilla/win32"/>
-	<classpathentry kind="src" path="components"/>
 	<classpathentry kind="src" path="Eclipse SWT WebKit/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>

@@ -142,8 +142,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
@@ -156,7 +154,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -179,8 +176,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/gtk/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/gtk/"/>
@@ -196,7 +191,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -215,8 +209,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/win32/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
@@ -231,7 +223,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Printing/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>

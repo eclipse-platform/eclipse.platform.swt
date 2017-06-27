@@ -30,9 +30,6 @@
 	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/gtk"/>
-	<classpathentry kind="src" path="Eclipse SWT Mozilla/common"/> <!-- TODO [win32] not available; browser common depends -->
-	<classpathentry kind="src" path="Eclipse SWT Mozilla/gtk"/> <!-- TODO [win32] not available; browser common depends -->
-	<classpathentry kind="src" path="components"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/> <!-- TODO [win32] not available; OpenGL/gtk depends -->
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
