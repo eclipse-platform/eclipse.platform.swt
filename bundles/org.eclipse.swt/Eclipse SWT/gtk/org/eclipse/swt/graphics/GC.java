@@ -964,61 +964,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (srcWidth != destWidth || srcHeight != destHeight) {
-				/*
-				* Bug in Cairo.  When drawing the image stretched with an interpolation
-				* algorithm, the edges of the image are faded.  This is not a bug, but
-				* it is not desired.  To avoid the faded edges, it should be possible to
-				* use cairo_pattern_set_extend() to set the pattern extend to either
-				* CAIRO_EXTEND_REFLECT or CAIRO_EXTEND_PAD, but these are not implemented
-				* in some versions of cairo (1.2.x) and have bugs in others (in 1.4.2 it
-				* draws with black edges).  The fix is to implement CAIRO_EXTEND_REFLECT
-				* by creating an image that is 3 times bigger than the original, drawing
-				* the original image in every quadrant (with an appropriate transform) and
-				* use this image as the pattern.
-				*
-				* NOTE: For some reason, it is necessary to use CAIRO_EXTEND_PAD with
-				* the image that was created or the edges are still faded.
-				*
-				* NOTE: Cairo.CAIRO_EXTEND_PAD works on Cairo 1.8.x and greater.
-				*/
-				int version = Cairo.cairo_version ();
-				if (version < Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
-					long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
-					long /*int*/ cr = Cairo.cairo_create(surface);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, -1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, 1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, -1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_destroy(cr);
-					long /*int*/ newPattern = Cairo.cairo_pattern_create_for_surface(surface);
-					Cairo.cairo_surface_destroy(surface);
-					if (newPattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					Cairo.cairo_pattern_destroy(pattern);
-					pattern = newPattern;
-					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
-					double[] matrix = new double[6];
-					Cairo.cairo_matrix_init_translate(matrix, imgWidth, imgHeight);
-					Cairo.cairo_pattern_set_matrix(pattern, matrix);
-				} else {
-					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
-				}
+				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
 			}
 			Cairo.cairo_pattern_set_filter(pattern, filter);
 			Cairo.cairo_set_source(cairo, pattern);

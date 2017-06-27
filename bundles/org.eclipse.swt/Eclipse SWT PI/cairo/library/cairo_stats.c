@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2016 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2017 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -70,7 +70,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1matrix_1init_1identity",
 	"_1cairo_1matrix_1init_1rotate",
 	"_1cairo_1matrix_1init_1scale",
-	"_1cairo_1matrix_1init_1translate",
 	"_1cairo_1matrix_1invert",
 	"_1cairo_1matrix_1multiply",
 	"_1cairo_1matrix_1rotate",

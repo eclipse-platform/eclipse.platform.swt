@@ -523,16 +523,6 @@ public static final void cairo_matrix_init_scale(double[] matrix, double sx, dou
 	}
 }
 /** @param matrix cast=(cairo_matrix_t *) */
-public static final native void _cairo_matrix_init_translate(double[] matrix, double tx, double ty);
-public static final void cairo_matrix_init_translate(double[] matrix, double tx, double ty) {
-	lock.lock();
-	try {
-		_cairo_matrix_init_translate(matrix, tx, ty);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param matrix cast=(cairo_matrix_t *) */
 public static final native int _cairo_matrix_invert(double[] matrix);
 public static final int cairo_matrix_invert(double[] matrix) {
 	lock.lock();

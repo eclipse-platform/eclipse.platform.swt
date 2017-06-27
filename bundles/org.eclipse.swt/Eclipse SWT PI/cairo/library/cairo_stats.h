@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2016 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2017 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -80,7 +80,6 @@ typedef enum {
 	_1cairo_1matrix_1init_1identity_FUNC,
 	_1cairo_1matrix_1init_1rotate_FUNC,
 	_1cairo_1matrix_1init_1scale_FUNC,
-	_1cairo_1matrix_1init_1translate_FUNC,
 	_1cairo_1matrix_1invert_FUNC,
 	_1cairo_1matrix_1multiply_FUNC,
 	_1cairo_1matrix_1rotate_FUNC,

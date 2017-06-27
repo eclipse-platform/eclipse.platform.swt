@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2016 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2017 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -516,20 +516,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1matrix_1init_1scale)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1matrix_1init_1scale_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1matrix_1init_1translate
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1matrix_1init_1translate)
-	(JNIEnv *env, jclass that, jdoubleArray arg0, jdouble arg1, jdouble arg2)
-{
-	jdouble *lparg0=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1matrix_1init_1translate_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	cairo_matrix_init_translate((cairo_matrix_t *)lparg0, arg1, arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1matrix_1init_1translate_FUNC);
 }
 #endif
 
