@@ -64,7 +64,7 @@ public class SpyView extends ViewPart {
 				Display display = output.getDisplay();
 				Control control = display.getCursorControl();
 				if (control != lastControl) {
-					StringBuffer text = new StringBuffer();
+					StringBuilder text = new StringBuilder();
 					if (control != null) {
 						text.append(getName(control)+"@"+getOSHandle(control)+"\n");
 						text.append("\tStyle: "+getStyle(control)+"\n");
