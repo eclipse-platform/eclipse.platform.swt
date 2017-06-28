@@ -184,10 +184,9 @@ class ColorTab extends Tab {
 	}
 
 	String getRGBcolor(int id){
-		String result;
 		Color color = display.getSystemColor(id);
-		result = "("+color.getRed() + "," + color.getGreen() + "," + color.getBlue()+")";
-		return result;
+		return String.format("(%d,%d,%d,%d)", color.getRed(), color.getGreen(),
+				color.getBlue(), color.getAlpha());
 	}
 
 	@Override
