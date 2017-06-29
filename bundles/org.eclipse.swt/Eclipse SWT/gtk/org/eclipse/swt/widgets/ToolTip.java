@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -478,56 +478,18 @@ void drawTooltip (long /*int*/ cr) {
 	long /*int*/ window = gtk_widget_get_window (handle);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
-	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
-		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
-		int count = borderPolygon.length / 2;
-		if (count != 0) {
-			Cairo.cairo_set_line_width(cairo, 1);
-			Cairo.cairo_move_to(cairo, borderPolygon[0], borderPolygon[1]);
-			for (int i=1,j=2; i<count; i++,j+=2) {
-				Cairo.cairo_line_to(cairo, borderPolygon[j]+0.5, borderPolygon[j+1]+0.5);
-			}
-			Cairo.cairo_close_path(cairo);
-			Cairo.cairo_stroke(cairo);
+	long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
+	int count = borderPolygon.length / 2;
+	if (count != 0) {
+		Cairo.cairo_set_line_width(cairo, 1);
+		Cairo.cairo_move_to(cairo, borderPolygon[0], borderPolygon[1]);
+		for (int i=1,j=2; i<count; i++,j+=2) {
+			Cairo.cairo_line_to(cairo, borderPolygon[j]+0.5, borderPolygon[j+1]+0.5);
 		}
-		if (spikeAbove) y += TIP_HEIGHT;
-		if (layoutText != 0) {
-			byte[] buffer = null;
-			int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
-			switch (id) {
-				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs ("dialog-error", true); break;
-				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs ("dialog-information", true); break;
-				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("dialog-warning", true); break;
-			}
-			if (buffer != null) {
-				long /*int*/ pixbuf = OS.gtk_icon_theme_load_icon(OS.gtk_icon_theme_get_default(), buffer, OS.GTK_ICON_SIZE_MENU, 0, 0);
- 				OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
- 				Cairo.cairo_paint (cairo);
-				OS.g_object_unref (pixbuf);
-				x += IMAGE_SIZE;
-			}
-			x += INSET;
-			int [] w = new int [1], h = new int [1];
-			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
-			Cairo.cairo_move_to(cairo, x,y );
-			OS.pango_cairo_show_layout(cairo, layoutText);
-			OS.pango_layout_get_pixel_size (layoutText, w, h);
-			y += 2 * PADDING + Math.max (IMAGE_SIZE, h [0]);
-		}
-		if (layoutMessage != 0) {
-			x = BORDER + PADDING + INSET;
-			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
-			Cairo.cairo_move_to(cairo, x, y);
-			OS.pango_cairo_show_layout(cairo, layoutMessage);
-		}
-		if (cairo != cr) Cairo.cairo_destroy(cairo);
-		return;
+		Cairo.cairo_close_path(cairo);
+		Cairo.cairo_stroke(cairo);
 	}
-	long /*int*/ gdkGC = OS.gdk_gc_new (window);
-	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
 	if (spikeAbove) y += TIP_HEIGHT;
 	if (layoutText != 0) {
 		byte[] buffer = null;
@@ -539,25 +501,28 @@ void drawTooltip (long /*int*/ cr) {
 		}
 		if (buffer != null) {
 			long /*int*/ pixbuf = OS.gtk_icon_theme_load_icon(OS.gtk_icon_theme_get_default(), buffer, OS.GTK_ICON_SIZE_MENU, 0, 0);
-			OS.gdk_draw_pixbuf (window, gdkGC, pixbuf, 0, 0, x, y, IMAGE_SIZE, IMAGE_SIZE, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+			OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
+			Cairo.cairo_paint (cairo);
 			OS.g_object_unref (pixbuf);
 			x += IMAGE_SIZE;
 		}
 		x += INSET;
-		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		OS.gdk_gc_set_foreground (gdkGC, foreground.handle);
-		OS.gdk_draw_layout (window, gdkGC, x, y, layoutText);
 		int [] w = new int [1], h = new int [1];
+		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+		OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		Cairo.cairo_move_to(cairo, x,y );
+		OS.pango_cairo_show_layout(cairo, layoutText);
 		OS.pango_layout_get_pixel_size (layoutText, w, h);
 		y += 2 * PADDING + Math.max (IMAGE_SIZE, h [0]);
 	}
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		OS.gdk_gc_set_foreground (gdkGC, foreground.handle);
-		OS.gdk_draw_layout (window, gdkGC, x, y, layoutMessage);
+		OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		Cairo.cairo_move_to(cairo, x, y);
+		OS.pango_cairo_show_layout(cairo, layoutMessage);
 	}
-	OS.g_object_unref (gdkGC);
+	if (cairo != cr) Cairo.cairo_destroy(cairo);
 }
 
 @Override
