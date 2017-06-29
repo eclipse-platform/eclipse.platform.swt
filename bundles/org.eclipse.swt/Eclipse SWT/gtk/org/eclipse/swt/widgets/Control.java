@@ -148,56 +148,39 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ region, 
 }
 
 void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long /*int*/ region, int x, int y, int width, int height) {
-	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
-		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
-		if (region != 0) {
-			OS.gdk_cairo_region(cairo, region);
-			Cairo.cairo_clip(cairo);
-		}
-		if (control.backgroundImage != null) {
-			Point pt = display.mapInPixels (this, control, 0, 0);
-			Cairo.cairo_translate (cairo, -pt.x, -pt.y);
-			x += pt.x;
-			y += pt.y;
-			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (control.backgroundImage.surface);
-			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
-			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
-			if ((style & SWT.MIRRORED) != 0) {
-				double[] matrix = {-1, 0, 0, 1, 0, 0};
-				Cairo.cairo_pattern_set_matrix(pattern, matrix);
-			}
-			Cairo.cairo_set_source (cairo, pattern);
-			Cairo.cairo_pattern_destroy (pattern);
-		} else {
-			GdkRGBA rgba;
-			if (OS.GTK3) {
-				rgba = control.getBackgroundGdkRGBA();
-				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-			} else {
-				GdkColor color = control.getBackgroundGdkColor ();
-				Cairo.cairo_set_source_rgba_compatibility (cairo, color);
-			}
-		}
-		Cairo.cairo_rectangle (cairo, x, y, width, height);
-		Cairo.cairo_fill (cairo);
-		if (cairo != cr) Cairo.cairo_destroy(cairo);
-		return;
+	long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
+	if (region != 0) {
+		OS.gdk_cairo_region(cairo, region);
+		Cairo.cairo_clip(cairo);
 	}
-	long /*int*/ gdkGC = OS.gdk_gc_new (window);
-	if (region != 0) OS.gdk_gc_set_clip_region (gdkGC, region);
 	if (control.backgroundImage != null) {
 		Point pt = display.mapInPixels (this, control, 0, 0);
-		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
-		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
-		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
+		Cairo.cairo_translate (cairo, -pt.x, -pt.y);
+		x += pt.x;
+		y += pt.y;
+		long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (control.backgroundImage.surface);
+		if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+		if ((style & SWT.MIRRORED) != 0) {
+			double[] matrix = {-1, 0, 0, 1, 0, 0};
+			Cairo.cairo_pattern_set_matrix(pattern, matrix);
+		}
+		Cairo.cairo_set_source (cairo, pattern);
+		Cairo.cairo_pattern_destroy (pattern);
 	} else {
-		GdkColor color = control.getBackgroundGdkColor ();
-		OS.gdk_gc_set_foreground (gdkGC, color);
-		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
+		GdkRGBA rgba;
+		if (OS.GTK3) {
+			rgba = control.getBackgroundGdkRGBA();
+			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+		} else {
+			GdkColor color = control.getBackgroundGdkColor ();
+			Cairo.cairo_set_source_rgba_compatibility (cairo, color);
+		}
 	}
-	OS.g_object_unref (gdkGC);
+	Cairo.cairo_rectangle (cairo, x, y, width, height);
+	Cairo.cairo_fill (cairo);
+	if (cairo != cr) Cairo.cairo_destroy(cairo);
 }
 
 boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
@@ -3775,11 +3758,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	if (gc != 0) {
 		Cairo.cairo_reference (gc);
 	} else {
-		if (OS.USE_CAIRO) {
-			gc = OS.gdk_cairo_create (window);
-		} else {
-			gc = OS.gdk_gc_new (window);
-		}
+		gc = OS.gdk_cairo_create (window);
 	}
 	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
@@ -3830,12 +3809,7 @@ long /*int*/ imHandle () {
 @Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 	checkWidget ();
-	long /*int*/ gc = hDC;
-	if (OS.USE_CAIRO) {
-		Cairo.cairo_destroy (gc);
-	} else {
-		OS.g_object_unref (gc);
-	}
+	Cairo.cairo_destroy (hDC);
 }
 
 /**
@@ -6202,39 +6176,37 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
 			if ((state & OBSCURED) != 0) break;
-			if (OS.USE_CAIRO) {
-				Control control = findBackgroundControl ();
-				boolean draw = control != null && control.backgroundImage != null;
-				if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
-					GdkRGBA rgba = new GdkRGBA();
-					long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-					if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-						OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
-					} else {
-						OS.gtk_style_context_get_background_color (context, OS.gtk_widget_get_state_flags(handle), rgba);
-					}
-					draw = rgba.alpha == 0;
+			Control control = findBackgroundControl ();
+			boolean draw = control != null && control.backgroundImage != null;
+			if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
+				GdkRGBA rgba = new GdkRGBA();
+				long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+				if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+					OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+				} else {
+					OS.gtk_style_context_get_background_color (context, OS.gtk_widget_get_state_flags(handle), rgba);
 				}
-				if (draw) {
-					if (OS.GTK3) {
-						long /*int*/ cairo = arg0;
-						GdkRectangle rect = new GdkRectangle ();
-						OS.gdk_cairo_get_clip_rectangle (cairo, rect);
-						if (control == null) control = this;
-						long /*int*/ window = OS.gtk_widget_get_window (handle);
-						if (window != 0) {
-							drawBackground (control, window, 0, 0, rect.x, rect.y, rect.width, rect.height);
-						} else {
-							drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
-						}
+				draw = rgba.alpha == 0;
+			}
+			if (draw) {
+				if (OS.GTK3) {
+					long /*int*/ cairo = arg0;
+					GdkRectangle rect = new GdkRectangle ();
+					OS.gdk_cairo_get_clip_rectangle (cairo, rect);
+					if (control == null) control = this;
+					long /*int*/ window = OS.gtk_widget_get_window (handle);
+					if (window != 0) {
+						drawBackground (control, window, 0, 0, rect.x, rect.y, rect.width, rect.height);
 					} else {
-						GdkEventExpose gdkEvent = new GdkEventExpose ();
-						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-						long /*int*/ paintWindow = paintWindow();
-						long /*int*/ window = gdkEvent.window;
-						if (window != paintWindow) break;
-						drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+						drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
 					}
+				} else {
+					GdkEventExpose gdkEvent = new GdkEventExpose ();
+					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+					long /*int*/ paintWindow = paintWindow();
+					long /*int*/ window = gdkEvent.window;
+					if (window != paintWindow) break;
+					drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
 				}
 			}
 			break;
