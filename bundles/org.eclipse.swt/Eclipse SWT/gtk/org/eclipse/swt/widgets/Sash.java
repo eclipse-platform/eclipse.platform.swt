@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -114,9 +114,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 static int checkStyle (int style) {
-	if (OS.USE_CAIRO) {
-		style |= SWT.SMOOTH;
-	}
+	style |= SWT.SMOOTH;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 

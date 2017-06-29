@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -394,15 +394,8 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
  */
 @Override
 public long /*int*/ internal_new_GC(GCData data) {
-	long /*int*/ gc, drawable = 0;
-	if (OS.USE_CAIRO) {
-		gc = cairo;
-	} else {
-		GdkVisual visual = new GdkVisual ();
-		OS.memmove (visual, OS.gdk_visual_get_system());
-		drawable = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), 1, 1, visual.depth);
-		gc = OS.gdk_gc_new (drawable);
-	}
+	long /*int*/ drawable = 0;
+	long /*int*/ gc = cairo;
 	if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -455,14 +448,7 @@ public long /*int*/ internal_new_GC(GCData data) {
  */
 @Override
 public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
-	long /*int*/ gc = hDC;
 	if (data != null) isGCCreated = false;
-	if (OS.USE_CAIRO) return;
-	OS.g_object_unref (gc);
-	if (data != null) {
-		if (data.drawable != 0) OS.g_object_unref (data.drawable);
-		data.drawable = data.cairo = 0;
-	}
 }
 
 /**

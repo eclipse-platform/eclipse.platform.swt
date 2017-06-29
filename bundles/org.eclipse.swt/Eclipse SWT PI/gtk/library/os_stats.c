@@ -1722,11 +1722,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2JJ",
 #endif
 #ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2JJ",

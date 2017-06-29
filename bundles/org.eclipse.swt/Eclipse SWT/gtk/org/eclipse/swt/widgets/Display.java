@@ -3645,12 +3645,7 @@ void initializeWindowManager () {
  */
 @Override
 public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
-	long /*int*/ gc = hDC;
-	if (OS.USE_CAIRO) {
-		Cairo.cairo_destroy (gc);
-	} else {
-		OS.g_object_unref (gc);
-	}
+	Cairo.cairo_destroy (hDC);
 }
 
 /**
@@ -3679,16 +3674,9 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 public long /*int*/ internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long /*int*/ root = OS.gdk_get_default_root_window();
-	long /*int*/ gc;
-	if (OS.USE_CAIRO) {
-		gc = OS.gdk_cairo_create (root);
-		if (gc == 0) error (SWT.ERROR_NO_HANDLES);
-		//TODO how gdk_gc_set_subwindow is done in cairo?
-	} else {
-		gc = OS.gdk_gc_new (root);
-		if (gc == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
-	}
+	long /*int*/ gc = OS.gdk_cairo_create (root);
+	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
+	//TODO how gdk_gc_set_subwindow is done in cairo?
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {

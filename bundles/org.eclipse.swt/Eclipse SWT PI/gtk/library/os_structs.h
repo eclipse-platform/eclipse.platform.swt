@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -280,18 +280,6 @@ void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct
 #define getGdkRectangleFields(a,b,c) NULL
 #define setGdkRectangleFields(a,b,c)
 #define GdkRectangle_sizeof() 0
-#endif
-
-#ifndef NO_GdkVisual
-void cacheGdkVisualFields(JNIEnv *env, jobject lpObject);
-GdkVisual *getGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct);
-void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct);
-#define GdkVisual_sizeof() sizeof(GdkVisual)
-#else
-#define cacheGdkVisualFields(a,b)
-#define getGdkVisualFields(a,b,c) NULL
-#define setGdkVisualFields(a,b,c)
-#define GdkVisual_sizeof() 0
 #endif
 
 #ifndef NO_GdkWindowAttr

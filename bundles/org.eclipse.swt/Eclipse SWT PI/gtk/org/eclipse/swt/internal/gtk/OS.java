@@ -15397,11 +15397,6 @@ public static final native void memmove(long /*int*/ dest, GtkFixed src);
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
  */
-public static final native void memmove(GdkVisual dest, long /*int*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
 public static final native void memmove(GdkImage dest, long /*int*/ src);
 /**
  * @param dest cast=(void *),flags=no_in

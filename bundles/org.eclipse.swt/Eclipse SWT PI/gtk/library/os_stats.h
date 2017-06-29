@@ -1732,11 +1732,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2JJ_FUNC,
 #endif
 #ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J_FUNC,
-#endif
-#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2JJ_FUNC,

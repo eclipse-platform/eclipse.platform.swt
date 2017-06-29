@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1709,25 +1709,17 @@ void drawMessage (long /*int*/ cr) {
 				Point thickness = getThickness (handle);
 				x += thickness.x;
 				y += thickness.y;
-				if (OS.USE_CAIRO) {
-					long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
-					Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
-				}
+				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+				Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
 			} else {
 				long /*int*/ style = OS.gtk_widget_get_style (handle);
 				OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
 				OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
-				if (OS.USE_CAIRO) {
-					long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
-					Cairo.cairo_set_source_rgba_compatibility (cairo, textColor);
-					Cairo.cairo_move_to(cairo, x, y);
-					OS.pango_cairo_show_layout(cairo, layout);
-					if (cr != cairo) Cairo.cairo_destroy(cairo);
-				} else {
-					long /*int*/ gc = OS.gdk_gc_new	(window);
-					OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
-					OS.g_object_unref (gc);
-				}
+				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+				Cairo.cairo_set_source_rgba_compatibility (cairo, textColor);
+				Cairo.cairo_move_to(cairo, x, y);
+				OS.pango_cairo_show_layout(cairo, layout);
+				if (cr != cairo) Cairo.cairo_destroy(cairo);
 			}
 			OS.g_object_unref (layout);
 		}
