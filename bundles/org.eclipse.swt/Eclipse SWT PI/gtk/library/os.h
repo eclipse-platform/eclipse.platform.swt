@@ -233,6 +233,7 @@
 #define NO__1gdk_1rgba_1parse
 #define NO__1gdk_1rgba_1free
 #define NO__1gdk_1rgba_1hash
+#define NO__1gdk_1cairo_1set_1source_1rgba
 #define NO__1gtk_1scrollable_1get_1vadjustment
 #define NO__1gtk_1widget_1set_1opacity
 #define NO__1gtk_1widget_1get_1opacity

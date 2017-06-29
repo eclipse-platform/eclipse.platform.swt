@@ -3915,6 +3915,28 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1set_1source_1rgba
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1rgba)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1rgba_FUNC);
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gdk_cairo_set_source_rgba(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_set_source_rgba)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkRGBA *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1rgba_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1set_1source_1window
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1window)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)

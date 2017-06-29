@@ -253,6 +253,7 @@
 #define gdk_cairo_get_clip_rectangle_LIB LIB_GDK
 #define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
+#define gdk_cairo_set_source_rgba_LIB LIB_GDK
 #define gdk_cairo_set_source_window_LIB LIB_GDK
 #define gdk_cairo_region_create_from_surface_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK

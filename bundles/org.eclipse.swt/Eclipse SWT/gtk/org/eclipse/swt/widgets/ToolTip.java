@@ -509,7 +509,11 @@ void drawTooltip (long /*int*/ cr) {
 		x += INSET;
 		int [] w = new int [1], h = new int [1];
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		if (OS.GTK3) {
+			OS.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+		} else {
+			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		}
 		Cairo.cairo_move_to(cairo, x,y );
 		OS.pango_cairo_show_layout(cairo, layoutText);
 		OS.pango_layout_get_pixel_size (layoutText, w, h);
@@ -518,7 +522,11 @@ void drawTooltip (long /*int*/ cr) {
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		if (OS.GTK3) {
+			OS.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+		} else {
+			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+		}
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layoutMessage);
 	}

@@ -97,14 +97,6 @@ public TextLayout (Device device) {
 	init();
 }
 
-GdkColor toGdkColor (GdkRGBA rgba) {
-	GdkColor gdkColor = new GdkColor();
-	gdkColor.red = (short)(rgba.red * 0xFFFF);
-	gdkColor.green = (short)(rgba.green * 0xFFFF);
-	gdkColor.blue = (short)(rgba.blue * 0xFFFF);
-	return gdkColor;
-}
-
 void checkLayout() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
@@ -225,8 +217,17 @@ void computeRuns () {
 				case SWT.UNDERLINE_LINK: {
 					if (style.foreground == null) {
 						// Bug 497071: use COLOR_LINK_FOREGROUND for StyledText links
-						GdkColor linkColor = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handle;
-						long /*int*/ attr = OS.pango_attr_foreground_new(linkColor.red, linkColor.green, linkColor.blue);
+						long /*int*/ attr;
+						if (OS.GTK3) {
+							GdkRGBA linkRGBA = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handleRGBA;
+							// Manual conversion since PangoAttrColor is a special case.
+							// It uses GdkColor style colors but is supported on GTK3.
+							attr = OS.pango_attr_foreground_new((short)(linkRGBA.red * 0xFFFF),
+									(short)(linkRGBA.green * 0xFFFF), (short)(linkRGBA.blue * 0xFFFF));
+						} else {
+							GdkColor linkColor = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handle;
+							attr = OS.pango_attr_foreground_new(linkColor.red, linkColor.green, linkColor.blue);
+						}
 						OS.memmove (attribute, attr, PangoAttribute.sizeof);
 						attribute.start_index = byteStart;
 						attribute.end_index = byteEnd;
@@ -245,9 +246,14 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.underlineColor != null) {
-				GdkColor fg;
-				fg = OS.GTK3? toGdkColor(style.underlineColor.handleRGBA) : style.underlineColor.handle;
-				attr = OS.pango_attr_underline_color_new(fg.red, fg.green, fg.blue);
+				if (OS.GTK3) {
+					GdkRGBA rgba = style.underlineColor.handleRGBA;
+					attr = OS.pango_attr_underline_color_new((short)(rgba.red * 0xFFFF),
+							(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
+				} else {
+					GdkColor fg = style.underlineColor.handle;
+					attr = OS.pango_attr_underline_color_new(fg.red, fg.green, fg.blue);
+				}
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
 					attribute.start_index = byteStart;
@@ -267,9 +273,14 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.strikeoutColor != null) {
-				GdkColor fg;
-				fg = OS.GTK3? toGdkColor(style.strikeoutColor.handleRGBA) : style.strikeoutColor.handle;
-				attr = OS.pango_attr_strikethrough_color_new(fg.red, fg.green, fg.blue);
+				if (OS.GTK3) {
+					GdkRGBA rgba = style.strikeoutColor.handleRGBA;
+					attr = OS.pango_attr_strikethrough_color_new((short)(rgba.red * 0xFFFF),
+							(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
+				} else {
+					GdkColor fg = style.strikeoutColor.handle;
+					attr = OS.pango_attr_strikethrough_color_new(fg.red, fg.green, fg.blue);
+				}
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
 					attribute.start_index = byteStart;
@@ -282,9 +293,15 @@ void computeRuns () {
 		}
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
-			GdkColor fg;
-			fg = OS.GTK3? toGdkColor(foreground.handleRGBA) : foreground.handle;
-			long /*int*/ attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
+			long /*int*/ attr;
+			if (OS.GTK3) {
+				GdkRGBA rgba = foreground.handleRGBA;
+				attr = OS.pango_attr_foreground_new((short)(rgba.red * 0xFFFF),
+						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
+			} else {
+				GdkColor fg = foreground.handle;
+				attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
+			}
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -293,9 +310,15 @@ void computeRuns () {
 		}
 		Color background = style.background;
 		if (background != null && !background.isDisposed()) {
-			GdkColor bg;
-			bg = OS.GTK3? toGdkColor(background.handleRGBA) : background.handle;
-			long /*int*/ attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
+			long /*int*/ attr;
+			if (OS.GTK3) {
+				GdkRGBA rgba = background.handleRGBA;
+				attr = OS.pango_attr_background_new((short)(rgba.red * 0xFFFF),
+						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
+			} else {
+				GdkColor bg = background.handle;
+				attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
+			}
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
