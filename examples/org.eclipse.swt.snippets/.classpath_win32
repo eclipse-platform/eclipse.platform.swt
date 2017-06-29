@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="org/eclipse/swt/snippets/Snippet174.java|org/eclipse/swt/snippets/Snippet195.java|org/eclipse/swt/snippets/Snippet209.java|org/eclipse/swt/snippets/Snippet267.java|org/eclipse/swt/snippets/Snippet277.java|org/eclipse/swt/snippets/Snippet306.java|org/eclipse/swt/snippets/Snippet321.java|org/eclipse/swt/snippets/Snippet323.java|org/eclipse/swt/snippets/Snippet329.java|org/eclipse/swt/snippets/Snippet341.java" kind="src" path="src"/>
+	<classpathentry excluding="org/eclipse/swt/snippets/Snippet174.java|org/eclipse/swt/snippets/Snippet195.java|org/eclipse/swt/snippets/Snippet209.java|org/eclipse/swt/snippets/Snippet341.java" kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
