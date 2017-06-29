@@ -2944,8 +2944,6 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 		long /*int*/ cairo = data.cairo = handle;
 		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 		data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
-	} else if (OS.INIT_CAIRO) {
-		 initCairo();
 	}
 	setClipping(data.clipRgn);
 	if ((data.style & SWT.MIRRORED) != 0) {
@@ -3056,34 +3054,15 @@ boolean isIdentity(double[] matrix) {
  */
 public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if ((data.style & SWT.MIRRORED) != 0 || OS.USE_CAIRO || OS.INIT_CAIRO) {
-		if (!advanced) {
-			setAlpha(0xFF);
-			setAntialias(SWT.DEFAULT);
-			setBackgroundPattern(null);
-			setClipping(0);
-			setForegroundPattern(null);
-			setInterpolation(SWT.DEFAULT);
-			setTextAntialias(SWT.DEFAULT);
-			setTransform(null);
-		}
-		return;
-	}
-	if (advanced && data.cairo != 0) return;
-	if (advanced) {
-		try {
-			initCairo();
-		} catch (SWTException e) {}
-	} else {
-		if (!data.disposeCairo) return;
-		long /*int*/ cairo = data.cairo;
-		if (cairo != 0) Cairo.cairo_destroy(cairo);
-		data.cairo = 0;
-		data.interpolation = SWT.DEFAULT;
-		data.alpha = 0xFF;
-		data.backgroundPattern = data.foregroundPattern = null;
-		data.state = 0;
+	if (!advanced) {
+		setAlpha(0xFF);
+		setAntialias(SWT.DEFAULT);
+		setBackgroundPattern(null);
 		setClipping(0);
+		setForegroundPattern(null);
+		setInterpolation(SWT.DEFAULT);
+		setTextAntialias(SWT.DEFAULT);
+		setTransform(null);
 	}
 }
 

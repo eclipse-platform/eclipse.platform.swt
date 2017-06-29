@@ -750,18 +750,13 @@ public class OS extends C {
 		}
 		SWT_PADDED_MENU_ITEMS = usePadded;
 	}
-	public static final boolean USE_CAIRO, INIT_CAIRO;
+	public static final boolean USE_CAIRO;
 	static {
 		boolean useCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
 			useCairo  = Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 9, 4);
 		}
 		USE_CAIRO = useCairo || OS.GTK3;
-		boolean initCairo = false;
-		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
-			initCairo  = true;
-		}
-		INIT_CAIRO = initCairo;
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK_VERSION >>> 16) + "." + (GTK_VERSION >>> 8 & 0xFF) + "." + (GTK_VERSION & 0xFF));
