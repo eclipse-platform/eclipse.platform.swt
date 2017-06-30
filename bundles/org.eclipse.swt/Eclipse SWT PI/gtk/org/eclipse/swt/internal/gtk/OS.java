@@ -144,7 +144,6 @@ public class OS extends C {
 	public static final int GDK_BUTTON_PRESS_MASK = 0x100;
 	public static final int GDK_BUTTON_RELEASE = 0x7;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
-	public static final int GDK_CAP_BUTT = 0x1;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONFIGURE = 13;
 	public static final int GDK_CONTROL_MASK = 0x4;
@@ -203,17 +202,12 @@ public class OS extends C {
 	public static final int GDK_FLEUR = 0x34;
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
-	public static final int GDK_GC_FOREGROUND = 0x1;
 	public static final int GDK_FUNC_ALL = 1;
 	public static final int GDK_FUNC_RESIZE = 2;
 	public static final int GDK_FUNC_MOVE = 4;
 	public static final int GDK_FUNC_MINIMIZE = 8;
 	public static final int GDK_FUNC_MAXIMIZE = 16;
 	public static final int GDK_FUNC_CLOSE = 32;
-	public static final int GDK_GC_LINE_WIDTH = 0x4000;
-	public static final int GDK_GC_LINE_STYLE = 0x8000;
-	public static final int GDK_GC_CAP_STYLE = 0x10000;
-	public static final int GDK_GC_JOIN_STYLE = 0x20000;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;
@@ -224,7 +218,6 @@ public class OS extends C {
 	public static final int GDK_INTERP_BILINEAR = 0x2;
 	public static final int GDK_Insert = 0xff63;
 	public static final int GDK_ISO_Left_Tab = 0xfe20;
-	public static final int GDK_JOIN_MITER = 0x0;
 	public static final int GDK_KEY_PRESS = 0x8;
 	public static final int GDK_KEY_PRESS_MASK = 0x400;
 	public static final int GDK_KEY_RELEASE = 0x9;
@@ -260,8 +253,6 @@ public class OS extends C {
 	public static final int GDK_LEAVE_NOTIFY_MASK = 0x2000;
 	public static final int GDK_LEFT_PTR = 0x44;
 	public static final int GDK_LEFT_SIDE = 0x46;
-	public static final int GDK_LINE_ON_OFF_DASH = 0x1;
-	public static final int GDK_LINE_SOLID = 0x0;
 	public static final int GDK_Linefeed = 0xff0A;
 	public static final int GDK_Left = 0xff51;
 	public static final int GDK_Meta_L = 0xFFE7;
@@ -3903,35 +3894,6 @@ public static final void gdk_draw_image(long /*int*/ drawable, long /*int*/ gc, 
 	}
 }
 /**
-  @method flags=dynamic
- */
-public static final native void _gdk_draw_layout(long /*int*/ drawable, long /*int*/ gc, int x, int y, long /*int*/ layout);
-public static final void gdk_draw_layout(long /*int*/ drawable, long /*int*/ gc, int x, int y, long /*int*/ layout) {
-	lock.lock();
-	try {
-		_gdk_draw_layout(drawable, gc, x, y, layout);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gint)
- * @param y cast=(gint)
- * @param layout cast=(PangoLayout *)
- * @param foreground flags=no_out
- * @param background flags=no_out
- */
-public static final native void _gdk_draw_layout_with_colors(long /*int*/ drawable, long /*int*/ gc, int x, int y, long /*int*/ layout, GdkColor foreground, GdkColor background);
-public static final void gdk_draw_layout_with_colors(long /*int*/ drawable, long /*int*/ gc, int x, int y, long /*int*/ layout, GdkColor foreground, GdkColor background) {
-	lock.lock();
-	try {
-		_gdk_draw_layout_with_colors(drawable, gc, x, y, layout, foreground, background);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @method flags=dynamic
  * @param xsrc cast=(gint)
  * @param ysrc cast=(gint)
@@ -4190,33 +4152,6 @@ public static final long /*int*/ gdk_gc_new(long /*int*/ window) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_clip_region(long /*int*/ gc, long /*int*/ region);
-public static final void gdk_gc_set_clip_region(long /*int*/ gc, long /*int*/ region) {
-	lock.lock();
-	try {
-		_gdk_gc_set_clip_region(gc, region);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param dash_offset cast=(gint)
- * @param dash_list cast=(gint8 *),flags=no_out critical
- * @param n cast=(gint)
- */
-public static final native void _gdk_gc_set_dashes(long /*int*/ gc, int dash_offset, byte[] dash_list, int n);
-public static final void gdk_gc_set_dashes(long /*int*/ gc, int dash_offset, byte[] dash_list, int n) {
-	lock.lock();
-	try {
-		_gdk_gc_set_dashes(gc, dash_offset, dash_list, n);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native void _gdk_gc_set_fill(long /*int*/ gc, int fill);
 public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {
@@ -4248,18 +4183,6 @@ public static final void gdk_gc_set_function(long /*int*/ gc, long /*int*/ funct
 	lock.lock();
 	try {
 		_gdk_gc_set_function(gc, function);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_line_attributes(long /*int*/ gc, int line_width, int line_style, int cap_style, int join_style);
-public static final void gdk_gc_set_line_attributes(long /*int*/ gc, int line_width, int line_style, int cap_style, int join_style) {
-	lock.lock();
-	try {
-		_gdk_gc_set_line_attributes(gc, line_width, line_style, cap_style, join_style);
 	} finally {
 		lock.unlock();
 	}
@@ -4306,19 +4229,6 @@ public static final void gdk_gc_set_ts_origin(long /*int*/ gc, int x, int y) {
 	lock.lock();
 	try {
 		_gdk_gc_set_ts_origin(gc, x, y);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param values flags=no_out
- */
-public static final native void _gdk_gc_set_values(long /*int*/ gc, GdkGCValues values, int values_mask);
-public static final void gdk_gc_set_values(long /*int*/ gc, GdkGCValues values, int values_mask) {
-	lock.lock();
-	try {
-		_gdk_gc_set_values(gc, values, values_mask);
 	} finally {
 		lock.unlock();
 	}

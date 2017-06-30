@@ -4525,47 +4525,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1image)
 }
 #endif
 
-#ifndef NO__1gdk_1draw_1layout
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1layout)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1layout_FUNC);
-/*
-	gdk_draw_layout(arg0, arg1, arg2, arg3, arg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_layout)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jintLong))fp)(arg0, arg1, arg2, arg3, arg4);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1layout_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1layout_1with_1colors
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1layout_1with_1colors)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4, jobject arg5, jobject arg6)
-{
-	GdkColor _arg5, *lparg5=NULL;
-	GdkColor _arg6, *lparg6=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1layout_1with_1colors_FUNC);
-	if (arg5) if ((lparg5 = getGdkColorFields(env, arg5, &_arg5)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = getGdkColorFields(env, arg6, &_arg6)) == NULL) goto fail;
-/*
-	gdk_draw_layout_with_colors(arg0, arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_layout_with_colors)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, PangoLayout *, GdkColor *, GdkColor *))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
-		}
-	}
-fail:
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1layout_1with_1colors_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1draw_1pixbuf
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
@@ -4888,46 +4847,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1gc_1new)
 }
 #endif
 
-#ifndef NO__1gdk_1gc_1set_1clip_1region
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1region)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1region_FUNC);
-/*
-	gdk_gc_set_clip_region(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_region)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1region_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1dashes
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1dashes)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
-{
-	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1dashes_FUNC);
-		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gdk_gc_set_dashes(arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_dashes)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, gint, gint8 *, gint))fp)(arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
-		}
-	}
-fail:
-		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1dashes_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1set_1fill
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1fill)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -4982,24 +4901,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1function)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1function_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1line_1attributes
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1line_1attributes)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1line_1attributes_FUNC);
-/*
-	gdk_gc_set_line_attributes(arg0, arg1, arg2, arg3, arg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_line_attributes)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1line_1attributes_FUNC);
 }
 #endif
 
@@ -5072,27 +4973,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1ts_1origin)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1values
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1values)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
-{
-	GdkGCValues _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1values_FUNC);
-	if (arg1) if ((lparg1 = getGdkGCValuesFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_gc_set_values(arg0, lparg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_values)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkGCValues *, jint))fp)(arg0, lparg1, arg2);
-		}
-	}
-fail:
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1values_FUNC);
 }
 #endif
 

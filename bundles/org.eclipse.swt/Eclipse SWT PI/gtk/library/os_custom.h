@@ -135,14 +135,12 @@
 #define gdk_drag_context_list_targets_LIB LIB_GDK
 #define gdk_draw_arc_LIB LIB_GDK
 #define gdk_draw_layout_LIB LIB_GDK
-#define gdk_draw_layout_with_colors_LIB LIB_GDK
 #define gdk_draw_pixbuf_LIB LIB_GDK
 #define gdk_draw_image_LIB LIB_GDK
 #define gdk_drawable_get_image_LIB LIB_GDK
 #define gdk_drawable_get_visible_region_LIB LIB_GDK
 #define gdk_gc_new_LIB LIB_GDK
 #define gdk_draw_rectangle_LIB LIB_GDK
-#define gdk_gc_set_clip_region_LIB LIB_GDK
 #define gdk_gc_set_foreground_LIB LIB_GDK
 #define gdk_gc_set_function_LIB LIB_GDK
 #define gdk_gc_set_subwindow_LIB LIB_GDK
@@ -161,11 +159,8 @@
 #define gdk_window_set_back_pixmap_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_fill_LIB LIB_GDK
-#define gdk_gc_set_dashes_LIB LIB_GDK
-#define gdk_gc_set_line_attributes_LIB LIB_GDK
 #define gdk_gc_set_tile_LIB LIB_GDK
 #define gdk_gc_set_ts_origin_LIB LIB_GDK
-#define gdk_gc_set_values_LIB LIB_GDK
 #define gdk_gc_get_values_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_pixbuf_get_from_drawable_LIB LIB_GDK
