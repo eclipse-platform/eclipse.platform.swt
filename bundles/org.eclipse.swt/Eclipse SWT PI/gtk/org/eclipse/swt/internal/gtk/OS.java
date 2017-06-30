@@ -129,7 +129,6 @@ public class OS extends C {
 	public static final int GDK_ACTION_LINK = 1 << 3;
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
-	public static final int GDK_AND = 4;
 	public static final int GDK_BackSpace = 0xff08;
 	public static final int GDK_BOTTOM_LEFT_CORNER = 0xc;
 	public static final int GDK_BOTTOM_RIGHT_CORNER = 0xe;
@@ -146,8 +145,6 @@ public class OS extends C {
 	public static final int GDK_BUTTON_RELEASE = 0x7;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
 	public static final int GDK_CAP_BUTT = 0x1;
-	public static final int GDK_CAP_PROJECTING = 3;
-	public static final int GDK_CAP_ROUND = 0x2;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONFIGURE = 13;
 	public static final int GDK_CONTROL_MASK = 0x4;
@@ -213,9 +210,6 @@ public class OS extends C {
 	public static final int GDK_FUNC_MINIMIZE = 8;
 	public static final int GDK_FUNC_MAXIMIZE = 16;
 	public static final int GDK_FUNC_CLOSE = 32;
-	public static final int GDK_GC_CLIP_MASK = 0x80;
-	public static final int GDK_GC_CLIP_X_ORIGIN = 0x800;
-	public static final int GDK_GC_CLIP_Y_ORIGIN = 0x1000;
 	public static final int GDK_GC_LINE_WIDTH = 0x4000;
 	public static final int GDK_GC_LINE_STYLE = 0x8000;
 	public static final int GDK_GC_CAP_STYLE = 0x10000;
@@ -231,8 +225,6 @@ public class OS extends C {
 	public static final int GDK_Insert = 0xff63;
 	public static final int GDK_ISO_Left_Tab = 0xfe20;
 	public static final int GDK_JOIN_MITER = 0x0;
-	public static final int GDK_JOIN_ROUND = 0x1;
-	public static final int GDK_JOIN_BEVEL = 0x2;
 	public static final int GDK_KEY_PRESS = 0x8;
 	public static final int GDK_KEY_PRESS_MASK = 0x400;
 	public static final int GDK_KEY_RELEASE = 0x9;
@@ -296,7 +288,6 @@ public class OS extends C {
 	public static final int GDK_Pause = 0xff13;
 	public static final int GDK_Print = 0xff61;
 	public static final int GDK_QUESTION_ARROW = 0x5c;
-	public static final int GDK_RGB_DITHER_NORMAL = 0x1;
 	public static final int GDK_RIGHT_SIDE = 0x60;
 	public static final int GDK_Return = 0xff0d;
 	public static final int GDK_Right = 0xff53;
@@ -3942,36 +3933,6 @@ public static final void gdk_draw_layout_with_colors(long /*int*/ drawable, long
 }
 /**
  * @method flags=dynamic
- * @param x1 cast=(gint)
- * @param y1 cast=(gint)
- * @param x2 cast=(gint)
- * @param y2 cast=(gint)
- */
-public static final native void _gdk_draw_line(long /*int*/ drawable, long /*int*/ gc, int x1, int y1, int x2, int y2);
-public static final void gdk_draw_line(long /*int*/ drawable, long /*int*/ gc, int x1, int y1, int x2, int y2) {
-	lock.lock();
-	try {
-		_gdk_draw_line(drawable, gc, x1, y1, x2, y2);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param points cast=(GdkPoint *),flags=no_out critical
- * @param npoints cast=(gint)
- */
-public static final native void _gdk_draw_lines(long /*int*/ drawable, long /*int*/ gc, int[] points, int npoints);
-public static final void gdk_draw_lines(long /*int*/ drawable, long /*int*/ gc, int[] points, int npoints) {
-	lock.lock();
-	try {
-		_gdk_draw_lines(drawable, gc, points, npoints);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
  * @param xsrc cast=(gint)
  * @param ysrc cast=(gint)
  * @param xdest cast=(gint)
@@ -3986,31 +3947,6 @@ public static final void gdk_draw_pixbuf(long /*int*/ drawable, long /*int*/ gc,
 	lock.lock();
 	try {
 		_gdk_draw_pixbuf(drawable, gc, pixbuf, xsrc, ysrc, xdest, ydest, width, height, dither, x_dither, y_dither);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_draw_point(long /*int*/ drawable, long /*int*/ gc, int x, int y);
-public static final void gdk_draw_point(long /*int*/ drawable, long /*int*/ gc, int x, int y) {
-	lock.lock();
-	try {
-		_gdk_draw_point(drawable, gc, x, y);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param points flags=no_out critical
- */
-public static final native void _gdk_draw_polygon(long /*int*/ drawable, long /*int*/ gc, int filled, int[] points, int npoints);
-public static final void gdk_draw_polygon(long /*int*/ drawable, long /*int*/ gc, int filled, int[] points, int npoints) {
-	lock.lock();
-	try {
-		_gdk_draw_polygon(drawable, gc, filled, points, npoints);
 	} finally {
 		lock.unlock();
 	}
@@ -4250,45 +4186,6 @@ public static final long /*int*/ gdk_gc_new(long /*int*/ window) {
 	lock.lock();
 	try {
 		return _gdk_gc_new(window);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param color cast=(GdkColor *),flags=no_out
- */
-public static final native void _gdk_gc_set_background(long /*int*/ gc, GdkColor color);
-public static final void gdk_gc_set_background(long /*int*/ gc, GdkColor color) {
-	lock.lock();
-	try {
-		_gdk_gc_set_background(gc, color);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_clip_mask(long /*int*/ gc, long /*int*/ mask);
-public static final void gdk_gc_set_clip_mask(long /*int*/ gc, long /*int*/ mask) {
-	lock.lock();
-	try {
-		_gdk_gc_set_clip_mask(gc, mask);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param x cast=(gint)
- * @param y cast=(gint)
- */
-public static final native void _gdk_gc_set_clip_origin(long /*int*/ gc, int x, int y);
-public static final void gdk_gc_set_clip_origin(long /*int*/ gc, int x, int y) {
-	lock.lock();
-	try {
-		_gdk_gc_set_clip_origin(gc, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -4673,28 +4570,6 @@ public static final long /*int*/ gdk_pixbuf_new_from_file(byte[] filename, long 
 	lock.lock();
 	try {
 		return _gdk_pixbuf_new_from_file(filename, error);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_pixbuf_render_to_drawable(long /*int*/ pixbuf, long /*int*/ drawable, long /*int*/ gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither);
-public static final void gdk_pixbuf_render_to_drawable(long /*int*/ pixbuf, long /*int*/ drawable, long /*int*/ gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither) {
-	lock.lock();
-	try {
-		_gdk_pixbuf_render_to_drawable(pixbuf, drawable, gc, src_x, src_y, dest_x, dest_y, width, height, dither, x_dither, y_dither);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native void _gdk_pixbuf_render_pixmap_and_mask(long /*int*/ pixbuf, long /*int*/[] pixmap_return, long /*int*/[] mask_return, int alpha_threshold);
-public static final void gdk_pixbuf_render_pixmap_and_mask(long /*int*/ pixbuf, long /*int*/[] pixmap_return, long /*int*/[] mask_return, int alpha_threshold) {
-	lock.lock();
-	try {
-		_gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, mask_return, alpha_threshold);
 	} finally {
 		lock.unlock();
 	}
@@ -9999,23 +9874,6 @@ public static final void gtk_paint_flat_box(long /*int*/ style, long /*int*/ win
 	lock.lock();
 	try {
 		_gtk_paint_flat_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param window cast=(GdkWindow *)
- * @param area flags=no_out
- * @param widget cast=(GtkWidget *)
- * @param detail cast=(const gchar *)
- */
-public static final native void _gtk_paint_focus(long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height);
-/** [GTK2/GTK3; 3.0 deprecated] */
-public static final void gtk_paint_focus(long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	lock.lock();
-	try {
-		_gtk_paint_focus(style, window, state_type, area, widget, detail, x, y, width, height);
 	} finally {
 		lock.unlock();
 	}

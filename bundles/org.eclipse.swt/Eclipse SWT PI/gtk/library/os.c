@@ -4566,46 +4566,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1draw_1line
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1line)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1line_FUNC);
-/*
-	gdk_draw_line(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_line)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, gint, gint))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1line_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1lines
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1lines)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jint arg3)
-{
-	jint *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1lines_FUNC);
-		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gdk_draw_lines(arg0, arg1, (GdkPoint *)lparg2, (gint)arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_lines)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, GdkPoint *, gint))fp)(arg0, arg1, (GdkPoint *)lparg2, (gint)arg3);
-		}
-	}
-fail:
-		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1lines_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1draw_1pixbuf
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
@@ -4621,46 +4581,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1pixbuf)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1pixbuf_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1point
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1point)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1point_FUNC);
-/*
-	gdk_draw_point(arg0, arg1, arg2, arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_point)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1point_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1polygon
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1polygon)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jint arg4)
-{
-	jint *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1polygon_FUNC);
-		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
-/*
-	gdk_draw_polygon(arg0, arg1, arg2, lparg3, arg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_polygon)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint *, jint))fp)(arg0, arg1, arg2, lparg3, arg4);
-		}
-	}
-fail:
-		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1polygon_FUNC);
 }
 #endif
 
@@ -4965,63 +4885,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1gc_1new)
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1new_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1background
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1background)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1background_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_gc_set_background(arg0, (GdkColor *)lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_background)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, (GdkColor *)lparg1);
-		}
-	}
-fail:
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1background_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1clip_1mask
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1mask)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1mask_FUNC);
-/*
-	gdk_gc_set_clip_mask(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_mask)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1mask_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1clip_1origin
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1origin)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1origin_FUNC);
-/*
-	gdk_gc_set_clip_origin(arg0, (gint)arg1, (gint)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_origin)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1origin_FUNC);
 }
 #endif
 
@@ -5546,49 +5409,6 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1new_1from_1file_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1pixbuf_1render_1pixmap_1and_1mask
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1pixmap_1and_1mask)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2, jint arg3)
-{
-	jintLong *lparg1=NULL;
-	jintLong *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gdk_pixbuf_render_pixmap_and_mask(arg0, lparg1, lparg2, arg3);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_pixbuf_render_pixmap_and_mask)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong *, jintLong *, jint))fp)(arg0, lparg1, lparg2, arg3);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1pixbuf_1render_1to_1drawable
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1to_1drawable)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1render_1to_1drawable_FUNC);
-/*
-	gdk_pixbuf_render_to_drawable(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_pixbuf_render_to_drawable)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jint, jint, jint, jint, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1render_1to_1drawable_FUNC);
 }
 #endif
 
@@ -11763,30 +11583,6 @@ fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1flat_1box_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1paint_1focus
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1focus)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jintLong arg4, jbyteArray arg5, jint arg6, jint arg7, jint arg8, jint arg9)
-{
-	GdkRectangle _arg3, *lparg3=NULL;
-	jbyte *lparg5=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1focus_FUNC);
-	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	gtk_paint_focus(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8, arg9);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_paint_focus)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, GdkRectangle *, GtkWidget *, const gchar *, jint, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8, arg9);
-		}
-	}
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1focus_FUNC);
 }
 #endif
 

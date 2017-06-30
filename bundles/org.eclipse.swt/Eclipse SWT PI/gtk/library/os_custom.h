@@ -136,11 +136,7 @@
 #define gdk_draw_arc_LIB LIB_GDK
 #define gdk_draw_layout_LIB LIB_GDK
 #define gdk_draw_layout_with_colors_LIB LIB_GDK
-#define gdk_draw_line_LIB LIB_GDK
-#define gdk_draw_lines_LIB LIB_GDK
 #define gdk_draw_pixbuf_LIB LIB_GDK
-#define gdk_draw_point_LIB LIB_GDK
-#define gdk_draw_polygon_LIB LIB_GDK
 #define gdk_draw_image_LIB LIB_GDK
 #define gdk_drawable_get_image_LIB LIB_GDK
 #define gdk_drawable_get_visible_region_LIB LIB_GDK
@@ -163,11 +159,8 @@
 #define gdk_window_invalidate_region_LIB LIB_GDK
 #define gdk_window_shape_combine_region_LIB LIB_GDK
 #define gdk_window_set_back_pixmap_LIB LIB_GDK
-#define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
-#define gdk_gc_set_clip_mask_LIB LIB_GDK
 #define gdk_gc_set_fill_LIB LIB_GDK
-#define gdk_gc_set_clip_origin_LIB LIB_GDK
 #define gdk_gc_set_dashes_LIB LIB_GDK
 #define gdk_gc_set_line_attributes_LIB LIB_GDK
 #define gdk_gc_set_tile_LIB LIB_GDK
@@ -177,7 +170,6 @@
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_pixbuf_get_from_drawable_LIB LIB_GDK
 #define gdk_pixbuf_get_from_window_LIB LIB_GDK
-#define gdk_pixbuf_render_pixmap_and_mask_LIB LIB_GDK
 #define gdk_pointer_grab_LIB LIB_GDK
 #define gdk_pointer_ungrab_LIB LIB_GDK
 #define gdk_region_polygon_LIB LIB_GDK
@@ -195,7 +187,6 @@
 #define gdk_screen_get_n_monitors_LIB LIB_GDK
 #define gdk_screen_get_monitor_width_mm_LIB LIB_GDK
 #define gdk_screen_get_primary_monitor_LIB LIB_GDK
-#define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gdk_visual_get_depth_LIB LIB_GDK
 #define gtk_scale_new_LIB LIB_GTK
 #define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
@@ -261,7 +252,6 @@
 #define gdk_colormap_free_colors_LIB LIB_GDK
 #define gtk_paint_box_LIB LIB_GTK
 #define gtk_paint_handle_LIB LIB_GTK
-#define gtk_paint_focus_LIB LIB_GTK
 #define gtk_paint_flat_box_LIB LIB_GTK
 #define gtk_printer_option_widget_get_type_LIB LIB_GTK
 #define gtk_render_handle_LIB LIB_GTK
