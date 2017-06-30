@@ -3915,6 +3915,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1set_1source_1pixmap
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1pixmap)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1pixmap_FUNC);
+/*
+	gdk_cairo_set_source_pixmap(arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_set_source_pixmap)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jdouble, jdouble))fp)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1pixmap_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1set_1source_1rgba
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1rgba)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -4486,24 +4504,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1arc)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1arc_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1drawable
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1drawable)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1drawable_FUNC);
-/*
-	gdk_draw_drawable(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_draw_drawable)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, gint, gint, gint, gint, gint, gint))fp)(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1drawable_FUNC);
 }
 #endif
 

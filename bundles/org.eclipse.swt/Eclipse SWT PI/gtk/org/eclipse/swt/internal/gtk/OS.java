@@ -3535,6 +3535,19 @@ public static final void gdk_cairo_set_source_pixbuf(long /*int*/ cairo, long /*
 }
 /**
  * @method flags=dynamic
+ */
+public static final native void _gdk_cairo_set_source_pixmap(long /*int*/ cairo, long /*int*/ pixmap, double pixbuf_x, double pixbuf_y);
+public static final void gdk_cairo_set_source_pixmap(long /*int*/ cairo, long /*int*/ pixmap, double pixbuf_x, double pixbuf_y) {
+        lock.lock();
+        try {
+                _gdk_cairo_set_source_pixmap(cairo,pixmap,pixbuf_x,pixbuf_y);
+        }
+        finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  */
 public static final native void _gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y);
@@ -3859,24 +3872,6 @@ public static final void gdk_draw_arc(long /*int*/ drawable, long /*int*/ gc, in
 	lock.lock();
 	try {
 		_gdk_draw_arc(drawable, gc, filled, x, y, width, height, angle1, angle2);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param xsrc cast=(gint)
- * @param ysrc cast=(gint)
- * @param xdest cast=(gint)
- * @param ydest cast=(gint)
- * @param width cast=(gint)
- * @param height cast=(gint)
- */
-public static final native void _gdk_draw_drawable(long /*int*/ drawable, long /*int*/ gc, long /*int*/ src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
-public static final void gdk_draw_drawable(long /*int*/ drawable, long /*int*/ gc, long /*int*/ src, int xsrc, int ysrc, int xdest, int ydest, int width, int height) {
-	lock.lock();
-	try {
-		_gdk_draw_drawable(drawable, gc, src, xsrc, ysrc, xdest, ydest, width, height);
 	} finally {
 		lock.unlock();
 	}

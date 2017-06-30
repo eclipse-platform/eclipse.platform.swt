@@ -144,7 +144,6 @@
 #define gdk_gc_set_foreground_LIB LIB_GDK
 #define gdk_gc_set_function_LIB LIB_GDK
 #define gdk_gc_set_subwindow_LIB LIB_GDK
-#define gdk_draw_drawable_LIB LIB_GDK
 #define gdk_drawable_get_depth_LIB LIB_GDK
 #define gdk_pixmap_new_LIB LIB_GDK
 #define gdk_color_white_LIB LIB_GDK
@@ -234,6 +233,7 @@
 #define gdk_cairo_reset_clip_LIB LIB_GDK
 #define gdk_cairo_get_clip_rectangle_LIB LIB_GDK
 #define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
+#define gdk_cairo_set_source_pixmap_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
 #define gdk_cairo_set_source_rgba_LIB LIB_GDK
 #define gdk_cairo_set_source_window_LIB LIB_GDK

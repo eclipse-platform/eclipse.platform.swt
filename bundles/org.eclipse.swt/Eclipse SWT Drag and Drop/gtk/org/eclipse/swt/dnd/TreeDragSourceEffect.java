@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -135,39 +135,40 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				list = OS.g_list_next (list);
 				OS.gtk_tree_path_free (path);
 			}
+			long /*int*/ surface;
+			long /*int*/ cairo ;
 			if (OS.GTK3) {
-				long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+				surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
 				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				long /*int*/ cairo = Cairo.cairo_create(surface);
-				if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
-				for (int i=0; i<count; i++) {
+				cairo = Cairo.cairo_create(surface);
+			} else {
+				surface = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
+				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				cairo = OS.gdk_cairo_create(surface);
+			}
+			if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
+			for (int i=0; i<count; i++) {
+				if (OS.GTK3) {
 					Cairo.cairo_set_source_surface (cairo, icons[i], 2, yy[i] - yy[0] + 2);
-					Cairo.cairo_rectangle(cairo, 0, yy[i] - yy[0], width, hh[i]);
-					Cairo.cairo_fill(cairo);
+				} else {
+					OS.gdk_cairo_set_source_pixmap(cairo, icons[i], 0, yy[i] - yy[0]);
+				}
+				Cairo.cairo_rectangle(cairo, 0, yy[i] - yy[0], width, hh[i]);
+				Cairo.cairo_fill(cairo);
+				if (OS.GTK3) {
 					Cairo.cairo_surface_destroy(icons[i]);
 				}
-				Cairo.cairo_destroy(cairo);
+			}
+			Cairo.cairo_destroy(cairo);
+			if (OS.GTK3) {
 				dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
 			} else {
-				long /*int*/ source = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
-				long /*int*/ gcSource = OS.gdk_gc_new(source);
-				long /*int*/ mask = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, 1);
-				long /*int*/ gcMask = OS.gdk_gc_new(mask);
-				GdkColor color = new GdkColor();
-				color.pixel = 0;
-				OS.gdk_gc_set_foreground(gcMask, color);
-				OS.gdk_draw_rectangle(mask, gcMask, 1, 0, 0, width, height);
-				color.pixel = 1;
-				OS.gdk_gc_set_foreground(gcMask, color);
-				for (int i=0; i<count; i++) {
-					OS.gdk_draw_drawable(source, gcSource, icons[i], 0, 0, 0, yy[i] - yy[0], -1, -1);
-					OS.gdk_draw_rectangle(mask, gcMask, 1, 0, yy[i] - yy[0], width, hh[i]);
-					OS.g_object_unref(icons[i]);
-				}
-				OS.g_object_unref(gcSource);
-				OS.g_object_unref(gcMask);
-				dragSourceImage  = Image.gtk_new(display, SWT.ICON, source, mask);
+				long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+				if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				long /*int*/ colormap = OS.gdk_colormap_get_system();
+				OS.gdk_pixbuf_get_from_drawable(pixbuf, surface, colormap, 0, 0, 0, 0, width, height);
+				dragSourceImage = Image.gtk_new_from_pixbuf(display, SWT.ICON, pixbuf);
 			}
 		}
 		OS.g_list_free (originalList);
