@@ -4129,19 +4129,6 @@ public static final void gdk_flush() {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param values flags=no_in
- */
-public static final native void _gdk_gc_get_values(long /*int*/ gc, GdkGCValues values);
-public static final void gdk_gc_get_values(long /*int*/ gc, GdkGCValues values) {
-	lock.lock();
-	try {
-		_gdk_gc_get_values(gc, values);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native long /*int*/ _gdk_gc_new(long /*int*/ window);
 public static final long /*int*/ gdk_gc_new(long /*int*/ window) {
@@ -4205,30 +4192,6 @@ public static final void gdk_gc_set_subwindow(long /*int*/ gc, long /*int*/ mode
 	lock.lock();
 	try {
 		_gdk_gc_set_subwindow(gc, mode);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_tile(long /*int*/ gc, long /*int*/ tile);
-public static final void gdk_gc_set_tile(long /*int*/ gc, long /*int*/ tile) {
-	lock.lock();
-	try {
-		_gdk_gc_set_tile(gc, tile);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_ts_origin(long /*int*/ gc, int x, int y);
-public static final void gdk_gc_set_ts_origin(long /*int*/ gc, int x, int y) {
-	lock.lock();
-	try {
-		_gdk_gc_set_ts_origin(gc, x, y);
 	} finally {
 		lock.unlock();
 	}

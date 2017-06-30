@@ -159,9 +159,6 @@
 #define gdk_window_set_back_pixmap_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_fill_LIB LIB_GDK
-#define gdk_gc_set_tile_LIB LIB_GDK
-#define gdk_gc_set_ts_origin_LIB LIB_GDK
-#define gdk_gc_get_values_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_pixbuf_get_from_drawable_LIB LIB_GDK
 #define gdk_pixbuf_get_from_window_LIB LIB_GDK

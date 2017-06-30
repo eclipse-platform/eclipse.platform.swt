@@ -4805,28 +4805,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1flush)
 }
 #endif
 
-#ifndef NO__1gdk_1gc_1get_1values
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1get_1values)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkGCValues _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1get_1values_FUNC);
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	gdk_gc_get_values(arg0, lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_get_values)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkGCValues *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkGCValuesFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1get_1values_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1gc_1new)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -4937,42 +4915,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1subwindow)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1subwindow_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1tile
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1tile)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1tile_FUNC);
-/*
-	gdk_gc_set_tile(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_tile)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1tile_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1ts_1origin
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1ts_1origin)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
-/*
-	gdk_gc_set_ts_origin(arg0, arg1, arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_gc_set_ts_origin)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
 }
 #endif
 

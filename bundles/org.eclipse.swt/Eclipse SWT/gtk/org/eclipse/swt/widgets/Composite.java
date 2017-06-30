@@ -398,72 +398,51 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 	if (control != null) {
 		GCData data = gc.getGCData ();
 		long /*int*/ cairo = data.cairo;
-		if (cairo != 0) {
-			Cairo.cairo_save (cairo);
-			if (control.backgroundImage != null) {
-				Point pt = display.mapInPixels (this, control, 0, 0);
-				Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
-				x += pt.x + offsetX;
-				y += pt.y + offsetY;
-				long /*int*/ surface = control.backgroundImage.surface;
-				if (surface == 0) {
-					long /*int*/ drawable = control.backgroundImage.pixmap;
-					int [] w = new int [1], h = new int [1];
-					OS.gdk_pixmap_get_size (drawable, w, h);
-					if (OS.isX11()) {
-						long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-						long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
-						long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);
-						surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
-					} else {
-						surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, w [0], h [0]);
-					}
-					if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_save (cairo);
+		if (control.backgroundImage != null) {
+			Point pt = display.mapInPixels (this, control, 0, 0);
+			Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
+			x += pt.x + offsetX;
+			y += pt.y + offsetY;
+			long /*int*/ surface = control.backgroundImage.surface;
+			if (surface == 0) {
+				long /*int*/ drawable = control.backgroundImage.pixmap;
+				int [] w = new int [1], h = new int [1];
+				OS.gdk_pixmap_get_size (drawable, w, h);
+				if (OS.isX11()) {
+					long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+					long /*int*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
+					long /*int*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);
+					surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
 				} else {
-					Cairo.cairo_surface_reference(surface);
+					surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, w [0], h [0]);
 				}
-				long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
-				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
-				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
-				if ((data.style & SWT.MIRRORED) != 0) {
-					double[] matrix = {-1, 0, 0, 1, 0, 0};
-					Cairo.cairo_pattern_set_matrix(pattern, matrix);
-				}
-				Cairo.cairo_set_source (cairo, pattern);
-				Cairo.cairo_surface_destroy (surface);
-				Cairo.cairo_pattern_destroy (pattern);
+				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
 			} else {
-				if (OS.GTK3) {
-					GdkRGBA rgba = control.getBackgroundGdkRGBA ();
-					Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-				} else {
-					GdkColor color = control.getBackgroundGdkColor ();
-					Cairo.cairo_set_source_rgba_compatibility (cairo, color);
-				}
+				Cairo.cairo_surface_reference(surface);
 			}
-			Cairo.cairo_rectangle (cairo, x, y, width, height);
-			Cairo.cairo_fill (cairo);
-			Cairo.cairo_restore (cairo);
+			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+			if ((data.style & SWT.MIRRORED) != 0) {
+				double[] matrix = {-1, 0, 0, 1, 0, 0};
+				Cairo.cairo_pattern_set_matrix(pattern, matrix);
+			}
+			Cairo.cairo_set_source (cairo, pattern);
+			Cairo.cairo_surface_destroy (surface);
+			Cairo.cairo_pattern_destroy (pattern);
 		} else {
-			long /*int*/ gdkGC = gc.handle;
-			GdkGCValues values = new GdkGCValues ();
-			OS.gdk_gc_get_values (gdkGC, values);
-			if (control.backgroundImage != null) {
-				Point pt = display.mapInPixels (this, control, 0, 0);
-				OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x - offsetX, -pt.y - offsetY);
-				OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
-				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
-				OS.gdk_gc_set_fill (gdkGC, values.fill);
-				OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+			if (OS.GTK3) {
+				GdkRGBA rgba = control.getBackgroundGdkRGBA ();
+				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 			} else {
 				GdkColor color = control.getBackgroundGdkColor ();
-				OS.gdk_gc_set_foreground (gdkGC, color);
-				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
-				color.pixel = values.foreground_pixel;
-				OS.gdk_gc_set_foreground (gdkGC, color);
+				Cairo.cairo_set_source_rgba_compatibility (cairo, color);
 			}
 		}
+		Cairo.cairo_rectangle (cairo, x, y, width, height);
+		Cairo.cairo_fill (cairo);
+		Cairo.cairo_restore (cairo);
 	} else {
 		gc.fillRectangle(DPIUtil.autoScaleDown(new Rectangle(x, y, width, height)));
 

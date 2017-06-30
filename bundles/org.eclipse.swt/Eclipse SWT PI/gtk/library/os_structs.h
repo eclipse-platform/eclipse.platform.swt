@@ -222,18 +222,6 @@ void setGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowS
 #define GdkEventWindowState_sizeof() 0
 #endif
 
-#ifndef NO_GdkGCValues
-void cacheGdkGCValuesFields(JNIEnv *env, jobject lpObject);
-GdkGCValues *getGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct);
-void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct);
-#define GdkGCValues_sizeof() sizeof(GdkGCValues)
-#else
-#define cacheGdkGCValuesFields(a,b)
-#define getGdkGCValuesFields(a,b,c) NULL
-#define setGdkGCValuesFields(a,b,c)
-#define GdkGCValues_sizeof() 0
-#endif
-
 #ifndef NO_GdkGeometry
 void cacheGdkGeometryFields(JNIEnv *env, jobject lpObject);
 GdkGeometry *getGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct);
