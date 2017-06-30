@@ -451,7 +451,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1gc_1set_1clip_1origin",
 	"_1gdk_1gc_1set_1clip_1region",
 	"_1gdk_1gc_1set_1dashes",
-	"_1gdk_1gc_1set_1exposures",
 	"_1gdk_1gc_1set_1fill",
 	"_1gdk_1gc_1set_1foreground",
 	"_1gdk_1gc_1set_1function",

@@ -4320,18 +4320,6 @@ public static final void gdk_gc_set_dashes(long /*int*/ gc, int dash_offset, byt
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
-public static final native void _gdk_gc_set_exposures(long /*int*/ gc, boolean exposures);
-public static final void gdk_gc_set_exposures(long /*int*/ gc, boolean exposures) {
-	lock.lock();
-	try {
-		_gdk_gc_set_exposures(gc, exposures);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native void _gdk_gc_set_fill(long /*int*/ gc, int fill);
 public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -381,28 +381,21 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		redrawWidget (x, y, width, height, false, false, false);
 		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-		if (OS.GTK3) {
-			long /*int*/ cairo = OS.gdk_cairo_create(window);
-			if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
-				OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
-			} else {
-				Cairo.cairo_push_group(cairo);
-				OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
-				Cairo.cairo_paint(cairo);
-				Cairo.cairo_pop_group_to_source(cairo);
-			}
-			double[] matrix = {1, 0, 0, 1, -deltaX, -deltaY};
-			Cairo.cairo_pattern_set_matrix(Cairo.cairo_get_source(cairo), matrix);
-			Cairo.cairo_rectangle(cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-			Cairo.cairo_clip(cairo);
-			Cairo.cairo_paint(cairo);
-			Cairo.cairo_destroy(cairo);
+		long /*int*/ cairo = OS.gdk_cairo_create(window);
+		if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
+			OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
 		} else {
-			long /*int*/ gdkGC = OS.gdk_gc_new (window);
-			OS.gdk_gc_set_exposures (gdkGC, true);
-			OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-			OS.g_object_unref (gdkGC);
+			Cairo.cairo_push_group(cairo);
+			OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
+			Cairo.cairo_paint(cairo);
+			Cairo.cairo_pop_group_to_source(cairo);
 		}
+		double[] matrix = {1, 0, 0, 1, -deltaX, -deltaY};
+		Cairo.cairo_pattern_set_matrix(Cairo.cairo_get_source(cairo), matrix);
+		Cairo.cairo_rectangle(cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+		Cairo.cairo_clip(cairo);
+		Cairo.cairo_paint(cairo);
+		Cairo.cairo_destroy(cairo);
 		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 		if (disjoint) {
 			GdkRectangle rect = new GdkRectangle ();
