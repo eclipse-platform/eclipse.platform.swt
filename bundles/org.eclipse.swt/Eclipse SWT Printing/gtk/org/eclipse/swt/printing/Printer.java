@@ -599,7 +599,7 @@ public boolean startPage() {
  */
 public void endPage() {
 	checkDevice();
-	if (cairo != 0) Cairo.cairo_show_page(cairo);
+	Cairo.cairo_show_page(cairo);
 }
 
 /**
