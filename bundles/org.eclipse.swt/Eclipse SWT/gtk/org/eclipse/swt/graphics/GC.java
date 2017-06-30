@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.graphics;
-
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -495,32 +494,23 @@ public void copyArea(Image image, int x, int y) {
 	copyAreaInPixels(image, loc.x, loc.y);
 }
 void copyAreaInPixels(Image image, int x, int y) {
-	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = Cairo.cairo_create(image.surface);
-		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		Cairo.cairo_translate(cairo, -x, -y);
-		Cairo.cairo_push_group(cairo);
-		if (data.image != null) {
-			Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
-		} else if (data.drawable != 0) {
-			OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
-		} else {
-			Cairo.cairo_destroy(cairo);
-			return;
-		}
-		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
-		Cairo.cairo_paint(cairo);
-		Cairo.cairo_pop_group_to_source(cairo);
-		Cairo.cairo_paint(cairo);
+	long /*int*/ cairo = Cairo.cairo_create(image.surface);
+	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Cairo.cairo_translate(cairo, -x, -y);
+	Cairo.cairo_push_group(cairo);
+	if (data.image != null) {
+		Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
+	} else if (data.drawable != 0) {
+		OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
+	} else {
 		Cairo.cairo_destroy(cairo);
-        return;
+		return;
 	}
-	Rectangle rect = image.getBoundsInPixels();
-	long /*int*/ gdkGC = OS.gdk_gc_new(image.pixmap);
-	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.gdk_gc_set_subwindow(gdkGC, OS.GDK_INCLUDE_INFERIORS);
-	OS.gdk_draw_drawable(image.pixmap, gdkGC, data.drawable, x, y, 0, 0, rect.width, rect.height);
-	OS.g_object_unref(gdkGC);
+	Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
+	Cairo.cairo_paint(cairo);
+	Cairo.cairo_pop_group_to_source(cairo);
+	Cairo.cairo_paint(cairo);
+	Cairo.cairo_destroy(cairo);
 }
 
 /**
@@ -577,55 +567,49 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
 	long /*int*/ drawable = data.drawable;
-	if (OS.USE_CAIRO) {
-		if (data.image != null) {
-			Cairo.cairo_set_source_surface(handle, data.image.surface, deltaX, deltaY);
-			Cairo.cairo_rectangle(handle, destX, destY, width, height);
-			Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
-			Cairo.cairo_fill(handle);
-		} else if (drawable != 0) {
-			Cairo.cairo_save(handle);
-			Cairo.cairo_rectangle(handle, destX, destY, width, height);
-			Cairo.cairo_clip(handle);
-			Cairo.cairo_translate(handle, deltaX, deltaY);
-			Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
-			Cairo.cairo_push_group(handle);
-			OS.gdk_cairo_set_source_window(handle, drawable, 0, 0);
-			Cairo.cairo_paint(handle);
-			Cairo.cairo_pop_group_to_source(handle);
-			Cairo.cairo_rectangle(handle, destX - deltaX, destY - deltaY, width, height);
-			Cairo.cairo_clip(handle);
-			Cairo.cairo_paint(handle);
-			Cairo.cairo_restore(handle);
-			if (paint) {
-				long /*int*/ visibleRegion;
-				if (OS.GTK3) {
-					visibleRegion = OS.gdk_window_get_visible_region (drawable);
-				} else {
-					visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
-				}
-				GdkRectangle srcRect = new GdkRectangle ();
-				srcRect.x = srcX;
-				srcRect.y = srcY;
-				srcRect.width = width;
-				srcRect.height = height;
-				long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
-				OS.gdk_region_intersect(copyRegion, visibleRegion);
-				long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);
-				OS.gdk_region_subtract (invalidateRegion, visibleRegion);
-				OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
-				OS.gdk_window_invalidate_region(drawable, invalidateRegion, false);
-				OS.gdk_region_destroy (visibleRegion);
-				OS.gdk_region_destroy (copyRegion);
-				OS.gdk_region_destroy (invalidateRegion);
+	if (data.image != null) {
+		Cairo.cairo_set_source_surface(handle, data.image.surface, deltaX, deltaY);
+		Cairo.cairo_rectangle(handle, destX, destY, width, height);
+		Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
+		Cairo.cairo_fill(handle);
+	} else if (drawable != 0) {
+		Cairo.cairo_save(handle);
+		Cairo.cairo_rectangle(handle, destX, destY, width, height);
+		Cairo.cairo_clip(handle);
+		Cairo.cairo_translate(handle, deltaX, deltaY);
+		Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
+		Cairo.cairo_push_group(handle);
+		OS.gdk_cairo_set_source_window(handle, drawable, 0, 0);
+		Cairo.cairo_paint(handle);
+		Cairo.cairo_pop_group_to_source(handle);
+		Cairo.cairo_rectangle(handle, destX - deltaX, destY - deltaY, width, height);
+		Cairo.cairo_clip(handle);
+		Cairo.cairo_paint(handle);
+		Cairo.cairo_restore(handle);
+		if (paint) {
+			long /*int*/ visibleRegion;
+			if (OS.GTK3) {
+				visibleRegion = OS.gdk_window_get_visible_region (drawable);
+			} else {
+				visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
 			}
+			GdkRectangle srcRect = new GdkRectangle ();
+			srcRect.x = srcX;
+			srcRect.y = srcY;
+			srcRect.width = width;
+			srcRect.height = height;
+			long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
+			OS.gdk_region_intersect(copyRegion, visibleRegion);
+			long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);
+			OS.gdk_region_subtract (invalidateRegion, visibleRegion);
+			OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+			OS.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+			OS.gdk_region_destroy (visibleRegion);
+			OS.gdk_region_destroy (copyRegion);
+			OS.gdk_region_destroy (invalidateRegion);
 		}
-	} else {
-		if (data.image == null && paint) OS.gdk_gc_set_exposures(handle, true);
-		OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
 	}
 	if (data.image == null & paint) {
-		if (!OS.USE_CAIRO) OS.gdk_gc_set_exposures(handle, false);
 		boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
 		GdkRectangle rect = new GdkRectangle ();
 		if (disjoint) {
@@ -913,17 +897,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	/* Refresh Image as per zoom level, if required. */
 	srcImage.refreshImageForZoom ();
 
-	int imgWidth, imgHeight;
-	if (OS.USE_CAIRO){
-	 	imgWidth = srcImage.width;
-	 	imgHeight = srcImage.height;
-	} else {
-		int[] width = new int[1];
-		int[] height = new int[1];
-		OS.gdk_pixmap_get_size(srcImage.pixmap, width, height);
-	 	imgWidth = width[0];
-	 	imgHeight = height[0];
-	}
+	int	imgWidth = srcImage.width;
+	int	imgHeight = srcImage.height;
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;
@@ -2784,18 +2759,16 @@ void getSize(int[] width, int[] height) {
 		height[0] = OS.gdk_window_get_height(data.drawable);
 		return;
 	}
-	if (OS.USE_CAIRO) {
-		long /*int*/ surface = Cairo.cairo_get_target(handle);
-		switch (Cairo.cairo_surface_get_type(surface)) {
-			case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
-				width[0] = Cairo.cairo_image_surface_get_width(surface);
-				height[0] = Cairo.cairo_image_surface_get_height(surface);
-				break;
-			case Cairo.CAIRO_SURFACE_TYPE_XLIB:
-				width[0] = Cairo.cairo_xlib_surface_get_width(surface);
-				height[0] = Cairo.cairo_xlib_surface_get_height(surface);
-				break;
-		}
+	long /*int*/ surface = Cairo.cairo_get_target(handle);
+	switch (Cairo.cairo_surface_get_type(surface)) {
+		case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+			width[0] = Cairo.cairo_image_surface_get_width(surface);
+			height[0] = Cairo.cairo_image_surface_get_height(surface);
+			break;
+		case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+			width[0] = Cairo.cairo_xlib_surface_get_width(surface);
+			height[0] = Cairo.cairo_xlib_surface_get_height(surface);
+			break;
 	}
 }
 
@@ -2940,16 +2913,13 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = gdkGC;
-	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = data.cairo = handle;
-		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-		data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
-	}
+	long /*int*/ cairo = data.cairo = handle;
+	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
 	setClipping(data.clipRgn);
 	if ((data.style & SWT.MIRRORED) != 0) {
 	  initCairo();
-	  long /*int*/ cairo = data.cairo;
-	  Cairo.cairo_set_matrix(cairo, identity());
+	  Cairo.cairo_set_matrix(data.cairo, identity());
 	}
 }
 
@@ -4034,9 +4004,6 @@ public void setXORMode(boolean xor) {
 		if (Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 10, 0)) {
 			Cairo.cairo_set_operator(handle, xor ? Cairo.CAIRO_OPERATOR_DIFFERENCE : Cairo.CAIRO_OPERATOR_OVER);
 		}
-	}
-	if (!OS.USE_CAIRO) {
-		OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
 	}
 	data.xorMode = xor;
 }
