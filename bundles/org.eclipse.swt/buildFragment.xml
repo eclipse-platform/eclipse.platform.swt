@@ -89,8 +89,6 @@
 				<attribute name="SWT-Arch" value="${arch}"/>
 			</manifest>
 		</jar>
-		<!--delete dir="${temp.folder}/@dot.bin" />
-		<delete dir="${temp.folder}/@dot.src" /-->
 	</target>
 
 	<target name="build.jars" depends="init">
@@ -310,17 +308,7 @@
 		<delete dir="${build.result.folder}/@dot" />
 		<mkdir dir="${temp.folder}/swtdownload/" />
 		<property name="includetranslationfiles" value="true" />
-		<antcall target="build.jars">
-			<param name="debug" value="true" />
-			<param name="jar.filename" value="swt-debug.jar" />
-		</antcall>
-		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
-		<move file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
-		<delete dir="${build.result.folder}/@dot" />
-		<antcall target="build.jars">
-			<param name="debug" value="false" />
-			<param name="jar.filename" value="swt.jar" />
-		</antcall>
+		<antcall target="build.jars" />
 		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<move file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
