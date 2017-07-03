@@ -99,7 +99,15 @@ public class OS extends C {
 		}
 	}
 
-	private static String getEnvironmentalVariable (String envVarName) {
+	// Bug 519124
+	static {
+		String swt_lib_versions = getEnvironmentalVariable ("SWT_LIB_VERSIONS"); // Note, this is read in multiple places.
+		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
+			System.out.println("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
+		}
+	}
+
+	public static String getEnvironmentalVariable (String envVarName) {
 		String envVarValue = null;
 		long /*int*/ ptr = OS.getenv(ascii(envVarName));
 		if (ptr != 0) {

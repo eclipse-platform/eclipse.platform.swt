@@ -16,8 +16,18 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 public class WebKitGTK extends C {
+
+
+	// Bug 519124
+	static {
+		String swt_lib_versions = OS.getEnvironmentalVariable ("SWT_LIB_VERSIONS"); // Note, this is read in multiple places.
+		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
+			System.out.println("SWT_LIB_WebkitGtk:"+webkit_get_major_version()+"."+webkit_get_minor_version()+"."+webkit_micro_version() + "  (Version >=2.5 is Webkit2)");
+		}
+	}
 
 	/** Constants */
 	public static final int kJSTypeUndefined = 0;
