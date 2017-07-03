@@ -57,6 +57,7 @@ class WebKit extends WebBrowser {
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	static final long DEFAULT_DB_QUOTA = 5 * 1024 * 1024;
 
 	/* event strings */
 	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
@@ -151,6 +152,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFinishLoadingFromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_, proc6, "@:@@@@" ); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_createWebViewWithRequest_, proc4, "@:@@"); //$NON-NLS-1$
@@ -400,6 +402,8 @@ static long /*int*/ browserProc(long /*int*/ id, long /*int*/ sel, long /*int*/ 
 	} else if (sel == OS.sel_callJava) {
 		id result = webKit.callJava(arg0, arg1, arg2, arg3);
 		return result == null ? 0 : result.id;
+	} else if (sel == OS.sel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_){
+		webView_frame_exceededDatabaseQuotaForSecurityOrigin_database(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
@@ -434,6 +438,13 @@ static long /*int*/ webScriptNameForSelector (long /*int*/ aSelector) {
 		return NSString.stringWith ("callRunBeforeUnloadConfirmPanelWithMessage").id; //$NON-NLS-1$
 	}
 	return 0;
+}
+
+static void webView_frame_exceededDatabaseQuotaForSecurityOrigin_database(
+		long /* int */sender, long /* int */frame, long /* int */origin,
+		long /* int */database )
+{
+	OS.objc_msgSend( origin, OS.sel_setQuota, DEFAULT_DB_QUOTA );
 }
 
 @Override

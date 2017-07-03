@@ -127,6 +127,9 @@ public class OS extends C {
 	public static final long /*int*/ sel_setShouldExpandItem_ = sel_registerName("setShouldExpandItem:");
 	public static final long /*int*/ sel_setShouldScrollClipView_ = sel_registerName("setShouldScrollClipView:");
 
+	public static final long /*int*/ sel_setQuota = sel_registerName( "setQuota:" );
+	public static final long /*int*/ sel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_ = sel_registerName( "webView:frame:exceededDatabaseQuotaForSecurityOrigin:database:" );
+
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final long /*int*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final long /*int*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -654,7 +657,6 @@ public static final native int objc_super_sizeof();
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSSize arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5);
-
 
 /** This section is auto generated */
 
