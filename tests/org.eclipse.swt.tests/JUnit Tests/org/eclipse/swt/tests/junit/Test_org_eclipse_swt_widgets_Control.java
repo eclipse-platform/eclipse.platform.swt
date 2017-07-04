@@ -471,7 +471,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	color.dispose();
 }
 @Test
-public void test_setBackgroundWithAlphaLorg_eclipse_swt_graphics_Color() {
+public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
 	control.setBackground(color);
 	assertEquals(color, control.getBackground());
@@ -596,8 +596,8 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 }
 @Test
 public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
-	assumeTrue("Alpha support for foreground colors does not exist on GTK2",
-			!SwtTestUtil.isGTK || SwtTestUtil.isGTK3());
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
 	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
