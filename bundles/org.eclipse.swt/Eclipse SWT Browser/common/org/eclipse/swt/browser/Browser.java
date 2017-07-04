@@ -732,7 +732,12 @@ public int getStyle () {
  * Returns a string with HTML that represents the content of the current page.
  *
  * @return HTML representing the current page or an empty <code>String</code>
- * if this is empty
+ * if this is empty.<br>
+ * <p> Note, the exact return value is platform dependent. 
+ * For example on Windows, the returned string is the proccessed webpage
+ * with javascript executed and missing html tags added. 
+ * On Linux and OS X, this returns the original HTML before the browser has 
+ * processed it.</p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
