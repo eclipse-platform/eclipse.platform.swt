@@ -849,37 +849,59 @@ public void test_setUrl() {
 	// TODO - it would be good to verify that the page actually loaded. ex download the webpage etc..
 }
 
+/** Text without html tags */
 @Test
 public void test_getText() {
-	getText_helper("helloWorld");
+	if (SwtTestUtil.isWindows) {
+		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// The processed webpage has html tags added to it.
+		getText_helper("helloWorld", "<html><head></head><body>helloWorld</body></html>");
+	} else {
+		// Linux Webkit1, Webkit2
+		// Cocoa
+		getText_helper("helloWorld", "helloWorld");
+	}
 }
 
 @Test
 public void test_getText_html() {
-	getText_helper("<html><head></head><body>hello<b>World</b></body></html>");
+	String testString = "<html><head></head><body>hello<b>World</b></body></html>";
+	getText_helper(testString, testString);
 }
 
 /** Ensure we get webpage before javascript processed it.
  *  E.g js would add 'style' tag to body after processing. */
 @Test
 public void test_getText_script() {
-	getText_helper("<html><head></head><body>hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>");
+	String testString = "<html><head></head><body>hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>";
+	if (SwtTestUtil.isWindows) {
+		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// The processed page injects "style" property into the body from the script.
+		getText_helper(testString, "<html><head></head><body style=\"background-color: red;\">hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>");
+	} else {
+		// Linux Webkit1, Webkit2
+		// Cocoa
+		getText_helper(testString, testString);
+	}
+
 }
 
 /** Ensure that 'DOCTYPE' is not stripped out of original string */
 @Test
 public void test_getText_doctype() {
-	getText_helper("<!DOCTYPE html><html><head></head><body>hello World</body></html>");
+	String testString = "<!DOCTYPE html><html><head></head><body>hello World</body></html>";
+	if (SwtTestUtil.isWindows) {
+		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// The processed page strips out DOCTYPE.
+		getText_helper(testString, "<html><head></head><body>hello World</body></html>");
+	} else  {
+		// Linux Webkit1, Webkit2
+		// Cocoa
+		getText_helper(testString,testString);
+	}
 }
 
-/** Ensure custom DOCTYPE is not stripped out of original string */
-@Test
-public void test_getText_doctype_custom() {
-	getText_helper("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
-			+ "\"http://www.w3.org/TR/html4/strict.dtd\"><html><head></head><body>hello World</body></html>");
-}
-
-private void getText_helper(String testString) {
+private void getText_helper(String testString, String expectedOutput) {
 	AtomicReference<String> returnString= new AtomicReference<>("");
 	AtomicBoolean finished = new AtomicBoolean(false);
 	browser.setText(testString);
@@ -894,7 +916,7 @@ private void getText_helper(String testString) {
 	});
 	shell.open();
 	waitForPassCondition(() -> finished.get());
-	boolean passed = returnString.get().equals(testString);
+	boolean passed = returnString.get().equals(expectedOutput);
 	String error_msg = finished.get() ?
 			"Test did not return correct string.\n"
 			+ "Expected:"+testString+"\n"
