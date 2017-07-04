@@ -2774,8 +2774,7 @@ GdkRGBA getContextColorGdkRGBA () {
 		return display.gtk_css_parse_foreground(provider, null);
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
-		GdkRGBA rgba = new GdkRGBA ();
-		rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		GdkRGBA rgba = display.styleContextGetColor (context, OS.GTK_STATE_FLAG_NORMAL);
 		return rgba;
 	}
 }

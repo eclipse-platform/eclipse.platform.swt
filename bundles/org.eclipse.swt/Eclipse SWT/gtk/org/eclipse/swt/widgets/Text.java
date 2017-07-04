@@ -1704,8 +1704,8 @@ void drawMessage (long /*int*/ cr) {
 			GdkColor baseColor = new GdkColor ();
 			if (OS.GTK3) {
 				long /*int*/ styleContext = OS.gtk_widget_get_style_context (handle);
-				GdkRGBA textRGBA = new GdkRGBA ();
-				textRGBA = display.styleContextGetColor (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE, textRGBA);
+				GdkRGBA textRGBA;
+				textRGBA = display.styleContextGetColor (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE);
 				Point thickness = getThickness (handle);
 				x += thickness.x;
 				y += thickness.y;
@@ -2242,8 +2242,8 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	} else {
 		background = rgba;
 	}
-	GdkRGBA selectedBackground = display.COLOR_LIST_SELECTION_RGBA;
-	GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handleRGBA;
 	String css;
 	String properties;
 	String name;

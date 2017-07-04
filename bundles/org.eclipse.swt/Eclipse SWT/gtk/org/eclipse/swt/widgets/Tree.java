@@ -3401,7 +3401,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	} else {
 		background = rgba;
 	}
-	GdkRGBA selectedBackground = display.COLOR_LIST_SELECTION_RGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
