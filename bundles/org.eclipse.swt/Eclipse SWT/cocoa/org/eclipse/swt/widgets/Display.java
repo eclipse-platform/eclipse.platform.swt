@@ -836,7 +836,7 @@ void createDisplay (DeviceData data) {
 	NSThread nsthread = NSThread.currentThread();
 
 	if (!NSThread.isMainThread()) {
-		System.out.println ("***WARNING: Display must be created on main thread due to Cocoa restrictions."); //$NON-NLS-1$
+		System.out.println ("***WARNING: Display must be created on main thread due to Cocoa restrictions. Use vmarg -XstartOnFirstThread"); //$NON-NLS-1$
 		error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 
