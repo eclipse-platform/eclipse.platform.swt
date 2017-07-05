@@ -68,7 +68,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	boolean debug_print_test_names = true; // Useful to figure out which jUnit caused vm crash.
 	boolean debug_verbose_output = false;
 
-	int secondsToWaitTillFail = Math.max(5, debug_show_browser_timeout_seconds);
+	int secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 	// CONFIG END
 
 	@Rule
