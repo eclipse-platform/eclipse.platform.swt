@@ -1418,16 +1418,12 @@ public TableColumn [] getColumns () {
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (background != null) {
+	if (background != null) {
 			return background;
-		} else {
-			// For Tables and Trees, the default background is
-			// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
-			return display.COLOR_LIST_BACKGROUND_RGBA;
-		}
 	} else {
-		return super.getContextBackgroundGdkRGBA ();
+		// For Tables and Trees, the default background is
+		// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
+		return display.COLOR_LIST_BACKGROUND_RGBA;
 	}
 }
 
