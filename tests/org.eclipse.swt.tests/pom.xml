@@ -64,7 +64,7 @@
             <phase>integration-test</phase>
             <configuration>
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
-              <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit</argLine>
+              <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting -Dorg.eclipse.swt.browser.DefaultType=webkit ${os-jvm-flags}</argLine>
             </configuration>
           </execution>
         </executions>
