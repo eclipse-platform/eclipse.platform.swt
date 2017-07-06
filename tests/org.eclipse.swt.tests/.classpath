@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="JUnit Tests"/>
 	<classpathentry kind="src" path="data"/>
+	<classpathentry kind="src" path="BugSnippets"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
