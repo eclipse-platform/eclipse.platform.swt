@@ -900,6 +900,11 @@ int applyThemeBackground () {
 }
 
 @Override
+GdkRGBA defaultBackground () {
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+}
+
+@Override
 void deregister () {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));

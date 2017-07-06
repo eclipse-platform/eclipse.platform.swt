@@ -1864,6 +1864,10 @@ void register () {
 	if (textEntryHandle != 0) display.addWidget (textEntryHandle, this);
 }
 
+@Override
+GdkRGBA defaultBackground () {
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+}
 
 @Override
 void deregister () {

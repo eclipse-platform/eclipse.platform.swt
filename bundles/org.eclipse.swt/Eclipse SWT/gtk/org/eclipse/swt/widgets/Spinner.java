@@ -366,6 +366,11 @@ public void cut () {
 }
 
 @Override
+GdkRGBA defaultBackground () {
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+}
+
+@Override
 void deregister () {
 	super.deregister ();
 	long /*int*/ imContext = imContext ();

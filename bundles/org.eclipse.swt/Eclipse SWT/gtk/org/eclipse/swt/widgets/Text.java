@@ -751,6 +751,11 @@ char [] deprocessText (char [] text, int start, int end) {
 }
 
 @Override
+GdkRGBA defaultBackground () {
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+}
+
+@Override
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) display.removeWidget (bufferHandle);

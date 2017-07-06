@@ -135,6 +135,11 @@ Font defaultFont () {
 	return display.getSystemFont ();
 }
 
+GdkRGBA defaultBackground () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
+}
+
 @Override
 void deregister () {
 	super.deregister ();
@@ -4556,6 +4561,8 @@ void setBackgroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 			Control control = findBackgroundControl();
 			if (control == null) control = this;
 			rgba = control == this ? null : control.getBackgroundGdkRGBA();
+		} else {
+			rgba = defaultBackground ();
 		}
 	} else {
 		backgroundAlpha = (int) (rgba.alpha * 255);
