@@ -82,7 +82,8 @@
       <activation>
         <os>
           <family>unix</family>
-        </os>
+          <name>Linux</name>
+	</os>
       </activation>
 	  <modules>
 	    <module>tests/org.eclipse.swt.tests.gtk</module>
