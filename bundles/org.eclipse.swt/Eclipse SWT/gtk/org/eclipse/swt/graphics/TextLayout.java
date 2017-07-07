@@ -216,7 +216,9 @@ void computeRuns () {
 					break;
 				case SWT.UNDERLINE_LINK: {
 					if (style.foreground == null) {
-						long /*int*/ attr = OS.pango_attr_foreground_new((short)0, (short)0x3333, (short)0x9999);
+						// Bug 497071: use COLOR_LINK_FOREGROUND for StyledText links
+						GdkColor linkColor = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handle;
+						long /*int*/ attr = OS.pango_attr_foreground_new(linkColor.red, linkColor.green, linkColor.blue);
 						OS.memmove (attribute, attr, PangoAttribute.sizeof);
 						attribute.start_index = byteStart;
 						attribute.end_index = byteEnd;
