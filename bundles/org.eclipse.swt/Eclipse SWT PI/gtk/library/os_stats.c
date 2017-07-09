@@ -71,6 +71,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventWindowState_1sizeof",
 	"GdkEvent_1sizeof",
 	"GdkGeometry_1sizeof",
+	"GdkKeymapKey_1sizeof",
 	"GdkRGBA_1sizeof",
 	"GdkRectangle_1sizeof",
 	"GdkWindowAttr_1sizeof",
@@ -447,6 +448,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1get_1default_1root_1window",
 	"_1gdk_1keyboard_1ungrab",
 	"_1gdk_1keymap_1get_1default",
+	"_1gdk_1keymap_1get_1entries_1for_1keyval",
 	"_1gdk_1keymap_1translate_1keyboard_1state",
 	"_1gdk_1keyval_1to_1lower",
 	"_1gdk_1keyval_1to_1unicode",
@@ -1691,6 +1693,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRGBA_2II",

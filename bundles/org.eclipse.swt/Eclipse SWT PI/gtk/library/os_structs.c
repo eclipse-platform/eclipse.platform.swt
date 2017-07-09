@@ -989,6 +989,43 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkKeymapKey
+typedef struct GdkKeymapKey_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID keycode, group, level;
+} GdkKeymapKey_FID_CACHE;
+
+GdkKeymapKey_FID_CACHE GdkKeymapKeyFc;
+
+void cacheGdkKeymapKeyFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkKeymapKeyFc.cached) return;
+	GdkKeymapKeyFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkKeymapKeyFc.keycode = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "keycode", "J");
+	GdkKeymapKeyFc.group = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "group", "I");
+	GdkKeymapKeyFc.level = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "level", "I");
+	GdkKeymapKeyFc.cached = 1;
+}
+
+GdkKeymapKey *getGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey *lpStruct)
+{
+	if (!GdkKeymapKeyFc.cached) cacheGdkKeymapKeyFields(env, lpObject);
+	lpStruct->keycode = (guint)(*env)->GetLongField(env, lpObject, GdkKeymapKeyFc.keycode);
+	lpStruct->group = (gint)(*env)->GetIntField(env, lpObject, GdkKeymapKeyFc.group);
+	lpStruct->level = (gint)(*env)->GetIntField(env, lpObject, GdkKeymapKeyFc.level);
+	return lpStruct;
+}
+
+void setGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey *lpStruct)
+{
+	if (!GdkKeymapKeyFc.cached) cacheGdkKeymapKeyFields(env, lpObject);
+	(*env)->SetLongField(env, lpObject, GdkKeymapKeyFc.keycode, (jlong)lpStruct->keycode);
+	(*env)->SetIntField(env, lpObject, GdkKeymapKeyFc.group, (jint)lpStruct->group);
+	(*env)->SetIntField(env, lpObject, GdkKeymapKeyFc.level, (jint)lpStruct->level);
+}
+#endif
+
 #ifndef NO_GdkRGBA
 typedef struct GdkRGBA_FID_CACHE {
 	int cached;
