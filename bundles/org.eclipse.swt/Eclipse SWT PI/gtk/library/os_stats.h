@@ -81,6 +81,7 @@ typedef enum {
 	GdkEventWindowState_1sizeof_FUNC,
 	GdkEvent_1sizeof_FUNC,
 	GdkGeometry_1sizeof_FUNC,
+	GdkKeymapKey_1sizeof_FUNC,
 	GdkRGBA_1sizeof_FUNC,
 	GdkRectangle_1sizeof_FUNC,
 	GdkWindowAttr_1sizeof_FUNC,
@@ -470,6 +471,7 @@ typedef enum {
 	_1gdk_1get_1default_1root_1window_FUNC,
 	_1gdk_1keyboard_1ungrab_FUNC,
 	_1gdk_1keymap_1get_1default_FUNC,
+	_1gdk_1keymap_1get_1entries_1for_1keyval_FUNC,
 	_1gdk_1keymap_1translate_1keyboard_1state_FUNC,
 	_1gdk_1keyval_1to_1lower_FUNC,
 	_1gdk_1keyval_1to_1unicode_FUNC,
@@ -1702,6 +1704,11 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II_FUNC,

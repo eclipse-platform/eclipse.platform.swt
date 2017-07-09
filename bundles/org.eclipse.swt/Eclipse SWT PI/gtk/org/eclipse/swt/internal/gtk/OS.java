@@ -182,6 +182,8 @@ public class OS extends C {
 	public static final int GDK_F7 = 0xffc4;
 	public static final int GDK_F8 = 0xffc5;
 	public static final int GDK_F9 = 0xffc6;
+	public static final int GDK_KEY_a = 0x061;
+	public static final int GDK_KEY_z = 0x07a;
 	public static final int GDK_FLEUR = 0x34;
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
@@ -578,6 +580,7 @@ public class OS extends C {
 	public static final byte[] insert_text = ascii("insert-text");
 	public static final byte[] key_press_event = ascii("key-press-event");
 	public static final byte[] key_release_event = ascii("key-release-event");
+	public static final byte[] keys_changed = ascii("keys-changed");
 	public static final byte[] leave_notify_event = ascii("leave-notify-event");
 	public static final byte[] link_color = ascii("link-color");
 	public static final byte[] map = ascii("map");
@@ -767,6 +770,7 @@ public static final native int GPollFD_sizeof ();
 public static final native int GTypeInfo_sizeof ();
 public static final native int GTypeQuery_sizeof ();
 public static final native int GdkColor_sizeof();
+public static final native int GdkKeymapKey_sizeof();
 public static final native int GdkRGBA_sizeof();
 public static final native int GdkDragContext_sizeof();
 public static final native int GdkEvent_sizeof();
@@ -4404,14 +4408,25 @@ public static final long /*int*/ gdk_keymap_get_default() {
 }
 /**
  * @param keymap cast=(GdkKeymap*)
- * @param state cast=(GdkModifierType)
- * @param keyval cast=(guint*)
- * @param effective_group cast=(gint*)
- * @param level cast=(gint*)
- * @param consumed_modifiers cast=(GdkModifierType *)
+ * @param keyval cast=(guint)
+ * @param keys cast=(GdkKeymapKey**)
+ * @param n_keys cast=(gint*)
  */
-public static final native boolean _gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
-public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers) {
+public static final native boolean _gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, long keyval, long /*int*/[] keys, int[] n_keys);
+public static final boolean gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, long keyval, long /*int*/[] keys, int[] n_keys) {
+	lock.lock();
+	try {
+		return _gdk_keymap_get_entries_for_keyval(keymap, keyval, keys, n_keys);
+ 	} finally {
+ 		lock.unlock();
+ 	}
+}
+/**
+ * Can't be auto-generated because of mapping guint to long for keyval
+ * @method flags=no_gen
+ */
+public static final native boolean _gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
+public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers) {
 	lock.lock();
 	try {
 		return _gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, group, keyval, effective_group, level, consumed_modifiers);
@@ -4419,8 +4434,8 @@ public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ ke
 		lock.unlock();
 	}
 }
-public static final native int _gdk_keyval_to_lower(int keyval);
-public static final int gdk_keyval_to_lower(int keyval) {
+public static final native long _gdk_keyval_to_lower(long keyval);
+public static final long gdk_keyval_to_lower(long keyval) {
 	lock.lock();
 	try {
 		return _gdk_keyval_to_lower(keyval);
@@ -4428,8 +4443,8 @@ public static final int gdk_keyval_to_lower(int keyval) {
 		lock.unlock();
 	}
 }
-public static final native int _gdk_keyval_to_unicode(int keyval);
-public static final int gdk_keyval_to_unicode(int keyval) {
+public static final native long _gdk_keyval_to_unicode(long keyval);
+public static final long gdk_keyval_to_unicode(long keyval) {
 	lock.lock();
 	try {
 		return _gdk_keyval_to_unicode(keyval);
@@ -15087,6 +15102,12 @@ public static final native void memmove(GtkBorder dest, long /*int*/ src, long /
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkColor dest, long /*int*/ src, long /*int*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param size cast=(size_t)
+ */
+public static final native void memmove(GdkKeymapKey dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

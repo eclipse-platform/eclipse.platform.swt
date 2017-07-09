@@ -5889,7 +5889,7 @@ boolean translateMnemonic (Event event, Control control) {
 }
 
 boolean translateMnemonic (int keyval, GdkEventKey gdkEvent) {
-	int key = OS.gdk_keyval_to_unicode (keyval);
+	long key = OS.gdk_keyval_to_unicode (keyval);
 	if (key < 0x20) return false;
 	if (gdkEvent.state == 0) {
 		int code = traversalCode (keyval, gdkEvent);

@@ -1107,8 +1107,8 @@ boolean mnemonicHit (long /*int*/ mnemonicHandle, char key) {
 }
 
 boolean mnemonicMatch (long /*int*/ mnemonicHandle, char key) {
-	int keyval1 = OS.gdk_keyval_to_lower (OS.gdk_unicode_to_keyval (key));
-	int keyval2 = OS.gdk_keyval_to_lower (OS.gtk_label_get_mnemonic_keyval (mnemonicHandle));
+	long keyval1 = OS.gdk_keyval_to_lower (OS.gdk_unicode_to_keyval (key));
+	long keyval2 = OS.gdk_keyval_to_lower (OS.gtk_label_get_mnemonic_keyval (mnemonicHandle));
 	return keyval1 == keyval2;
 }
 
@@ -1704,9 +1704,10 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_ISO_Left_Tab: 	event.character = SWT.TAB; break;
 		default: {
 			if (event.keyCode == 0) {
-				int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
-				if (OS.gdk_keymap_translate_keyboard_state (OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
-					event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
+				long [] keyval = new long [1];
+				int [] effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
+				if (OS.gdk_keymap_translate_keyboard_state (OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, display.getLatinKeyGroup(), keyval, effective_group, level, consumed_modifiers)) {
+					event.keyCode = (int) OS.gdk_keyval_to_unicode (keyval [0]);
 				}
 			}
 			int key = keyEvent.keyval;

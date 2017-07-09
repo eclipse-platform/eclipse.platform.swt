@@ -510,6 +510,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkGeometry_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkKeymapKey_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkKeymapKey_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GdkKeymapKey_1sizeof_FUNC);
+	rc = (jint)GdkKeymapKey_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkKeymapKey_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkRGBA_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkRGBA_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -5219,50 +5231,44 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1keymap_1get_1default)
 }
 #endif
 
-#ifndef NO__1gdk_1keymap_1translate_1keyboard_1state
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1keymap_1translate_1keyboard_1state)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+#ifndef NO__1gdk_1keymap_1get_1entries_1for_1keyval
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1keymap_1get_1entries_1for_1keyval)
+	(JNIEnv *env, jclass that, jintLong arg0, jlong arg1, jintLongArray arg2, jintArray arg3)
 {
-	jint *lparg4=NULL;
-	jint *lparg5=NULL;
-	jint *lparg6=NULL;
-	jint *lparg7=NULL;
+	jintLong *lparg2=NULL;
+	jint *lparg3=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
+	OS_NATIVE_ENTER(env, that, _1gdk_1keymap_1get_1entries_1for_1keyval_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_keymap_get_entries_for_keyval((GdkKeymap*)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
 fail:
-	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
-	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1keymap_1get_1entries_1for_1keyval_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO__1gdk_1keyval_1to_1lower
-JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1keyval_1to_1lower)
-	(JNIEnv *env, jclass that, jint arg0)
+JNIEXPORT jlong JNICALL OS_NATIVE(_1gdk_1keyval_1to_1lower)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jint rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1keyval_1to_1lower_FUNC);
-	rc = (jint)gdk_keyval_to_lower(arg0);
+	rc = (jlong)gdk_keyval_to_lower(arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1keyval_1to_1lower_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO__1gdk_1keyval_1to_1unicode
-JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1keyval_1to_1unicode)
-	(JNIEnv *env, jclass that, jint arg0)
+JNIEXPORT jlong JNICALL OS_NATIVE(_1gdk_1keyval_1to_1unicode)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jint rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1keyval_1to_1unicode_FUNC);
-	rc = (jint)gdk_keyval_to_unicode(arg0);
+	rc = (jlong)gdk_keyval_to_unicode(arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1keyval_1to_1unicode_FUNC);
 	return rc;
 }
@@ -19648,6 +19654,32 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkImage
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	GdkKeymapKey _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ_FUNC);
+#endif
+	if (!arg0) goto fail;
+	if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setGdkKeymapKeyFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2JJ_FUNC);
 #endif
 }
 #endif

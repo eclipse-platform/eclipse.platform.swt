@@ -425,6 +425,13 @@ public class Display extends Device {
 
 	};
 
+	/* Latin layout key group */
+	private int latinKeyGroup;
+
+	/* Keymap "keys-changed" callback */
+	long /*int*/ keysChangedProc;
+	Callback keysChangedCallback;
+
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [4];
@@ -1081,6 +1088,75 @@ void createDisplay (DeviceData data) {
 	if (signalProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_widget_add_events (shellHandle, OS.GDK_PROPERTY_CHANGE_MASK);
 	OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
+
+	latinKeyGroup = findLatinKeyGroup ();
+	keysChangedCallback = new Callback (this, "keysChangedProc", 2); //$NON-NLS-1$
+	keysChangedProc = keysChangedCallback.getAddress ();
+	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.g_signal_connect (OS.gdk_keymap_get_default (), OS.keys_changed, keysChangedProc, 0);
+}
+
+/**
+ * Determine key group of Latin layout.
+ *
+ * @return the most Latin keyboard layout group
+ */
+private int findLatinKeyGroup () {
+	int result = 0;
+	Map<Integer, Integer> groupKeysCount = new HashMap<> ();
+	long /*int*/ keymap = OS.gdk_keymap_get_default ();
+
+	// count all key groups for Latin alphabet
+	for (int keyval = OS.GDK_KEY_a; keyval <= OS.GDK_KEY_z; keyval++) {
+		long /*int*/[] keys = new long /*int*/[1];
+		int [] n_keys = new int [1];
+
+		if (OS.gdk_keymap_get_entries_for_keyval (keymap, keyval, keys, n_keys)) {
+			GdkKeymapKey key_entry = new GdkKeymapKey ();
+			for (int key = 0; key < n_keys [0]; key++) {
+				OS.memmove (key_entry, keys [0] + key * GdkKeymapKey.sizeof, GdkKeymapKey.sizeof);
+				Integer keys_count = (Integer) groupKeysCount.get (key_entry.group);
+				if (keys_count != null) {
+					keys_count++;
+				} else {
+					keys_count = 1;
+				}
+				groupKeysCount.put (key_entry.group, keys_count);
+			}
+			OS.g_free (keys [0]);
+		}
+	}
+
+	// group with maximum keys count is Latin
+	int max_keys_count = 0;
+	Iterator<Map.Entry<Integer, Integer>> it = groupKeysCount.entrySet ().iterator ();
+	while (it.hasNext ()) {
+		Map.Entry<Integer, Integer> entry = it.next ();
+		Integer group = (Integer) entry.getKey ();
+		Integer keys_count = (Integer) entry.getValue ();
+		if (keys_count > max_keys_count) {
+			result = group;
+			max_keys_count = keys_count;
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Return the most Latin keyboard layout group.
+ */
+int getLatinKeyGroup () {
+	return latinKeyGroup;
+}
+
+/**
+ * 'keys-changed' event handler.
+ * Updates the most Latin keyboard layout group field.
+ */
+long /*int*/ keysChangedProc (long /*int*/ keymap, long /*int*/ user_data) {
+	latinKeyGroup = findLatinKeyGroup ();
+	return 0;
 }
 
 Image createImage (String name) {
@@ -4311,6 +4387,10 @@ void releaseDisplay () {
 	/* Dispose the settings callback */
 	signalCallback.dispose(); signalCallback = null;
 	signalProc = 0;
+
+	/* Dispose the "keys-changed" callback */
+	keysChangedCallback.dispose(); keysChangedCallback = null;
+	keysChangedProc = 0;
 
 	/* Dispose subclass */
 	long /*int*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
