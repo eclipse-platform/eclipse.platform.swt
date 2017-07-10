@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.*;
 // --------------------
 // Primitives:
 // int   -> int
-// guint -> int
+// guint -> long /*int*/     #C unsigned int > java int
 // gint* -> int[]
 // boolean   -> int  ex setenv
 // gboolean  -> boolean
