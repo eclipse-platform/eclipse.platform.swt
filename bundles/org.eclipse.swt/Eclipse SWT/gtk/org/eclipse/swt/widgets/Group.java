@@ -438,7 +438,7 @@ public void setText (String string) {
 		OS.gtk_frame_set_label_widget (handle, 0);
 	}
 	// Set the foreground now that the text has been set
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0) && foreground != null) {
 		setForegroundGdkRGBA (labelHandle, foreground);
 	}
 }
