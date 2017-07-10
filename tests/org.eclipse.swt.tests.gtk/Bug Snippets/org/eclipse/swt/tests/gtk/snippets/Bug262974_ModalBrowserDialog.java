@@ -26,10 +26,16 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Bug262974_ModalBrowserDialog extends JFrame {
 
-  public Bug262974_ModalBrowserDialog() {
+	private static final long serialVersionUID = -4662730703780970912L;
+
+
+public Bug262974_ModalBrowserDialog() {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     Canvas canvas = new Canvas() {
-      @Override
+
+	private static final long serialVersionUID = -8128631529339936684L;
+
+	@Override
       public void addNotify() {
         super.addNotify();
         final Canvas canvas_ = this;

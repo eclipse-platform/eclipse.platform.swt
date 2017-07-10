@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -26,12 +27,17 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Bug221240_AWTJVMCrash extends JFrame {
 
-  protected static final String LS = System.getProperty("line.separator");
+	private static final long serialVersionUID = -248424300520098295L;
+
+protected static final String LS = System.getProperty("line.separator");
 
   public Bug221240_AWTJVMCrash() {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     Canvas canvas = new Canvas() {
-      @Override
+
+    private static final long serialVersionUID = -4380477744500979114L;
+
+	@Override
       public void addNotify() {
         super.addNotify();
         final Canvas canvas_ = this;
@@ -119,7 +125,7 @@ public class Bug221240_AWTJVMCrash extends JFrame {
     DeviceData data = new DeviceData();
     data.debug = true;
     display = new Display(data);
-    Display.DEBUG = true;
+    Device.DEBUG = true;
     if(args.length > 0) {
       url = args[0];
     }

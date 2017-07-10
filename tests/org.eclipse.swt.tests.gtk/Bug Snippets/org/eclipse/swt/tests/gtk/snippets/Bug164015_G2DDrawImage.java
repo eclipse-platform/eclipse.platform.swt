@@ -30,6 +30,9 @@ import org.eclipse.swt.widgets.Shell;
  * GTK Version(s): N/A
  */
 public class Bug164015_G2DDrawImage extends JPanel {
+
+	private static final long serialVersionUID = -6507131039136726834L;
+
 	private static final int TILE_SIZE = 200;
 
 	private static final boolean USE_JAI_FOR_IMAGE_IO = true;
