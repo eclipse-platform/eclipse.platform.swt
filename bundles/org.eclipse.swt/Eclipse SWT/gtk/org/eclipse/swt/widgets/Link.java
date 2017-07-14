@@ -391,7 +391,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		long /*int*/ context = OS.gtk_widget_get_style_context(widget);
 		GtkAllocation allocation = new GtkAllocation();
 		OS.gtk_widget_get_allocation (widget, allocation);

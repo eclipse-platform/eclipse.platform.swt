@@ -496,7 +496,6 @@ void setAlignment () {
 	}
 }
 
-
 private void gtk_label_set_align (float xalign, float yalign) {
 	OS.gtk_label_set_xalign (labelHandle, xalign);
 	OS.gtk_label_set_yalign (labelHandle, yalign);
@@ -686,7 +685,7 @@ public void setText (String string) {
 
 @Override
 void setWidgetBackground  () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
 		super.setBackgroundGdkRGBA (handle, rgba);
 	} else {

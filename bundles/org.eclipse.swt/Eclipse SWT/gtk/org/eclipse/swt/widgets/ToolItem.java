@@ -1041,7 +1041,7 @@ void setForegroundColor (GdkColor color) {
 
 void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
 		long /*int*/ context = OS.gtk_widget_get_style_context(handle);
 		String name = OS.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
@@ -1056,7 +1056,7 @@ void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 
 void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
 		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedForeground);

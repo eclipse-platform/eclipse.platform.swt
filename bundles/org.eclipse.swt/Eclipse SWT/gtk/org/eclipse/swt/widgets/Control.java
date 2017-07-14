@@ -682,7 +682,7 @@ void checkForeground () {
 	*
 	* This can be removed on GTK3.16+.
 	*/
-	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0) && OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0) && OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
 		setForegroundGdkRGBA (topHandle (), display.COLOR_WIDGET_FOREGROUND_RGBA);
 	}
 }
@@ -2755,7 +2755,7 @@ public Image getBackgroundImage () {
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		if (provider != 0) {
 			return display.gtk_css_parse_background (provider, null);
 		} else {
@@ -2775,7 +2775,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 GdkRGBA getContextColorGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		return display.gtk_css_parse_foreground(provider, null);
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
@@ -4438,7 +4438,7 @@ private void _setBackground (Color color) {
 			} else {
 				state |= BACKGROUND;
 			}
-			setBackgroundGdkRGBA (handle, rgba);
+			setBackgroundGdkRGBA (rgba);
 		}
 	} else {
 		GdkColor gdkColor = null;
@@ -4469,11 +4469,14 @@ private void _setBackground (Color color) {
 
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-    if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+    if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
     	// Form background string
         String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
-        String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+        String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+        String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}\n"
+                + name + selection + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
         // Cache background
         cssBackground = css;
@@ -4483,6 +4486,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
         gtk_css_provider_load_from_css (context, finalCss);
     } else {
         OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+        OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
     }
 }
 
@@ -4550,6 +4554,11 @@ void setBackgroundGdkColor (long /*int*/ handle, GdkColor color) {
 void setBackgroundGdkColor (GdkColor color) {
 	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	setBackgroundGdkColor (handle, color);
+}
+
+void setBackgroundGdkRGBA(GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	setBackgroundGdkRGBA (handle, rgba);
 }
 
 void setBackgroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
@@ -4965,7 +4974,7 @@ void setForegroundGdkColor (GdkColor color) {
 
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA toSet = new GdkRGBA();
 		if (rgba != null) {
 			toSet = rgba;
@@ -6178,14 +6187,14 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			Control control = findBackgroundControl ();
 			boolean draw = control != null && control.backgroundImage != null;
 			if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
-				GdkRGBA rgba = new GdkRGBA();
-				long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-				if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+				if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+					GdkRGBA rgba = new GdkRGBA();
+					long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 					OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+					draw = rgba.alpha == 0;
 				} else {
-					OS.gtk_style_context_get_background_color (context, OS.gtk_widget_get_state_flags(handle), rgba);
+					draw = (state & BACKGROUND) == 0;
 				}
-				draw = rgba.alpha == 0;
 			}
 			if (draw) {
 				if (OS.GTK3) {
@@ -6228,5 +6237,4 @@ Point getWindowOrigin () {
 
 	return new Point (x [0], y [0]);
 }
-
 }

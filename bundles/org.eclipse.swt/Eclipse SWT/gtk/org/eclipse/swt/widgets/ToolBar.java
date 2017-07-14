@@ -595,7 +595,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
@@ -622,7 +622,7 @@ void setParentBackground () {
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA toSet = new GdkRGBA();
 		if (rgba != null) {
 			toSet = rgba;

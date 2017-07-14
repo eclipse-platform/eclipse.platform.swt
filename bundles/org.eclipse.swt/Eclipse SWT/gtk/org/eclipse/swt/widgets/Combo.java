@@ -1919,11 +1919,18 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	// CSS to be parsed for various widgets within Combo
 	background = rgba;
 	String css = "* {\n";
+	String color;
 	if (rgba != null) {
-		String color = display.gtk_rgba_to_css_string (rgba);
-		css += "background: " + color + ";\n";
+		color = display.gtk_rgba_to_css_string (rgba);
+	} else {
+		if ((style & SWT.READ_ONLY) != 0) {
+			color = display.gtk_rgba_to_css_string (display.COLOR_WIDGET_BACKGROUND_RGBA);
+		} else {
+			color = display.gtk_rgba_to_css_string (display.COLOR_LIST_BACKGROUND_RGBA);
+		}
 	}
-	css += "}\n";
+	css += "background: " + color + ";}";
+
 	// Cache background color
 	cssBackground = css;
 	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
@@ -1931,17 +1938,25 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 		// For read only Combos, we can just apply the background CSS to the GtkToggleButton.
 		gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(buttonHandle), finalCss);
 	} else {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-			// For GTK3.16+, only the GtkEntry needs to be themed.
+		if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			// For GTK3.14+, only the GtkEntry needs to be themed.
 			gtk_css_provider_load_from_css (OS.gtk_widget_get_style_context(entryHandle), finalCss);
 		} else {
-			// Maintain GTK3.14- functionality
+			// Maintain GTK3.12- functionality
 			setBackgroundGradientGdkRGBA (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
 			super.setBackgroundGdkRGBA (OS.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
 		}
 	}
 	// Set the background color of the text of the drop down menu.
 	OS.g_object_set (textRenderer, OS.background_rgba, rgba, 0);
+}
+
+@Override
+void setBackgroundGdkRGBA (GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setBackgroundGdkRGBA(rgba);
+	if (entryHandle != 0) setBackgroundGdkRGBA (entryHandle, rgba);
+	setBackgroundGdkRGBA (fixedHandle, rgba);
 }
 
 @Override

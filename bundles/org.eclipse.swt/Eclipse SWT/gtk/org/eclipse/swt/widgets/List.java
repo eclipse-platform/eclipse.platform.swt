@@ -45,7 +45,6 @@ public class List extends Scrollable {
 	int selectionCountOnPress,selectionCountOnRelease;
 
 	static final int TEXT_COLUMN = 0;
-	GdkRGBA background;
 	double cachedAdjustment, currentAdjustment;
 
 /**
@@ -448,22 +447,6 @@ long /*int*/ eventWindow () {
 GdkColor getBackgroundGdkColor () {
 	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	return getBaseGdkColor ();
-}
-
-@Override
-GdkRGBA getContextBackgroundGdkRGBA () {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		if (background != null) {
-			return background;
-		} else {
-			// List is a GtkTreeView, same as Table/Tree: its default
-			// background color is COLOR_LIST_BACKGROUND.
-			return display.COLOR_LIST_BACKGROUND_RGBA;
-		}
-	} else {
-		return super.getContextBackgroundGdkRGBA ();
-	}
 }
 
 /**
@@ -1435,37 +1418,6 @@ void setBackgroundGdkColor (GdkColor color) {
 }
 
 @Override
-void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	/* Setting the background color overrides the selected background color.
-	 * To prevent this, we need to re-set the default. This can be done with CSS
-	 * on GTK3.16+, or by using GtkStateFlags as an argument to
-	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
-	 */
-	if (rgba == null) {
-		background = display.COLOR_LIST_BACKGROUND_RGBA;
-	} else {
-		background = rgba;
-	}
-	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                + name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
-
-		// Cache background color
-		cssBackground = css;
-
-		// Apply background color and any foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		super.setBackgroundGdkRGBA(context, handle, rgba);
-		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
-	}
-}
-
-@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
@@ -1547,7 +1499,7 @@ public void setItems (String... items) {
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
 		setForegroundGdkRGBA (handle, toSet);
 	} else {

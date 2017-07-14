@@ -745,7 +745,7 @@ void reskinChildren (int flags) {
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-    if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+    if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
     	// Form background string
     	String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "notebook header" : "GtkNotebook.header";
         String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";

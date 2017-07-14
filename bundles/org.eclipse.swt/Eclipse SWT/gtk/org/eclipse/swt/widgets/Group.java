@@ -160,7 +160,7 @@ Rectangle getClientAreaInPixels () {
 @Override
 GdkRGBA getContextColorGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		if (foreground != null) {
 			return foreground;
 		} else {
@@ -174,7 +174,7 @@ GdkRGBA getContextColorGdkRGBA () {
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		return super.getContextBackgroundGdkRGBA();
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fixedHandle);
@@ -334,18 +334,18 @@ void releaseWidget () {
 }
 
 @Override
+void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	super.setBackgroundGdkRGBA(fixedHandle, rgba);
+}
+
+@Override
 void setBackgroundGdkColor (GdkColor color) {
 	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	super.setBackgroundGdkColor (color);
 	setBackgroundGdkColor (fixedHandle, color);
 	// Bug 453827 - client handle should also be painted as it's visible to the user now.
 	setBackgroundGdkColor (clientHandle, color);
-}
-
-@Override
-void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	super.setBackgroundGdkRGBA(fixedHandle, rgba);
 }
 
 @Override
@@ -357,7 +357,7 @@ void setFontDescription (long /*int*/ font) {
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION < OS.VERSION(3, 16, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
 	}
@@ -367,7 +367,7 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	 * to specify a foreground color before the text is set, store the
 	 * color and wait until text is specified to apply it.
 	 */
-	if (!text.isEmpty()) {
+	if (text != null && !text.isEmpty()) {
 		super.setForegroundGdkRGBA (labelHandle, rgba);
 	}
 	foreground = rgba;

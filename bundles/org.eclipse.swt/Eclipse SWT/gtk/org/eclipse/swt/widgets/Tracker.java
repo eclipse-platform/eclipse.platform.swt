@@ -765,7 +765,7 @@ public boolean open () {
 		OS.gtk_widget_realize (overlay);
 		long /*int*/ overlayWindow = OS.gtk_widget_get_window (overlay);
 		OS.gdk_window_set_override_redirect (overlayWindow, true);
-		if (OS.GTK_VERSION < OS.VERSION (3, 16, 0)) {
+		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			OS.gtk_widget_override_background_color (overlay, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 		} else {
 			String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
