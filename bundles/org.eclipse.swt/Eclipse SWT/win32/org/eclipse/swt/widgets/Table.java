@@ -7011,7 +7011,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					* from drawing the selection when LVS_EX_FULLROWSELECT
 					* is set.
 					*/
-					int length = Math.min (string.length (), plvfi.cchTextMax - 1);
+					int length = Math.min (string.length (), Math.max (0, plvfi.cchTextMax - 1));
 					if (!tipRequested && plvfi.iSubItem == 0 && length == 0) {
 						string = " "; //$NON-NLS-1$
 						length = 1;
