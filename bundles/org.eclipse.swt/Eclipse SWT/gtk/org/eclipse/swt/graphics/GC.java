@@ -278,7 +278,7 @@ void checkGC (int mask) {
 			}
 		} else {
 			if (OS.GTK3) {
-				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
+				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, data.alpha / (float)0xFF);
 			} else {
 				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 			}
