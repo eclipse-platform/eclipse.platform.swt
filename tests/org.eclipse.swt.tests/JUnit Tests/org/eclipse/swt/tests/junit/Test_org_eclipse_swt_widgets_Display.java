@@ -1181,16 +1181,23 @@ public void test_setAppNameLjava_lang_String() {
 public void test_setCursorLocationII() {
 	Display display = new Display();
 	try {
+		// Move mouse back to original location, to prevent mouse being jerked around.
+		Point originalLocation = display.getCursorLocation();
+		display.addListener(SWT.Dispose, e -> display.setCursorLocation(originalLocation));
+
 		Point location = new Point(100, 100);
 		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
 		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
-		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
-			assertEquals(location, actual);
+			if (!location.equals(actual)) {
+				Screenshots.takeScreenshot(getClass(), testName.getMethodName());
+				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
+			}
 		} else {
 			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
 		}
+
 	} finally {
 		display.dispose();
 	}
@@ -1200,6 +1207,10 @@ public void test_setCursorLocationII() {
 public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 	Display display = new Display();
 	try {
+		// Move mouse back to original location, to prevent mouse being jerked around.
+		Point originalLocation = display.getCursorLocation();
+		display.addListener(SWT.Dispose, e -> display.setCursorLocation(originalLocation));
+
 		Point location = new Point(100, 50);
 		display.setCursorLocation(location); // don't put cursor into a corner, since that could trigger special platform events
 		try {
@@ -1209,10 +1220,12 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 			assertSWTProblem("Incorrect exception thrown for setCursorLocation with null argument", SWT.ERROR_NULL_ARGUMENT, e);
 		}
 		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
-		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
 		Point actual = display.getCursorLocation();
 		if (!BUG_492569) {
-			assertEquals(location, actual);
+			if (!location.equals(actual)) {
+				Screenshots.takeScreenshot(getClass(), testName.getMethodName());
+				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
+			}
 		} else {
 			System.out.println(getClass().getName() + "#" + testName.getMethodName() + ": actual == " + actual);
 		}
