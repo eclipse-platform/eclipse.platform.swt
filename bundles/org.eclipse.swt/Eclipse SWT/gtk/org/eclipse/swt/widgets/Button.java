@@ -895,6 +895,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		gtk_widget_get_preferred_size (boxHandle, requisition);
 		allocation.width = boxWidth;
 		allocation.height = boxHeight;
+		Point sizes = resizeCalculationsGTK3(boxHandle, boxWidth, boxHeight);
+		allocation.width = sizes.x;
+		allocation.height = sizes.y;
 		OS.gtk_widget_size_allocate (boxHandle, allocation);
 	}
 	return result;

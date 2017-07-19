@@ -999,12 +999,31 @@ void resizeHandle (int width, int height) {
 	if (OS.GTK3) {
 		OS.swt_fixed_resize (OS.gtk_widget_get_parent (topHandle), topHandle, width, height);
 		if (topHandle != handle) {
+			Point sizes = resizeCalculationsGTK3 (handle, width, height);
+			width = sizes.x;
+			height = sizes.y;
 			OS.swt_fixed_resize (OS.gtk_widget_get_parent (handle), handle, width, height);
 		}
 	} else {
 		OS.gtk_widget_set_size_request (topHandle, width, height);
 		if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
 	}
+}
+
+Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
+	Point sizes = new Point (width, height);
+	/*
+	 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
+	 * elements which we cannot access. If the to-be-allocated size minus
+	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		GtkRequisition requisition = new GtkRequisition();
+		OS.gtk_widget_get_preferred_size(widget, requisition, null);
+		sizes.x = (width - (requisition.width - width)) < 0 ? requisition.width : width;
+		sizes.y = (height - (requisition.height - height)) < 0 ? requisition.height : height;
+	}
+	return sizes;
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

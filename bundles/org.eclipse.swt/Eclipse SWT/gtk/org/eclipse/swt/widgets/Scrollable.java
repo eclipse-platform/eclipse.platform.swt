@@ -476,6 +476,9 @@ void resizeHandle (int width, int height) {
 			OS.swt_fixed_resize (OS.gtk_widget_get_parent(fixedHandle), fixedHandle, width, height);
 		}
 		long /*int*/ child = scrolledHandle != 0 ? scrolledHandle : handle;
+		Point sizes = resizeCalculationsGTK3 (child, width, height);
+		width = sizes.x;
+		height = sizes.y;
 		OS.swt_fixed_resize (OS.gtk_widget_get_parent(child), child, width, height);
 	} else {
 		if (fixedHandle != 0) OS.gtk_widget_set_size_request (fixedHandle, width, height);

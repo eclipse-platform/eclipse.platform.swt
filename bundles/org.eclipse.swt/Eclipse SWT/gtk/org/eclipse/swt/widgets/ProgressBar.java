@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -179,6 +180,16 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	*/
 	updateBar (selection, minimum, maximum);
 	return 0;
+}
+
+/*
+ * Feature in GTK3.20+: ProgressBar has a very large minimum size,
+ * too large to use for SWT. It's necessary to shrink it even though it emits
+ * 2 warnings. For this reason, do not perform GtkCSSNode calculations.
+ */
+@Override
+Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
+	return new Point (width, height);
 }
 
 @Override
