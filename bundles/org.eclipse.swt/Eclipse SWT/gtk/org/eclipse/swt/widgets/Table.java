@@ -82,7 +82,7 @@ public class Table extends Composite {
 	boolean firstCustomDraw;
 	int drawState, drawFlags;
 	GdkColor drawForeground;
-	GdkRGBA foreground, drawForegroundRGBA;
+	GdkRGBA background, foreground, drawForegroundRGBA;
 	Color headerBackground, headerForeground;
 	String headerCSSBackground, headerCSSForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
@@ -1418,6 +1418,18 @@ public TableColumn [] getColumns () {
 	TableColumn [] result = new TableColumn [columnCount];
 	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
+}
+
+@Override
+GdkRGBA getContextBackgroundGdkRGBA () {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	if (background != null) {
+			return background;
+	} else {
+		// For Tables and Trees, the default background is
+		// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
+		return display.COLOR_LIST_BACKGROUND_RGBA;
+	}
 }
 
 @Override
@@ -3346,6 +3358,37 @@ void setBackgroundGdkColor (GdkColor color) {
 	assert !OS.GTK3 : "GTK2 code was run by GTK3";
 	super.setBackgroundGdkColor (color);
 	OS.gtk_widget_modify_base (handle, 0, color);
+}
+
+@Override
+void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	/* Setting the background color overrides the selected background color.
+	 * To prevent this, we need to re-set the default. This can be done with CSS
+	 * on GTK3.14+, or by using GtkStateFlags as an argument to
+	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
+	 */
+	if (rgba == null) {
+		background = display.COLOR_LIST_BACKGROUND_RGBA;
+	} else {
+		background = rgba;
+	}
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
+		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+                + name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+
+		// Cache background color
+		cssBackground = css;
+
+		// Apply background color and any foreground color
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
+	} else {
+		super.setBackgroundGdkRGBA(context, handle, rgba);
+		OS.gtk_widget_override_background_color(handle, OS.GTK_STATE_FLAG_SELECTED, selectedBackground);
+	}
 }
 
 @Override

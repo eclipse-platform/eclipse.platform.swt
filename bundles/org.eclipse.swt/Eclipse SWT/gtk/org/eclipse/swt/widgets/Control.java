@@ -4474,8 +4474,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
     	// Form background string
         String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
-        String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) &&
-        		!name.contains("treeview") ? " selection" : ":selected";
+        String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
         String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}\n"
                 + name + selection + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
