@@ -1775,17 +1775,21 @@ String gtk_css_create_css_color_string (String background, String foreground, in
 	}
 }
 
+/**
+ * This method fetches GTK theme values/properties. This is accomplished
+ * by determining the name of the current system theme loaded, giving that
+ * name to GTK, and then parsing values from the returned theme contents.
+ *
+ * The idea here is that SWT variables that have corresponding GTK theme
+ * elements can be fetched easily by supplying the SWT variable as an
+ * parameter to this method.
+ *
+ * @param swt an Integer corresponding to the SWT color
+ *
+ * @return a String representation of the color parsed or "parsed" if the color was assigned
+ * directly
+ */
 String gtk_css_default_theme_values (int swt) {
-	/*
-	 * This method fetches GTK theme values/properties. This is accomplished
-	 * by determining the name of the current system theme loaded, giving that
-	 * name to GTK, and then parsing values from the returned theme contents.
-	 *
-	 * The idea here is that SWT variables that have corresponding GTK theme
-	 * elements can be fetched easily by supplying the SWT variable as an
-	 * parameter to this method.
-	 */
-
 	// Find CSS theme name
 	int length;
 	long /*int*/ str;
@@ -1816,39 +1820,9 @@ String gtk_css_default_theme_values (int swt) {
 	String color = "";
 	switch (swt) {
 		case SWT.COLOR_INFO_FOREGROUND:
-			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				tSelected = cssOutput.indexOf ("tooltip * {");
-			} else {
-				tSelected = cssOutput.indexOf (".tooltip {");
-			}
-			selected = cssOutput.indexOf ("@define-color tooltip_fg_color");
-			if (tSelected != -1) {
-				if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "tooltip * {");
-				} else {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, ".tooltip {");
-				}
-				return "parsed";
-			} else if (selected != -1) {
-				color = simple_color_parser(cssOutput, "@define-color tooltip_fg_color", selected);
-				if (!color.isEmpty()) {
-					break;
-				}
-			}
-			break;
+			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
 		case SWT.COLOR_INFO_BACKGROUND:
-			tSelected = cssOutput.indexOf ("tooltip.background {");
-			selected = cssOutput.indexOf ("@define-color tooltip_bg_color");
-			if (tSelected != -1) {
-				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(themeProvider, "tooltip.background {");
-				return "parsed";
-			} else if (selected != -1) {
-				color = simple_color_parser(cssOutput, "@define-color tooltip_bg_color", selected);
-				if (!color.isEmpty()) {
-					break;
-				}
-			}
-			break;
+			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
 		case SWT.COLOR_LIST_BACKGROUND:
 			tSelected = cssOutput.indexOf ("@define-color theme_base_color");
 			selected = cssOutput.indexOf ("@define-color base_color");
@@ -1990,6 +1964,74 @@ String gtk_css_default_theme_values (int swt) {
 			break;
 		default:
 			return "";
+	}
+	return color;
+}
+
+/**
+ * Certain colors don't match up nicely to a "@define-color" tag in certain GTK themes.
+ * For example Adwaita is one of the few themes that does not use a "@define-color"
+ * tag for tooltip colors. It is therefore necessary to parse a tooltip CSS class.
+ *
+ * Since this varies from theme to theme, we first check if a "@define-color" tag
+ * exists, if it is: parse it. If not, check for the tooltip class definition.
+ *
+ * @param swt an Integer corresponding to the SWT color
+ * @param cssOutput a String representation of the currently loaded CSS theme
+ * @param themeProvider a pointer to the GtkCssProvider associated with the
+ * currently loaded CSS theme
+ *
+ * @return a String representation of the color parsed or "parsed" if the color was assigned
+ * directly
+ */
+String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*int*/ themeProvider) {
+	int tSelected, selected, classDef;
+	String color = "";
+	switch (swt) {
+		case SWT.COLOR_INFO_FOREGROUND:
+			selected = cssOutput.indexOf ("@define-color tooltip_fg_color");
+			tSelected = cssOutput.indexOf ("@define-color theme_tooltip_fg_color");
+			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				classDef = cssOutput.indexOf ("tooltip * {");
+			} else {
+				classDef = cssOutput.indexOf (".tooltip {");
+			}
+			if (selected != -1 || tSelected != -1) {
+				if (selected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color tooltip_fg_color", selected);
+				} else if (tSelected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color theme_tooltip_fg_color", tSelected);
+				}
+				if (!color.isEmpty()) {
+					break;
+				}
+			} else if (classDef != -1){
+				if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "tooltip * {");
+				} else {
+					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, ".tooltip {");
+				}
+				return "parsed";
+			}
+			break;
+		case SWT.COLOR_INFO_BACKGROUND:
+			selected = cssOutput.indexOf ("@define-color tooltip_bg_color");
+			tSelected = cssOutput.indexOf ("@define-color theme_tooltip_bg_color");
+			classDef = cssOutput.indexOf ("tooltip.background {");
+			if (selected != -1 || tSelected != -1) {
+				if (selected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color tooltip_bg_color", selected);
+				} else if (tSelected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color theme_tooltip_bg_color", tSelected);
+				}
+				if (!color.isEmpty()) {
+					break;
+				}
+			} else if (classDef != -1) {
+				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(themeProvider, "tooltip.background {");
+				return "parsed";
+			}
+			break;
 	}
 	return color;
 }
