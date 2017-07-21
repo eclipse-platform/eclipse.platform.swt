@@ -20,8 +20,13 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -145,6 +150,36 @@ public void test_setHighlightEnabled () {
 	assertFalse(ctabFolder.getHighlightEnabled());
 	ctabFolder.setHighlightEnabled(true);
 	assertTrue(ctabFolder.getHighlightEnabled());
+}
+
+@Ignore("Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59")
+@Test
+public void test_checkSize() {
+	shell.setLayout(new GridLayout(1, false));
+	Text text2 = new Text(shell, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+	text2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	text2.setText("This control takes the initial focus.");
+
+	Color red = shell.getDisplay().getSystemColor(SWT.COLOR_RED);
+	Image systemImage = shell.getDisplay().getSystemImage(SWT.ICON_INFORMATION);
+
+	CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
+	folder.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+	folder.setSelectionBackground(red);
+	for (int i = 0; i < 3; i++) {
+		CTabItem item = new CTabItem(folder, SWT.CLOSE);
+		item.setText("Item " + i);
+		Text text = new Text(folder, SWT.MULTI);
+		text.setText("Content for Item " + i);
+		item.setImage(systemImage);
+		item.setControl(text);
+	}
+	folder.setSelection(0);
+	shell.pack();
+	shell.open();
+	int folderY = folder.getSize().y;
+	int expectedminHeight = systemImage.getImageData().height + text2.getFont().getFontData()[0].getHeight();
+	assertTrue("\nBug 507611 - CTabFolder is too thin for its actual content. \nCtabFolder height:"+folderY+"\nExpected min:"+expectedminHeight,  folderY > expectedminHeight);
 }
 
 }
