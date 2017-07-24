@@ -11,6 +11,8 @@
 package org.eclipse.swt.custom;
 
 
+import java.util.function.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -1088,12 +1090,14 @@ boolean isDropped () {
 @Override
 public boolean isFocusControl () {
 	checkWidget();
-	if ((text != null && text.isFocusControl ()) || (arrow != null && arrow.isFocusControl ()) ||
-            (list != null && list.isFocusControl ()) || (popup != null && popup.isFocusControl ())) {
+	Predicate<Control> checkFocusControl = (control) -> (control != null && !control.isDisposed() && control.isFocusControl ());
+	if (checkFocusControl.test(text) || checkFocusControl.test(arrow) ||
+            checkFocusControl.test(list) || checkFocusControl.test(popup)) {
 		return true;
 	}
 	return super.isFocusControl ();
 }
+
 boolean isParentScrolling(Control scrollableParent) {
 	Control parent = this.getParent();
 	while (parent != null) {
