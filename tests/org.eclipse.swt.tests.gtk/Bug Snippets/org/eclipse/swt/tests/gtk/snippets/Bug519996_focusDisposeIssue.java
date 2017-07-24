@@ -15,7 +15,7 @@ public class Bug519996_focusDisposeIssue {
 		Shell shell = new Shell();
 		shell.setLayout(new FillLayout());
 		CCombo combo = new CCombo(shell, SWT.BORDER);
-		CCombo combo1 = new CCombo(shell, SWT.BORDER);
+		new CCombo(shell, SWT.BORDER);
 
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("focus and close");
