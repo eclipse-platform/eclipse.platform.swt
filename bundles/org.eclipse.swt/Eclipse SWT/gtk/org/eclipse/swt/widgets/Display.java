@@ -1823,6 +1823,8 @@ String gtk_css_default_theme_values (int swt) {
 			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
 		case SWT.COLOR_INFO_BACKGROUND:
 			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
+		case SWT.COLOR_LINK_FOREGROUND:
+			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
 		case SWT.COLOR_LIST_BACKGROUND:
 			tSelected = cssOutput.indexOf ("@define-color theme_base_color");
 			selected = cssOutput.indexOf ("@define-color base_color");
@@ -1866,19 +1868,6 @@ String gtk_css_default_theme_values (int swt) {
 				if (!color.isEmpty()) {
 					break;
 				}
-			}
-			break;
-		case SWT.COLOR_LINK_FOREGROUND:
-			tSelected = cssOutput.indexOf ("*:link {");
-			// On Ubuntu and non-Adwaita themes, the link color is sometimes set to the
-			// same as COLOR_LIST_SELECTION.
-			selected = cssOutput.indexOf("@define-color link_color @selected_bg_color");
-			if (tSelected != -1) {
-				COLOR_LINK_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "*:link {");
-				return "parsed";
-			} else if (selected != -1) {
-				COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
-				return "parsed";
 			}
 			break;
 		case SWT_COLOR_LIST_SELECTION_INACTIVE:
@@ -2029,6 +2018,30 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
 				}
 			} else if (classDef != -1) {
 				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(themeProvider, "tooltip.background {");
+				return "parsed";
+			}
+			break;
+		case SWT.COLOR_LINK_FOREGROUND:
+			selected = cssOutput.indexOf("@define-color link_color");
+			tSelected = cssOutput.indexOf("@define-color theme_link_color");
+			classDef = cssOutput.indexOf ("*:link {");
+			// On Ubuntu and somenon-Adwaita themes, the link color is sometimes set to the
+			// same as COLOR_LIST_SELECTION.
+			int selectedBg = cssOutput.indexOf("@define-color link_color @selected_bg_color");
+			if (selected != -1 || tSelected != -1) {
+				if (selected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color link_color", selected);
+				} else if (tSelected != -1) {
+					color = simple_color_parser(cssOutput, "@define-color theme_link_color", tSelected);
+				}
+				if (!color.isEmpty()) {
+					break;
+				}
+			} else if (selectedBg != -1) {
+				COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
+				return "parsed";
+			} else if (classDef != -1) {
+				COLOR_LINK_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "*:link {");
 				return "parsed";
 			}
 			break;
@@ -3207,7 +3220,7 @@ void initializeSystemColors () {
 			String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND);
 			if (!colorLinkForeground.isEmpty()) {
 				if (colorLinkForeground != "parsed") {
-					COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
+					COLOR_LINK_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorLinkForeground);
 				}
 			} else {
 				COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
