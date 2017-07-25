@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
-	private boolean drawFlag;
+	boolean blink, drawFlag;
 
 Canvas () {}
 
@@ -176,8 +176,14 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		if (isFocus) caret.setFocus ();
 	} else {
 		result = super.gtk_draw (widget, cairo);
-		if (caret != null) {
+		/*
+		 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
+		 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
+		 *  caret when it is intended to. See Bug 517487.
+		 */
+		if (caret != null && blink == true) {
 			drawCaret(widget,cairo);
+			blink = false;
 		}
 	}
 	return result;
@@ -186,7 +192,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 private void drawCaret (long /*int*/ widget, long /*int*/ cairo) {
 	if(this.isDisposed()) return;
 	if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!drawFlag) {
+	if (drawFlag) {
 		Cairo.cairo_save(cairo);
 		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
 			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
@@ -217,9 +223,9 @@ private void drawCaret (long /*int*/ widget, long /*int*/ cairo) {
 			}
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
-		drawFlag = true;
-	} else {
 		drawFlag = false;
+	} else {
+		drawFlag = true;
 		}
 	return;
 }

@@ -5337,11 +5337,27 @@ long /*int*/ caretProc (long /*int*/ clientData) {
 	if (currentCaret.blinkCaret()) {
 		int blinkRate = currentCaret.blinkRate;
 		if (blinkRate == 0) return 0;
+		/*
+		 * blink is set to true so that when gtk_draw() is called, we know it is the correct
+		 * state to draw/redraw the caret. See Bug 517487.
+		 */
+		currentCaret.getParent().blink = true;
 		caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
 	} else {
 		currentCaret = null;
 	}
 	return 0;
+}
+
+/*
+ * Causes the caretProc method timing interval to be reset. This is useful as the blink rate
+ * intervals should always reset when the caret is moved. See Bug 517487.
+ */
+void resetCaretTiming() {
+	if (caretId != 0) {
+		OS.g_source_remove(caretId);
+		caretId = OS.g_timeout_add(currentCaret.blinkRate, caretProc, 0);
+	}
 }
 
 long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {

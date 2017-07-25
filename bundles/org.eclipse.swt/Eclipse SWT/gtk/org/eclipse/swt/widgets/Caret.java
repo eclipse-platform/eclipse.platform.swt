@@ -556,6 +556,10 @@ void setSizeInPixels (Point size) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
+	Canvas canvas = getParent();
+	canvas.blink = true;
+	canvas.drawFlag = visible;
+	display.resetCaretTiming();
 	if (visible == isVisible) return;
 	isVisible = visible;
 	if (!isFocusCaret ()) return;
