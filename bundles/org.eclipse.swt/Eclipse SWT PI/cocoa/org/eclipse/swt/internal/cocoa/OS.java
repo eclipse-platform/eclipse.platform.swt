@@ -3352,7 +3352,7 @@ public static final native void CFRunLoopStop(long /*int*/ rl);
 public static final native long /*int*/ CFStringCreateWithCharacters(long /*int*/ alloc, char[] chars, long /*int*/ numChars);
 /**
  * @param allocator cast=(CFAllocatorRef)
- * @param fsRef cast=(structFSRef*)
+ * @param fsRef cast=(struct FSRef*)
  */
 public static final native long /*int*/ CFURLCreateFromFSRef(long /*int*/ allocator, byte[] fsRef);
 /**
