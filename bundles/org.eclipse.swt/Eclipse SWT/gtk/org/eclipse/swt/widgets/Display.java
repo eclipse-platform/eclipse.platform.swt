@@ -2036,6 +2036,22 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
 	return color;
 }
 
+/**
+ * This method allows for parsing of background colors from a GTK CSS string.
+ * It allows for specific search input, such as a selector or tag, or for parsing
+ * the first (and usually only) background color in a given GtkCssProvider.
+ *
+ * For example: given the string GtkWidget {background-color: rgba(255, 0, 0, 255);}
+ * this method will return a GdkRGBA object with the color red. Supported formats
+ * include "background-color" and just "background".
+ *
+ * @param provider a pointer to the GtkCssProvider associated with the CSS being parsed
+ * @param precise a String representation of a selector to search for, or NULL if
+ * the entire GtkCssProvider is to be parsed
+ *
+ * @return a GdkRGBA object representing the background color, or COLOR_WIDGET_BACKGROUND
+ * if the background color could not be parsed or isn't set
+ */
 GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	String shortOutput;
 	int startIndex;
@@ -2084,6 +2100,21 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	return rgba;
 }
 
+/**
+ * This method allows for parsing of foreground colors from a GTK CSS string.
+ * It allows for specific search input, such as a selector or tag, or for parsing
+ * the first (and usually only) foreground color in a given GtkCssProvider.
+ *
+ * For example: given the string GtkWidget {color: rgba(255, 0, 0, 255);}
+ * this method will return a GdkRGBA object with the color red.
+ *
+ * @param provider a pointer to the GtkCssProvider associated with the CSS being parsed
+ * @param precise a String representation of a selector to search for, or NULL if
+ * the entire GtkCssProvider is to be parsed
+ *
+ * @return a GdkRGBA object representing the foreground color or COLOR_WIDGET_FOREGROUND
+ * if the foreground color could not be parsed or isn't set
+ */
 GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	if (provider == 0) return COLOR_WIDGET_FOREGROUND_RGBA;
 	String shortOutput;
@@ -2139,19 +2170,45 @@ GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	return rgba;
 }
 
+/**
+ * This method parses a string representation of a color
+ * and returns a GdkRGBA object of that color.
+ *
+ * Supported formats:
+ *  -a standard X11 color
+ *  -a hex value in the form "#rgb", "#rrggbb", "#rrrgggbbb" or "rrrrggggbbbb"
+ *  -an RGB color in the for "rgb(r,g,b)"
+ *  -an RGBA color in the form "rgba(r,g,b,a)"
+ *
+ * @param property a String representation of the color
+ *
+ * @return a GdkRGBA object representing the color, or transparent (empty GdkRGBA)
+ * if the color could not be parsed
+ */
 GdkRGBA gtk_css_property_to_rgba(String property) {
-	/* Here we convert rgb(...) or rgba(...) properties
-	 * into GdkRGBA objects using gdk_rgba_parse(). Note
-	 * that we still need to remove the ";" character from the
-	 * input string.
-	 */
 	GdkRGBA rgba = new GdkRGBA ();
 	String [] propertyParsed = new String [1];
+	//Note that we still need to remove the ";" character from the input string
 	propertyParsed = property.split (";");
 	OS.gdk_rgba_parse (rgba, Converter.wcsToMbcs (propertyParsed[0], true));
 	return rgba;
 }
 
+/**
+ * In GdkRGBA, values are a double between 0-1. In CSS,
+ * values are integers between 0-255 for r, g, and b.
+ * Alpha is still a double between 0-1.
+ *
+ * The final CSS format is: rgba(int, int, int, double)
+ * Due to this, there is a slight loss of precision.
+ * Setting/getting with CSS *might* yield slight differences.
+ *
+ * @param rgba a GdkRGBA object containing the color to be parsed
+ * or NULL
+ *
+ * @return a String representation of the color or COLOR_WIDGET_BACKGROUND
+ * if NULL is specified as a parameter
+ */
 String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	/*
 	 * In GdkRGBA, values are a double between 0-1.
@@ -2175,6 +2232,13 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
+/**
+ * Gets the name of the widget in String format.
+ *
+ * @param handle a pointer to the GtkWidget resource
+ *
+ * @return a String representation of the widget's name
+ */
 String gtk_widget_get_name(long /*int*/ handle) {
 	long /*int*/ str = OS.gtk_widget_get_name (handle);
 	String name;
@@ -2189,6 +2253,14 @@ String gtk_widget_get_name(long /*int*/ handle) {
 	return name;
 }
 
+/**
+ * Gets the CSS name of the widget provided. This
+ * only works on GTK3.20+.
+ *
+ * @param handle a pointer to the GtkWidget resource
+ *
+ * @return a String representation of the widget's CSS name
+ */
 String gtk_widget_class_get_css_name(long /*int*/ handle) {
 	long /*int*/ str = OS.gtk_widget_class_get_css_name (OS.GTK_WIDGET_GET_CLASS(handle));
 	String name;
