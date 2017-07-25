@@ -688,7 +688,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
 @Override
-void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
@@ -705,7 +705,7 @@ void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cell
 }
 
 
-void drawInteriorWithFrame_inView_searchfield(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+void drawInteriorWithFrame_inView_searchfield (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
 	/*
 	 * Cocoa does not support a background color for the search field. Therefore we
 	 * paint it ourselves, if a background color is set.
@@ -713,15 +713,30 @@ void drawInteriorWithFrame_inView_searchfield(long /*int*/ id, long /*int*/ sel,
 	if (background == null) {
 		return;
 	}
-	// Shrink the cell frame by 1px on each side, to keep the border drawn by Cocoa visible
-	cellFrame.x += 1.0;
-	cellFrame.width -= 2.0;
-	cellFrame.y = (cellFrame.height - 20.0) / 2.0;
-	cellFrame.height = 20.0; // A search field is always 22px in height. 22-2=20
+
+	double searchFieldHeight = 22.0; // Default height of search field on Cocoa
+	double borderWidth = 1.0;
+
+	// Shrink the cell frame by borderWidth on each side, to keep the border drawn by Cocoa visible
+	NSRect frameRect = new NSRect();
+	frameRect.x = cellFrame.x + borderWidth;
+	frameRect.width = cellFrame.width - (2 * borderWidth);
+
+	if (cellFrame.height <= searchFieldHeight ) {
+		frameRect.height = cellFrame.height - (2 * borderWidth);
+		frameRect.y = cellFrame.y + borderWidth;
+	} else {
+		/*
+		 * If search box height > searchFieldHeight (22px), Cocoa draws the focus ring
+		 * assuming that the height == searchFieldHeight. So, limit the
+		 * cellFrame height accordingly while filling the background color.
+		 */
+		frameRect.height = searchFieldHeight - (2 * borderWidth);
+		frameRect.y = cellFrame.y + (cellFrame.height - frameRect.height) / 2.0;
+	}
 
 	// Create a path of the cellFrame with rounded corners
-	NSBezierPath path = NSBezierPath.bezierPathWithRoundedRect(cellFrame, 2.0d, 2.0d);
-	path.addClip();
+	NSBezierPath path = NSBezierPath.bezierPathWithRoundedRect(frameRect, 2.0d, 2.0d);
 
 	// Create the native color and fill the background with it
 	NSColor bgColor = NSColor.colorWithDeviceRed (background [0], background [1], background [2], background [3]);
