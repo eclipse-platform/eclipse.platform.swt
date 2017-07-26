@@ -293,7 +293,7 @@ public int getAlpha() {
 public int getBlue() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.GTK3) {
-		return (int) (handleRGBA.blue * 255);
+		return (int) (handleRGBA.blue * 255) & 0xFF;
 	} else {
 		return (handle.blue >> 8) & 0xFF;
 	}
@@ -311,7 +311,7 @@ public int getBlue() {
 public int getGreen() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.GTK3) {
-		return (int) (handleRGBA.green * 255);
+		return (int) (handleRGBA.green * 255) & 0xFF;
 	} else {
 		return (handle.green >> 8) & 0xFF;
 	}
@@ -329,7 +329,7 @@ public int getGreen() {
 public int getRed() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.GTK3) {
-		return (int) (handleRGBA.red * 255);
+		return (int) (handleRGBA.red * 255) & 0xFF;
 	} else {
 		return (handle.red >> 8) & 0xFF;
 	}
