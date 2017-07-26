@@ -4994,7 +4994,7 @@ void setForegroundGdkColor (GdkColor color) {
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		GdkRGBA toSet = new GdkRGBA();
+		GdkRGBA toSet;
 		if (rgba != null) {
 			toSet = rgba;
 		} else {
