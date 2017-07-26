@@ -21,4 +21,15 @@ public class GdkRGBA {
 	public double blue;
 	public double alpha;
 	public static final int sizeof = OS.GdkRGBA_sizeof();
+
+	/**
+	 * Returns a string containing a concise, human-readable
+	 * description of the receiver.
+	 *
+	 * @return a string representation of the <code>GdkRGBA</code>
+	 */
+	@Override
+	public String toString() {
+		return "GdkRGBA {" + (int)(red * 255) + ", " + (int)(green * 255) + ", " + (int)(blue * 255) + ", " + (int)(alpha * 255) + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	}
 }
