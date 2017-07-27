@@ -1,6 +1,6 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2016 IBM Corporation and others.
+# Copyright (c) 2000, 2017 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -80,10 +80,6 @@ case $OS in
 	"AIX")
 		SWT_OS=aix
 		MAKEFILE=make_aix.mak
-		;;
-	"HP-UX")
-		SWT_OS=hpux
-		MAKEFILE=make_hpux.mak
 		;;
 	"SunOS")
 		SWT_OS=solaris
@@ -209,33 +205,6 @@ case $SWT_OS.$SWT_ARCH in
 			export JAVA_HOME="/bluebird/teamswt/swt-builddir/build/JRE/Solaris_x64/jdk1.8.0_71"
 		fi
  		;;
-	"solaris.sparcv9")
-		PATH="/usr/ccs/bin:/opt/csw/bin:$PATH"
-		if [ "${CC}" = "" ]; then
-			CC="cc"
-		fi	
-		if [ "${CXX}" = "" ]; then
-			CXX="CC"
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/SOLARIS/SPARC64/jdk1.5.0_22"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
-		fi
-		export PATH CC CXX JAVA_HOME PKG_CONFIG_PATH;
-		;;
-	"linux.s390")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/swtbuild/java5/s390/ibm-java2-s390-50"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
-		fi
-		;;
 	"linux.s390x")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -255,26 +224,11 @@ case $SWT_OS.$SWT_ARCH in
 			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/AIX/PPC64/j564/sdk"
 		fi
 		;;
-	"hpux.ia64")
-		export PATH="/opt/hp-gcc/bin:/opt/gtk_64bit/bin:/opt/${PATH}"
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/opt/java1.5"
-		fi
-		if [ "${AWT_LIB_PATH}" = "" ]; then
-			export AWT_LIB_PATH="/opt/java1.5/jre/lib/IA64W/"
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/opt/gtk_64bit/lib/hpux64/pkgconfig"
-		fi
-		;;
 esac	
 
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparcv9'  -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
@@ -292,13 +246,6 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			export SWT_LFLAGS
 		fi
 	fi
-	if [ ${MODEL} = 'ia64' ]; then
-		if [ ${OS} = 'HP-UX' ]; then
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -mlp64"
-			SWT_LFLAGS=-mlp64
-			export SWT_LFLAGS
-		fi
-	fi
 	if [ ${OS} = 'SunOS' ]; then
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
 			SWT_LFLAGS=-m64
@@ -306,22 +253,11 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 	fi
 	export SWT_PTR_CFLAGS
 fi
-if [ ${MODEL} = 's390' ]; then
-	SWT_PTR_CFLAGS="-m31"
-	SWT_LFLAGS=-m31
-	export SWT_LFLAGS SWT_PTR_CFLAGS
-fi
 if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	SWT_PTR_CFLAGS="-m32"
 	SWT_LFLAGS=-m32
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
-if [ ${MODEL} = 'ppc' -a ${SWT_OS} = 'linux' ]; then
-	SWT_PTR_CFLAGS="-m32"
-	SWT_LFLAGS=-m32
-	export SWT_LFLAGS SWT_PTR_CFLAGS
-fi
-
 
 if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then
 	func_echo_plus "Cairo found, compiling SWT support for the cairo graphics library."

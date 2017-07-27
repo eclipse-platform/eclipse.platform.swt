@@ -35,12 +35,6 @@
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
-#elif HPUX
-#define LIB_GTK "libgtk-x11-2.0.so"
-#define LIB_GDK "libgdk-x11-2.0.so"
-#define LIB_GTHREAD "libgthread-2.0.so"
-#define LIB_ATK "libatk-1.0.so"
-#define LIB_FONTCONFIG "libfontconfig.so"
 #elif _WIN32
 #if GTK_CHECK_VERSION(3,0,0)
 #define LIB_GTK "libgtk-3-0.dll"
