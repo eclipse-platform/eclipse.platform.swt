@@ -979,9 +979,20 @@ private void gtk_swt_set_border_color (GdkRGBA rgba) {
 		String css_color = display.gtk_rgba_to_css_string (rgba);
 		css_string += "border-color: " + css_color + ";\n";
 	}
-		css_string += "}\n";
+	css_string += "}\n";
+
+	String finalCss;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		// Cache foreground color
+		cssForeground += "\n" + css_string;
+		finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
+	} else {
+		finalCss = css_string;
+	}
+
+	// Apply the CSS
 	long /*int*/context = OS.gtk_widget_get_style_context (handle);
-	gtk_css_provider_load_from_css (context, css_string);
+	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 /**
