@@ -910,7 +910,7 @@ public Rectangle getClientArea() {
  * </ul>
  */
 public CTabItem getItem (int index) {
-	checkWidget();
+	//checkWidget();
 	if (index  < 0 || index >= items.length)
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
@@ -927,7 +927,7 @@ public CTabItem getItem (int index) {
  *	</ul>
  */
 public CTabItem getItem (Point pt) {
-	checkWidget();
+	//checkWidget();
 	if (items.length == 0) return null;
 	runUpdate();
 	Point size = getSize();
@@ -951,7 +951,7 @@ public CTabItem getItem (Point pt) {
  *	</ul>
  */
 public int getItemCount(){
-	checkWidget();
+	//checkWidget();
 	return items.length;
 }
 /**
@@ -965,7 +965,7 @@ public int getItemCount(){
  *	</ul>
  */
 public CTabItem [] getItems() {
-	checkWidget();
+	//checkWidget();
 	CTabItem[] tabItems = new CTabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
@@ -1171,7 +1171,7 @@ int getRightItemEdge (GC gc){
  *	</ul>
  */
 public CTabItem getSelection() {
-	checkWidget();
+	//checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
 }
@@ -1219,7 +1219,7 @@ public Color getSelectionForeground() {
  *	</ul>
  */
 public int getSelectionIndex() {
-	checkWidget();
+	//checkWidget();
 	return selectedIndex;
 }
 /**

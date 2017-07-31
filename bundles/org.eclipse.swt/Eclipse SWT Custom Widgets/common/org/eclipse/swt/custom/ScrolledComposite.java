@@ -209,7 +209,7 @@ boolean contains(Control control) {
  * @return the Always Show Scrollbars flag value
  */
 public boolean getAlwaysShowScrollBars() {
-	checkWidget();
+	//checkWidget();
 	return alwaysShowScroll;
 }
 
@@ -289,7 +289,7 @@ public int getMinHeight() {
  * @return the control displayed in the content area
  */
 public Control getContent() {
-	checkWidget();
+	//checkWidget();
 	return content;
 }
 

@@ -145,7 +145,7 @@ public void dispose() {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
+	//checkWidget();
 	parent.runUpdate();
 	return new Rectangle(x, y, width, height);
 }
@@ -208,7 +208,7 @@ public Font getFont() {
  * </ul>
  */
 public CTabFolder getParent () {
-	checkWidget();
+	//checkWidget();
 	return parent;
 }
 /**
