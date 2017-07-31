@@ -15,10 +15,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
@@ -171,11 +173,175 @@ public void test_setAlignmentI() {
 	assertTrue(alignment != button.getAlignment());
 }
 
+@Test
+public void test_setBackgroundCheckButton() {
+	Button checkButton = new Button(shell, SWT.CHECK);
+	Color color = new Color(checkButton.getDisplay(), 255, 0, 0);
+	checkButton.setBackground(color);
+	assertEquals("getBackground not equal after setBackground for SWT.CHECK Button",
+			color, checkButton.getBackground());
+	checkButton.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) for SWT.CHECK Button",
+			!checkButton.getBackground().equals(color));
+	color.dispose();
+	color = new Color(checkButton.getDisplay(), 255, 0, 0, 0);
+	checkButton.setBackground(color);
+	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CHECK Button",
+			color, checkButton.getBackground());
+	checkButton.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CHECK Button",
+			!checkButton.getBackground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(checkButton.getDisplay(), 0, 255, 0);
+		checkButton.setBackground(color);
+		checkButton.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for SWT.CHECK Button",
+				color, checkButton.getBackground());
+		assertEquals("Setting a foreground onto an SWT.CHECK Button with a background failed",
+				fg, checkButton.getForeground());
+	}
+	color.dispose();
+	checkButton.dispose();
+}
+
+@Test
+public void test_setBackgroundAlphaCheckButton() {
+	Button checkButton = new Button(shell, SWT.CHECK);
+	Color color = new Color (checkButton.getDisplay(), 255, 0, 0, 0);
+	checkButton.setBackground(color);
+	assertEquals(color, checkButton.getBackground());
+	Color fg = new Color(checkButton.getDisplay(), 0, 255, 0, 0);
+	checkButton.setForeground(fg);
+	assertEquals(color, checkButton.getBackground());
+	color.dispose();
+	fg.dispose();
+	checkButton.dispose();
+}
+
+@Test
+public void test_setBackgroundRadioButton() {
+	Button radioButton = new Button(shell, SWT.RADIO);
+	Color color = new Color(radioButton.getDisplay(), 255, 0, 0);
+	radioButton.setBackground(color);
+	assertEquals("getBackground not equal after setBackground for SWT.RADIO Button",
+			color, radioButton.getBackground());
+	radioButton.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
+			!radioButton.getBackground().equals(color));
+	color.dispose();
+	color = new Color(radioButton.getDisplay(), 255, 0, 0, 0);
+	radioButton.setBackground(color);
+	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.RADIO Button",
+			color, radioButton.getBackground());
+	radioButton.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.RADIO Button",
+			!radioButton.getBackground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(radioButton.getDisplay(), 0, 255, 0);
+		radioButton.setBackground(color);
+		radioButton.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for SWT.RADIO Button",
+				color, radioButton.getBackground());
+		assertEquals("Setting a foreground onto an SWT.RADIO Button with a background failed",
+				fg, radioButton.getForeground());
+	}
+	color.dispose();
+	radioButton.dispose();
+}
+
+@Test
+public void test_setBackgroundAlphaRadioButton() {
+	Button radioButton = new Button(shell, SWT.RADIO);
+	Color color = new Color (radioButton.getDisplay(), 255, 0, 0, 0);
+	radioButton.setBackground(color);
+	assertEquals(color, radioButton.getBackground());
+	Color fg = new Color(radioButton.getDisplay(), 0, 255, 0, 0);
+	radioButton.setForeground(fg);
+	assertEquals(color, radioButton.getBackground());
+	color.dispose();
+	fg.dispose();
+	radioButton.dispose();
+}
+
 @Override
 @Test
 public void test_setFocus() {
 	Button btn = new Button(shell, SWT.ARROW);
 	btn.setFocus();
+}
+
+@Test
+public void test_setForegroundCheckButton() {
+	Button checkButton = new Button(shell, SWT.CHECK);
+	Color color = new Color(checkButton.getDisplay(), 255, 0, 0);
+	checkButton.setForeground(color);
+	assertEquals(color, checkButton.getForeground());
+	checkButton.setForeground(null);
+	assertFalse(checkButton.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(checkButton.getDisplay(), 0, 255, 0);
+		checkButton.setForeground(color);
+		checkButton.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for SWT.CHECK Button",
+				color, checkButton.getForeground());
+		assertEquals("Setting a background onto an SWT.CHECK Button with a foreground failed",
+				bg, checkButton.getBackground());
+	}
+	color.dispose();
+	checkButton.dispose();
+}
+
+@Test
+public void test_setForegroundAlphaCheckButton() {
+	Button checkButton = new Button(shell, SWT.CHECK);
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+	Color color = new Color (checkButton.getDisplay(), 255, 0, 0, 0);
+	checkButton.setForeground(color);
+	assertEquals(color, checkButton.getForeground());
+	Color bg = new Color(checkButton.getDisplay(), 0, 255, 0, 0);
+	checkButton.setBackground(bg);
+	assertEquals(color, checkButton.getForeground());
+	color.dispose();
+	bg.dispose();
+	checkButton.dispose();
+}
+
+@Test
+public void test_setForegroundRadioButton() {
+	Button radioButton = new Button(shell, SWT.RADIO);
+	Color color = new Color(radioButton.getDisplay(), 255, 0, 0);
+	radioButton.setForeground(color);
+	assertEquals(color, radioButton.getForeground());
+	radioButton.setForeground(null);
+	assertFalse(radioButton.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(radioButton.getDisplay(), 0, 255, 0);
+		radioButton.setForeground(color);
+		radioButton.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for SWT.RADIO Button",
+				color, radioButton.getForeground());
+		assertEquals("Setting a background onto an SWT.RADIO Button with a foreground failed",
+				bg, radioButton.getBackground());
+	}
+	color.dispose();
+	radioButton.dispose();
+}
+
+@Test
+public void test_setForegroundAlphaRadiokButton() {
+	Button radioButton = new Button(shell, SWT.RADIO);
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+	Color color = new Color (radioButton.getDisplay(), 255, 0, 0, 0);
+	radioButton.setForeground(color);
+	assertEquals(color, radioButton.getForeground());
+	Color bg = new Color(radioButton.getDisplay(), 0, 255, 0, 0);
+	radioButton.setBackground(bg);
+	assertEquals(color, radioButton.getForeground());
+	color.dispose();
+	bg.dispose();
+	radioButton.dispose();
 }
 
 @Test
