@@ -24,9 +24,12 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentListener;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.MovementEvent;
+import org.eclipse.swt.custom.MovementListener;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -262,6 +265,31 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	text.removeBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener.
 	text.getLocationAtOffset(0);
+	assertFalse("Listener not removed", listenerCalled);
+}
+
+@Test(expected=IllegalArgumentException.class)
+public void test_addCaretListener_passingNullThrowsException() {
+	text.addCaretListener(null);
+}
+
+@Test
+public void test_addCaretListener_CaretListenerCalled() {
+	listenerCalled = false;
+	CaretListener listener = event -> listenerCalled = true;
+	text.setText("Line1");
+	text.addCaretListener(listener);
+	text.setCaretOffset(1);
+	assertTrue("Listener not called", listenerCalled);
+}
+
+@Test
+public void test_removeCaretListener_CaretListenerNotCalled() {
+	listenerCalled = false;
+	CaretListener listener = event -> listenerCalled = true;
+	text.addCaretListener(listener);
+	text.removeCaretListener(listener);
+	text.setCaretOffset(1);
 	assertFalse("Listener not removed", listenerCalled);
 }
 
@@ -558,6 +586,61 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	// cause StyledText to call the listener.
 	text.setText(line);
 	assertFalse("Listener not removed", listenerCalled);
+}
+
+@Test(expected=IllegalArgumentException.class)
+public void test_addWordMovementListener_passingNullThrowsException() {
+	text.addWordMovementListener(null);
+}
+
+@Test
+public void test_addWordMovementListener_invokeActionSelectWordNextCallsGetNextOffset() {
+	MovementListener listener = new RecordingMovementListener();
+	listenerCalled = false;
+	listener2Called = false;
+	text.setText("Word0 Word1 Word2");
+	text.addWordMovementListener(listener);
+	text.invokeAction(ST.SELECT_WORD_NEXT);
+	assertFalse("Listener unexpectantly called", listenerCalled);
+	assertTrue("Listener not called", listener2Called);
+}
+
+@Test
+public void test_addWordMovementListener_invokeActionSelectWordPreviousCallsGetPreviousOffset() {
+	MovementListener listener = new RecordingMovementListener();
+	listenerCalled = false;
+	listener2Called = false;
+	text.setText("Word0 Word1 Word2");
+	text.addWordMovementListener(listener);
+	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
+	assertTrue("Listener not called", listenerCalled);
+	assertFalse("Listener unexpectantly called", listener2Called);
+}
+
+@Test
+public void test_removeWordMovementListener_invokeActionSelectWordCallsNoMethods() {
+	MovementListener listener = new RecordingMovementListener();
+	listenerCalled = false;
+	listener2Called = false;
+	text.setText("Word0 Word1 Word2");
+	text.addWordMovementListener(listener);
+	text.removeWordMovementListener(listener);
+	text.invokeAction(ST.SELECT_WORD_NEXT);
+	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
+	assertFalse("Listener unexpectantly called", listenerCalled);
+	assertFalse("Listener unexpectantly called", listener2Called);
+}
+
+private class RecordingMovementListener implements MovementListener {
+	@Override
+	public void getPreviousOffset(MovementEvent event) {
+		listenerCalled = true;
+	}
+
+	@Override
+	public void getNextOffset(MovementEvent event) {
+		listener2Called = true;
+	}
 }
 
 @Test
