@@ -22,12 +22,17 @@ import org.eclipse.swt.internal.*;
 // --------------------
 // Primitives:
 // int   -> int
-// guint -> long /*int*/     #C unsigned int > java int
+// guint -> long   #Reason:
+//					c : unsigned int range: 4294967295
+//                  java : int range      : 2147483647 (less than c unsigned int)
+//                  Java : long range: 9,223,372,036,854,775,807
+//				    // Note: Not to be used for pointers.
+//
 // gint* -> int[]
 // boolean   -> int  ex setenv
 // gboolean  -> boolean
 //
-// Pointers:
+// Pointers: (the /*int*/ tells 32bit linux to use int instead of long.
 // gpointer -> long /*int*/
 // void *   -> long /*int*/    # C pointers (*) are normally long /*int*/
 //
@@ -39,6 +44,7 @@ import org.eclipse.swt.internal.*;
 // Special types:
 // GQuark -> int
 // GError ** -> long /*int*/[]  ex g_filename_to_uri
+
 
 public class OS extends C {
 	/** OS Constants */
