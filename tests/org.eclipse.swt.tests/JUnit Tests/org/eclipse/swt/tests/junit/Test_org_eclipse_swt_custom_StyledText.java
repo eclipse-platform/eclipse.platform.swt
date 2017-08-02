@@ -55,6 +55,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -4835,6 +4836,106 @@ public void test_isTextSelected() {
 	text.setBlockSelection(true);
 	text.setBlockSelectionBounds(0, 0, 100, 100);
 	assertTrue(text.isTextSelected());
+}
+
+@Test
+public void test_clickUpdatesCaretPosition() {
+	text.setText("1\n2\n3\n");
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 1;
+	event.x = 0;
+	event.y = text.getLinePixel(1);
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals(2, text.getCaretOffset());
+}
+
+@Test
+public void test_doubleClickSelectsWord() {
+	text.setText("Test1 Test2");
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = 0;
+	event.y = 0;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Test1", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickWithRightMouseButtonDoesNotSelectWord() {
+	text.setText("Test1 Test2");
+
+	Event event = new Event();
+	event.button = 3;
+	event.count = 2;
+	event.x = 0;
+	event.y = 0;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickDoesNotSelectIfDoubleClickIsDisabled() {
+	text.setText("Test1 Test2");
+	text.setDoubleClickEnabled(false);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = 0;
+	event.y = 0;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("", text.getSelectionText());
+}
+
+@Test
+public void test_trippleClickSelectsSentance() {
+	text.setText("Test1 Test2\nTest3 Test4");
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 3;
+	event.x = 0;
+	event.y = 0;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Test1 Test2\n", text.getSelectionText());
+}
+
+@Test
+public void test_trippleClickOnLastLineSelectsSentance() {
+	text.setText("Test1 Test2\nTest3 Test4");
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 3;
+	event.x = 0;
+	event.y = text.getLinePixel(1);
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Test3 Test4", text.getSelectionText());
+}
+
+@Test
+public void test_trippleClickDoesNotSelectIfDoubleClickIsDisabled() {
+	text.setText("Test1 Test2\nTest3 Test4");
+	text.setDoubleClickEnabled(false);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 3;
+	event.x = 0;
+	event.y = 0;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("", text.getSelectionText());
 }
 
 /**
