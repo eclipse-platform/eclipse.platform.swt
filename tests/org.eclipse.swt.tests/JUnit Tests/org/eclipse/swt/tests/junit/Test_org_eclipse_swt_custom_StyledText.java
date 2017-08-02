@@ -50,6 +50,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.BidiUtil;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
@@ -4936,6 +4937,205 @@ public void test_trippleClickDoesNotSelectIfDoubleClickIsDisabled() {
 	text.notifyListeners(SWT.MouseDown, event);
 
 	assertEquals("", text.getSelectionText());
+}
+
+@Test
+public void test_isTextSelectedInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	assertTrue(text.isTextSelected());
+	assertEquals("Sample" + System.getProperty("line.separator") + "Sample" + System.getProperty("line.separator")
+			+ "Sample", text.getSelectionText());
+}
+
+@Test
+public void test_isTextSelectedInBlockSelectionForLingleEmptyLine() {
+	text.setText(System.getProperty("line.separator"));
+	text.setSize(100, 100);
+	text.setBlockSelection(true);
+	text.setBlockSelectionBounds(0, 0, 100, 100);
+	assertTrue(text.isTextSelected());
+}
+
+@Test
+public void test_selectionIsClearedOnCaretMoveWhenInBlockSelection() {
+	text.setText("Test" + System.getProperty("line.separator"));
+	text.setSize(100, 100);
+	text.setBlockSelection(true);
+	text.setBlockSelectionBounds(0, 0, 100, 100);
+	assertTrue(text.isTextSelected());
+
+	text.setCaretOffset(1);
+	assertFalse(text.isTextSelected());
+}
+
+@Test
+public void test_setBlockSelectionBounds_updatesNormalSelectionIfNotInBlockMode() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(false);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	assertTrue(text.isTextSelected());
+	assertEquals(blockSelectionTestTextOneLine() + blockSelectionTestTextOneLine() + "Sample", text.getSelectionText());
+}
+
+@Test
+public void test_selectionIsMaintainedOnDisableOfBlockSelection() {
+	text.setText("Test" + System.getProperty("line.separator"));
+	text.setSize(100, 100);
+	text.setBlockSelection(true);
+	text.setBlockSelectionBounds(0, 0, 100, 100);
+	assertTrue(text.isTextSelected());
+
+	text.setBlockSelection(false);
+	assertTrue(text.isTextSelected());
+}
+
+@Test
+public void test_selectAllInBlockSelectionMode() {
+	text.setText("Test" + System.getProperty("line.separator"));
+	text.setSize(100, 100);
+	text.setBlockSelection(true);
+	text.selectAll();
+	assertTrue(text.isTextSelected());
+	assertEquals("Test" + System.getProperty("line.separator"), text.getSelectionText());
+}
+
+@Test
+public void test_cutTextInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	text.cut();
+
+	assertTrue(text.getText(),
+			text.getText()
+					.startsWith(" Test Selection" + System.getProperty("line.separator")
+							+ " Test Selection" + System.getProperty("line.separator")
+							+ " Test Selection" + System.getProperty("line.separator")
+							+ "Sample Test Selection" + System.getProperty("line.separator")));
+}
+
+@Test
+public void test_pasteInsertsTextInBlockSelectionAsBlock() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	text.copy();
+
+	text.setCaretOffset(0);
+	text.paste();
+
+	assertTrue(text.getText(),
+			text.getText()
+					.startsWith("Sample" + blockSelectionTestTextOneLine()
+							+ "Sample" + blockSelectionTestTextOneLine()
+							+ "Sample" + blockSelectionTestTextOneLine()
+							+ blockSelectionTestTextOneLine()));
+}
+
+@Test
+public void test_cutAndPasteInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	text.cut();
+	text.paste();
+
+	assertTrue(text.getText(),
+			text.getText()
+					.startsWith(blockSelectionTestTextOneLine()
+							+ blockSelectionTestTextOneLine()
+							+ blockSelectionTestTextOneLine()
+							+ blockSelectionTestTextOneLine()));
+}
+
+@Test
+public void test_trippleClickInBlockSelectionSelectsLine() {
+	text.setText("  Sample Test Selection  " + System.getProperty("line.separator") + "  Sample Test Selection  "
+			+ System.getProperty("line.separator"));
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(3);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 3;
+	event.x = lowerRight.x;
+	event.y = lowerRight.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("  Sample Test Selection  ", text.getSelectionText());
+}
+
+@Test
+public void test_getSelectionRangesInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	assertArrayEquals(new int[] { 0, 6, 21 + System.getProperty("line.separator").length(), 6,
+			42 + System.getProperty("line.separator").length() * 2, 6 }, text.getSelectionRanges());
+}
+
+@Test
+public void test_getSelectionCountInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text
+			.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
+	assertEquals(18 + System.getProperty("line.separator").length() * 2, text.getSelectionCount());
+}
+
+@Test
+public void test_getBlockSelectionlundsInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+	Point lowerRight = text
+			.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
+	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y);
+	assertEquals(new Rectangle(0, 0, lowerRight.x, lowerRight.y), text.getBlockSelectionBounds());
+}
+
+@Test
+public void test_insertInBlockSelection() {
+	text.setText(blockSelectionTestText());
+	text.setSize(1000, 1000);
+	text.setBlockSelection(true);
+
+	text.setSelection(6, 6 + blockSelectionTestTextOneLine().length());
+	text.insert("Foo" + System.getProperty("line.separator") + "Foo" + System.getProperty("line.separator"));
+
+	assertTrue(text.getText(), text.getText()
+			.startsWith("SampleFoo Test Selection" + System.getProperty("line.separator")
+					+ "SampleFoo Test Selection" + System.getProperty("line.separator") + "Sample Test Selection"
+					+ System.getProperty("line.separator")));
+}
+
+private String blockSelectionTestText() {
+	StringBuilder buffer = new StringBuilder();
+	for (int i = 0; i < 20; i++) {
+		buffer.append(blockSelectionTestTextOneLine());
+	}
+	return (buffer.toString());
+}
+
+private String blockSelectionTestTextOneLine() {
+	return "Sample Test Selection" + System.getProperty("line.separator");
 }
 
 /**
