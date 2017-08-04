@@ -9466,7 +9466,7 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
  * Flips selection anchor based on word selection direction.
  */
 void setMouseWordSelectionAnchor() {
-	if (clickCount > 1) {
+	if (doubleClickEnabled && clickCount > 1) {
 		if (caretOffset < doubleClickSelection.x) {
 			selectionAnchor = doubleClickSelection.y;
 		} else if (caretOffset > doubleClickSelection.y) {
