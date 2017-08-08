@@ -1110,7 +1110,7 @@ void createDisplay (DeviceData data) {
  *
  * @return the most Latin keyboard layout group
  */
-protected int findLatinKeyGroup () {
+private int findLatinKeyGroup () {
 	int result = 0;
 	Map<Integer, Integer> groupKeysCount = new HashMap<> ();
 	long /*int*/ keymap = OS.gdk_keymap_get_default ();
@@ -1154,10 +1154,8 @@ protected int findLatinKeyGroup () {
 
 /**
  * Return the most Latin keyboard layout group.
- *
- * @noreference This method is not intended to be referenced by clients.
  */
-public int getLatinKeyGroup () {
+int getLatinKeyGroup () {
 	return latinKeyGroup;
 }
 
