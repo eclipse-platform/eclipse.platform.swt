@@ -90,6 +90,54 @@ public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 }
 
 @Test
+public void test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener() {
+	ControlListener listener = ControlListener.controlMovedAdapter(e -> eventOccurred = true);
+	control.addControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addControlListenerControlResizedAdapterLorg_eclipse_swt_events_ControlListener() {
+	ControlListener listener = ControlListener.controlResizedAdapter(e -> eventOccurred = true);
+	control.addControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeControlListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.Resize, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.Move, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
 public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 	FocusListener listener = new FocusListener() {
 		@Override
