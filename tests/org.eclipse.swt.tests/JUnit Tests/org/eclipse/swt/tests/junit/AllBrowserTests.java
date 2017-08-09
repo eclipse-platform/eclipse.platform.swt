@@ -15,13 +15,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-/**
- * Suite for testing all of the graphics test cases.
- */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	Test_org_eclipse_swt_browser_Browser.class,
-	org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.class,
 })
 public class AllBrowserTests {
 
