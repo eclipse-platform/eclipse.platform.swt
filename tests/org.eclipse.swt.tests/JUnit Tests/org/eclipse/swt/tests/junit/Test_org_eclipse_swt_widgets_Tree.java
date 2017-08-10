@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -671,6 +673,54 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 		tree.showItem(items2[i]);
 
 	tree.removeAll();
+}
+
+@Test
+public void test_addTreeListenerTreeCollapsedAdapterLorg_eclipse_swt_events_TreeListener() {
+	TreeListener listener = TreeListener.treeCollapsedAdapter(e -> eventOccurred = true);
+	tree.addTreeListener(listener);
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Collapse, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+
+	tree.removeTreeListener(listener);
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
+
+	tree.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addTreeListenerTreeExpandedAdapterLorg_eclipse_swt_events_TreeListener() {
+	TreeListener listener = TreeListener.treeExpandedAdapter(e -> eventOccurred = true);
+	tree.addTreeListener(listener);
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Expand, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
+
+	tree.removeTreeListener(listener);
+	eventOccurred = false;
+
+	tree.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+
+	tree.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
 }
 
 @Test
