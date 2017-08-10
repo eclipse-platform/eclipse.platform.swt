@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,12 +49,9 @@ public static void main(String[] args) {
     GLData data = new GLData();
     data.doubleBuffer = true;
     final GLCanvas canvas = new GLCanvas(shell, SWT.NO_BACKGROUND, data);
-    canvas.addControlListener(new ControlAdapter() {
-        @Override
-		public void controlResized(ControlEvent e) {
-            resize(canvas);
-        }
-    });
+	canvas.addControlListener(ControlListener.controlResizedAdapter(e -> {
+		resize(canvas);
+	}));
     init(canvas);
     new Runnable() {
         @Override

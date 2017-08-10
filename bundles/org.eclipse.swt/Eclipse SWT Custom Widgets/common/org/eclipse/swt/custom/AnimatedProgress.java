@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,12 +74,7 @@ public AnimatedProgress(Composite parent, int style) {
 	}
 	showBorder = (style & SWT.BORDER) != 0;
 
-	addControlListener(new ControlAdapter() {
-		@Override
-		public void controlResized(ControlEvent e) {
-			redraw();
-		}
-	});
+	addControlListener(ControlListener.controlResizedAdapter(e -> redraw()));
 	addPaintListener(e -> paint(e));
 	addDisposeListener(e -> stop());
 }

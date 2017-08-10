@@ -29,8 +29,8 @@ import org.eclipse.swt.custom.PaintObjectEvent;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -856,12 +856,7 @@ public class TextEditor {
 			item.setPreferredSize(size);
 			item.setSize(size);
 		}
-		coolBar.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent event) {
-				handleResize(event);
-			}
-		});
+		coolBar.addControlListener(ControlListener.controlResizedAdapter(event -> handleResize(event)));
 	}
 
 	void disposeRanges(StyleRange[] ranges) {
@@ -1135,12 +1130,7 @@ public class TextEditor {
 				}
 			}
 		});
-		shell.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent event) {
-				handleResize(event);
-			}
-		});
+		shell.addControlListener(ControlListener.controlResizedAdapter(event ->	handleResize(event)));
 	}
 
 	Image loadImage(Display display, String fileName) {

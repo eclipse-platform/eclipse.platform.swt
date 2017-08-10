@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,20 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.controlexample;
 
-
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 class SashTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -117,12 +123,7 @@ class SashTab extends Tab {
 				layout ();
 			}
 		}));
-		sashComp.addControlListener (new ControlAdapter () {
-			@Override
-			public void controlResized (ControlEvent event) {
-				resized ();
-			}
-		});
+		sashComp.addControlListener (ControlListener.controlResizedAdapter(e ->	resized ()));
 	}
 
 	/**

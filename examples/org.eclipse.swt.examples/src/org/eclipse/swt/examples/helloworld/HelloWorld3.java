@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.helloworld;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 import java.util.ResourceBundle;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 /*
  * This example builds on HelloWorld2 and demonstrates how to resize the
@@ -37,12 +39,7 @@ public Shell open (Display display) {
 	final Label label = new Label (shell, SWT.CENTER);
 	label.setText (resHello.getString("Hello_world"));
 	label.pack();
-	shell.addControlListener(new ControlAdapter() {
-		@Override
-		public void controlResized(ControlEvent e) {
-			label.setBounds (shell.getClientArea ());
-		}
-	});
+	shell.addControlListener(ControlListener.controlResizedAdapter(e ->	label.setBounds (shell.getClientArea ())));
 	shell.pack();
 	shell.open ();
 	return shell;

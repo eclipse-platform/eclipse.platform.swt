@@ -24,8 +24,8 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -203,12 +203,7 @@ public class ImageAnalyzer {
 		shell.setText(bundle.getString("Image_analyzer"));
 
 		// Hook resize and dispose listeners.
-		shell.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent event) {
-				resizeShell(event);
-			}
-		});
+		shell.addControlListener(ControlListener.controlResizedAdapter(e-> resizeShell(e)));
 		shell.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellClosed(ShellEvent e) {

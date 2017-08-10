@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,7 @@ package org.eclipse.swt.examples.controlexample;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -136,14 +135,12 @@ class CanvasTab extends Tab {
 			Point extent = gc.textExtent(canvasString);
 			gc.drawString(canvasString, cx + (size.x - extent.x) / 2, cy - extent.y + (size.y - 10) / 2, true);
 		});
-		canvas.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent event) {
-				Point size = canvas.getSize ();
-				maxX = size.x * 3 / 2; maxY = size.y * 3 / 2;
-				resizeScrollBars ();
-			}
-		});
+		canvas.addControlListener(ControlListener.controlResizedAdapter(e -> {
+			Point size = canvas.getSize();
+			maxX = size.x * 3 / 2;
+			maxY = size.y * 3 / 2;
+			resizeScrollBars();
+		}));
 		ScrollBar bar = canvas.getHorizontalBar();
 		if (bar != null) {
 			hookListeners (bar);
@@ -200,12 +197,7 @@ class CanvasTab extends Tab {
 		 * its preferred size, and then resizes the shell, we
 		 * recalculate the preferred size correctly.
 		 */
-		tabFolderPage.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				setExampleWidgetSize ();
-			}
-		});
+		tabFolderPage.addControlListener(ControlListener.controlResizedAdapter(e -> setExampleWidgetSize ()));
 
 		return tabFolderPage;
 	}

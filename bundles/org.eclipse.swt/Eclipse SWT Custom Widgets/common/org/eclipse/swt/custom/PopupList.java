@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,15 +58,10 @@ public PopupList(Shell parent, int style) {
 	shell.addListener(SWT.Deactivate, e -> shell.setVisible (false));
 
 	// resize shell when list resizes
-	shell.addControlListener(new ControlListener() {
-		@Override
-		public void controlMoved(ControlEvent e){}
-		@Override
-		public void controlResized(ControlEvent e){
-			Rectangle shellSize = shell.getClientArea();
-			list.setSize(shellSize.width, shellSize.height);
-		}
-	});
+	shell.addControlListener(ControlListener.controlResizedAdapter(e -> {
+		Rectangle shellSize = shell.getClientArea();
+		list.setSize(shellSize.width, shellSize.height);
+	}));
 
 	// return list selection on Mouse Up or Carriage Return
 	list.addMouseListener(new MouseListener() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,37 +41,34 @@ public static void main(String[] args) {
 		TableItem item = new TableItem(table, SWT.NONE);
 		item.setText(new String[] {"item 0" + i, "item 1"+i});
 	}
-	comp.addControlListener(new ControlAdapter() {
-		@Override
-		public void controlResized(ControlEvent e) {
-			Rectangle area = comp.getClientArea();
-			Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			ScrollBar vBar = table.getVerticalBar();
-			int width = area.width - table.computeTrim(0,0,0,0).width - vBar.getSize().x;
-			if (size.y > area.height + table.getHeaderHeight()) {
-				// Subtract the scrollbar width from the total column width
-				// if a vertical scrollbar will be required
-				Point vBarSize = vBar.getSize();
-				width -= vBarSize.x;
-			}
-			Point oldSize = table.getSize();
-			if (oldSize.x > area.width) {
-				// table is getting smaller so make the columns
-				// smaller first and then resize the table to
-				// match the client area width
-				column1.setWidth(width/3);
-				column2.setWidth(width - column1.getWidth());
-				table.setSize(area.width, area.height);
-			} else {
-				// table is getting bigger so make the table
-				// bigger first and then make the columns wider
-				// to match the client area width
-				table.setSize(area.width, area.height);
-				column1.setWidth(width/3);
-				column2.setWidth(width - column1.getWidth());
-			}
+	comp.addControlListener(ControlListener.controlResizedAdapter(e -> {
+		Rectangle area = comp.getClientArea();
+		Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		ScrollBar vBar = table.getVerticalBar();
+		int width = area.width - table.computeTrim(0, 0, 0, 0).width - vBar.getSize().x;
+		if (size.y > area.height + table.getHeaderHeight()) {
+			// Subtract the scrollbar width from the total column width
+			// if a vertical scrollbar will be required
+			Point vBarSize = vBar.getSize();
+			width -= vBarSize.x;
 		}
-	});
+		Point oldSize = table.getSize();
+		if (oldSize.x > area.width) {
+			// table is getting smaller so make the columns
+			// smaller first and then resize the table to
+			// match the client area width
+			column1.setWidth(width / 3);
+			column2.setWidth(width - column1.getWidth());
+			table.setSize(area.width, area.height);
+		} else {
+			// table is getting bigger so make the table
+			// bigger first and then make the columns wider
+			// to match the client area width
+			table.setSize(area.width, area.height);
+			column1.setWidth(width / 3);
+			column2.setWidth(width - column1.getWidth());
+		}
+	}));
 
 	shell.open();
 	while (!shell.isDisposed()) {

@@ -27,8 +27,7 @@ import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -188,12 +187,7 @@ class BrowserTab extends Tab {
 		 * its preferred size, and then resizes the shell, we
 		 * recalculate the preferred size correctly.
 		 */
-		tabFolderPage.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				setExampleWidgetSize ();
-			}
-		});
+		tabFolderPage.addControlListener(ControlListener.controlResizedAdapter(e-> setExampleWidgetSize ()));
 
 		/*
 		 * Add a selection listener to the tabFolder to bring up a
