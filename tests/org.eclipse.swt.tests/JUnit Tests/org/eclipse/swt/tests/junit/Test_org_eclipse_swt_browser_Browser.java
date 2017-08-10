@@ -80,6 +80,9 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 
 	/** Accumiliate logs, print only if test case fails. Cleared for each test case. */
 	StringBuffer testLog;
+	private void testLogAppend(String msg) {
+		testLog.append("  " + msg + "\n");
+	}
 
 
 @Override
@@ -761,9 +764,23 @@ public void test_setText() {
 public void test_setUrl_local() {
 	String expectedTitle = "Website Title";
 	Runnable browserSetFunc = () -> {
-		String url = Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
+
+		String pluginPath = System.getProperty("PLUGIN_PATH");
+		testLogAppend("PLUGIN_PATH: " + pluginPath);
+
+		String url;
+		// Depending on how the jUnit test is ran, (gui/maven/ant), url for local file needs to be acquired differently.
+		if (pluginPath != null) {
+			url = pluginPath + "/data/testWebsiteWithTitle.html";
+		} else {
+			// used when ran from Eclipse gui.
+			url = Test_org_eclipse_swt_browser_Browser.class.getClassLoader().getResource("testWebsiteWithTitle.html").toString();
+		}
+
+		testLogAppend("URL: " + url);
+
 		boolean opSuccess = browser.setUrl(url);
-		assertTrue("Expecting setUrl() to return true", opSuccess);
+		assertTrue("Expecting setUrl() to return true" + testLog.toString(), opSuccess);
 	};
 	validateTitleChanged(expectedTitle, browserSetFunc);
 }
@@ -783,7 +800,8 @@ public void test_setUrl_remote() {
 private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc) {
 	final AtomicReference<String> actualTitle = new AtomicReference<>("");
 	browser.addTitleListener(event ->  {
-		assertTrue("event title is empty", event.title != null);
+		testLog.append("TitleListener fired");
+		assertTrue("event title is empty" + testLog.toString(), event.title != null);
 		actualTitle.set(event.title);
 	});
 	browserSetFunc.run();
@@ -799,7 +817,7 @@ private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc)
 				+ "\nExpected: " + expectedTitle
 				+ "\nActual: " + actualTitle;
 	}
-	assertTrue(errMsg, passed);
+	assertTrue(errMsg + testLog.toString(), passed);
 }
 
 @Test
