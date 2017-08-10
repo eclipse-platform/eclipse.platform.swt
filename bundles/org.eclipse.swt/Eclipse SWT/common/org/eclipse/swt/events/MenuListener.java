@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,9 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -43,4 +45,38 @@ public void menuHidden(MenuEvent e);
  * @param e an event containing information about the menu operation
  */
 public void menuShown(MenuEvent e);
+
+/**
+ * Static helper method to create a <code>MenuListener</code> for the
+ * {@link #menuHidden(MenuEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return MenuListener
+ * @since 3.107
+ */
+public static MenuListener menuHiddenAdapter(Consumer<MenuEvent> c) {
+	return new MenuAdapter() {
+		@Override
+		public void menuHidden(MenuEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>MenuListener</code> for the
+ * {@link #menuShown(MenuEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return MenuListener
+ * @since 3.107
+ */
+public static MenuListener menuShownAdapter(Consumer<MenuEvent> c) {
+	return new MenuAdapter() {
+		@Override
+		public void menuShown(MenuEvent e) {
+			c.accept(e);
+		}
+	};
+}
 }
