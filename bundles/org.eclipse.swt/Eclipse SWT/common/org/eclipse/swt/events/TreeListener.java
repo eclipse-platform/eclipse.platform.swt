@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,9 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -44,4 +46,38 @@ public void treeCollapsed(TreeEvent e);
  * @param e an event containing information about the tree operation
  */
 public void treeExpanded(TreeEvent e);
+
+/**
+ * Static helper method to create a <code>TreeListener</code> for the
+ * {@link #treeCollapsed(TreeEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return TreeListener
+ * @since 3.107
+ */
+public static TreeListener treeCollapsedAdapter(Consumer<TreeEvent> c) {
+	return new TreeAdapter() {
+		@Override
+		public void treeCollapsed(TreeEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>TreeListener</code> for the
+ * {@link #treeExpanded(TreeEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return TreeListener
+ * @since 3.107
+ */
+public static TreeListener treeExpandedAdapter(Consumer<TreeEvent> c) {
+	return new TreeAdapter() {
+		@Override
+		public void treeExpanded(TreeEvent e) {
+			c.accept(e);
+		}
+	};
+}
 }
