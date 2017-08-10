@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,6 +81,54 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	expandBar.removeExpandListener(expandListener);
 	expandBar.notifyListeners(SWT.Expand, new Event());
 	assertFalse(listenerCalled[0]);
+}
+
+@Test
+public void test_addExpandListenerItemCollapsedAdapterLorg_eclipse_swt_events_ExpandListener() {
+	ExpandListener listener = ExpandListener.itemCollapsedAdapter(e -> eventOccurred = true);
+	expandBar.addExpandListener(listener);
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Collapse, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+
+	expandBar.removeExpandListener(listener);
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
+
+	expandBar.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addExpandListenerItemExpandedAdapterLorg_eclipse_swt_events_ExpandListener() {
+	ExpandListener listener = ExpandListener.itemExpandedAdapter(e -> eventOccurred = true);
+	expandBar.addExpandListener(listener);
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Expand, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
+
+	expandBar.removeExpandListener(listener);
+	eventOccurred = false;
+
+	expandBar.notifyListeners(SWT.Expand, new Event());
+	assertFalse(eventOccurred);
+
+	expandBar.notifyListeners(SWT.Collapse, new Event());
+	assertFalse(eventOccurred);
 }
 
 @Override
