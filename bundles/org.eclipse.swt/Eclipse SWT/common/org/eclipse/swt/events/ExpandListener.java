@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,9 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -46,4 +48,38 @@ public void itemCollapsed(ExpandEvent e);
  * @param e an event containing information about the operation
  */
 public void itemExpanded(ExpandEvent e);
+
+/**
+ * Static helper method to create a <code>ExpandListener</code> for the
+ * {@link #itemCollapsed(ExpandEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return ExpandListener
+ * @since 3.107
+ */
+public static ExpandListener itemCollapsedAdapter(Consumer<ExpandEvent> c) {
+	return new ExpandAdapter() {
+		@Override
+		public void itemCollapsed(ExpandEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>ExpandListener</code> for the
+ * {@link #itemExpanded(ExpandEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return ExpandListener
+ * @since 3.107
+ */
+public static ExpandListener itemExpandedAdapter(Consumer<ExpandEvent> c) {
+	return new ExpandAdapter() {
+		@Override
+		public void itemExpanded(ExpandEvent e) {
+			c.accept(e);
+		}
+	};
+}
 }
