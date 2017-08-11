@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.texteditor;
 
+import static org.eclipse.swt.events.MenuListener.menuShownAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import java.io.BufferedReader;
@@ -317,15 +318,12 @@ public class TextEditor {
 		selectAllItem.setAccelerator(SWT.MOD1 | 'a');
 		selectAllItem.addSelectionListener(widgetSelectedAdapter(event -> styledText.selectAll()));
 
-		editMenu.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuShown(MenuEvent event) {
-				int selectionCount = styledText.getSelectionCount();
-				cutItem.setEnabled(selectionCount > 0);
-				copyItem.setEnabled(selectionCount > 0);
-				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
-			}
-		});
+		editMenu.addMenuListener(menuShownAdapter(event -> {
+			int selectionCount = styledText.getSelectionCount();
+			cutItem.setEnabled(selectionCount > 0);
+			copyItem.setEnabled(selectionCount > 0);
+			selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
+		}));
 
 		MenuItem wrapItem = new MenuItem(editMenu, SWT.CHECK);
 		wrapItem.setText(getResourceString("Wrap_menuitem")); //$NON-NLS-1$
@@ -499,15 +497,12 @@ public class TextEditor {
 		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
 		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
 		selectAllItem.addListener (SWT.Selection, event -> styledText.selectAll());
-		menu.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuShown(MenuEvent event) {
-				int selectionCount = styledText.getSelectionCount();
-				cutItem.setEnabled(selectionCount > 0);
-				copyItem.setEnabled(selectionCount > 0);
-				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
-			}
-		});
+		menu.addMenuListener(menuShownAdapter(event -> {
+			int selectionCount = styledText.getSelectionCount();
+			cutItem.setEnabled(selectionCount > 0);
+			copyItem.setEnabled(selectionCount > 0);
+			selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
+		}));
 		styledText.setMenu(menu);
 	}
 

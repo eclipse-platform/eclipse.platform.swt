@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.addressbook;
 
-
+import static org.eclipse.swt.events.MenuListener.menuShownAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetDefaultSelectedAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-/* Imports */
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,8 +25,6 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -470,16 +467,13 @@ private void createFileMenu(Menu menuBar) {
 	 * Adds a listener to handle enabling and disabling
 	 * some items in the Edit submenu.
 	 */
-	menu.addMenuListener(new MenuAdapter() {
-		@Override
-		public void menuShown(MenuEvent e) {
-			Menu menu = (Menu)e.widget;
-			MenuItem[] items = menu.getItems();
-			items[1].setEnabled(table.getSelectionCount() != 0); // edit contact
-			items[5].setEnabled((file != null) && isModified); // save
-			items[6].setEnabled(table.getItemCount() != 0); // save as
-		}
-	});
+	menu.addMenuListener(menuShownAdapter(e -> {
+		Menu menu1 = (Menu) e.widget;
+		MenuItem[] items = menu1.getItems();
+		items[1].setEnabled(table.getSelectionCount() != 0); // edit contact
+		items[5].setEnabled((file != null) && isModified); // save
+		items[6].setEnabled(table.getItemCount() != 0); // save as
+	}));
 
 
 	//File -> New Contact
@@ -562,19 +556,16 @@ private MenuItem createEditMenu(Menu menuBar) {
 	 * Add a listener to handle enabling and disabling
 	 * some items in the Edit submenu.
 	 */
-	menu.addMenuListener(new MenuAdapter() {
-		@Override
-		public void menuShown(MenuEvent e) {
-			Menu menu = (Menu)e.widget;
-			MenuItem[] items = menu.getItems();
-			int count = table.getSelectionCount();
-			items[0].setEnabled(count != 0); // edit
-			items[1].setEnabled(count != 0); // copy
-			items[2].setEnabled(copyBuffer != null); // paste
-			items[3].setEnabled(count != 0); // delete
-			items[5].setEnabled(table.getItemCount() != 0); // sort
-		}
-	});
+	menu.addMenuListener(menuShownAdapter(e -> {
+		Menu menu1 = (Menu) e.widget;
+		MenuItem[] items = menu1.getItems();
+		int count = table.getSelectionCount();
+		items[0].setEnabled(count != 0); // edit
+		items[1].setEnabled(count != 0); // copy
+		items[2].setEnabled(copyBuffer != null); // paste
+		items[3].setEnabled(count != 0); // delete
+		items[5].setEnabled(table.getItemCount() != 0); // sort
+	}));
 
 	//Edit -> Edit
 	MenuItem subItem = new MenuItem(menu, SWT.PUSH);
@@ -704,19 +695,16 @@ private Menu createPopUpMenu() {
 	 * Adds a listener to handle enabling and disabling
 	 * some items in the Edit submenu.
 	 */
-	popUpMenu.addMenuListener(new MenuAdapter() {
-		@Override
-		public void menuShown(MenuEvent e) {
-			Menu menu = (Menu)e.widget;
-			MenuItem[] items = menu.getItems();
-			int count = table.getSelectionCount();
-			items[2].setEnabled(count != 0); // edit
-			items[3].setEnabled(count != 0); // copy
-			items[4].setEnabled(copyBuffer != null); // paste
-			items[5].setEnabled(count != 0); // delete
-			items[7].setEnabled(table.getItemCount() != 0); // find
-		}
-	});
+	popUpMenu.addMenuListener(menuShownAdapter(e -> {
+		Menu menu = (Menu) e.widget;
+		MenuItem[] items = menu.getItems();
+		int count = table.getSelectionCount();
+		items[2].setEnabled(count != 0); // edit
+		items[3].setEnabled(count != 0); // copy
+		items[4].setEnabled(copyBuffer != null); // paste
+		items[5].setEnabled(count != 0); // delete
+		items[7].setEnabled(table.getItemCount() != 0); // find
+	}));
 
 	//New
 	MenuItem item = new MenuItem(popUpMenu, SWT.PUSH);

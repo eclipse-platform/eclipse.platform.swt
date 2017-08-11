@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,11 +11,10 @@
 package org.eclipse.swt.examples.controlexample;
 
 
+import static org.eclipse.swt.events.MenuListener.menuHiddenAdapter;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -346,12 +345,7 @@ class CoolBarTab extends Tab {
 			if (menu == null) {
 				// Lazy create the menu.
 				menu = new Menu(shell, SWT.POP_UP | (coolBar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
-				menu.addMenuListener(new MenuAdapter() {
-					@Override
-					public void menuHidden(MenuEvent e) {
-						visible = false;
-					}
-				});
+				menu.addMenuListener(menuHiddenAdapter(e ->	visible = false));
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);
 					if (text.length() != 0) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,24 +57,21 @@ public static void main(String[] args) {
 				text.insert(string);
 			}
 		}));
-	menu.addMenuListener(new MenuAdapter() {
-		@Override
-		public void menuShown(MenuEvent e) {
-			// is copy valid?
-			String selection = text.getSelectionText();
-			copyItem.setEnabled(selection.length() > 0);
-			// is paste valid?
-			TransferData[] available = cb.getAvailableTypes();
-			boolean enabled = false;
-			for (int i = 0; i < available.length; i++) {
-				if (TextTransfer.getInstance().isSupportedType(available[i])) {
-					enabled = true;
-					break;
-				}
+	menu.addMenuListener(MenuListener.menuShownAdapter(e -> {
+		// is copy valid?
+		String selection = text.getSelectionText();
+		copyItem.setEnabled(selection.length() > 0);
+		// is paste valid?
+		TransferData[] available = cb.getAvailableTypes();
+		boolean enabled = false;
+		for (int i = 0; i < available.length; i++) {
+			if (TextTransfer.getInstance().isSupportedType(available[i])) {
+				enabled = true;
+				break;
 			}
-			pasteItem.setEnabled(enabled);
 		}
-	});
+		pasteItem.setEnabled(enabled);
+	}));
 	text.setMenu (menu);
 
 	shell.setSize(200, 200);
