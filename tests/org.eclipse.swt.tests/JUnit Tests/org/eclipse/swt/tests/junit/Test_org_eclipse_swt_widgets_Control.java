@@ -335,6 +335,103 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 	assertTrue(eventOccurred);
 	control.removeMouseTrackListener(listener);
 }
+
+@Test
+public void test_addMouseTrackListenerMouseEnterAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseEnterAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addMouseTrackListenerMouseExitAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseExitAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addMouseTrackListenerMouseHoverAdapterLorg_eclipse_swt_events_MouseTrackListener() {
+	MouseTrackListener listener = MouseTrackListener.mouseHoverAdapter(e -> eventOccurred = true);
+	control.addMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+
+	control.removeMouseTrackListener(listener);
+	eventOccurred = false;
+
+	control.notifyListeners(SWT.MouseHover, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseEnter, new Event());
+	assertFalse(eventOccurred);
+
+	control.notifyListeners(SWT.MouseExit, new Event());
+	assertFalse(eventOccurred);
+}
+
 @Test
 public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	PaintListener listener = e -> eventOccurred = true;
