@@ -301,7 +301,6 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 		boolean ascending = parent.sortDirection == SWT.UP;
 		if (parent.headerBackground != null || parent.headerForeground != null) {
 			NSRect sortIndicatorRect = headerCell.sortIndicatorRectForBounds(cellRect);
-			System.out.println(sortIndicatorRect);
 			context.saveGraphicsState();
 			if (parent.headerForeground != null) {
 				double /*float*/ [] colorRGB = parent.headerForeground;
