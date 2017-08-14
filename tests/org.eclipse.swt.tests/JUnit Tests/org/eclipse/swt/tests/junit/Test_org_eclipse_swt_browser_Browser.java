@@ -62,13 +62,14 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 
 	// CONFIG
 	/** This forces tests to display the shell/browser for a brief moment. Useful to see what's going on with broken jUnits */
-	boolean debug_show_browser = false;
-	int     debug_show_browser_timeout_seconds = 2;
+	boolean debug_show_browser = false; // true to display browser.
+	int     debug_show_browser_timeout_seconds = 2; // if above set to true, then how long should the browser be shown for.
+													// This is independent of whether test passes or fails.
 
 	boolean debug_print_test_names = true; // Useful to figure out which jUnit caused vm crash.
 	boolean debug_verbose_output = false;
 
-	int secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
+	int secondsToWaitTillFail; // configured in setUp() to allow individual tests to override this.
 	// CONFIG END
 
 	@Rule
@@ -89,6 +90,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 @Before
 public void setUp() {
 	super.setUp();
+	secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 
 //	 Print test name if running on hudson. This makes it easier to tell in the logs which test case caused crash.
 	if (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK || debug_print_test_names) {
@@ -788,9 +790,14 @@ public void test_setUrl_local() {
 /** This test requires working Internet connection */
 @Test
 public void test_setUrl_remote() {
+
+	// This test sometimes times out on windows build server. (as it uses internet)
+	secondsToWaitTillFail = 35;
+
 	String expectedTitle = "Example Domain";
 	Runnable browserSetFunc = () -> {
 		String url = "http://example.com"; // example.com loads very quickly and conveniently has a consistent title
+		testLog.append("Setting Browser url to:" + url);
 		boolean opSuccess = browser.setUrl(url);
 		assertTrue("Expecting setUrl() to return true", opSuccess);
 	};
