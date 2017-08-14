@@ -4977,12 +4977,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1keymap_1get_1entries_1for_1keyval)
 	(JNIEnv *env, jclass that, jintLong arg0, jlong arg1, jintLongArray arg2, jintArray arg3)
 {
 	jintLong *lparg2=NULL;
-	jint  *lparg3=NULL;
+	jint *lparg3=NULL;
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1keymap_1get_1entries_1for_1keyval_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jboolean)gdk_keymap_get_entries_for_keyval((GdkKeymap*)arg0, arg1, (GdkKeymapKey**)lparg2, (gint*) lparg3);
+	rc = (jboolean)gdk_keymap_get_entries_for_keyval((GdkKeymap*)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
@@ -4999,15 +4999,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1keymap_1translate_1keyboard_1state)
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	jint *lparg7=NULL;
-	guint tmp4;
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, &tmp4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
-	if (lparg4) *lparg4 = tmp4;
+	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
 fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
