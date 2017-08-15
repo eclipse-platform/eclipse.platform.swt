@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +32,7 @@ import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Before;
@@ -162,6 +164,246 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
+}
+
+@Test
+public void test_addShellListenerShellActivatedAdapterLorg_eclipse_swt_events_ShellListener() {
+	ShellListener listener = ShellListener.shellActivatedAdapter(e -> eventOccurred = true);
+	shell.addShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+
+	shell.removeShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addShellListenerShellDeactivatedAdapterLorg_eclipse_swt_events_ShellListener() {
+	ShellListener listener = ShellListener.shellDeactivatedAdapter(e -> eventOccurred = true);
+	shell.addShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+
+	shell.removeShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addShellListenerShellDeiconifiedAdapterLorg_eclipse_swt_events_ShellListener() {
+	ShellListener listener = ShellListener.shellDeiconifiedAdapter(e -> eventOccurred = true);
+	shell.addShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+
+	shell.removeShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addShellListenerShellIconifiedAdapterLorg_eclipse_swt_events_ShellListener() {
+	ShellListener listener = ShellListener.shellIconifiedAdapter(e -> eventOccurred = true);
+	shell.addShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+
+	shell.removeShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
+}
+
+@Test
+public void test_addShellListenerShellClosedAdapterLorg_eclipse_swt_events_ShellListener() {
+	ShellListener listener = ShellListener.shellClosedAdapter(e -> eventOccurred = true);
+	shell.addShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertTrue(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.removeShellListener(listener);
+	eventOccurred = false;
+
+	shell.notifyListeners(SWT.Activate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deactivate, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Deiconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Iconify, new Event());
+	assertFalse(eventOccurred);
+
+	shell.notifyListeners(SWT.Close, new Event());
+	assertFalse(eventOccurred);
 }
 
 @Test
