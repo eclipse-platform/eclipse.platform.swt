@@ -19,6 +19,10 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -791,12 +795,17 @@ public void test_setUrl_local() {
 @Test
 public void test_setUrl_remote() {
 
-	// This test sometimes times out on windows build server. (as it uses internet)
+	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
 	secondsToWaitTillFail = 35;
+
+	String url = "http://example.com"; // example.com loads very quickly and conveniently has a consistent title
+
+	// Skip this test if we don't have a working Internet connection.
+	assumeTrue("Skipping test due to bad internet connection", checkInternet(url));
+	testLog.append("checkInternet() passed");
 
 	String expectedTitle = "Example Domain";
 	Runnable browserSetFunc = () -> {
-		String url = "http://example.com"; // example.com loads very quickly and conveniently has a consistent title
 		testLog.append("Setting Browser url to:" + url);
 		boolean opSuccess = browser.setUrl(url);
 		assertTrue("Expecting setUrl() to return true", opSuccess);
@@ -2235,6 +2244,34 @@ void waitForMilliseconds(final int milliseconds) {
 
 private String webkit1SkipMsg() {
 	return "Test_org_eclipse_swt_browser. Bug 509411. Skipping test on Webkit1 due to sporadic crash: "+ name.getMethodName();
+}
+
+
+/**
+ * Check if Internet connection to a http url works.
+ *
+ * @param url a full url like http://www.example.com
+ * @return true if server responded with correct code (200), false otherwise.
+ */
+private static Boolean checkInternet(String url) {
+	HttpURLConnection connection = null;
+    try {
+        connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("HEAD");
+        int code = connection.getResponseCode(); // 200 is success. See https://tools.ietf.org/html/rfc7231#section-6.3.1.
+        if (code == 200)
+        	return true;
+    } catch (MalformedURLException e) {
+    	System.err.println("Given url is malformed: " + url + "Try a fully formed url like: http://www.example.com");
+    	e.printStackTrace();
+    } catch (IOException e) {
+    	// No connection was made.
+    } finally {
+        if (connection != null) {
+            connection.disconnect();
+        }
+    }
+    return false;
 }
 
 }
