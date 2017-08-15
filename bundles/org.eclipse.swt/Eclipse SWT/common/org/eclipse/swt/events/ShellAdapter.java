@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-
 /**
  * This adapter class provides default implementations for the
  * methods described by the <code>ShellListener</code> interface.
@@ -18,6 +17,11 @@ package org.eclipse.swt.events;
  * Classes that wish to deal with <code>ShellEvent</code>s can
  * extend this class and override only the methods which they are
  * interested in.
+ * </p>
+ * <p>
+ * An alternative to this class are the static helper methods in
+ * {@link ShellListener},
+ * which accept a lambda expression or a method reference that implements the event consumer.
  * </p>
  *
  * @see ShellListener
