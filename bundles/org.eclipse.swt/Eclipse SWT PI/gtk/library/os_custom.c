@@ -258,6 +258,33 @@ glong g_utf8_offset_to_utf16_offset(const gchar* str, glong offset) {
 	return r;
 }
 
+#ifndef NO__1gdk_1keymap_1translate_1keyboard_1state
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1keymap_1translate_1keyboard_1state)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jlongArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+{
+	jlong *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	guint tmp4;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, &tmp4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
+	if (lparg4) *lparg4 = tmp4;
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SwtFixed
 
 struct _SwtFixedPrivate {

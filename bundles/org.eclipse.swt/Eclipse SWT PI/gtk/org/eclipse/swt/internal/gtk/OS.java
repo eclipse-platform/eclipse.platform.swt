@@ -4253,12 +4253,8 @@ public static final boolean gdk_keymap_get_entries_for_keyval (long /*int*/ keym
  	}
 }
 /**
- * @param keymap cast=(GdkKeymap*)
- * @param state cast=(GdkModifierType)
- * @param keyval cast=(guint*)
- * @param effective_group cast=(gint*)
- * @param level cast=(gint*)
- * @param consumed_modifiers cast=(GdkModifierType *)
+ * Can't be auto-generated because of mapping guint to long for keyval
+ * @method flags=no_gen
  */
 public static final native boolean _gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
 public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers) {
