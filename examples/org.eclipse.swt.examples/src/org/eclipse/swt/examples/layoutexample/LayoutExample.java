@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,14 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.layoutexample;
 
-
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -75,15 +73,13 @@ public class LayoutExample {
 		shell.setLayout(new FillLayout());
 		new LayoutExample(shell);
 		shell.setText(getResourceString("window.title"));
-		shell.addShellListener (new ShellAdapter () {
-			@Override
-			public void shellClosed(ShellEvent e) {
-				Shell [] shells = display.getShells();
-				for (Shell currentShell : shells) {
-					if (currentShell != shell) currentShell.close ();
-				}
+		shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
+			Shell[] shells = display.getShells();
+			for (Shell currentShell : shells) {
+				if (currentShell != shell)
+					currentShell.close();
 			}
-		});
+		}));
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();

@@ -25,8 +25,7 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
@@ -81,12 +80,7 @@ public static void main(String[] args) {
 public Shell open(Display display) {
 	shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	shell.addShellListener(new ShellAdapter() {
-		@Override
-		public void shellClosed(ShellEvent e) {
-			e.doit = closeAddressBook();
-		}
-	});
+	shell.addShellListener(ShellListener.shellClosedAdapter(e -> e.doit = closeAddressBook()));
 
 	createMenuBar();
 

@@ -31,8 +31,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -204,19 +203,17 @@ public class ImageAnalyzer {
 
 		// Hook resize and dispose listeners.
 		shell.addControlListener(ControlListener.controlResizedAdapter(e-> resizeShell(e)));
-		shell.addShellListener(new ShellAdapter() {
-			@Override
-			public void shellClosed(ShellEvent e) {
-				animate = false; // stop any animation in progress
-				if (animateThread != null) {
-					// wait for the thread to die before disposing the shell.
-					while (animateThread.isAlive()) {
-						if (!display.readAndDispatch()) display.sleep();
-					}
+		shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
+			animate = false; // stop any animation in progress
+			if (animateThread != null) {
+				// wait for the thread to die before disposing the shell.
+				while (animateThread.isAlive()) {
+					if (!display.readAndDispatch())
+						display.sleep();
 				}
-				e.doit = true;
 			}
-		});
+			e.doit = true;
+		}));
 		shell.addDisposeListener(e -> {
 			// Clean up.
 			if (image != null)

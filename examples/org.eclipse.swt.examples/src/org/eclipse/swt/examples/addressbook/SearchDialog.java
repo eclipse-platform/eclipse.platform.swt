@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,7 @@ import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -62,14 +61,11 @@ public SearchDialog(Shell parent) {
 	layout.numColumns = 2;
 	shell.setLayout(layout);
 	shell.setText(resAddressBook.getString("Search_dialog_title"));
-	shell.addShellListener(new ShellAdapter(){
-		@Override
-		public void shellClosed(ShellEvent e) {
-			// don't dispose of the shell, just hide it for later use
-			e.doit = false;
-			shell.setVisible(false);
-		}
-	});
+	shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
+		// don't dispose of the shell, just hide it for later use
+		e.doit = false;
+		shell.setVisible(false);
+	}));
 
 	Label label = new Label(shell, SWT.LEFT);
 	label.setText(resAddressBook.getString("Dialog_find_what"));

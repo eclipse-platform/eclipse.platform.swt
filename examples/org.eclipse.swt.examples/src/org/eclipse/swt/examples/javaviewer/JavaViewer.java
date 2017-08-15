@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.examples.javaviewer;
-
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
@@ -25,8 +24,7 @@ import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,8 +35,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- */
 public class JavaViewer {
 	Shell shell;
 	StyledText text;
@@ -80,13 +76,10 @@ void createShell (Display display) {
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
 	shell.setLayout(layout);
-	shell.addShellListener (new ShellAdapter () {
-		@Override
-		public void shellClosed (ShellEvent e) {
-			lineStyler.disposeColors();
-			text.removeLineStyleListener(lineStyler);
-		}
-	});
+	shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
+		lineStyler.disposeColors();
+		text.removeLineStyleListener(lineStyler);
+	}));
 }
 void createStyledText() {
 	text = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
