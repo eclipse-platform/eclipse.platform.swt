@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -87,5 +89,39 @@ public void hide(WindowEvent event);
  * @since 3.0
  */
 public void show(WindowEvent event);
+
+/**
+ * Static helper method to create a <code>VisibilityWindowListener</code> for thehide
+ * {@link #hide(WindowEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return LocationListener
+ * @since 3.107
+ */
+public static VisibilityWindowListener hideAdapter(Consumer<WindowEvent> c) {
+	return new VisibilityWindowAdapter() {
+		@Override
+		public void hide(WindowEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>VisibilityWindowListener</code> for the
+ * {@link #show(WindowEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return LocationListener
+ * @since 3.107
+ */
+public static VisibilityWindowListener showAdapter(Consumer<WindowEvent> c) {
+	return new VisibilityWindowAdapter() {
+		@Override
+		public void show(WindowEvent e) {
+			c.accept(e);
+		}
+	};
+}
 
 }

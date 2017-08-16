@@ -18,6 +18,11 @@ package org.eclipse.swt.browser;
  * extend this class and override only the methods which they are
  * interested in.
  * </p>
+ * <p>
+ * An alternative to this class are the static helper methods in
+ * {@link ProgressListener},
+ * which accept a lambda expression or a method reference that implements the event consumer.
+ * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *

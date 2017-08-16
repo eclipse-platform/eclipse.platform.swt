@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -19,6 +21,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @see Browser#addLocationListener(LocationListener)
  * @see Browser#removeLocationListener(LocationListener)
+ * @see LocationAdapter
  *
  * @since 3.0
  */
@@ -61,5 +64,39 @@ public void changing(LocationEvent event);
  * @since 3.0
  */
 public void changed(LocationEvent event);
+
+/**
+ * Static helper method to create a <code>LocationListener</code> for the
+ * {@link #changing(LocationEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return LocationListener
+ * @since 3.107
+ */
+public static LocationListener changingAdapter(Consumer<LocationEvent> c) {
+	return new LocationAdapter() {
+		@Override
+		public void changing(LocationEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>LocationListener</code> for the
+ * {@link #changed(LocationEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return LocationListener
+ * @since 3.107
+ */
+public static LocationListener changedAdapter(Consumer<LocationEvent> c) {
+	return new LocationAdapter() {
+		@Override
+		public void changed(LocationEvent e) {
+			c.accept(e);
+		}
+	};
+}
 
 }
