@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.custom;
+
+import java.util.function.*;
 
 import org.eclipse.swt.internal.*;
 
@@ -109,4 +111,89 @@ public void restore(CTabFolderEvent event);
  * @see CTabFolder#setSelection(CTabItem)
  */
 public void showList(CTabFolderEvent event);
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #close(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.107
+ */
+public static CTabFolder2Listener closeAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void close(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #minimize(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.107
+ */
+public static CTabFolder2Listener minimizeAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void minimize(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #maximize(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.107
+ */
+public static CTabFolder2Listener maximizeAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void maximize(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #restore(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.107
+ */
+public static CTabFolder2Listener restoreAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void restore(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #showList(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.107
+ */
+public static CTabFolder2Listener showListAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void showList(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
 }
