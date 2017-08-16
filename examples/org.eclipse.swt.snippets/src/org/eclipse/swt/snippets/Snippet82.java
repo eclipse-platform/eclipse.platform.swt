@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,14 +44,11 @@ public static void main(String[] args) {
 	text.setText("This tab can never be closed");
 	specialItem.setControl(text);
 
-	folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-		@Override
-		public void close(CTabFolderEvent event) {
-			if (event.item.equals(specialItem)) {
-				event.doit = false;
-			}
+	folder.addCTabFolder2Listener(CTabFolder2Listener.closeAdapter(event -> {
+		if (event.item.equals(specialItem)) {
+			event.doit = false;
 		}
-	});
+	}));
 
 	final CTabItem noCloseItem = new CTabItem(folder, SWT.NONE);
 	noCloseItem.setText("No Close Button");
