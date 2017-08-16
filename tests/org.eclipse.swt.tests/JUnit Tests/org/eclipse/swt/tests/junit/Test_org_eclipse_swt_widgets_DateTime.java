@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Event;
 import org.junit.Before;
@@ -142,6 +144,144 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 	datetime.removeSelectionListener(listener);
 	datetime.notifyListeners(SWT.Selection, new Event());
 	assertFalse(listenerCalled);
+}
+
+@Test
+public void test_setBackgroundCalendarDateTime() {
+	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
+	Color color = new Color(calendar.getDisplay(), 255, 0, 0);
+	calendar.setBackground(color);
+	assertEquals("getBackground not equal after setBackground for SWT.CALENDAR DateTime",
+			color, calendar.getBackground());
+	calendar.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) for SWT.CALENDAR DateTime",
+			!calendar.getBackground().equals(color));
+	color.dispose();
+	color = new Color(calendar.getDisplay(), 255, 0, 0, 0);
+	calendar.setBackground(color);
+	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CALENDAR DateTime",
+			color, calendar.getBackground());
+	calendar.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CALENDAR DateTime",
+			!calendar.getBackground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(calendar.getDisplay(), 0, 255, 0);
+		calendar.setBackground(color);
+		calendar.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for SWT.CALENDAR DateTime",
+				color, calendar.getBackground());
+		assertEquals("Setting a foreground onto an SWT.CALENDAR DateTime with a background failed",
+				fg, calendar.getForeground());
+		fg.dispose();
+	}
+	color.dispose();
+	calendar.dispose();
+}
+
+@Test
+public void test_setBackgroundAlphaCalendarDateTime() {
+	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
+	Color color = new Color (calendar.getDisplay(), 255, 0, 0, 0);
+	calendar.setBackground(color);
+	assertEquals(color, calendar.getBackground());
+	Color fg = new Color(calendar.getDisplay(), 0, 255, 0, 0);
+	calendar.setForeground(fg);
+	assertEquals(color, calendar.getBackground());
+	color.dispose();
+	fg.dispose();
+	calendar.dispose();
+}
+
+@Test
+public void test_setBackgroundTimeDateTime() {
+	DateTime time = new DateTime(shell, SWT.TIME);
+	Color color = new Color(time.getDisplay(), 255, 0, 0);
+	time.setBackground(color);
+	assertEquals("getBackground not equal after setBackground for SWT.TIME DateTime",
+			color, time.getBackground());
+	time.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) for SWT.TIME DateTime",
+			!time.getBackground().equals(color));
+	color.dispose();
+	color = new Color(time.getDisplay(), 255, 0, 0, 0);
+	time.setBackground(color);
+	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.TIME DateTime",
+			color, time.getBackground());
+	time.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.TIME DateTime",
+			!time.getBackground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(time.getDisplay(), 0, 255, 0);
+		time.setBackground(color);
+		time.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for SWT.TIME DateTime",
+				color, time.getBackground());
+		assertEquals("Setting a foreground onto an SWT.TIME DateTime with a background failed",
+				fg, time.getForeground());
+		fg.dispose();
+	}
+	color.dispose();
+	time.dispose();
+}
+
+@Test
+public void test_setBackgroundAlphaTimeDateTime() {
+	DateTime time = new DateTime(shell, SWT.TIME);
+	Color color = new Color (time.getDisplay(), 255, 0, 0, 0);
+	time.setBackground(color);
+	assertEquals(color, time.getBackground());
+	Color fg = new Color(time.getDisplay(), 0, 255, 0, 0);
+	time.setForeground(fg);
+	assertEquals(color, time.getBackground());
+	color.dispose();
+	fg.dispose();
+	time.dispose();
+}
+
+@Test
+public void test_setBackgroundDateDateTime() {
+	DateTime date = new DateTime(shell, SWT.DATE);
+	Color color = new Color(date.getDisplay(), 255, 0, 0);
+	date.setBackground(color);
+	assertEquals("getBackground not equal after setBackground for SWT.DATE DateTime",
+			color, date.getBackground());
+	date.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) for SWT.DATE DateTime",
+			!date.getBackground().equals(color));
+	color.dispose();
+	color = new Color(date.getDisplay(), 255, 0, 0, 0);
+	date.setBackground(color);
+	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.DATE DateTime",
+			color, date.getBackground());
+	date.setBackground(null);
+	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DATE DateTime",
+			!date.getBackground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color fg = new Color(date.getDisplay(), 0, 255, 0);
+		date.setBackground(color);
+		date.setForeground(fg);
+		assertEquals("Setting a foreground disrupted the background color for SWT.DATE DateTime",
+				color, date.getBackground());
+		assertEquals("Setting a foreground onto an SWT.DATE DateTime with a background failed",
+				fg, date.getForeground());
+		fg.dispose();
+	}
+	color.dispose();
+	date.dispose();
+}
+
+@Test
+public void test_setBackgroundAlphaDateDateTime() {
+	DateTime date = new DateTime(shell, SWT.DATE);
+	Color color = new Color (date.getDisplay(), 255, 0, 0, 0);
+	date.setBackground(color);
+	assertEquals(color, date.getBackground());
+	Color fg = new Color(date.getDisplay(), 0, 255, 0, 0);
+	date.setForeground(fg);
+	assertEquals(color, date.getBackground());
+	color.dispose();
+	fg.dispose();
+	date.dispose();
 }
 
 @Test
@@ -268,6 +408,120 @@ public void test_setDayI() {
 	datetime.setDate(2007, FEB, 5);
 	datetime.setDay(29); // Feb 2007 did not have 29 days, so setDay should be ignored
 	assertEquals(5, datetime.getDay());
+}
+
+@Test
+public void test_setForegroundCalendarDateTime() {
+	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
+	Color color = new Color(calendar.getDisplay(), 255, 0, 0);
+	calendar.setForeground(color);
+	assertEquals(color, calendar.getForeground());
+	calendar.setForeground(null);
+	assertFalse(calendar.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(calendar.getDisplay(), 0, 255, 0);
+		calendar.setForeground(color);
+		calendar.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for SWT.CALENDAR DateTime",
+				color, calendar.getForeground());
+		assertEquals("Setting a background onto an SWT.CALENDAR DateTime with a foreground failed",
+				bg, calendar.getBackground());
+		bg.dispose();
+	}
+	color.dispose();
+	calendar.dispose();
+}
+
+@Test
+public void test_setForegroundAlphaCalendarDateTime() {
+	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+	Color color = new Color (calendar.getDisplay(), 255, 0, 0, 0);
+	calendar.setForeground(color);
+	assertEquals(color, calendar.getForeground());
+	Color bg = new Color(calendar.getDisplay(), 0, 255, 0, 0);
+	calendar.setBackground(bg);
+	assertEquals(color, calendar.getForeground());
+	color.dispose();
+	bg.dispose();
+	calendar.dispose();
+}
+
+@Test
+public void test_setForegroundTimeDateTime() {
+	DateTime time = new DateTime(shell, SWT.TIME);
+	Color color = new Color(time.getDisplay(), 255, 0, 0);
+	time.setForeground(color);
+	assertEquals(color, time.getForeground());
+	time.setForeground(null);
+	assertFalse(time.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(time.getDisplay(), 0, 255, 0);
+		time.setForeground(color);
+		time.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for SWT.TIME DateTime",
+				color, time.getForeground());
+		assertEquals("Setting a background onto an SWT.TIME DateTime with a foreground failed",
+				bg, time.getBackground());
+		bg.dispose();
+	}
+	color.dispose();
+	time.dispose();
+}
+
+@Test
+public void test_setForegroundAlphaTimeDateTime() {
+	DateTime time = new DateTime(shell, SWT.TIME);
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+	Color color = new Color (time.getDisplay(), 255, 0, 0, 0);
+	time.setForeground(color);
+	assertEquals(color, time.getForeground());
+	Color bg = new Color(time.getDisplay(), 0, 255, 0, 0);
+	time.setBackground(bg);
+	assertEquals(color, time.getForeground());
+	color.dispose();
+	bg.dispose();
+	time.dispose();
+}
+
+@Test
+public void test_setForegroundDateDateTime() {
+	DateTime date = new DateTime(shell, SWT.DATE);
+	Color color = new Color(date.getDisplay(), 255, 0, 0);
+	date.setForeground(color);
+	assertEquals(color, date.getForeground());
+	date.setForeground(null);
+	assertFalse(date.getForeground().equals(color));
+	if ("gtk".equals(SWT.getPlatform ())) {
+		Color bg = new Color(date.getDisplay(), 0, 255, 0);
+		date.setForeground(color);
+		date.setBackground(bg);
+		assertEquals("Setting a background disrupted the foreground color for SWT.DATE DateTime",
+				color, date.getForeground());
+		assertEquals("Setting a background onto an SWT.DATE DateTime with a foreground failed",
+				bg, date.getBackground());
+		bg.dispose();
+	}
+	color.dispose();
+	date.dispose();
+}
+
+@Test
+public void test_setForegroundAlphaDateDateTime() {
+	DateTime date = new DateTime(shell, SWT.DATE);
+	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+	Color color = new Color (date.getDisplay(), 255, 0, 0, 0);
+	date.setForeground(color);
+	assertEquals(color, date.getForeground());
+	Color bg = new Color(date.getDisplay(), 0, 255, 0, 0);
+	date.setBackground(bg);
+	assertEquals(color, date.getForeground());
+	color.dispose();
+	bg.dispose();
+	date.dispose();
 }
 
 @Test
