@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 IBM Corporation and others.
+ * Copyright (c) 2009, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet327 {
 
@@ -39,18 +39,15 @@ public static void main(String[] args) {
 		return;
 	}
 	browser.setText(createPage(0));
-	browser.addLocationListener(new LocationAdapter() {
-	    @Override
-		public void changing(LocationEvent event) {
-			String location = event.location;
-			int index = location.indexOf(PREAMBLE);
-			if (index != -1) {
-				int pageNumber = Integer.valueOf(location.substring(index + PREAMBLE.length())).intValue();
-				browser.setText(createPage(pageNumber));
-				event.doit = false;
-			}
-	    }
-	});
+	browser.addLocationListener(LocationListener.changingAdapter(event -> {
+		String location = event.location;
+		int index = location.indexOf(PREAMBLE);
+		if (index != -1) {
+			int pageNumber = Integer.valueOf(location.substring(index + PREAMBLE.length())).intValue();
+			browser.setText(createPage(pageNumber));
+			event.doit = false;
+		}
+	}));
 
 	shell.setBounds(10,10,200,200);
 	shell.open();

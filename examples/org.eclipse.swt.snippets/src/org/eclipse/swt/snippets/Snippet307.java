@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,19 +42,16 @@ public static void main (String [] args) {
 	browser.setText (createHTML ());
 	final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 
-	browser.addProgressListener (new ProgressAdapter () {
-		@Override
-		public void completed (ProgressEvent event) {
-			browser.addLocationListener (new LocationAdapter () {
-				@Override
-				public void changed (LocationEvent event) {
-					browser.removeLocationListener (this);
-					System.out.println ("left java function-aware page, so disposed CustomFunction");
-					function.dispose ();
-				}
-			});
-		}
-	});
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+		browser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent event) {
+				browser.removeLocationListener(this);
+				System.out.println("left java function-aware page, so disposed CustomFunction");
+				function.dispose();
+			}
+		});
+	}));
 
 	shell.open ();
 	while (!shell.isDisposed ()) {

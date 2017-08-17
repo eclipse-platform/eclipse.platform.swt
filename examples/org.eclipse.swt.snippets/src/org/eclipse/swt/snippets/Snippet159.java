@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,20 +41,14 @@ public class Snippet159 {
 			System.out.println("TitleEvent: "+event.title);
 			shell.setText(event.title);
 		});
-		browser.addProgressListener(new ProgressListener() {
-			@Override
-			public void changed(ProgressEvent event) {
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+			/* Set HTML title tag using JavaScript and DOM when page has been loaded */
+			boolean result = browser.execute("document.title='" + newTitle + "'");
+			if (!result) {
+				/* Script may fail or may not be supported on certain platforms. */
+				System.out.println("Script was not executed.");
 			}
-			@Override
-			public void completed(ProgressEvent event) {
-				/* Set HTML title tag using JavaScript and DOM when page has been loaded */
-				boolean result = browser.execute("document.title='"+newTitle+"'");
-				if (!result) {
-					/* Script may fail or may not be supported on certain platforms. */
-					System.out.println("Script was not executed.");
-				}
-			}
-		});
+		}));
 		/* Load an HTML document */
 		browser.setUrl("http://www.eclipse.org");
 		shell.open();

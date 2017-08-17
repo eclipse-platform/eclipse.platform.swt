@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,29 +40,24 @@ public class Snippet160 {
 			return;
 		}
 		browser.addStatusTextListener(event -> browser.setData("query", event.text));
-		browser.addProgressListener(new ProgressListener() {
-			@Override
-			public void changed(ProgressEvent event) {
+		browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+			/*
+			 * Use JavaScript to query the desired node content through the Document Object
+			 * Model
+			 *
+			 * Assign result to the window property status to pass the result to the
+			 * StatusTextListener This trick is required since <code>execute</code> does not
+			 * return the <code>String</code> directly.
+			 */
+			boolean result = browser.execute("window.status=document.getElementById('myid').childNodes[0].nodeValue;");
+			if (!result) {
+				/* Script may fail or may not be supported on certain platforms. */
+				System.out.println("Script was not executed.");
+				return;
 			}
-			@Override
-			public void completed(ProgressEvent event) {
-				/*
-				 * Use JavaScript to query the desired node content through the Document Object Model
-				 *
-				 * Assign result to the window property status to pass the result to the StatusTextListener
-				 * This trick is required since <code>execute</code> does not return the <code>String</code>
-				 * directly.
-				 */
-				boolean result = browser.execute("window.status=document.getElementById('myid').childNodes[0].nodeValue;");
-				if (!result) {
-					/* Script may fail or may not be supported on certain platforms. */
-					System.out.println("Script was not executed.");
-					return;
-				}
-				String value = (String)browser.getData("query");
-				System.out.println("Node value: "+value);
-			}
-		});
+			String value = (String) browser.getData("query");
+			System.out.println("Node value: " + value);
+		}));
 		/* Load an HTML document */
 		browser.setText(html);
 		shell.open();

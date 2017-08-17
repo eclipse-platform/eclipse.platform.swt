@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.browser.LocationListener.changedAdapter;
+import static org.eclipse.swt.browser.LocationListener.changingAdapter;
+import static org.eclipse.swt.browser.ProgressListener.completedAdapter;
+import static org.eclipse.swt.browser.VisibilityWindowListener.showAdapter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -236,12 +240,7 @@ public void test_LocationListener_addAndRemove() {
 @Test
 public void test_LocationListener_changing() {
 	AtomicBoolean changingFired = new AtomicBoolean(false);
-	browser.addLocationListener(new LocationAdapter() {
-		@Override
-		public void changing(LocationEvent event) {
-			changingFired.set(true);
-		}
-	});
+	browser.addLocationListener(changingAdapter(e -> changingFired.set(true)));
 	shell.open();
 	browser.setText("Hello world");
 	boolean passed = waitForPassCondition(() -> changingFired.get());
@@ -250,12 +249,7 @@ public void test_LocationListener_changing() {
 @Test
 public void test_LocationListener_changed() {
 	AtomicBoolean changedFired = new AtomicBoolean(false);
-	browser.addLocationListener(new LocationAdapter() {
-		@Override
-		public void changed(LocationEvent event) {
-			changedFired.set(true);
-		}
-	});
+	browser.addLocationListener(changedAdapter(e ->	changedFired.set(true)));
 	shell.open();
 	browser.setText("Hello world");
 	boolean passed = waitForPassCondition(() -> changedFired.get());
@@ -310,22 +304,14 @@ public void test_LocationListener_then_ProgressListener() {
 	AtomicBoolean progressChanged = new AtomicBoolean(false);
 	AtomicBoolean progressChangedAfterLocationChanged = new AtomicBoolean(false);
 
-	browser.addLocationListener(new LocationAdapter() {
-		@Override
-		public void changed(LocationEvent event) {
-			locationChanged.set(true);
-		}
-	});
+	browser.addLocationListener(changedAdapter(event ->	locationChanged.set(true)));
 
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			if (locationChanged.get()) {
-				progressChangedAfterLocationChanged.set(true);
-			}
-			progressChanged.set(true);
+	browser.addProgressListener(completedAdapter(event -> {
+		if (locationChanged.get()) {
+			progressChangedAfterLocationChanged.set(true);
 		}
-	});
+		progressChanged.set(true);
+	}));
 
 	shell.open();
 	browser.setText("Hello world");
@@ -363,15 +349,12 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 		}
 	});
 
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			String location = browser.getUrl();
-			if (location.length() != 0) { // See footnote 1
-				unexpectedProgressCompleted.set(true);
-			}
+	browser.addProgressListener(completedAdapter(event -> {
+		String location = browser.getUrl();
+		if (location.length() != 0) { // See footnote 1
+			unexpectedProgressCompleted.set(true);
 		}
-	});
+	}));
 	shell.open();
 	browser.setText("You should not see this message.");
 
@@ -407,19 +390,9 @@ public void test_LocationListener_ProgressListener_noExtraEvents() {
 	AtomicInteger changedCount = new AtomicInteger(0);
 	AtomicInteger completedCount = new AtomicInteger(0);
 
-	browser.addLocationListener(new LocationAdapter() {
-		@Override
-		public void changed(LocationEvent event) {
-			changedCount.incrementAndGet();
-		}
-	});
+	browser.addLocationListener(changedAdapter(e ->	changedCount.incrementAndGet()));
 
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			completedCount.incrementAndGet();
-		}
-	});
+	browser.addProgressListener(completedAdapter(e -> completedCount.incrementAndGet()));
 
 	shell.open();
 	browser.setText("Hello world");
@@ -495,20 +468,12 @@ public void test_OpenWindowListener_open_ChildPopup() {
 		event.browser = browserChild;
 	});
 
-	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
-		@Override
-		public void show(WindowEvent event) {
-			childShell.open();
-			browserChild.setText("Child Browser");
-		}
-	});
-
-	browserChild.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			childCompleted.set(true); //Triggers test to finish.
-		}
-	});
+	browserChild.addVisibilityWindowListener(showAdapter(event -> {
+		childShell.open();
+		browserChild.setText("Child Browser");
+	}));
+	 //Triggers test to finish.
+	browserChild.addProgressListener(completedAdapter(event -> childCompleted.set(true)));
 
 	shell.open();
 
@@ -542,23 +507,19 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 		windowOpenFired.set(true);
 	});
 
-	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
-		@Override
-		public void show(WindowEvent event) {
-			childShell.open();
-			assertTrue("Child Visibility.show should have fired before progress completed", windowOpenFired.get() && !childCompleted.get()); // Validate event order.
-			visibilityShowed.set(true);
-		}
-	});
+	browserChild.addVisibilityWindowListener(showAdapter(event -> {
+		childShell.open();
+		assertTrue("Child Visibility.show should have fired before progress completed",
+				windowOpenFired.get() && !childCompleted.get()); // Validate event order.
+		visibilityShowed.set(true);
+	}));
 
-	browserChild.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			assertTrue("Child's Progress Completed before parent's expected events", windowOpenFired.get() && visibilityShowed.get());  // Validate event order.
-			childCompleted.set(true); //Triggers test to finish.
-			browserChild.setText("Child Browser!");
-		}
-	});
+	browserChild.addProgressListener(completedAdapter(event -> {
+		assertTrue("Child's Progress Completed before parent's expected events",
+				windowOpenFired.get() && visibilityShowed.get()); // Validate event order.
+		childCompleted.set(true); // Triggers test to finish.
+		browserChild.setText("Child Browser!");
+	}));
 
 	shell.open();
 
@@ -686,25 +647,20 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 	shell.setLocation(0, 0);
 	shell.setSize(size, size);
 
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void completed(ProgressEvent event) {
-			// * 3) Upon compleation of page load, move cursor across whole shell.
-			// *    (Note, in current jUnit, browser sometimes only takes up half the shell).
-			Display display = event.display;
-			Point cachedLocation = display.getCursorLocation();
-			display.setCursorLocation(20, 10);
-			browser.getBounds();
-			for (int i = 0; i < size; i=i+5) {
-				display.setCursorLocation(i, i);
-				waitForMilliseconds(debug_show_browser ? 3 : 1); // Move mouse slower during debug.
-			}
-			display.setCursorLocation(cachedLocation); // for convenience of developer. Not needed for test.
-
+	browser.addProgressListener(completedAdapter(event -> {
+		// * 3) Upon compleation of page load, move cursor across whole shell.
+		// * (Note, in current jUnit, browser sometimes only takes up half the shell).
+		Display display = event.display;
+		Point cachedLocation = display.getCursorLocation();
+		display.setCursorLocation(20, 10);
+		browser.getBounds();
+		for (int i = 0; i < size; i = i + 5) {
+			display.setCursorLocation(i, i);
+			waitForMilliseconds(debug_show_browser ? 3 : 1); // Move mouse slower during debug.
 		}
-		@Override
-		public void changed(ProgressEvent event) {}
-	});
+		display.setCursorLocation(cachedLocation); // for convenience of developer. Not needed for test.
+
+	}));
 
 	browser.addStatusTextListener(event -> {
 		statusChanged.set(true);
@@ -966,15 +922,12 @@ public void test_VisibilityWindowListener_eventSize() {
 		testLog.append("openWindowListener fired");
 	});
 
-	browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
-		@Override
-		public void show(WindowEvent event) {
-			testLog.append("Visibilty show eventfired.\nEvent size: " + event.size);
-			result.set(event.size);
-			childShell.open();
-			childCompleted.set(true);
-		}
-	});
+	browserChild.addVisibilityWindowListener(showAdapter(event -> {
+		testLog.append("Visibilty show eventfired.\nEvent size: " + event.size);
+		result.set(event.size);
+		childShell.open();
+		childCompleted.set(true);
+	}));
 
 	shell.open();
 	browser.setText("<html>"
@@ -1045,27 +998,25 @@ public void test_setJavascriptEnabled() {
 	AtomicBoolean testFinished = new AtomicBoolean(false);
 	AtomicBoolean testPassed = new AtomicBoolean(false);
 
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			pageLoadCount.incrementAndGet();
-			if (pageLoadCount.get() == 1) {
-				browser.setJavascriptEnabled(false);
-				browser.setText("Second page with javascript dissabled");
-			} else if (pageLoadCount.get() == 2) {
-				Boolean expectedNull = null;
-				try {
-					expectedNull = (Boolean) browser.evaluate("return true");
-				} catch (Exception e) {
-					fail("1) if javascript is dissabled, browser.evaluate() should return null. But an Exception was thrown");
-				}
-				assertNull("2) Javascript should not have executed. But not-null was returned:"+expectedNull, expectedNull);
-
-				testPassed.set(true);
-				testFinished.set(true);
+	browser.addProgressListener(completedAdapter(event -> {
+		pageLoadCount.incrementAndGet();
+		if (pageLoadCount.get() == 1) {
+			browser.setJavascriptEnabled(false);
+			browser.setText("Second page with javascript dissabled");
+		} else if (pageLoadCount.get() == 2) {
+			Boolean expectedNull = null;
+			try {
+				expectedNull = (Boolean) browser.evaluate("return true");
+			} catch (Exception e) {
+				fail("1) if javascript is dissabled, browser.evaluate() should return null. But an Exception was thrown");
 			}
+			assertNull("2) Javascript should not have executed. But not-null was returned:" + expectedNull,
+					expectedNull);
+
+			testPassed.set(true);
+			testFinished.set(true);
 		}
-	});
+	}));
 
 	shell.open();
 	browser.setText("First page with javascript enabled. This should not be visiable as a second page should load");
@@ -1087,26 +1038,23 @@ public void test_setJavascriptEnabled_multipleInstances() {
 
 	Browser browserSecondInsance = new Browser(shell, SWT.None);
 
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			if (pageLoadCount.get() == 1) {
-				browser.setJavascriptEnabled(false);
+	browser.addProgressListener(completedAdapter(event -> {
+		if (pageLoadCount.get() == 1) {
+			browser.setJavascriptEnabled(false);
 
-				pageLoadCount.set(2);
-				browser.setText("First instance, second page (with javascript turned off)");
+			pageLoadCount.set(2);
+			browser.setText("First instance, second page (with javascript turned off)");
 
-				pageLoadCountSecondInstance.set(2);
-				browserSecondInsance.setText("Second instance, second page (javascript execution not changed)");
-			} else if (pageLoadCount.get() == 2) {
-				pageLoadCount.set(3);
+			pageLoadCountSecondInstance.set(2);
+			browserSecondInsance.setText("Second instance, second page (javascript execution not changed)");
+		} else if (pageLoadCount.get() == 2) {
+			pageLoadCount.set(3);
 
-				Boolean shouldBeNull = (Boolean) browser.evaluate("return true");
-				assertNull("1) Evaluate execution should be null, but 'true was returned'", shouldBeNull);
-				instanceOneFinishedCorrectly.set(true);
-			}
+			Boolean shouldBeNull = (Boolean) browser.evaluate("return true");
+			assertNull("1) Evaluate execution should be null, but 'true was returned'", shouldBeNull);
+			instanceOneFinishedCorrectly.set(true);
 		}
-	});
+	}));
 
 	browserSecondInsance.addProgressListener(new ProgressAdapter() {
 		@Override
@@ -1352,15 +1300,12 @@ private void getText_helper(String testString, String expectedOutput) {
 	AtomicReference<String> returnString= new AtomicReference<>("");
 	AtomicBoolean finished = new AtomicBoolean(false);
 	browser.setText(testString);
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			returnString.set(browser.getText());
-			if (debug_verbose_output)
-				System.out.println(returnString.get());
-			finished.set(true);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		returnString.set(browser.getText());
+		if (debug_verbose_output)
+			System.out.println(returnString.get());
+		finished.set(true);
+	}));
 	shell.open();
 	waitForPassCondition(() -> finished.get());
 	boolean passed = returnString.get().equals(expectedOutput);
@@ -1424,18 +1369,13 @@ public void test_evaluate_string() {
 	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1));
 
 	final AtomicReference<String> returnValue = new AtomicReference<>();
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			String evalResult = (String) browser.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
-			returnValue.set(evalResult);
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		String evalResult = (String) browser
+				.evaluate("return document.getElementById('myid').childNodes[0].nodeValue;");
+		returnValue.set(evalResult);
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
@@ -1483,18 +1423,12 @@ public void test_evaluate_number_big() {
 
 boolean evaluate_number_helper(Double testNum) {
 	final AtomicReference<Double> returnValue = new AtomicReference<>();
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Double evalResult = (Double) browser.evaluate("return " +testNum.toString());
-			returnValue.set(evalResult);
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Double evalResult = (Double) browser.evaluate("return " + testNum.toString());
+		returnValue.set(evalResult);
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
@@ -1510,18 +1444,12 @@ boolean evaluate_number_helper(Double testNum) {
 public void test_evaluate_boolean() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Boolean evalResult = (Boolean) browser.evaluate("return true");
-			atomicBoolean.set(evalResult);
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Boolean evalResult = (Boolean) browser.evaluate("return true");
+		atomicBoolean.set(evalResult);
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
@@ -1538,18 +1466,12 @@ public void test_evaluate_null() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	 // Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(new Boolean(true));
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Object evalResult = browser.evaluate("return null");
-			returnValue.set(evalResult);
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Object evalResult = browser.evaluate("return null");
+		returnValue.set(evalResult);
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
@@ -1573,18 +1495,13 @@ public void test_evaluate_invalid_return_value() {
 	}
 
 	final AtomicInteger exception = new AtomicInteger(-1);
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {}
-		@Override
-		public void completed(ProgressEvent event) {
-			try {
-			browser.evaluate("return new Date()"); //Date is not supoprted as return value.
-			} catch (SWTException e) {
-				exception.set(e.code);
-			}
+	browser.addProgressListener(completedAdapter(event -> {
+		try {
+			browser.evaluate("return new Date()"); // Date is not supoprted as return value.
+		} catch (SWTException e) {
+			exception.set(e.code);
 		}
-	});
+	}));
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
@@ -1617,18 +1534,13 @@ public void test_evaluate_invalid_return_value() {
 public void test_evaluate_evaluation_failed_exception() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicInteger exception = new AtomicInteger(-1);
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {}
-		@Override
-		public void completed(ProgressEvent event) {
-			try {
+	browser.addProgressListener(completedAdapter(event -> {
+		try {
 			browser.evaluate("return runSomeUndefinedFunctionInJavaScriptWhichCausesUndefinedError()");
-			} catch (SWTException e) {
-				exception.set(e.code);
-			}
+		} catch (SWTException e) {
+			exception.set(e.code);
 		}
-	});
+	}));
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
@@ -1661,20 +1573,14 @@ public void test_evaluate_array_numbers() {
 	// for convienience we simply convert double to int as we're dealing with integers anyway.
 	final AtomicIntegerArray atomicIntArray = new AtomicIntegerArray(3);
 	atomicIntArray.set(0, -1);
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Object[] evalResult = (Object[]) browser.evaluate("return new Array(1,2,3)");
-			atomicIntArray.set(0, ((Double) evalResult[0]).intValue());
-			atomicIntArray.set(1, ((Double) evalResult[1]).intValue());
-			atomicIntArray.set(2, ((Double) evalResult[2]).intValue());
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Object[] evalResult = (Object[]) browser.evaluate("return new Array(1,2,3)");
+		atomicIntArray.set(0, ((Double) evalResult[0]).intValue());
+		atomicIntArray.set(1, ((Double) evalResult[1]).intValue());
+		atomicIntArray.set(2, ((Double) evalResult[2]).intValue());
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
@@ -1703,20 +1609,14 @@ public void test_evaluate_array_strings () {
 
 	final AtomicReferenceArray<String> atomicStringArray = new AtomicReferenceArray<>(3);
 	atomicStringArray.set(0, "executing");
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", \"str2\", \"str3\")");
-			atomicStringArray.set(0, (String) evalResult[0]);
-			atomicStringArray.set(1, (String) evalResult[1]);
-			atomicStringArray.set(2, (String) evalResult[2]);
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", \"str2\", \"str3\")");
+		atomicStringArray.set(0, (String) evalResult[0]);
+		atomicStringArray.set(1, (String) evalResult[1]);
+		atomicStringArray.set(2, (String) evalResult[2]);
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
 	shell.open();
@@ -1747,20 +1647,14 @@ public void test_evaluate_array_mixedTypes () {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3);
 	atomicArray.set(0, "executing");
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void changed(ProgressEvent event) {
-		}
-		@Override
-		public void completed(ProgressEvent event) {
-			Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", 2, true)");
-			atomicArray.set(2, evalResult[2]);
-			atomicArray.set(1, evalResult[1]);
-			atomicArray.set(0, evalResult[0]); // should be set last. to avoid loop below ending & failing to early.
-			if (debug_verbose_output)
-				System.out.println("Node value: "+ evalResult);
-		}
-	});
+	browser.addProgressListener(completedAdapter(event -> {
+		Object[] evalResult = (Object[]) browser.evaluate("return new Array(\"str1\", 2, true)");
+		atomicArray.set(2, evalResult[2]);
+		atomicArray.set(1, evalResult[1]);
+		atomicArray.set(0, evalResult[0]); // should be set last. to avoid loop below ending & failing to early.
+		if (debug_verbose_output)
+			System.out.println("Node value: " + evalResult);
+	}));
 
 
 	browser.setText("<html><body><p id='myid'>HelloWorld</p></body></html>");
@@ -1782,14 +1676,7 @@ public void test_evaluate_array_mixedTypes () {
 }
 
 
-ProgressListener callCustomFunctionUponLoad = new ProgressListener() {
-	@Override
-	public void changed(ProgressEvent event) {}
-	@Override
-	public void completed(ProgressEvent event) {
-		browser.execute("callCustomFunction()");
-	}
-};
+ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.execute("callCustomFunction()"));
 
 /**
  * Test that javascript can call java.
@@ -2169,16 +2056,8 @@ public void test_BrowserFunction_callback_afterPageReload() {
 	browser.setText("1st (initial) page load");
 	new JavascriptCallback(browser, "jsCallbackToJava");
 	browser.execute("jsCallbackToJava()");
-
-	browser.addProgressListener(new ProgressListener() {
-		@Override
-		public void completed(ProgressEvent event) {
-			// see if function still works after a page change:
-			browser.execute("jsCallbackToJava()");
-		}
-		@Override
-		public void changed(ProgressEvent event) {}
-	});
+	// see if function still works after a page change:
+	browser.addProgressListener(completedAdapter(e -> browser.execute("jsCallbackToJava()")));
 
 	shell.open();
 	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,14 +84,19 @@ public class Snippet128 {
 
 		/* event handling */
 		Listener listener = event -> {
-			ToolItem item = (ToolItem)event.widget;
+			ToolItem item = (ToolItem) event.widget;
 			String string = item.getText();
-			if (string.equals("Back")) browser.back();
-			else if (string.equals("Forward")) browser.forward();
-			else if (string.equals("Stop")) browser.stop();
-			else if (string.equals("Refresh")) browser.refresh();
-			else if (string.equals("Go")) browser.setUrl(location.getText());
-   };
+			if (string.equals("Back"))
+				browser.back();
+			else if (string.equals("Forward"))
+				browser.forward();
+			else if (string.equals("Stop"))
+				browser.stop();
+			else if (string.equals("Refresh"))
+				browser.refresh();
+			else if (string.equals("Go"))
+				browser.setUrl(location.getText());
+		};
 		browser.addProgressListener(new ProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
@@ -105,15 +110,10 @@ public class Snippet128 {
 			}
 		});
 		browser.addStatusTextListener(event -> status.setText(event.text));
-		browser.addLocationListener(new LocationListener() {
-			@Override
-			public void changed(LocationEvent event) {
+		browser.addLocationListener(LocationListener.changedAdapter(event -> {
 				if (event.top) location.setText(event.location);
 			}
-			@Override
-			public void changing(LocationEvent event) {
-			}
-		});
+		));
 		itemBack.addListener(SWT.Selection, listener);
 		itemForward.addListener(SWT.Selection, listener);
 		itemStop.addListener(SWT.Selection, listener);

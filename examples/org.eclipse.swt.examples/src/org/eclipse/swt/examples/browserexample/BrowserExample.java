@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,12 +18,10 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.VisibilityWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
@@ -95,17 +93,12 @@ public class BrowserExample {
 			browser.setUrl(getResourceString("Startup"));
 			show(false, null, null, true, true, true, true);
 		} else {
-			browser.addVisibilityWindowListener(new VisibilityWindowListener() {
-				@Override
-				public void hide(WindowEvent e) {
-				}
-				@Override
-				public void show(WindowEvent e) {
-					Browser browser = (Browser)e.widget;
-					BrowserExample app = (BrowserExample)browser.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
-					app.show(true, e.location, e.size, e.addressBar, e.menuBar, e.statusBar, e.toolBar);
-				}
-			});
+			browser.addVisibilityWindowListener(VisibilityWindowListener.showAdapter(e -> {
+				Browser browser = (Browser) e.widget;
+				BrowserExample app = (BrowserExample) browser
+						.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
+				app.show(true, e.location, e.size, e.addressBar, e.menuBar, e.statusBar, e.toolBar);
+			}));
 			browser.addCloseWindowListener(event -> {
 				Browser browser = (Browser)event.widget;
 				Shell shell = browser.getShell();
@@ -283,16 +276,11 @@ public class BrowserExample {
 			});
 		}
 		if (addressBar || statusBar || toolBar) {
-			browser.addLocationListener(new LocationListener() {
-				@Override
-				public void changed(LocationEvent event) {
+			browser.addLocationListener(LocationListener.changedAdapter(event -> {
 					busy = true;
 					if (event.top && locationBar != null) locationBar.setText(event.location);
 				}
-				@Override
-				public void changing(LocationEvent event) {
-				}
-			});
+			));
 		}
 		if (title) {
 			browser.addTitleListener(event -> shell.setText(event.title+" - "+getResourceString("window.title")));

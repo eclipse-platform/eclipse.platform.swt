@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,12 +43,7 @@ public static void main(String [] args) {
 		display.dispose();
 		return;
 	}
-	browser.addProgressListener(new ProgressAdapter() {
-		@Override
-		public void completed(ProgressEvent event) {
-			browser.execute(SCRIPT);
-		}
-	});
+	browser.addProgressListener(ProgressListener.completedAdapter(event ->	browser.execute(SCRIPT)));
 	browser.addStatusTextListener(event -> {
 		if (event.text.startsWith("MOUSEDOWN: ")) {
 			System.out.println(event.text);

@@ -11,8 +11,7 @@ import javax.swing.SwingUtilities;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationAdapter;
-import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -44,12 +43,9 @@ public Bug262974_ModalBrowserDialog() {
             shell.setLayout(new FillLayout());
             final Browser browser = new Browser(shell, SWT.NONE);
             browser.setUrl("http://www.google.com");
-            browser.addLocationListener(new LocationAdapter() {
-              @Override
-              public void changed(LocationEvent e) {
-                display.asyncExec(() -> browser.execute("alert('some dialog');"));
-              }
-            });
+            browser.addLocationListener(LocationListener.changedAdapter(e ->
+                display.asyncExec(() -> browser.execute("alert('some dialog');")))
+            );
             // The initial size is wrong on Windows so we have to force it
             shell.setSize(canvas_.getWidth(), canvas_.getHeight());
           });

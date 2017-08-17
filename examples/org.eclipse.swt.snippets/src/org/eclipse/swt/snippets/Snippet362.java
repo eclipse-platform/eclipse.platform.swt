@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 IBM Corporation and others.
+ * Copyright (c) 2012, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,20 +37,17 @@ public static void main(String [] args) {
 		display.dispose();
 		return;
 	}
-	browser.addProgressListener (new ProgressAdapter () {
-		@Override
-		public void completed (ProgressEvent event) {
-			final BrowserFunction function = new CustomFunction (browser, "mouseDownHappened");
-			browser.execute(SCRIPT);
-			browser.addLocationListener (new LocationAdapter () {
-				@Override
-				public void changed (LocationEvent event) {
-					browser.removeLocationListener (this);
-					function.dispose ();
-				}
-			});
-		}
-	});
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> {
+		final BrowserFunction function = new CustomFunction(browser, "mouseDownHappened");
+		browser.execute(SCRIPT);
+		browser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent event) {
+				browser.removeLocationListener(this);
+				function.dispose();
+			}
+		});
+	}));
 
 	browser.setUrl("eclipse.org");
 	shell.open();
