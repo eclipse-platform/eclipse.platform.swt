@@ -112,6 +112,10 @@ Sash createSash() {
  */
 @Override
 public int getOrientation() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
 }
@@ -146,6 +150,10 @@ public int getStyle() {
  * @return the control that currently is maximized or null
  */
 public Control getMaximizedControl(){
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return this.maxControl;
 }

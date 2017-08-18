@@ -145,6 +145,10 @@ public void dispose() {
  * </ul>
  */
 public Rectangle getBounds () {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	parent.runUpdate();
 	return new Rectangle(x, y, width, height);
@@ -208,6 +212,10 @@ public Font getFont() {
  * </ul>
  */
 public CTabFolder getParent () {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return parent;
 }

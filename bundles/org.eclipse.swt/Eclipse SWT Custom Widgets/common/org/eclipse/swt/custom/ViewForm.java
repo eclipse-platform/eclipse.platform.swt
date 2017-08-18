@@ -211,6 +211,10 @@ public Rectangle getClientArea() {
 * @return the control in the content area of the pane or null
 */
 public Control getContent() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the parent.
+	 */
 	//checkWidget();
 	return content;
 }
@@ -221,6 +225,10 @@ public Control getContent() {
 * @return the control in the top center of the pane or null
 */
 public Control getTopCenter() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return topCenter;
 }
@@ -231,6 +239,10 @@ public Control getTopCenter() {
 * @return the control in the top left corner of the pane or null
 */
 public Control getTopLeft() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return topLeft;
 }
@@ -241,6 +253,10 @@ public Control getTopLeft() {
 * @return the control in the top right corner of the pane or null
 */
 public Control getTopRight() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return topRight;
 }

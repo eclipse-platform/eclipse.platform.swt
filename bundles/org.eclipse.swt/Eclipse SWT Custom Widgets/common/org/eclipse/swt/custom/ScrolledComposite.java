@@ -209,6 +209,10 @@ boolean contains(Control control) {
  * @return the Always Show Scrollbars flag value
  */
 public boolean getAlwaysShowScrollBars() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return alwaysShowScroll;
 }
@@ -289,6 +293,10 @@ public int getMinHeight() {
  * @return the control displayed in the content area
  */
 public Control getContent() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return content;
 }

@@ -910,6 +910,10 @@ public Rectangle getClientArea() {
  * </ul>
  */
 public CTabItem getItem (int index) {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	if (index  < 0 || index >= items.length)
 		SWT.error(SWT.ERROR_INVALID_RANGE);
@@ -927,6 +931,10 @@ public CTabItem getItem (int index) {
  *	</ul>
  */
 public CTabItem getItem (Point pt) {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	if (items.length == 0) return null;
 	runUpdate();
@@ -965,6 +973,10 @@ public int getItemCount(){
  *	</ul>
  */
 public CTabItem [] getItems() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	CTabItem[] tabItems = new CTabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
@@ -1171,6 +1183,10 @@ int getRightItemEdge (GC gc){
  *	</ul>
  */
 public CTabItem getSelection() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
@@ -1219,6 +1235,10 @@ public Color getSelectionForeground() {
  *	</ul>
  */
 public int getSelectionIndex() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return selectedIndex;
 }

@@ -191,6 +191,10 @@ char _findMnemonic (String string) {
  * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
  */
 public int getAlignment() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return align;
 }
@@ -202,6 +206,10 @@ public int getAlignment() {
  * @since 3.6
  */
 public int getBottomMargin() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return bottomMargin;
 }
@@ -211,6 +219,10 @@ public int getBottomMargin() {
  * @return the image of the label or null
  */
 public Image getImage() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return image;
 }
@@ -222,6 +234,10 @@ public Image getImage() {
  * @since 3.6
  */
 public int getLeftMargin() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return leftMargin;
 }
@@ -233,6 +249,10 @@ public int getLeftMargin() {
  * @since 3.6
  */
 public int getRightMargin() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return rightMargin;
 }
@@ -278,6 +298,10 @@ public int getStyle () {
  * @return the text of the label or null
  */
 public String getText() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return text;
 }
@@ -294,6 +318,10 @@ public String getToolTipText () {
  * @since 3.6
  */
 public int getTopMargin() {
+	/*
+	 * This call is intentionally commented out, to allow this getter method to be
+	 * called from a thread which is different from one that created the widget.
+	 */
 	//checkWidget();
 	return topMargin;
 }
