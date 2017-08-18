@@ -2473,6 +2473,7 @@ void initClasses () {
 	long /*int*/ setNeedsDisplayInRectProc = OS.CALLBACK_setNeedsDisplayInRect_(proc3);
 	long /*int*/ expansionFrameWithFrameProc = OS.CALLBACK_expansionFrameWithFrame_inView_ (proc4);
 	long /*int*/ focusRingMaskBoundsForFrameProc = OS.CALLBACK_focusRingMaskBoundsForFrame_inView_ (proc4);
+	long /*int*/ cacheDisplayInRect_toBitmapImageRepProc = OS.CALLBACK_cacheDisplayInRect_toBitmapImageRep_ (proc4);
 	long /*int*/ sizeOfLabelProc = OS.CALLBACK_sizeOfLabel_ (proc3);
 	long /*int*/ drawLabelInRectProc = OS.CALLBACK_drawLabel_inRect_ (proc4);
 	long /*int*/ drawViewBackgroundInRectProc = OS.CALLBACK_drawViewBackgroundInRect_(proc3);
@@ -2547,6 +2548,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_readSelectionFromPasteboard_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_writeSelectionToPasteboard_types_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_viewWillMoveToWindow_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_cacheDisplayInRect_toBitmapImageRep_, cacheDisplayInRect_toBitmapImageRepProc, "@:{NSRect}@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2727,6 +2729,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_scrollClipView_toPoint_, scrollClipView_ToPointProc, "@:@{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_cacheDisplayInRect_toBitmapImageRep_, cacheDisplayInRect_toBitmapImageRepProc, "@:{NSRect}@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -6046,6 +6049,10 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		widget.menu_willHighlightItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_cacheDisplayInRect_toBitmapImageRep_) {
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg0, NSRect.sizeof);
+		widget.cacheDisplayInRect_toBitmapImageRep(id, sel, rect, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
 		NSRect rect = new NSRect ();
 		OS.memmove (rect, arg0, NSRect.sizeof);

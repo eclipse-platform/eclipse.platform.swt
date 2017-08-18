@@ -680,6 +680,8 @@ public static final native void objc_msgSend_stret(NSSize result, long /*int*/ i
 public static final native long /*int*/ CALLBACK_accessibilityHitTest_(long /*int*/ func);
 /** @method callback_types=NSAttributedString*;id;SEL;NSRange;,callback_flags=none;none;none;struct; */
 public static final native long /*int*/ CALLBACK_attributedSubstringFromRange_(long /*int*/ func);
+/** @method callback_types=void;id;SEL;NSRect;NSBitmapImageRep*;,callback_flags=none;none;none;struct;none; */
+public static final native long /*int*/ CALLBACK_cacheDisplayInRect_toBitmapImageRep_(long /*int*/ func);
 /** @method callback_types=BOOL;id;SEL;NSIndexSet*;NSPoint;,callback_flags=none;none;none;none;struct; */
 public static final native long /*int*/ CALLBACK_canDragRowsWithIndexes_atPoint_(long /*int*/ func);
 /** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */

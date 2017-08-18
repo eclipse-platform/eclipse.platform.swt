@@ -69,6 +69,7 @@ public abstract class Control extends Widget implements Drawable {
 	NSBezierPath regionPath;
 	long /*int*/ visibleRgn;
 	Accessible accessible;
+	boolean ignorePaint;
 	boolean touchEnabled;
 
 	final static int CLIPPING = 1 << 10;
@@ -1259,6 +1260,7 @@ boolean drawsBackground() {
 
 @Override
 void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+	if (ignorePaint) return;
 	if (id != paintView().id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
@@ -3961,6 +3963,22 @@ void setFrameSize (long /*int*/ id, long /*int*/ sel, NSSize size) {
 		resized ();
 		if (!oldResizing) state &= ~RESIZING;
 	}
+}
+
+@Override
+void cacheDisplayInRect_toBitmapImageRep (long id, long sel, NSRect rect, long rep) {
+	/*
+	 * When a GC is created with a control as the Drawable and GC.copyArea() is
+	 * called, a SWT.Paint event will be sent, unexpectedly. This happens because
+	 * NSView.cacheDisplayInRect() calls drawRect() which causes a SWT.Paint event
+	 * to be sent. The fix is to ignore this paint event and prevent SWT from
+	 * sending it to the clients.
+	 * In the callback, set the ignorePaint flag, then call the Cocoa
+	 * implementation of cacheDisplayInRect_toBitmapImageRep(), then reset the ignorePaint flag.
+	 */
+	ignorePaint = true;
+	super.cacheDisplayInRect_toBitmapImageRep(id, sel, rect, rep);
+	ignorePaint = false;
 }
 
 /**

@@ -214,6 +214,10 @@ long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, lo
 	return 0;
 }
 
+void cacheDisplayInRect_toBitmapImageRep (long id, long sel, NSRect rect, long imageRep) {
+	callSuper(id, sel, rect, imageRep);
+}
+
 void callSuper(long /*int*/ id, long /*int*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;

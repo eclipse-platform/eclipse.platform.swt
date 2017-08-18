@@ -23,6 +23,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1NSTextAttachmentCell_1cellSize",
 	"CALLBACK_1accessibilityHitTest_1",
 	"CALLBACK_1attributedSubstringFromRange_1",
+	"CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1",
 	"CALLBACK_1canDragRowsWithIndexes_1atPoint_1",
 	"CALLBACK_1cellBaselineOffset",
 	"CALLBACK_1cellSize",

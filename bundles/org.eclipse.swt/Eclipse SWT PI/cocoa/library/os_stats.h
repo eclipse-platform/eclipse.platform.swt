@@ -33,6 +33,7 @@ typedef enum {
 	CALLBACK_1NSTextAttachmentCell_1cellSize_FUNC,
 	CALLBACK_1accessibilityHitTest_1_FUNC,
 	CALLBACK_1attributedSubstringFromRange_1_FUNC,
+	CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1_FUNC,
 	CALLBACK_1canDragRowsWithIndexes_1atPoint_1_FUNC,
 	CALLBACK_1cellBaselineOffset_FUNC,
 	CALLBACK_1cellSize_FUNC,

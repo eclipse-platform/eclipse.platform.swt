@@ -457,6 +457,10 @@ public void copyArea(Image image, int x, int y) {
 			rect.height = size.height;
 			NSBitmapImageRep imageRep = topView.bitmapImageRepForCachingDisplayInRect(rect);
 			imageRep.setSize(size);
+			/*
+			 * NSView.cacheDisplayInRect will cause an unexpected SWT.Paint event to be sent.
+			 * This is handled by Control.cacheDisplayInRect_toBitmapImageRep().
+			 */
 			topView.cacheDisplayInRect(rect, imageRep);
 			NSBitmapImageRep rep = image.getRepresentation();
 			image.handle.addRepresentation(imageRep);

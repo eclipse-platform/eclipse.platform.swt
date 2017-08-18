@@ -135,6 +135,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1attributedSubstringFromRange_1)
 }
 #endif
 
+#ifndef NO_CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1
+static jintLong CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1;
+static void proc_CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1(id arg0, SEL arg1, NSRect arg2, NSBitmapImageRep* arg3) {
+	((void (*)(id, SEL, NSRect*, NSBitmapImageRep*))CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1)(arg0, arg1, &arg2, arg3);
+}
+static jintLong CALLBACK_cacheDisplayInRect_toBitmapImageRep_(jintLong func) {
+	CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1 = func;
+	return (jintLong)proc_CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1_FUNC);
+	rc = (jintLong)CALLBACK_cacheDisplayInRect_toBitmapImageRep_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1cacheDisplayInRect_1toBitmapImageRep_1_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1canDragRowsWithIndexes_1atPoint_1
 static jintLong CALLBACK_1canDragRowsWithIndexes_1atPoint_1;
 static BOOL proc_CALLBACK_1canDragRowsWithIndexes_1atPoint_1(id arg0, SEL arg1, NSIndexSet* arg2, NSPoint arg3) {
