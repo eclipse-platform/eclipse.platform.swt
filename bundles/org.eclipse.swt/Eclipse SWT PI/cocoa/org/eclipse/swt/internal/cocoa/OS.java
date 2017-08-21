@@ -177,6 +177,9 @@ public class OS extends C {
 	public static final int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
 	public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
 
+	/** 10.12 selector */
+	public static final long /*int*/ sel_setAllowsAutomaticWindowTabbing_ = sel_registerName("setAllowsAutomaticWindowTabbing:");
+
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final long /*int*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
 	public static final long /*int*/ sel_awtAppDelegate = sel_registerName("awtAppDelegate");

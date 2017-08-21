@@ -707,6 +707,15 @@ void createHandle () {
 				OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
 			}
 		}
+		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 12, 0)) {
+			/*
+			 * In macOS 10.12, a new system preference "prefer tabs when opening documents"
+			 * has been added which causes automatic tabbing of windows in Eclipse.
+			 * Disable automatic window tabbing, by setting the NSWindow.allowsAutomaticWindowTabbing
+			 * property to false.
+			 */
+			OS.objc_msgSend(OS.class_NSWindow, OS.sel_setAllowsAutomaticWindowTabbing_, false);
+		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
 		double /*float*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
