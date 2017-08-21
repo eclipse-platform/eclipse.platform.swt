@@ -779,7 +779,8 @@ private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc)
 	browserSetFunc.run();
 	shell.open();
 
-	boolean hasFinished = waitForPassCondition(() -> actualTitle.get().length() != 0);
+	boolean hasFinished = waitForPassCondition(() -> actualTitle.get().length() != 0
+			&& !actualTitle.get().contains("about:blank")); // Windows sometimes does 2 loads, one "about:blank", and one actual load.
 	boolean passed = hasFinished && actualTitle.get().equals(expectedTitle);
 	String errMsg = "";
 	if (!hasFinished)
