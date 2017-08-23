@@ -2730,7 +2730,7 @@ public void forceActive () {
 Rectangle getBoundsInPixels () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
-	OS.gtk_window_get_position (shellHandle, x, y);
+	OS.gdk_window_get_root_origin(OS.gtk_widget_get_window(shellHandle), x, y);
 	GtkAllocation allocation = new GtkAllocation ();
 	OS.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;

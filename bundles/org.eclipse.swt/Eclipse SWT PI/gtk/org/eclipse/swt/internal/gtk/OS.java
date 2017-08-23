@@ -5353,6 +5353,20 @@ public static final void gdk_window_get_position(long /*int*/ window, int[] x, i
 }
 /**
  * @param window cast=(GdkWindow *)
+ * @param x cast=(gint *)
+ * @param y cast=(gint *)
+ */
+public static final native void _gdk_window_get_root_origin(long /*int*/ window, int[] x, int[] y);
+public static final void gdk_window_get_root_origin(long /*int*/ window, int[] x, int[] y) {
+	lock.lock();
+	try {
+		_gdk_window_get_root_origin(window, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param window cast=(GdkWindow *)
  * @param data cast=(gpointer *)
  */
 public static final native void _gdk_window_get_user_data(long /*int*/ window, long /*int*/[] data);
