@@ -547,6 +547,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1get_1parent",
 	"_1gdk_1window_1get_1pointer",
 	"_1gdk_1window_1get_1position",
+	"_1gdk_1window_1get_1root_1origin",
 	"_1gdk_1window_1get_1user_1data",
 	"_1gdk_1window_1get_1visible_1region",
 	"_1gdk_1window_1get_1width",
