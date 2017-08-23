@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2015 IBM Corporation and others.
+# Copyright (c) 2000, 2017 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ GDIP_OBJS    = gdip.obj gdip_structs.obj gdip_stats.obj gdip_custom.obj
 
 AWT_PREFIX = swt-awt
 AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
+AWT_LIBS   = "$(JAVA_HOME)\lib\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
 WEBKIT_DIR 	  = $(WEBKIT_HOME)\WebKit-r72896

@@ -1,5 +1,5 @@
 @rem ***************************************************************************
-@rem Copyright (c) 2000, 2013 IBM Corporation and others.
+@rem Copyright (c) 2000, 2017 IBM Corporation and others.
 @rem All rights reserved. This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License v1.0
 @rem which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ IF x.%1==x.ia64 GOTO IA64
 
 :X86
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
-IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java2-sdk-50-win-i386
+IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-i386\sdk
 call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8\Common7\Tools\vsvars32.bat"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%1==x.x86 shift
@@ -33,7 +33,7 @@ GOTO MAKE
 
 set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
-IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk50-x86_64
+IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-x86_64\sdk
 set CFLAGS=-DJNI64
 call %MSSDK%\setenv /X64 /RETAIL
 shift
