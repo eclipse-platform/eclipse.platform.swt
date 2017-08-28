@@ -19,6 +19,15 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+JavaVM *cached_jvm = NULL;
+
+JNIEXPORT void JNICALL OS_NATIVE(_1cachejvmptr)
+	(JNIEnv *env, jclass that)
+{
+	/* cache the JavaVM pointer */
+	if (cached_jvm == NULL) (*env)->GetJavaVM(env, &cached_jvm);
+}
+
 #ifndef NO__1call_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1call_1get_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)

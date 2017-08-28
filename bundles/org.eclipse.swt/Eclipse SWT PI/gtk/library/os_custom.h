@@ -403,6 +403,9 @@ glong g_utf16_strlen(const gchar*, glong max);
 glong g_utf16_offset_to_utf8_offset(const gchar*, glong);
 glong g_utf8_offset_to_utf16_offset(const gchar*, glong);
 
+// Cached JVM pointer: see bug 521487.
+JavaVM *cached_jvm;
+
 #ifndef NO_SwtFixed
 
 #define SWT_TYPE_FIXED (swt_fixed_get_type ())

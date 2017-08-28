@@ -92,6 +92,7 @@ public class OS extends C {
 				Library.loadLibrary("swt-pi");
 			}
 		}
+		cachejvmptr();
 	}
 
 	//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
@@ -4261,6 +4262,19 @@ public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ ke
 	lock.lock();
 	try {
 		return _gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, group, keyval, effective_group, level, consumed_modifiers);
+	} finally {
+		lock.unlock();
+	}
+}
+
+// Cache the JVM pointer so that it's usable in other implementations.
+// This is a custom function defined in os_custom.c. See bug 521487.
+/** @method flags=no_gen */
+public static final native void _cachejvmptr ();
+public static final void cachejvmptr() {
+	lock.lock();
+	try {
+		_cachejvmptr();
 	} finally {
 		lock.unlock();
 	}
