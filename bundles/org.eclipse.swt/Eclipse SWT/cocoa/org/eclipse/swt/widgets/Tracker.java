@@ -47,7 +47,7 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	NSWindow window;
+	NSWindow windows[];
 	int oldX, oldY;
 
 	/*
@@ -489,8 +489,12 @@ void mouse (NSEvent nsEvent) {
 				draw = true;
 			}
 			if (draw) {
-				drawRectangles (window, rectsToErase, true);
-				drawRectangles (window, rectangles, false);
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectsToErase, true);
+				}
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectangles, false);
+				}
 			}
 			Point cursorPos = adjustResizeCursor (orientationInit);
 			if (cursorPos != null) {
@@ -535,8 +539,12 @@ void mouse (NSEvent nsEvent) {
 				draw = true;
 			}
 			if (draw) {
-				drawRectangles (window, rectsToErase, true);
-				drawRectangles (window, rectangles, false);
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectsToErase, true);
+				}
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectangles, false);
+				}
 			}
 		}
 		oldX = newX;  oldY = newY;
@@ -668,8 +676,12 @@ void key (NSEvent nsEvent) {
 				draw = true;
 			}
 			if (draw) {
-				drawRectangles (window, rectsToErase, true);
-				drawRectangles (window, rectangles, false);
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectsToErase, true);
+				}
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectangles, false);
+				}
 			}
 			cursorPos = adjustResizeCursor (true);
 		} else {
@@ -710,8 +722,12 @@ void key (NSEvent nsEvent) {
 				draw = true;
 			}
 			if (draw) {
-				drawRectangles (window, rectsToErase, true);
-				drawRectangles (window, rectangles, false);
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectsToErase, true);
+				}
+				for (int i = 0; i < windows.length; i++) {
+					drawRectangles (windows[i], rectangles, false);
+				}
 			}
 			cursorPos = adjustMoveCursor ();
 		}
@@ -753,45 +769,39 @@ public boolean open () {
 	Display display = this.display;
 	cancelled = false;
 	tracking = true;
-	window = (NSWindow)new NSWindow().alloc();
+
+	/*
+	 * Starting from OSX 10.9, displays have separate spaces by default. Hence, one
+	 * window can't be visible/drawn across multiple monitors. Due to this change,
+	 * we can't draw the Tracker rectangles on all the screens using a single
+	 * NSWindow. Fix is to use one NSWindow per screen.
+	 */
 	NSArray screens = NSScreen.screens();
-	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 	int count = (int)/*64*/screens.count();
+	windows = new NSWindow [count];
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
-		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
-		double /*float*/ y1 = frame.y, y2 = frame.y + frame.height;
-		if (x1 < minX) minX = x1;
-		if (x2 < minX) minX = x2;
-		if (x1 > maxX) maxX = x1;
-		if (x2 > maxX) maxX = x2;
-		if (y1 < minY) minY = y1;
-		if (y2 < minY) minY = y2;
-		if (y1 > maxY) maxY = y1;
-		if (y2 > maxY) maxY = y2;
+		NSWindow window = (NSWindow)new NSWindow().alloc();
+		window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window.setOpaque(false);
+		window.setLevel(OS.NSStatusWindowLevel);
+		window.setContentView(null);
+		window.setBackgroundColor(NSColor.clearColor());
+		NSGraphicsContext context = window.graphicsContext();
+		NSGraphicsContext.static_saveGraphicsState();
+		NSGraphicsContext.setCurrentContext(context);
+		context.setCompositingOperation(OS.NSCompositeClear);
+		frame.x = frame.y = 0;
+		NSBezierPath.fillRect(frame);
+		NSGraphicsContext.static_restoreGraphicsState();
+		window.orderFrontRegardless();
+		windows[i] = window;
 	}
-	NSRect frame = new NSRect();
-	frame.x = minX;
-	frame.y = minY;
-	frame.width = maxX - minX;
-	frame.height = maxY - minY;
-	window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
-	window.setOpaque(false);
-	window.setLevel(OS.NSStatusWindowLevel);
-	window.setContentView(null);
-	window.setBackgroundColor(NSColor.clearColor());
-	NSGraphicsContext context = window.graphicsContext();
-	NSGraphicsContext.static_saveGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
-	context.setCompositingOperation(OS.NSCompositeClear);
-	frame.x = frame.y = 0;
-	NSBezierPath.fillRect(frame);
-	NSGraphicsContext.static_restoreGraphicsState();
-	window.orderFrontRegardless();
 
-	drawRectangles (window, rectangles, false);
+	for (int i = 0; i < windows.length; i++) {
+		drawRectangles (windows[i], rectangles, false);
+	}
 
 	/*
 	* If exactly one of UP/DOWN is specified as a style then set the cursor
@@ -906,11 +916,18 @@ public boolean open () {
 	}
 	display.setCursor(display.findControl(true));
 	if (!isDisposed()) {
-		drawRectangles (window, rectangles, true);
+		for (int i = 0; i < windows.length; i++) {
+			drawRectangles (windows[i], rectangles, true);
+		}
 	}
-	if (window != null) window.close();
+	for (int i = 0; i < windows.length; i++) {
+		if (windows[i] != null) {
+			windows[i].close();
+			windows[i] = null;
+		}
+	}
 	tracking = false;
-	window = null;
+	windows = null;
 	return !cancelled;
 }
 
