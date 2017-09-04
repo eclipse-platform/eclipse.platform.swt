@@ -841,6 +841,22 @@ public class SWT {
 	@Deprecated
 	public static final int Wakeup = PostExternalEventDispatch;
 
+	/**
+	 * The open URL event type (value is 54).
+	 *
+	 * <p>
+	 * This event is sent when SWT receives notification that a URL
+	 * should be opened.
+	 * </p>
+	 * Note that this event is not sent on Linux/GTK platforms.
+	 *
+	 * @see org.eclipse.swt.widgets.Display#addListener
+	 * @see org.eclipse.swt.widgets.Event
+	 *
+	 * @since 3.107
+	 */
+	public static final int OpenUrl = 54;
+
 	/* Event Details */
 
 	/**

@@ -5549,6 +5549,18 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 			new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
 			return 0;
 		}
+		case sel_application_openUrls_: {
+			NSArray urls = new NSArray(arg1);
+			long /*int*/ count = urls.count();
+			for (int i=0; i<count; i++) {
+				String url = new NSString(urls.objectAtIndex(i)).getString();
+				Event event = new Event();
+				event.text = url;
+				display.sendEvent(SWT.OpenUrl, event);
+			}
+			// No need to call replyToOpenOrPrint on URLs
+			return 0;
+		}
 		case sel_applicationShouldHandleReopen_hasVisibleWindows_: {
 			final Event event = new Event();
 			display.sendEvent(SWT.Activate, event);

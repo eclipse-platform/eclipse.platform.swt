@@ -163,6 +163,7 @@ public enum Selector {
 	, sel_appendString_("appendString:")
 	, sel_application_openFile_("application:openFile:")
 	, sel_application_openFiles_("application:openFiles:")
+	, sel_application_openUrls_("application:openUrls:")
 	, sel_applicationDidBecomeActive_("applicationDidBecomeActive:")
 	, sel_applicationDidFinishLaunching_("applicationDidFinishLaunching:")
 	, sel_applicationDidResignActive_("applicationDidResignActive:")

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.net.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -3440,9 +3441,14 @@ long /*int*/ messageProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPar
 							item.sendSelectionEvent (SWT.Selection);
 						}
 					} else {
-						Event event = new Event();
+						Event event = new Event ();
 						event.text = filename;
-						sendEvent(SWT.OpenDocument, event);
+						try {
+							new URI (filename);
+							sendEvent (SWT.OpenUrl, event);
+						} catch (URISyntaxException e) {
+							sendEvent (SWT.OpenDocument, event);
+						}
 					}
 					wakeThread ();
 				}

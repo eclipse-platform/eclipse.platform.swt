@@ -1042,6 +1042,7 @@ public static final long /*int*/ sel_appendBezierPathWithRoundedRect_xRadius_yRa
 public static final long /*int*/ sel_appendString_ = Selector.sel_appendString_.value;
 public static final long /*int*/ sel_application_openFile_ = Selector.sel_application_openFile_.value;
 public static final long /*int*/ sel_application_openFiles_ = Selector.sel_application_openFiles_.value;
+public static final long /*int*/ sel_application_openUrls_ = Selector.sel_application_openUrls_.value;
 public static final long /*int*/ sel_applicationDidBecomeActive_ = Selector.sel_applicationDidBecomeActive_.value;
 public static final long /*int*/ sel_applicationDidFinishLaunching_ = Selector.sel_applicationDidFinishLaunching_.value;
 public static final long /*int*/ sel_applicationDidResignActive_ = Selector.sel_applicationDidResignActive_.value;
