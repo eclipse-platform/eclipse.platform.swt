@@ -12,10 +12,11 @@ package org.eclipse.swt.accessibility;
 
 
 import java.util.*;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.*;
 
 class AccessibleFactory {
 	static final Map<LONG, Accessible> Accessibles = new HashMap<> (9);
@@ -331,7 +332,7 @@ class AccessibleFactory {
 		}
 		/* if an atk object has already been created for this widget then just return it */
 		if (accessible.accessibleObject != null) {
-			return accessible.accessibleObject.handle;
+			return accessible.accessibleObject.atkHandle;
 		}
 		long /*int*/ widgetType = OS.G_OBJECT_TYPE (widget);
 		long /*int*/ parentType = getParentType (widgetType);
@@ -340,7 +341,7 @@ class AccessibleFactory {
 		AccessibleObject object = new AccessibleObject (type, widget, accessible, false);
 		accessible.accessibleObject = object;
 		accessible.addRelations ();
-		return object.handle;
+		return object.atkHandle;
 	}
 
 	static AccessibleObject createChildAccessible (Accessible accessible, int childId) {

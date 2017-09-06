@@ -327,6 +327,7 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
 static void swt_fixed_finalize (GObject *object);
 static void swt_fixed_realize (GtkWidget *widget);
 static void swt_fixed_map (GtkWidget *widget);
+static AtkObject *swt_fixed_get_accessible (GtkWidget *widget);
 static void swt_fixed_get_preferred_width (GtkWidget *widget, gint *minimum, gint *natural);
 static void swt_fixed_get_preferred_height (GtkWidget *widget, gint *minimum, gint *natural);
 static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocation);
@@ -358,6 +359,9 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	widget_class->get_preferred_width = swt_fixed_get_preferred_width;
 	widget_class->get_preferred_height = swt_fixed_get_preferred_height;
 	widget_class->size_allocate = swt_fixed_size_allocate;
+
+	/* Accessibility implementation */
+	widget_class->get_accessible = swt_fixed_get_accessible;
 
 	/* Container implementation */
 	container_class->add = swt_fixed_add;
@@ -429,6 +433,7 @@ static void swt_fixed_finalize (GObject *object) {
 
 	g_object_unref (priv->hadjustment);
 	g_object_unref (priv->vadjustment);
+	g_clear_object (&widget->accessible);
 
 	G_OBJECT_CLASS (swt_fixed_parent_class)->finalize (object);
 }
@@ -547,6 +552,16 @@ static void swt_fixed_map (GtkWidget *widget) {
 		//cases.
 		gdk_window_show_unraised (gtk_widget_get_window (widget));
 	}
+}
+
+/* Accessibility */
+static AtkObject *swt_fixed_get_accessible (GtkWidget *widget) {
+	SwtFixed *fixed = SWT_FIXED (widget);
+
+	if (!fixed->accessible) {
+		fixed->accessible = swt_fixed_accessible_new (widget);
+	}
+	return fixed->accessible;
 }
 
 static void swt_fixed_get_preferred_width (GtkWidget *widget, gint *minimum, gint *natural) {
@@ -731,6 +746,292 @@ static void swt_fixed_forall (GtkContainer *container, gboolean include_internal
 }
 
 
+#endif
+#ifndef NO_SwtFixedAccessible
+
+static void swt_fixed_accessible_class_init (SwtFixedAccessibleClass *klass);
+static void swt_fixed_accessible_finalize (GObject *object);
+static void swt_fixed_accessible_initialize (AtkObject *obj, gpointer data);
+static AtkAttributeSet *swt_fixed_accessible_get_attributes (AtkObject *obj);
+static const gchar *swt_fixed_accessible_get_description (AtkObject *obj);
+static gint swt_fixed_accessible_get_index_in_parent (AtkObject *obj);
+static gint swt_fixed_accessible_get_n_children (AtkObject *obj);
+static const gchar *swt_fixed_accessible_get_name (AtkObject *obj);
+static AtkObject *swt_fixed_accessible_get_parent (AtkObject *obj);
+static AtkRole swt_fixed_accessible_get_role (AtkObject *obj);
+static AtkObject *swt_fixed_accessible_ref_child (AtkObject *obj, gint i);
+static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *accessible);
+static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface);
+static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init))
+
+struct _SwtFixedAccessiblePrivate {
+	// A boolean flag which is set to TRUE when an Accessible Java
+	// object has been created for this SwtFixedAccessible instance
+	gboolean has_accessible;
+
+	// The GtkWidget this SwtFixedAccessible instance maps to.
+	GtkWidget *widget;
+};
+
+// Fully qualified Java class name for the Java implementation of ATK functions
+const char *ACCESSIBILITY_CLASS_NAME = "org/eclipse/swt/accessibility/AccessibleObject";
+
+static void swt_fixed_accessible_init (SwtFixedAccessible *accessible) {
+	// Initialize the SwtFixedAccessiblePrivate struct
+	accessible->priv = G_TYPE_INSTANCE_GET_PRIVATE (accessible, SWT_TYPE_FIXED_ACCESSIBLE, SwtFixedAccessiblePrivate);
+}
+
+static void swt_fixed_accessible_class_init (SwtFixedAccessibleClass *klass) {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	AtkObjectClass *atk_class = ATK_OBJECT_CLASS (klass);
+
+	// Override GObject functions
+	object_class->finalize = swt_fixed_accessible_finalize;
+
+	// Override AtkObject functions
+	atk_class->initialize = swt_fixed_accessible_initialize;
+	atk_class->get_attributes = swt_fixed_accessible_get_attributes;
+	atk_class->get_description = swt_fixed_accessible_get_description;
+	atk_class->get_index_in_parent = swt_fixed_accessible_get_index_in_parent;
+	atk_class->get_n_children = swt_fixed_accessible_get_n_children;
+	atk_class->get_name = swt_fixed_accessible_get_name;
+	atk_class->get_parent = swt_fixed_accessible_get_parent;
+	atk_class->get_role = swt_fixed_accessible_get_role;
+	atk_class->ref_child = swt_fixed_accessible_ref_child;
+	atk_class->ref_state_set = swt_fixed_accesssible_ref_state_set;
+
+	g_type_class_add_private (klass, sizeof (SwtFixedAccessiblePrivate));
+}
+
+AtkObject *swt_fixed_accessible_new (GtkWidget *widget) {
+	AtkObject *accessible;
+
+	g_return_val_if_fail (SWT_IS_FIXED (widget), NULL);
+
+	// Create the SwtFixedAccessible instance and call the initializer
+	accessible = g_object_new (SWT_TYPE_FIXED_ACCESSIBLE, NULL);
+	atk_object_initialize (accessible, widget);
+
+	return accessible;
+}
+
+static void swt_fixed_accessible_finalize (GObject *object) {
+	jintLong returned_value = 0;
+
+	// Call the Java implementation to ensure AccessibleObjects are removed
+	// from the HashMap on the Java side.
+	returned_value = call_accessible_object_function("gObjectClass_finalize", "(J)J", object);
+	if (returned_value != 0) g_critical ("Undefined behavior calling gObjectClass_finalize from C\n");
+
+	// Chain up to the parent class
+	G_OBJECT_CLASS (swt_fixed_accessible_parent_class)->finalize (object);
+	return;
+}
+
+// This method is called from Java when an Accessible Java object that corresponds
+// to this SwtFixedAccessible instance has been created.
+void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_native, GtkWidget *to_map) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	private->has_accessible = TRUE;
+
+	// TODO_a11y: implement support for native GTK widgets on the Java side,
+	// some work might need to be done here.
+	if (!is_native) {
+		private->has_accessible = TRUE;
+		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), private->widget);
+	}
+
+	return;
+}
+
+static void swt_fixed_accessible_initialize (AtkObject *obj, gpointer data) {
+	// Call parent class initializer function
+	if (ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->initialize != NULL) {
+		ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->initialize (obj, data);
+	}
+
+	SwtFixedAccessiblePrivate *private = SWT_FIXED_ACCESSIBLE (obj)->priv;
+	// If this SwtFixedAccessible instance has a corresponding Accessible
+	// Java object created for it, then we can map it to its widget. Otherwise,
+	// map it to NULL. This means that only widgets with an Accessible Java object
+	// created get ATK function/interface implementations.
+	if (private->has_accessible) {
+		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), GTK_WIDGET (data));
+	} else {
+		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), NULL);
+		private->widget = GTK_WIDGET (data);
+	}
+}
+
+static AtkAttributeSet *swt_fixed_accessible_get_attributes (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_attributes", "(J)J", obj);
+		return (AtkAttributeSet *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_attributes (obj);
+	}
+}
+
+static const gchar *swt_fixed_accessible_get_description (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_description", "(J)J", obj);
+		return (const gchar *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_description (obj);
+	}
+}
+
+static gint swt_fixed_accessible_get_index_in_parent (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_index_in_parent", "(J)J", obj);
+		return (gint) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_index_in_parent (obj);
+	}
+}
+
+static gint swt_fixed_accessible_get_n_children (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_n_children", "(J)J", obj);
+		return (gint) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_n_children (obj);
+	}
+}
+
+static const gchar *swt_fixed_accessible_get_name (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_name", "(J)J", obj);
+		return (const gchar *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_name (obj);
+	}
+}
+
+static AtkObject *swt_fixed_accessible_get_parent (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_parent", "(J)J", obj);
+		return (AtkObject *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_parent (obj);
+	}
+}
+
+static AtkRole swt_fixed_accessible_get_role (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_get_role", "(J)J", obj);
+		return returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->get_role (obj);
+	}
+}
+
+static AtkObject *swt_fixed_accessible_ref_child (AtkObject *obj, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_ref_child", "(JJ)J", obj, i);
+		return (AtkObject *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->ref_child (obj, i);
+	}
+}
+
+static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *obj) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkObject_ref_state_set", "(J)J", obj);
+		return (AtkStateSet *) returned_value;
+	} else {
+		return ATK_OBJECT_CLASS (swt_fixed_accessible_parent_class)->ref_state_set (obj);
+	}
+}
+
+// TODO_a11y: to be implemented later
+static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
+}
+
+// TODO_a11y: to be implemented later
+static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface) {
+}
+
+jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...) {
+	jintLong result = 0;
+	va_list arg_list;
+	jclass cls;
+	JNIEnv *env;
+	jmethodID mid;
+
+	if (method_name == NULL || method_signature == NULL) {
+		g_critical("Error calling Java method with JNI, check method name and signature\n");
+		return 0;
+	}
+
+	// Get the JNIEnv pointer
+	if ((*cached_jvm)->GetEnv(cached_jvm, (void **)&env, JNI_VERSION_1_2)) {
+		g_critical("Error fetching the JNIEnv pointer\n");
+		return 0;
+	}
+
+	// Find the class pointer
+	cls = (*env)->FindClass(env, ACCESSIBILITY_CLASS_NAME);
+	if (cls == NULL) {
+		g_critical("JNI class pointer is NULL for class %s\n", ACCESSIBILITY_CLASS_NAME);
+		return 0;
+	}
+
+	// Find the method ID
+	mid = (*env)->GetStaticMethodID(env, cls, method_name, method_signature);
+
+	// If the method ID isn't NULL
+	if (mid == NULL) {
+		g_critical("JNI method ID pointer is NULL for class %s\n", method_name);
+	} else {
+		va_start(arg_list, method_signature);
+		result = (*env)->CallStaticLongMethodV(env, cls, mid, arg_list);
+		va_end(arg_list);
+	}
+
+	return result;
+}
 #endif
 
 //Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1

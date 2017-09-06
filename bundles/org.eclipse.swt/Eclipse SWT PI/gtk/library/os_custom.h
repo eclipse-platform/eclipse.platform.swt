@@ -426,6 +426,9 @@ struct _SwtFixed
 
   /*< private >*/
   SwtFixedPrivate *priv;
+
+  /* Accessibility */
+  AtkObject *accessible;
 };
 
 struct _SwtFixedClass
@@ -439,6 +442,35 @@ void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, g
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
 void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
 
+#endif
+
+#ifndef NO_SwtFixedAccessible
+#include <gtk/gtk-a11y.h>
+
+#define SWT_TYPE_FIXED_ACCESSIBLE      (swt_fixed_accessible_get_type ())
+#define SWT_FIXED_ACCESSIBLE(obj)      (G_TYPE_CHECK_INSTANCE_CAST ((obj), SWT_TYPE_FIXED_ACCESSIBLE, SwtFixedAccessible))
+#define SWT_IS_FIXED_ACCESSIBLE(obj)   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SWT_TYPE_FIXED_ACCESSIBLE))
+
+typedef struct _SwtFixedAccessible SwtFixedAccessible;
+typedef struct _SwtFixedAccessiblePrivate SwtFixedAccessiblePrivate;
+typedef struct _SwtFixedAccessibleClass SwtFixedAccessibleClass;
+
+struct _SwtFixedAccessible
+{
+	GtkContainerAccessible parent;
+
+	SwtFixedAccessiblePrivate *priv;
+};
+
+struct _SwtFixedAccessibleClass
+{
+	GtkContainerAccessibleClass parent_class;
+};
+
+GType swt_fixed_accessible_get_type (void) G_GNUC_CONST;
+AtkObject *swt_fixed_accessible_new (GtkWidget *widget);
+void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_native, GtkWidget *to_map);
+jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...);
 #endif
 
 void swt_debug_on_fatal_warnings() ;

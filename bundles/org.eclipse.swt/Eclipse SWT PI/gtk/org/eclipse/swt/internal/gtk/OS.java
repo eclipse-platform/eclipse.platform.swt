@@ -16345,12 +16345,34 @@ public static final void swt_debug_on_fatal_warnings() {
 		lock.unlock();
 	}
 }
-
 public static final native long /*int*/ _swt_fixed_get_type();
 public static final long /*int*/ swt_fixed_get_type() {
 	lock.lock();
 	try {
 		return _swt_fixed_get_type();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native long /*int*/ _swt_fixed_accessible_get_type();
+public static final long /*int*/ swt_fixed_accessible_get_type() {
+	lock.lock();
+	try {
+		return _swt_fixed_accessible_get_type();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param obj cast=(AtkObject*)
+ * @param is_native cast=(gboolean)
+ * @param to_map cast=(GtkWidget *)
+ */
+public static final native void _swt_fixed_accessible_register_accessible(long /*int*/ obj, boolean is_native, long /*int*/ to_map);
+public static final void swt_fixed_accessible_register_accessible(long /*int*/ obj, boolean is_native, long /*int*/ to_map) {
+	lock.lock();
+	try {
+		_swt_fixed_accessible_register_accessible(obj, is_native, to_map);
 	} finally {
 		lock.unlock();
 	}

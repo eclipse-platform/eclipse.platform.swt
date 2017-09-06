@@ -1525,6 +1525,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1tab_1array_1new",
 	"_1pango_1tab_1array_1set_1tab",
 	"_1swt_1debug_1on_1fatal_1warnings",
+	"_1swt_1fixed_1accessible_1get_1type",
+	"_1swt_1fixed_1accessible_1register_1accessible",
 	"_1swt_1fixed_1get_1type",
 	"_1swt_1fixed_1move",
 	"_1swt_1fixed_1resize",

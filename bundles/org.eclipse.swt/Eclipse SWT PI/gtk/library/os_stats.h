@@ -1535,6 +1535,8 @@ typedef enum {
 	_1pango_1tab_1array_1new_FUNC,
 	_1pango_1tab_1array_1set_1tab_FUNC,
 	_1swt_1debug_1on_1fatal_1warnings_FUNC,
+	_1swt_1fixed_1accessible_1get_1type_FUNC,
+	_1swt_1fixed_1accessible_1register_1accessible_FUNC,
 	_1swt_1fixed_1get_1type_FUNC,
 	_1swt_1fixed_1move_FUNC,
 	_1swt_1fixed_1resize_FUNC,

@@ -206,6 +206,10 @@
 #define NO__1swt_1fixed_1restack
 #define NO__1gtk_1widget_1input_1shape_1combine_1region
 
+#define NO_SwtFixedAccessible
+#define NO__1swt_1fixed_1accessible_1get_1type
+#define NO__1swt_1fixed_1accessible_1register_1accessible
+
 #define NO_GdkRGBA
 #define NO__1GDK_1TYPE_1RGBA
 #define NO__1gtk_1widget_1draw

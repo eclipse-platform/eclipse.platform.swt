@@ -18569,6 +18569,28 @@ JNIEXPORT void JNICALL OS_NATIVE(_1swt_1debug_1on_1fatal_1warnings)
 }
 #endif
 
+#ifndef NO__1swt_1fixed_1accessible_1get_1type
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1swt_1fixed_1accessible_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1accessible_1get_1type_FUNC);
+	rc = (jintLong)swt_fixed_accessible_get_type();
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1accessible_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1swt_1fixed_1accessible_1register_1accessible
+JNIEXPORT void JNICALL OS_NATIVE(_1swt_1fixed_1accessible_1register_1accessible)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1, jintLong arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1accessible_1register_1accessible_FUNC);
+	swt_fixed_accessible_register_accessible((AtkObject*)arg0, (gboolean)arg1, (GtkWidget *)arg2);
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1accessible_1register_1accessible_FUNC);
+}
+#endif
+
 #ifndef NO__1swt_1fixed_1get_1type
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1swt_1fixed_1get_1type)
 	(JNIEnv *env, jclass that)
