@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Anton Leherbauer (Wind River Systems) - Bug 439419
+ *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -24,6 +25,10 @@ class StyledTextRenderer {
 	Device device;
 	StyledText styledText;
 	StyledTextContent content;
+
+	/* Custom line spacing */
+	StyledTextLineSpacingProvider lineSpacingProvider;
+	boolean lineSpacingComputing;
 
 	/* Font info */
 	Font regularFont, boldFont, italicFont, boldItalicFont;
@@ -601,6 +606,9 @@ int[] getLineTabStops(int index, int[] defaultTabStops) {
 	}
 	return defaultTabStops;
 }
+StyledTextLineSpacingProvider getLineSpacingProvider() {
+	return lineSpacingProvider;
+}
 int getRangeIndex(int offset, int low, int high) {
 	if (styleCount == 0) return 0;
 	if (ranges != null)  {
@@ -716,7 +724,53 @@ StyleRange getStyleRange(StyleRange style) {
 	return clone;
 }
 TextLayout getTextLayout(int lineIndex) {
-	return getTextLayout(lineIndex, styledText.getOrientation(), styledText.getWrapWidth(), styledText.lineSpacing);
+	if (lineSpacingProvider == null) {
+		return getTextLayout(lineIndex, styledText.getOrientation(), styledText.getWrapWidth(), styledText.lineSpacing);
+	}
+	// Compute line spacing for the given line index.
+	int newLineSpacing = styledText.lineSpacing;
+	Integer spacing = lineSpacingProvider.getLineSpacing(lineIndex);
+	if (spacing != null && spacing.intValue() >= 0) {
+		newLineSpacing = spacing;
+	}
+	// Check if line spacing has not changed
+	if (isSameLineSpacing(lineIndex, newLineSpacing)) {
+		return getTextLayout(lineIndex, styledText.getOrientation(), styledText.getWrapWidth(), newLineSpacing);
+	}
+	// Get text layout with original StyledText line spacing.
+	TextLayout layout = getTextLayout(lineIndex, styledText.getOrientation(), styledText.getWrapWidth(),
+			styledText.lineSpacing);
+	if (layout.getSpacing() != newLineSpacing) {
+		layout.setSpacing(newLineSpacing);
+		if (lineSpacingComputing) {
+			return layout;
+		}
+		try {
+			/* Call of resetCache, setCaretLocation, redraw call getTextLayout method
+			 * To avoid having stack overflow, lineSpacingComputing flag is used to call
+			 * resetCache, setCaretLocation, redraw methods only at the end of the compute of all lines spacing.
+			 */
+			lineSpacingComputing = true;
+			styledText.resetCache(lineIndex, styledText.getLineCount());
+			styledText.setVariableLineHeight();
+			styledText.setCaretLocation();
+			styledText.redraw();
+		} finally {
+			lineSpacingComputing = false;
+		}
+	}
+	return layout;
+}
+boolean isSameLineSpacing(int lineIndex, int newLineSpacing) {
+	if (layouts == null) {
+		return false;
+	}
+	int layoutIndex = lineIndex - topIndex;
+	if (0 <= layoutIndex && layoutIndex < layouts.length) {
+		TextLayout layout = layouts[layoutIndex];
+		return layout != null && !layout.isDisposed() && layout.getSpacing() == newLineSpacing;
+	}
+	return false;
 }
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
 	TextLayout layout = null;
@@ -1229,6 +1283,9 @@ void setLineTabStops(int startLine, int count, int[] tabStops) {
 		lines[i].flags |= TABSTOPS;
 		lines[i].tabStops = tabStops;
 	}
+}
+void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProvider) {
+	this.lineSpacingProvider = lineSpacingProvider;
 }
 void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 	if (newStyles == null) {

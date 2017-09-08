@@ -9,6 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Andrey Loskutov <loskutov@gmx.de> - bug 488172
  *     Stefan Xenos (Google) - bug 487254 - StyledText.getTopIndex() can return negative values
+ *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -9290,18 +9291,46 @@ public void setLineJustify(int startLine, int lineCount, boolean justify) {
 }
 /**
  * Sets the line spacing of the widget. The line spacing applies for all lines.
+ * In the case of #setLineSpacingProvider(StyledTextLineSpacingProvider) is customized,
+ * the line spacing are applied only for the lines which are not managed by {@link StyledTextLineSpacingProvider}.
  *
  * @param lineSpacing the line spacing
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @see #setLineSpacingProvider(StyledTextLineSpacingProvider)
  * @since 3.2
  */
 public void setLineSpacing(int lineSpacing) {
 	checkWidget();
 	if (this.lineSpacing == lineSpacing || lineSpacing < 0) return;
 	this.lineSpacing = lineSpacing;
+	setVariableLineHeight();
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	super.redraw();
+}
+/**
+ * Sets the line spacing provider of the widget. The line spacing applies for some lines with customized spacing
+ * or reset the customized spacing if the argument is null.
+ *
+ * @param lineSpacingProvider the line spacing provider (or null)
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * </ul>
+ * @see #setLineSpacingProvider(StyledTextLineSpacingProvider)
+ * @since 3.107
+ */
+public void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProvider) {
+	checkWidget();
+	if (renderer.getLineSpacingProvider() == null && lineSpacingProvider == null
+			|| (renderer.getLineSpacingProvider() != null
+					&& renderer.getLineSpacingProvider().equals(lineSpacingProvider)))
+		return;
+	renderer.setLineSpacingProvider(lineSpacingProvider);
 	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
