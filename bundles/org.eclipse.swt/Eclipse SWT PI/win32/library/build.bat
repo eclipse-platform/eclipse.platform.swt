@@ -24,7 +24,7 @@ IF x.%1==x.ia64 GOTO IA64
 :X86
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-i386\sdk
-call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 9.0\Common7\Tools\vsvars32.bat"
+call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8\Common7\Tools\vsvars32.bat"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%1==x.x86 shift
 GOTO MAKE
