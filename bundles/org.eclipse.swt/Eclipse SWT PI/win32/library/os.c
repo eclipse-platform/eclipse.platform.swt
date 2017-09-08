@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13115,6 +13115,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(SHBrowseForFolderW)
 fail:
 	if (arg0 && lparg0) setBROWSEINFOFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, SHBrowseForFolderW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SHCreateItemFromParsingName
+JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemFromParsingName)
+	(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1, jbyteArray arg2, jintLongArray arg3)
+{
+	jchar *lparg0=NULL;
+	jbyte *lparg2=NULL;
+	jintLong *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SHCreateItemFromParsingName_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)SHCreateItemFromParsingName(lparg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, SHCreateItemFromParsingName)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *, jintLong, jbyte *, jintLong *))fp)(lparg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SHCreateItemFromParsingName_FUNC);
 	return rc;
 }
 #endif
