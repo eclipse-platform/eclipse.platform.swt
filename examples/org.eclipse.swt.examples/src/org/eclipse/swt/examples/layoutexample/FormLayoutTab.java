@@ -373,7 +373,7 @@ class FormLayoutTab extends Tab {
 					if (data.left.control != null) {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (LEFT_COL);
-						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
+						int index = Integer.valueOf(controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
 						code.append ("\t\tdata.left = new FormAttachment (" + names [index] + ", " + data.left.offset + ", SWT." + alignmentString (data.left.alignment) + ");\n");
 					} else {
 						if (data.right != null || (data.left.numerator != 0 ||data.left.offset != 0)) {
@@ -468,12 +468,12 @@ class FormLayoutTab extends Tab {
 				nameText.setText (oldItem.getText (NAME_COL));
 			}
 			try {
-				new Integer (widthText.getText ()).intValue ();
+				Integer.parseInt(widthText.getText ());
 			} catch (NumberFormatException e) {
 				widthText.setText (oldItem.getText (WIDTH_COL));
 			}
 			try {
-				Integer.valueOf(heightText.getText()).intValue();
+				Integer.parseInt(heightText.getText());
 			} catch(NumberFormatException e) {
 				heightText.setText (oldItem.getText(HEIGHT_COL));
 			}
@@ -517,11 +517,11 @@ class FormLayoutTab extends Tab {
 				i++;
 			}
 			String end = control.substring (i);
-			int index = new Integer (end).intValue ();
+			int index = Integer.valueOf(end).intValue ();
 			Control attachControl = children [index];
 			int colon = attachment.indexOf (':');
 			try {
-				offset = new Integer (attachment.substring (comma + 1, colon)).intValue ();
+				offset = Integer.valueOf(attachment.substring (comma + 1, colon)).intValue ();
 			} catch (NumberFormatException e) {
 				offset = 0;
 			}
@@ -554,8 +554,8 @@ class FormLayoutTab extends Tab {
 		int width, height;
 		String left, right, top, bottom;
 		for (int i = 0; i < children.length; i++) {
-			width = new Integer (items [i].getText (WIDTH_COL)).intValue ();
-			height = new Integer (items [i].getText (HEIGHT_COL)).intValue ();
+			width = Integer.valueOf(items [i].getText (WIDTH_COL)).intValue ();
+			height = Integer.valueOf(items [i].getText (HEIGHT_COL)).intValue ();
 			data = new FormData ();
 			if (width > 0) data.width = width;
 			if (height > 0) data.height = height;
@@ -744,7 +744,7 @@ class FormLayoutTab extends Tab {
 				if (positionInput.length() == 0)
 					positionInput = "0";
 				try {
-					new Integer(positionInput).intValue();
+					Integer.parseInt(positionInput);
 				} catch (NumberFormatException except) {
 					positionInput = "0";
 				}
@@ -752,7 +752,7 @@ class FormLayoutTab extends Tab {
 				if (offsetInput.length() == 0)
 					offsetInput = "0";
 				try {
-					new Integer(offsetInput).intValue();
+					Integer.parseInt(offsetInput);
 				} catch (NumberFormatException except) {
 					offsetInput = "0";
 				}

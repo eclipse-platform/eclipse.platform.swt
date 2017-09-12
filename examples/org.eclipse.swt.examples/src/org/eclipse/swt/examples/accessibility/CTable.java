@@ -1704,7 +1704,7 @@ boolean headerUpdateToolTip (int x) {
 
 	toolTipLabel.setText (tooltip);
 	CTableColumn column = getOrderedColumns () [computeColumnIntersect (x, 0)];
-	toolTipShell.setData (new Integer (column.getIndex ()));
+	toolTipShell.setData (Integer.valueOf (column.getIndex ()));
 	Point labelSize = toolTipLabel.computeSize (SWT.DEFAULT, SWT.DEFAULT, true);
 	labelSize.x += 2; labelSize.y += 2;
 	toolTipLabel.setSize (labelSize);

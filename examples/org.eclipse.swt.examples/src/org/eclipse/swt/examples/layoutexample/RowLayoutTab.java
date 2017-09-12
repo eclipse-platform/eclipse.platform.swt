@@ -370,12 +370,12 @@ class RowLayoutTab extends Tab {
 				nameText.setText(oldItem.getText(NAME_COL));
 			}
 			try {
-				new Integer (widthText.getText ()).intValue ();
+				Integer.parseInt(widthText.getText ());
 			} catch (NumberFormatException e) {
 				widthText.setText (oldItem.getText (WIDTH_COL));
 			}
 			try {
-				new Integer (heightText.getText ()).intValue ();
+				Integer.parseInt(heightText.getText ());
 			} catch (NumberFormatException e) {
 				heightText.setText (oldItem.getText (HEIGHT_COL));
 			}
@@ -405,8 +405,8 @@ class RowLayoutTab extends Tab {
 		int width, height;
 		String exclude;
 		for (int i = 0; i < children.length; i++) {
-			width = new Integer (items [i].getText (WIDTH_COL)).intValue ();
-			height = new Integer (items [i].getText (HEIGHT_COL)).intValue ();
+			width = Integer.valueOf(items [i].getText (WIDTH_COL)).intValue ();
+			height = Integer.valueOf(items [i].getText (HEIGHT_COL)).intValue ();
 			data = new RowData (width, height);
 			exclude = items [i].getText (EXCLUDE_COL);
 			data.exclude = exclude.equals ("true");

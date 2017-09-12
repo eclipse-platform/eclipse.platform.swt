@@ -1094,9 +1094,9 @@ abstract class Tab {
 				} else if (typeName.equals("int")) {
 					parameter = new Object[] {Integer.valueOf(value)};
 				} else if (typeName.equals("long")) {
-					parameter = new Object[] {new Long(value)};
+					parameter = new Object[] {Long.valueOf(value)};
 				} else if (typeName.equals("char")) {
-					parameter = new Object[] {value.length() == 1 ? new Character(value.charAt(0)) : new Character('\0')};
+					parameter = new Object[] {value.length() == 1 ? Character.valueOf(value.charAt(0)) : Character.valueOf('\0')};
 				} else if (typeName.equals("boolean")) {
 					parameter = new Object[] {Boolean.valueOf(value)};
 				} else if (typeName.equals("java.lang.String")) {

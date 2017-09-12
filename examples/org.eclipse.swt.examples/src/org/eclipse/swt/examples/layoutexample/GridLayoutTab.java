@@ -540,42 +540,42 @@ class GridLayoutTab extends Tab {
 				nameText.setText (oldItem.getText (NAME_COL));
 			}
 			try {
-				new Integer (widthText.getText ()).intValue ();
+				Integer.parseInt(widthText.getText ());
 			} catch (NumberFormatException e) {
 				widthText.setText (oldItem.getText (WIDTH_COL));
 			}
 			try {
-				new Integer (heightText.getText ()).intValue ();
+				Integer.parseInt(heightText.getText ());
 			} catch (NumberFormatException e) {
 				heightText.setText (oldItem.getText (HEIGHT_COL));
 			}
 			try {
-				new Integer (hSpan.getText ()).intValue ();
+				Integer.parseInt(hSpan.getText ());
 			} catch (NumberFormatException e) {
 				hSpan.setText (oldItem.getText (HSPAN_COL));
 			}
 			try {
-				new Integer (vSpan.getText ()).intValue ();
+				Integer.parseInt(vSpan.getText ());
 			} catch (NumberFormatException e) {
 				vSpan.setText (oldItem.getText (VSPAN_COL));
 			}
 			try {
-				new Integer (hIndent.getText ()).intValue ();
+				Integer.parseInt(hIndent.getText ());
 			} catch (NumberFormatException e) {
 				hIndent.setText (oldItem.getText (HINDENT_COL));
 			}
 			try {
-				new Integer (vIndent.getText ()).intValue ();
+				Integer.parseInt(vIndent.getText ());
 			} catch (NumberFormatException e) {
 				vIndent.setText (oldItem.getText (VINDENT_COL));
 			}
 			try {
-				new Integer (minWidthText.getText ()).intValue ();
+				Integer.parseInt(minWidthText.getText ());
 			} catch (NumberFormatException e) {
 				minWidthText.setText (oldItem.getText (MINWIDTH_COL));
 			}
 			try {
-				new Integer (minHeightText.getText ()).intValue ();
+				Integer.parseInt(minHeightText.getText ());
 			} catch (NumberFormatException e) {
 				minHeightText.setText (oldItem.getText (MINHEIGHT_COL));
 			}
@@ -620,8 +620,8 @@ class GridLayoutTab extends Tab {
 		for (int i = 0; i < children.length; i++) {
 			data = new GridData ();
 			/* Set widthHint and heightHint */
-			data.widthHint = new Integer (items [i].getText (WIDTH_COL)).intValue ();
-			data.heightHint = new Integer (items [i].getText (HEIGHT_COL)).intValue ();
+			data.widthHint = Integer.valueOf(items [i].getText (WIDTH_COL)).intValue ();
+			data.heightHint = Integer.valueOf(items [i].getText (HEIGHT_COL)).intValue ();
 			/* Set vertical alignment and horizontal alignment */
 			hAlign = items [i].getText (HALIGN_COL);
 			if (hAlign.equals ("CENTER")) {

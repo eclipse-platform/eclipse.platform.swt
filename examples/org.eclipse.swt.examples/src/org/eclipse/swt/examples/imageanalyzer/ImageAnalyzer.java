@@ -1703,7 +1703,7 @@ public class ImageAnalyzer {
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
 		transparentPixelLabel.setText(string);
 
-		string = createMsg(bundle.getString("Time_to_load_value"), new Long(loadTime));
+		string = createMsg(bundle.getString("Time_to_load_value"), Long.valueOf(loadTime));
 		timeToLoadLabel.setText(string);
 
 		string = createMsg(bundle.getString("Animation_size_value"),
