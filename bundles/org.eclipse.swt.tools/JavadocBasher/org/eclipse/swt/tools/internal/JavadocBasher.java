@@ -2,6 +2,7 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.*;
 
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jface.text.*;
@@ -9,7 +10,7 @@ import org.eclipse.jface.text.*;
 /**
  * Bashes the javadoc from one source tree into another. Only produces new
  * source files for compilation units that have changed.
- * 
+ *
  * How to use: 1) make sure you have the latest org.eclipse.swt (master branch)
  * in your workspace, and that you have no outstanding org.eclipse.swt changes
  * 2) create a Bugzilla bug called
@@ -30,7 +31,7 @@ import org.eclipse.jface.text.*;
  * before a javadoc comment) 10) use the Bugzilla bug as the commit comment for
  * javadoc and copyright bash commits 11) make a version of the org.eclipse.swt
  * project after bashing (use tag name AFTER_...)
- * 
+ *
  * 12) Copyright bash (tag before and after): NOTE: JavadocBasher does not fix
  * copyrights. Use the "Fix Copyrights" tool in org.eclipse.releng.tools for
  * that (always fix copyrights after bash). Use Help->Install New Software... to
@@ -52,7 +53,7 @@ import org.eclipse.jface.text.*;
  * internal/mozilla have 2 copyright lines and the tool tries to change the 1st
  * - don't keep the 1st change (Netscape 1998-2015), but update the 2nd (IBM)
  * manually.
- * 
+ *
  * NOTE: JavadocBasher now does a fairly good job of checking API consistency.
  * We used to use org.eclipse.swt.diff for API consistency checking, but it was
  * difficult to maintain.
@@ -417,14 +418,14 @@ public class JavadocBasher {
 				"Display.getSystemFont",
 				"Display.msg",
 				"Menu.handle",
-				"Shell.win32_newDisplaylong",	
+				"Shell.win32_newDisplaylong",
 				"Accessible.internal_WM_GETOBJECTlonglong",
 				"TransferData.result",
 				"TransferData.stgmedium",
 				"TransferData.pIDataObject",
 				"TransferData.formatetc",
 				"Printer.handle",
-				"Printer.checkDevice",	
+				"Printer.checkDevice",
 				"TableDragSourceEffect.dragFinishedDragSourceEvent",
 				"TableDragSourceEffect.dragStartDragSourceEvent",
 				"TableDropTargetEffect.dragOverDropTargetEvent",
@@ -448,9 +449,9 @@ public class JavadocBasher {
 				"Display.getClientArea",
 				"TreeItem.handle",
 			};
-			for (Iterator<String> iterator = comments.keySet().iterator(); iterator.hasNext();) {
-				String name = iterator.next();
-				if (comments.get(name).length() > 0){
+			for (Entry<String, String> entry: comments.entrySet()) {
+				String name = entry.getKey();
+				if (entry.getValue().length() > 0){
 					int i = 0;
 					for (i = 0; i < filter.length; i++) {
 						if (name.equals(filter[i])) break;

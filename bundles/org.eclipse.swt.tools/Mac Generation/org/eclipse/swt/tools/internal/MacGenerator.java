@@ -12,6 +12,7 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.*;
 import java.util.stream.*;
 
 import javax.xml.parsers.*;
@@ -702,15 +703,14 @@ void generateClasses() {
 	TreeMap<String, Object[]> classes = getGeneratedClasses();
 	copyClassMethodsDown(classes);
 
-	Set<String> classNames = classes.keySet();
-	for (Iterator<String> iterator = classNames.iterator(); iterator.hasNext();) {
+	for (Entry<String, Object[]> clazzes: classes.entrySet()) {
 		CharArrayWriter out = new CharArrayWriter();
 		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
-		String className = iterator.next();
-		Object[] clazz = classes.get(className);
+		String className = clazzes.getKey();
+		Object[] clazz = clazzes.getValue();
 		Node node = (Node)clazz[0];
 		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
@@ -742,15 +742,14 @@ void generateStructs() {
 	MetaData metaData = new MetaData(mainClassName);
 	TreeMap<String, Object[]> structs = getGeneratedStructs();
 
-	Set<String> structNames = structs.keySet();
-	for (Iterator<String> iterator = structNames.iterator(); iterator.hasNext();) {
+	for (Entry<String, Object[]> structEntry: structs.entrySet()) {
 		CharArrayWriter out = new CharArrayWriter();
 		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
-		String className = iterator.next();
-		Object[] clazz = structs.get(className);
+		String className = structEntry.getKey();
+		Object[] clazz = structEntry.getValue();
 		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
 		String packageName = getPackageName(mainClassName);
@@ -1524,9 +1523,9 @@ void generateCustomCallbacks() {
 			}
 		}
 	}
-	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
-		Node method = set.get(key);
+	for (Entry<String, Node> entry: set.entrySet()) {
+		String key = entry.getKey();
+		Node method = entry.getValue();
 		if ("informal_protocol".equals(method.getParentNode().getNodeName())) {
 			method = findNSObjectMethod(method);
 			if (method == null) continue;
