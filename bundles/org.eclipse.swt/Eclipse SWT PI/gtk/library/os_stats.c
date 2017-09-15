@@ -165,6 +165,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1access",
 	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1remove_1relationship",
+	"_1cachejvmptr",
 #ifndef JNI64
 	"_1call__IIIII",
 #else

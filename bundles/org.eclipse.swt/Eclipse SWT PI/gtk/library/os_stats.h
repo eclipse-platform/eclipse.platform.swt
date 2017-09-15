@@ -175,6 +175,7 @@ typedef enum {
 	_1access_FUNC,
 	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1remove_1relationship_FUNC,
+	_1cachejvmptr_FUNC,
 #ifndef JNI64
 	_1call__IIIII_FUNC,
 #else
