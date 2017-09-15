@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Karsten Thoms <karsten.thoms@itemis.de> - Bug 522349
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -131,6 +132,9 @@ public class OS extends C {
 	public static final long /*int*/ sel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_ = sel_registerName( "webView:frame:exceededDatabaseQuotaForSecurityOrigin:database:" );
 
 	public static final long /*int*/ sel_beginSheetModalForWindow_completionHandler_ = sel_registerName("beginSheetModalForWindow:completionHandler:");
+
+	/** non-API selector for NSCursor **/
+	public static final long /*int*/ sel_busyButClickableCursor = sel_registerName("busyButClickableCursor");
 
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final long /*int*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");

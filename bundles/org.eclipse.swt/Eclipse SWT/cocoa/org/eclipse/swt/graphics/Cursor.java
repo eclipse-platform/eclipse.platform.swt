@@ -7,12 +7,13 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Karsten Thoms <karsten.thoms@itemis.de> - Bug 522349
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -95,6 +96,22 @@ public final class Cursor extends Resource {
 	 */
 	public NSCursor handle;
 
+	/**
+	 * Retrieves a handle for an animated waiting cursor. The used selector
+	 * 'busyButClickableCursor' is not a public API, but yet existent. To be fail-safe
+	 * it is checked that NSCursor responds to the selector.
+	 *
+	 * @return The cursor handle or <code>null</code> when NSCursor is not able to
+	 * handle the 'busyButClickableCursor' selector.
+	 */
+	static NSCursor busyButClickableCursor() {
+		if (!new NSObject(OS.class_NSCursor).respondsToSelector(OS.sel_busyButClickableCursor)) {
+			return null;
+		}
+		long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_busyButClickableCursor);
+		return result != 0 ? new NSCursor(result) : null;
+	}
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -155,28 +172,32 @@ public Cursor(Device device, int style) {
 	boolean shouldCreateCursor = false;
 	try {
 		switch (style) {
-			case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
-			case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
-			case SWT.CURSOR_WAIT: 			shouldCreateCursor = true; break;
-			case SWT.CURSOR_CROSS:	 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_APPSTARTING: 	handle = NSCursor.arrowCursor(); break;
-			case SWT.CURSOR_HELP: 			handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZEALL: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZENESW: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_HAND:			handle = NSCursor.pointingHandCursor(); break;
+			case SWT.CURSOR_ARROW:			handle = NSCursor.arrowCursor(); break;
+			case SWT.CURSOR_WAIT:			{
+												handle = busyButClickableCursor();
+												if (handle == null) shouldCreateCursor = true; // create when handle was not retrieved
+												break;
+											}
+			case SWT.CURSOR_CROSS:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_APPSTARTING:		handle = NSCursor.arrowCursor(); break;
+			case SWT.CURSOR_HELP:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZEALL:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZENESW:		handle = NSCursor.crosshairCursor(); break;
 			case SWT.CURSOR_SIZENS:			handle = NSCursor.resizeUpDownCursor(); break;
-			case SWT.CURSOR_SIZENWSE: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZEWE: 		handle = NSCursor.resizeLeftRightCursor(); break;
-			case SWT.CURSOR_SIZEN: 			handle = NSCursor.resizeUpCursor(); break;
-			case SWT.CURSOR_SIZES: 			handle = NSCursor.resizeDownCursor(); break;
-			case SWT.CURSOR_SIZEE: 			handle = NSCursor.resizeRightCursor(); break;
-			case SWT.CURSOR_SIZEW: 			handle = NSCursor.resizeLeftCursor(); break;
-			case SWT.CURSOR_SIZENE: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZESE: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZESW: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_SIZENW: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_UPARROW: 		handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_IBEAM: 			shouldCreateCursor = true; break;
-			case SWT.CURSOR_NO: 			handle = NSCursor.operationNotAllowedCursor(); break;
+			case SWT.CURSOR_SIZENWSE:		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZEWE:			handle = NSCursor.resizeLeftRightCursor(); break;
+			case SWT.CURSOR_SIZEN:			handle = NSCursor.resizeUpCursor(); break;
+			case SWT.CURSOR_SIZES:			handle = NSCursor.resizeDownCursor(); break;
+			case SWT.CURSOR_SIZEE:			handle = NSCursor.resizeRightCursor(); break;
+			case SWT.CURSOR_SIZEW:			handle = NSCursor.resizeLeftCursor(); break;
+			case SWT.CURSOR_SIZENE:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZESE:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZESW:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZENW:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_UPARROW:			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_IBEAM:			shouldCreateCursor = true; break;
+			case SWT.CURSOR_NO:				handle = NSCursor.operationNotAllowedCursor(); break;
 			default:
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
