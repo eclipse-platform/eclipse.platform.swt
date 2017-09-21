@@ -5335,6 +5335,7 @@ void applicationWillFinishLaunching (long /*int*/ id, long /*int*/ sel, long /*i
 	 * 		/System/Library/..../Resources/<language>.lproj/DefaultApp.nib
 	 * 		/System/Library/..../Resources/<user's default language>.lproj/DefaultApp.nib
 	 * 		/System/Library/..../Resources/English.lproj/DefaultApp.nib.
+	 * 		/System/Library/..../Resources/en.lproj/DefaultApp.nib.
 	 */
 	NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
 	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
@@ -5343,8 +5344,8 @@ void applicationWillFinishLaunching (long /*int*/ id, long /*int*/ sel, long /*i
 	if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 	if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 	if (!loaded) {
-		NSString resourcePath = bundle.resourcePath();
-		path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
+		path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith("English"));
+		if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith("en"));
 		loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 	}
 	if (!loaded) {
