@@ -115,6 +115,7 @@ void createWidget () {
 
 /**
  * Returns the offset of the caret from the start of the document.
+ * -1 means that there is currently no active composition.
  * The caret is within the current composition.
  *
  * @return the caret offset
@@ -524,6 +525,9 @@ LRESULT WM_IME_COMPOSITION_START (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
+	// Reset defaults. Otherwise the next composition overwrites the previous one.
+	startOffset = -1;
+	caretOffset = 0;
 	return isInlineEnabled () ? LRESULT.ONE : null;
 }
 

@@ -5954,6 +5954,7 @@ void handleCompositionChanged(Event event) {
 		}
 		setCaretOffset(ime.getCaretOffset(), alignment);
 	}
+	resetSelection();
 	showCaret();
 }
 /**
