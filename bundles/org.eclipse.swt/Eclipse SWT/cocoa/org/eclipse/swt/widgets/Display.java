@@ -945,6 +945,7 @@ void createMainMenu () {
 	NSString emptyStr = NSString.string();
 	NSMenu mainMenu = (NSMenu)new NSMenu().alloc();
 	mainMenu.initWithTitle(emptyStr);
+	mainMenu.setAutoenablesItems(false);
 
 	NSMenuItem menuItem;
 	NSMenu appleMenu;
