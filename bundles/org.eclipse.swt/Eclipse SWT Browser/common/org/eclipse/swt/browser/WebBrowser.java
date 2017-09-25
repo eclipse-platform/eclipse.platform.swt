@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2016 IBM Corporation and others.
+ * Copyright (c) 2003, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,12 +35,11 @@ abstract class WebBrowser {
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
 
 	static List<String[]> NativePendingCookies = new ArrayList<> ();
-	static List<String[]> MozillaPendingCookies = new ArrayList<> ();
 	static String CookieName, CookieValue, CookieUrl;
 	static boolean CookieResult;
-	static Runnable MozillaClearSessions, NativeClearSessions;
-	static Runnable MozillaGetCookie, NativeGetCookie;
-	static Runnable MozillaSetCookie, NativeSetCookie;
+	static Runnable NativeClearSessions;
+	static Runnable NativeGetCookie;
+	static Runnable NativeSetCookie;
 
 	/* Key Mappings */
 	static final int [][] KeyTable = {
@@ -261,13 +260,11 @@ public abstract boolean back ();
 
 public static void clearSessions () {
 	if (NativeClearSessions != null) NativeClearSessions.run ();
-	if (MozillaClearSessions != null) MozillaClearSessions.run ();
 }
 
 public static String GetCookie (String name, String url) {
 	CookieName = name; CookieUrl = url; CookieValue = null;
 	if (NativeGetCookie != null) NativeGetCookie.run ();
-	if (CookieValue == null && MozillaGetCookie != null) MozillaGetCookie.run ();
 	String result = CookieValue;
 	CookieName = CookieValue = CookieUrl = null;
 	return result;
@@ -281,13 +278,6 @@ public static boolean SetCookie (String value, String url, boolean addToPending)
 	} else {
 		if (addToPending && NativePendingCookies != null) {
 			NativePendingCookies.add (new String[] {value, url});
-		}
-	}
-	if (MozillaSetCookie != null) {
-		MozillaSetCookie.run ();
-	} else {
-		if (addToPending && MozillaPendingCookies != null) {
-			MozillaPendingCookies.add (new String[] {value, url});
 		}
 	}
 	CookieValue = CookieUrl = null;
@@ -411,7 +401,7 @@ public Object evaluate (String script, boolean trusted) throws SWTException {
 
 public Object evaluate (String script) throws SWTException {
 	// Developer note:
-	// Webkit1 & Mozilla use this mechanism.
+	// Webkit1 uses this mechanism.
 	// Webkit2 uses a different mechanism. See WebKit:evaluate();
 	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
 	int index = getNextFunctionIndex ();
