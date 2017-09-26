@@ -111,21 +111,15 @@ class BrowserTab extends Tab {
 		} else if (lastText != null) {
 			browser.setText(lastText);
 		} else {
-	        InputStream htmlStream= ControlExample.class.getResourceAsStream("browser-content.html");
-			BufferedReader br= new BufferedReader(new InputStreamReader(htmlStream));
 			StringBuffer sb= new StringBuffer(300);
-			try {
-				int read= 0;
-				while ((read= br.read()) != -1)
+
+			try (InputStream htmlStream = ControlExample.class.getResourceAsStream("browser-content.html");
+					BufferedReader br = new BufferedReader(new InputStreamReader(htmlStream))) {
+				int read = 0;
+				while ((read = br.read()) != -1)
 					sb.append((char) read);
 			} catch (IOException e) {
 				log(e.getMessage());
-			} finally {
-				try {
-					br.close();
-				} catch (IOException e) {
-					log(e.getMessage());
-				}
 			}
 			String text= sb.toString();
 			browser.setText(text);
@@ -225,15 +219,11 @@ class BrowserTab extends Tab {
 	}
 
 	public static String getContents(InputStream in) throws IOException {
-		BufferedReader br= new BufferedReader(new InputStreamReader(in));
-
 		StringBuffer sb= new StringBuffer(300);
-		try {
+		try (BufferedReader br= new BufferedReader(new InputStreamReader(in))) {
 			int read= 0;
 			while ((read= br.read()) != -1)
 				sb.append((char) read);
-		} finally {
-			br.close();
 		}
 		return sb.toString();
 	}

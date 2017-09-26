@@ -892,18 +892,18 @@ public class ImageAnalyzer {
 		ImageLoader oldLoader = loader;
 		try {
 			URL url = new URL(urlname);
-			InputStream stream = url.openStream();
-			loader = new ImageLoader();
-			if (incremental) {
-				// Prepare to handle incremental events.
-				loader.addImageLoaderListener(event -> incrementalDataLoaded(event));
-				incrementalThreadStart();
+			try (InputStream stream = url.openStream()) {
+				loader = new ImageLoader();
+				if (incremental) {
+					// Prepare to handle incremental events.
+					loader.addImageLoaderListener(event -> incrementalDataLoaded(event));
+					incrementalThreadStart();
+				}
+				// Read the new image(s) from the chosen URL.
+				long startTime = System.currentTimeMillis();
+				imageDataArray = loader.load(stream);
+				loadTime = System.currentTimeMillis() - startTime;
 			}
-			// Read the new image(s) from the chosen URL.
-			long startTime = System.currentTimeMillis();
-			imageDataArray = loader.load(stream);
-			loadTime = System.currentTimeMillis() - startTime;
-			stream.close();
 			if (imageDataArray.length > 0) {
 				currentName = urlname;
 				fileName = null;
@@ -1243,11 +1243,11 @@ public class ImageAnalyzer {
 			ImageData[] newImageData;
 			if (fileName == null) {
 				URL url = new URL(currentName);
-				InputStream stream = url.openStream();
-				long startTime = System.currentTimeMillis();
-				newImageData = loader.load(stream);
-				loadTime = System.currentTimeMillis() - startTime;
-				stream.close();
+				try (InputStream stream = url.openStream()) {
+					long startTime = System.currentTimeMillis();
+					newImageData = loader.load(stream);
+					loadTime = System.currentTimeMillis() - startTime;
+				}
 			} else {
 				long startTime = System.currentTimeMillis();
 				newImageData = loader.load(fileName);

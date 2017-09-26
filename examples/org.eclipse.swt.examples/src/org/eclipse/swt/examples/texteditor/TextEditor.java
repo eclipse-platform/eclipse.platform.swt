@@ -244,18 +244,10 @@ public class TextEditor {
 		    String name = dialog.open();
 		    if (name == null)  return;
 		    fileName = name;
-		    FileInputStream file = null;
-		    try {
-		    	file = new FileInputStream(name);
+		    try (FileInputStream file = new FileInputStream(name);){
 		    	styledText.setText(openFile(file));
 		    } catch (IOException e) {
 		    	showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
-		    } finally {
-		    	try {
-		    		if (file != null) file.close();
-		    	} catch (IOException e) {
-		    		showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
-		    	}
 		    }
 		}));
 
@@ -1130,12 +1122,10 @@ public class TextEditor {
 
 	Image loadImage(Display display, String fileName) {
 		Image image = null;
-		try {
-			InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$
+		try (InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico")) { //$NON-NLS-1$
 			ImageData source = new ImageData(sourceStream);
 			ImageData mask = source.getTransparencyMask();
 			image = new Image(display, source, mask);
-			sourceStream.close();
 		} catch (IOException e) {
 			showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
 		}
@@ -1245,19 +1235,10 @@ public class TextEditor {
 
 	void saveFile() {
 		if (fileName != null) {
-			FileWriter file = null;
-			try {
-				file = new FileWriter(fileName);
+			try (FileWriter file = new FileWriter(fileName);) {
 		       	file.write(styledText.getText());
-		       	file.close();
 			} catch (IOException e) {
 	        	showError(getResourceString("Error"), e.getMessage());
-	        } finally {
-	        	try {
-	        		if (file != null) file.close();
-	        	} catch (IOException e) {
-	        		showError(getResourceString("Error"), e.getMessage());
-	        	}
 	        }
 		}
 	}

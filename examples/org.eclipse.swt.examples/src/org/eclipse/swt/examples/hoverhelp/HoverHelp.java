@@ -84,20 +84,17 @@ public class HoverHelp {
 				images = new Image[imageLocations.length];
 
 				for (int i = 0; i < imageLocations.length; ++i) {
-					InputStream stream = clazz.getResourceAsStream(imageLocations[i]);
-					ImageData source = new ImageData(stream);
-					ImageData mask = source.getTransparencyMask();
-					images[i] = new Image(display, source, mask);
-					try {
-						stream.close();
+					try (InputStream stream = clazz.getResourceAsStream(imageLocations[i])) {
+						ImageData source = new ImageData(stream);
+						ImageData mask = source.getTransparencyMask();
+						images[i] = new Image(display, source, mask);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		} catch (Exception ex) {
-			System.err.println(getResourceString("error.CouldNotLoadResources",
-				new Object[] { ex.getMessage() }));
+			System.err.println(getResourceString("error.CouldNotLoadResources", ex.getMessage()));
 			return null;
 		}
 
@@ -138,7 +135,7 @@ public class HoverHelp {
 	 * with the given arguments. If the key is not found,
 	 * return the key.
 	 */
-	public String getResourceString(String key, Object[] args) {
+	public String getResourceString(String key, Object... args) {
 		try {
 			return MessageFormat.format(getResourceString(key), args);
 		} catch (MissingResourceException e) {

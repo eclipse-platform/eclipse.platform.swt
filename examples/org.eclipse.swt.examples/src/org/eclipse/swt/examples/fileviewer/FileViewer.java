@@ -1358,25 +1358,14 @@ public class FileViewer {
 				//System.out.println(getResourceString("simulate.CopyFromTo.text",
 				//	new Object[] { oldFile.getPath(), newFile.getPath() }));
 			} else {
-				FileReader in = null;
-				FileWriter out = null;
-				try {
-					in = new FileReader(oldFile);
-					out = new FileWriter(newFile);
-
+				try (FileReader in = new FileReader(oldFile);
+						FileWriter out = new FileWriter(newFile);){
 					int count;
 					while ((count = in.read()) != -1) out.write(count);
 				} catch (FileNotFoundException e) {
 					return false;
 				} catch (IOException e) {
 					return false;
-				} finally {
-					try {
-						if (in != null) in.close();
-						if (out != null) out.close();
-					} catch (IOException e) {
-						return false;
-					}
 				}
 			}
 		}

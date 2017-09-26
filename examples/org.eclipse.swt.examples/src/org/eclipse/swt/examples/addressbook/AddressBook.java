@@ -284,12 +284,10 @@ private void openAddressBook() {
 	Cursor waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_WAIT);
 	shell.setCursor(waitCursor);
 
-	FileReader fileReader = null;
-	BufferedReader bufferedReader = null;
 	String[] data = new String[0];
-	try {
-		fileReader = new FileReader(file.getAbsolutePath());
-		bufferedReader = new BufferedReader(fileReader);
+	try (FileReader fileReader = new FileReader(file.getAbsolutePath());
+			BufferedReader bufferedReader = new BufferedReader(fileReader);){
+
 		String nextLine = bufferedReader.readLine();
 		while (nextLine != null){
 			String[] newData = new String[data.length + 1];
@@ -305,17 +303,7 @@ private void openAddressBook() {
 		displayError(resAddressBook.getString("IO_error_read") + "\n" + file.getName());
 		return;
 	} finally {
-
 		shell.setCursor(null);
-
-		if(fileReader != null) {
-			try {
-				fileReader.close();
-			} catch(IOException e) {
-				displayError(resAddressBook.getString("IO_error_close") + "\n" + file.getName());
-				return;
-			}
-		}
 	}
 
 	String[][] tableInfo = new String[data.length][table.getColumnCount()];
@@ -355,9 +343,7 @@ private boolean save() {
 		lines[i] = encodeLine(itemText);
 	}
 
-	FileWriter fileWriter = null;
-	try {
-		fileWriter = new FileWriter(file.getAbsolutePath(), false);
+	try (FileWriter fileWriter = new FileWriter(file.getAbsolutePath(), false);){
 		for (String line : lines) {
 			fileWriter.write(line);
 		}
@@ -369,15 +355,6 @@ private boolean save() {
 		return false;
 	} finally {
 		shell.setCursor(null);
-
-		if(fileWriter != null) {
-			try {
-				fileWriter.close();
-			} catch(IOException e) {
-				displayError(resAddressBook.getString("IO_error_close") + "\n" + file.getName());
-				return false;
-			}
-		}
 	}
 
 	shell.setText(resAddressBook.getString("Title_bar")+file.getName());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.clipboard;
 
-import java.io.*;
-import org.eclipse.swt.dnd.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.TransferData;
 
 public class MyTypeTransfer extends ByteArrayTransfer {
 
@@ -31,18 +38,18 @@ public void javaToNative (Object object, TransferData transferData) {
 	try {
 		// write data to a byte array and then ask super to convert to pMedium
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		DataOutputStream writeOut = new DataOutputStream(out);
-		for (MyType myType : myTypes) {
-			byte[] buffer = myType.firstName.getBytes();
-			writeOut.writeInt(buffer.length);
-			writeOut.write(buffer);
-			buffer = myType.firstName.getBytes();
-			writeOut.writeInt(buffer.length);
-			writeOut.write(buffer);
+		try (DataOutputStream writeOut = new DataOutputStream(out)) {
+			for (MyType myType : myTypes) {
+				byte[] buffer = myType.firstName.getBytes();
+				writeOut.writeInt(buffer.length);
+				writeOut.write(buffer);
+				buffer = myType.firstName.getBytes();
+				writeOut.writeInt(buffer.length);
+				writeOut.write(buffer);
+			}
+			byte[] buffer = out.toByteArray();
+			super.javaToNative(buffer, transferData);
 		}
-		byte[] buffer = out.toByteArray();
-		writeOut.close();
-		super.javaToNative(buffer, transferData);
 	} catch (IOException e) {
 	}
 }
@@ -56,23 +63,23 @@ public Object nativeToJava(TransferData transferData){
 		MyType[] myData = new MyType[0];
 		try {
 			ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-			DataInputStream readIn = new DataInputStream(in);
-			while(readIn.available() > 20) {
-				MyType datum = new MyType();
-				int size = readIn.readInt();
-				byte[] name = new byte[size];
-				readIn.read(name);
-				datum.firstName = new String(name);
-				size = readIn.readInt();
-				name = new byte[size];
-				readIn.read(name);
-				datum.lastName = new String(name);
-				MyType[] newMyData = new MyType[myData.length + 1];
-				System.arraycopy(myData, 0, newMyData, 0, myData.length);
-				newMyData[myData.length] = datum;
-				myData = newMyData;
+			try (DataInputStream readIn = new DataInputStream(in)) {
+				while(readIn.available() > 20) {
+					MyType datum = new MyType();
+					int size = readIn.readInt();
+					byte[] name = new byte[size];
+					readIn.read(name);
+					datum.firstName = new String(name);
+					size = readIn.readInt();
+					name = new byte[size];
+					readIn.read(name);
+					datum.lastName = new String(name);
+					MyType[] newMyData = new MyType[myData.length + 1];
+					System.arraycopy(myData, 0, newMyData, 0, myData.length);
+					newMyData[myData.length] = datum;
+					myData = newMyData;
+				}
 			}
-			readIn.close();
 		} catch (IOException ex) {
 			return null;
 		}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.swt.examples.paint;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
@@ -476,14 +475,10 @@ public class PaintExample {
 				for (Tool tool2 : tools) {
 					Tool tool = tool2;
 					String id = tool.group + '.' + tool.name;
-					InputStream sourceStream = clazz.getResourceAsStream(getResourceString(id + ".image"));
-					ImageData source = new ImageData(sourceStream);
-					ImageData mask = source.getTransparencyMask();
-					tool.image = new Image(null, source, mask);
-					try {
-						sourceStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+					try (InputStream sourceStream = clazz.getResourceAsStream(getResourceString(id + ".image"))) {
+						ImageData source = new ImageData(sourceStream);
+						ImageData mask = source.getTransparencyMask();
+						tool.image = new Image(null, source, mask);
 					}
 				}
 				return;

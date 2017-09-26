@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,6 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
@@ -191,18 +190,14 @@ public class ControlExample {
 					images = new Image[imageLocations.length];
 
 					for (int i = 0; i < imageLocations.length; ++i) {
-						InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i]);
-						ImageData source = new ImageData(sourceStream);
-						if (imageTypes[i] == SWT.ICON) {
-							ImageData mask = source.getTransparencyMask();
-							images[i] = new Image(null, source, mask);
-						} else {
-							images[i] = new Image(null, source);
-						}
-						try {
-							sourceStream.close();
-						} catch (IOException e) {
-							e.printStackTrace();
+						try (InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i])) {
+							ImageData source = new ImageData(sourceStream);
+							if (imageTypes[i] == SWT.ICON) {
+								ImageData mask = source.getTransparencyMask();
+								images[i] = new Image(null, source, mask);
+							} else {
+								images[i] = new Image(null, source);
+							}
 						}
 					}
 				}
