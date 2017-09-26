@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others.
+ * Copyright (c) 2008, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -266,7 +266,7 @@ String getParamName(Node param, int i) {
 	return paramName;
 }
 
-void generateFields(String structName, ArrayList<?> fields) {
+void generateFields(ArrayList<?> fields) {
 	for (Iterator<?> iterator = fields.iterator(); iterator.hasNext();) {
 		Node field = (Node)iterator.next();
 		NamedNodeMap fieldAttributes = field.getAttributes();
@@ -688,14 +688,12 @@ String getSuperclassName (Node node) {
 	Node superclass = attributes.getNamedItem("swt_superclass");
 	if (superclass != null) {
 		return superclass.getNodeValue();
-	} else {
-		Node name = attributes.getNamedItem("name");
-		if (name.getNodeValue().equals("NSObject")) {
-			return "id";
-		} else {
-			return "NSObject";
-		}
+	} 
+	Node name = attributes.getNamedItem("name");
+	if (name.getNodeValue().equals("NSObject")) {
+		return "id";
 	}
+	return "NSObject";
 }
 
 void generateClasses() {
@@ -714,7 +712,7 @@ void generateClasses() {
 		Node node = (Node)clazz[0];
 		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
-		String packageName = getPackageName(mainClassName);
+		String packageName = getPackageName();
 		out(packageName);
 		out(";");
 		outln();
@@ -752,7 +750,7 @@ void generateStructs() {
 		Object[] clazz = structEntry.getValue();
 		ArrayList<?> methods = (ArrayList<?>)clazz[1];
 		out("package ");
-		String packageName = getPackageName(mainClassName);
+		String packageName = getPackageName();
 		out(packageName);
 		out(";");
 		outln();
@@ -761,7 +759,7 @@ void generateStructs() {
 		out(className);
 		out(" {");
 		outln();
-		generateFields(className, methods);
+		generateFields(methods);
 		generateExtraFields(className);
 		out("}");
 		outln();
@@ -865,7 +863,7 @@ public Document[] getDocuments() {
 			Document document = documents[i] = getDocument(xmlPath);
 			if (document == null) continue;
 			if (mainClassName != null && outputDir != null) {
-				String packageName = getPackageName(mainClassName);
+				String packageName = getPackageName();
 				String folder = extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/');
 				String extrasPath = folder + "/" + getFileName(xmlPath) + ".extras";
 				merge(document, getDocument(extrasPath));
@@ -883,7 +881,7 @@ public String[] getXmls() {
 			list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
 			list(new File("/System/Library/Frameworks/ApplicationServices.framework/Frameworks"), array);
 		} else {
-			String packageName = getPackageName(mainClassName);
+			String packageName = getPackageName();
 			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
 			File[] files = folder.listFiles((FilenameFilter) (dir, name) -> name.endsWith("Full.bridgesupport"));
 			for (int i = 0; i < files.length; i++) {
@@ -898,7 +896,7 @@ public String[] getXmls() {
 
 void saveExtraAttributes(String xmlPath, Document document) {
 	try {
-		String packageName = getPackageName(mainClassName);
+		String packageName = getPackageName();
 		String folder = extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/');
 		String fileName = folder + "/" + getFileName(xmlPath) + ".extras";
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1713,13 +1711,13 @@ void generateProtocolsConst() {
 	}
 }
 
-String getPackageName(String className) {
+String getPackageName() {
 	int dot = mainClassName.lastIndexOf('.');
 	if (dot == -1) return "";
 	return mainClassName.substring(0, dot);
 }
 
-String getClassName(String className) {
+String getClassName() {
 	int dot = mainClassName.lastIndexOf('.');
 	if (dot == -1) return mainClassName;
 	return mainClassName.substring(dot + 1);

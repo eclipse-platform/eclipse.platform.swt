@@ -92,7 +92,7 @@ boolean isFloatingPoint(String type) {
 	return type.equals("float") || type.equals("double");
 }
 
-void generateCallback(JNIMethod method, String function, JNIParameter[] params, JNIType returnType) {
+void generateCallback(JNIMethod method, String function) {
 	output("static jintLong ");
 	output(function);
 	outputln(";");
@@ -197,7 +197,7 @@ public void generate(JNIMethod method) {
 		outputln(";");
 	}
 	if (function.startsWith("CALLBACK_")) {
-		generateCallback(method, function, params, returnType);
+		generateCallback(method, function);
 	}
 	generateFunctionPrototype(method, function, params, returnType, returnType64, !sameFunction);
 	if (!function.equals(function64)) {
@@ -213,7 +213,7 @@ public void generate(JNIMethod method) {
 		outputln("#endif");
 	}
 	generateFunctionBody(method, function, function64, params, returnType, returnType64);
-	generateSourceEnd(function);
+	generateSourceEnd();
 	outputln();
 }
 
@@ -474,7 +474,7 @@ void generateEnterExitMacro(JNIMethod method, String function, String function64
 	}
 }
 
-boolean generateLocalVars(JNIMethod method, JNIParameter[] params, JNIType returnType, JNIType returnType64) {
+boolean generateLocalVars(JNIParameter[] params, JNIType returnType, JNIType returnType64) {
 	boolean needsReturn = enterExitMacro;
 	for (int i = 0; i < params.length; i++) {
 		JNIParameter param = params[i];
@@ -542,7 +542,7 @@ boolean generateGetters(JNIMethod method, JNIParameter[] params) {
 	return genFailTag;
 }
 
-void generateSetters(JNIMethod method, JNIParameter[] params) {
+void generateSetters(JNIParameter[] params) {
 	int criticalCount = 0;
 	for (int i = params.length - 1; i >= 0; i--) {
 		JNIParameter param = params[i];
@@ -856,18 +856,18 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 	}
 	if (objc_struct) {
 		outputln("\t} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
-		generate_objc_msgSend_stret (method, params, name);
+		generate_objc_msgSend_stret (params, name);
 		generateFunctionCallRightSide(method, params, 1);
 		outputln(";");
 		outputln("\t} else {");
-		generate_objc_msgSend_stret (method, params, name.substring(0, name.length() - "_stret".length()));
+		generate_objc_msgSend_stret (params, name.substring(0, name.length() - "_stret".length()));
 		generateFunctionCallRightSide(method, params, 1);
 		outputln(";");
 		outputln("\t}");
 	}
 }
 
-void generate_objc_msgSend_stret (JNIMethod method, JNIParameter[] params, String func) {
+void generate_objc_msgSend_stret (JNIParameter[] params, String func) {
 	output("\t\t*lparg0 = (*(");
 	JNIType paramType = params[0].getType(), paramType64 = params[0].getType64();
 	output(paramType.getTypeSignature4(!paramType.equals(paramType64), true));
@@ -895,7 +895,7 @@ void generate_objc_msgSend_stret (JNIMethod method, JNIParameter[] params, Strin
 	output(")");
 }
 
-void generateReturn(JNIMethod method, JNIType returnType, boolean needsReturn) {
+void generateReturn(JNIType returnType, boolean needsReturn) {
 	if (needsReturn && !returnType.isType("void")) {
 		outputln("\treturn rc;");
 	}
@@ -925,7 +925,7 @@ void generateFunctionBody(JNIMethod method, String function, String function64, 
 	if (isMemove) {
 		generateMemmove(method, function, function64, params);
 	} else {
-		boolean needsReturn = generateLocalVars(method, params, returnType, returnType64);
+		boolean needsReturn = generateLocalVars(params, returnType, returnType64);
 		generateEnterExitMacro(method, function, function64, true);
 		boolean genFailTag = generateGetters(method, params);
 		if (method.getFlag(FLAG_DYNAMIC)) {
@@ -934,9 +934,9 @@ void generateFunctionBody(JNIMethod method, String function, String function64, 
 			generateFunctionCall(method, params, returnType, returnType64, needsReturn);
 		}
 		if (genFailTag) outputln("fail:");
-		generateSetters(method, params);
+		generateSetters(params);
 		generateEnterExitMacro(method, function, function64, false);
-		generateReturn(method, returnType, needsReturn);
+		generateReturn(returnType, needsReturn);
 	}
 	
 	outputln("}");
@@ -989,7 +989,7 @@ void generateSourceStart(String function, String function64) {
 	}
 }
 
-void generateSourceEnd(String function) {
+void generateSourceEnd() {
 	outputln("#endif");
 }
 

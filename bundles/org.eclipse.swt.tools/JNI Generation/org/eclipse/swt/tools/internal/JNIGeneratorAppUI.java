@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2016 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -899,7 +899,7 @@ public void run() {
 	cleanup();
 }
 
-String getPackageString(String className) {
+String getPackageString() {
 	int dot = app.getMainClassName().lastIndexOf('.');
 	if (dot == -1) return "";
 	return app.getMainClassName().substring(0, dot);
@@ -924,7 +924,7 @@ String getFlagsString(String[] flags) {
 }
 
 String getMethodString(JNIMethod method) {
-	String pkgName = getPackageString(method.getDeclaringClass().getName());
+	String pkgName = getPackageString();
 	StringBuffer buffer = new StringBuffer();
 	buffer.append(method.getName());
 	buffer.append("(");

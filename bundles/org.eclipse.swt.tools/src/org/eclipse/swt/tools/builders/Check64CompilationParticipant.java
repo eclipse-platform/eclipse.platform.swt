@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2016 IBM Corporation and others.
+ * Copyright (c) 2008, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -199,7 +199,7 @@ boolean is64Type(String type) {
 			type.equals("int[]") || type.equals("long[]") || type.equals("float[]") || type.equals("double[]");
 }
 
-void createBadOverwrittenMethodProblems(IJavaProject project, String root) throws CoreException {
+void createBadOverwrittenMethodProblems(IJavaProject project) throws CoreException {
 	if (sources == null) return;
 	IProject proj = project.getProject();
 	HashMap<String, TypeDeclaration> cache = new HashMap<>();
@@ -313,7 +313,7 @@ public void buildFinished(IJavaProject project) {
 		String root = project.getProject().getLocation().toPortableString() + buildDir;
 		build(project, root);		
 		createProblems(project, root);
-		createBadOverwrittenMethodProblems(project, root);
+		createBadOverwrittenMethodProblems(project);
 		sources = null;
 //		System.out.println("compiling time=" + (System.currentTimeMillis() - time));
 	} catch (Exception e) {

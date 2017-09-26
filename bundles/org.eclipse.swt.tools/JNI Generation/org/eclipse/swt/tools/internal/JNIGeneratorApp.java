@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -259,14 +259,14 @@ public void generate(ProgressMonitor progress) {
 	this.progress = null;
 }
 
-String getPackageName(String className) {
+String getPackageName() {
 	int dot = mainClassName.lastIndexOf('.');
 	if (dot == -1) return "";
 	return mainClassName.substring(0, dot);
 }
 
-String[] getClassNames(String mainClassName) {
-	String pkgName = getPackageName(mainClassName);
+String[] getClassNames() {
+	String pkgName = getPackageName();
 	String classpath = getClasspath();
 	if (classpath == null) classpath = System.getProperty("java.class.path");
 	String pkgPath = pkgName.replace('.', File.separatorChar);
@@ -317,9 +317,9 @@ public JNIClass[] getClasses() {
 	if (classes != null) return classes;
 	if (mainClassName == null) return new JNIClass[0];
 	if (USE_AST) return getASTClasses();
-	String[] classNames = getClassNames(mainClassName);
+	String[] classNames = getClassNames();
 	Arrays.sort(classNames);
-	String packageName = getPackageName(mainClassName);
+	String packageName = getPackageName();
 	JNIClass[] classes = new JNIClass[classNames.length];
 	for (int i = 0; i < classNames.length; i++) {
 		String className = classNames[i];
@@ -345,7 +345,7 @@ JNIClass[] getASTClasses() {
 	String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
 	String mainPath = new File(root + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
 	List<JNIClass> classes = new ArrayList<>();
-	String packageName = getPackageName(mainClassName);
+	String packageName = getPackageName();
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
 	File[] files = dir.listFiles();
 	for (int i = 0; i < files.length; i++) {
