@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -258,10 +258,10 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
 	styles = null;
 	caretOffset = commitCount = 0;
 	if (textPtr != 0 && inComposition) {
-		int length = OS.strlen (textPtr);
+		int length = C.strlen (textPtr);
 		if (length != 0) {
 			byte [] buffer = new byte [length];
-			OS.memmove (buffer, textPtr, length);
+			C.memmove (buffer, textPtr, length);
 			char [] chars = Converter.mbcsToWcs (buffer);
 			Event event = new Event();
 			event.detail = SWT.COMPOSITION_CHANGED;
@@ -294,9 +294,9 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	caretOffset = cursorPos [0];
 	char [] chars = null;
 	if (preeditString [0] != 0) {
-		int length = OS.strlen (preeditString [0]);
+		int length = C.strlen (preeditString [0]);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, preeditString [0], length);
+		C.memmove (buffer, preeditString [0], length);
 		chars = Converter.mbcsToWcs (buffer);
 		if (pangoAttrs [0] != 0) {
 			int count = 0;

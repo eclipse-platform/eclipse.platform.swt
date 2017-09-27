@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -88,7 +88,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	if (transferData.type == UTF8_STRING_ID) {
 		long /*int*/ pValue = OS.g_malloc(utf8.length);
 		if (pValue ==  0) return;
-		OS.memmove(pValue, utf8, utf8.length);
+		C.memmove(pValue, utf8, utf8.length);
 		transferData.type = UTF8_STRING_ID;
 		transferData.format = 8;
 		transferData.length = utf8.length - 1;
@@ -100,7 +100,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		if (string_target ==  0) return;
 		transferData.type = STRING_ID;
 		transferData.format = 8;
-		transferData.length = OS.strlen(string_target);
+		transferData.length = C.strlen(string_target);
 		transferData.pValue = string_target;
 		transferData.result = 1;
 	}
@@ -122,10 +122,10 @@ public Object nativeToJava(TransferData transferData){
 	int count = OS.gdk_text_property_to_utf8_list_for_display(OS.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 	if (count == 0) return null;
 	long /*int*/[] ptr = new long /*int*/[1];
-	OS.memmove(ptr, list[0], OS.PTR_SIZEOF);
-	int length = OS.strlen(ptr[0]);
+	C.memmove(ptr, list[0], C.PTR_SIZEOF);
+	int length = C.strlen(ptr[0]);
 	byte[] utf8 = new byte[length];
-	OS.memmove(utf8, ptr[0], length);
+	C.memmove(utf8, ptr[0], length);
 	OS.g_strfreev(list[0]);
 	// convert utf8 byte array to a unicode string
 	char [] unicode = Converter.mbcsToWcs (utf8);

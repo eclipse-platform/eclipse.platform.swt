@@ -224,7 +224,7 @@ class WebKit extends WebBrowser {
 				long /*int*/ cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
 				WebKitGTK.soup_uri_free (uri);
 				if (cookies == 0) return;
-				int length = OS.strlen (cookies);
+				int length = C.strlen (cookies);
 				bytes = new byte[length];
 				C.memmove (bytes, cookies, length);
 				OS.g_free (cookies);
@@ -392,9 +392,9 @@ class WebKit extends WebBrowser {
 	}
 
 static String getString (long /*int*/ strPtr) {
-	int length = OS.strlen (strPtr);
+	int length = C.strlen (strPtr);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, strPtr, length);
+	C.memmove (buffer, strPtr, length);
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
@@ -613,7 +613,7 @@ long /*int*/ sessionProc (long /*int*/ session, long /*int*/ msg, long /*int*/ a
 	long /*int*/ uriString = WebKitGTK.soup_uri_to_string (uri, 0);
 	int length = C.strlen (uriString);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, uriString, length);
+	C.memmove (bytes, uriString, length);
 	OS.g_free (uriString);
 	String location = new String (Converter.mbcsToWcs (bytes));
 
@@ -754,7 +754,7 @@ public void create (Composite parent, int style) {
 			JSClassDefinition jsClassDefinition = new JSClassDefinition ();
 			byte[] bytes = Converter.wcsToMbcs (CLASSNAME_EXTERNAL, true);
 			jsClassDefinition.className = C.malloc (bytes.length);
-			OS.memmove (jsClassDefinition.className, bytes, bytes.length);
+			C.memmove (jsClassDefinition.className, bytes, bytes.length);
 
 			jsClassDefinition.hasProperty = JSObjectHasPropertyProc.getAddress ();
 			jsClassDefinition.getProperty = JSObjectGetPropertyProc.getAddress ();
@@ -1397,9 +1397,9 @@ public String getText () {
 		if (data == 0) return "";	//$NON-NLS-1$
 
 		long /*int*/ encoding = WebKitGTK.webkit_web_data_source_get_encoding (source);
-		int length = OS.strlen (encoding);
+		int length = C.strlen (encoding);
 		byte[] bytes = new byte [length];
-		OS.memmove (bytes, encoding, length);
+		C.memmove (bytes, encoding, length);
 		String encodingString = new String (Converter.mbcsToWcs (bytes));
 
 		length = OS.GString_len (data);
@@ -1422,9 +1422,9 @@ public String getUrl () {
 	/* WebKit auto-navigates to about:blank at startup */
 	if (uri == 0) return ABOUT_BLANK;
 
-	int length = OS.strlen (uri);
+	int length = C.strlen (uri);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, uri, length);
+	C.memmove (bytes, uri, length);
 
 	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
@@ -1808,9 +1808,9 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 }
 
 long /*int*/ handleLoadCommitted (long /*int*/ uri, boolean top) {
-	int length = OS.strlen (uri);
+	int length = C.strlen (uri);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, uri, length);
+	C.memmove (bytes, uri, length);
 	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
@@ -1910,9 +1910,9 @@ private void fireProgressCompletedEvent(){
  *  (Webkit2 equivalent is webkit_load_changed())
  */
 long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
-	int length = OS.strlen (uri);
+	int length = C.strlen (uri);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, uri, length);
+	C.memmove (bytes, uri, length);
 	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
 	 * If the URI indicates that the page is being rendered from memory
@@ -2035,14 +2035,14 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	shell.setLayout (gridLayout);
 
 	long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (webkitDownload);
-	int length = OS.strlen (name);
+	int length = C.strlen (name);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, name, length);
+	C.memmove (bytes, name, length);
 	String nameString = new String (Converter.mbcsToWcs (bytes));
 	long /*int*/ url = WebKitGTK.webkit_download_get_uri (webkitDownload);
-	length = OS.strlen (url);
+	length = C.strlen (url);
 	bytes = new byte[length];
-	OS.memmove (bytes, url, length);
+	C.memmove (bytes, url, length);
 	String urlString = new String (Converter.mbcsToWcs (bytes));
 	msg = Compatibility.getMessage ("SWT_Download_Location", new Object[] {nameString, urlString}); //$NON-NLS-1$
 	Label nameLabel = new Label (shell, SWT.WRAP);
@@ -2313,9 +2313,9 @@ long /*int*/ webkit_create_web_view (long /*int*/ web_view, long /*int*/ frame) 
 
 long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ download) {
 	long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (download);
-	int length = OS.strlen (name);
+	int length = C.strlen (name);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, name, length);
+	C.memmove (bytes, name, length);
 	final String nameString = new String (Converter.mbcsToWcs (bytes));
 
 	final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
@@ -2376,9 +2376,9 @@ long /*int*/ webkit_mouse_target_changed (long /*int*/ web_view, long /*int*/ hi
  */
 long /*int*/ webkit_hovering_over_link (long /*int*/ web_view, long /*int*/ title, long /*int*/ uri) {
 	if (uri != 0) {
-		int length = OS.strlen (uri);
+		int length = C.strlen (uri);
 		byte[] bytes = new byte[length];
-		OS.memmove (bytes, uri, length);
+		C.memmove (bytes, uri, length);
 		String text = new String (Converter.mbcsToWcs (bytes));
 		StatusTextEvent event = new StatusTextEvent (browser);
 		event.display = browser.getDisplay ();
@@ -2421,9 +2421,9 @@ long /*int*/ webkit_navigation_policy_decision_requested (long /*int*/ web_view,
 	}
 
 	long /*int*/ uri = WebKitGTK.webkit_network_request_get_uri (request);
-	int length = OS.strlen (uri);
+	int length = C.strlen (uri);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, uri, length);
+	C.memmove (bytes, uri, length);
 
 	String url = new String (Converter.mbcsToWcs (bytes));
 	/*
@@ -2646,9 +2646,9 @@ long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
 	if (title == 0) {
 		titleString = ""; //$NON-NLS-1$
 	} else {
-		int length = OS.strlen (title);
+		int length = C.strlen (title);
 		byte[] bytes = new byte[length];
-		OS.memmove (bytes, title, length);
+		C.memmove (bytes, title, length);
 		titleString = new String (Converter.mbcsToWcs (bytes));
 	}
 	TitleEvent event = new TitleEvent (browser);
@@ -2803,9 +2803,9 @@ long /*int*/ webkit_resource_request_starting (long /*int*/ web_view, long /*int
  * status bar now only changes when you hover you mouse over it.
  */
 long /*int*/ webkit_status_bar_text_changed (long /*int*/ web_view, long /*int*/ text) {
-	int length = OS.strlen (text);
+	int length = C.strlen (text);
 	byte[] bytes = new byte[length];
-	OS.memmove (bytes, text, length);
+	C.memmove (bytes, text, length);
 	StatusTextEvent statusText = new StatusTextEvent (browser);
 	statusText.display = browser.getDisplay ();
 	statusText.widget = browser;

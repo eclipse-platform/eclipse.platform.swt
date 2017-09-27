@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -189,9 +189,9 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
 	long /*int*/ family = OS.pango_font_description_get_family(handle);
-	int length = OS.strlen(family);
+	int length = C.strlen(family);
 	byte[] buffer = new byte[length];
-	OS.memmove(buffer, family, length);
+	C.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(buffer));
 	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
@@ -203,9 +203,9 @@ public FontData[] getFontData() {
 	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
 	if (pangoWeight >= OS.PANGO_WEIGHT_BOLD) style |= SWT.BOLD;
 	long /*int*/ fontString = OS.pango_font_description_to_string (handle);
-	length = OS.strlen (fontString);
+	length = C.strlen (fontString);
 	buffer = new byte [length + 1];
-	OS.memmove (buffer, fontString, length);
+	C.memmove (buffer, fontString, length);
 	OS.g_free (fontString);
 	FontData data = new FontData(name, size, style);
 	data.string = buffer;

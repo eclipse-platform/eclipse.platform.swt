@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -95,9 +96,9 @@ public void javaToNative(Object object, TransferData transferData) {
 		long /*int*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || uriPtr == 0) continue;
-		length = OS.strlen(uriPtr);
+		length = C.strlen(uriPtr);
 		byte[] temp = new byte[length];
-		OS.memmove (temp, uriPtr, length);
+		C.memmove (temp, uriPtr, length);
 		OS.g_free(uriPtr);
 		int newLength = (buffer.length > 0) ? buffer.length+separator.length+temp.length :  temp.length;
 		byte[] newBuffer = new byte[newLength];
@@ -113,8 +114,8 @@ public void javaToNative(Object object, TransferData transferData) {
 	}
 	if (buffer.length == 0) return;
 	long /*int*/ ptr = OS.g_malloc(buffer.length+1);
-	OS.memset(ptr, '\0', buffer.length+1);
-	OS.memmove(ptr, buffer, buffer.length);
+	C.memset(ptr, '\0', buffer.length+1);
+	C.memmove(ptr, buffer, buffer.length);
 	transferData.pValue = ptr;
 	transferData.length = buffer.length;
 	transferData.format = 8;
@@ -136,7 +137,7 @@ public Object nativeToJava(TransferData transferData) {
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ||  transferData.length <= 0 ) return null;
 	int length = transferData.length;
 	byte[] temp = new byte[length];
-	OS.memmove(temp, transferData.pValue, length);
+	C.memmove(temp, transferData.pValue, length);
 	boolean gnomeList = transferData.type == GNOME_LIST_ID;
 	int sepLength = gnomeList ? 1 : 2;
 	long /*int*/[] files = new long /*int*/[0];
@@ -150,7 +151,7 @@ public Object nativeToJava(TransferData transferData) {
 				long /*int*/ file = OS.g_malloc(size + 1);
 				byte[] fileBuffer = new byte[size + 1];
 				System.arraycopy(temp, offset, fileBuffer, 0, size);
-				OS.memmove(file, fileBuffer, size + 1);
+				C.memmove(file, fileBuffer, size + 1);
 				long /*int*/[] newFiles = new long /*int*/[files.length + 1];
 				System.arraycopy(files, 0, newFiles, 0, files.length);
 				newFiles[files.length] = file;
@@ -164,7 +165,7 @@ public Object nativeToJava(TransferData transferData) {
 		long /*int*/ file = OS.g_malloc(size + 1);
 		byte[] fileBuffer = new byte[size + 1];
 		System.arraycopy(temp, offset, fileBuffer, 0, size);
-		OS.memmove(file, fileBuffer, size + 1);
+		C.memmove(file, fileBuffer, size + 1);
 		long /*int*/[] newFiles = new long /*int*/[files.length + 1];
 		System.arraycopy(files, 0, newFiles, 0, files.length);
 		newFiles[files.length] = file;
@@ -186,7 +187,7 @@ public Object nativeToJava(TransferData transferData) {
 		if (utf16Ptr == 0) continue;
 		length = (int)/*64*/items_written[0];
 		char[] buffer = new char[length];
-		OS.memmove(buffer, utf16Ptr, length * 2);
+		C.memmove(buffer, utf16Ptr, length * 2);
 		OS.g_free(utf16Ptr);
 		String name = new String(buffer);
 		String[] newFileNames = new String[fileNames.length + 1];

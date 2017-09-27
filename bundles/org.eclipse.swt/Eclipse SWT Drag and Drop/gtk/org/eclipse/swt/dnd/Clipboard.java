@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -564,8 +564,8 @@ public String[] getAvailableTypeNames() {
 		if (pName == 0) {
 			continue;
 		}
-		byte[] buffer = new byte [OS.strlen(pName)];
-		OS.memmove (buffer, pName, buffer.length);
+		byte[] buffer = new byte [C.strlen(pName)];
+		C.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
 		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
@@ -574,8 +574,8 @@ public String[] getAvailableTypeNames() {
 		if (pName == 0) {
 			continue;
 		}
-		byte[] buffer = new byte [OS.strlen(pName)];
-		OS.memmove (buffer, pName, buffer.length);
+		byte[] buffer = new byte [C.strlen(pName)];
+		C.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
 		result[count++] = "GTKPRIMARYCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
@@ -604,7 +604,7 @@ private  int[] getAvailablePrimaryTypes() {
 			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
-				OS.memmove(types, data, length);
+				C.memmove(types, data, length);
 			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);
@@ -629,7 +629,7 @@ private int[] getAvailableClipboardTypes () {
 			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
-				OS.memmove(types, data, length);
+				C.memmove(types, data, length);
 			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);

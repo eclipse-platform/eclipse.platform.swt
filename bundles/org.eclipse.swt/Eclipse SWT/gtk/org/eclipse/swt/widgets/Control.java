@@ -3332,10 +3332,10 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 @Override
 long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	if (text == 0) return 0;
-	int length = OS.strlen (text);
+	int length = C.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, text, length);
+	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	sendIMKeyEvent (SWT.KeyDown, null, chars);
 	return 0;
@@ -4561,7 +4561,7 @@ void setBackgroundGdkColor (long /*int*/ handle, GdkColor color) {
 	if (pixmapName != null) {
 		byte[] buffer = Converter.wcsToMbcs (pixmapName, true);
 		ptr = OS.g_malloc (buffer.length);
-		OS.memmove (ptr, buffer, buffer.length);
+		C.memmove (ptr, buffer, buffer.length);
 	}
 
 	OS.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);

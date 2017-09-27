@@ -185,7 +185,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	if (cell == ignoreCell) return 0;
 	long /*int*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
 	int [] index = new int [1];
-	OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+	C.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
 	TableItem item = _getItem (index[0]);
 	OS.gtk_tree_path_free (path);
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
@@ -1454,7 +1454,7 @@ TableItem getFocusItem () {
 	long /*int*/ indices = OS.gtk_tree_path_get_indices (path [0]);
 	if (indices != 0) {
 		int [] index = new int []{-1};
-		OS.memmove (index, indices, 4);
+		C.memmove (index, indices, 4);
 		item = _getItem (index [0]);
 	}
 	OS.gtk_tree_path_free (path [0]);
@@ -1653,7 +1653,7 @@ TableItem getItemInPixels (Point point) {
 	TableItem item = null;
 	if (indices != 0) {
 		int [] index = new int [1];
-		OS.memmove (index, indices, 4);
+		C.memmove (index, indices, 4);
 		item = _getItem (index [0]);
 	}
 	OS.gtk_tree_path_free (path [0]);
@@ -1826,7 +1826,7 @@ public TableItem [] getSelection () {
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
-				OS.memmove (index, indices, 4);
+				C.memmove (index, indices, 4);
 				treeSelection [length] = index [0];
 				length++;
 			}
@@ -1881,7 +1881,7 @@ public int getSelectionIndex () {
 			if (foundIndex == false) {
 				long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 				if (indices != 0) {
-					OS.memmove (index, indices, 4);
+					C.memmove (index, indices, 4);
 					foundIndex = true;
 				}
 			}
@@ -1924,7 +1924,7 @@ public int [] getSelectionIndices () {
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
-				OS.memmove (index, indices, 4);
+				C.memmove (index, indices, 4);
 				treeSelection [length] = index [0];
 				length++;
 			}
@@ -2033,7 +2033,7 @@ public int getTopIndex () {
 		if (path [0] == 0) return 0;
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
 		int[] index = new int [1];
-		if (indices != 0) OS.memmove (index, indices, 4);
+		if (indices != 0) C.memmove (index, indices, 4);
 		OS.gtk_tree_path_free (path [0]);
 		return index [0];
 	}
@@ -2322,7 +2322,7 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
 	long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
 	if (indices != 0) {
 		int [] index = new int [1];
-		OS.memmove (index, indices, 4);
+		C.memmove (index, indices, 4);
 		TableItem item = _getItem (index [0]);
 		item.setChecked (!item.getChecked ());
 		Event event = new Event ();
@@ -2598,7 +2598,7 @@ public void remove (int index) {
 	if (item != null) {
 		disposed = item.isDisposed ();
 		if (!disposed) {
-			OS.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
+			C.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
 			item.release (false);
 		}
 	} else {
@@ -2705,7 +2705,7 @@ public void remove (int [] indices) {
 			if (item != null) {
 				disposed = item.isDisposed ();
 				if (!disposed) {
-					OS.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
+					C.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
 					item.release (false);
 				}
 			} else {
@@ -2801,7 +2801,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 		if (iter != 0) {
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			int [] buffer = new int [1];
-			OS.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
+			C.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
 			int index = buffer [0];
 			item = _getItem (index);
 			long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
@@ -2820,8 +2820,8 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 				}
 			}
 			int [] contentWidth = new int [1], contentHeight = new int  [1];
-			if (width != 0) OS.memmove (contentWidth, width, 4);
-			if (height != 0) OS.memmove (contentHeight, height, 4);
+			if (width != 0) C.memmove (contentWidth, width, 4);
+			if (height != 0) C.memmove (contentHeight, height, 4);
 			if (OS.GTK3) {
 				OS.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
 			}
@@ -2846,8 +2846,8 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
 			contentWidth [0] = rect.width - imageWidth;
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
-			if (width != 0) OS.memmove (width, contentWidth, 4);
-			if (height != 0) OS.memmove (height, contentHeight, 4);
+			if (width != 0) C.memmove (width, contentWidth, 4);
+			if (height != 0) C.memmove (height, contentHeight, 4);
 			if (OS.GTK3) {
 				OS.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
 			}
@@ -2894,7 +2894,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 	if (iter != 0) {
 		long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 		int [] buffer = new int [1];
-		OS.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
+		C.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
 		int index = buffer [0];
 		item = _getItem (index);
 		OS.gtk_tree_path_free (path);

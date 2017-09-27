@@ -2811,9 +2811,9 @@ static void setCairoFont(long /*int*/ cairo, Font font) {
 
 static void setCairoFont(long /*int*/ cairo, long /*int*/ font) {
 	long /*int*/ family = OS.pango_font_description_get_family(font);
-	int length = OS.strlen(family);
+	int length = C.strlen(family);
 	byte[] buffer = new byte[length + 1];
-	OS.memmove(buffer, family, length);
+	C.memmove(buffer, family, length);
 	//TODO - convert font height from pango to cairo
 	double height = OS.PANGO_PIXELS(OS.pango_font_description_get_size(font)) * 96 / 72;
 	int pangoStyle = OS.pango_font_description_get_style(font);

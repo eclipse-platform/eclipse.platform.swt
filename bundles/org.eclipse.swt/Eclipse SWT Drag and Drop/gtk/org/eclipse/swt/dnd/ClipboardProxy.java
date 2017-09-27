@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -141,7 +141,7 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 				entry.info = typeIds[j];
 				byte[] buffer = Converter.wcsToMbcs(typeNames[j], true);
 				long /*int*/ pName = OS.g_malloc(buffer.length);
-				OS.memmove(pName, buffer, buffer.length);
+				C.memmove(pName, buffer, buffer.length);
 				entry.target = pName;
 				GtkTargetEntry[] tmp = new GtkTargetEntry [entries.length + 1];
 				System.arraycopy(entries, 0, tmp, 0, entries.length);

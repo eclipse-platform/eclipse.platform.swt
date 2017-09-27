@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -367,7 +367,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				}
 			}
 		}
-		OS.memmove(data, buffer, stride * height);
+		C.memmove(data, buffer, stride * height);
 		handle = OS.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
 		OS.g_object_unref(pixbuf);
 	} else {
@@ -502,7 +502,7 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		OS.memmove(pixels, data, stride * height);
+		C.memmove(pixels, data, stride * height);
 		long /*int*/ cursor = OS.gdk_cursor_new_from_pixbuf(OS.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
 		OS.g_object_unref(pixbuf);
 		return cursor;

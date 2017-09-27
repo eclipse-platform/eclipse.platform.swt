@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -235,7 +235,7 @@ String openChooserDialog () {
 				if (utf16Ptr != 0) {
 					int clength = (int)/*64*/items_written [0];
 					char [] chars = new char [clength];
-					OS.memmove (chars, utf16Ptr, clength * 2);
+					C.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
 					answer = new String (chars);
 					filterPath = answer;

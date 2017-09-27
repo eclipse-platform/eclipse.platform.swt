@@ -63,10 +63,10 @@ public class OS extends C {
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX; IsWin32 = isWin32;
 
 		byte[] buffer = new byte[4];
-		long /*int*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(buffer, ptr, 1);
-		OS.free(ptr);
+		long /*int*/ ptr = C.malloc(4);
+		C.memmove(ptr, new int[]{1}, 4);
+		C.memmove(buffer, ptr, 1);
+		C.free(ptr);
 		BIG_ENDIAN = buffer[0] == 0;
 	}
 
@@ -75,7 +75,7 @@ public class OS extends C {
 		if (!OS.IsWin32) {
 			// only applicable for X11 but OS.isX11() is not available yet
 			String scalingProperty = "GDK_SCALE";
-			OS.setenv(ascii(scalingProperty), ascii("1"), 1);
+			C.setenv(ascii(scalingProperty), ascii("1"), 1);
 		}
 		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
@@ -116,11 +116,11 @@ public class OS extends C {
 
 	public static String getEnvironmentalVariable (String envVarName) {
 		String envVarValue = null;
-		long /*int*/ ptr = OS.getenv(ascii(envVarName));
+		long /*int*/ ptr = C.getenv(ascii(envVarName));
 		if (ptr != 0) {
-			int length = OS.strlen(ptr);
+			int length = C.strlen(ptr);
 			byte[] buffer = new byte[length];
-			OS.memmove(buffer, ptr, length);
+			C.memmove(buffer, ptr, length);
 			char[] convertedChar = new char[buffer.length];
 			for (int i = 0; i < buffer.length; i++) {
 				convertedChar[i]=(char)buffer[i];
@@ -16436,12 +16436,12 @@ public static final byte [] getThemeNameBytes() {
 	if (ptr [0] == 0) {
 		return buffer;
 	}
-	length = OS.strlen (ptr [0]);
+	length = C.strlen (ptr [0]);
 	if (length == 0) {
 		return buffer;
 	}
 	buffer = new byte [length];
-	OS.memmove (buffer, ptr [0], length);
+	C.memmove (buffer, ptr [0], length);
 	OS.g_free (ptr [0]);
 	return buffer;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -229,9 +229,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	}
 	byte [] buffer1 = Converter.wcsToMbcs (string, false);
 	long /*int*/ ptr = OS.pango_layout_get_text (layout);
-	int length = OS.strlen (ptr);
+	int length = C.strlen (ptr);
 	byte [] buffer2 = new byte [length];
-	OS.memmove (buffer2, ptr, length);
+	C.memmove (buffer2, ptr, length);
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
 	int width, height = 0 ;
 	OS.gtk_widget_realize (handle);
@@ -557,9 +557,9 @@ public String getText () {
 	checkWidget ();
 	long /*int*/ str = OS.gtk_entry_get_text (handle);
 	if (str == 0) return "";
-	int length = OS.strlen (str);
+	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
+	C.memmove (buffer, str, length);
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
@@ -603,9 +603,9 @@ public int getDigits () {
 
 String getDecimalSeparator () {
 	long /*int*/ ptr = OS.localeconv_decimal_point ();
-	int length = OS.strlen (ptr);
+	int length = C.strlen (ptr);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);
+	C.memmove (buffer, ptr, length);
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
@@ -618,7 +618,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	long /*int*/ str = OS.gtk_entry_get_text (handle);
-	int length = OS.strlen (str);
+	int length = C.strlen (str);
 	if (length > 0) {
 		long /*int*/ [] endptr = new long /*int*/ [1];
 		double value = OS.g_strtod (str, endptr);
@@ -664,10 +664,10 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (handle)) return 0;
-	int length = OS.strlen (text);
+	int length = C.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, text, length);
+	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
@@ -742,10 +742,10 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
-	OS.memmove (buffer, new_text, buffer.length);
+	C.memmove (buffer, new_text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
-	OS.memmove (pos, position, 4);
+	C.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, pos [0]);
@@ -772,7 +772,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 			fixStart = newStart [0];
 			fixEnd = newEnd [0];
 		}
-		OS.memmove (position, pos, 4);
+		C.memmove (position, pos, 4);
 		OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
 	}
 	return 0;
@@ -1245,7 +1245,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
-					int length = OS.strlen (preeditString [0]);
+					int length = C.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
 					if (length != 0) return false;
 				}

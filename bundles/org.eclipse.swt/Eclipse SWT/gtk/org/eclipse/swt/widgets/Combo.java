@@ -383,7 +383,7 @@ void clearText () {
 			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 			OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 			OS.g_free (iter);
-			if (ptr [0] != 0 && OS.strlen (ptr [0]) > 0) postEvent (SWT.Modify);
+			if (ptr [0] != 0 && C.strlen (ptr [0]) > 0) postEvent (SWT.Modify);
 			OS.g_free (ptr [0]);
 		}
 	} else {
@@ -1129,9 +1129,9 @@ public String getText () {
 	if (entryHandle != 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (entryHandle);
 		if (str == 0) return "";
-		int length = OS.strlen (str);
+		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
+		C.memmove (buffer, str, length);
 		return new String (Converter.mbcsToWcs (buffer));
 	} else {
 		int index = OS.gtk_combo_box_get_active (handle);
@@ -1293,10 +1293,10 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (entryHandle)) return 0;
-	int length = OS.strlen (text);
+	int length = C.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, text, length);
+	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
@@ -1420,10 +1420,10 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
-	OS.memmove (buffer, new_text, buffer.length);
+	C.memmove (buffer, new_text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
-	OS.memmove (pos, position, 4);
+	C.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, pos [0]);
@@ -1450,7 +1450,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 			fixStart = newStart [0];
 			fixEnd = newEnd [0];
 		}
-		OS.memmove (position, pos, 4);
+		C.memmove (position, pos, 4);
 		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
 	}
 	return 0;
@@ -2346,7 +2346,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
-					int length = OS.strlen (preeditString [0]);
+					int length = C.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
 					if (length != 0) return false;
 				}

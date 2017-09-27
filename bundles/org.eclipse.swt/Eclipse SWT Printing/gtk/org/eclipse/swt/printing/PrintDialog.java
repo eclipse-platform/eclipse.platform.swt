@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -427,7 +427,7 @@ public PrinterData open() {
 					int length = num_ranges[0];
 					int min = Integer.MAX_VALUE, max = 0;
 					for (int i = 0; i < length; i++) {
-						OS.memmove(pageRange, page_ranges + i * pageRange.length * 4, pageRange.length * 4);
+						C.memmove(pageRange, page_ranges + i * pageRange.length * 4, pageRange.length * 4);
 						min = Math.min(min, pageRange[0] + 1);
 						max = Math.max(max, pageRange[1] + 1);
 					}
@@ -445,9 +445,9 @@ public PrinterData open() {
 			data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 			if (data.printToFile) {
 				long /*int*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
-				int length = OS.strlen (address);
+				int length = C.strlen (address);
 				byte [] buffer = new byte [length];
-				OS.memmove (buffer, address, length);
+				C.memmove (buffer, address, length);
 				data.fileName = new String (Converter.mbcsToWcs (buffer));
 			}
 
@@ -495,12 +495,12 @@ public PrinterData open() {
 }
 
 long /*int*/ GtkPrintSettingsFunc (long /*int*/ key, long /*int*/ value, long /*int*/ data) {
-	int length = OS.strlen (key);
+	int length = C.strlen (key);
 	byte [] keyBuffer = new byte [length];
-	OS.memmove (keyBuffer, key, length);
-	length = OS.strlen (value);
+	C.memmove (keyBuffer, key, length);
+	length = C.strlen (value);
 	byte [] valueBuffer = new byte [length];
-	OS.memmove (valueBuffer, value, length);
+	C.memmove (valueBuffer, value, length);
 	store(keyBuffer, valueBuffer);
 	return 0;
 }
@@ -518,9 +518,9 @@ void store(String key, boolean value) {
 }
 
 void storeBytes(String key, long /*int*/ value) {
-	int length = OS.strlen (value);
+	int length = C.strlen (value);
 	byte [] valueBuffer = new byte [length];
-	OS.memmove (valueBuffer, value, length);
+	C.memmove (valueBuffer, value, length);
 	store(key.getBytes(), valueBuffer);
 }
 

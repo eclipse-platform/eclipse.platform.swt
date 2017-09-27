@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -130,7 +130,7 @@ String computeResultChooserDialog () {
 				if (utf16Ptr != 0) {
 					int clength = (int)/*64*/items_written [0];
 					char [] chars = new char [clength];
-					OS.memmove (chars, utf16Ptr, clength * 2);
+					C.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
 					fullPath = new String (chars);
 					fileNames [writePos++] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
@@ -163,7 +163,7 @@ String computeResultChooserDialog () {
 			if (utf16Ptr != 0) {
 				int clength = (int)/*64*/items_written [0];
 				char [] chars = new char [clength];
-				OS.memmove (chars, utf16Ptr, clength * 2);
+				C.memmove (chars, utf16Ptr, clength * 2);
 				OS.g_free (utf16Ptr);
 				fullPath = new String (chars);
 				fileNames = new String [1];
@@ -176,9 +176,9 @@ String computeResultChooserDialog () {
 	if (filter != 0) {
 		long /*int*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
 		if (filterNamePtr != 0) {
-			int length = OS.strlen (filterNamePtr);
+			int length = C.strlen (filterNamePtr);
 			byte[] buffer = new byte [length];
-			OS.memmove (buffer, filterNamePtr, length);
+			C.memmove (buffer, filterNamePtr, length);
 			//OS.g_free (filterNamePtr); //GTK owns this pointer - do not free
 			String filterName = new String (Converter.mbcsToWcs (buffer));
 			for (int i = 0; i < filterExtensions.length; i++) {

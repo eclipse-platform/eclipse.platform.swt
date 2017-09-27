@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -160,7 +161,7 @@ protected void javaToNative (Object object, TransferData transferData) {
 	if (buffer.length == 0) return;
 	long /*int*/ pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
-	OS.memmove(pValue, buffer, buffer.length);
+	C.memmove(pValue, buffer, buffer.length);
 	transferData.length = buffer.length;
 	transferData.format = 8;
 	transferData.pValue = pValue;
@@ -183,7 +184,7 @@ protected Object nativeToJava(TransferData transferData) {
 	int size = transferData.format * transferData.length / 8;
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
-	OS.memmove(buffer, transferData.pValue, size);
+	C.memmove(buffer, transferData.pValue, size);
 	return buffer;
 }
 

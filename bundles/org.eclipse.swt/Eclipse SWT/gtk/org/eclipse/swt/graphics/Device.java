@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -428,20 +428,20 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
 	for (int i=0; i<n_families[0]; i++) {
-		OS.memmove(family, families[0] + i * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
+		C.memmove(family, families[0] + i * C.PTR_SIZEOF, C.PTR_SIZEOF);
 		boolean match = true;
 		if (faceName != null) {
 			long /*int*/ familyName = OS.pango_font_family_get_name(family[0]);
-			int length = OS.strlen(familyName);
+			int length = C.strlen(familyName);
 			byte[] buffer = new byte[length];
-			OS.memmove(buffer, familyName, length);
+			C.memmove(buffer, familyName, length);
 			String name = new String(Converter.mbcsToWcs(buffer));
 			match = faceName.equalsIgnoreCase(name);
 		}
 		if (match) {
 		    OS.pango_font_family_list_faces(family[0], faces, n_faces);
 		    for (int j=0; j<n_faces[0]; j++) {
-		        OS.memmove(face, faces[0] + j * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
+		        C.memmove(face, faces[0] + j * C.PTR_SIZEOF, C.PTR_SIZEOF);
 		        long /*int*/ fontDesc = OS.pango_font_face_describe(face[0]);
 		        Font font = Font.gtk_new(this, fontDesc);
 		        FontData data = font.getFontData()[0];
@@ -573,7 +573,7 @@ protected void init () {
 	DPIUtil.setDeviceZoom (scaleFactor);
 
 	//TODO: Remove; temporary code only
-	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+	boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;
 
 	if (debug || fixAIX) {
 		if (xDisplay != 0) {
@@ -973,7 +973,7 @@ static long /*int*/ XErrorProc (long /*int*/ xDisplay, long /*int*/ xErrorEvent)
 				new SWTError ().printStackTrace ();
 			}
 			//TODO: Remove; temporary code only
-			boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+			boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;
 			if (!fixAIX) OS.Call (XErrorProc, xDisplay, xErrorEvent);
 		}
 	} else {

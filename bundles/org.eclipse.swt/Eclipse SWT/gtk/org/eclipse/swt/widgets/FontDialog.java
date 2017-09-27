@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class allow the user to select a font
@@ -172,9 +172,9 @@ public FontData open () {
 	if (fontData != null) {
 		Font font = new Font (display, fontData);
 		long /*int*/ fontName = OS.pango_font_description_to_string (font.handle);
-		int length = OS.strlen (fontName);
+		int length = C.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
-		OS.memmove (buffer, fontName, length);
+		C.memmove (buffer, fontName, length);
 		font.dispose();
 		OS.g_free (fontName);
 		gtk_font_chooser_set_font (handle, buffer);
@@ -210,9 +210,9 @@ public FontData open () {
 	boolean success = response == OS.GTK_RESPONSE_OK;
 	if (success) {
 		long /*int*/ fontName = gtk_font_chooser_get_font (handle);
-		int length = OS.strlen (fontName);
+		int length = C.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
-		OS.memmove (buffer, fontName, length);
+		C.memmove (buffer, fontName, length);
 		OS.g_free (fontName);
 		long /*int*/ fontDesc = OS.pango_font_description_from_string (buffer);
 		Font font = Font.gtk_new (display, fontDesc);

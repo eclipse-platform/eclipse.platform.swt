@@ -66,7 +66,7 @@ public static long /*int*/ createPixbuf(Image image) {
 	long /*int*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
 	if (hasAlpha) {
 		for (int y = 0; y < height; y++) {
-			OS.memmove (line, surfaceData + (y * stride), stride);
+			C.memmove (line, surfaceData + (y * stride), stride);
 			for (int x = 0, offset = 0; x < width; x++, offset += 4) {
 				int a = line[offset + oa] & 0xFF;
 				int r = line[offset + or] & 0xFF;
@@ -79,13 +79,13 @@ public static long /*int*/ createPixbuf(Image image) {
 					line[offset + 2] = (byte)(((b * 0xFF) + a / 2) / a);
 				}
 			}
-			OS.memmove (pixels + (y * stride), line, stride);
+			C.memmove (pixels + (y * stride), line, stride);
 		}
 	} else {
 		int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
 		byte[] cairoLine = new byte[cairoStride];
 		for (int y = 0; y < height; y++) {
-			OS.memmove (cairoLine, surfaceData + (y * cairoStride), cairoStride);
+			C.memmove (cairoLine, surfaceData + (y * cairoStride), cairoStride);
 			for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
 				byte r = cairoLine[cairoOffset + or];
 				byte g = cairoLine[cairoOffset + og];
@@ -94,7 +94,7 @@ public static long /*int*/ createPixbuf(Image image) {
 				line[offset + 1] = g;
 				line[offset + 2] = b;
 			}
-			OS.memmove (pixels + (y * stride), line, stride);
+			C.memmove (pixels + (y * stride), line, stride);
 		}
 	}
 	Cairo.cairo_surface_destroy(surface);

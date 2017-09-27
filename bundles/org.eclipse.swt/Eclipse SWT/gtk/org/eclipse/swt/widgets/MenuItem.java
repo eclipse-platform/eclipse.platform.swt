@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1090,7 +1090,7 @@ public void setText (String string) {
 private void setAccelLabel(long /*int*/ label, String accelString) {
 	byte[] buffer = Converter.wcsToMbcs (accelString, true);
 	long /*int*/ ptr = OS.g_malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	C.memmove (ptr, buffer, buffer.length);
 	long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
 	OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
 	if (oldPtr != 0) OS.g_free (oldPtr);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,7 +63,7 @@ class AccessibleObject {
 					// this functionality needs to be implemented. Currently objects are
 					// created but aren't linked to the parent in a meaningful way.
 					widget = accessible.getControlHandle();
-					atkHandle = ATK.g_object_new (OS.swt_fixed_accessible_get_type(), 0);
+					atkHandle = OS.g_object_new (OS.swt_fixed_accessible_get_type(), 0);
 					ATK.atk_object_initialize (atkHandle, widget);
 					OS.swt_fixed_accessible_register_accessible(atkHandle, false, 0);
 				}
@@ -73,7 +73,7 @@ class AccessibleObject {
 				atkHandle = OS.gtk_widget_get_accessible(widget);
 			}
 		} else {
-			atkHandle = ATK.g_object_new (type, 0);
+			atkHandle = OS.g_object_new (type, 0);
 			ATK.atk_object_initialize (atkHandle, widget);
 		}
 		this.accessible = accessible;
@@ -90,9 +90,9 @@ class AccessibleObject {
 	}
 
 	static AtkActionIface getActionIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_ACTION())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_ACTION())) {
 			AtkActionIface iface = new AtkActionIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -263,9 +263,9 @@ class AccessibleObject {
 	}
 
 	static AtkComponentIface getComponentIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -274,13 +274,13 @@ class AccessibleObject {
 	static long /*int*/ atkComponent_get_extents (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_extents: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		OS.memmove (x, new int[] {0}, 4);
-		OS.memmove (y, new int[] {0}, 4);
-		OS.memmove (width, new int[] {0}, 4);
-		OS.memmove (height, new int[] {0}, 4);
+		C.memmove (x, new int[] {0}, 4);
+		C.memmove (y, new int[] {0}, 4);
+		C.memmove (width, new int[] {0}, 4);
+		C.memmove (height, new int[] {0}, 4);
 		AtkComponentIface iface = getComponentIface (atkObject);
 		if (iface != null && iface.get_extents != 0) {
-			ATK.call (iface.get_extents, atkObject, x, y, width, height, coord_type);
+			OS.call (iface.get_extents, atkObject, x, y, width, height, coord_type);
 		}
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -289,10 +289,10 @@ class AccessibleObject {
 			if (length > 0) {
 				int[] parentX = new int [1], parentY = new int [1];
 				int[] parentWidth = new int [1], parentHeight = new int [1];
-				OS.memmove (parentX, x, 4);
-				OS.memmove (parentY, y, 4);
-				OS.memmove (parentWidth, width, 4);
-				OS.memmove (parentHeight, height, 4);
+				C.memmove (parentX, x, 4);
+				C.memmove (parentY, y, 4);
+				C.memmove (parentWidth, width, 4);
+				C.memmove (parentHeight, height, 4);
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.x = parentX [0]; event.y = parentY [0];
@@ -311,10 +311,10 @@ class AccessibleObject {
 					event.x -= topWindowX [0];
 					event.y -= topWindowY [0];
 				}
-				OS.memmove (x, new int[] {event.x}, 4);
-				OS.memmove (y, new int[] {event.y}, 4);
-				OS.memmove (width, new int[] {event.width}, 4);
-				OS.memmove (height, new int[] {event.height}, 4);
+				C.memmove (x, new int[] {event.x}, 4);
+				C.memmove (y, new int[] {event.y}, 4);
+				C.memmove (width, new int[] {event.width}, 4);
+				C.memmove (height, new int[] {event.height}, 4);
 				if (DEBUG) print("--->" + event.x + "," + event.y + "," + event.width + "x" + event.height);
 			}
 		}
@@ -324,11 +324,11 @@ class AccessibleObject {
 	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_position, object: " + atkObject + " x: " + x + " y: " + y + " coord: " + coord_type);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		OS.memmove (x, new int[] {0}, 4);
-		OS.memmove (y, new int[] {0}, 4);
+		C.memmove (x, new int[] {0}, 4);
+		C.memmove (y, new int[] {0}, 4);
 		AtkComponentIface iface = getComponentIface (atkObject);
 		if (iface != null && iface.get_position != 0) {
-			ATK.call (iface.get_position, atkObject, x, y, coord_type);
+			OS.call (iface.get_position, atkObject, x, y, coord_type);
 		}
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -336,8 +336,8 @@ class AccessibleObject {
 			int length = size(listeners);
 			if (length > 0) {
 				int[] parentX = new int [1], parentY = new int [1];
-				OS.memmove (parentX, x, 4);
-				OS.memmove (parentY, y, 4);
+				C.memmove (parentX, x, 4);
+				C.memmove (parentY, y, 4);
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.x = parentX [0]; event.y = parentY [0];
@@ -355,8 +355,8 @@ class AccessibleObject {
 					event.x -= topWindowX [0];
 					event.y -= topWindowY [0];
 				}
-				OS.memmove (x, new int[] {event.x}, 4);
-				OS.memmove (y, new int[] {event.y}, 4);
+				C.memmove (x, new int[] {event.x}, 4);
+				C.memmove (y, new int[] {event.y}, 4);
 			}
 		}
 		return 0;
@@ -365,11 +365,11 @@ class AccessibleObject {
 	static long /*int*/ atkComponent_get_size (long /*int*/ atkObject, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_size");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		OS.memmove (width, new int[] {0}, 4);
-		OS.memmove (height, new int[] {0}, 4);
+		C.memmove (width, new int[] {0}, 4);
+		C.memmove (height, new int[] {0}, 4);
 		AtkComponentIface iface = getComponentIface (atkObject);
 		if (iface != null && iface.get_size != 0) {
-			ATK.call (iface.get_size, atkObject, width, height, coord_type);
+			OS.call (iface.get_size, atkObject, width, height, coord_type);
 		}
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -377,8 +377,8 @@ class AccessibleObject {
 			int length = size(listeners);
 			if (length > 0) {
 				int[] parentWidth = new int [1], parentHeight = new int [1];
-				OS.memmove (parentWidth, width, 4);
-				OS.memmove (parentHeight, height, 4);
+				C.memmove (parentWidth, width, 4);
+				C.memmove (parentHeight, height, 4);
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.width = parentWidth [0]; event.height = parentHeight [0];
@@ -386,8 +386,8 @@ class AccessibleObject {
 					AccessibleControlListener listener = listeners.get (i);
 					listener.getLocation (event);
 				}
-				OS.memmove (width, new int[] {event.width}, 4);
-				OS.memmove (height, new int[] {event.height}, 4);
+				C.memmove (width, new int[] {event.width}, 4);
+				C.memmove (height, new int[] {event.height}, 4);
 			}
 		}
 		return 0;
@@ -425,16 +425,16 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkComponentIface iface = getComponentIface (atkObject);
 		if (iface != null && iface.ref_accessible_at_point != 0) {
-			parentResult = ATK.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
+			parentResult = OS.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
 		}
 		return parentResult;
 	}
 
 
 	static AtkEditableTextIface getEditableTextIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -583,7 +583,7 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
+			parentResult = OS.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
 		}
 		return parentResult;
 	}
@@ -645,7 +645,7 @@ class AccessibleObject {
 			if (length > 0) {
 				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
 				int[] pos = new int [1];
-				OS.memmove (pos, position, OS.PTR_SIZEOF);
+				C.memmove (pos, position, C.PTR_SIZEOF);
 				event.start = event.end = pos[0];
 				event.string = getString (string);
 				for (int i = 0; i < length; i++) {
@@ -658,7 +658,7 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.insert_text != 0) {
-			parentResult = ATK.call (iface.insert_text, atkObject, string, string_length, position);
+			parentResult = OS.call (iface.insert_text, atkObject, string, string_length, position);
 		}
 		return parentResult;
 	}
@@ -772,9 +772,9 @@ class AccessibleObject {
 	}
 
 	static AtkHypertextIface getHypertextIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_HYPERTEXT_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_HYPERTEXT_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -871,7 +871,7 @@ class AccessibleObject {
 		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (type != 0) {
 			long /*int*/ parentType = OS.g_type_parent (type);
-			if (parentType != 0) ATK.memmove (objectClass, ATK.g_type_class_peek (parentType));
+			if (parentType != 0) ATK.memmove (objectClass, OS.g_type_class_peek (parentType));
 		}
 		return objectClass;
 	}
@@ -1409,9 +1409,9 @@ class AccessibleObject {
 	}
 
 	static AtkSelectionIface getSelectionIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_SELECTION())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_SELECTION())) {
 			AtkSelectionIface iface = new AtkSelectionIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -1477,9 +1477,9 @@ class AccessibleObject {
 	}
 
 	static AtkTableIface getTableIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TABLE())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TABLE())) {
 			AtkTableIface iface = new AtkTableIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_TABLE_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_TABLE_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -1908,8 +1908,8 @@ class AccessibleObject {
 				}
 				int count = event.selected != null ? event.selected.length : 0;
 				long /*int*/ result = OS.g_malloc(count * 4);
-				if (event.selected != null) OS.memmove(result, event.selected, count * 4);
-				if (selected != 0) OS.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
+				if (event.selected != null) C.memmove(result, event.selected, count * 4);
+				if (selected != 0) C.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}
@@ -1936,8 +1936,8 @@ class AccessibleObject {
 				}
 				int count = event.selected != null ? event.selected.length : 0;
 				long /*int*/ result = OS.g_malloc(count * 4);
-				if (event.selected != null) OS.memmove(result, event.selected, count * 4);
-				if (selected != 0) OS.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
+				if (event.selected != null) C.memmove(result, event.selected, count * 4);
+				if (selected != 0) C.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}
@@ -2141,9 +2141,9 @@ class AccessibleObject {
 	}
 
 	static AtkTextIface getTextIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TEXT())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TEXT())) {
 			AtkTextIface iface = new AtkTextIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -2170,31 +2170,31 @@ class AccessibleObject {
 					event.x -= topWindowX [0];
 					event.y -= topWindowY [0];
 				}
-				OS.memmove (x, new int[]{event.x}, 4);
-				OS.memmove (y, new int[]{event.y}, 4);
-				OS.memmove (width, new int[]{event.width}, 4);
-				OS.memmove (height, new int[]{event.height}, 4);
+				C.memmove (x, new int[]{event.x}, 4);
+				C.memmove (y, new int[]{event.y}, 4);
+				C.memmove (width, new int[]{event.width}, 4);
+				C.memmove (height, new int[]{event.height}, 4);
 				return 0;
 			}
 		}
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_character_extents != 0) {
-			ATK.call (iface.get_character_extents, atkObject, offset, x, y, width, height, coords);
+			OS.call (iface.get_character_extents, atkObject, offset, x, y, width, height, coords);
 		}
 		return 0;
 	}
 
 	static String getString (long /*int*/ strPtr) {
-		int length = OS.strlen (strPtr);
+		int length = C.strlen (strPtr);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, strPtr, length);
+		C.memmove (buffer, strPtr, length);
 		return new String (Converter.mbcsToWcs (buffer));
 	}
 
 	static long /*int*/ getStringPtr (String str) {
 		byte [] buffer = Converter.wcsToMbcs(str != null ? str : "", true);
 		long /*int*/ ptr = OS.g_malloc(buffer.length);
-		OS.memmove(ptr, buffer, buffer.length);
+		C.memmove(ptr, buffer, buffer.length);
 		return ptr;
 	}
 
@@ -2249,8 +2249,8 @@ class AccessibleObject {
 					AccessibleAttributeListener listener = listeners.get(i);
 					listener.getTextAttributes(event);
 				}
-				OS.memmove (start_offset, new int []{event.start}, 4);
-				OS.memmove (end_offset, new int []{event.end}, 4);
+				C.memmove (start_offset, new int []{event.start}, 4);
+				C.memmove (end_offset, new int []{event.end}, 4);
 				TextStyle style = event.textStyle;
 				long /*int*/ result = 0;
 				AtkAttribute attr = new AtkAttribute();
@@ -2364,7 +2364,7 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_run_attributes != 0) {
-			parentResult = ATK.call (iface.get_run_attributes, atkObject, offset, start_offset, end_offset);
+			parentResult = OS.call (iface.get_run_attributes, atkObject, offset, start_offset, end_offset);
 		}
 		return parentResult;
 	}
@@ -2396,7 +2396,7 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_offset_at_point != 0) {
-			parentResult = ATK.call (iface.get_offset_at_point, atkObject, x, y, coords);
+			parentResult = OS.call (iface.get_offset_at_point, atkObject, x, y, coords);
 		}
 		return parentResult;
 	}
@@ -2498,7 +2498,7 @@ class AccessibleObject {
 		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.set_selection != 0) {
-			parentResult = ATK.call (iface.set_selection, atkObject, selection_num, start_offset, end_offset);
+			parentResult = OS.call (iface.set_selection, atkObject, selection_num, start_offset, end_offset);
 		}
 		return parentResult;
 	}
@@ -2560,7 +2560,7 @@ class AccessibleObject {
 				}
 				int [] ranges = event.ranges;
 				int size = ranges == null ? 1 : ranges.length / 2;
-				long /*int*/ result = OS.malloc(size * AtkTextRange.sizeof);
+				long /*int*/ result = C.malloc(size * AtkTextRange.sizeof);
 				AtkTextRange range = new AtkTextRange();
 				for (int j = 0, end = (ranges != null ? ranges.length / 2 : 1); j < end; j++) {
 					if (ranges != null) {
@@ -2693,17 +2693,17 @@ class AccessibleObject {
 		if (DEBUG) print ("-->atkText_get_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		OS.memmove (start_offset, new int[] {0}, 4);
-		OS.memmove (end_offset, new int[] {0}, 4);
+		C.memmove (start_offset, new int[] {0}, 4);
+		C.memmove (end_offset, new int[] {0}, 4);
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_selection != 0) {
-			parentResult = ATK.call (iface.get_selection, atkObject, selection_num, start_offset, end_offset);
+			parentResult = OS.call (iface.get_selection, atkObject, selection_num, start_offset, end_offset);
 		}
 		if (object != null) {
 			int[] parentStart = new int [1];
 			int[] parentEnd = new int [1];
-			OS.memmove (parentStart, start_offset, 4);
-			OS.memmove (parentEnd, end_offset, 4);
+			C.memmove (parentStart, start_offset, 4);
+			C.memmove (parentEnd, end_offset, 4);
 			Accessible accessible = object.accessible;
 			List<AccessibleTextExtendedListener> listeners = accessible.accessibleTextExtendedListeners;
 			int length = size(listeners);
@@ -2718,8 +2718,8 @@ class AccessibleObject {
 				}
 				parentStart [0] = event.start;
 				parentEnd [0] = event.end;
-				OS.memmove (start_offset, parentStart, 4);
-				OS.memmove (end_offset, parentEnd, 4);
+				C.memmove (start_offset, parentStart, 4);
+				C.memmove (end_offset, parentEnd, 4);
 				event.count = event.index = 0;
 				event.type = ACC.TEXT_BOUNDARY_ALL;
 				for (int i = 0; i < length; i++) {
@@ -2741,8 +2741,8 @@ class AccessibleObject {
 						AccessibleTextListener listener = listeners2.get(i);
 						listener.getSelectionRange (event);
 					}
-					OS.memmove (start_offset, new int[] {event.offset}, 4);
-					OS.memmove (end_offset, new int[] {event.offset + event.length}, 4);
+					C.memmove (start_offset, new int[] {event.offset}, 4);
+					C.memmove (end_offset, new int[] {event.offset + event.length}, 4);
 					if (parentResult != 0) OS.g_free(parentResult);
 					String text = object.getText();
 					if (text != null && text.length () > event.offset && text.length() >= event.offset + event.length) {
@@ -2868,8 +2868,8 @@ class AccessibleObject {
 						}
 						break;
 				}
-				OS.memmove (start_offset, new int[] {event.start}, 4);
-				OS.memmove (end_offset, new int[] {event.end}, 4);
+				C.memmove (start_offset, new int[] {event.start}, 4);
+				C.memmove (end_offset, new int[] {event.end}, 4);
 				return getStringPtr (event.result);
 			}
 			int offset = (int)/*64*/offset_value;
@@ -3030,8 +3030,8 @@ class AccessibleObject {
 						break;
 					}
 				}
-				OS.memmove (start_offset, new int[] {startBounds}, 4);
-				OS.memmove (end_offset, new int[] {endBounds}, 4);
+				C.memmove (start_offset, new int[] {startBounds}, 4);
+				C.memmove (end_offset, new int[] {endBounds}, 4);
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
 			}
@@ -3116,8 +3116,8 @@ class AccessibleObject {
 						}
 						break;
 				}
-				OS.memmove (start_offset, new int[] {event.start}, 4);
-				OS.memmove (end_offset, new int[] {event.end}, 4);
+				C.memmove (start_offset, new int[] {event.start}, 4);
+				C.memmove (end_offset, new int[] {event.end}, 4);
 				return getStringPtr (event.result);
 			}
 			int offset = (int)/*64*/offset_value;
@@ -3221,8 +3221,8 @@ class AccessibleObject {
 						endBounds = nextIndexOfChar (text, "\n", lineEnd1 + 1);
 					}
 				}
-				OS.memmove (start_offset, new int[] {startBounds}, 4);
-				OS.memmove (end_offset, new int[] {endBounds}, 4);
+				C.memmove (start_offset, new int[] {startBounds}, 4);
+				C.memmove (end_offset, new int[] {endBounds}, 4);
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
 			}
@@ -3261,8 +3261,8 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = listeners.get(i);
 					listener.getText(event);
 				}
-				OS.memmove (start_offset, new int[] {event.start}, 4);
-				OS.memmove (end_offset, new int[] {event.end}, 4);
+				C.memmove (start_offset, new int[] {event.start}, 4);
+				C.memmove (end_offset, new int[] {event.end}, 4);
 				switch ((int)/*64*/boundary_type) {
 					case ATK.ATK_TEXT_BOUNDARY_WORD_START:
 					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
@@ -3417,8 +3417,8 @@ class AccessibleObject {
 						break;
 					}
 				}
-				OS.memmove (start_offset, new int[] {startBounds}, 4);
-				OS.memmove (end_offset, new int[] {endBounds}, 4);
+				C.memmove (start_offset, new int[] {startBounds}, 4);
+				C.memmove (end_offset, new int[] {endBounds}, 4);
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
 			}
@@ -3458,9 +3458,9 @@ class AccessibleObject {
 	}
 
 	static AtkValueIface getValueIface (long /*int*/ atkObject) {
-		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
+		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_VALUE_GET_IFACE (atkObject)));
+			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_VALUE_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
@@ -3631,10 +3631,10 @@ class AccessibleObject {
 		 * the map of AccessibleObjects, though.
 		 */
 		if (!OS.GTK3) {
-			long /*int*/ superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
-			long /*int*/ gObjectClass = ATK.G_OBJECT_CLASS (superType);
+			long /*int*/ superType = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (atkObject));
+			long /*int*/ gObjectClass = OS.G_OBJECT_CLASS (superType);
 			GObjectClass objectClassStruct = new GObjectClass ();
-			ATK.memmove (objectClassStruct, gObjectClass);
+			OS.memmove (objectClassStruct, gObjectClass);
 			ATK.call (objectClassStruct.finalize, atkObject);
 		}
 		AccessibleObject object = AccessibleObjects.get (new LONG (atkObject));
@@ -3672,7 +3672,7 @@ class AccessibleObject {
 			widget = OS.gtk_accessible_get_widget(object.atkHandle);
 		}
 		if (widget == 0) return;
-		long /*int*/ topLevel = ATK.gtk_widget_get_toplevel (widget);
+		long /*int*/ topLevel = OS.gtk_widget_get_toplevel (widget);
 		long /*int*/ window = OS.gtk_widget_get_window (topLevel);
 		OS.gdk_window_get_origin (window, x, y);
 	}

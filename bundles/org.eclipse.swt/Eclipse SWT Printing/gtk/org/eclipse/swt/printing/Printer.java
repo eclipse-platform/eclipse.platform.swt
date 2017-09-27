@@ -194,15 +194,15 @@ static long /*int*/ GtkPrinterFunc_FindNamedPrinter (long /*int*/ printer, long 
 static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
 	long /*int*/ backend = OS.gtk_printer_get_backend(printer);
 	long /*int*/ address = OS.G_OBJECT_TYPE_NAME(backend);
-	int length = OS.strlen (address);
+	int length = C.strlen (address);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
+	C.memmove (buffer, address, length);
 	String backendType = new String (Converter.mbcsToWcs (buffer));
 
 	address = OS.gtk_printer_get_name (printer);
-	length = OS.strlen (address);
+	length = C.strlen (address);
 	buffer = new byte [length];
-	OS.memmove (buffer, address, length);
+	C.memmove (buffer, address, length);
 	String name = new String (Converter.mbcsToWcs (buffer));
 
 	return new PrinterData (backendType, name);
@@ -273,9 +273,9 @@ static byte [] uriFromFilename(String filename) {
 	long /*int*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 	OS.g_free(localePtr);
 	if (error[0] != 0 || uriPtr == 0) return null;
-	length = OS.strlen(uriPtr);
+	length = C.strlen(uriPtr);
 	byte[] uri = new byte[length + 1];
-	OS.memmove (uri, uriPtr, length);
+	C.memmove (uri, uriPtr, length);
 	OS.g_free(uriPtr);
 	return uri;
 }

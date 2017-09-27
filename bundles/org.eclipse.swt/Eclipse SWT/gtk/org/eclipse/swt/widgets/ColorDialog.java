@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -205,10 +205,10 @@ public RGB open () {
 				}
 			}
 			long /*int*/ strPtr = OS.gtk_color_selection_palette_to_string(gdkColors, rgbs.length);
-			int length = OS.strlen (strPtr);
+			int length = C.strlen (strPtr);
 
 			buffer = new byte [length];
-			OS.memmove (buffer, strPtr, length);
+			C.memmove (buffer, strPtr, length);
 			String paletteString = new String (Converter.mbcsToWcs (buffer));
 			buffer = Converter.wcsToMbcs (paletteString, true);
 			OS.g_free (gdkColors);
@@ -272,9 +272,9 @@ public RGB open () {
 				long /*int*/ [] ptr = new long /*int*/ [1];
 				OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
 				if (ptr [0] != 0) {
-					int length = OS.strlen (ptr [0]);
+					int length = C.strlen (ptr [0]);
 					buffer = new byte [length];
-					OS.memmove (buffer, ptr [0], length);
+					C.memmove (buffer, ptr [0], length);
 					OS.g_free (ptr [0]);
 					String [] gdkColorStrings = null;
 					if (length > 0) {

@@ -648,7 +648,7 @@ public void setTransfer(Transfer... transferAgents){
 				GtkTargetEntry entry = new GtkTargetEntry();
 				byte[] buffer = Converter.wcsToMbcs(typeNames[j], true);
 				entry.target = OS.g_malloc(buffer.length);
-				OS.memmove(entry.target, buffer, buffer.length);
+				C.memmove(entry.target, buffer, buffer.length);
 				entry.info = typeIds[j];
 				GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
 				System.arraycopy(targets, 0, newTargets, 0, targets.length);

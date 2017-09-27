@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,7 +57,7 @@ public static char [] mbcsToWcs (byte [] buffer) {
 	if (ptr == 0) return EmptyCharArray;
 	int length = (int)/*64*/items_written [0];
 	char [] chars = new char [length];
-	OS.memmove (chars, ptr, length * 2);
+	C.memmove (chars, ptr, length * 2);
 	OS.g_free (ptr);
 	return chars;
 }
@@ -96,9 +96,9 @@ public static byte [] wcsToMbcs (String string, boolean terminate) {
  * @return a Java String object.
  */
 public static String cCharPtrToJavaString(long /*int*/ cCharPtr, boolean freecCharPtr) {
-	int length = OS.strlen (cCharPtr);
+	int length = C.strlen (cCharPtr);
 	byte[] buffer = new byte [length];
-	OS.memmove (buffer, cCharPtr, length);
+	C.memmove (buffer, cCharPtr, length);
 	if (freecCharPtr) {
 		OS.g_free (cCharPtr);
 	}
@@ -125,7 +125,7 @@ public static byte [] wcsToMbcs (char [] chars, boolean terminate) {
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
 	int written = (int)/*64*/items_written [0];
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];
-	OS.memmove (bytes, ptr, written);
+	C.memmove (bytes, ptr, written);
 	OS.g_free (ptr);
 	return bytes;
 }

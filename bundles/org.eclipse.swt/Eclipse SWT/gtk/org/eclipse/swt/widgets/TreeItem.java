@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -314,9 +314,9 @@ String _getText (int index) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, ptr, -1);
 	if (ptr [0] == 0) return ""; //$NON-NLS-1$
-	int length = OS.strlen (ptr [0]);
+	int length = C.strlen (ptr [0]);
 	byte[] buffer = new byte [length];
-	OS.memmove (buffer, ptr [0], length);
+	C.memmove (buffer, ptr [0], length);
 	OS.g_free (ptr [0]);
 	return new String (Converter.mbcsToWcs (buffer));
 }
@@ -1073,7 +1073,7 @@ public int indexOf (TreeItem item) {
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
 		if (indices != 0) {
 			int[] temp = new int[depth];
-			OS.memmove (temp, indices, 4 * temp.length);
+			C.memmove (temp, indices, 4 * temp.length);
 			index = temp[temp.length - 1];
 		}
 	}

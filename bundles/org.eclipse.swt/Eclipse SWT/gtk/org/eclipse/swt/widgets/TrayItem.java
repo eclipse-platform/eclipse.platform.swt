@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -299,7 +299,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 			GdkImage gdkImage = new GdkImage();
 			OS.memmove (gdkImage, gdkImagePtr);
 			byte[] maskData = new byte [gdkImage.bpl * gdkImage.height];
-			OS.memmove (maskData, gdkImage.mem, maskData.length);
+			C.memmove (maskData, gdkImage.mem, maskData.length);
 			OS.g_object_unref (gdkImagePtr);
 			Region region = new Region (display);
 			for (int y = 0; y < b.height; y++) {

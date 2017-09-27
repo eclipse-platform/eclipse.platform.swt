@@ -5710,7 +5710,7 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 
 					if (nitems [0] > 0) {
 						byte [] buffer = new byte [nitems [0]];
-						OS.memmove(buffer, data [0], buffer.length);
+						C.memmove(buffer, data [0], buffer.length);
 						OS.XFree (data [0]);
 						char[] chars = Converter.mbcsToWcs(buffer);
 						String string = new String (chars);

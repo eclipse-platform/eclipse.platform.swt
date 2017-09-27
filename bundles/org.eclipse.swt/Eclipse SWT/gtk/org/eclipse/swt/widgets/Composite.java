@@ -1207,8 +1207,8 @@ void moveAbove (long /*int*/ child, long /*int*/ sibling) {
 	long /*int*/ [] widget = new long /*int*/ [1];
 	long /*int*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
-		OS.memmove (data, temp, OS.PTR_SIZEOF);
-		OS.memmove (widget, data [0], OS.PTR_SIZEOF);
+		C.memmove (data, temp, C.PTR_SIZEOF);
+		C.memmove (widget, data [0], C.PTR_SIZEOF);
 		if (child == widget [0]) {
 			childLink = temp;
 			childData = data [0];
@@ -1252,8 +1252,8 @@ void moveBelow (long /*int*/ child, long /*int*/ sibling) {
 	long /*int*/ [] widget = new long /*int*/ [1];
 	long /*int*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
-		OS.memmove (data, temp, OS.PTR_SIZEOF);
-		OS.memmove (widget, data [0], OS.PTR_SIZEOF);
+		C.memmove (data, temp, C.PTR_SIZEOF);
+		C.memmove (widget, data [0], C.PTR_SIZEOF);
 		if (child == widget [0]) {
 			childLink = temp;
 			childData = data [0];

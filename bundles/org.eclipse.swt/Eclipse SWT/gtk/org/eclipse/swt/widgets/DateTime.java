@@ -2033,9 +2033,9 @@ String getText () {
 	if (textEntryHandle != 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (textEntryHandle);
 		if (str == 0) return "";
-		int length = OS.strlen (str);
+		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
+		C.memmove (buffer, str, length);
 		return new String (Converter.mbcsToWcs (buffer));
 	}
 		return "";

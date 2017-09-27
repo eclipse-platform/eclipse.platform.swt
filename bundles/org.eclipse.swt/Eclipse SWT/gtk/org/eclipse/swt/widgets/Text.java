@@ -1336,9 +1336,9 @@ public char [] getTextChars () {
 		address = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
 	}
 	if (address == 0) return new char[0];
-	int length = OS.strlen (address);
+	int length = C.strlen (address);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
+	C.memmove (buffer, address, length);
 	if ((style & SWT.MULTI) != 0) OS.g_free (address);
 
 	char [] result = Converter.mbcsToWcs (buffer);
@@ -1520,10 +1520,10 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if ((style & SWT.SINGLE) != 0) {
 		if (!OS.gtk_editable_get_editable (handle)) return 0;
 	}
-	int length = OS.strlen (text);
+	int length = C.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, text, length);
+	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	Arrays.fill (buffer, (byte) 0);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
@@ -1564,8 +1564,8 @@ long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*i
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] startIter = new byte [ITER_SIZEOF];
 	byte [] endIter = new byte [ITER_SIZEOF];
-	OS.memmove (startIter, iter1, startIter.length);
-	OS.memmove (endIter, iter2, endIter.length);
+	C.memmove (startIter, iter1, startIter.length);
+	C.memmove (endIter, iter2, endIter.length);
 	int start = OS.gtk_text_iter_get_offset (startIter);
 	int end = OS.gtk_text_iter_get_offset (endIter);
 	byte [] zero = new byte [ITER_SIZEOF];
@@ -1667,7 +1667,7 @@ void drawMessage (long /*int*/ cr) {
 	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) return;
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (handle);
-		if (!OS.gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
+		if (!OS.gtk_widget_has_focus (handle) && C.strlen (str) == 0) {
 			long /*int*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
 			gdk_window_get_size (window, w, h);
@@ -1788,10 +1788,10 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
-	OS.memmove (buffer, new_text, buffer.length);
+	C.memmove (buffer, new_text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
-	OS.memmove (pos, position, 4);
+	C.memmove (pos, position, 4);
 	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	/* Use the selection when the text was deleted */
@@ -1826,7 +1826,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 			fixStart = newStart [0];
 			fixEnd = newEnd [0];
 		}
-		OS.memmove (position, pos, 4);
+		C.memmove (position, pos, 4);
 		OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
 	}
 	return 0;
@@ -1869,7 +1869,7 @@ long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter, long /*int*/ text, long /*int*/ length) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
-	OS.memmove (position, iter, position.length);
+	C.memmove (position, iter, position.length);
 	/* Use the selection when the text was deleted */
 	int start = OS.gtk_text_iter_get_offset (position), end = start;
 	if (fixStart != -1 && fixEnd != -1) {
@@ -1884,7 +1884,7 @@ long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter
 	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
 	OS.g_free(ptr);
 	byte [] buffer = new byte [(int)/*64*/length];
-	OS.memmove (buffer, text, buffer.length);
+	C.memmove (buffer, text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	String newText = verifyText (oldText, start, end);
 	if (newText == null) {
@@ -2865,7 +2865,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
-					int length = OS.strlen (preeditString [0]);
+					int length = C.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
 					if (length != 0) return false;
 				}

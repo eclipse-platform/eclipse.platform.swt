@@ -170,7 +170,7 @@ TreeItem _getItem (long /*int*/ iter) {
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	int depth = OS.gtk_tree_path_get_depth (path);
 	int [] indices = new int [depth];
-	OS.memmove (indices, OS.gtk_tree_path_get_indices (path), 4*depth);
+	C.memmove (indices, OS.gtk_tree_path_get_indices (path), 4*depth);
 	long /*int*/ parentIter = 0;
 	if (depth > 1) {
 		OS.gtk_tree_path_up (path);
@@ -2597,7 +2597,7 @@ public int indexOf (TreeItem item) {
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path);
 		if (indices != 0) {
 			int[] temp = new int[1];
-			OS.memmove (temp, indices, 4);
+			C.memmove (temp, indices, 4);
 			index = temp[0];
 		}
 	}
@@ -2872,8 +2872,8 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 				}
 			}
 			int [] contentWidth = new int [1], contentHeight = new int  [1];
-			if (width != 0) OS.memmove (contentWidth, width, 4);
-			if (height != 0) OS.memmove (contentHeight, height, 4);
+			if (width != 0) C.memmove (contentWidth, width, 4);
+			if (height != 0) C.memmove (contentHeight, height, 4);
 			if (OS.GTK3) {
 				OS.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
 			}
@@ -2903,8 +2903,8 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
 			contentWidth [0] = rect.width - imageWidth;
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
-			if (width != 0) OS.memmove (width, contentWidth, 4);
-			if (height != 0) OS.memmove (height, contentHeight, 4);
+			if (width != 0) C.memmove (width, contentWidth, 4);
+			if (height != 0) C.memmove (height, contentHeight, 4);
 			if (OS.GTK3) {
 				OS.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
 			}
@@ -3970,7 +3970,7 @@ void showItem (long /*int*/ path, boolean scroll) {
 	if (depth > 1) {
 		int [] indices = new int [depth - 1];
 		long /*int*/ indicesPtr = OS.gtk_tree_path_get_indices (path);
-		OS.memmove (indices, indicesPtr, indices.length * 4);
+		C.memmove (indices, indicesPtr, indices.length * 4);
 		long /*int*/ tempPath = OS.gtk_tree_path_new ();
 		for (int i=0; i<indices.length; i++) {
 			OS.gtk_tree_path_append_index (tempPath, indices [i]);

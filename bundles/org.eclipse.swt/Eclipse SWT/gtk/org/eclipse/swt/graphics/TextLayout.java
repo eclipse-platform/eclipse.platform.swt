@@ -179,7 +179,7 @@ void computeRuns () {
 			}
 		}
 	}
-	int strlen = OS.strlen(ptr);
+	int strlen = C.strlen(ptr);
 	Font defaultFont = font != null ? font : device.systemFont;
 	for (int i = 0; i < stylesCount - 1; i++) {
 		StyleItem styleItem = styles[i];
@@ -577,7 +577,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				Cairo.cairo_scale(cairo, -1,  1);
 				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
-			drawWithCairo(gc, x, y, 0, OS.strlen(ptr), fullSelection, selectionForeground, selectionBackground);
+			drawWithCairo(gc, x, y, 0, C.strlen(ptr), fullSelection, selectionForeground, selectionBackground);
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_restore(cairo);
 			}
@@ -585,7 +585,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			long /*int*/ ptr = OS.pango_layout_get_text(layout);
 			int byteSelStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionStart) - ptr);
 			int byteSelEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionEnd + 1) - ptr);
-			int strlen = OS.strlen(ptr);
+			int strlen = C.strlen(ptr);
 			byteSelStart = Math.min(byteSelStart, strlen);
 			byteSelEnd = Math.min(byteSelEnd, strlen);
 			if ((data.style & SWT.MIRRORED) != 0) {
@@ -841,7 +841,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, start) - ptr);
 	int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, end + 1) - ptr);
-	int strlen = OS.strlen(ptr);
+	int strlen = C.strlen(ptr);
 	byteStart = Math.min(byteStart, strlen);
 	byteEnd = Math.min(byteEnd, strlen);
 	int[] ranges = new int[]{byteStart, byteEnd};
@@ -984,7 +984,7 @@ public int getLevel(int offset) {
 	PangoLayoutRun run = new PangoLayoutRun();
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	long /*int*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr, offset) - ptr;
-	int strlen = OS.strlen(ptr);
+	int strlen = C.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	do {
 		long /*int*/ runPtr = OS.pango_layout_iter_get_run(iter);
@@ -1082,7 +1082,7 @@ public int getLineIndex(int offset) {
 	int line = 0;
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	long /*int*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr,offset) - ptr;
-	int strlen = OS.strlen(ptr);
+	int strlen = C.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1193,7 +1193,7 @@ Point getLocationInPixels(int offset, boolean trailing) {
 	offset = translateOffset(offset);
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int byteOffset = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, offset) - ptr);
-	int strlen = OS.strlen(ptr);
+	int strlen = C.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	PangoRectangle pos = new PangoRectangle();
 	OS.pango_layout_index_to_pos(layout, byteOffset, pos);

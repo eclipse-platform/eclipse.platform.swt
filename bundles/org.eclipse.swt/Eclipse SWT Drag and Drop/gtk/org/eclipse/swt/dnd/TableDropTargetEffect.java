@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -143,7 +143,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
 			if (indices != 0) {
 				int[] temp = new int[1];
-				OS.memmove (temp, indices, 4);
+				C.memmove (temp, indices, 4);
 				index = temp[0];
 			}
 		}

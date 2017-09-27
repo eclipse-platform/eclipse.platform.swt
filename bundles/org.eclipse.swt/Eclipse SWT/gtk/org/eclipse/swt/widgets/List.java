@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -467,7 +467,7 @@ public int getFocusIndex () {
 	if (path [0] == 0) return -1;
 	long /*int*/ indices = OS.gtk_tree_path_get_indices (path [0]);
 	int [] index = new int []{-1};
-	if (indices != 0) OS.memmove (index, indices, 4);
+	if (indices != 0) C.memmove (index, indices, 4);
 	OS.gtk_tree_path_free (path [0]);
 	return index [0];
 }
@@ -504,9 +504,9 @@ public String getItem (int index) {
 	OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 	OS.g_free (iter);
 	if (ptr [0] == 0) return null;
-	int length = OS.strlen (ptr [0]);
+	int length = C.strlen (ptr [0]);
 	byte[] buffer2 = new byte [length];
-	OS.memmove (buffer2, ptr [0], length);
+	C.memmove (buffer2, ptr [0], length);
 	OS.g_free (ptr [0]);
 	return new String (Converter.mbcsToWcs (buffer2));
 }
@@ -593,9 +593,9 @@ public String [] getItems () {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 		if (ptr [0] != 0) {
-			int length = OS.strlen (ptr [0]);
+			int length = C.strlen (ptr [0]);
 			byte[] buffer = new byte [length];
-			OS.memmove (buffer, ptr [0], length);
+			C.memmove (buffer, ptr [0], length);
 			OS.g_free (ptr [0]);
 			result [index] = new String (Converter.mbcsToWcs (buffer));
 		}
@@ -670,7 +670,7 @@ public int getSelectionIndex () {
 			if (foundIndex == false) {
 				long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 				if (indices !=0) {
-					OS.memmove (index, indices, 4);
+					C.memmove (index, indices, 4);
 					foundIndex = true;
 				}
 			}
@@ -713,7 +713,7 @@ public int [] getSelectionIndices () {
 			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
-				OS.memmove (index, indices, 4);
+				C.memmove (index, indices, 4);
 				treeSelection [length] = index [0];
 				length++;
 			}
@@ -780,7 +780,7 @@ public int getTopIndex () {
 		if (path [0] == 0) return 0;
 		long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
 		int[] index = new int [1];
-		if (indices != 0) OS.memmove (index, indices, 4);
+		if (indices != 0) C.memmove (index, indices, 4);
 		OS.gtk_tree_path_free (path [0]);
 		return index [0];
 	}

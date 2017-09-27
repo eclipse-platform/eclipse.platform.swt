@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -188,7 +188,7 @@ void _setImages (Image [] images) {
 	long /*int*/ [] data = new long /*int*/ [1];
 	long /*int*/ temp = pixbufs;
 	while (temp != 0) {
-		OS.memmove (data, temp, OS.PTR_SIZEOF);
+		C.memmove (data, temp, C.PTR_SIZEOF);
 		OS.g_object_unref (data [0]);
 		temp = OS.g_list_next (temp);
 	}
