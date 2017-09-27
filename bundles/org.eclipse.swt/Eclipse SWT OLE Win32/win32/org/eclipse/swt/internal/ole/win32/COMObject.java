@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,10 +37,10 @@ public COMObject(int[] argCounts) {
 		}
 	}
 
-	long /*int*/ pVtable = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, OS.PTR_SIZEOF * argCounts.length);
-	COM.MoveMemory(pVtable, callbackAddresses, OS.PTR_SIZEOF * argCounts.length);
-	ppVtable = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, OS.PTR_SIZEOF);
-	COM.MoveMemory(ppVtable, new long /*int*/[] {pVtable}, OS.PTR_SIZEOF);
+	long /*int*/ pVtable = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, C.PTR_SIZEOF * argCounts.length);
+	OS.MoveMemory(pVtable, callbackAddresses, C.PTR_SIZEOF * argCounts.length);
+	ppVtable = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, C.PTR_SIZEOF);
+	OS.MoveMemory(ppVtable, new long /*int*/[] {pVtable}, C.PTR_SIZEOF);
 	ObjectMap.put(new LONG(ppVtable), this);
 }
 
@@ -778,7 +778,7 @@ static long /*int*/ callback79(long /*int*/[] callbackArgs) {
 public void dispose() {
 	// free the memory for this reference
 	long /*int*/[] pVtable = new long /*int*/[1];
-	OS.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
+	OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
 	OS.GlobalFree(pVtable[0]);
 	OS.GlobalFree(ppVtable);
 

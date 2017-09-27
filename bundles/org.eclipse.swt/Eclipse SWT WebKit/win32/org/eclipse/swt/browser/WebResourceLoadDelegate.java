@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2016 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -220,11 +220,11 @@ int identifierForInitialRequest (long /*int*/ webView, long /*int*/ request, lon
     }
 	new IWebFrame (mainFrame[0]).Release ();
 	if (frame[0] == mainFrame[0]) {
-		long /*int*/ ptr = OS.malloc (8);
+		long /*int*/ ptr = C.malloc (8);
 		iWebView.estimatedProgress (ptr);
 		double[] estimate = new double[1];
 		OS.MoveMemory (estimate, ptr, 8);
-		OS.free (ptr);
+		C.free (ptr);
 		int progress = (int)(estimate[0] * 100);
 
 		ProgressEvent progressEvent = new ProgressEvent (browser);
@@ -246,17 +246,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebResourceLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebResourceLoadDelegate)) {
-		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebResourceLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory (ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 

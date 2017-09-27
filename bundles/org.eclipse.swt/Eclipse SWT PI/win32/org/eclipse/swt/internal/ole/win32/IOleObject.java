@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,22 +18,22 @@ public IOleObject(long /*int*/ address) {
 	super(address);
 }
 public int Advise(long /*int*/ pAdvSink, int[] pdwConnection) {
-	return COM.VtblCall(19, address, pAdvSink, pdwConnection);
+	return OS.VtblCall(19, address, pAdvSink, pdwConnection);
 }
 public int Close(int dwSaveOption) {
-	return COM.VtblCall(6, address, dwSaveOption);
+	return OS.VtblCall(6, address, dwSaveOption);
 }
 public int DoVerb(int iVerb, MSG lpmsg, long /*int*/ pActiveSite, int lindex, long /*int*/ hwndParent, RECT lprcPosRect) {
 	return COM.VtblCall(11, address, iVerb, lpmsg, pActiveSite, lindex, hwndParent, lprcPosRect);
 }
 public int GetClientSite(long /*int*/[] ppvClientSite) {
-	return COM.VtblCall(4, address, ppvClientSite);
+	return OS.VtblCall(4, address, ppvClientSite);
 }
 public int GetExtent(int dwDrawAspect, SIZE pSizel) {
 	return COM.VtblCall(18, address, dwDrawAspect, pSizel);
 }
 public int SetClientSite(long /*int*/ pClientSite) {
-	return COM.VtblCall(3, address, pClientSite);
+	return OS.VtblCall(3, address, pClientSite);
 }
 public int SetExtent(int dwDrawAspect, SIZE pSizel) {
 	return COM.VtblCall(17, address, dwDrawAspect, pSizel);
@@ -58,9 +58,9 @@ public int SetHostNames(String szContainerApp, String szContainerObj) {
 	return COM.VtblCall(5, address, buffer1, buffer2);
 }
 public int Unadvise(int token) {
-	return COM.VtblCall(20, address, token);
+	return OS.VtblCall(20, address, token);
 }
 public int Update() {
-	return COM.VtblCall(13, address);
+	return OS.VtblCall(13, address);
 }
 }

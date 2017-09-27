@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -444,7 +444,7 @@ private long /*int*/ getMenuItemID(long /*int*/ hMenu, int index) {
 }
 private int GetWindow(long /*int*/ phwnd) {
 	if (phwnd != 0) {
-		COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
+		OS.MoveMemory(phwnd, new long /*int*/[] {handle}, C.PTR_SIZEOF);
 	}
 	return COM.S_OK;
 }
@@ -470,7 +470,7 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 	// locate menu bar
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()) {
-		COM.MoveMemory(lpMenuWidths, new int[] {0}, 4);
+		OS.MoveMemory(lpMenuWidths, new int[] {0}, 4);
 		return COM.S_OK;
 	}
 	long /*int*/ hMenu = menubar.handle;
@@ -511,7 +511,7 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 	}
 
 	// copy the menu item count information to the pointer
-	COM.MoveMemory(lpMenuWidths, new int[] {fileMenuCount}, 4);
+	OS.MoveMemory(lpMenuWidths, new int[] {fileMenuCount}, 4);
 
 	// Loop over all "Container-like" menus in the menubar and get information about the
 	// item from the OS.
@@ -536,7 +536,7 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 	}
 
 	// copy the menu item count information to the pointer
-	COM.MoveMemory(lpMenuWidths + 8, new int[] {containerMenuCount}, 4);
+	OS.MoveMemory(lpMenuWidths + 8, new int[] {containerMenuCount}, 4);
 
 	// Loop over all "Window-like" menus in the menubar and get information about the
 	// item from the OS.
@@ -561,7 +561,7 @@ private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
 	}
 
 	// copy the menu item count information to the pointer
-	COM.MoveMemory(lpMenuWidths + 16, new int[] {windowMenuCount}, 4);
+	OS.MoveMemory(lpMenuWidths + 16, new int[] {windowMenuCount}, 4);
 
 	// free resources used in querying the OS
 	if (pszText != 0)
@@ -615,12 +615,12 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIOleInPlaceFrame) ) {
-		COM.MoveMemory(ppvObject, new long /*int*/ [] {iOleInPlaceFrame.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/ [] {iOleInPlaceFrame.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory(ppvObject, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/ [] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 /**

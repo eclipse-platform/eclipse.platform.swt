@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLAuthenticationChallengeSender extends IUnknown {
 
@@ -20,11 +21,11 @@ public IWebURLAuthenticationChallengeSender (long /*int*/ address) {
 }
 
 public int cancelAuthenticationChallenge (long /*int*/ challenge) {
-	return COM.VtblCall (3, getAddress (), challenge);
+	return OS.VtblCall (3, getAddress (), challenge);
 }
 
 public int useCredential (long /*int*/ credential, long /*int*/ challenge) {
-	return COM.VtblCall (5, getAddress (), credential, challenge);
+	return OS.VtblCall (5, getAddress (), credential, challenge);
 }
 
 }

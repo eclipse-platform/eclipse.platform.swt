@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2806,7 +2806,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.CB_FINDSTRINGEXACT:
 			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0))) {
 				long /*int*/ code = OS.CB_ERR;
-				int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+				int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
 				TCHAR buffer = new TCHAR (getCodePage (), length);
 				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
 				String string = buffer.toString (0, length);
@@ -3169,7 +3169,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 		case OS.WM_SETTEXT:
 			if (lockText) return null;
 			end [0] = OS.GetWindowTextLength (hwndText);
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+			int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
 			TCHAR buffer = new TCHAR (getCodePage (), length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);

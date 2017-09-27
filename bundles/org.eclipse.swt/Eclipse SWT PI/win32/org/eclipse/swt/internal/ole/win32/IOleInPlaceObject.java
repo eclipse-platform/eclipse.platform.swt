@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,15 +18,15 @@ public IOleInPlaceObject(long /*int*/ address) {
 	super(address);
 }
 public int InPlaceDeactivate() {
-	return COM.VtblCall(5, address);
+	return OS.VtblCall(5, address);
 }
 public int UIDeactivate() {
-	return COM.VtblCall(6, address);
+	return OS.VtblCall(6, address);
 }
 public int SetObjectRects(RECT lprcPosRect, RECT lprcClipRect) {
 	return COM.VtblCall(7, address, lprcPosRect, lprcClipRect);
 }
 public int ReactivateAndUndo() {
-	return COM.VtblCall(8, address);
+	return OS.VtblCall(8, address);
 }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2012 IBM Corporation and others.
+ * Copyright (c) 2009, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.swt.accessibility;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 class Relation {
 	Accessible accessible;
@@ -98,7 +99,7 @@ class Relation {
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) {
-			COM.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, C.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -136,7 +137,7 @@ class Relation {
 
 	/* IAccessibleRelation::get_nTargets([out] pNTargets) */
 	int get_nTargets(long /*int*/ pNTargets) {
-		COM.MoveMemory(pNTargets, new int [] { targets.length }, 4);
+		OS.MoveMemory(pNTargets, new int [] { targets.length }, 4);
 		return COM.S_OK;
 	}
 
@@ -145,7 +146,7 @@ class Relation {
 		if (targetIndex < 0 || targetIndex >= targets.length) return COM.E_INVALIDARG;
 		Accessible target = targets[targetIndex];
 		target.AddRef();
-		COM.MoveMemory(ppTarget, new long /*int*/[] { target.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppTarget, new long /*int*/[] { target.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -155,9 +156,9 @@ class Relation {
 		for (int i = 0; i < count; i++) {
 			Accessible target = targets[i];
 			target.AddRef();
-			COM.MoveMemory(ppTargets + i * OS.PTR_SIZEOF, new long /*int*/[] { target.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppTargets + i * C.PTR_SIZEOF, new long /*int*/[] { target.getAddress() }, C.PTR_SIZEOF);
 		}
-		COM.MoveMemory(pNTargets, new int [] { count }, 4);
+		OS.MoveMemory(pNTargets, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -196,6 +197,6 @@ class Relation {
 	void setString(long /*int*/ psz, String string) {
 		char[] data = (string + "\0").toCharArray();
 		long /*int*/ ptr = COM.SysAllocString(data);
-		COM.MoveMemory(psz, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
+		OS.MoveMemory(psz, new long /*int*/ [] { ptr }, C.PTR_SIZEOF);
 	}
 }

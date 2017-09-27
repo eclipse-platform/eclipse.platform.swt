@@ -817,7 +817,7 @@ void initNative(String filename) {
 	* when loading GIF files in 64-bit Windows.  The fix is to not use
 	* GDI+ image loading in this case.
 	*/
-	if (gdip && OS.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
+	if (gdip && C.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
 	/*
 	* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in
 	* Windows 7 when the image has a position offset in the first frame.

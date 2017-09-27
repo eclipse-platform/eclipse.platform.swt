@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.ole.win32;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -266,7 +267,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	data.type = vardesc.elemdescVar_tdesc_vt;
 	if (data.type == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + OS.PTR_SIZEOF, 2);
+		OS.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + C.PTR_SIZEOF, 2);
 		data.type = vt[0];
 	}
 	data.flags = vardesc.wVarFlags;
@@ -314,24 +315,24 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		}
 		//TODO 0- use structures
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);
+		OS.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + C.PTR_SIZEOF, 2);
 		if (vt[0] == OLE.VT_PTR) {
 			long /*int*/ [] pTypedesc = new long /*int*/ [1];
-			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), OS.PTR_SIZEOF);
+			OS.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), C.PTR_SIZEOF);
 			short[] vt2 = new short[1];
-			COM.MoveMemory(vt2, pTypedesc[0] + OS.PTR_SIZEOF, 2);
+			OS.MoveMemory(vt2, pTypedesc[0] + C.PTR_SIZEOF, 2);
 			vt[0] = (short)(vt2[0] | COM.VT_BYREF);
 		}
 		data.args[i].type = vt[0];
 		short[] wParamFlags = new short[1];
-		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + COM.TYPEDESC_sizeof () + OS.PTR_SIZEOF, 2);
+		OS.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + COM.TYPEDESC_sizeof () + C.PTR_SIZEOF, 2);
 		data.args[i].flags = wParamFlags[0];
 	}
 
 	data.returnType = funcdesc.elemdescFunc_tdesc_vt;
 	if (data.returnType == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + OS.PTR_SIZEOF, 2);
+		OS.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + C.PTR_SIZEOF, 2);
 		data.returnType = vt[0];
 	}
 
@@ -559,7 +560,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 		pDispParams.rgdispidNamedArgs = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, 4 * rgdispidNamedArgs.length);
 		int offset = 0;
 		for (int i = rgdispidNamedArgs.length; i > 0; i--) {
-			COM.MoveMemory(pDispParams.rgdispidNamedArgs + offset, new int[] {rgdispidNamedArgs[i-1]}, 4);
+			OS.MoveMemory(pDispParams.rgdispidNamedArgs + offset, new int[] {rgdispidNamedArgs[i-1]}, 4);
 			offset += 4;
 		}
 	}
@@ -674,7 +675,7 @@ private void manageExcepinfo(int hResult, EXCEPINFO excepInfo) {
 		if (excepInfo.bstrDescription != 0){
 			int size = COM.SysStringByteLen(excepInfo.bstrDescription);
 			char[] buffer = new char[(size + 1) /2];
-			COM.MoveMemory(buffer, excepInfo.bstrDescription, size);
+			OS.MoveMemory(buffer, excepInfo.bstrDescription, size);
 			exceptionDescription = new String(buffer);
 		} else {
 			exceptionDescription = "OLE Automation Error Exception "; //$NON-NLS-1$

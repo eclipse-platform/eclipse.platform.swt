@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -100,7 +100,7 @@ long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*in
 		case OS.BFFM_VALIDATEFAILEDA:
 		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+			int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
 			TCHAR buffer = new TCHAR (0, length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);

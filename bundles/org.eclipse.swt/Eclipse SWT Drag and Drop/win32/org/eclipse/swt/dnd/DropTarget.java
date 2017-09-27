@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -623,12 +623,12 @@ int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
-        COM.MoveMemory(ppvObject, new long /*int*/[] {iDropTarget.getAddress()}, OS.PTR_SIZEOF);
+        OS.MoveMemory(ppvObject, new long /*int*/[] {iDropTarget.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
-    COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+    OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 

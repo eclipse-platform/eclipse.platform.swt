@@ -3467,7 +3467,7 @@ String getSharedData(int pid, int  handle) {
 
 	long /*int*/ sharedData = OS.MapViewOfFile(mapHandle[0], OS.FILE_MAP_READ, 0, 0, 0);
 	if (sharedData == 0) return null;
-	int length = OS.IsUnicode ? OS.wcslen (sharedData) : OS.strlen (sharedData);
+	int length = OS.IsUnicode ? OS.wcslen (sharedData) : C.strlen (sharedData);
 	TCHAR buffer = new TCHAR (0, length);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	OS.MoveMemory (buffer, sharedData, byteCount);
@@ -3680,7 +3680,7 @@ public boolean post (Event event) {
 				long /*int*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
 				OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
 				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-				OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
+				OS.MoveMemory (pInputs + C.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
 				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 				OS.HeapFree (hHeap, 0, pInputs);
 				return result;
@@ -3746,7 +3746,7 @@ public boolean post (Event event) {
 				long /*int*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
 				OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
 				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-				OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
+				OS.MoveMemory (pInputs + C.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
 				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 				OS.HeapFree (hHeap, 0, pInputs);
 				return result;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,8 @@
 package org.eclipse.swt.internal.ole.win32;
 
 
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class ITypeInfo extends IUnknown
 {
@@ -32,7 +33,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 		if (size > 0){
 			// get the unicode character array from the global memory and create a String
 			char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
-			COM.MoveMemory(buffer, pBstrName[0], size);
+			OS.MoveMemory(buffer, pBstrName[0], size);
 			name[0] = new String(buffer);
 			int subindex = name[0].indexOf("\0");
 			if (subindex > 0)
@@ -45,7 +46,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 		if (size > 0){
 			// get the unicode character array from the global memory and create a String
 			char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
-			COM.MoveMemory(buffer, pBstrDocString[0], size);
+			OS.MoveMemory(buffer, pBstrDocString[0], size);
 			docString[0] = new String(buffer);
 			int subindex = docString[0].indexOf("\0");
 			if (subindex > 0)
@@ -58,7 +59,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 		if (size > 0){
 			// get the unicode character array from the global memory and create a String
 			char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
-			COM.MoveMemory(buffer, pBstrHelpFile[0], size);
+			OS.MoveMemory(buffer, pBstrHelpFile[0], size);
 			helpFile[0] = new String(buffer);
 			int subindex = helpFile[0].indexOf("\0");
 			if (subindex > 0)
@@ -69,7 +70,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 	return rc;
 }
 public int GetFuncDesc(int index, long /*int*/[] ppFuncDesc) {
-	return COM.VtblCall(5, address, index, ppFuncDesc);
+	return OS.VtblCall(5, address, index, ppFuncDesc);
 }
 public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 
@@ -78,7 +79,7 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 
 	// create an array to hold the addresses
 	long /*int*/ hHeap = OS.GetProcessHeap();
-	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * OS.PTR_SIZEOF);
+	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * C.PTR_SIZEOF);
 	long /*int*/[] memTracker = new long /*int*/[size];
 
 	try {
@@ -93,7 +94,7 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 			long /*int*/ pName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
 			OS.MoveMemory(pName, buffer, buffer.length * 2);
 			// copy the address to the array of addresses
-			COM.MoveMemory(ppNames + OS.PTR_SIZEOF * i, new long /*int*/[]{pName}, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppNames + C.PTR_SIZEOF * i, new long /*int*/[]{pName}, C.PTR_SIZEOF);
 			// keep track of the Global Memory so we can free it
 			memTracker[i] = pName;
 		}
@@ -110,7 +111,7 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 }
 
 public int GetImplTypeFlags(int index, int[] pImplTypeFlags) {
-	return COM.VtblCall(9, address, index, pImplTypeFlags);
+	return OS.VtblCall(9, address, index, pImplTypeFlags);
 }
 public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 
@@ -124,7 +125,7 @@ public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 			if (size > 0){
 				// get the unicode character array from the global memory and create a String
 				char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
-				COM.MoveMemory(buffer, rgBstrNames[i], size);
+				OS.MoveMemory(buffer, rgBstrNames[i], size);
 				names[i] = new String(buffer);
 				int subindex = names[i].indexOf("\0");
 				if (subindex > 0)
@@ -137,24 +138,24 @@ public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 	return rc;
 }
 public int GetRefTypeInfo(int hRefType, long /*int*/[] ppTInfo) {
-	return COM.VtblCall(14, address, hRefType, ppTInfo);
+	return OS.VtblCall(14, address, hRefType, ppTInfo);
 }
 public int GetRefTypeOfImplType(int index, int[] pRefType) {
-	return COM.VtblCall(8, address, index, pRefType);
+	return OS.VtblCall(8, address, index, pRefType);
 }
 public int GetTypeAttr(long /*int*/[] ppTypeAttr) {
-	return COM.VtblCall(3, address, ppTypeAttr);
+	return OS.VtblCall(3, address, ppTypeAttr);
 }
 public int GetVarDesc(int index, long /*int*/[] ppVarDesc ) {
-	return COM.VtblCall(6, address, index, ppVarDesc);
+	return OS.VtblCall(6, address, index, ppVarDesc);
 }
 public int ReleaseFuncDesc(long /*int*/ pFuncDesc ) {
-	return COM.VtblCall(20, address, pFuncDesc);
+	return OS.VtblCall(20, address, pFuncDesc);
 }
 public int ReleaseTypeAttr(long /*int*/ pTypeAttr) {
-	return COM.VtblCall(19, address, pTypeAttr);
+	return OS.VtblCall(19, address, pTypeAttr);
 }
 public int ReleaseVarDesc(long /*int*/ pVarDesc ) {
-	return COM.VtblCall(21, address, pVarDesc);
+	return OS.VtblCall(21, address, pVarDesc);
 }
 }

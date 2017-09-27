@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 
-import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.internal.win32.*;
 
 public class IOleDocumentView extends IUnknown
 {
@@ -19,15 +19,15 @@ public IOleDocumentView(long /*int*/ address) {
 	super(address);
 }
 public int SetInPlaceSite(long /*int*/ pIPSite) {
-	return COM.VtblCall(3, address, pIPSite);
+	return OS.VtblCall(3, address, pIPSite);
 }
 public int SetRect(RECT prcView) {
 	return COM.VtblCall(6, address, prcView);
 }
 public int Show(int fShow) {
-	return COM.VtblCall(9, address, fShow);
+	return OS.VtblCall(9, address, fShow);
 }
 public int UIActivate(int fUIActivate) {
-	return COM.VtblCall(10, address, fUIActivate);
+	return OS.VtblCall(10, address, fUIActivate);
 }
 }

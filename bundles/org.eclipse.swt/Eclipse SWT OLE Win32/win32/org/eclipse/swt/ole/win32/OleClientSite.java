@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -188,7 +188,7 @@ public OleClientSite(Composite parent, int style, File file) {
 	try {
 
 		if (file == null || file.isDirectory() || !file.exists())
-			OLE.error(OLE.ERROR_INVALID_ARGUMENT);
+			OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 
 		// Is there an associated CLSID?
 		GUID fileClsid = new GUID();
@@ -298,7 +298,7 @@ public OleClientSite(Composite parent, int style, String progId) {
 public OleClientSite(Composite parent, int style, String progId, File file) {
 	this(parent, style);
 	try {
-		if (file == null || file.isDirectory() || !file.exists()) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
+		if (file == null || file.isDirectory() || !file.exists()) OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 		appClsid = getClassID(progId);
 		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
 
@@ -369,10 +369,10 @@ void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
 				byte[] buffer = new byte[increment];
 				int count = 0;
 				while((count = fileInput.read(buffer)) > 0){
-					long /*int*/ pv = COM.CoTaskMemAlloc(count);
+					long /*int*/ pv = OS.CoTaskMemAlloc(count);
 					OS.MoveMemory(pv, buffer, count);
 					result = stream.Write(pv, count, null) ;
-					COM.CoTaskMemFree(pv);
+					OS.CoTaskMemFree(pv);
 					if (result != COM.S_OK) {
 						fileInput.close();
 						stream.Release();
@@ -740,7 +740,7 @@ private int GetContainer(long /*int*/ ppContainer) {
 	 * they can return E_NOINTERFACE and set ppContainer to NULL.
 	 */
 	if (ppContainer != 0)
-		COM.MoveMemory(ppContainer, new long /*int*/[]{0}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppContainer, new long /*int*/[]{0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 private SIZE getExtent() {
@@ -782,7 +782,7 @@ String getProgID(GUID clsid) {
 			int length = OS.GlobalSize(hMem);
 			long /*int*/ ptr = OS.GlobalLock(hMem);
 			char[] buffer = new char[length];
-			COM.MoveMemory(buffer, ptr, length);
+			OS.MoveMemory(buffer, ptr, length);
 			OS.GlobalUnlock(hMem);
 			OS.GlobalFree(hMem);
 
@@ -817,12 +817,12 @@ protected int GetWindow(long /*int*/ phwnd) {
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
 	if (frame == null) {
-		COM.MoveMemory(phwnd, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+		OS.MoveMemory(phwnd, new long /*int*/[] {0}, C.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
 
 	// Copy the Window's handle into the memory passed in
-	COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
+	OS.MoveMemory(phwnd, new long /*int*/[] {handle}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 RECT getRect() {
@@ -840,11 +840,11 @@ private int GetWindowContext(long /*int*/ ppFrame, long /*int*/ ppDoc, long /*in
 
 	// fill in frame handle
 	long /*int*/ iOleInPlaceFrame = frame.getIOleInPlaceFrame();
-	COM.MoveMemory(ppFrame, new long /*int*/[] {iOleInPlaceFrame}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppFrame, new long /*int*/[] {iOleInPlaceFrame}, C.PTR_SIZEOF);
 	frame.AddRef();
 
 	// null out document handle
-	if (ppDoc != 0) COM.MoveMemory(ppDoc, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	if (ppDoc != 0) OS.MoveMemory(ppDoc, new long /*int*/[] {0}, C.PTR_SIZEOF);
 
 	// fill in position and clipping info
 	RECT rect = getRect();
@@ -1085,34 +1085,34 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIAdviseSink)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iAdviseSink.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iAdviseSink.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iOleClientSite.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleClientSite.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceSite)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iOleInPlaceSite.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleInPlaceSite.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite )) {
 		String progID = getProgramID();
 		if (!progID.startsWith("PowerPoint")) { //$NON-NLS-1$
-			COM.MoveMemory(ppvObject, new long /*int*/[] {iOleDocumentSite.getAddress()}, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] {iOleDocumentSite.getAddress()}, C.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
 	}
-	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 /**
@@ -1224,7 +1224,7 @@ private boolean saveFromContents(long /*int*/ address, File file) {
 		FileOutputStream writer = new FileOutputStream(file);
 
 		int increment = 1024 * 4;
-		long /*int*/ pv = COM.CoTaskMemAlloc(increment);
+		long /*int*/ pv = OS.CoTaskMemAlloc(increment);
 		int[] pcbWritten = new int[1];
 		while (tempContents.Read(pv, increment, pcbWritten) == COM.S_OK && pcbWritten[0] > 0) {
 			byte[] buffer = new byte[ pcbWritten[0]];
@@ -1233,7 +1233,7 @@ private boolean saveFromContents(long /*int*/ address, File file) {
 			                      // first time it is called
 			success = true;
 		}
-		COM.CoTaskMemFree(pv);
+		OS.CoTaskMemFree(pv);
 
 		writer.close();
 
@@ -1253,19 +1253,19 @@ private boolean saveFromOle10Native(long /*int*/ address, File file) {
 
 	// The "\1Ole10Native" stream contains a DWORD header whose value is the length
 	// of the native data that follows.
-	long /*int*/ pv = COM.CoTaskMemAlloc(4);
+	long /*int*/ pv = OS.CoTaskMemAlloc(4);
 	int[] size = new int[1];
 	int rc = tempContents.Read(pv, 4, null);
 	OS.MoveMemory(size, pv, 4);
-	COM.CoTaskMemFree(pv);
+	OS.CoTaskMemFree(pv);
 	if (rc == COM.S_OK && size[0] > 0) {
 
 		// Read the data
 		byte[] buffer = new byte[size[0]];
-		pv = COM.CoTaskMemAlloc(size[0]);
+		pv = OS.CoTaskMemAlloc(size[0]);
 		rc = tempContents.Read(pv, size[0], null);
 		OS.MoveMemory(buffer, pv, size[0]);
-		COM.CoTaskMemFree(pv);
+		OS.CoTaskMemFree(pv);
 
 		// open the file and write data into it
 		try {
@@ -1487,7 +1487,7 @@ public void showProperties(String title) {
 	result = COM.OleCreatePropertyFrame(frame.handle, 10, 10, chTitle, 1, new long /*int*/[] {objIUnknown.getAddress()}, caGUID.cElems, caGUID.pElems, COM.LOCALE_USER_DEFAULT, 0, 0);
 
 	// free the property page information
-	COM.CoTaskMemFree(caGUID.pElems);
+	OS.CoTaskMemFree(caGUID.pElems);
 }
 private boolean updateStorage() {
 

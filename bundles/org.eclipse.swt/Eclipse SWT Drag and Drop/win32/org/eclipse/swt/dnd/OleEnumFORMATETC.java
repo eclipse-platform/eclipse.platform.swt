@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 final class OleEnumFORMATETC {
 
@@ -105,13 +106,13 @@ private int Next(int celt, long /*int*/ rgelt, long /*int*/ pceltFetched) {
 		}
 
 		if (pceltFetched != 0)
-			COM.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
+			OS.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
 
 		if (nextItems.length == celt) return COM.S_OK;
 
 	} else {
 		if (pceltFetched != 0)
-			COM.MoveMemory(pceltFetched, new int[] {0}, 4);
+			OS.MoveMemory(pceltFetched, new int[] {0}, 4);
 		COM.MoveMemory(rgelt, new FORMATETC(), FORMATETC.sizeof);
 
 	}
@@ -125,16 +126,16 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIEnumFORMATETC)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iEnumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iEnumFORMATETC.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2012 IBM Corporation and others.
+ * Copyright (c) 2008, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
+
+import org.eclipse.swt.internal.win32.*;
 
 public class IDispatchEx extends IDispatch {
 
@@ -25,11 +27,11 @@ public int InvokeEx (int id, int lcid, int wFlags, DISPPARAMS pdp, long /*int*/ 
 }
 
 public int DeleteMemberByName (long /*int*/ bstrName, int grfdex) {
-	return COM.VtblCall (9, address, bstrName, grfdex);
+	return OS.VtblCall (9, address, bstrName, grfdex);
 }
 
 public int DeleteMemberByDispID (int id) {
-	return COM.VtblCall (10, address, id);
+	return OS.VtblCall (10, address, id);
 }
 
 public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
@@ -37,7 +39,7 @@ public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
 }
 
 public int GetMemberName (int id, long /*int*/[] pbstrName) {
-	return COM.VtblCall (12, address, id, pbstrName);
+	return OS.VtblCall (12, address, id, pbstrName);
 }
 
 public int GetNextDispID (int grfdex, int id, int[] pid) {
@@ -45,6 +47,6 @@ public int GetNextDispID (int grfdex, int id, int[] pid) {
 }
 
 public int GetNameSpaceParent (long /*int*/[] ppunk) {
-	return COM.VtblCall (14, address, ppunk);
+	return OS.VtblCall (14, address, ppunk);
 }
 }

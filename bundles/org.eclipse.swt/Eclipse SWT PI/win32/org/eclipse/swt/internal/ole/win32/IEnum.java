@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,21 +10,23 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
+import org.eclipse.swt.internal.win32.*;
+
 public class IEnum extends IUnknown
 {
 public IEnum(long /*int*/ address) {
 	super(address);
 }
 public int Clone( long /*int*/[] ppenum  ){
-	return COM.VtblCall(6, address, ppenum);
+	return OS.VtblCall(6, address, ppenum);
 }
 public int Next(int celt, long /*int*/ rgelt, int[] pceltFetched  ){
 	return COM.VtblCall(3, address, celt, rgelt, pceltFetched);
 }
 public int Reset() {
-	return COM.VtblCall(5, address);
+	return OS.VtblCall(5, address);
 }
 public int Skip(int celt){
-	return COM.VtblCall(4, address, celt);
+	return OS.VtblCall(4, address, celt);
 }
 }

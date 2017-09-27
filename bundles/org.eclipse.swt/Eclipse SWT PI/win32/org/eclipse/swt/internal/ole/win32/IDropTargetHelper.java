@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2012 IBM Corporation and others.
+ * Copyright (c) 2008, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ public int DragEnter(long /*int*/ hwndTarget, long /*int*/ pDataObject, POINT pp
 	return COM.VtblCall(3, address, hwndTarget, pDataObject, ppt, dwEffect);
 }
 public int DragLeave() {
-	return COM.VtblCall(4, address);
+	return OS.VtblCall(4, address);
 }
 public int DragOver(POINT ppt, int dwEffect) {
 	return COM.VtblCall(5, address, ppt, dwEffect);

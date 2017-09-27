@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.swt.ole.win32;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 final class OleEventSink
 {
@@ -164,12 +165,12 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 
 	if ( COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) ||
 			COM.IsEqualGUID(guid, eventGuid)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return OLE.S_OK;
 	}
 
-	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

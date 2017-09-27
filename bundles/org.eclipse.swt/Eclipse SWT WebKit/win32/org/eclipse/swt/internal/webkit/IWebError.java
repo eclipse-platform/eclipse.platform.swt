@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class IWebError extends IUnknown {
 
@@ -20,7 +21,7 @@ public IWebError (long /*int*/ address) {
 }
 
 public int code (int[] result) {
-	return COM.VtblCall (4, getAddress (), result);
+	return OS.VtblCall (4, getAddress (), result);
 }
 
 //public int domain (long /*int*/[] result) {
@@ -28,7 +29,7 @@ public int code (int[] result) {
 //}
 
 public int localizedDescription (long /*int*/[] result) {
-	return COM.VtblCall (6, getAddress (), result);
+	return OS.VtblCall (6, getAddress (), result);
 }
 
 //public int localizedFailureReason (long /*int*/[] result) {
@@ -40,7 +41,7 @@ public int localizedDescription (long /*int*/[] result) {
 //}
 
 public int failingURL (long /*int*/[] result) {
-	return COM.VtblCall (12, getAddress (), result);
+	return OS.VtblCall (12, getAddress (), result);
 }
 
 }

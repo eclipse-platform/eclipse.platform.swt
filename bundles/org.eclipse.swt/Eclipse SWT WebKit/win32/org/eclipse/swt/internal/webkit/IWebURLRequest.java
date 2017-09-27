@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLRequest extends IUnknown {
 
@@ -24,15 +25,15 @@ public IWebURLRequest (long /*int*/ address) {
 //}
 
 public int HTTPMethod (long /*int*/[] result) {
-	return COM.VtblCall (8, getAddress (), result);
+	return OS.VtblCall (8, getAddress (), result);
 }
 
 public int URL (long /*int*/[] result) {
-	return COM.VtblCall (13, getAddress (), result);
+	return OS.VtblCall (13, getAddress (), result);
 }
 
 public int mutableCopy (long /*int*/[] result) {
-	return COM.VtblCall (16, getAddress (), result);
+	return OS.VtblCall (16, getAddress (), result);
 }
 
 }

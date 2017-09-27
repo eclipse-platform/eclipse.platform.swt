@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,10 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -573,7 +574,7 @@ private int EnumFormatEtc(int dwDirection, long /*int*/ ppenumFormatetc) {
 	dropeffect.tymed = COM.TYMED_HGLOBAL;
 	formats[formats.length -1] = dropeffect;
 	enumFORMATETC.setFormats(formats);
-	OS.MoveMemory(ppenumFormatetc, new long /*int*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppenumFormatetc, new long /*int*/[] {enumFORMATETC.getAddress()}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
@@ -642,11 +643,11 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iDataObject.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iDataObject.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 private int Release() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 public class IWebFrame extends IUnknown {
 
@@ -20,19 +21,19 @@ public IWebFrame (long /*int*/ address) {
 }
 
 public int loadRequest (long /*int*/ request) {
-	return COM.VtblCall (8, getAddress (), request);
+	return OS.VtblCall (8, getAddress (), request);
 }
 
 public int loadHTMLString (long /*int*/ string, long /*int*/ baseURL) {
-	return COM.VtblCall (10, getAddress (), string, baseURL);
+	return OS.VtblCall (10, getAddress (), string, baseURL);
 }
 
 public int dataSource (long /*int*/[] source) {
-	return COM.VtblCall (13, getAddress (), source);
+	return OS.VtblCall (13, getAddress (), source);
 }
 
 public long /*int*/ globalContext () {
-	return COM.VtblCall (23, getAddress ());
+	return OS.VtblCall (23, getAddress ());
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
+import org.eclipse.swt.internal.win32.*;
+
 public class IStorage extends IUnknown
 {
 public IStorage(long /*int*/ address) {
 	super(address);
 }
 public int Commit(int grfCommitFlag) {
-	return COM.VtblCall(9, address, grfCommitFlag);
+	return OS.VtblCall(9, address, grfCommitFlag);
 }
 public int CopyTo(
 	int ciidExclude,     //Number of elements in rgiidExclude
@@ -69,7 +71,7 @@ public int DestroyElement(String pwcsName) {
 	if (pwcsName != null) {
 		buffer = (pwcsName+"\0").toCharArray();
 	}
-	return COM.VtblCall(12, address, buffer);
+	return OS.VtblCall(12, address, buffer);
 }
 public int EnumElements(
 	int reserved1, //Reserved; must be zero
@@ -78,7 +80,7 @@ public int EnumElements(
 	long /*int*/[] ppenum   //Pointer to output variable that
 				   // receives the IEnumSTATSTG interface
 ){
-	return COM.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
+	return OS.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
 }
 public int OpenStorage(
 	String pwcsName,     //Pointer to the name of the
@@ -139,7 +141,7 @@ public int RenameElement(
 	return COM.VtblCall(13, address, buffer1, buffer2);
 }
 public int Revert() {
-	return COM.VtblCall(10, address);
+	return OS.VtblCall(10, address);
 }
 public int SetClass(
 	GUID clsid  //CLSID to be assigned to the storage object

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1096,7 +1096,7 @@ RECT drawRunTextGDIP(long /*int*/ graphics, StyleItem run, RECT rect, long /*int
 	}
 	int[] advances = new int[run.glyphCount];
 	float[] points = new float[run.glyphCount * 2];
-	OS.memmove(advances, run.justify != 0 ? run.justify : run.advances, run.glyphCount * 4);
+	C.memmove(advances, run.justify != 0 ? run.justify : run.advances, run.glyphCount * 4);
 	int glyphX = drawX;
 	for (int h = 0, j = 0; h < advances.length; h++) {
 		points[j++] = glyphX;
@@ -3372,7 +3372,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 			if (run.psc != 0) {
 				OS.ScriptFreeCache(run.psc);
 				glyphCount[0] = 0;
-				OS.MoveMemory(run.psc, new long /*int*/ [1], OS.PTR_SIZEOF);
+				OS.MoveMemory(run.psc, new long /*int*/ [1], C.PTR_SIZEOF);
 			}
 			return false;
 		}
@@ -3397,7 +3397,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	if (run.psc != 0) {
 		OS.ScriptFreeCache(run.psc);
 		glyphCount[0] = 0;
-		OS.MoveMemory(run.psc, new long /*int*/ [1], OS.PTR_SIZEOF);
+		OS.MoveMemory(run.psc, new long /*int*/ [1], C.PTR_SIZEOF);
 	}
 	run.glyphCount = 0;
 	return false;
@@ -3421,7 +3421,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 	if (run.clusters == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.visAttrs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * SCRIPT_VISATTR_SIZEOF);
 	if (run.visAttrs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.PTR_SIZEOF);
+	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, C.PTR_SIZEOF);
 	if (run.psc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	final short script = run.analysis.eScript;
 	final SCRIPT_PROPERTIES sp = new SCRIPT_PROPERTIES();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
+import org.eclipse.swt.internal.win32.*;
 
 public class IAccessible extends IDispatch {
 
@@ -18,10 +19,10 @@ public IAccessible(long /*int*/ address) {
 }
 
 public int get_accParent(long /*int*/ ppdispParent) {
-	return COM.VtblCall(7, address, ppdispParent);
+	return OS.VtblCall(7, address, ppdispParent);
 }
 public int get_accChildCount(long /*int*/ pcountChildren) {
-	return COM.VtblCall(8, address, pcountChildren);
+	return OS.VtblCall(8, address, pcountChildren);
 }
 public int get_accChild(long /*int*/ variant, long /*int*/ ppdispChild) {
 	return COM.VtblCall_VARIANTP(9, address, variant, ppdispChild);
@@ -51,10 +52,10 @@ public int get_accKeyboardShortcut(long /*int*/ variant, long /*int*/ pszKeyboar
 	return COM.VtblCall_VARIANTP(17, address, variant, pszKeyboardShortcut);
 }
 public int get_accFocus(long /*int*/ pvarChild) {
-	return COM.VtblCall(18, address, pvarChild);
+	return OS.VtblCall(18, address, pvarChild);
 }
 public int get_accSelection(long /*int*/ pvarChildren) {
-	return COM.VtblCall(19, address, pvarChildren);
+	return OS.VtblCall(19, address, pvarChildren);
 }
 public int get_accDefaultAction(long /*int*/ variant, long /*int*/ pszDefaultAction) {
 	return COM.VtblCall_VARIANTP(20, address, variant, pszDefaultAction);

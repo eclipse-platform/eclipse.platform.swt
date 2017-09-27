@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
@@ -123,7 +124,7 @@ public class Accessible {
 		/* CreateStdAccessibleObject([in] hwnd, [in] idObject, [in] riidInterface, [out] ppvObject).
 		 * AddRef has already been called on ppvObject by the callee and must be released by the caller.
 		 */
-		int result = (int)/*64*/COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
+		int result = (int)/*64*/COM.CreateStdAccessibleObject(control.handle, OS.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
 		/* The object needs to be checked, because if the CreateStdAccessibleObject()
 		 * symbol is not found, the return value is S_OK.
 		 */
@@ -206,9 +207,9 @@ public class Accessible {
 		 */
 		long /*int*/ ppVtable = objIAccessible.ppVtable;
 		long /*int*/[] pVtable = new long /*int*/[1];
-		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
+		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
 		long /*int*/[] funcs = new long /*int*/[28];
-		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
 		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
 		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
 		funcs[11] = COM.get_accValue_CALLBACK(funcs[11]);
@@ -225,7 +226,7 @@ public class Accessible {
 		funcs[25] = COM.accDoDefaultAction_CALLBACK(funcs[25]);
 		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
 		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
-		COM.MoveMemory(pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIAccessible2() {
@@ -333,9 +334,9 @@ public class Accessible {
 		 */
 		long /*int*/ ppVtable = objIAccessible2.ppVtable;
 		long /*int*/[] pVtable = new long /*int*/[1];
-		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
+		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
 		long /*int*/[] funcs = new long /*int*/[28];
-		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
 		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
 		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
 		funcs[11] = COM.get_accValue_CALLBACK(funcs[11]);
@@ -352,7 +353,7 @@ public class Accessible {
 		funcs[25] = COM.accDoDefaultAction_CALLBACK(funcs[25]);
 		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
 		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
-		COM.MoveMemory(pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIAccessibleAction() {
@@ -687,11 +688,11 @@ public class Accessible {
 		/* Dereference VARIANT struct parameters. */
 		long /*int*/ ppVtable = objIAccessibleValue.ppVtable;
 		long /*int*/[] pVtable = new long /*int*/[1];
-		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
+		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
 		long /*int*/[] funcs = new long /*int*/[7];
-		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
 		funcs[4] = COM.CALLBACK_setCurrentValue(funcs[4]);
-		COM.MoveMemory(pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
+		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIEnumVARIANT() {
@@ -1128,7 +1129,7 @@ public class Accessible {
 	 */
 	public long /*int*/ internal_WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 		if (objIAccessible == null) return 0;
-		if ((int)/*64*/lParam == COM.OBJID_CLIENT) {
+		if ((int)/*64*/lParam == OS.OBJID_CLIENT) {
 			/* LresultFromObject([in] riid, [in] wParam, [in] pAcc)
 			 * The argument pAcc is owned by the caller so reference count does not
 			 * need to be incremented.
@@ -1521,7 +1522,7 @@ public class Accessible {
 			case ACC.EVENT_TABLE_CHANGED: {
 				if (!(eventData instanceof int[] && ((int[])eventData).length == TABLE_MODEL_CHANGE_SIZE)) break;
 				tableChange = (int[])eventData;
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID());
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID());
 				break;
 			}
 			case ACC.EVENT_TEXT_CHANGED: {
@@ -1531,11 +1532,11 @@ public class Accessible {
 				switch (type) {
 					case ACC.DELETE:
 						textDeleted = (Object[])eventData;
-						COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_REMOVED, control.handle, COM.OBJID_CLIENT, eventChildID());
+						OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_REMOVED, control.handle, OS.OBJID_CLIENT, eventChildID());
 						break;
 					case ACC.INSERT:
 						textInserted = (Object[])eventData;
-						COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_INSERTED, control.handle, COM.OBJID_CLIENT, eventChildID());
+						OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_INSERTED, control.handle, OS.OBJID_CLIENT, eventChildID());
 						break;
 				}
 				break;
@@ -1544,67 +1545,67 @@ public class Accessible {
 				if (!(eventData instanceof Integer)) break;
 	//			int index = ((Integer)eventData).intValue();
 				// TODO: IA2 currently does not use the index, however the plan is to use it in future
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_SELECTED, control.handle, COM.OBJID_CLIENT, eventChildID());
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_SELECTED, control.handle, OS.OBJID_CLIENT, eventChildID());
 				break;
 			}
 			case ACC.EVENT_VALUE_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_STATE_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_STATECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_STATECHANGE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_SELECTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TEXT_SELECTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_LOCATION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_NAME_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_NAMECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_NAMECHANGE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_DESCRIPTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:
-				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_COMPLETE, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_COMPLETE, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_DOCUMENT_LOAD_STOPPED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_STOPPED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_STOPPED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_DOCUMENT_RELOAD:
-				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_RELOAD, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_RELOAD, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_PAGE_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_PAGE_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_PAGE_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_SECTION_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_SECTION_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_SECTION_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_ACTION_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_ACTION_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_ACTION_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_START_INDEX_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_START_INDEX_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERLINK_END_INDEX_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_END_INDEX_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_END_INDEX_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERLINK_SELECTED_LINK_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_SELECTED_LINK_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_SELECTED_LINK_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERLINK_ACTIVATED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ACTIVATED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ACTIVATED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_COUNT_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_COUNT_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_ATTRIBUTE_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_ATTRIBUTE_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_ATTRIBUTE_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_CAPTION_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_CAPTION_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_CAPTION_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_COLUMN_HEADER_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_HEADER_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_HEADER_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_ROW_DESCRIPTION_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_DESCRIPTION_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_DESCRIPTION_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_ROW_HEADER_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_HEADER_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_HEADER_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TABLE_SUMMARY_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_SUMMARY_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TABLE_SUMMARY_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TEXT_ATTRIBUTE_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TEXT_CARET_MOVED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 			case ACC.EVENT_TEXT_COLUMN_CHANGED:
-				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_COLUMN_CHANGED, control.handle, COM.OBJID_CLIENT, eventChildID()); break;
+				OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_COLUMN_CHANGED, control.handle, OS.OBJID_CLIENT, eventChildID()); break;
 		}
 	}
 
@@ -1644,19 +1645,19 @@ public class Accessible {
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + osChildID);
 		switch (event) {
 			case ACC.EVENT_STATE_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_STATECHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_STATECHANGE, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_NAME_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_NAMECHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_NAMECHANGE, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_VALUE_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_LOCATION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_SELECTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_TEXT_SELECTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, OS.OBJID_CLIENT, osChildID); break;
 			case ACC.EVENT_DESCRIPTION_CHANGED:
-				COM.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, COM.OBJID_CLIENT, osChildID); break;
+				OS.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, OS.OBJID_CLIENT, osChildID); break;
 		}
 	}
 
@@ -1676,7 +1677,7 @@ public class Accessible {
 		checkWidget();
 		if (!isATRunning ()) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_SELECTIONWITHIN hwnd=" + control.handle + " childID=" + eventChildID());
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, eventChildID());
+		OS.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, OS.OBJID_CLIENT, eventChildID());
 	}
 
 	/**
@@ -1695,7 +1696,7 @@ public class Accessible {
 		if (!isATRunning ()) return;
 		int osChildID = childID == ACC.CHILDID_SELF ? eventChildID() : childIDToOs(childID);
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_FOCUS hwnd=" + control.handle + " childID=" + osChildID);
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, osChildID);
+		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, control.handle, OS.OBJID_CLIENT, osChildID);
 	}
 
 	/**
@@ -1719,10 +1720,10 @@ public class Accessible {
 				public void run() {
 					if (!isATRunning ()) return;
 					if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
-					COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
+					OS.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, OS.OBJID_CARET, eventChildID());
 					if (!UseIA2) return;
 					if (DEBUG) print(this + ".NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=" + control.handle + " childID=" + eventChildID());
-					COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, eventChildID());
+					OS.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, OS.OBJID_CLIENT, eventChildID());
 				}
 			};
 		}
@@ -1770,7 +1771,7 @@ public class Accessible {
 			return;
 		}
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_VALUECHANGE hwnd=" + control.handle + " childID=" + eventChildID());
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID());
+		OS.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, OS.OBJID_CLIENT, eventChildID());
 	}
 
 	/**
@@ -1788,7 +1789,7 @@ public class Accessible {
 		checkWidget();
 		if (!isATRunning ()) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_TEXTSELECTIONCHANGED hwnd=" + control.handle + " childID=" + eventChildID());
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, COM.OBJID_CLIENT, eventChildID());
+		OS.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, OS.OBJID_CLIENT, eventChildID());
 	}
 
 	/* QueryInterface([in] iid, [out] ppvObject)
@@ -1797,12 +1798,12 @@ public class Accessible {
 	 */
 	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {
 		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
-		COM.MoveMemory(ppvObject, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			COM.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, C.PTR_SIZEOF);
 			AddRef();
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + getAddress() + hresult(COM.S_OK));
 			return COM.S_OK;
@@ -1810,7 +1811,7 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIDispatch) || COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 			if (objIAccessible == null) createIAccessible();
-			COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, C.PTR_SIZEOF);
 			AddRef();
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIAccessible.getAddress() + hresult(COM.S_OK));
 			return COM.S_OK;
@@ -1818,7 +1819,7 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) {
 			if (objIEnumVARIANT == null) createIEnumVARIANT();
-			COM.MoveMemory(ppvObject, new long /*int*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] { objIEnumVARIANT.getAddress() }, C.PTR_SIZEOF);
 			AddRef();
 			enumIndex = 0;
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIEnumVARIANT.getAddress() + hresult(COM.S_OK));
@@ -1833,7 +1834,7 @@ public class Accessible {
 				accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
 				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIServiceProvider == null) createIServiceProvider();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIServiceProvider.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIServiceProvider.getAddress() + hresult(COM.S_OK));
 				return COM.S_OK;
@@ -1852,7 +1853,7 @@ public class Accessible {
 			/* Forward any other GUIDs to the OS proxy. */
 			long /*int*/[] ppv = new long /*int*/[1];
 			code = iaccessible.QueryInterface(guid, ppv);
-			COM.MoveMemory(ppvObject, ppv, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, ppv, C.PTR_SIZEOF);
 			if (DEBUG) if (interesting(guid)) print("QueryInterface guid=" + guidString(guid) + " returning super" + hresult(code));
 			return code;
 		}
@@ -1986,7 +1987,7 @@ public class Accessible {
 
 	/* QueryService([in] guidService, [in] riid, [out] ppvObject) */
 	int QueryService(long /*int*/ guidService, long /*int*/ riid, long /*int*/ ppvObject) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
 		GUID service = new GUID();
 		COM.MoveMemory(service, guidService, GUID.sizeof);
 		GUID guid = new GUID();
@@ -1996,7 +1997,7 @@ public class Accessible {
 			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) | COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 				if (objIAccessible == null) createIAccessible();
 				if (DEBUG) print(this + ".QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning " + objIAccessible.getAddress() + hresult(COM.S_OK));
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2023,7 +2024,7 @@ public class Accessible {
 				IServiceProvider iserviceProvider = new IServiceProvider(ppv[0]);
 				long /*int*/ [] ppvx = new long /*int*/ [1];
 				code = iserviceProvider.QueryService(service, guid, ppvx);
-				COM.MoveMemory(ppvObject, ppvx, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, ppvx, C.PTR_SIZEOF);
 				if (DEBUG) if (interesting(service) && interesting(guid)) print("QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning super" + hresult(code));
 				return code;
 			}
@@ -2042,7 +2043,7 @@ public class Accessible {
 					accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
 					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
 				if (objIAccessible2 == null) createIAccessible2();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2052,7 +2053,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) {
 			if (accessibleActionListenersSize() > 0) {
 				if (objIAccessibleAction == null) createIAccessibleAction();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleAction.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleAction.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2061,7 +2062,7 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) {
 			if (objIAccessibleApplication == null) createIAccessibleApplication();
-			COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleApplication.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleApplication.getAddress() }, C.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -2080,7 +2081,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) {
 			if (accessibleEditableTextListenersSize() > 0) {
 				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleEditableText.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2090,7 +2091,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) {
 			if (accessibleHyperlinkListenersSize() > 0) {
 				if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHyperlink.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHyperlink.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2100,7 +2101,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) {
 			if (accessibleTextExtendedListenersSize() > 0) {
 				if (objIAccessibleHypertext == null) createIAccessibleHypertext();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHypertext.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHypertext.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2126,7 +2127,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) {
 			if (accessibleTableListenersSize() > 0) {
 				if (objIAccessibleTable2 == null) createIAccessibleTable2();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTable2.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTable2.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2136,7 +2137,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) {
 			if (accessibleTableCellListenersSize() > 0) {
 				if (objIAccessibleTableCell == null) createIAccessibleTableCell();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTableCell.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTableCell.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2146,7 +2147,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
 			if (accessibleTextExtendedListenersSize() > 0 || accessibleAttributeListenersSize() > 0) {
 				if (objIAccessibleText == null) createIAccessibleText();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleText.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2156,7 +2157,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) {
 			if (accessibleValueListenersSize() > 0) {
 				if (objIAccessibleValue == null) createIAccessibleValue();
-				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleValue.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleValue.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2250,10 +2251,10 @@ public class Accessible {
 			}
 			if (code == COM.S_OK) {
 				int[] pLeft = new int[1], pTop = new int[1], pWidth = new int[1], pHeight = new int[1];
-				COM.MoveMemory(pLeft, pxLeft, 4);
-				COM.MoveMemory(pTop, pyTop, 4);
-				COM.MoveMemory(pWidth, pcxWidth, 4);
-				COM.MoveMemory(pHeight, pcyHeight, 4);
+				OS.MoveMemory(pLeft, pxLeft, 4);
+				OS.MoveMemory(pTop, pyTop, 4);
+				OS.MoveMemory(pWidth, pcxWidth, 4);
+				OS.MoveMemory(pHeight, pcyHeight, 4);
 				osLeft = pLeft[0]; osTop = pTop[0]; osWidth = pWidth[0]; osHeight = pHeight[0];
 			}
 		}
@@ -2313,7 +2314,7 @@ public class Accessible {
 		if (v.lVal == COM.CHILDID_SELF) {
 			if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning " + getAddress() + hresult(COM.S_OK));
 			AddRef();
-			COM.MoveMemory(ppdispChild, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppdispChild, new long /*int*/[] { getAddress() }, C.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 		final int childID = osToChildID(v.lVal);
@@ -2328,7 +2329,7 @@ public class Accessible {
 				final ToolItem item = toolBar.getItem(childID);
 				if (item != null && (item.getStyle() & SWT.DROP_DOWN) != 0) {
 					long /*int*/[] addr = new long /*int*/[1];
-					COM.MoveMemory(addr, ppdispChild, OS.PTR_SIZEOF);
+					OS.MoveMemory(addr, ppdispChild, C.PTR_SIZEOF);
 					boolean found = false;
 					for (int i = 0; i < children.size(); i++) {
 						Accessible accChild = children.get(i);
@@ -2384,7 +2385,7 @@ public class Accessible {
 		if (accessible != null) {
 			if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning " + accessible.getAddress() + hresult(COM.S_OK));
 			accessible.AddRef();
-			COM.MoveMemory(ppdispChild, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppdispChild, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning from super" + hresult(code));
@@ -2399,7 +2400,7 @@ public class Accessible {
 			int code = iaccessible.get_accChildCount(pcountChildren);
 			if (code == COM.S_OK) {
 				int[] pChildCount = new int[1];
-				COM.MoveMemory(pChildCount, pcountChildren, 4);
+				OS.MoveMemory(pChildCount, pcountChildren, 4);
 				osChildCount = pChildCount[0];
 			}
 			if (accessibleControlListenersSize() == 0) {
@@ -2416,7 +2417,7 @@ public class Accessible {
 			listener.getChildCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accChildCount() returning " + event.detail + hresult(COM.S_OK));
-		COM.MoveMemory(pcountChildren, new int[] { event.detail }, 4);
+		OS.MoveMemory(pcountChildren, new int[] { event.detail }, 4);
 		return COM.S_OK;
 	}
 
@@ -2434,11 +2435,11 @@ public class Accessible {
 			if (accessibleControlListenersSize() == 0) return code;
 			if (code == COM.S_OK) {
 				long /*int*/[] pDefaultAction = new long /*int*/[1];
-				COM.MoveMemory(pDefaultAction, pszDefaultAction, OS.PTR_SIZEOF);
+				OS.MoveMemory(pDefaultAction, pszDefaultAction, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pDefaultAction[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pDefaultAction[0], size);
+					OS.MoveMemory(buffer, pDefaultAction[0], size);
 					osDefaultAction = new String(buffer);
 				}
 			}
@@ -2487,11 +2488,11 @@ public class Accessible {
 			}
 			if (code == COM.S_OK) {
 				long /*int*/[] pDescription = new long /*int*/[1];
-				COM.MoveMemory(pDescription, pszDescription, OS.PTR_SIZEOF);
+				OS.MoveMemory(pDescription, pszDescription, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pDescription[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pDescription[0], size);
+					OS.MoveMemory(buffer, pDescription[0], size);
 					osDescription = new String(buffer);
 				}
 			}
@@ -2604,11 +2605,11 @@ public class Accessible {
 			if (accessibleListenersSize() == 0) return code;
 			if (code == COM.S_OK) {
 				long /*int*/[] pHelp = new long /*int*/[1];
-				COM.MoveMemory(pHelp, pszHelp, OS.PTR_SIZEOF);
+				OS.MoveMemory(pHelp, pszHelp, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pHelp[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pHelp[0], size);
+					OS.MoveMemory(buffer, pHelp[0], size);
 					osHelp = new String(buffer);
 				}
 			}
@@ -2656,11 +2657,11 @@ public class Accessible {
 			if (accessibleListenersSize() == 0 && !(control instanceof TabFolder)) return code;
 			if (code == COM.S_OK) {
 				long /*int*/[] pKeyboardShortcut = new long /*int*/[1];
-				COM.MoveMemory(pKeyboardShortcut, pszKeyboardShortcut, OS.PTR_SIZEOF);
+				OS.MoveMemory(pKeyboardShortcut, pszKeyboardShortcut, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pKeyboardShortcut[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pKeyboardShortcut[0], size);
+					OS.MoveMemory(buffer, pKeyboardShortcut[0], size);
 					osKeyboardShortcut = new String(buffer);
 				}
 			}
@@ -2695,11 +2696,11 @@ public class Accessible {
 			code = iaccessible.get_accName(varChild, pszName);
 			if (code == COM.S_OK) {
 				long /*int*/[] pName = new long /*int*/[1];
-				COM.MoveMemory(pName, pszName, OS.PTR_SIZEOF);
+				OS.MoveMemory(pName, pszName, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pName[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pName[0], size);
+					OS.MoveMemory(buffer, pName[0], size);
 					osName = new String(buffer);
 				}
 			}
@@ -2747,7 +2748,7 @@ public class Accessible {
 		if (parent != null) {
 			/* For lightweight accessibles, return the accessible's parent. */
 			parent.AddRef();
-			COM.MoveMemory(ppdispParent, new long /*int*/[] { parent.getAddress() }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppdispParent, new long /*int*/[] { parent.getAddress() }, C.PTR_SIZEOF);
 			code = COM.S_OK;
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accParent() returning" + (parent != null ? " " + parent.getAddress() : " from super") + hresult(code));
@@ -2918,11 +2919,11 @@ public class Accessible {
 			code = iaccessible.get_accValue(varChild, pszValue);
 			if (code == COM.S_OK) {
 				long /*int*/[] pValue = new long /*int*/[1];
-				COM.MoveMemory(pValue, pszValue, OS.PTR_SIZEOF);
+				OS.MoveMemory(pValue, pszValue, C.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pValue[0]);
 				if (size > 0) {
 					char[] buffer = new char[(size + 1) /2];
-					COM.MoveMemory(buffer, pValue[0], size);
+					OS.MoveMemory(buffer, pValue[0], size);
 					osValue = new String(buffer);
 				}
 			}
@@ -3024,7 +3025,7 @@ public class Accessible {
 			int[] celtFetched = new int[1];
 			code = ienumvariant.Next(celt, rgvar, celtFetched);
 			ienumvariant.Release();
-			COM.MoveMemory(pceltFetched, celtFetched, 4);
+			OS.MoveMemory(pceltFetched, celtFetched, 4);
 			return code;
 		}
 
@@ -3069,11 +3070,11 @@ public class Accessible {
 				}
 			}
 			if (pceltFetched != 0)
-				COM.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
+				OS.MoveMemory(pceltFetched, new int[] {nextItems.length}, 4);
 			if (nextItems.length == celt) return COM.S_OK;
 		} else {
 			if (pceltFetched != 0)
-				COM.MoveMemory(pceltFetched, new int[] {0}, 4);
+				OS.MoveMemory(pceltFetched, new int[] {0}, 4);
 		}
 		return COM.S_FALSE;
 	}
@@ -3140,12 +3141,12 @@ public class Accessible {
 			long /*int*/ [] pEnum = new long /*int*/ [1];
 			code = ienumvariant.Clone(pEnum);
 			ienumvariant.Release();
-			COM.MoveMemory(ppEnum, pEnum, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppEnum, pEnum, C.PTR_SIZEOF);
 			return code;
 		}
 
 		if (ppEnum == 0) return COM.E_INVALIDARG;
-		COM.MoveMemory(ppEnum, new long /*int*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppEnum, new long /*int*/[] { objIEnumVARIANT.getAddress() }, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
@@ -3154,7 +3155,7 @@ public class Accessible {
 	int get_nRelations(long /*int*/ pNRelations) {
 		int count = getRelationCount();
 		if (DEBUG) print(this + ".IAccessible2::get_nRelations returning " + count + hresult(COM.S_OK));
-		COM.MoveMemory(pNRelations, new int [] { count }, 4);
+		OS.MoveMemory(pNRelations, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -3167,7 +3168,7 @@ public class Accessible {
 			if (i == relationIndex) {
 				if (DEBUG) print(this + ".IAccessible2::get_relation(" + relationIndex + ") returning " + relation.getAddress() + hresult(COM.S_OK));
 				relation.AddRef();
-				COM.MoveMemory(ppRelation, new long /*int*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppRelation, new long /*int*/[] { relation.getAddress() }, C.PTR_SIZEOF);
 				return COM.S_OK;
 			}
 		}
@@ -3183,12 +3184,12 @@ public class Accessible {
 			Relation relation = relations[type];
 			if (relation != null) {
 				relation.AddRef();
-				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new long /*int*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(ppRelations + count * C.PTR_SIZEOF, new long /*int*/[] { relation.getAddress() }, C.PTR_SIZEOF);
 				count++;
 			}
 		}
 		if (DEBUG) print(this + ".IAccessible2::get_relations(" + maxRelations + ") returning " + count + hresult(COM.S_OK));
-		COM.MoveMemory(pNRelations, new int [] { count }, 4);
+		OS.MoveMemory(pNRelations, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -3197,7 +3198,7 @@ public class Accessible {
 		int role = getRole();
 		if (role == 0) role = getDefaultRole();
 		if (DEBUG) print(this + ".IAccessible2::get_role() returning " + getRoleString(role) + hresult(COM.S_OK));
-		COM.MoveMemory(pRole, new int [] { role }, 4);
+		OS.MoveMemory(pRole, new int [] { role }, 4);
 		return COM.S_OK;
 	}
 
@@ -3242,9 +3243,9 @@ public class Accessible {
 				}
 			}
 		}
-		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
-		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
-		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
+		OS.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
+		OS.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
+		OS.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
 		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning level=" + groupLevel + ", count=" + similarItemsInGroup + ", index=" + positionInGroup + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
 		if (groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0) return COM.S_FALSE;
 		return COM.S_OK;
@@ -3275,7 +3276,7 @@ public class Accessible {
 			ia2States |= COM.IA2_STATE_EDITABLE;
 		}
 		if (DEBUG) print(this + ".IAccessible2::get_states returning" + getIA2StatesString(ia2States) + hresult(COM.S_OK));
-		COM.MoveMemory(pStates, new int [] { ia2States }, 4);
+		OS.MoveMemory(pStates, new int [] { ia2States }, 4);
 		return COM.S_OK;
 	}
 
@@ -3296,7 +3297,7 @@ public class Accessible {
 	/* IAccessible2::get_nExtendedStates([out] pNExtendedStates) */
 	int get_nExtendedStates(long /*int*/ pNExtendedStates) {
 		/* This feature is not supported. */
-		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
+		OS.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
 		return COM.S_OK;
 	}
 
@@ -3304,7 +3305,7 @@ public class Accessible {
 	int get_extendedStates(int maxExtendedStates, long /*int*/ ppbstrExtendedStates, long /*int*/ pNExtendedStates) {
 		/* This feature is not supported. */
 		setString(ppbstrExtendedStates, null);
-		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
+		OS.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
 		return COM.S_FALSE;
 	}
 
@@ -3312,7 +3313,7 @@ public class Accessible {
 	int get_localizedExtendedStates(int maxLocalizedExtendedStates, long /*int*/ ppbstrLocalizedExtendedStates, long /*int*/ pNLocalizedExtendedStates) {
 		/* This feature is not supported. */
 		setString(ppbstrLocalizedExtendedStates, null);
-		COM.MoveMemory(pNLocalizedExtendedStates, new int [] { 0 }, 4);
+		OS.MoveMemory(pNLocalizedExtendedStates, new int [] { 0 }, 4);
 		return COM.S_FALSE;
 	}
 
@@ -3320,14 +3321,14 @@ public class Accessible {
 	int get_uniqueID(long /*int*/ pUniqueID) {
 		if (uniqueID == -1) uniqueID = UniqueID--;
 		if (DEBUG) print(this + ".IAccessible2::get_uniqueID returning " + uniqueID + hresult(COM.S_OK));
-		COM.MoveMemory(pUniqueID, new long /*int*/ [] { uniqueID }, 4);
+		OS.MoveMemory(pUniqueID, new long /*int*/ [] { uniqueID }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_windowHandle([out] pWindowHandle) */
 	int get_windowHandle(long /*int*/ pWindowHandle) {
 		if (DEBUG) print(this + ".IAccessible2::get_windowHandle returning " + control.handle + hresult(COM.S_OK));
-		COM.MoveMemory(pWindowHandle, new long /*int*/ [] { control.handle }, OS.PTR_SIZEOF);
+		OS.MoveMemory(pWindowHandle, new long /*int*/ [] { control.handle }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -3387,7 +3388,7 @@ public class Accessible {
 		}
 
 		if (DEBUG) print(this + ".IAccessible2::get_indexInParent returning " + indexInParent + hresult(indexInParent == -1 ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
+		OS.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
 		return indexInParent == -1 ? COM.S_FALSE : COM.S_OK;
 	}
 
@@ -3398,15 +3399,15 @@ public class Accessible {
 
 		char[] data = (locale.getLanguage()+"\0").toCharArray();
 		long /*int*/ ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
+		OS.MoveMemory(pLocale, new long /*int*/[] {ptr}, C.PTR_SIZEOF);
 
 		data = (locale.getCountry()+"\0").toCharArray();
 		ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale + OS.PTR_SIZEOF, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
+		OS.MoveMemory(pLocale + C.PTR_SIZEOF, new long /*int*/[] {ptr}, C.PTR_SIZEOF);
 
 		data = (locale.getVariant()+"\0").toCharArray();
 		ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale + 2 * OS.PTR_SIZEOF, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
+		OS.MoveMemory(pLocale + 2 * C.PTR_SIZEOF, new long /*int*/[] {ptr}, C.PTR_SIZEOF);
 
 		if (DEBUG) print(this + ".IAccessible2::get_locale() returning" + hresult(COM.S_OK));
 		return COM.S_OK;
@@ -3456,7 +3457,7 @@ public class Accessible {
 			listener.getActionCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_nActions() returning " + event.count + hresult(COM.S_OK));
-		COM.MoveMemory(pNActions, new int [] { event.count }, 4);
+		OS.MoveMemory(pNActions, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -3505,13 +3506,13 @@ public class Accessible {
 			if (j == -1) j = length;
 			String keyBinding = keyBindings.substring(i, j);
 			if (keyBinding.length() > 0) {
-				setString(ppbstrKeyBindings + count * OS.PTR_SIZEOF, keyBinding);
+				setString(ppbstrKeyBindings + count * C.PTR_SIZEOF, keyBinding);
 				count++;
 			}
 			i = j + 1;
 		}
 		if (DEBUG) print(this + ".IAccessibleAction::get_keyBinding(index=" + actionIndex + " max=" + nMaxBindings + ") returning count=" + count + hresult(count == 0 ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pNBindings, new int [] { count }, 4);
+		OS.MoveMemory(pNBindings, new int [] { count }, 4);
 		if (count == 0) {
 			setString(ppbstrKeyBindings, null);
 			return COM.S_FALSE;
@@ -3869,7 +3870,7 @@ public class Accessible {
 			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getStartIndex(event);
 		}
-		COM.MoveMemory(pIndex, new int [] { event.index }, 4);
+		OS.MoveMemory(pIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
 
@@ -3881,7 +3882,7 @@ public class Accessible {
 			AccessibleHyperlinkListener listener = accessibleHyperlinkListeners.get(i);
 			listener.getEndIndex(event);
 		}
-		COM.MoveMemory(pIndex, new int [] { event.index }, 4);
+		OS.MoveMemory(pIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
 
@@ -3899,7 +3900,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getHyperlinkCount(event);
 		}
-		COM.MoveMemory(pHyperlinkCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pHyperlinkCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -3918,7 +3919,7 @@ public class Accessible {
 			return COM.E_INVALIDARG;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppHyperlink, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppHyperlink, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -3932,7 +3933,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 			listener.getHyperlinkIndex(event);
 		}
-		COM.MoveMemory(pHyperlinkIndex, new int [] { event.index }, 4);
+		OS.MoveMemory(pHyperlinkIndex, new int [] { event.index }, 4);
 		if (event.index == -1) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -3995,7 +3996,7 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleTable2::get_cellAt(row=" + row + ", column=" + column + ") returning " + accessible);
 		if (accessible == null) return COM.E_INVALIDARG;
 		accessible.AddRef();
-		COM.MoveMemory(ppCell, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppCell, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -4009,11 +4010,11 @@ public class Accessible {
 		Accessible accessible = event.accessible;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_caption() returning " + accessible);
 		if (accessible == null) {
-			COM.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -4039,7 +4040,7 @@ public class Accessible {
 			listener.getColumnCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nColumns() returning " + event.count);
-		COM.MoveMemory(pColumnCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pColumnCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4051,7 +4052,7 @@ public class Accessible {
 			listener.getRowCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nRows() returning " + event.count);
-		COM.MoveMemory(pRowCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pRowCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4063,7 +4064,7 @@ public class Accessible {
 			listener.getSelectedCellCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedCells() returning " + event.count);
-		COM.MoveMemory(pCellCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pCellCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4075,7 +4076,7 @@ public class Accessible {
 			listener.getSelectedColumnCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedColumns() returning " + event.count);
-		COM.MoveMemory(pColumnCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pColumnCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4087,7 +4088,7 @@ public class Accessible {
 			listener.getSelectedRowCount(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_nSelectedRows() returning " + event.count);
-		COM.MoveMemory(pRowCount, new int [] { event.count }, 4);
+		OS.MoveMemory(pRowCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4114,23 +4115,23 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCells, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
-			COM.MoveMemory(pNSelectedCells, new int [] { 0 }, 4);
+			OS.MoveMemory(ppCells, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
+			OS.MoveMemory(pNSelectedCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = OS.CoTaskMemAlloc(length * C.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(pv + i * C.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCells, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
-		COM.MoveMemory(pNSelectedCells, new int [] { count }, 4);
+		OS.MoveMemory(ppCells, new long /*int*/ [] { pv }, C.PTR_SIZEOF);
+		OS.MoveMemory(pNSelectedCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4144,14 +4145,14 @@ public class Accessible {
 		int count = event.selected == null ? 0 : event.selected.length;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedColumns() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
 		if (count == 0) {
-			COM.MoveMemory(ppSelectedColumns, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
-			COM.MoveMemory(pNColumns, new int [] { 0 }, 4);
+			OS.MoveMemory(ppSelectedColumns, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
+			OS.MoveMemory(pNColumns, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
-		long /*int*/ pv = COM.CoTaskMemAlloc(count * 4);
-		COM.MoveMemory(pv, event.selected, count * 4);
-		COM.MoveMemory(ppSelectedColumns, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
-		COM.MoveMemory(pNColumns, new int [] { count }, 4);
+		long /*int*/ pv = OS.CoTaskMemAlloc(count * 4);
+		OS.MoveMemory(pv, event.selected, count * 4);
+		OS.MoveMemory(ppSelectedColumns, new long /*int*/ [] { pv }, C.PTR_SIZEOF);
+		OS.MoveMemory(pNColumns, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4165,14 +4166,14 @@ public class Accessible {
 		int count = event.selected == null ? 0 : event.selected.length;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedRows() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
 		if (count == 0) {
-			COM.MoveMemory(ppSelectedRows, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
-			COM.MoveMemory(pNRows, new int [] { 0 }, 4);
+			OS.MoveMemory(ppSelectedRows, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
+			OS.MoveMemory(pNRows, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
-		long /*int*/ pv = COM.CoTaskMemAlloc(count * 4);
-		COM.MoveMemory(pv, event.selected, count * 4);
-		COM.MoveMemory(ppSelectedRows, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
-		COM.MoveMemory(pNRows, new int [] { count }, 4);
+		long /*int*/ pv = OS.CoTaskMemAlloc(count * 4);
+		OS.MoveMemory(pv, event.selected, count * 4);
+		OS.MoveMemory(ppSelectedRows, new long /*int*/ [] { pv }, C.PTR_SIZEOF);
+		OS.MoveMemory(pNRows, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4186,11 +4187,11 @@ public class Accessible {
 		Accessible accessible = event.accessible;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_summary() returning " + accessible);
 		if (accessible == null) {
-			COM.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -4203,7 +4204,7 @@ public class Accessible {
 			listener.isColumnSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_isColumnSelected() returning " + event.isSelected);
-		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
+		OS.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
 
@@ -4216,7 +4217,7 @@ public class Accessible {
 			listener.isRowSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_isRowSelected() returning " + event.isSelected);
-		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
+		OS.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
 
@@ -4276,10 +4277,10 @@ public class Accessible {
 	int get_modelChange(long /*int*/ pModelChange) {
 		if (DEBUG) print(this + ".IAccessibleTable2::get_modelChange() returning " + (tableChange == null ? "null" : "tableChange=" + tableChange[0] + ", " + tableChange[1] + ", " + tableChange[2] + ", " + tableChange[3]));
 		if (tableChange == null) {
-			COM.MoveMemory(pModelChange, new long /*int*/ [] { 0 }, OS.PTR_SIZEOF);
+			OS.MoveMemory(pModelChange, new long /*int*/ [] { 0 }, C.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
-		COM.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
+		OS.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
 		return COM.S_OK;
 	}
 
@@ -4291,7 +4292,7 @@ public class Accessible {
 			listener.getColumnSpan(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnExtent() returning " + event.count);
-		COM.MoveMemory(pNColumnsSpanned, new int [] { event.count }, 4);
+		OS.MoveMemory(pNColumnsSpanned, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4304,23 +4305,23 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
-			COM.MoveMemory(pNColumnHeaderCells, new int [] { 0 }, 4);
+			OS.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
+			OS.MoveMemory(pNColumnHeaderCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = OS.CoTaskMemAlloc(length * C.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(pv + i * C.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
-		COM.MoveMemory(pNColumnHeaderCells, new int [] { count }, 4);
+		OS.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, C.PTR_SIZEOF);
+		OS.MoveMemory(pNColumnHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4332,7 +4333,7 @@ public class Accessible {
 			listener.getColumnIndex(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnIndex() returning " + event.index);
-		COM.MoveMemory(pColumnIndex, new int [] { event.index }, 4);
+		OS.MoveMemory(pColumnIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
 
@@ -4344,7 +4345,7 @@ public class Accessible {
 			listener.getRowSpan(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowExtent() returning " + event.count);
-		COM.MoveMemory(pNRowsSpanned, new int [] { event.count }, 4);
+		OS.MoveMemory(pNRowsSpanned, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4357,23 +4358,23 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
-			COM.MoveMemory(pNRowHeaderCells, new int [] { 0 }, 4);
+			OS.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
+			OS.MoveMemory(pNRowHeaderCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = OS.CoTaskMemAlloc(length * C.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				OS.MoveMemory(pv + i * C.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
-		COM.MoveMemory(pNRowHeaderCells, new int [] { count }, 4);
+		OS.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, C.PTR_SIZEOF);
+		OS.MoveMemory(pNRowHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4385,7 +4386,7 @@ public class Accessible {
 			listener.getRowIndex(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowIndex() returning " + event.index);
-		COM.MoveMemory(pRowIndex, new int [] { event.index }, 4);
+		OS.MoveMemory(pRowIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
 
@@ -4397,7 +4398,7 @@ public class Accessible {
 			listener.isSelected(event);
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_isSelected() returning " + event.isSelected);
-		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
+		OS.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
 
@@ -4429,11 +4430,11 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_table() returning " + accessible);
 		if (accessible == null) {
 			// TODO: This is not supposed to return S_FALSE. We need to lookup the table role parent and return that.
-			COM.MoveMemory(ppTable, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppTable, new long /*int*/[] { 0 }, C.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppTable, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppTable, new long /*int*/[] { accessible.getAddress() }, C.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -4505,8 +4506,8 @@ public class Accessible {
 			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_attributes(" + offset + ") returning start = " + event.start + ", end = " + event.end + ", attributes = " + textAttributes);
-		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
-		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		OS.MoveMemory(pStartOffset, new int [] { event.start }, 4);
+		OS.MoveMemory(pEndOffset, new int [] { event.end }, 4);
 		setString(pbstrTextAttributes, textAttributes);
 		if (textAttributes.length() == 0) return COM.S_FALSE;
 		return COM.S_OK;
@@ -4516,7 +4517,7 @@ public class Accessible {
 	int get_caretOffset(long /*int*/ pOffset) {
 		int offset = getCaretOffset();
 		if (DEBUG) print(this + ".IAccessibleText::get_caretOffset returning " + offset + hresult(offset == -1 ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pOffset, new int [] { offset }, 4);
+		OS.MoveMemory(pOffset, new int [] { offset }, 4);
 		if (offset == -1) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -4533,10 +4534,10 @@ public class Accessible {
 		}
 		/* Note: event.rectangles is not used here, because IAccessibleText::get_characterExtents is just for one character. */
 		if (DEBUG) print(this + ".IAccessibleText::get_characterExtents(" + offset + ") returning " + event.x + ", " + event.y + ", " + event.width + ", " + event.height);
-		COM.MoveMemory(pX, new int [] { event.x }, 4);
-		COM.MoveMemory(pY, new int [] { event.y }, 4);
-		COM.MoveMemory(pWidth, new int [] { event.width }, 4);
-		COM.MoveMemory(pHeight, new int [] { event.height }, 4);
+		OS.MoveMemory(pX, new int [] { event.x }, 4);
+		OS.MoveMemory(pY, new int [] { event.y }, 4);
+		OS.MoveMemory(pWidth, new int [] { event.width }, 4);
+		OS.MoveMemory(pHeight, new int [] { event.height }, 4);
 		if (event.width == 0 && event.height == 0) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
@@ -4560,7 +4561,7 @@ public class Accessible {
 			event.count = event.offset != -1 && event.length > 0 ? 1 : 0;
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_nSelections returning " + event.count);
-		COM.MoveMemory(pNSelections, new int [] { event.count }, 4);
+		OS.MoveMemory(pNSelections, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
 
@@ -4579,7 +4580,7 @@ public class Accessible {
 		 * Note that the current IA2 spec says to return 0 when there's nothing to return,
 		 * but since 0 is a valid return value, the spec is going to be updated to return -1.
 		 */
-		COM.MoveMemory(pOffset, new int [] { event.offset }, 4);
+		OS.MoveMemory(pOffset, new int [] { event.offset }, 4);
 		if (event.offset == -1) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -4606,8 +4607,8 @@ public class Accessible {
 			event.end = event.offset + event.length;
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_selection(" + selectionIndex + ") returning " + event.start + ", " + event.end);
-		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
-		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		OS.MoveMemory(pStartOffset, new int [] { event.start }, 4);
+		OS.MoveMemory(pEndOffset, new int [] { event.end }, 4);
 		/*
 		 * Note that the current IA2 spec says to return 0,0 when there's nothing to return,
 		 * but since 0 is a valid return value, the spec is going to be updated to return -1,-1.
@@ -4698,8 +4699,8 @@ public class Accessible {
 			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textBeforeOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
-		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		OS.MoveMemory(pStartOffset, new int [] { event.start }, 4);
+		OS.MoveMemory(pEndOffset, new int [] { event.end }, 4);
 		setString(pbstrText, event.result);
 		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
@@ -4751,8 +4752,8 @@ public class Accessible {
 			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textAfterOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
-		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		OS.MoveMemory(pStartOffset, new int [] { event.start }, 4);
+		OS.MoveMemory(pEndOffset, new int [] { event.end }, 4);
 		setString(pbstrText, event.result);
 		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
@@ -4811,8 +4812,8 @@ public class Accessible {
 			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textAtOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
-		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
-		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		OS.MoveMemory(pStartOffset, new int [] { event.start }, 4);
+		OS.MoveMemory(pEndOffset, new int [] { event.end }, 4);
 		setString(pbstrText, event.result);
 		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
@@ -4862,7 +4863,7 @@ public class Accessible {
 	/* IAccessibleText::get_nCharacters([out] pNCharacters) */
 	int get_nCharacters(long /*int*/ pNCharacters) {
 		int count = getCharacterCount();
-		COM.MoveMemory(pNCharacters, new int [] { count }, 4);
+		OS.MoveMemory(pNCharacters, new int [] { count }, 4);
 		if (DEBUG) print(this + ".IAccessibleText::get_nCharacters returning " + count);
 		return COM.S_OK;
 	}
@@ -4919,8 +4920,8 @@ public class Accessible {
 			end = ((Integer)textInserted[2]).intValue();
 		}
 		setString(pNewText, text);
-		COM.MoveMemory(pNewText + OS.PTR_SIZEOF, new int [] {start}, 4);
-		COM.MoveMemory(pNewText + OS.PTR_SIZEOF + 4, new int [] {end}, 4);
+		OS.MoveMemory(pNewText + C.PTR_SIZEOF, new int [] {start}, 4);
+		OS.MoveMemory(pNewText + C.PTR_SIZEOF + 4, new int [] {end}, 4);
 		if (textInserted == null) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -4937,8 +4938,8 @@ public class Accessible {
 			end = ((Integer)textDeleted[2]).intValue();
 		}
 		setString(pOldText, text);
-		COM.MoveMemory(pOldText + OS.PTR_SIZEOF, new int [] {start}, 4);
-		COM.MoveMemory(pOldText + OS.PTR_SIZEOF + 4, new int [] {end}, 4);
+		OS.MoveMemory(pOldText + C.PTR_SIZEOF, new int [] {start}, 4);
+		OS.MoveMemory(pOldText + C.PTR_SIZEOF + 4, new int [] {end}, 4);
 		if (textDeleted == null) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -5295,7 +5296,7 @@ public class Accessible {
 
 	String getString(long /*int*/ psz) {
 		long /*int*/ [] ptr = new long /*int*/ [1];
-		OS.MoveMemory (ptr, psz, OS.PTR_SIZEOF);
+		OS.MoveMemory (ptr, psz, C.PTR_SIZEOF);
 		int size = COM.SysStringByteLen(ptr [0]);
 		if (size == 0) return "";
 		char [] buffer = new char [(size + 1) / 2];
@@ -5318,34 +5319,34 @@ public class Accessible {
 
 	void setIntVARIANT(long /*int*/ variant, short vt, int lVal) {
 		if (vt == COM.VT_I4 || vt == COM.VT_EMPTY) {
-			COM.MoveMemory(variant, new short[] { vt }, 2);
-			COM.MoveMemory(variant + 8, new int[] { lVal }, 4);
+			OS.MoveMemory(variant, new short[] { vt }, 2);
+			OS.MoveMemory(variant + 8, new int[] { lVal }, 4);
 		}
 	}
 
 	void setPtrVARIANT(long /*int*/ variant, short vt, long /*int*/ lVal) {
 		if (vt == COM.VT_DISPATCH || vt == COM.VT_UNKNOWN) {
-			COM.MoveMemory(variant, new short[] { vt }, 2);
-			COM.MoveMemory(variant + 8, new long /*int*/ [] { lVal }, OS.PTR_SIZEOF);
+			OS.MoveMemory(variant, new short[] { vt }, 2);
+			OS.MoveMemory(variant + 8, new long /*int*/ [] { lVal }, C.PTR_SIZEOF);
 		}
 	}
 
 	void setNumberVARIANT(long /*int*/ variant, Number number) {
 		if (number == null) {
-			COM.MoveMemory(variant, new short[] { COM.VT_EMPTY }, 2);
-			COM.MoveMemory(variant + 8, new int[] { 0 }, 4);
+			OS.MoveMemory(variant, new short[] { COM.VT_EMPTY }, 2);
+			OS.MoveMemory(variant + 8, new int[] { 0 }, 4);
 		} else if (number instanceof Double) {
-			COM.MoveMemory(variant, new short[] { COM.VT_R8 }, 2);
-			COM.MoveMemory(variant + 8, new double[] { number.doubleValue() }, 8);
+			OS.MoveMemory(variant, new short[] { COM.VT_R8 }, 2);
+			OS.MoveMemory(variant + 8, new double[] { number.doubleValue() }, 8);
 		} else if (number instanceof Float) {
-			COM.MoveMemory(variant, new short[] { COM.VT_R4 }, 2);
-			COM.MoveMemory(variant + 8, new float[] { number.floatValue() }, 4);
+			OS.MoveMemory(variant, new short[] { COM.VT_R4 }, 2);
+			OS.MoveMemory(variant + 8, new float[] { number.floatValue() }, 4);
 		} else if (number instanceof Long) {
-			COM.MoveMemory(variant, new short[] { COM.VT_I8 }, 2);
-			COM.MoveMemory(variant + 8, new long[] { number.longValue() }, 8);
+			OS.MoveMemory(variant, new short[] { COM.VT_I8 }, 2);
+			OS.MoveMemory(variant + 8, new long[] { number.longValue() }, 8);
 		} else {
-			COM.MoveMemory(variant, new short[] { COM.VT_I4 }, 2);
-			COM.MoveMemory(variant + 8, new int[] { number.intValue() }, 4);
+			OS.MoveMemory(variant, new short[] { COM.VT_I4 }, 2);
+			OS.MoveMemory(variant + 8, new int[] { number.intValue() }, 4);
 		}
 	}
 
@@ -5355,7 +5356,7 @@ public class Accessible {
 			char[] data = (string + "\0").toCharArray();
 			ptr = COM.SysAllocString(data);
 		}
-		COM.MoveMemory(psz, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
+		OS.MoveMemory(psz, new long /*int*/ [] { ptr }, C.PTR_SIZEOF);
 	}
 
 	void setStringVARIANT(long /*int*/ variant, String string) {
@@ -5364,8 +5365,8 @@ public class Accessible {
 			char[] data = (string + "\0").toCharArray();
 			ptr = COM.SysAllocString(data);
 		}
-		COM.MoveMemory(variant, new short[] { ptr == 0 ? COM.VT_EMPTY : COM.VT_BSTR }, 2);
-		COM.MoveMemory(variant + 8, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
+		OS.MoveMemory(variant, new short[] { ptr == 0 ? COM.VT_EMPTY : COM.VT_BSTR }, 2);
+		OS.MoveMemory(variant + 8, new long /*int*/ [] { ptr }, C.PTR_SIZEOF);
 	}
 
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
@@ -5539,7 +5540,7 @@ public class Accessible {
 			case COM.E_NOTIMPL: return " E_NOTIMPL";
 			case COM.E_NOTSUPPORTED: return " E_NOTSUPPORTED";
 			case COM.E_OUTOFMEMORY: return " E_OUTOFMEMORY";
-			case COM.E_POINTER: return " E_POINTER";
+			case OS.E_POINTER: return " E_POINTER";
 			case COM.DISP_E_EXCEPTION: return " DISP_E_EXCEPTION";
 			case COM.DISP_E_MEMBERNOTFOUND: return " DISP_E_MEMBERNOTFOUND";
 			case COM.DISP_E_UNKNOWNINTERFACE: return " DISP_E_UNKNOWNINTERFACE";

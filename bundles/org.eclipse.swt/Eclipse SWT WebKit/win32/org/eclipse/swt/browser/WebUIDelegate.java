@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2014 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -222,7 +222,7 @@ int createWebViewWithRequest (long /*int*/ sender, long /*int*/ request, long /*
 	}
 	if (browser != null && !browser.isDisposed ()) {
 		iwebview = ((WebKit)browser.webBrowser).webView;
-		OS.MoveMemory (webView, new long /*int*/[] {iwebview.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (webView, new long /*int*/[] {iwebview.getAddress ()}, C.PTR_SIZEOF);
 		if (request != 0) {
 			IWebURLRequest req = new IWebURLRequest (request);
 			long /*int*/[] result = new long /*int*/[1];
@@ -373,17 +373,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebUIDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebUIDelegate)) {
-		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebUIDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory (ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 

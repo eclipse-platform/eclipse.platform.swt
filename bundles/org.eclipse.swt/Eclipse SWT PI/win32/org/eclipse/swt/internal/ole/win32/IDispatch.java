@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class IDispatch extends IUnknown {
@@ -24,7 +25,7 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 
 	// create an array to hold the addresses
 	long /*int*/ hHeap = OS.GetProcessHeap();
-	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * OS.PTR_SIZEOF);
+	long /*int*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * C.PTR_SIZEOF);
 	long /*int*/[] memTracker = new long /*int*/[size];
 
 	try {
@@ -39,7 +40,7 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 			long /*int*/ pName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
 			OS.MoveMemory(pName, buffer, buffer.length * 2);
 			// copy the address to the array of addresses
-			COM.MoveMemory(ppNames + OS.PTR_SIZEOF * i, new long /*int*/[]{pName}, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppNames + C.PTR_SIZEOF * i, new long /*int*/[]{pName}, C.PTR_SIZEOF);
 			// keep track of the Global Memory so we can free it
 			memTracker[i] = pName;
 		}
@@ -58,7 +59,7 @@ public int GetTypeInfo(int iTInfo, int lcid, long /*int*/[] ppTInfo ){
 	return COM.VtblCall(4, address, iTInfo, lcid, ppTInfo);
 }
 public int GetTypeInfoCount(int [] pctinfo ){
-	return COM.VtblCall(3, address, pctinfo);
+	return OS.VtblCall(3, address, pctinfo);
 }
 public int Invoke(int dispIdMember, GUID riid, int lcid, int dwFlags, DISPPARAMS pDispParams, long /*int*/ pVarResult, EXCEPINFO pExcepInfo, int[] pArgErr) {
 	return COM.VtblCall(6, address, dispIdMember, riid, lcid, dwFlags, pDispParams, pVarResult, pExcepInfo, pArgErr);

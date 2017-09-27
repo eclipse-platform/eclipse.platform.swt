@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,10 +13,11 @@ package org.eclipse.swt.ole.win32;
 import java.io.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * OleControlSite provides a site to manage an embedded ActiveX Control within a container.
@@ -620,18 +621,18 @@ protected int GetWindow(long /*int*/ phwnd) {
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
 	if (frame == null) {
-		COM.MoveMemory(phwnd, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+		OS.MoveMemory(phwnd, new long /*int*/[] {0}, C.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
 
 	// Copy the Window's handle into the memory passed in
-	COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
+	OS.MoveMemory(phwnd, new long /*int*/[] {handle}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr) {
 	if (pVarResult == 0 || dwFlags != COM.DISPATCH_PROPERTYGET) {
-		if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-		if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
+		if (pExcepInfo != 0) OS.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+		if (pArgErr != 0) OS.MoveMemory(pArgErr, new int[] {0}, 4);
 		return COM.DISP_E_MEMBERNOTFOUND;
 	}
 	Variant result = getSiteProperty(dispIdMember);
@@ -644,9 +645,9 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 		case COM.DISPID_AMBIENT_SUPPORTSMNEMONICS :
 		case COM.DISPID_AMBIENT_SHOWGRABHANDLES :
 		case COM.DISPID_AMBIENT_SHOWHATCHING :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
+			if (pVarResult != 0) OS.MoveMemory(pVarResult, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pExcepInfo != 0) OS.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pArgErr != 0) OS.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.S_FALSE;
 
 			// not implemented
@@ -657,15 +658,15 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 		case COM.DISPID_AMBIENT_LOCALEID :
 		case COM.DISPID_AMBIENT_SILENT :
 		case COM.DISPID_AMBIENT_MESSAGEREFLECT :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
+			if (pVarResult != 0) OS.MoveMemory(pVarResult, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pExcepInfo != 0) OS.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pArgErr != 0) OS.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.E_NOTIMPL;
 
 		default :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo,new long /*int*/ [] {0}, OS.PTR_SIZEOF);
-			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
+			if (pVarResult != 0) OS.MoveMemory(pVarResult, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pExcepInfo != 0) OS.MoveMemory(pExcepInfo,new long /*int*/ [] {0}, C.PTR_SIZEOF);
+			if (pArgErr != 0) OS.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.DISP_E_MEMBERNOTFOUND;
 	}
 }
@@ -768,16 +769,16 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iOleControlSite.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleControlSite.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-		COM.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 @Override

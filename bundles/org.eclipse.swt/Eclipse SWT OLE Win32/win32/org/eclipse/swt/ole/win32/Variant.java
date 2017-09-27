@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.ole.win32;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 /**
@@ -484,63 +485,63 @@ void getData(long /*int*/ pData){
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
 		//TODO - use VARIANT structure
-		COM.MoveMemory(pData, new short[] {type}, 2);
-		COM.MoveMemory(pData + 8, new long /*int*/[]{byRefPtr}, OS.PTR_SIZEOF);
+		OS.MoveMemory(pData, new short[] {type}, 2);
+		OS.MoveMemory(pData + 8, new long /*int*/[]{byRefPtr}, C.PTR_SIZEOF);
 		return;
 	}
 
 	switch (type) {
 		case COM.VT_EMPTY :
 		case COM.VT_NULL :
-            COM.MoveMemory(pData, new short[] {type}, 2);
+            OS.MoveMemory(pData, new short[] {type}, 2);
 			break;
 		case COM.VT_BOOL :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new short[]{(booleanData) ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new short[]{(booleanData) ? OS.VARIANT_TRUE : OS.VARIANT_FALSE}, 2);
 			break;
 		case COM.VT_I1 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new byte[]{byteData}, 1);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new byte[]{byteData}, 1);
 			break;
 		case COM.VT_I2 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new short[]{shortData}, 2);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new short[]{shortData}, 2);
 			break;
 		case COM.VT_UI2 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new char[]{charData}, 2);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new char[]{charData}, 2);
 			break;
 		case COM.VT_I4 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{intData}, 4);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new int[]{intData}, 4);
 			break;
 		case COM.VT_I8 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new long[]{longData}, 8);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new long[]{longData}, 8);
 			break;
 		case COM.VT_R4 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new float[]{floatData}, 4);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new float[]{floatData}, 4);
 			break;
 		case COM.VT_R8 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new double[]{doubleData}, 8);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new double[]{doubleData}, 8);
 			break;
 		case COM.VT_DISPATCH :
 			dispatchData.AddRef();
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new long /*int*/[]{dispatchData.getAddress()}, OS.PTR_SIZEOF);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new long /*int*/[]{dispatchData.getAddress()}, C.PTR_SIZEOF);
 			break;
 		case COM.VT_UNKNOWN :
 			unknownData.AddRef();
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new long /*int*/[]{unknownData.getAddress()}, OS.PTR_SIZEOF);
+			OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData + 8, new long /*int*/[]{unknownData.getAddress()}, C.PTR_SIZEOF);
 			break;
 		case COM.VT_BSTR :
-			COM.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData, new short[] {type}, 2);
 			char[] data = (stringData+"\0").toCharArray();
 			long /*int*/ ptr = COM.SysAllocString(data);
-			COM.MoveMemory(pData + 8, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
+			OS.MoveMemory(pData + 8, new long /*int*/[] {ptr}, C.PTR_SIZEOF);
 			break;
 
 		default :
@@ -855,7 +856,7 @@ public void setByRef(boolean val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_BOOL) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new short[]{val ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+	OS.MoveMemory(byRefPtr, new short[]{val ? OS.VARIANT_TRUE : OS.VARIANT_FALSE}, 2);
 }
 /**
  * Update the by reference value of this variant with a new float value.
@@ -873,7 +874,7 @@ public void setByRef(float val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_R4) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new float[]{val}, 4);
+	OS.MoveMemory(byRefPtr, new float[]{val}, 4);
 }
 /**
  * Update the by reference value of this variant with a new integer value.
@@ -888,11 +889,11 @@ public void setByRef(float val) {
  */
 public void setByRef(long /*int*/ val) {
 	if ((type & COM.VT_BYREF) == 0
-			|| (OS.PTR_SIZEOF == 4 && (type & COM.VT_I4) == 0)
-			|| (OS.PTR_SIZEOF == 8 && (type & COM.VT_I8) == 0)) {
+			|| (C.PTR_SIZEOF == 4 && (type & COM.VT_I4) == 0)
+			|| (C.PTR_SIZEOF == 8 && (type & COM.VT_I8) == 0)) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new long /*int*/[]{val}, OS.PTR_SIZEOF);
+	OS.MoveMemory(byRefPtr, new long /*int*/[]{val}, C.PTR_SIZEOF);
 }
 /**
  * Update the by reference value of this variant with a new short value.
@@ -909,19 +910,19 @@ public void setByRef(short val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I2) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new short[]{val}, 2);
+	OS.MoveMemory(byRefPtr, new short[]{val}, 2);
 }
 void setData(long /*int*/ pData){
-	if (pData == 0) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
+	if (pData == 0) OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	//TODO - use VARIANT structure
 	short[] dataType = new short[1];
-	COM.MoveMemory(dataType, pData, 2);
+	OS.MoveMemory(dataType, pData, 2);
 	type = dataType[0];
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
 		long /*int*/[] newByRefPtr = new long /*int*/[1];
-		OS.MoveMemory(newByRefPtr, pData + 8, OS.PTR_SIZEOF);
+		OS.MoveMemory(newByRefPtr, pData + 8, C.PTR_SIZEOF);
 		byRefPtr = newByRefPtr[0];
 		return;
 	}
@@ -932,22 +933,22 @@ void setData(long /*int*/ pData){
 			break;
 		case COM.VT_BOOL :
 			short[] newBooleanData = new short[1];
-			COM.MoveMemory(newBooleanData, pData + 8, 2);
-			booleanData = (newBooleanData[0] != COM.VARIANT_FALSE);
+			OS.MoveMemory(newBooleanData, pData + 8, 2);
+			booleanData = (newBooleanData[0] != OS.VARIANT_FALSE);
 			break;
 		case COM.VT_I1 :
 			byte[] newByteData = new byte[1];
-			COM.MoveMemory(newByteData, pData + 8, 1);
+			OS.MoveMemory(newByteData, pData + 8, 1);
 			byteData = newByteData[0];
 			break;
 		case COM.VT_I2 :
 			short[] newShortData = new short[1];
-			COM.MoveMemory(newShortData, pData + 8, 2);
+			OS.MoveMemory(newShortData, pData + 8, 2);
 			shortData = newShortData[0];
 			break;
 		case COM.VT_UI2 :
 			char[] newCharData = new char[1];
-			COM.MoveMemory(newCharData, pData + 8, 2);
+			OS.MoveMemory(newCharData, pData + 8, 2);
 			charData = newCharData[0];
 			break;
 		case COM.VT_I4 :
@@ -962,17 +963,17 @@ void setData(long /*int*/ pData){
 			break;
 		case COM.VT_R4 :
 			float[] newFloatData = new float[1];
-			COM.MoveMemory(newFloatData, pData + 8, 4);
+			OS.MoveMemory(newFloatData, pData + 8, 4);
 			floatData = newFloatData[0];
 			break;
 		case COM.VT_R8 :
 			double[] newDoubleData = new double[1];
-			COM.MoveMemory(newDoubleData, pData + 8, 8);
+			OS.MoveMemory(newDoubleData, pData + 8, 8);
  			doubleData = newDoubleData[0];
 			break;
 		case COM.VT_DISPATCH : {
 			long /*int*/[] ppvObject = new long /*int*/[1];
-			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, pData + 8, C.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -983,7 +984,7 @@ void setData(long /*int*/ pData){
 		}
 		case COM.VT_UNKNOWN : {
 			long /*int*/[] ppvObject = new long /*int*/[1];
-			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
+			OS.MoveMemory(ppvObject, pData + 8, C.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -995,7 +996,7 @@ void setData(long /*int*/ pData){
 		case COM.VT_BSTR :
 			// get the address of the memory in which the string resides
 			long /*int*/[] hMem = new long /*int*/[1];
-			OS.MoveMemory(hMem, pData + 8, OS.PTR_SIZEOF);
+			OS.MoveMemory(hMem, pData + 8, C.PTR_SIZEOF);
 			if (hMem[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -1006,7 +1007,7 @@ void setData(long /*int*/ pData){
 			if (size > 0){
 				// get the unicode character array from the global memory and create a String
 				char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
-				COM.MoveMemory(buffer, hMem[0], size);
+				OS.MoveMemory(buffer, hMem[0], size);
 				stringData = new String(buffer);
 			} else {
 				stringData = ""; //$NON-NLS-1$

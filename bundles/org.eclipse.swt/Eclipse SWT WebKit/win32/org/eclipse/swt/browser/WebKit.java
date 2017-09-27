@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2016 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -285,7 +285,7 @@ static String extractBSTR (long /*int*/ bstrString) {
 	int size = COM.SysStringByteLen (bstrString);
 	if (size == 0) return EMPTY_STRING;
 	char[] buffer = new char[(size + 1) / 2]; // add one to avoid rounding errors
-	COM.MoveMemory (buffer, bstrString, size);
+	OS.MoveMemory (buffer, bstrString, size);
 	return new String (buffer);
 }
 
@@ -519,7 +519,7 @@ public void create (Composite parent, int style) {
 		JSClassDefinition jsClassDefinition = new JSClassDefinition ();
 		byte[] bytes = (CLASSNAME_EXTERNAL + '\0').getBytes ();
 		jsClassDefinition.className = C.malloc (bytes.length);
-		OS.memmove (jsClassDefinition.className, bytes, bytes.length);
+		C.memmove (jsClassDefinition.className, bytes, bytes.length);
 
 		/* custom callbacks for hasProperty, getProperty and callAsFunction */
 		long /*int*/ addr = WebKit_win32.JSObjectHasPropertyProc_CALLBACK (JSObjectHasPropertyProc.getAddress ());

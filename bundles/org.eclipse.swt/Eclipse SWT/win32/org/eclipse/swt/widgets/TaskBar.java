@@ -149,7 +149,7 @@ long /*int*/ createShellLink (MenuItem item, String directory) {
 		titlePtr = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
 		OS.MoveMemory (titlePtr, buffer, buffer.length * 2);
 		OS.MoveMemory (pv, new short [] {OS.VT_LPWSTR}, 2);
-		OS.MoveMemory (pv + 8, new long /*int*/ [] {titlePtr}, OS.PTR_SIZEOF);
+		OS.MoveMemory (pv + 8, new long /*int*/ [] {titlePtr}, C.PTR_SIZEOF);
 		key = PKEY_Title;
 
 		/*IShellLink::SetPath*/

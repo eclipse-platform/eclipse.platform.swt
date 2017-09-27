@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ public IWebView (long /*int*/ address) {
 }
 
 public int canShowMIMEType (long /*int*/ mimeType, int[] canShow) {
-	return COM.VtblCall (3, getAddress (), mimeType, canShow);
+	return OS.VtblCall (3, getAddress (), mimeType, canShow);
 }
 
 public int initWithFrame (RECT frame, long /*int*/ frameName, long /*int*/ groupName) {
@@ -29,59 +29,59 @@ public int initWithFrame (RECT frame, long /*int*/ frameName, long /*int*/ group
 }
 
 public int setUIDelegate (long /*int*/ delegate) {
-	return COM.VtblCall (10, getAddress (), delegate);
+	return OS.VtblCall (10, getAddress (), delegate);
 }
 
 public int setResourceLoadDelegate (long /*int*/ delegate) {
-	return COM.VtblCall (12, getAddress (), delegate);
+	return OS.VtblCall (12, getAddress (), delegate);
 }
 
 public int setDownloadDelegate (long /*int*/ delegate) {
-	return COM.VtblCall (14, getAddress (), delegate);
+	return OS.VtblCall (14, getAddress (), delegate);
 }
 
 public int setFrameLoadDelegate (long /*int*/ delegate) {
-	return COM.VtblCall (16, getAddress (), delegate);
+	return OS.VtblCall (16, getAddress (), delegate);
 }
 
 public int setPolicyDelegate (long /*int*/ delegate) {
-	return COM.VtblCall (18, getAddress (), delegate);
+	return OS.VtblCall (18, getAddress (), delegate);
 }
 
 public int mainFrame (long /*int*/[] frame) {
-	return COM.VtblCall (20, getAddress (), frame);
+	return OS.VtblCall (20, getAddress (), frame);
 }
 
 public int goBack (int[] succeeded) {
-	return COM.VtblCall (24, getAddress(), succeeded);
+	return OS.VtblCall (24, getAddress(), succeeded);
 }
 
 public int goForward (int[] succeeded) {
-	return COM.VtblCall (25, getAddress(), succeeded);
+	return OS.VtblCall (25, getAddress(), succeeded);
 }
 
 public int setCustomUserAgent (long /*int*/ valueString) {
-	return COM.VtblCall (31, getAddress (), valueString);
+	return OS.VtblCall (31, getAddress (), valueString);
 }
 
 public int setPreferences (long /*int*/ prefs) {
-	return COM.VtblCall (41, getAddress (), prefs);
+	return OS.VtblCall (41, getAddress (), prefs);
 }
 
 public int preferences (long /*int*/[] prefs) {
-	return COM.VtblCall (42, getAddress (), prefs);
+	return OS.VtblCall (42, getAddress (), prefs);
 }
 
 public int setHostWindow (long /*int*/ window) {
-	return COM.VtblCall (45, getAddress (), window);
+	return OS.VtblCall (45, getAddress (), window);
 }
 
 public int hostWindow (long /*int*/[] window) {
-	return COM.VtblCall (46, getAddress (), window);
+	return OS.VtblCall (46, getAddress (), window);
 }
 
 public int estimatedProgress (long /*int*/ estimatedProgress) {
-	return COM.VtblCall (51, getAddress (), estimatedProgress);
+	return OS.VtblCall (51, getAddress (), estimatedProgress);
 }
 
 }
