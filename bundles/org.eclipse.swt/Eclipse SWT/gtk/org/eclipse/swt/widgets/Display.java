@@ -974,9 +974,9 @@ void createDisplay (DeviceData data) {
 		ptr = OS.gtk_check_version (GTK2_MAJOR, GTK2_MINOR, GTK2_MICRO);
 	}
 	if (ptr != 0) {
-		int length = OS.strlen (ptr);
+		int length = C.strlen (ptr);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr, length);
+		C.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
 		System.out.println ("***WARNING: SWT requires GTK " + GTK2_MAJOR+ "." + GTK2_MINOR + "." + GTK2_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		int minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
@@ -1178,7 +1178,7 @@ Image createImage (String name) {
 	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha (pixbuf);
 	long /*int*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 	byte [] data = new byte [stride * height];
-	OS.memmove (data, pixels, data.length);
+	C.memmove (data, pixels, data.length);
 	OS.g_object_unref (pixbuf);
 	ImageData imageData = null;
 	if (hasAlpha) {
@@ -1877,12 +1877,12 @@ String gtk_css_default_theme_values (int swt) {
 	// Fetch the actual theme in char/string format
 	long /*int*/ themeProvider = OS.gtk_css_provider_get_named(buffer, null);
 	str = OS.gtk_css_provider_to_string (themeProvider);
-	length = OS.strlen (str);
+	length = C.strlen (str);
 	if (length == 0) {
 		return "";
 	}
 	byte [] themeBuffer = new byte [length];
-	OS.memmove (themeBuffer, str, length);
+	C.memmove (themeBuffer, str, length);
 	String cssOutput = new String (Converter.mbcsToWcs (themeBuffer));
 
 	// Parse the theme values based on the corresponding SWT value
@@ -2148,9 +2148,9 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	// Fetch the CSS in char/string format from the GtkCssProvider.
 	long /*int*/ str = OS.gtk_css_provider_to_string (provider);
 	if (str == 0) return COLOR_WIDGET_BACKGROUND_RGBA;
-	int length = OS.strlen (str);
+	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
+	C.memmove (buffer, str, length);
 	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
@@ -2212,9 +2212,9 @@ GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	// Fetch the CSS in char/string format from the provider.
 	long /*int*/ str = OS.gtk_css_provider_to_string(provider);
 	if (str == 0) return COLOR_WIDGET_FOREGROUND_RGBA;
-	int length = OS.strlen (str);
+	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
+	C.memmove (buffer, str, length);
 	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
@@ -2315,9 +2315,9 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 		toConvert = COLOR_WIDGET_BACKGROUND_RGBA;
 	}
 	long /*int*/ str = OS.gdk_rgba_to_string (toConvert);
-	int length = OS.strlen (str);
+	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
+	C.memmove (buffer, str, length);
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
@@ -2334,9 +2334,9 @@ String gtk_widget_get_name(long /*int*/ handle) {
 	if (str == 0) {
 		name = "*";
 	} else {
-		int length = OS.strlen (str);
+		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
+		C.memmove (buffer, str, length);
 		name = new String (Converter.mbcsToWcs (buffer));
 	}
 	return name;
@@ -2356,9 +2356,9 @@ String gtk_widget_class_get_css_name(long /*int*/ handle) {
 	if (str == 0) {
 		name = "*";
 	} else {
-		int length = OS.strlen (str);
+		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
+		C.memmove (buffer, str, length);
 		name = new String (Converter.mbcsToWcs (buffer));
 	}
 	return name;
@@ -2575,11 +2575,11 @@ Rectangle getWorkArea() {
 	if (data [0] != 0) {
 		if (actualLength [0] == 16) {
 			int values [] = new int [4];
-			OS.memmove (values, data[0], 16);
+			C.memmove (values, data[0], 16);
 			result = new Rectangle (values [0],values [1],values [2],values [3]);
 		} else if (actualLength [0] == 32) {
 			long values [] = new long [4];
-			OS.memmove (values, data[0], 32);
+			C.memmove (values, data[0], 32);
 			result = new Rectangle ((int)values [0],(int)values [1],(int)values [2],(int)values [3]);
 		}
 		OS.g_free (data [0]);
@@ -3066,7 +3066,7 @@ GdkRGBA getBackgroundColor (long /*int*/ context, int state) {
 	Cairo.cairo_fill (cairo);
 	Cairo.cairo_surface_flush (surface);
 	byte[] buffer = new byte[3];
-	OS.memmove (buffer, Cairo.cairo_image_surface_get_data(surface), buffer.length);
+	C.memmove (buffer, Cairo.cairo_image_surface_get_data(surface), buffer.length);
 	rgba.red = buffer[2] / 255f;
 	rgba.green = buffer[1] / 255f;
 	rgba.blue = buffer[0] / 255f;
@@ -3838,10 +3838,10 @@ void initializeWindowManager () {
 		if (screen != 0) {
 			long /*int*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
 			if (ptr2 != 0) {
-				int length = OS.strlen (ptr2);
+				int length = C.strlen (ptr2);
 				if (length > 0) {
 					byte [] buffer2 = new byte [length];
-					OS.memmove (buffer2, ptr2, length);
+					C.memmove (buffer2, ptr2, length);
 					windowManager = new String (Converter.mbcsToWcs (buffer2));
 				}
 			}
@@ -4248,7 +4248,7 @@ public boolean post (Event event) {
 	* thread already be in the operating system.  This avoids deadlock
 	* should the other thread need the device lock.
 	*/
-	Lock lock = OS.lock;
+	Lock lock = Platform.lock;
 	lock.lock();
 	try {
 		synchronized (Device.class) {
@@ -5305,7 +5305,7 @@ void showIMWindow (Control control) {
 	long /*int*/ [] pangoAttrs = new long /*int*/ [1];
 	long /*int*/ imHandle = control.imHandle ();
 	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
-	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
+	if (preeditString [0] != 0 && C.strlen (preeditString [0]) > 0) {
 		Control widget = control.findBackgroundControl ();
 		if (widget == null) widget = control;
 		if (OS.GTK3) {
@@ -5390,7 +5390,7 @@ public boolean sleep () {
 					if (timeout [0] < 0) timeout [0] = 50;
 
 					/* Exit the OS lock to allow other threads to enter GTK */
-					Lock lock = OS.lock;
+					Lock lock = Platform.lock;
 					int count = lock.lock ();
 					for (int i = 0; i < count; i++) lock.unlock ();
 					try {
