@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,8 +79,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	List<ImportDeclaration> imports = unit.imports();
 	this.imports = new String[imports.size()];
 	int count = 0;
-	for (Iterator<ImportDeclaration> iterator = imports.iterator(); iterator.hasNext();) {
-		ImportDeclaration imp = iterator.next();
+	for (ImportDeclaration imp : imports) {
 		this.imports[count++] = imp.getName().getFullyQualifiedName();
 	}
 	start = type.getStartPosition();
@@ -89,8 +88,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	List<TagElement> tags = null;
 	if (doc != null) {
 		tags = doc.tags();
-		for (Iterator<TagElement> iterator = tags.iterator(); iterator.hasNext();) {
-			TagElement tag = iterator.next();
+		for (TagElement tag : tags) {
 			if ("@jniclass".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);
@@ -104,8 +102,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	for (int i = 0; i < fields.length; i++) {
 		FieldDeclaration field = fields[i];
 		List<VariableDeclarationFragment> fragments = field.fragments();
-		for (Iterator<VariableDeclarationFragment> iterator = fragments.iterator(); iterator.hasNext();) {
-			VariableDeclarationFragment fragment = iterator.next();
+		for (VariableDeclarationFragment fragment : fragments) {
 			fid.add(new ASTField(this, source, field, fragment));
 		}
 	}

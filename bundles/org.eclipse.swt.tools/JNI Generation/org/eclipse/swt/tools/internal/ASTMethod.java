@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,7 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	List<TagElement> tags = null;
 	if (doc != null) {
 		tags = doc.tags();
-		for (Iterator<TagElement> iterator = tags.iterator(); iterator.hasNext();) {
-			TagElement tag = iterator.next();
+		for (TagElement tag : tags) {
 			if ("@method".equals(tag.getTagName())) {
 				String data = tag.fragments().get(0).toString();
 				setMetaData(data);
@@ -83,8 +82,7 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 		}
 		if (tags != null) {
 			String name = param.getName().getIdentifier();
-			for (Iterator<TagElement> iterator1 = tags.iterator(); iterator1.hasNext();) {
-				TagElement tag = iterator1.next();
+			for (TagElement tag : tags) {
 				if ("@param".equals(tag.getTagName())) {
 					List<?> fragments = tag.fragments();
 					if (name.equals(fragments.get(0).toString())) {

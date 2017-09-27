@@ -148,9 +148,8 @@ public class JavadocBasher {
 				+ ((count == 1) ? " file" : " files") + " in " + targetSubdir
 				+ ((count > 0) ? ":" : "."));
 		if (count > 0) {
-			Iterator<String> i = list.iterator();
-			while (i.hasNext())
-				System.out.println(label + ": " + i.next());
+			for(String s : list)
+				System.out.println(label + ": " + s);
 			System.out.println();
 		}
 	}

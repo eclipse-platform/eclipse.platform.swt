@@ -157,8 +157,7 @@ void merge(Document document, Document extraDocument) {
 		return compare;
 	});
 	String delimiter = System.getProperty("line.separator");
-	for (Iterator<Node> iterator = sortedNodes.iterator(); iterator.hasNext();) {
-		Node node = iterator.next();
+	for (Node node : sortedNodes) {
 		String name = node.getNodeName();
 		if ("arg".equals(name) || "retval".equals(name)) {
 			if (!sortedNodes.contains(node.getParentNode())) continue;
@@ -667,8 +666,7 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);
 		}
 	});
-	for (Iterator<Object[]> iterator = sortedClasses.iterator(); iterator.hasNext();) {
-		Object[] clazz = iterator.next();
+	for (Object[] clazz : sortedClasses) {
 		Node node = (Node)clazz[0];
 		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		Object[] superclass = classes.get(getSuperclassName(node));
@@ -1313,8 +1311,7 @@ void generateSelectorsConst() {
 		set.add("alloc");
 		set.add("dealloc");
 	}
-	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
-		String sel = iterator.next();
+	for (String sel : set) {
 		String selConst = getSelConst(sel);
 		out("public static final int /*long*/ ");
 		out(selConst);
@@ -1341,8 +1338,7 @@ void generateStructNatives() {
 	}
 	out("/** Sizeof natives */");
 	outln();
-	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
-		String struct = iterator.next();
+	for (String struct : set) {
 		out("public static final native int ");
 		out(struct);
 		out("_sizeof();");
@@ -1352,8 +1348,7 @@ void generateStructNatives() {
 	out("/** Memmove natives */");
 	outln();
 	outln();
-	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
-		String struct = iterator.next();
+	for (String struct : set) {
 		out("/**");
 		outln();
 		out(" * @param dest cast=(void *),flags=no_in critical");
@@ -1600,21 +1595,17 @@ void generateSends(boolean superCall) {
 		}
 	}
 	TreeMap<String, Node> all = new TreeMap<>();
-	for (Iterator<String> iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
+	for (String key : tagsSet.keySet()) {
 		Node method = tagsSet.get(key);
 		all.put(buildSend(method, true, false, superCall), method);
 	}
-	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
+	for (String key : set.keySet()) {
 		all.put(key, set.get(key));
 	}
-	for (Iterator<String> iterator = set64.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
+	for (String key : set64.keySet()) {
 		all.put(key, set64.get(key));
 	}
-	for (Iterator<String> iterator = all.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
+	for (String key : all.keySet()) {
 		Node method = all.get(key);
 		NodeList params = method.getChildNodes();
 		ArrayList<String> tags = new ArrayList<>();
@@ -1635,8 +1626,7 @@ void generateSends(boolean superCall) {
 		}
 		out(" @method flags=cast");
 		if (tags.size() > 0) outln();
-		for (Iterator<String> iterator2 = tags.iterator(); iterator2.hasNext();) {
-			String tag = iterator2.next();
+		for (String tag : tags) {
 			out(tag);
 			outln();
 		}
@@ -1668,8 +1658,7 @@ void generateClassesConst() {
 			}
 		}
 	}
-	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
-		String cls = iterator.next();
+	for (String cls : set) {
 		String clsConst = "class_" + cls;
 		out("public static final int /*long*/ ");
 		out(clsConst);
@@ -1698,8 +1687,7 @@ void generateProtocolsConst() {
 			}
 		}
 	}
-	for (Iterator<String> iterator = set.iterator(); iterator.hasNext();) {
-		String cls = iterator.next();
+	for (String cls : set) {
 		String clsConst = "protocol_" + cls;
 		out("public static final int /*long*/ ");
 		out(clsConst);

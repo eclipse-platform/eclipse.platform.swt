@@ -203,8 +203,7 @@ void createBadOverwrittenMethodProblems(IJavaProject project) throws CoreExcepti
 	if (sources == null) return;
 	IProject proj = project.getProject();
 	HashMap<String, TypeDeclaration> cache = new HashMap<>();
-	for (Iterator<String> iterator = sources.iterator(); iterator.hasNext();) {
-		String path = iterator.next();
+	for (String path: sources) {
 		IResource resource = getResourceWithoutErrors(proj, path, false);
 		if (resource == null) continue;
 		TypeDeclaration type = loadType(cache, path);
@@ -221,8 +220,7 @@ void createBadOverwrittenMethodProblems(IJavaProject project) throws CoreExcepti
 		}
 		for (int i = 0; i < methods.length; i++) {
 			MethodDeclaration method = methods[i];
-			for (Iterator<TypeDeclaration> iterator2 = superclasses.iterator(); iterator2.hasNext();) {
-				TypeDeclaration supertype = iterator2.next();
+			for (TypeDeclaration supertype : superclasses) {
 				MethodDeclaration[] supermethods = supertype.getMethods();
 				for (int j = 0; j < supermethods.length; j++) {
 					MethodDeclaration supermethod = supermethods[j];

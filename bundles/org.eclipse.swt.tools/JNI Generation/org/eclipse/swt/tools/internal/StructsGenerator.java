@@ -87,8 +87,7 @@ void generateExcludes(JNIClass[] classes) {
 			excludes.add(exclude);
 		}
 	}
-	for (Iterator<String> iter = excludes.iterator(); iter.hasNext();) {
-		String exclude = iter.next();
+	for (String exclude : excludes) {
 		outputln(exclude);
 		for (int i = 0; i < classes.length; i++) {
 			JNIClass clazz = classes[i];
