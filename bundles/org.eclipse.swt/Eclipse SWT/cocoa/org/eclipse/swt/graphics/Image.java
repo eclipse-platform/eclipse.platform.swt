@@ -179,20 +179,20 @@ public final class Image extends Resource implements Drawable {
 				/* Compute the alpha values */
 				long /*int*/ bitmapBytesPerRow = width;
 				long /*int*/ bitmapByteCount = bitmapBytesPerRow * height;
-				long /*int*/ alphaBitmapData = OS.malloc(bitmapByteCount);
+				long /*int*/ alphaBitmapData = C.malloc(bitmapByteCount);
 				long /*int*/ alphaBitmapCtx = OS.CGBitmapContextCreate(alphaBitmapData, width, height, 8, bitmapBytesPerRow, 0, OS.kCGImageAlphaOnly);
 				NSGraphicsContext.static_saveGraphicsState();
 				NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(alphaBitmapCtx, false));
 				nativeRep.drawInRect(rect);
 				NSGraphicsContext.static_restoreGraphicsState();
 				byte[] alphaData = new byte[(int)/*64*/bitmapByteCount];
-				OS.memmove(alphaData, alphaBitmapData, bitmapByteCount);
-				OS.free(alphaBitmapData);
+				C.memmove(alphaData, alphaBitmapData, bitmapByteCount);
+				C.free(alphaBitmapData);
 				OS.CGContextRelease(alphaBitmapCtx);
 
 				/* Merge the alpha values with the pixels */
 				byte[] srcData = new byte[height * bpr];
-				OS.memmove(srcData, rep.bitmapData(), srcData.length);
+				C.memmove(srcData, rep.bitmapData(), srcData.length);
 				for (int a = 0, p = 0; a < alphaData.length; a++, p += 4) {
 					srcData[p] = alphaData[a];
 					float alpha = alphaData[a] & 0xFF;
@@ -202,7 +202,7 @@ public final class Image extends Resource implements Drawable {
 						srcData[p+3] = (byte)(((srcData[p+3] & 0xFF) / alpha) * 0xFF);
 					}
 				}
-				OS.memmove(rep.bitmapData(), srcData, srcData.length);
+				C.memmove(rep.bitmapData(), srcData, srcData.length);
 
 				// If the alpha has only 0 or 255 (-1) for alpha values, compute the transparent pixel color instead
 				// of a continuous alpha range.
@@ -405,7 +405,7 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 	rep.release();
 
 	long /*int*/ data = rep.bitmapData();
-	OS.memmove(data, srcData, srcWidth * srcHeight * 4);
+	C.memmove(data, srcData, srcWidth * srcHeight * 4);
 	if (flag != SWT.IMAGE_COPY) {
 		final int redOffset, greenOffset, blueOffset;
 		if (srcBpp == 32 && (srcBitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
@@ -432,7 +432,7 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 			byte oneBlue = (byte)oneRGB.blue;
 			byte[] line = new byte[(int)/*64*/srcBpr];
 			for (int y=0; y<srcHeight; y++) {
-				OS.memmove(line, data + (y * srcBpr), srcBpr);
+				C.memmove(line, data + (y * srcBpr), srcBpr);
 				int offset = 0;
 				for (int x=0; x<srcWidth; x++) {
 					int red = line[offset+redOffset] & 0xFF;
@@ -450,14 +450,14 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 					}
 					offset += 4;
 				}
-				OS.memmove(data + (y * srcBpr), line, srcBpr);
+				C.memmove(data + (y * srcBpr), line, srcBpr);
 			}
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
 			byte[] line = new byte[(int)/*64*/srcBpr];
 			for (int y=0; y<srcHeight; y++) {
-				OS.memmove(line, data + (y * srcBpr), srcBpr);
+				C.memmove(line, data + (y * srcBpr), srcBpr);
 				int offset = 0;
 				for (int x=0; x<srcWidth; x++) {
 					int red = line[offset+redOffset] & 0xFF;
@@ -467,7 +467,7 @@ private void createRepFromSourceAndApplyFlag(NSBitmapImageRep srcRep, int srcWid
 					line[offset+redOffset] = line[offset+greenOffset] = line[offset+blueOffset] = intensity;
 					offset += 4;
 				}
-				OS.memmove(data + (y * srcBpr), line, srcBpr);
+				C.memmove(data + (y * srcBpr), line, srcBpr);
 			}
 			break;
 		}
@@ -844,7 +844,7 @@ ImageData _getImageData (NSBitmapImageRep imageRep, AlphaInfo info) {
 	long /*int*/ bitmapFormat = imageRep.bitmapFormat();
 	long /*int*/ dataSize = height * bpr;
 	byte[] srcData = new byte[(int)/*64*/dataSize];
-	OS.memmove(srcData, bitmapData, dataSize);
+	C.memmove(srcData, bitmapData, dataSize);
 
 	PaletteData palette;
 	if (bpp == 32 && (bitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
@@ -935,7 +935,7 @@ void createAlpha () {
 		long /*int*/ format = imageRep.bitmapFormat();
 		long /*int*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
-		OS.memmove(srcData, bitmapData, dataSize);
+		C.memmove(srcData, bitmapData, dataSize);
 		if (info.transparentPixel != -1) {
 			if ((format & OS.NSAlphaFirstBitmapFormat) != 0) {
 				for (int i=0; i<dataSize; i+=4) {
@@ -968,7 +968,7 @@ void createAlpha () {
 		// Since we just calculated alpha for the image rep, tell it that it now has an alpha component.
 		imageRep.setAlpha(true);
 
-		OS.memmove(bitmapData, srcData, dataSize);
+		C.memmove(bitmapData, srcData, dataSize);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1073,7 +1073,7 @@ private NSBitmapImageRep createRepresentation(ImageData imageData, AlphaInfo alp
 	}
 
 	rep = rep.initWithBitmapDataPlanes(0, imageData.width, imageData.height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
-	OS.memmove(rep.bitmapData(), buffer, dataSize);
+	C.memmove(rep.bitmapData(), buffer, dataSize);
 	return rep;
 }
 
@@ -1400,7 +1400,7 @@ void init(int width, int height) {
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
-	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
+	C.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 	rep.release();
 	handle.setCacheMode(OS.NSImageCacheNever);
@@ -1681,7 +1681,7 @@ public void setBackground(Color color) {
 		}
 		byte[] line = new byte[(int)bpr];
 		for (int i = 0, offset = 0; i < height; i++, offset += bpr) {
-			OS.memmove(line, data + offset, bpr);
+			C.memmove(line, data + offset, bpr);
 			for (int j = 0; j  < line.length; j += 4) {
 				if (line[j + redOffset] == red && line[j + greenOffset] == green && line[j + blueOffset] == blue) {
 					line[j + redOffset] = newRed;
@@ -1689,7 +1689,7 @@ public void setBackground(Color color) {
 					line[j + blueOffset] = newBlue;
 				}
 			}
-			OS.memmove(data + offset, line, bpr);
+			C.memmove(data + offset, line, bpr);
 		}
 		alphaInfo.transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
 	} finally {

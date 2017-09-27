@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,14 +11,14 @@
 package org.eclipse.swt.program;
 
 
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.widgets.*;
+import java.io.*;
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-
-import java.io.IOException;
-import java.util.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -230,13 +230,13 @@ static NSURL getURL (String fileName) {
 }
 
 static boolean isExecutable (String fileName) {
-	long /*int*/ ptr = OS.malloc(1);
+	long /*int*/ ptr = C.malloc(1);
 	NSString path = NSString.stringWith(fileName);
 	boolean result = false;
 	NSFileManager manager = NSFileManager.defaultManager();
 	if (manager.fileExistsAtPath(path, ptr)) {
 		byte[] isDirectory = new byte[1];
-		OS.memmove(isDirectory, ptr, 1);
+		C.memmove(isDirectory, ptr, 1);
 		if (isDirectory[0] == 0 && manager.isExecutableFileAtPath(path)) {
 			NSWorkspace ws = NSWorkspace.sharedWorkspace();
 			NSString type = ws.typeOfFile(path, 0);
@@ -244,7 +244,7 @@ static boolean isExecutable (String fileName) {
 					OS.UTTypeEqual(type.id, NSString.stringWith("public.shell-script").id)); //$NON-NLS-1$
 		}
 	}
-	OS.free(ptr);
+	C.free(ptr);
 	return result;
 }
 

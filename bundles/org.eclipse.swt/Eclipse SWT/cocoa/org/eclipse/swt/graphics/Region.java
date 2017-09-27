@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,9 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class represent areas of an x-y coordinate
@@ -378,7 +378,7 @@ void convertRgn(NSAffineTransform transform) {
 long /*int*/ convertRgn(long /*int*/ message, long /*int*/ rgn, long /*int*/ r, long /*int*/ newRgn) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		short[] rect = new short[4];
-		OS.memmove(rect, r, rect.length * 2);
+		C.memmove(rect, r, rect.length * 2);
 		int i = 0;
 		NSPoint point = new NSPoint();
 		int[] points = new int[10];
@@ -479,7 +479,7 @@ NSPoint pt = new NSPoint();
 short[] rect = new short[4];
 long /*int*/ regionToRects(long /*int*/ message, long /*int*/ rgn, long /*int*/ r, long /*int*/ path) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
-		OS.memmove(rect, r, rect.length * 2);
+		C.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];
 		pt.y = rect[0];
 		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);

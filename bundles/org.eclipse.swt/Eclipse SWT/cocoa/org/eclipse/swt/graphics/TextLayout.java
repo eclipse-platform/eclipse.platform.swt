@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -316,7 +316,7 @@ void computeRuns() {
 	int numberOfLines;
 	layoutManager.glyphRangeForTextContainer(textContainer);
 	long /*int*/ numberOfGlyphs = layoutManager.numberOfGlyphs(), index;
-	long /*int*/ rangePtr = OS.malloc(NSRange.sizeof);
+	long /*int*/ rangePtr = C.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 	    layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
@@ -339,7 +339,7 @@ void computeRuns() {
 		bounds[0] = new NSRect();
 		bounds[0].height = Math.max(layoutManager.defaultLineHeightForFont(nsFont), ascent + descent);
 	}
-	OS.free(rangePtr);
+	C.free(rangePtr);
 	offsets[numberOfLines] = (int)/*64*/textStorage.length();
 	this.lineOffsets = offsets;
 	this.lineBounds = bounds;
@@ -2216,14 +2216,14 @@ static long /*int*/ textLayoutProc(long /*int*/ id, long /*int*/ sel) {
 		size.width = metrics.width;
 		size.height = metrics.ascent + metrics.descent;
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc(NSSize.sizeof);
+		long /*int*/ result = C.malloc(NSSize.sizeof);
 		OS.memmove(result, size, NSSize.sizeof);
 		return result;
 	} else if (sel == OS.sel_cellBaselineOffset) {
 		NSPoint point = new NSPoint();
 		point.y = -metrics.descent;
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc(NSPoint.sizeof);
+		long /*int*/ result = C.malloc(NSPoint.sizeof);
 		OS.memmove(result, point, NSPoint.sizeof);
 		return result;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -305,7 +306,7 @@ NSRect[] getRectangles(int linkIndex) {
 	range.length = offsets[linkIndex].y - offsets[linkIndex].x + 1;
 	NSRange glyphRange = layoutManager.glyphRangeForCharacterRange(range, 0);
 
-	long /*int*/ rangePtr = OS.malloc(NSRange.sizeof);
+	long /*int*/ rangePtr = C.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 
 	/* compute number of lines in the link */
@@ -336,7 +337,7 @@ NSRect[] getRectangles(int linkIndex) {
 		result[i] = new NSRect();
 		OS.NSIntersectionRect(result[i], usedRect, boundsRect);
 	}
-	OS.free(rangePtr);
+	C.free(rangePtr);
 	return result;
 }
 

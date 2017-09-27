@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
@@ -81,13 +82,13 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;
 		NSPoint point = new NSPoint();
-		long /*int*/ ptr = OS.malloc(NSPoint.sizeof);
+		long /*int*/ ptr = C.malloc(NSPoint.sizeof);
 		OS.memmove(ptr, point, NSPoint.sizeof);
 		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
 		NSTableView widget = (NSTableView)control.view;
 		NSImage nsImage = widget.dragImageForRowsWithIndexes(widget.selectedRowIndexes(), widget.tableColumns(), nsEvent, ptr);
 		OS.memmove(point, ptr, NSPoint.sizeof);
-		OS.free(ptr);
+		C.free(ptr);
 		if (nsImage == null) return null;
 		//TODO: Image representation wrong???
 		Image image = Image.cocoa_new(control.getDisplay(), SWT.BITMAP, nsImage);

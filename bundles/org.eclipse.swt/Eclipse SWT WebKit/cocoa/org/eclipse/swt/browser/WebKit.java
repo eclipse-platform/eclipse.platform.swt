@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 IBM Corporation and others.
+ * Copyright (c) 2011, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1703,7 +1703,7 @@ Object convertToJava (long /*int*/ value) {
 		NSNumber number = new NSNumber (value);
 		long /*int*/ ptr = number.objCType ();
 		byte[] type = new byte[1];
-		OS.memmove (type, ptr, 1);
+		C.memmove (type, ptr, 1);
 		if (type[0] == 'c' || type[0] == 'B') {
 			return new Boolean (number.boolValue ());
 		}

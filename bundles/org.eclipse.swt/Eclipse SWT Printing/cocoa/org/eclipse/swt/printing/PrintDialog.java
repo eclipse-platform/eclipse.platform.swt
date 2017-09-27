@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,9 @@
 package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.printing.PrinterData;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class allow the user to select
@@ -244,7 +243,7 @@ public PrinterData open() {
 				: PrinterData.DUPLEX_NONE;
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
 		data.otherData = new byte[(int)/*64*/nsData.length()];
-		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);
+		C.memmove(data.otherData, nsData.bytes(), data.otherData.length);
 		printerData = data;
 	}
 	printInfo.release();

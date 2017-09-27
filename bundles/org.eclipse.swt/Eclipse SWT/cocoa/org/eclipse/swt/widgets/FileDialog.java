@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -353,11 +353,11 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 	NSString path = new NSString(arg1);
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		NSFileManager manager = NSFileManager.defaultManager();
-		long /*int*/ ptr = OS.malloc(1);
+		long /*int*/ ptr = C.malloc(1);
 		boolean found = manager.fileExistsAtPath(path, ptr);
 		byte[] isDirectory = new byte[1];
-		OS.memmove(isDirectory, ptr, 1);
-		OS.free(ptr);
+		C.memmove(isDirectory, ptr, 1);
+		C.free(ptr);
 		if (found) {
 			if (isDirectory[0] != 0) {
 				return 1;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -214,9 +215,9 @@ public Cursor(Device device, int style) {
 					OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width*4, 32);
 			NSPoint point = new NSPoint();
 			if (style == SWT.CURSOR_WAIT) {
-				OS.memmove(nsImageRep.bitmapData(), WAIT_SOURCE, WAIT_SOURCE.length);
+				C.memmove(nsImageRep.bitmapData(), WAIT_SOURCE, WAIT_SOURCE.length);
 			} else { //style == SWT.CURSOR_IBEAM
-				OS.memmove(nsImageRep.bitmapData(), SHADOWED_IBEAM_SOURCE, SHADOWED_IBEAM_SOURCE.length);
+				C.memmove(nsImageRep.bitmapData(), SHADOWED_IBEAM_SOURCE, SHADOWED_IBEAM_SOURCE.length);
 				point.x = 4; point.y = 8;			// values from NSCursor.IBeamCursor().hotSpot();
 			}
 			nsImage.addRepresentation(nsImageRep);
@@ -330,7 +331,7 @@ void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int he
 	nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height,
 			8, 4, true, false, OS.NSDeviceRGBColorSpace,
 			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
-	OS.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
+	C.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
 	nsImage.addRepresentation(nsImageRep);
 	NSPoint point = new NSPoint();
 	point.x = hotspotX;

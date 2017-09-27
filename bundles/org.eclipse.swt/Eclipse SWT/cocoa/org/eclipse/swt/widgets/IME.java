@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -462,7 +463,7 @@ boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*i
 		NSRange rangeLimit = new NSRange (), effectiveRange = new NSRange ();
 		rangeLimit.length = length;
 		int rangeCount = 0;
-		long /*int*/ ptr = OS.malloc (NSRange.sizeof);
+		long /*int*/ ptr = C.malloc (NSRange.sizeof);
 		for (int i = 0; i < length;) {
 			NSDictionary attribs = attribStr.attributesAtIndex(i, ptr, rangeLimit);
 			OS.memmove (effectiveRange, ptr, NSRange.sizeof);
@@ -471,7 +472,7 @@ boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*i
 			ranges [rangeCount * 2 + 1] = (int)/*64*/(effectiveRange.location + effectiveRange.length - 1);
 			styles [rangeCount++] = getStyle (attribs);
 		}
-		OS.free (ptr);
+		C.free (ptr);
 		if (rangeCount != styles.length) {
 			TextStyle [] newStyles = new TextStyle [rangeCount];
 			System.arraycopy (styles, 0, newStyles, 0, newStyles.length);

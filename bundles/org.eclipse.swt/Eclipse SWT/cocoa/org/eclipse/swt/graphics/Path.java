@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -245,7 +246,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 
 void appendBezierPath (NSBezierPath path) {
 	int count = (int)/*64*/path.elementCount();
-	long /*int*/ points = OS.malloc(3 * NSPoint.sizeof);
+	long /*int*/ points = C.malloc(3 * NSPoint.sizeof);
 	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	NSPoint pt1 = new NSPoint();
 	NSPoint pt2 = new NSPoint();
@@ -279,7 +280,7 @@ void appendBezierPath (NSBezierPath path) {
 				break;
 		}
 	}
-	OS.free(points);
+	C.free(points);
 }
 
 /**
@@ -392,7 +393,7 @@ public void addString(String string, float x, float y, Font font) {
 		attrStr.release();
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
-			long /*int*/ glyphs = OS.malloc((range.length + 1) * 4);
+			long /*int*/ glyphs = C.malloc((range.length + 1) * 4);
 			long /*int*/ count = layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			for (int i = 0; i < count; i++) {
@@ -404,7 +405,7 @@ public void addString(String string, float x, float y, Font font) {
 				path.moveToPoint(pt);
 				path.appendBezierPathWithGlyphs(glyphs + (i * 4), 1, actualFont);
 			}
-			OS.free(glyphs);
+			C.free(glyphs);
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
 			path.transformUsingAffineTransform(transform);
@@ -471,15 +472,15 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	try {
 		//TODO - see windows
 		if (outline) {
-			long /*int*/ pixel = OS.malloc(4);
+			long /*int*/ pixel = C.malloc(4);
 			if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int[] buffer = new int[]{0xFFFFFFFF};
-			OS.memmove(pixel, buffer, 4);
+			C.memmove(pixel, buffer, 4);
 			long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
 			long /*int*/ context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
 			OS.CGColorSpaceRelease(colorspace);
 			if (context == 0) {
-				OS.free(pixel);
+				C.free(pixel);
 				SWT.error(SWT.ERROR_NO_HANDLES);
 			}
 			GCData data = gc.data;
@@ -504,8 +505,8 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGPathRelease(path);
 			OS.CGContextStrokePath(context);
 			OS.CGContextRelease(context);
-			OS.memmove(buffer, pixel, 4);
-			OS.free(pixel);
+			C.memmove(buffer, pixel, 4);
+			C.free(pixel);
 			return buffer[0] != 0xFFFFFFFF;
 		} else {
 			NSPoint point = new NSPoint();
@@ -640,7 +641,7 @@ public PathData getPathData() {
 		int pointCount = 0, typeCount = 0;
 		byte[] types = new byte[count];
 		float[] pointArray = new float[count * 6];
-		long /*int*/ points = OS.malloc(3 * NSPoint.sizeof);
+		long /*int*/ points = C.malloc(3 * NSPoint.sizeof);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		NSPoint pt = new NSPoint();
 		for (int i = 0; i < count; i++) {
@@ -675,7 +676,7 @@ public PathData getPathData() {
 					break;
 			}
 		}
-		OS.free(points);
+		C.free(points);
 		if (pointCount != pointArray.length) {
 			float[] temp = new float[pointCount];
 			System.arraycopy(pointArray, 0, temp, 0, pointCount);

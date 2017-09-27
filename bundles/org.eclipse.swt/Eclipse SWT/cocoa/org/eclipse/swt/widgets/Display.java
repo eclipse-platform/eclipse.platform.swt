@@ -875,7 +875,7 @@ void createDisplay (DeviceData data) {
 				OS.SetFrontProcess (psn);
 			}
 		}
-		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
+		ptr = C.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
 			NSString path = NSString.stringWithUTF8String (ptr);
 			NSImage image = (NSImage) new NSImage().alloc();
@@ -4329,7 +4329,7 @@ public void sendPostExternalEventDispatchEvent () {
 static NSString getApplicationName() {
 	NSString name = null;
 	int pid = OS.getpid ();
-	long /*int*/ ptr = OS.getenv (ascii ("APP_NAME_" + pid));
+	long /*int*/ ptr = C.getenv (ascii ("APP_NAME_" + pid));
 	if (ptr != 0) name = NSString.stringWithUTF8String(ptr);
 	if (name == null && APP_NAME != null) name = NSString.stringWith(APP_NAME);
 	if (name == null) {
@@ -5682,19 +5682,19 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel) {
 	} else if (sel == OS.sel_markedRange) {
 		NSRange range = widget.markedRange (id, sel);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRange.sizeof);
+		long /*int*/ result = C.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
 		return result;
 	} else if (sel == OS.sel_selectedRange) {
 		NSRange range = widget.selectedRange (id, sel);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRange.sizeof);
+		long /*int*/ result = C.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
 		return result;
 	} else if (sel == OS.sel_cellSize) {
 		NSSize size = widget.cellSize (id, sel);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSSize.sizeof);
+		long /*int*/ result = C.malloc (NSSize.sizeof);
 		OS.memmove (result, size, NSSize.sizeof);
 		return result;
 	} else if (sel == OS.sel_hasMarkedText) {
@@ -5896,7 +5896,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	} else if (sel == OS.sel_firstRectForCharacterRange_) {
 		NSRect rect = widget.firstRectForCharacterRange (id, sel, arg0);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_insertText_) {
@@ -5938,7 +5938,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	} else if (sel == OS.sel_headerRectOfColumn_) {
 		NSRect rect = widget.headerRectOfColumn(id, sel, arg0);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_imageRectForBounds_) {
@@ -5946,7 +5946,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		rect = widget.imageRectForBounds(id, sel, rect);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_titleRectForBounds_) {
@@ -5954,7 +5954,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		rect = widget.titleRectForBounds(id, sel, rect);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_cellSizeForBounds_) {
@@ -5962,7 +5962,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		NSSize size = widget.cellSizeForBounds(id, sel, rect);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSSize.sizeof);
+		long /*int*/ result = C.malloc (NSSize.sizeof);
 		OS.memmove (result, size, NSSize.sizeof);
 		return result;
 	} else if (sel == OS.sel_setObjectValue_) {
@@ -5972,7 +5972,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	} else if (sel == OS.sel_sizeOfLabel_) {
 		NSSize size = widget.sizeOfLabel(id, sel, arg0 != 0);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc(NSSize.sizeof);
+		long /*int*/ result = C.malloc(NSSize.sizeof);
 		OS.memmove(result, size, NSSize.sizeof);
 		return result;
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
@@ -6089,7 +6089,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		rect = widget.expansionFrameWithFrame_inView(id, sel, rect, arg1);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_focusRingMaskBoundsForFrame_inView_) {
@@ -6097,7 +6097,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		rect = widget.focusRingMaskBoundsForFrame(id, sel, rect, arg1);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_drawLabel_inRect_) {
@@ -6144,7 +6144,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	} else if (sel == OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_) {
 		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(id, sel, arg0, arg1, arg2);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRange.sizeof);
+		long /*int*/ result = C.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
 		return result;
 	} else if (sel == OS.sel_dragSelectionWithEvent_offset_slideBack_) {
@@ -6160,7 +6160,7 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		OS.memmove (rect, arg1, NSRect.sizeof);
 		rect = widget.drawTitleWithFrameInView (id, sel, arg0, rect, arg2);
 		/* NOTE that this is freed in C */
-		long /*int*/ result = OS.malloc (NSRect.sizeof);
+		long /*int*/ result = C.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_hitTestForEvent_inRect_ofView_) {

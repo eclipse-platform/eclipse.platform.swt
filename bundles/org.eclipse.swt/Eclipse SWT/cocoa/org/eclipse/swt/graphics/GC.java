@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -226,7 +226,7 @@ long /*int*/ applierFunc(long /*int*/ info, long /*int*/ elementPtr) {
 	if (types != null) {
 		types[typeCount] = (byte)type;
 		if (length > 0) {
-			OS.memmove(point, element.points, length * CGPoint.sizeof);
+			C.memmove(point, element.points, length * CGPoint.sizeof);
 			System.arraycopy(point, 0, points, count, length * 2);
 		}
 	}
@@ -480,12 +480,12 @@ public void copyArea(Image image, int x, int y) {
 			rect.size.width = size.width;
 			rect.size.height = size.height;
 			int displayCount = 16;
-			long /*int*/ displays = OS.malloc(4 * displayCount), countPtr = OS.malloc(4);
+			long /*int*/ displays = C.malloc(4 * displayCount), countPtr = C.malloc(4);
 			if (OS.CGGetDisplaysWithRect(rect, displayCount, displays, countPtr) != 0) return;
 			int[] count = new int[1], display = new int[1];
-			OS.memmove(count, countPtr, OS.PTR_SIZEOF);
+			C.memmove(count, countPtr, C.PTR_SIZEOF);
 			for (int i = 0; i < count[0]; i++) {
-				OS.memmove(display, displays + (i * 4), 4);
+				C.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
 				double /*float*/ scaling = 1;
 				for (int j = 0; j < screens.count(); j++) {
@@ -503,7 +503,7 @@ public void copyArea(Image image, int x, int y) {
 					int height = (int) (size.height * scaling);
 					NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 					rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
-					OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
+					C.memset(rep.bitmapData(), 0xFF, width * height * 4);
 					imageHandle.addRepresentation(rep);
 					rep.release();
 				}
@@ -514,8 +514,8 @@ public void copyArea(Image image, int x, int y) {
 					OS.CGImageRelease(srcImage);
 				}
 			}
-			OS.free(displays);
-			OS.free(countPtr);
+			C.free(displays);
+			C.free(countPtr);
 		}
 	} finally {
 		uncheckGC(pool);
@@ -712,22 +712,22 @@ static long /*int*/ createCGPathRef(NSBezierPath nsPath) {
 	if (count > 0) {
 		long /*int*/ cgPath = OS.CGPathCreateMutable();
 		if (cgPath == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		long /*int*/ points = OS.malloc(NSPoint.sizeof * 3);
+		long /*int*/ points = C.malloc(NSPoint.sizeof * 3);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		double /*float*/ [] pt = new double /*float*/ [6];
 		for (int i = 0; i < count; i++) {
 			int element = (int)/*64*/nsPath.elementAtIndex(i, points);
 			switch (element) {
 				case OS.NSMoveToBezierPathElement:
-					OS.memmove(pt, points, NSPoint.sizeof);
+					C.memmove(pt, points, NSPoint.sizeof);
 					OS.CGPathMoveToPoint(cgPath, 0, pt[0], pt[1]);
 					break;
 				case OS.NSLineToBezierPathElement:
-                	OS.memmove(pt, points, NSPoint.sizeof);
+                	C.memmove(pt, points, NSPoint.sizeof);
                     OS.CGPathAddLineToPoint(cgPath, 0, pt[0], pt[1]);
 					break;
 				 case OS.NSCurveToBezierPathElement:
-					 OS.memmove(pt, points, NSPoint.sizeof * 3);
+					 C.memmove(pt, points, NSPoint.sizeof * 3);
 					 OS.CGPathAddCurveToPoint(cgPath, 0, pt[0], pt[1], pt[2], pt[3], pt[4], pt[5]);
 					 break;
                 case OS.NSClosePathBezierPathElement:
@@ -735,7 +735,7 @@ static long /*int*/ createCGPathRef(NSBezierPath nsPath) {
 					 break;
 			}
 		}
-		OS.free(points);
+		C.free(points);
 		return cgPath;
 	}
 	return 0;
@@ -2473,7 +2473,7 @@ public void getClipping(Region region) {
 			int pointCount = 0;
 			Region clipRgn = new Region(device);
 			int[] pointArray = new int[count * 2];
-			long /*int*/ points = OS.malloc(NSPoint.sizeof);
+			long /*int*/ points = C.malloc(NSPoint.sizeof);
 			if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			NSPoint pt = new NSPoint();
 			for (int i = 0; i < count; i++) {
@@ -2498,7 +2498,7 @@ public void getClipping(Region region) {
 				}
 			}
 			if (pointCount != 0) clipRgn.add(pointArray, pointCount);
-			OS.free(points);
+			C.free(points);
 			region.intersect(clipRgn);
 			clipRgn.dispose();
 		}
