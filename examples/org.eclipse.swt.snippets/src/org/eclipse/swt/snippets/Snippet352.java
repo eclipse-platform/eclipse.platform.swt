@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 IBM Corporation and others.
+ * Copyright (c) 2011, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,9 +79,7 @@ public class Snippet352 {
 		};
 
 		PaintListener pl = e -> {
-			Iterator<Map.Entry<Long, CircleInfo>> iter = touchLocations.entrySet().iterator();
-			while (iter.hasNext()) {
-				CircleInfo ci = iter.next().getValue();
+			for (CircleInfo ci : touchLocations.values()) {
 				e.gc.setBackground(ci.color);
 				e.gc.fillOval(ci.center.x - CIRCLE_RADIUS, ci.center.y - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2);
 			}

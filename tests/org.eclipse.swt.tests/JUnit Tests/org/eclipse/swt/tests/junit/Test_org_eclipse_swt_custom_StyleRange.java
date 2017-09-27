@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,9 +56,7 @@ public void setUp() {
 
 @After
 public void tearDown() {
-	Iterator<RGB> elements = colors.keySet().iterator();
-	while (elements.hasNext()) {
-		Color color = colors.get(elements.next());
+	for (Color color : colors.values()) {
 		color.dispose();
 	}
 }
