@@ -310,10 +310,7 @@ public void createFunction (BrowserFunction function) {
 	 * remove it so that it is not recreated on subsequent pages
 	 * (the new function overwrites the old one).
 	 */
-	Iterator<Integer> keys = functions.keySet().iterator ();
-	while (keys.hasNext ()) {
-		Integer key = keys.next ();
-		BrowserFunction current = functions.get (key);
+	for (BrowserFunction current : functions.values()) {
 		if (current.name.equals (function.name)) {
 			deregisterFunction (current);
 			break;

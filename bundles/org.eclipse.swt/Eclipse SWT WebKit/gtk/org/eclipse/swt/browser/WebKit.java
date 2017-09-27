@@ -1995,9 +1995,8 @@ void onDispose (Event e) {
 		}
 	}
 
-	Iterator<BrowserFunction> elements = functions.values().iterator ();
-	while (elements.hasNext ()) {
-		elements.next ().dispose (false);
+	for (BrowserFunction function : functions.values()) {
+		function.dispose(false);
 	}
 	functions = null;
 
@@ -2927,10 +2926,8 @@ private void webkit_settings_set(byte [] property, int value) {
 }
 
 private void registerBrowserFunctions() {
-	Iterator<BrowserFunction> elements = functions.values().iterator ();
-	while (elements.hasNext ()) {
-		BrowserFunction current = elements.next ();
-		execute (current.functionString);
+	for (BrowserFunction current : functions.values()) {
+		execute(current.functionString);
 	}
 }
 
