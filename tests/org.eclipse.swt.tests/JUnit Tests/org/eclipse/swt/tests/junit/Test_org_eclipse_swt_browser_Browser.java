@@ -1384,6 +1384,24 @@ public void test_evaluate_string() {
 	assertTrue("Evaluation did not return a value. Or test timed out.", passed);
 }
 
+// Test where the script has the 'return' not in the beginning,
+@Test
+public void test_evaluate_returnMoved() {
+	// Run locally, skip on hudson's webkit1. see Bug 509411
+	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1));
+
+	final AtomicReference<String> returnValue = new AtomicReference<>();
+	browser.addProgressListener(completedAdapter(event -> {
+		String evalResult = (String) browser.evaluate("var x = 1; return 'hello'");
+		returnValue.set(evalResult);
+	}));
+
+	browser.setText("test text");
+	shell.open();
+	boolean passed = waitForPassCondition(()-> "hello".equals(returnValue.get()));
+	assertTrue("Evaluation did not return a value. Or test timed out.", passed);
+}
+
 /**
  * Test the evaluate() api that returns a number (Double). Functionality based on Snippet308.
  * Only wait till success. Otherwise timeout after 3 seconds.
