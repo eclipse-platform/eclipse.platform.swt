@@ -789,7 +789,7 @@ public void setWarnings (boolean warnings) {
  */
 protected int getDeviceZoom () {
 	NSScreen mainScreen = NSScreen.mainScreen();
-	int scaleFactor = (int) mainScreen.backingScaleFactor();
+	int scaleFactor = mainScreen != null ? (int) mainScreen.backingScaleFactor() : 1;
 	return scaleFactor * 100;
 }
 
