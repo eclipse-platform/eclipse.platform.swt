@@ -353,13 +353,6 @@ public static final native int GetIndMenuItemWithCommandID(long /*int*/ mHandle,
  * @param index cast=(short)
  */
 public static final native void DeleteMenuItem(long /*int*/ mHandle, short index);
-/**
- * @param image_name cast=(const char*)
- * @param options cast=(uint32_t)
- */
-public static final native long /*int*/ NSAddImage(byte[] image_name, int options);
-public static final int NSADDIMAGE_OPTION_RETURN_ON_ERROR = 0x1;
-public static final int NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME = 0x8;
 /** @method flags=dynamic
  * @param pmSessionInfo cast=(PMPrintSession)
  * @param outPMPrinter cast=(PMPrinter *)

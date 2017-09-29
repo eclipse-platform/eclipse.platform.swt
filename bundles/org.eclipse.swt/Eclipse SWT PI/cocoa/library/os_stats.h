@@ -346,7 +346,6 @@ typedef enum {
 	NSAccessibilityVisibleRowsAttribute_FUNC,
 	NSAccessibilityWindowAttribute_FUNC,
 	NSAccessibilityWindowRole_FUNC,
-	NSAddImage_FUNC,
 	NSAffineTransformStruct_1sizeof_FUNC,
 	NSApplicationDidChangeScreenParametersNotification_FUNC,
 	NSAttachmentAttributeName_FUNC,

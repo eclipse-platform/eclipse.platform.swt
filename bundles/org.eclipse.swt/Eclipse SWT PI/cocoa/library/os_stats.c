@@ -336,7 +336,6 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityVisibleRowsAttribute",
 	"NSAccessibilityWindowAttribute",
 	"NSAccessibilityWindowRole",
-	"NSAddImage",
 	"NSAffineTransformStruct_1sizeof",
 	"NSApplicationDidChangeScreenParametersNotification",
 	"NSAttachmentAttributeName",
