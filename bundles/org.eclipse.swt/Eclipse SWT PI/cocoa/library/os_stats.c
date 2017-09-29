@@ -438,7 +438,6 @@ char * OS_nativeFunctionNames[] = {
 	"SecPolicySearchCreate",
 	"SecTrustCreateWithCertificates",
 	"SectRgn",
-	"SetFrontProcess",
 	"SetRect",
 	"SetSystemUIMode",
 	"SetThemeCursor",

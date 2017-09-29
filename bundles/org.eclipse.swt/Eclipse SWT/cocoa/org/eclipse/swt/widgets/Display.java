@@ -870,9 +870,6 @@ void createDisplay (DeviceData data) {
 			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 9, 0)) {
 				application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
 				NSRunningApplication.currentApplication().activateWithOptions (OS.NSApplicationActivateIgnoringOtherApps);
-			} else {
-				OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
-				OS.SetFrontProcess (psn);
 			}
 		}
 		ptr = C.getenv (ascii ("APP_ICON_" + pid));

@@ -448,7 +448,6 @@ typedef enum {
 	SecPolicySearchCreate_FUNC,
 	SecTrustCreateWithCertificates_FUNC,
 	SectRgn_FUNC,
-	SetFrontProcess_FUNC,
 	SetRect_FUNC,
 	SetSystemUIMode_FUNC,
 	SetThemeCursor_FUNC,

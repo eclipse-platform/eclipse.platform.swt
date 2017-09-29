@@ -5885,22 +5885,6 @@ JNIEXPORT void JNICALL OS_NATIVE(SectRgn)
 }
 #endif
 
-#ifndef NO_SetFrontProcess
-JNIEXPORT jint JNICALL OS_NATIVE(SetFrontProcess)
-	(JNIEnv *env, jclass that, jintArray arg0)
-{
-	jint *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SetFrontProcess_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)SetFrontProcess((ProcessSerialNumber *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, SetFrontProcess_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SetRect
 JNIEXPORT void JNICALL OS_NATIVE(SetRect)
 	(JNIEnv *env, jclass that, jshortArray arg0, jshort arg1, jshort arg2, jshort arg3, jshort arg4)

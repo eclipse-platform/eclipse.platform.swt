@@ -224,8 +224,6 @@ public static final native int Gestalt(int selector, int[] response);
 /** @param psn cast=(ProcessSerialNumber *) */
 public static final native int GetCurrentProcess(int[] psn);
 /** @param psn cast=(ProcessSerialNumber *) */
-public static final native int SetFrontProcess(int[] psn);
-/** @param psn cast=(ProcessSerialNumber *) */
 public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native int CPSSetProcessName(int[] psn, long /*int*/ name);
 /** @method flags=dynamic */
