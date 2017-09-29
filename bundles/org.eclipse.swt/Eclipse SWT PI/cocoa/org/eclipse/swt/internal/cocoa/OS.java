@@ -3303,11 +3303,6 @@ public static final native long /*int*/ NSNumberOfColorComponents(long /*int*/ c
  */
 public static final native void NSRectFillUsingOperation(NSRect aRect, long /*int*/ op);
 /**
- * @param size cast=(NSInteger)
- * @param list cast=(NSInteger*)
- */
-public static final native void NSWindowList(long /*int*/ size, long[] /*int[]*/ list);
-/**
  * @param alloc cast=(CFAllocatorRef)
  * @param str cast=(CFStringRef)
  * @param attributes cast=(CFDictionaryRef)

@@ -427,7 +427,6 @@ typedef enum {
 	NSWindowDidMoveNotification_FUNC,
 	NSWindowDidResignKeyNotification_FUNC,
 	NSWindowDidResizeNotification_FUNC,
-	NSWindowList_FUNC,
 	NSWindowWillCloseNotification_FUNC,
 	NewGlobalRef_FUNC,
 	NewRgn_FUNC,

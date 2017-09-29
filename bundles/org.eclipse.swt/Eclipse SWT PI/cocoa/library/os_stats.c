@@ -417,7 +417,6 @@ char * OS_nativeFunctionNames[] = {
 	"NSWindowDidMoveNotification",
 	"NSWindowDidResignKeyNotification",
 	"NSWindowDidResizeNotification",
-	"NSWindowList",
 	"NSWindowWillCloseNotification",
 	"NewGlobalRef",
 	"NewRgn",

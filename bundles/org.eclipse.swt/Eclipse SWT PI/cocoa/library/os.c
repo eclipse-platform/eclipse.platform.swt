@@ -5471,20 +5471,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidResizeNotification)
 }
 #endif
 
-#ifndef NO_NSWindowList
-JNIEXPORT void JNICALL OS_NATIVE(NSWindowList)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
-{
-	jintLong *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, NSWindowList_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	NSWindowList((NSInteger)arg0, (NSInteger*)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, NSWindowList_FUNC);
-}
-#endif
-
 #ifndef NO_NSWindowWillCloseNotification
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowWillCloseNotification)
 	(JNIEnv *env, jclass that)
