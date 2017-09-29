@@ -915,19 +915,10 @@
 		<property name="exports" value=""/>
 
 		<condition property="remotebuilddir" value="c:/build" else="~/build/">
-			<or>
-				<equals arg1="${swt.os}" arg2="win32"/>
-				<equals arg1="${swt.os}" arg2="wce_ppc"/>
-			</or>
+			<equals arg1="${swt.os}" arg2="win32"/>
 		</condition>
 		<condition property="exit_cmd" value="exit;" else="">
-			<or>
-				<equals arg1="${swt.os}" arg2="win32"/>
-				<equals arg1="${swt.os}" arg2="wce_ppc"/>
-			</or>
-		</condition>
-		<condition property="build_cmd" value="unix2dos *; if cmd /c build-ce.bat ${build_targets};">
-			<equals arg1="${swt.os}" arg2="wce_ppc"/>
+			<equals arg1="${swt.os}" arg2="win32"/>
 		</condition>
 		<condition property="build_cmd" value="unix2dos *; if cmd /c build.bat ${build_targets};" else="if sh build.sh ${build_targets};">
 			<equals arg1="${swt.os}" arg2="win32"/>
@@ -977,10 +968,7 @@
 		<pathconvert property="win_output_dir">
 			<path location="${output_dir}"></path>
 		</pathconvert>
-		<condition property="build_file" value="build-ce.bat" else="build.bat">
-			<equals arg1="${swt.os}" arg2="wce_ppc"/>
-		</condition>
-		<exec dir="${build_dir}" executable="${build_dir}/${build_file}" failonerror="true">
+		<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
 			<arg line="${targets}"/>
