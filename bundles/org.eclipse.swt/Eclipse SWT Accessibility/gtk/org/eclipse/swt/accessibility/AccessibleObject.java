@@ -89,8 +89,19 @@ class AccessibleObject {
 		return listeners == null ? 0 : listeners.size();
 	}
 
-	static AtkActionIface getActionIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_ACTION())) {
+	/**
+	 * Fills a Java AtkActionIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkActionIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkActionIface getParentActionIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_ACTION())) {
 			AtkActionIface iface = new AtkActionIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (atkObject)));
 			return iface;
@@ -98,8 +109,21 @@ class AccessibleObject {
 		return null;
 	}
 
+	/**
+	 * Performs the specified action on atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param index the action index corresponding to the action to be performed
+	 *
+	 * @return long int representing whether the action succeeded: 1 for success,
+	 * 0 for failure
+	 */
 	static long /*int*/ atkAction_do_action (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkAction_do_action");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -116,15 +140,28 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkActionIface iface = getActionIface (atkObject);
+		AtkActionIface iface = getParentActionIface (atkObject);
 		if (iface != null && iface.do_action != 0) {
 			parentResult = ATK.call (iface.do_action, atkObject, index);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Returns the number of accessible actions available on atkObject.
+	 * If there are more than one, the first is considered the default
+	 * action of the object.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return the number of actions available
+	 */
 	static long /*int*/ atkAction_get_n_actions (long /*int*/ atkObject) {
-		if (DEBUG) print ("-->atkAction_get_n_actions");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -140,15 +177,27 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkActionIface iface = getActionIface (atkObject);
+		AtkActionIface iface = getParentActionIface (atkObject);
 		if (iface != null && iface.get_n_actions != 0) {
 			parentResult = ATK.call (iface.get_n_actions, atkObject);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Returns a description of the specified action of the atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param index the action index corresponding to the action to be performed
+	 *
+	 * @return a pointer to the description string
+	 */
 	static long /*int*/ atkAction_get_description (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkAction_get_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -167,18 +216,31 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkActionIface iface = getActionIface (atkObject);
+		AtkActionIface iface = getParentActionIface (atkObject);
 		if (iface != null && iface.get_description != 0) {
 			parentResult = ATK.call (iface.get_description, atkObject, index);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Returns the keybinding which can be used to activate
+	 * this atkObject, if one exists. Example: "Ctrl+1"
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param index the action index corresponding to the action to be performed
+	 *
+	 * @return a pointer to the keybinding string
+	 */
 	static long /*int*/ atkAction_get_keybinding (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkAction_get_keybinding");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		AtkActionIface iface = getActionIface (atkObject);
+		AtkActionIface iface = getParentActionIface (atkObject);
 		if (iface != null && iface.get_keybinding != 0) {
 			parentResult = ATK.call (iface.get_keybinding, atkObject, index);
 		}
@@ -217,11 +279,23 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Returns the name of the specified action of the atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param index the action index corresponding to the action to be performed
+	 *
+	 * @return a pointer to the name string
+	 */
 	static long /*int*/ atkAction_get_name (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkAction_get_name");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		AtkActionIface iface = getActionIface (atkObject);
+		AtkActionIface iface = getParentActionIface (atkObject);
 		if (iface != null && iface.get_name != 0) {
 			parentResult = ATK.call (iface.get_name, atkObject, index);
 		}
@@ -262,6 +336,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	// TODO_a11y: refactor this
 	static AtkComponentIface getComponentIface (long /*int*/ atkObject) {
 		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
@@ -321,6 +396,7 @@ class AccessibleObject {
 		return 0;
 	}
 
+	// TODO_a11y: deprecated, should not be used on GTK3.14+
 	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_position, object: " + atkObject + " x: " + x + " y: " + y + " coord: " + coord_type);
 		AccessibleObject object = getAccessibleObject (atkObject);
@@ -431,8 +507,19 @@ class AccessibleObject {
 	}
 
 
-	static AtkEditableTextIface getEditableTextIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
+	/**
+	 * Fills a Java AtkEditableTextIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkEdtiableTextIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkEditableTextIface getParentEditableTextIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
 			return iface;
@@ -442,7 +529,6 @@ class AccessibleObject {
 
 //	gboolean atk_editable_text_set_run_attributes(AtkEditableText *text, AtkAttributeSet *attrib_set, gint start_offset, gint end_offset);
 	static long /*int*/ atkEditableText_set_run_attributes (long /*int*/ atkObject, long /*int*/ attrib_set, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkEditableText_set_run_attributes");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -464,7 +550,6 @@ class AccessibleObject {
 						String name = getString(attr.name);
 						String value = getString(attr.value);
 						OS.g_free(attrPtr);
-						if (DEBUG) print("name=" + name + ", value=" + value);
 						String [] newAttributes = new String [attributes.length + 2];
 						System.arraycopy (attributes, 0, newAttributes, 0, attributes.length);
 						newAttributes[attributes.length] = name;
@@ -581,7 +666,7 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.set_run_attributes != 0) {
 			parentResult = OS.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
 		}
@@ -605,9 +690,7 @@ class AccessibleObject {
 		return null;
 	}
 
-//	void atk_editable_text_set_text_contents (AtkEditableText *text, const gchar *string);
 	static long /*int*/ atkEditableText_set_text_contents (long /*int*/ atkObject, long /*int*/ string) {
-		if (DEBUG) print ("-->atkEditableText_set_text_contents");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -627,16 +710,14 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.set_text_contents != 0) {
 			parentResult = ATK.call (iface.set_text_contents, atkObject, string);
 		}
 		return parentResult;
 	}
 
-//	void atk_editable_text_insert_text (AtkEditableText *text, const gchar *string, gint length, gint *position);
 	static long /*int*/ atkEditableText_insert_text (long /*int*/ atkObject, long /*int*/ string, long /*int*/ string_length, long /*int*/ position) {
-		if (DEBUG) print ("-->atkEditableText_insert_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -656,16 +737,14 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.insert_text != 0) {
 			parentResult = OS.call (iface.insert_text, atkObject, string, string_length, position);
 		}
 		return parentResult;
 	}
 
-//	void atk_editable_text_copy_text (AtkEditableText *text, gint start_pos, gint end_pos);
 	static long /*int*/ atkEditableText_copy_text(long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
-		if (DEBUG) print ("-->atkEditableText_copy_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -683,16 +762,14 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.copy_text != 0) {
 			parentResult = ATK.call (iface.copy_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
 
-//	void atk_editable_text_cut_text (AtkEditableText *text, gint start_pos, gint end_pos);
 	static long /*int*/ atkEditableText_cut_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
-		if (DEBUG) print ("-->atkEditableText_cut_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -710,16 +787,14 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.cut_text != 0) {
 			parentResult = ATK.call (iface.cut_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
 
-//	void atk_editable_text_delete_text (AtkEditableText *text, gint start_pos, gint end_pos);
 	static long /*int*/ atkEditableText_delete_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
-		if (DEBUG) print ("-->atkEditableText_delete_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -738,16 +813,14 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.delete_text != 0) {
 			parentResult = ATK.call (iface.delete_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
 
-//	void atk_editable_text_paste_text (AtkEditableText *text, gint position);
 	static long /*int*/ atkEditableText_paste_text (long /*int*/ atkObject, long /*int*/ position) {
-		if (DEBUG) print ("-->atkEditableText_paste_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -764,15 +837,26 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		AtkEditableTextIface iface = getParentEditableTextIface (atkObject);
 		if (iface != null && iface.paste_text != 0) {
 			parentResult = ATK.call (iface.paste_text, atkObject, position);
 		}
 		return parentResult;
 	}
 
-	static AtkHypertextIface getHypertextIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
+	/**
+	 * Fills a Java AtkHypertextIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkHypertextIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkHypertextIface getParentHypertextIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_HYPERTEXT_GET_IFACE (atkObject)));
 			return iface;
@@ -780,8 +864,20 @@ class AccessibleObject {
 		return null;
 	}
 
+	/**
+	 * Gets the link in this hypertext document at index link_index.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param link_index the index of the link
+	 *
+	 * @return a pointer to the AtkHypertext at link_index in atkObject
+	 */
 	static long /*int*/ atkHypertext_get_link (long /*int*/ atkObject, long /*int*/ link_index) {
-		if (DEBUG) print ("-->atkHypertext_get_link");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -799,15 +895,27 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkHypertextIface iface = getHypertextIface (atkObject);
+		AtkHypertextIface iface = getParentHypertextIface (atkObject);
 		if (iface != null && iface.get_link != 0) {
 			parentResult = ATK.call (iface.get_link, atkObject, link_index);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Gets the number of links in this hypertext document.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an integer representing the number of links in the hypertext
+	 * in atkObject
+	 */
 	static long /*int*/ atkHypertext_get_n_links (long /*int*/ atkObject) {
-		if (DEBUG) print ("-->atkHypertext_get_n_links");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -823,15 +931,29 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkHypertextIface iface = getHypertextIface (atkObject);
+		AtkHypertextIface iface = getParentHypertextIface (atkObject);
 		if (iface != null && iface.get_n_links != 0) {
 			parentResult = ATK.call (iface.get_n_links, atkObject);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Gets the index into the array of hyperlinks that is
+	 * associated with the character specified by char_index.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param char_index a character index
+	 *
+	 * @return an integer representing the index into the array of
+	 * hypertexts
+	 */
 	static long /*int*/ atkHypertext_get_link_index (long /*int*/ atkObject, long /*int*/ char_index) {
-		if (DEBUG) print ("-->atkHypertext_get_link_index");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -849,7 +971,7 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkHypertextIface iface = getHypertextIface (atkObject);
+		AtkHypertextIface iface = getParentHypertextIface (atkObject);
 		if (iface != null && iface.get_link_index != 0) {
 			parentResult = ATK.call (iface.get_link_index, atkObject, char_index);
 		}
@@ -1408,8 +1530,19 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static AtkSelectionIface getSelectionIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_SELECTION())) {
+	/**
+	 * Fills a Java AtkSelectionIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkSelectionIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkSelectionIface getParentSelectionIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_SELECTION())) {
 			AtkSelectionIface iface = new AtkSelectionIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (atkObject)));
 			return iface;
@@ -1418,10 +1551,9 @@ class AccessibleObject {
 	}
 
 	static long /*int*/ atkSelection_is_child_selected (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkSelection_is_child_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		AtkSelectionIface iface = getSelectionIface (atkObject);
+		AtkSelectionIface iface = getParentSelectionIface (atkObject);
 		if (iface != null && iface.is_child_selected != 0) {
 			parentResult = ATK.call (iface.is_child_selected, atkObject, index);
 		}
@@ -1447,10 +1579,9 @@ class AccessibleObject {
 	}
 
 	static long /*int*/ atkSelection_ref_selection (long /*int*/ atkObject, long /*int*/ index) {
-		if (DEBUG) print ("-->atkSelection_ref_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		AtkSelectionIface iface = getSelectionIface (atkObject);
+		AtkSelectionIface iface = getParentSelectionIface (atkObject);
 		if (iface != null && iface.ref_selection != 0) {
 			parentResult = ATK.call (iface.ref_selection, atkObject, index);
 		}
@@ -1476,6 +1607,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	// TODO_a11y: refactor this
 	static AtkTableIface getTableIface (long /*int*/ atkObject) {
 		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TABLE())) {
 			AtkTableIface iface = new AtkTableIface ();
@@ -2140,6 +2272,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	// TODO_a11y: refactor this
 	static AtkTextIface getTextIface (long /*int*/ atkObject) {
 		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TEXT())) {
 			AtkTextIface iface = new AtkTextIface ();
@@ -3457,6 +3590,7 @@ class AccessibleObject {
 		return Integer.valueOf(OS.g_value_get_int(value));
 	}
 
+	// TODO_a11y: refactor this
 	static AtkValueIface getValueIface (long /*int*/ atkObject) {
 		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
@@ -4036,8 +4170,8 @@ class AccessibleObject {
 						if (object != null)	OS.g_object_ref(object.atkHandle);
 					} else {
 						if (OS.GTK3) {
-							//TODO_a11y: creation of child AccessibleObjects needs
-							//to be looked at for the GTK3 implementation
+							// TODO_a11y: creation of child AccessibleObjects needs
+							// to be looked at for the GTK3 implementation
 							long /*int*/ type = OS.G_OBJECT_TYPE (accessible.getControlHandle());
 							object = new AccessibleObject(type, 0, accessible, true);
 						} else {

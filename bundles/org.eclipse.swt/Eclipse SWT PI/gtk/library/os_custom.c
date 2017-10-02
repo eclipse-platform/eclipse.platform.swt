@@ -762,11 +762,13 @@ static AtkRole swt_fixed_accessible_get_role (AtkObject *obj);
 static AtkObject *swt_fixed_accessible_ref_child (AtkObject *obj, gint i);
 static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *accessible);
 static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface);
-static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
+static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface);
+static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init))
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init))
 
 struct _SwtFixedAccessiblePrivate {
 	// A boolean flag which is set to TRUE when an Accessible Java
@@ -985,12 +987,134 @@ static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *obj) {
 	}
 }
 
-// TODO_a11y: to be implemented later
-static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
+static gboolean swt_fixed_accessible_action_do_action (AtkAction *action, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (action);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkAction_do_action", "(JJ)J", action, i);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
 }
 
-// TODO_a11y: to be implemented later
-static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface) {
+static const gchar *swt_fixed_accessible_action_get_description (AtkAction *action, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (action);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkAction_get_description", "(JJ)J", action, i);
+	}
+	return (const gchar *) returned_value;
+}
+
+static const gchar *swt_fixed_accessible_action_get_keybinding (AtkAction *action, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (action);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkAction_get_keybinding", "(JJ)J", action, i);
+	}
+	return (const gchar *) returned_value;
+}
+
+static gint swt_fixed_accessible_action_get_n_actions (AtkAction *action) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (action);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkAction_get_n_actions", "(J)J", action);
+	}
+	return (gint) returned_value;
+}
+
+static const gchar *swt_fixed_accessible_action_get_name (AtkAction *action, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (action);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkAction_get_name", "(JJ)J", action, i);
+	}
+	return (const gchar *) returned_value;
+}
+
+static AtkHyperlink *swt_fixed_accessible_hypertext_get_link (AtkHypertext *hypertext, gint link_index) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (hypertext);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkHypertext_get_link", "(JJ)J", hypertext, link_index);
+	}
+	return (AtkHyperlink *) returned_value;
+}
+
+static gint swt_fixed_accessible_hypertext_get_link_index (AtkHypertext *hypertext, gint char_index) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (hypertext);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkHypertext_get_link_index", "(JJ)J", hypertext, char_index);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_hypertext_get_n_links (AtkHypertext *hypertext) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (hypertext);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkHypertext_get_n_links", "(J)J", hypertext);
+	}
+	return (gint) returned_value;
+}
+
+static gboolean swt_fixed_accessible_selection_is_child_selected (AtkSelection *selection, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (selection);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkSelection_is_child_selected", "(JJ)J", selection, i);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static AtkObject *swt_fixed_accessible_selection_ref_selection (AtkSelection *selection, gint i) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (selection);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkSelection_ref_selection", "(JJ)J", selection, i);
+	}
+	return (AtkObject *) returned_value;
+}
+
+// Interfaces initializers and implementations
+static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
+	iface->do_action = swt_fixed_accessible_action_do_action;
+	iface->get_description = swt_fixed_accessible_action_get_description;
+	iface->get_keybinding = swt_fixed_accessible_action_get_keybinding;
+	iface->get_n_actions = swt_fixed_accessible_action_get_n_actions;
+	iface->get_name = swt_fixed_accessible_action_get_name;
+}
+
+static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface) {
+	iface->get_link = swt_fixed_accessible_hypertext_get_link;
+	iface->get_link_index = swt_fixed_accessible_hypertext_get_link_index;
+	iface->get_n_links = swt_fixed_accessible_hypertext_get_n_links;
+}
+
+static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface) {
+	iface->is_child_selected = swt_fixed_accessible_selection_is_child_selected;
+	iface->ref_selection = swt_fixed_accessible_selection_ref_selection;
 }
 
 jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...) {
@@ -1023,7 +1147,7 @@ jintLong call_accessible_object_function (const char *method_name, const char *m
 
 	// If the method ID isn't NULL
 	if (mid == NULL) {
-		g_critical("JNI method ID pointer is NULL for class %s\n", method_name);
+		g_critical("JNI method ID pointer is NULL for method %s\n", method_name);
 	} else {
 		va_start(arg_list, method_signature);
 		result = (*env)->CallStaticLongMethodV(env, cls, mid, arg_list);
