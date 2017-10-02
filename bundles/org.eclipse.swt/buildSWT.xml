@@ -969,7 +969,6 @@
 			<path location="${output_dir}"></path>
 		</pathconvert>
 		<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
-			<env key="JAVA_HOME" value=""/>
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
