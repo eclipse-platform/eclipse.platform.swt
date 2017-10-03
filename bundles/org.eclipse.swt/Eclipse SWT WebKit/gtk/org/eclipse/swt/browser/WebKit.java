@@ -194,6 +194,14 @@ class WebKit extends WebBrowser {
 
 			NativeClearSessions = () -> {
 				if (!LibraryLoaded) return;
+
+				if (WEBKIT2) {
+					// TODO - implement equivalent. Bug 522181
+					// Currently 'webkit_get_default_session()' is a webkit1-only function.
+					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
+					return;
+				}
+
 				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
 				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
@@ -216,6 +224,14 @@ class WebKit extends WebBrowser {
 
 			NativeGetCookie = () -> {
 				if (!LibraryLoaded) return;
+
+				if (WEBKIT2) {
+					// TODO - implement equivalent. Bug 522181
+					// Currently 'webkit_get_default_session()' is a webkit1-only function.
+					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
+					return;
+				}
+
 				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
 				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
@@ -247,6 +263,14 @@ class WebKit extends WebBrowser {
 
 			NativeSetCookie = () -> {
 				if (!LibraryLoaded) return;
+
+				if (WEBKIT2) {
+					// TODO - implement equivalent. Bug 522181
+					// Currently 'webkit_get_default_session()' is a webkit1-only function.
+					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
+					return;
+				}
+
 				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
 				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
