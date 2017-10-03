@@ -40,6 +40,8 @@ class WebKit extends WebBrowser {
 	byte[] htmlBytes;
 	BrowserFunction eventFunction; //Webkit1 only.
 
+	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
+
 	/**
 	 * Webkit2: In a few situations, evaluate() should not wait for it's asynchronous callback to finish.
 	 * This is to avoid deadlocks, see Bug 512001.<br>
@@ -741,8 +743,8 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 
 @Override
 public void create (Composite parent, int style) {
+	int [] vers = internalGetWebkitVersion();
 	if (ExternalClass == 0) {
-		int [] vers = internalGetWebkitVersion();
 		System.setProperty(SWT_WEBKITGTK_VERSION,
 				String.format("%s.%s.%s", vers[0], vers[1], vers[2])); // $NON-NLS-1$
 		if (Device.DEBUG) {
@@ -796,6 +798,15 @@ public void create (Composite parent, int style) {
 		} else { // Webkit1
 		  webView = WebKitGTK.webkit_web_view_new ();
 		}
+
+	// Bug 522733 Webkit2 workaround for crash
+	//   As of Webkitgtk 2.18, webkitgtk2 crashes if the first instance of webview is not referenced when JVM shuts down.
+	//   There is a exit handler that tries to dereference the first instance [which if not referenced]
+	//   leads to a crash. This workaround would benefit from deeper investigation (find root cause etc...).
+	if (WEBKIT2 && !bug522733FirstInstanceCreated && vers[0] == 2 && vers[1] >= 18) {
+		bug522733FirstInstanceCreated = true;
+		OS.g_object_ref(webView);
+	}
 
 	if (!WEBKIT2) {
 		webViewData = C.malloc (C.PTR_SIZEOF);
@@ -977,7 +988,6 @@ public void create (Composite parent, int style) {
 	 * it.  The workaround is to temporarily give it a size that forces
 	 * the native resize events to fire.
 	 */
-	int [] vers = internalGetWebkitVersion();
 	int major = vers[0], minor = vers[1];
 	if (major == 1 && minor >= 10) {
 		Rectangle minSize = browser.computeTrim (0, 0, 2, 2);
