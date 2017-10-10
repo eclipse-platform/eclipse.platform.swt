@@ -1138,11 +1138,9 @@ private int findLatinKeyGroup () {
 
 	// group with maximum keys count is Latin
 	int max_keys_count = 0;
-	Iterator<Map.Entry<Integer, Integer>> it = groupKeysCount.entrySet ().iterator ();
-	while (it.hasNext ()) {
-		Map.Entry<Integer, Integer> entry = it.next ();
-		Integer group = (Integer) entry.getKey ();
-		Integer keys_count = (Integer) entry.getValue ();
+	for (Map.Entry<Integer, Integer> entry : groupKeysCount.entrySet()) {
+		Integer group = entry.getKey ();
+		Integer keys_count = entry.getValue ();
 		if (keys_count > max_keys_count) {
 			result = group;
 			max_keys_count = keys_count;

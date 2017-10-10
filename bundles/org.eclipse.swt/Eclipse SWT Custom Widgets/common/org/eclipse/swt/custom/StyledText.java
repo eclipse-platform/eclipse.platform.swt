@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -389,9 +389,7 @@ public class StyledText extends Canvas {
 			gc = null;
 		}
 		if (resources != null) {
-			Iterator<Resource> enumeration = resources.values().iterator();
-			while (enumeration.hasNext()) {
-				Resource resource = enumeration.next();
+			for (Resource resource : resources.values()) {
 				resource.dispose();
 			}
 			resources = null;
