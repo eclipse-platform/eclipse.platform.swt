@@ -265,9 +265,8 @@ String getParamName(Node param, int i) {
 	return paramName;
 }
 
-void generateFields(ArrayList<?> fields) {
-	for (Iterator<?> iterator = fields.iterator(); iterator.hasNext();) {
-		Node field = (Node)iterator.next();
+void generateFields(ArrayList<Node> fields) {
+	for (Node field : fields) {
 		NamedNodeMap fieldAttributes = field.getAttributes();
 		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
 		String type = getJavaType(field), type64 = getJavaType64(field);
@@ -309,9 +308,8 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 	return value;
 }
 
-void generateMethods(String className, ArrayList<?> methods) {
-	for (Iterator<?> iterator = methods.iterator(); iterator.hasNext();) {
-		Node method = (Node)iterator.next();
+void generateMethods(String className, ArrayList<Node> methods) {
+	for (Node method : methods) {
 		NamedNodeMap mthAttributes = method.getAttributes();
 		String sel = mthAttributes.getNamedItem("selector").getNodeValue();
 		if ("NSObject".equals(className)) {
@@ -671,8 +669,8 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		Object[] superclass = classes.get(getSuperclassName(node));
 		if (superclass != null) {
-			for (Iterator<?> iterator2 = ((ArrayList<?>)superclass[1]).iterator(); iterator2.hasNext();) {
-				Node method = (Node) iterator2.next();
+			for (Iterator<Node> iterator2 = ((ArrayList<Node>)superclass[1]).iterator(); iterator2.hasNext();) {
+				Node method = iterator2.next();
 				if (isStatic(method)) {
 					methods.add(method);
 				}
@@ -708,7 +706,7 @@ void generateClasses() {
 		String className = clazzes.getKey();
 		Object[] clazz = clazzes.getValue();
 		Node node = (Node)clazz[0];
-		ArrayList<?> methods = (ArrayList<?>)clazz[1];
+		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		out("package ");
 		String packageName = getPackageName();
 		out(packageName);
@@ -746,7 +744,7 @@ void generateStructs() {
 
 		String className = structEntry.getKey();
 		Object[] clazz = structEntry.getValue();
-		ArrayList<?> methods = (ArrayList<?>)clazz[1];
+		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		out("package ");
 		String packageName = getPackageName();
 		out(packageName);
@@ -1245,7 +1243,7 @@ void buildLookup(Node node, HashMap<String, Node> table) {
 	}
 }
 
-boolean isUnique(Node method, ArrayList<?> methods) {
+boolean isUnique(Node method, ArrayList<Node> methods) {
 	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
 	String signature = "";
 	NodeList params = method.getChildNodes();
@@ -1257,8 +1255,7 @@ boolean isUnique(Node method, ArrayList<?> methods) {
 	}
 	int index = methodName.indexOf(":");
 	if (index != -1) methodName = methodName.substring(0, index);
-	for (Iterator<?> iterator = methods.iterator(); iterator.hasNext();) {
-		Node other = (Node) iterator.next();
+	for (Node other : methods) {
 		NamedNodeMap attributes = other.getAttributes();
 		Node otherSel = null;
 		if (attributes != null) otherSel = attributes.getNamedItem("selector");
