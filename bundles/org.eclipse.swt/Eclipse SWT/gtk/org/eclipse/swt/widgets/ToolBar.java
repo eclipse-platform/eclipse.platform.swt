@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -543,6 +544,23 @@ void relayout () {
 }
 
 @Override
+boolean backgroundChangeNeeded(Color color) {
+	/*
+	 * CTabFolder has two different background colors depending on whether it
+	 * has focus or not. However, calling getBackground() on CTabFolder only reports one
+	 * of the colors, which causes its children (usually ToolBar) to have mismatching
+	 * backgrounds in certain scenarios.
+	 *
+	 * Fix: only set the background if necessary (i.e. not all the time).
+	 */
+	if (parent != null && parent instanceof CTabFolder) {
+		return !getBackground().equals(color);
+	} else {
+		return super.backgroundChangeNeeded(color);
+	}
+}
+
+@Override
 void releaseChildren (boolean destroy) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -609,14 +627,6 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	} else {
 		super.setBackgroundGdkRGBA(context, handle, rgba);
 	}
-}
-
-@Override
-void setParentBackground () {
-	if (OS.GTK3) {
-		setBackgroundGdkRGBA (handle, display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA);
-	}
-	super.setParentBackground();
 }
 
 @Override
