@@ -527,8 +527,23 @@ class AccessibleObject {
 		return null;
 	}
 
-//	gboolean atk_editable_text_set_run_attributes(AtkEditableText *text, AtkAttributeSet *attrib_set, gint start_offset, gint end_offset);
-	static long /*int*/ atkEditableText_set_run_attributes (long /*int*/ atkObject, long /*int*/ attrib_set, long /*int*/ start_offset, long /*int*/ end_offset) {
+	/**
+	 * Sets the attributes for a specified range.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param attrib_set a pointer to an AtkAttributeSet
+	 * @param start_offset start range in which to set attributes
+	 * @param end_offset end of range in which to set attributes
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
+	static long /*int*/ atkEditableText_set_run_attributes (long /*int*/ atkObject, long /*int*/ attrib_set,
+			long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -690,6 +705,19 @@ class AccessibleObject {
 		return null;
 	}
 
+	/**
+	 * Sets text contents of the atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param string the text to be set
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkEditableText_set_text_contents (long /*int*/ atkObject, long /*int*/ string) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -717,7 +745,25 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static long /*int*/ atkEditableText_insert_text (long /*int*/ atkObject, long /*int*/ string, long /*int*/ string_length, long /*int*/ position) {
+	/**
+	 * Inserts text at a given position.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param string the text to insert
+	 * @param string_length the length of the text to insert, in bytes
+	 * @param position the caller initializes this to the position at which to
+	 * insert the text. After the call, it points at the position after the
+	 * newly inserted text.
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
+	static long /*int*/ atkEditableText_insert_text (long /*int*/ atkObject, long /*int*/ string,
+			long /*int*/ string_length, long /*int*/ position) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -744,6 +790,21 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Copies text from start_pos up to (but not including) end_pos
+	 * into the clipboard.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_pos the start position of the text to be copied
+	 * @param end_pos the end position of the text to be copied
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkEditableText_copy_text(long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -769,6 +830,21 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Cuts text from start_pos up to (but not including) end_pos
+	 * into the clipboard.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_pos the start position of the text to be cut
+	 * @param end_pos the end position of the text to be cut
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkEditableText_cut_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -794,6 +870,20 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Delete text start_pos up to (but not including) end_pos.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_pos the start position of the text to be deleted
+	 * @param end_pos the end position of the text to be deleted
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkEditableText_delete_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -820,6 +910,19 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Paste text from clipboard to specified position.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param position the position to paste
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkEditableText_paste_text (long /*int*/ atkObject, long /*int*/ position) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2272,9 +2375,19 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	// TODO_a11y: refactor this
-	static AtkTextIface getTextIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TEXT())) {
+	/**
+	 * Fills a Java AtkTextIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkTextIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkTextIface getParentTextIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_TEXT())) {
 			AtkTextIface iface = new AtkTextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (atkObject)));
 			return iface;
@@ -2282,8 +2395,43 @@ class AccessibleObject {
 		return null;
 	}
 
-	static long /*int*/ atkText_get_character_extents (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coords) {
-		if (DEBUG) print ("-->atkText_get_character_extents");
+	static String getString (long /*int*/ strPtr) {
+		int length = C.strlen (strPtr);
+		byte [] buffer = new byte [length];
+		C.memmove (buffer, strPtr, length);
+		return new String (Converter.mbcsToWcs (buffer));
+	}
+
+	static long /*int*/ getStringPtr (String str) {
+		byte [] buffer = Converter.wcsToMbcs(str != null ? str : "", true);
+		long /*int*/ ptr = OS.g_malloc(buffer.length);
+		C.memmove(ptr, buffer, buffer.length);
+		return ptr;
+	}
+
+	/**
+	 * Get the bounding box containing the glyph representing the character
+	 * at a particular text offset.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset the offset of the text character for which bounding info
+	 * is required
+	 * @param x the pointer for the x coordinate of the bounding box
+	 * @param y the pointer for the y coordinate of the bounding box
+	 * @param width the pointer for the width of the bounding box
+	 * @param height the pointer for the height of the bounding box
+	 * @param coords long int representing the AtkCoordType for the coordinates
+	 *
+	 * @return a long int representation of 0 indicating that the method completed
+	 * successfully
+	 */
+	static long /*int*/ atkText_get_character_extents (long /*int*/ atkObject, long /*int*/ offset,
+			long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coords) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2310,29 +2458,34 @@ class AccessibleObject {
 				return 0;
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_character_extents != 0) {
 			OS.call (iface.get_character_extents, atkObject, offset, x, y, width, height, coords);
 		}
 		return 0;
 	}
 
-	static String getString (long /*int*/ strPtr) {
-		int length = C.strlen (strPtr);
-		byte [] buffer = new byte [length];
-		C.memmove (buffer, strPtr, length);
-		return new String (Converter.mbcsToWcs (buffer));
-	}
-
-	static long /*int*/ getStringPtr (String str) {
-		byte [] buffer = Converter.wcsToMbcs(str != null ? str : "", true);
-		long /*int*/ ptr = OS.g_malloc(buffer.length);
-		C.memmove(ptr, buffer, buffer.length);
-		return ptr;
-	}
-
-	static long /*int*/ atkText_get_range_extents (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset, long /*int*/ coord_type, long /*int*/ rect) {
-		if (DEBUG) print ("-->atkText_get_range_extents");
+	/**
+	 * Get the bounding box for text within the specified range.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_offset the offset of the first text character for which
+	 * bounding info is required
+	 * @param end_offset the offset of the last text character after the last
+	 * character for which boundary info is required
+	 * @param coord_type long int representing the AtkCoordType for the coordinates
+	 * @param rect a pointer to the AtkTextRectangle which is filled by this function
+	 *
+	 * @return a long int representation of 0 indicating that the method completed
+	 * successfully
+	 */
+	static long /*int*/ atkText_get_range_extents (long /*int*/ atkObject, long /*int*/ start_offset,
+			long /*int*/ end_offset, long /*int*/ coord_type, long /*int*/ rect) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2361,15 +2514,31 @@ class AccessibleObject {
 				return 0;
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_range_extents != 0) {
 			ATK.call (iface.get_range_extents, atkObject, start_offset, end_offset, coord_type, rect);
 		}
 		return 0;
 	}
 
-	static long /*int*/ atkText_get_run_attributes (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_run_attributes");
+	/**
+	 * Creates an AtkAttributeSet which consists of the attributes explicitly
+	 * set at the position offset in the text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset the offset at which to get the attributes
+	 * @param start_offset the address to put the start offset of the range
+	 * @param end_offset the address to put the end offset of the range
+	 *
+	 * @return a pointer to the AtkAttributeSet created
+	 */
+	static long /*int*/ atkText_get_run_attributes (long /*int*/ atkObject, long /*int*/ offset,
+			long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2495,15 +2664,31 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_run_attributes != 0) {
 			parentResult = OS.call (iface.get_run_attributes, atkObject, offset, start_offset, end_offset);
 		}
 		return parentResult;
 	}
 
-	static long /*int*/ atkText_get_offset_at_point (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coords) {
-		if (DEBUG) print ("-->atkText_get_offset_at_point");
+	/**
+	 * Gets the offset of the character located at coordinates x and y.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param x screen x-position of the character
+	 * @param y screen y-position of the character
+	 * @param coords long int representing the AtkCoordType for the coordinates
+	 *
+	 * @return the offset to the character which is located at the specified
+	 * x and y coordinates
+	 */
+	static long /*int*/ atkText_get_offset_at_point (long /*int*/ atkObject, long /*int*/ x,
+			long /*int*/ y, long /*int*/ coords) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2527,15 +2712,28 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_offset_at_point != 0) {
 			parentResult = OS.call (iface.get_offset_at_point, atkObject, x, y, coords);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Adds a selection bounded by the specified offsets.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_offset the start position of the selected region
+	 * @param end_offset the offset of the first character after the selected region
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkText_add_selection (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_add_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2553,15 +2751,27 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.add_selection != 0) {
 			parentResult = ATK.call (iface.add_selection, atkObject, start_offset, end_offset);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Removes the specified selection.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param selection_num the selection number.
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkText_remove_selection (long /*int*/ atkObject, long /*int*/ selection_num) {
-		if (DEBUG) print ("-->atkText_remove_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2578,15 +2788,27 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.remove_selection != 0) {
 			parentResult = ATK.call (iface.remove_selection, atkObject, selection_num);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Sets the caret (cursor) position to the specified offset.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset the position
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkText_set_caret_offset (long /*int*/ atkObject, long /*int*/ offset) {
-		if (DEBUG) print ("-->atkText_set_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2602,15 +2824,30 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.set_caret_offset != 0) {
 			return ATK.call (iface.set_caret_offset, atkObject, offset);
 		}
 		return 0;
 	}
 
-	static long /*int*/ atkText_set_selection (long /*int*/ atkObject, long /*int*/ selection_num, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_set_selection");
+	/**
+	 * Changes the start and end offset of the specified selection.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param selection_num the selection number
+	 * @param start_offset the new start position of the selection
+	 * @param end_offset the new end position of the selection
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
+	static long /*int*/ atkText_set_selection (long /*int*/ atkObject, long /*int*/ selection_num,
+			long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2629,18 +2866,29 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.set_selection != 0) {
 			parentResult = OS.call (iface.set_selection, atkObject, selection_num, start_offset, end_offset);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Gets the offset position of the caret (cursor).
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return a long int representation of the offset position of the caret (cursor)
+	 */
 	static long /*int*/ atkText_get_caret_offset (long /*int*/ atkObject) {
-		if (DEBUG) print ("-->atkText_get_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_caret_offset != 0) {
 			parentResult = ATK.call (iface.get_caret_offset, atkObject);
 		}
@@ -2672,8 +2920,26 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static long /*int*/ atkText_get_bounded_ranges (long /*int*/ atkObject, long /*int*/ rect, long /*int*/ coord_type, long /*int*/ x_clip_type, long /*int*/ y_clip_type) {
-		if (DEBUG) print ("-->atkText_get_bounded_ranges");
+	/**
+	 * Get the ranges of text in the specified bounding box.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param rect the AtkTextRectangle giving the dimensions of the bounding box
+	 * @param coord_type long int representing the AtkCoordType for the coordinates
+	 * @param x_clip_type a long int representing the AtkTextClipType of the
+	 * horizontal clip
+	 * @param y_clip_type a long int representing the AtkTextClipType of the
+	 * vertical clip
+	 *
+	 * @return a pointer to the array of AtkTextRanges
+	 */
+	static long /*int*/ atkText_get_bounded_ranges (long /*int*/ atkObject, long /*int*/ rect,
+			long /*int*/ coord_type, long /*int*/ x_clip_type, long /*int*/ y_clip_type) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2726,15 +2992,27 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_bounded_ranges != 0) {
 			parentResult = ATK.call (iface.get_bounded_ranges, atkObject);
 		}
 		return parentResult;
 	}
 
+	/**
+	 * Gets the specified text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset position
+	 *
+	 * @return a long int representing the character at offset
+	 */
 	static long /*int*/ atkText_get_character_at_offset (long /*int*/ atkObject, long /*int*/ offset) {
-		if (DEBUG) print ("-->atkText_get_character_at_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2755,15 +3033,26 @@ class AccessibleObject {
 			String text = object.getText ();
 			if (text != null && text.length() > offset) return text.charAt ((int)/*64*/offset);
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_character_at_offset != 0) {
 			return ATK.call (iface.get_character_at_offset, atkObject, offset);
 		}
 		return 0;
 	}
 
+	/**
+	 * Gets the character count.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return the number of characters
+	 */
 	static long /*int*/ atkText_get_character_count (long /*int*/ atkObject) {
-		if (DEBUG) print ("-->atkText_get_character_count");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2780,15 +3069,26 @@ class AccessibleObject {
 			String text = object.getText ();
 			if (text != null) return text.length ();
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_character_count != 0) {
 			return ATK.call (iface.get_character_count, atkObject);
 		}
 		return 0;
 	}
 
+	/**
+	 * Gets the number of selected regions.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return the number of selected regions, or -1 if a failure occurred
+	 */
 	static long /*int*/ atkText_get_n_selections (long /*int*/ atkObject) {
-		if (DEBUG) print ("-->atkText_get_n_selections");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2815,20 +3115,35 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_n_selections != 0) {
 			parentResult = ATK.call (iface.get_n_selections, atkObject);
 		}
 		return parentResult;
 	}
 
-	static long /*int*/ atkText_get_selection (long /*int*/ atkObject, long /*int*/ selection_num, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_selection");
+	/**
+	 * Gets the text from the specified selection.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param selection_num the selection number
+	 * @param start_offset passes back the start position of the selected region
+	 * @param end_offset passes back the end position of the selected region
+	 *
+	 * @return a pointer to the newly allocated string containing the selected text
+	 */
+	static long /*int*/ atkText_get_selection (long /*int*/ atkObject, long /*int*/ selection_num,
+			long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		long /*int*/ parentResult = 0;
 		C.memmove (start_offset, new int[] {0}, 4);
 		C.memmove (end_offset, new int[] {0}, 4);
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_selection != 0) {
 			parentResult = OS.call (iface.get_selection, atkObject, selection_num, start_offset, end_offset);
 		}
@@ -2891,8 +3206,22 @@ class AccessibleObject {
 		return parentResult;
 	}
 
+	/**
+	 * Gets the specified text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param start_offset start position
+	 * @param end_offset end position, or -1 for the end of the string
+	 *
+	 * @return a pointer to the newly allocated string containing the text
+	 * from start_offset up to (but not including) end_offset
+	 */
 	static long /*int*/ atkText_get_text (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_text: " + atkObject + " " + start_offset + "," + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2921,15 +3250,34 @@ class AccessibleObject {
 				return getStringPtr (text);
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_text != 0) {
 			return ATK.call (iface.get_text, atkObject, start_offset, end_offset);
 		}
 		return 0;
 	}
 
-	static long /*int*/ atkText_get_text_after_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_text_after_offset");
+	// TODO_a11y: implement atk_text_get_string_at_offset() once Orca is updated
+
+	/**
+	 * Gets the specified text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset position
+	 * @param boundary_type the AtkTextBoundary
+	 * @param start_offset the start offset of the returned string
+	 * @param end_offset the end_offset of the first character after the returned string
+	 *
+	 * @return a pointer to the newly allocated string containing
+	 * the text after offset bounded by the specified boundary_type
+	 */
+	static long /*int*/ atkText_get_text_after_offset (long /*int*/ atkObject, long /*int*/ offset_value,
+			long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -3169,15 +3517,32 @@ class AccessibleObject {
 				return getStringPtr (text);
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_text_after_offset != 0) {
 			return ATK.call (iface.get_text_after_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
 		}
 		return 0;
 	}
 
-	static long /*int*/ atkText_get_text_at_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_text_at_offset: " + offset_value + " start: " + start_offset + " end: " + end_offset);
+	/**
+	 * Gets the specified text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset position
+	 * @param boundary_type the AtkTextBoundary
+	 * @param start_offset the start offset of the returned string
+	 * @param end_offset the end_offset of the first character after the returned string
+	 *
+	 * @return a pointer to the newly allocated string containing the
+	 * text at offset bounded by the specified boundary_type
+	 */
+	static long /*int*/ atkText_get_text_at_offset (long /*int*/ atkObject, long /*int*/ offset_value,
+			long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -3360,15 +3725,32 @@ class AccessibleObject {
 				return getStringPtr (text);
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_text_at_offset != 0) {
 			return ATK.call (iface.get_text_at_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
 		}
 		return 0;
 	}
 
-	static long /*int*/ atkText_get_text_before_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_text_before_offset");
+	/**
+	 * Gets the specified text.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param offset position
+	 * @param boundary_type the AtkTextBoundary
+	 * @param start_offset the start offset of the returned string
+	 * @param end_offset the end_offset of the first character after the returned string
+	 *
+	 * @return a pointer to the newly allocated string containing
+	 * the text before offset bounded by the specified boundary_type
+	 */
+	static long /*int*/ atkText_get_text_before_offset (long /*int*/ atkObject, long /*int*/ offset_value,
+			long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -3556,7 +3938,7 @@ class AccessibleObject {
 				return getStringPtr (text);
 			}
 		}
-		AtkTextIface iface = getTextIface (atkObject);
+		AtkTextIface iface = getParentTextIface (atkObject);
 		if (iface != null && iface.get_text_before_offset != 0) {
 			return ATK.call (iface.get_text_before_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
 		}
@@ -3735,7 +4117,7 @@ class AccessibleObject {
 		int length = size(listeners);
 		if (length > 0) {
 			String parentText = "";	//$NON-NLS-1$
-			AtkTextIface iface = getTextIface (atkHandle);
+			AtkTextIface iface = getParentTextIface (atkHandle);
 			if (iface != null && iface.get_character_count != 0) {
 				long /*int*/ characterCount = ATK.call (iface.get_character_count, atkHandle);
 				if (characterCount > 0 && iface.get_text != 0) {

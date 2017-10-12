@@ -118,6 +118,14 @@ public class ATK extends OS {
 	public static final int ATK_TEXT_BOUNDARY_SENTENCE_END = 4;
 	public static final int ATK_TEXT_BOUNDARY_LINE_START = 5;
 	public static final int ATK_TEXT_BOUNDARY_LINE_END = 6;
+	/* TODO_a11y: use the ATK_TEXT_GRANULARITY_* constants once
+	 * Orca is updated to use the new API.
+	 */
+	public static final int ATK_TEXT_GRANULARITY_CHAR = 0;
+	public static final int ATK_TEXT_GRANULARITY_WORD = 1;
+	public static final int ATK_TEXT_GRANULARITY_SENTENCE = 2;
+	public static final int ATK_TEXT_GRANULARITY_LINE = 3;
+	public static final int ATK_TEXT_GRANULARITY_PARAGRAPH = 4;
 	public static final int ATK_TEXT_CLIP_NONE = 0;
 	public static final int ATK_TEXT_CLIP_MIN = 1;
 	public static final int ATK_TEXT_CLIP_MAX = 2;
