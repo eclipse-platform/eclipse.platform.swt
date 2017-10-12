@@ -68,6 +68,7 @@ class WebKit extends WebBrowser {
 	static long /*int*/ PostString, WebViewType;
 	static boolean IsWebKit14orNewer;
 	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
+	static Map<LONG, Integer> webKitDownloadStatus = new HashMap<> (); // Webkit2
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLASSNAME_EXTERNAL = "External"; //$NON-NLS-1$
@@ -121,6 +122,9 @@ class WebKit extends WebBrowser {
 	static final int MOUSE_TARGET_CHANGED = 18;
 	static final int CONTEXT_MENU = 19;
 	static final int AUTHENTICATE = 20;
+	static final int DECIDE_DESTINATION = 21; // webkit2 only.
+	static final int FAILED = 22; // webkit2 only.
+	static final int FINISHED = 23; // webkit2 only.
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -554,7 +558,13 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 }
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ user_data) {
-	Browser browser = FindBrowser (handle);
+	long /*int*/ webView  = handle;
+
+	if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_download_get_type ())) {
+		webView = WebKitGTK.webkit_download_get_web_view(handle);
+	}
+
+	Browser browser = FindBrowser (webView);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
 	return webkit.webViewProc (handle, user_data);
@@ -562,6 +572,7 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ user_data) {
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	long /*int*/ webView = 0;
+	boolean indirectWebView = false; // Behave as if handle were a WebKitWebView (Webkit2 only)
 	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_view_get_type ())) {
         webView = handle;
 	} else if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
@@ -570,6 +581,19 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 		} else {
 			webView = WebKitGTK.webkit_web_frame_get_web_view (handle); // webkit1 only.
 		}
+	} else if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_context_get_type ())) {
+		/*
+		 *  There is no API to determine WebKitWebView from a WebKitWebContext in WEBKIT2.
+		 *  Therefore, we pass the WebKitWebView in user_data field only when the handle
+		 *  is a WebKitWebContext. We then restore user_data to DOWNLOAD_REQUESTED to
+		 *  ensure the corresponding function gets called.
+		 */
+		webView = user_data;
+		user_data = DOWNLOAD_REQUESTED;
+		indirectWebView = true;
+	} else if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_download_get_type ())) {
+		webView = WebKitGTK.webkit_download_get_web_view(handle);
+		indirectWebView = true;
 	} else {
 		return 0;
 	}
@@ -579,7 +603,7 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 	Browser browser = FindBrowser (webView);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
-	if (webView == handle) {
+	if (webView == handle || indirectWebView) {
 		return webkit.webViewProc (handle, arg0, user_data);
 	} else {
 		return webkit.webFrameProc (handle, arg0, user_data);
@@ -713,6 +737,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case CLOSE_WEB_VIEW: return webkit_close_web_view (handle);
 		case WEB_VIEW_READY: return webkit_web_view_ready (handle);
+		case FINISHED: return webkit_download_finished (handle);	// Webkit2 only.
 		default: return 0;
 	}
 }
@@ -721,6 +746,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 	switch ((int)/*64*/user_data) {
 		case CREATE_WEB_VIEW: return webkit_create_web_view (handle, arg0);
 		case DOWNLOAD_REQUESTED: return webkit_download_requested (handle, arg0);
+		case DECIDE_DESTINATION: return webkit_download_decide_destination(handle, arg0);	//Webkit2 only.
 		case NOTIFY_LOAD_STATUS: return webkit_notify_load_status (handle, arg0); // Webkit1
 		case LOAD_CHANGED: return webkit_load_changed (handle, (int) arg0, user_data);
 		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);
@@ -728,6 +754,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 		case POPULATE_POPUP: return webkit_populate_popup (handle, arg0);
 		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0); // Webkit1 only.
 		case AUTHENTICATE: return webkit_authenticate (handle, arg0);		// Webkit2 only.
+		case FAILED: return webkit_download_failed (handle, arg0);			// Webkit2 only.
 		default: return 0;
 	}
 }
@@ -858,7 +885,7 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, WebKitGTK.load_changed, Proc3.getAddress (), LOAD_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
 		OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
-		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_REQUESTED);
+		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), this.webView);
 		OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
 		OS.g_signal_connect (webView, WebKitGTK.notify_estimated_load_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
@@ -2057,6 +2084,11 @@ void onResize (Event e) {
 }
 
 void openDownloadWindow (final long /*int*/ webkitDownload) {
+	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
+	openDownloadWindow(webkitDownload, null);
+}
+
+void openDownloadWindow (final long /*int*/ webkitDownload, final String suggested_filename) {
 	final Shell shell = new Shell ();
 	String msg = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
 	shell.setText (msg);
@@ -2066,14 +2098,26 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	gridLayout.verticalSpacing = 20;
 	shell.setLayout (gridLayout);
 
-	long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (webkitDownload);
-	int length = C.strlen (name);
+	String nameString;
+	if (WEBKIT1) {
+		long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (webkitDownload);
+		int length = C.strlen (name);
+		byte[] bytes = new byte[length];
+		C.memmove (bytes, name, length);
+		nameString = new String (Converter.mbcsToWcs (bytes));
+	} else {
+		nameString = suggested_filename;
+	}
+
+	long /*int*/ url;
+	if (WEBKIT1) {
+		url = WebKitGTK.webkit_download_get_uri (webkitDownload);
+	} else {
+		long /*int*/ request = WebKitGTK.webkit_download_get_request(webkitDownload);
+		url = WebKitGTK.webkit_uri_request_get_uri(request);
+	}
+	int length = C.strlen (url);
 	byte[] bytes = new byte[length];
-	C.memmove (bytes, name, length);
-	String nameString = new String (Converter.mbcsToWcs (bytes));
-	long /*int*/ url = WebKitGTK.webkit_download_get_uri (webkitDownload);
-	length = C.strlen (url);
-	bytes = new byte[length];
 	C.memmove (bytes, url, length);
 	String urlString = new String (Converter.mbcsToWcs (bytes));
 	msg = Compatibility.getMessage ("SWT_Download_Location", new Object[] {nameString, urlString}); //$NON-NLS-1$
@@ -2098,7 +2142,12 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	data = new GridData ();
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
-	final Listener cancelListener = event -> WebKitGTK.webkit_download_cancel (webkitDownload);
+	final Listener cancelListener = event -> {
+		if (WEBKIT2) {
+			webKitDownloadStatus.put(new LONG(webkitDownload), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED);
+		}
+		WebKitGTK.webkit_download_cancel (webkitDownload);
+	};
 	cancel.addListener (SWT.Selection, cancelListener);
 
 	OS.g_object_ref (webkitDownload);
@@ -2107,11 +2156,19 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 	display.timerExec (INTERVAL, new Runnable () {
 		@Override
 		public void run () {
-			int status = WebKitGTK.webkit_download_get_status (webkitDownload);
+			int status = 0; // 0 allows download window to continue
+			if (WEBKIT1) {
+				status = WebKitGTK.webkit_download_get_status (webkitDownload);
+			} else {
+				status = webKitDownloadStatus.containsKey(new LONG(webkitDownload)) ? webKitDownloadStatus.get(new LONG(webkitDownload)) : 0;
+			}
 			if (shell.isDisposed () || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_FINISHED || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED) {
 				shell.dispose ();
 				display.timerExec (-1, this);
 				OS.g_object_unref (webkitDownload);
+				if (WEBKIT2) {
+					webKitDownloadStatus.remove(new LONG(webkitDownload));
+				}
 				return;
 			}
 			if (status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_ERROR) {
@@ -2120,11 +2177,22 @@ void openDownloadWindow (final long /*int*/ webkitDownload) {
 				OS.g_object_unref (webkitDownload);
 				cancel.removeListener (SWT.Selection, cancelListener);
 				cancel.addListener (SWT.Selection, event -> shell.dispose ());
+				if (WEBKIT2) {
+					webKitDownloadStatus.remove(new LONG(webkitDownload));
+				}
 				return;
 			}
 
-			long current = WebKitGTK.webkit_download_get_current_size (webkitDownload) / 1024L;
-			long total = WebKitGTK.webkit_download_get_total_size (webkitDownload) / 1024L;
+			long current = 0;
+			long total = 0;
+			if (WEBKIT1) {
+				current = WebKitGTK.webkit_download_get_current_size (webkitDownload) / 1024L;
+				total = WebKitGTK.webkit_download_get_total_size (webkitDownload) / 1024L;
+			} else {
+				current = WebKitGTK.webkit_download_get_received_data_length(webkitDownload) / 1024L;
+				long /*int*/ response = WebKitGTK.webkit_download_get_response(webkitDownload);
+				total = WebKitGTK.webkit_uri_response_get_content_length(response) / 1024L;
+			}
 			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {new Long(current), new Long(total)}); //$NON-NLS-1$
 			statusLabel.setText (message);
 			display.timerExec (INTERVAL, this);
@@ -2345,40 +2413,86 @@ long /*int*/ webkit_create_web_view (long /*int*/ web_view, long /*int*/ frame) 
 }
 
 long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ download) {
-	long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (download);
-	int length = C.strlen (name);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, name, length);
-	final String nameString = new String (Converter.mbcsToWcs (bytes));
+	if (WEBKIT1) {
+		long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (download);
+		int length = C.strlen (name);
+		byte[] bytes = new byte[length];
+		C.memmove (bytes, name, length);
+		final String nameString = new String (Converter.mbcsToWcs (bytes));
 
-	final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
-	OS.g_object_ref (request);
+		final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
+		OS.g_object_ref (request);
 
-	/*
-	* As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
-	* a hang.  The workaround is to open it asynchronously with a new download.
-	*/
-	browser.getDisplay ().asyncExec (() -> {
-		if (!browser.isDisposed ()) {
-			FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
-			dialog.setFileName (nameString);
-			String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
-			dialog.setText (title);
-			String path = dialog.open ();
-			if (path != null) {
-				path = URI_FILEROOT + path;
-				long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
-				byte[] uriBytes = Converter.wcsToMbcs (path, true);
-				WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
-				openDownloadWindow (newDownload);
-				WebKitGTK.webkit_download_start (newDownload);
-				OS.g_object_unref (newDownload);
+		/*
+		 * As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
+		 * a hang.  The workaround is to open it asynchronously with a new download.
+		 */
+		browser.getDisplay ().asyncExec (() -> {
+			if (!browser.isDisposed ()) {
+				FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
+				dialog.setFileName (nameString);
+				String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
+				dialog.setText (title);
+				String path = dialog.open ();
+				if (path != null) {
+					path = URI_FILEROOT + path;
+					long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
+					byte[] uriBytes = Converter.wcsToMbcs (path, true);
+					WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
+					openDownloadWindow (newDownload);
+					WebKitGTK.webkit_download_start (newDownload);
+					OS.g_object_unref (newDownload);
+				}
 			}
-		}
-		OS.g_object_unref (request);
-	});
+			OS.g_object_unref (request);
+		});
+	} else {
+		OS._g_signal_connect(download, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
+		OS._g_signal_connect(download, WebKitGTK.failed, Proc3.getAddress(), FAILED);
+		OS._g_signal_connect(download, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
+	}
 
 	return 1;
+}
+
+long /*int*/ webkit_download_decide_destination(long /*int*/ download, long /*int*/ suggested_filename) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	final String fileName = getString(suggested_filename);
+
+	if (!browser.isDisposed ()) {
+		FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
+		dialog.setFileName (fileName);
+		String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
+		dialog.setText (title);
+		String path = dialog.open ();
+		if (path != null) {
+			path = URI_FILEROOT + path;
+			byte[] uriBytes = Converter.wcsToMbcs (path, true);
+			WebKitGTK.webkit_download_set_allow_overwrite (download, true);
+			WebKitGTK.webkit_download_set_destination (download, uriBytes);
+			openDownloadWindow (download, fileName);
+		}
+	}
+
+	return 0;
+}
+
+long /*int*/ webkit_download_finished(long /*int*/ download) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	// A failed signal may have been recorded prior. The finish signal is now being called.
+	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
+		webKitDownloadStatus.put(new LONG(download), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_FINISHED);
+	}
+	return 0;
+}
+
+long /*int*/ webkit_download_failed(long /*int*/ download, long /*int*/ error) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	// A cancel may have been issued resulting in this signal call. Preserve the original cause.
+	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
+		webKitDownloadStatus.put(new LONG(download), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_ERROR);
+	}
+	return 0;
 }
 
 /**

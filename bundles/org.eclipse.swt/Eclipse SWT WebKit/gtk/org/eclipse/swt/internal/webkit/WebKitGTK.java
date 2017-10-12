@@ -90,8 +90,11 @@ public class WebKitGTK extends C {
 	public static final byte[] create = ascii ("create"); // $NON-NLS-1$
 	public static final byte[] create_web_view = ascii ("create-web-view"); // $NON-NLS-1$
 	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$
+	public static final byte[] decide_destination = ascii ("decide-destination"); // $NON-NLS-1$	// Webkit2
 	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$
-	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$
+	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$		// Webkit2
+	public static final byte[] failed = ascii ("failed"); // $NON-NLS-1$							// Webkit2
+	public static final byte[] finished = ascii ("finished"); // $NON-NLS-1$						// Webkit2
 
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$   		// Webkit1 -> StatusTextListener.changed()
 	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$	// Webkit2 -> StatusTextListener.changed()
@@ -756,6 +759,18 @@ public static final void webkit_credential_free (long /*int*/ credential) {
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_context_get_type ();
+public static final long /*int*/ webkit_web_context_get_type () {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_web_context_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_credential_new (byte[] username, byte[] password, int persistence);
 public static final long /*int*/ webkit_credential_new (byte[] username, byte[] password, int persistence) {
 	assert WEBKIT2 : Webkit2AssertMsg;
@@ -905,7 +920,6 @@ public static final void webkit_download_cancel (long /*int*/ download) {
 public static final native long _webkit_download_get_current_size (long /*int*/ download);
 public static final long webkit_download_get_current_size (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_current_size (download);
@@ -915,10 +929,21 @@ public static final long webkit_download_get_current_size (long /*int*/ download
 }
 
 /** @method flags=dynamic */
+public static final native long _webkit_download_get_received_data_length (long /*int*/ download);
+public static final long webkit_download_get_received_data_length (long /*int*/ download) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_download_get_received_data_length (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_download_get_network_request (long /*int*/ download);
 public static final long /*int*/ webkit_download_get_network_request (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_network_request (download);
@@ -931,7 +956,6 @@ public static final long /*int*/ webkit_download_get_network_request (long /*int
 public static final native int _webkit_download_get_status (long /*int*/ download);
 public static final int webkit_download_get_status (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_status (download);
@@ -944,7 +968,6 @@ public static final int webkit_download_get_status (long /*int*/ download) {
 public static final native long /*int*/ _webkit_download_get_suggested_filename (long /*int*/ download);
 public static final long /*int*/ webkit_download_get_suggested_filename (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_suggested_filename (download);
@@ -954,10 +977,33 @@ public static final long /*int*/ webkit_download_get_suggested_filename (long /*
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_download_get_request (long /*int*/ download);
+public static final long /*int*/ webkit_download_get_request (long /*int*/ download) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_download_get_request (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_download_get_response (long /*int*/ download);
+public static final long /*int*/ webkit_download_get_response (long /*int*/ download) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_download_get_response (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long _webkit_download_get_total_size (long /*int*/ download);
 public static final long webkit_download_get_total_size (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_total_size (download);
@@ -967,10 +1013,33 @@ public static final long webkit_download_get_total_size (long /*int*/ download) 
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_download_get_type ();
+public static final long /*int*/ webkit_download_get_type () {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_download_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_uri_response_get_content_length (long /*int*/ response);
+public static final long webkit_uri_response_get_content_length (long /*int*/ response) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_uri_response_get_content_length (response);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_download_get_uri (long /*int*/ download);
 public static final long /*int*/ webkit_download_get_uri (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_get_uri (download);
@@ -980,10 +1049,21 @@ public static final long /*int*/ webkit_download_get_uri (long /*int*/ download)
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_download_get_web_view (long /*int*/ download);
+public static final long /*int*/ webkit_download_get_web_view (long /*int*/ download) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_download_get_web_view (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_download_new (long /*int*/ request);
 public static final long /*int*/ webkit_download_new (long /*int*/ request) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		return _webkit_download_new (request);
@@ -993,10 +1073,21 @@ public static final long /*int*/ webkit_download_new (long /*int*/ request) {
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_download_set_allow_overwrite (long /*int*/ download, boolean allowed);
+public static final void webkit_download_set_allow_overwrite (long /*int*/ download, boolean allowed) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_download_set_allow_overwrite (download, allowed);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_download_set_destination_uri (long /*int*/ download, byte[] destination_uri);
 public static final void webkit_download_set_destination_uri (long /*int*/ download, byte[] destination_uri) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		_webkit_download_set_destination_uri (download, destination_uri);
@@ -1006,10 +1097,21 @@ public static final void webkit_download_set_destination_uri (long /*int*/ downl
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_download_set_destination (long /*int*/ download, byte[] destination_uri);
+public static final void webkit_download_set_destination (long /*int*/ download, byte[] destination_uri) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_download_set_destination (download, destination_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_download_start (long /*int*/ download);
 public static final void webkit_download_start (long /*int*/ download) {
 	assert WEBKIT1 : Webkit1AssertMsg;
-	//TODO - guard from being called on webkit2.
 	lock.lock();
 	try {
 		_webkit_download_start (download);
