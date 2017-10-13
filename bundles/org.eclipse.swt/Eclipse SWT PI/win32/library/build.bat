@@ -32,6 +32,7 @@ IF x.%1==x.x86 shift
 GOTO MAKE
 
 :X86_64
+set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-x86_64\sdk"
 set CFLAGS=-DJNI64
