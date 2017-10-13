@@ -29,6 +29,7 @@ public class MacGeneratorView extends ViewPart {
 	IResourceChangeListener listener;
 	private Job job;
 	private String mainClassName = "org.eclipse.swt.internal.cocoa.OS";
+	private String selectorEnumName = "org.eclipse.swt.internal.cocoa.Selector";
 	
 	class GenJob extends Job {
 		public GenJob() {
@@ -67,7 +68,15 @@ public class MacGeneratorView extends ViewPart {
 		MacGenerator.BUILD_C_SOURCE = false;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		root = workspaceRoot.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));		
+		IProject swtProject = workspaceRoot.getProject("org.eclipse.swt");
+		if (swtProject == null) {
+			throw new IllegalStateException("Project org.eclipse.swt not found in the workspace.");
+		}
+		Path rootPath = new Path("Eclipse SWT PI/cocoa");
+		root = swtProject.findMember(rootPath);
+		if (root == null) {
+			throw new IllegalStateException("Path "+rootPath+" not found in the workspace.");
+		}
 		listener = event -> {
 			if (job != null) return;
 			if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
@@ -103,6 +112,7 @@ public class MacGeneratorView extends ViewPart {
 		MacGenerator gen = new MacGenerator();
 		gen.setOutputDir(root.getLocation().toPortableString());
 		gen.setMainClass(mainClassName);
+		gen.setSelectorEnum(selectorEnumName);
 		ui = new MacGeneratorUI(gen);
 		ui.setActionsVisible(false);
 		ui.open(parent);

@@ -24,7 +24,7 @@ import org.xml.sax.*;
 public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
-	String outputDir, outputLibDir, extrasDir, mainClassName;
+	String outputDir, outputLibDir, extrasDir, mainClassName, selectorEnumName;
 	String delimiter = System.getProperty("line.separator");
 	boolean generate64Code;
 	PrintWriter out;
@@ -182,7 +182,7 @@ void merge(Document document, Document extraDocument) {
 
 public void generate(ProgressMonitor progress) {
 	if (progress != null) {
-		progress.setTotal(BUILD_C_SOURCE ? 4 : 3);
+		progress.setTotal(BUILD_C_SOURCE ? 5 : 4);
 		progress.setMessage("extra attributes...");
 	}
 	generateExtraAttributes();
@@ -194,6 +194,11 @@ public void generate(ProgressMonitor progress) {
 	if (progress != null) {
 		progress.step();
 		progress.setMessage("classes...");
+	}
+	generateSelectorEnum();
+	if (progress != null) {
+		progress.step();
+		progress.setMessage("selector enum...");
 	}
 	generateClasses();
 	if (GENERATE_STRUCTS) {
@@ -850,6 +855,57 @@ void generateMainClass() {
 	this.out = null;
 }
 
+void generateSelectorEnum() {
+	CharArrayWriter out = new CharArrayWriter();
+	this.out = new PrintWriter(out);
+
+	String header = "", footer = "";
+	String fileName = outputDir + selectorEnumName.replace('.', '/') + ".java";
+	try (FileInputStream is = new FileInputStream(fileName);
+		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is))){
+		StringBuffer str = new StringBuffer();
+		char[] buffer = new char[4096];
+		int read;
+		while ((read = input.read(buffer)) != -1) {
+			str.append(buffer, 0, read);
+		}
+		String section = "/** This section is auto generated */";
+		int start = str.indexOf(section) + section.length();
+		int end = str.indexOf(section, start);
+		header = str.substring(0, start);
+		footer = end == -1 ? "\n}" : str.substring(end);
+		input.close();
+	} catch (IOException e) {
+	}
+
+	out(header);
+	outln();
+	outln();
+
+	generateSelectorsEnumLiteral();
+	
+	out(";"); outln();
+	
+	String mainClassShortName = mainClassName.substring(mainClassName.lastIndexOf('.')+1);
+	out("	final String name;"); outln();
+	out("	final long value;"); outln();
+	outln();
+	out("	private Selector(String name) {"); outln();
+	out("		this.name= name;"); outln();
+	out("		this.value = "+mainClassShortName+".sel_registerName(name);"); outln();
+	out("		"+mainClassShortName+".registerSelector(value,this);"); outln();
+	out("	}"); outln();
+	outln();
+	out("	public static Selector valueOf(long value) {"); outln();
+	out("		return "+mainClassShortName+".getSelector(value);"); outln();
+	out("	}"); outln();
+	
+	out(footer);
+	this.out.flush();
+	output(fileName, out.toCharArray());
+	this.out = null;
+}
+
 public Document[] getDocuments() {
 	if (documents == null) {
 		String[] xmls = getXmls();
@@ -951,6 +1007,10 @@ public void setXmls(String[] xmls) {
 
 public void setMainClass(String mainClassName) {
 	this.mainClassName = mainClassName;
+}
+
+public void setSelectorEnum(String selectorEnumName) {
+	this.selectorEnumName = selectorEnumName;
 }
 
 Document getDocument(String xmlPath) {
@@ -1308,14 +1368,56 @@ void generateSelectorsConst() {
 		set.add("alloc");
 		set.add("dealloc");
 	}
+	out ("private static java.util.Map<Long,Selector> SELECTORS;"); outln();
+	out ("public static void registerSelector (Long value, Selector selector) {"); outln();
+	out ("	if (SELECTORS == null) {"); outln();
+	out ("		SELECTORS = new java.util.HashMap<>();"); outln();
+	out ("	}"); outln();
+	out ("	SELECTORS.put(value, selector);"); outln();
+	out ("}"); outln();
+	out ("public static Selector getSelector (long value) {"); outln();
+	out ("	return SELECTORS.get(value);"); outln();
+	out ("}"); outln();
 	for (String sel : set) {
 		String selConst = getSelConst(sel);
 		out("public static final int /*long*/ ");
 		out(selConst);
 		out(" = ");
-		out("sel_registerName(\"");
-		out(sel);
-		out("\");");
+		out("Selector."+selConst+".value;");
+		outln();
+	}
+}
+
+void generateSelectorsEnumLiteral() {
+	TreeSet<String> set = new TreeSet<>();
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getNodeName()) || "informal_protocol".equals(node.getNodeName())) {
+				if (getGen(node)) {
+					NodeList methods = node.getChildNodes();
+					for (int j = 0; j < methods.getLength(); j++) {
+						Node method = methods.item(j);
+						if (getGen(method)) {
+							NamedNodeMap mthAttributes = method.getAttributes();
+							String sel = mthAttributes.getNamedItem("selector").getNodeValue();
+							set.add(sel);
+						}
+					}
+				}
+			}
+		}
+	}
+	if (set.size() > 0) {
+		set.add("alloc");
+		set.add("dealloc");
+	}
+	for (String sel: set) {
+		String selConst = getSelConst(sel);
+		out("	, "+selConst+"(\""+sel+"\")");
 		outln();
 	}
 }
@@ -2032,6 +2134,7 @@ public static void main(String[] args) {
 		gen.setXmls(args);
 		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
 		gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
+		gen.setSelectorEnum("org.eclipse.swt.internal.cocoa.Selector");
 		gen.generate(null);
 	} catch (Throwable e) {
 		e.printStackTrace();

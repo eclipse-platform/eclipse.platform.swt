@@ -579,10 +579,11 @@ public class MacGeneratorUI {
 	public static void main(String[] args) {
 		String mainClass = args.length > 0 ? args[0] : "org.eclipse.swt.internal.cocoa.OS";
 		String outputDir = args.length > 1 ? args[1] : "../org.eclipse.swt/Eclipse SWT PI/cocoa/";
+		String selectorEnumClass = args.length > 2 ? args[2] : "org.eclipse.swt.internal.cocoa.Selector";
 		String[] xmls = {};
-		if (args.length > 2) {
-			xmls = new String[args.length - 2];
-			System.arraycopy(args, 2, xmls, 0, xmls.length);
+		if (args.length > 3) {
+			xmls = new String[args.length - 3];
+			System.arraycopy(args, 3, xmls, 0, xmls.length);
 		}
 		try {
 			Display display = new Display();
@@ -591,6 +592,7 @@ public class MacGeneratorUI {
 			gen.setXmls(xmls);
 			gen.setOutputDir(outputDir);
 			gen.setMainClass(mainClass);
+			gen.setSelectorEnum(selectorEnumClass);
 			MacGeneratorUI ui = new MacGeneratorUI(gen);
 			ui.open(shell);
 			shell.open();

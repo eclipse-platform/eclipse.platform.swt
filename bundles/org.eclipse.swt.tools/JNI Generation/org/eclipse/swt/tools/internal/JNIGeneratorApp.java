@@ -11,10 +11,10 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
-import java.lang.reflect.*;
 import java.util.*;
 import java.util.zip.*;
 
+import org.eclipse.jdt.core.dom.*;
 import org.eclipse.swt.*;
 
 public class JNIGeneratorApp {
@@ -356,7 +356,13 @@ JNIClass[] getASTClasses() {
 				if (mainPath.equals(path)){
 					classes.add(mainClass);
 				} else {
-					classes.add(new ASTClass(path, metaData));
+					try {
+						classes.add(new ASTClass(path, metaData));
+					} catch (ClassCastException cce) {
+						if (cce.getMessage().startsWith(EnumDeclaration.class.getName())) {
+							// this can be ignored since enums don't affect native files
+						}
+					}
 				}
 			}
 		} catch (Exception e) {

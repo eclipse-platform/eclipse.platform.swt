@@ -5449,46 +5449,69 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 	}
 
 	NSApplication application = display.application;
-	if (sel == OS.sel_sendEvent_) {
-		display.applicationSendEvent (id, sel, arg0);
-	} else if (sel == OS.sel_applicationWillFinishLaunching_) {
-		display.applicationWillFinishLaunching(id, sel, arg0);
-	} else if (sel == OS.sel_applicationShouldTerminate_) {
-		int returnVal = OS.NSTerminateCancel;
-		if (!display.disposing) {
-			Event event = new Event ();
-			display.sendEvent (SWT.Close, event);
-			if (event.doit) {
-				display.dispose();
-				returnVal = OS.NSTerminateNow;
-			}
+
+	switch (Selector.valueOf(sel)) {
+		case sel_sendEvent_: {
+			display.applicationSendEvent (id, sel, arg0);
+			return 0;
 		}
-		return returnVal;
-	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
-//		application.orderFrontStandardAboutPanel(application);
-	} else if (sel == OS.sel_hideOtherApplications_) {
-		application.hideOtherApplications(application);
-	} else if (sel == OS.sel_hide_) {
-		application.hide(application);
-	} else if (sel == OS.sel_unhideAllApplications_) {
-		application.unhideAllApplications(application);
-	} else if (sel == OS.sel_applicationDidBecomeActive_) {
-		display.applicationDidBecomeActive(id, sel, arg0);
-	} else if (sel == OS.sel_applicationDidResignActive_) {
-		display.applicationDidResignActive(id, sel, arg0);
-	} else if (sel == OS.sel_applicationDockMenu_) {
-		TaskBar taskbar = display.taskBar;
-		if (taskbar != null && taskbar.itemCount != 0) {
-			TaskItem item = taskbar.getItem(null);
-			if (item != null) {
-				Menu menu = item.getMenu();
-				if (menu != null && !menu.isDisposed()) {
-					return menu.nsMenu.id;
+		case sel_applicationWillFinishLaunching_: {
+			display.applicationWillFinishLaunching(id, sel, arg0);
+			return 0;
+		}
+		case sel_applicationShouldTerminate_: {
+			int returnVal = OS.NSTerminateCancel;
+			if (!display.disposing) {
+				Event event = new Event ();
+				display.sendEvent (SWT.Close, event);
+				if (event.doit) {
+					display.dispose();
+					returnVal = OS.NSTerminateNow;
 				}
 			}
+			return returnVal;
+		}
+		case sel_orderFrontStandardAboutPanel_: {
+	//		application.orderFrontStandardAboutPanel(application);
+			return 0;
+		}
+		case sel_hideOtherApplications_: {
+			application.hideOtherApplications(application);
+			return 0;
+		}
+		case sel_hide_: {
+			application.hide(application);
+			return 0;
+		}
+		case sel_unhideAllApplications_: {
+			application.unhideAllApplications(application);
+			return 0;
+		}
+		case sel_applicationDidBecomeActive_: {
+			display.applicationDidBecomeActive(id, sel, arg0);
+			return 0;
+		}
+		case sel_applicationDidResignActive_: {
+			display.applicationDidResignActive(id, sel, arg0);
+			return 0;
+		}
+		case sel_applicationDockMenu_: {
+			TaskBar taskbar = display.taskBar;
+			if (taskbar != null && taskbar.itemCount != 0) {
+				TaskItem item = taskbar.getItem(null);
+				if (item != null) {
+					Menu menu = item.getMenu();
+					if (menu != null && !menu.isDisposed()) {
+						return menu.nsMenu.id;
+					}
+				}
+			}
+			return 0;
+		}
+		default: {
+			return 0;
 		}
 	}
-	return 0;
 }
 
 static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
@@ -5506,28 +5529,35 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 		if (currAppDelegate.respondsToSelector(sel)) OS.objc_msgSend(currAppDelegate.id, sel, arg0, arg1);
 	}
 
-	if (sel == OS.sel_application_openFile_) {
-		String file = new NSString(arg1).getString();
-		Event event = new Event();
-		event.text = file;
-		display.sendEvent(SWT.OpenDocument, event);
-		return 1;
-	} else if (sel == OS.sel_application_openFiles_) {
-		NSArray files = new NSArray(arg1);
-		long /*int*/ count = files.count();
-		for (int i=0; i<count; i++) {
-			String file = new NSString(files.objectAtIndex(i)).getString();
+	switch (Selector.valueOf(sel)) {
+		case sel_application_openFile_: {
+			String file = new NSString(arg1).getString();
 			Event event = new Event();
 			event.text = file;
 			display.sendEvent(SWT.OpenDocument, event);
+			return 1;
 		}
-		new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
-	}  else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
-		final Event event = new Event();
-		display.sendEvent(SWT.Activate, event);
-		return event.doit ? 1 : 0;
+		case sel_application_openFiles_: {
+			NSArray files = new NSArray(arg1);
+			long /*int*/ count = files.count();
+			for (int i=0; i<count; i++) {
+				String file = new NSString(files.objectAtIndex(i)).getString();
+				Event event = new Event();
+				event.text = file;
+				display.sendEvent(SWT.OpenDocument, event);
+			}
+			new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
+			return 0;
+		}
+		case sel_applicationShouldHandleReopen_hasVisibleWindows_: {
+			final Event event = new Event();
+			display.sendEvent(SWT.Activate, event);
+			return event.doit ? 1 : 0;
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 static long /*int*/ applicationProc(long /*int*/ id, long /*int*/sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3) {
@@ -5549,31 +5579,44 @@ static long /*int*/ dialogProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	long /*int*/ [] jniRef = new long /*int*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
-	if (sel == OS.sel_changeColor_) {
-		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
-		if (dialog == null) return 0;
-		dialog.changeColor(id, sel, arg0);
-	} else if (sel == OS.sel_changeFont_) {
-		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
-		if (dialog == null) return 0;
-		dialog.changeFont(id, sel, arg0);
-	} else if (sel == OS.sel_validModesForFontPanel_) {
-		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
-		if (dialog == null) return 0;
-		return dialog.validModesForFontPanel(id, sel, arg0);
-	} else if (sel == OS.sel_sendSelection_) {
-		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
-		if (dialog == null) return 0;
-		dialog.sendSelection(id, sel, arg0);
-	} else if (sel == OS.sel_windowWillClose_) {
-		Object object = OS.JNIGetObject(jniRef[0]);
-		if (object instanceof FontDialog) {
-			((FontDialog)object).windowWillClose(id, sel, arg0);
-		} else if (object instanceof ColorDialog) {
-			((ColorDialog)object).windowWillClose(id, sel, arg0);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_changeColor_: {
+			ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
+			if (dialog == null) return 0;
+			dialog.changeColor(id, sel, arg0);
+			return 0;
+		}
+		case sel_changeFont_: {
+			FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
+			if (dialog == null) return 0;
+			dialog.changeFont(id, sel, arg0);
+			return 0;
+		}
+		case sel_validModesForFontPanel_: {
+			FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
+			if (dialog == null) return 0;
+			return dialog.validModesForFontPanel(id, sel, arg0);
+		}
+		case sel_sendSelection_: {
+			FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
+			if (dialog == null) return 0;
+			dialog.sendSelection(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowWillClose_: {
+			Object object = OS.JNIGetObject(jniRef[0]);
+			if (object instanceof FontDialog) {
+				((FontDialog)object).windowWillClose(id, sel, arg0);
+			} else if (object instanceof ColorDialog) {
+				((ColorDialog)object).windowWillClose(id, sel, arg0);
+			}
+			return 0;
+		}
+		default: {
+			return 0;
 		}
 	}
-	return 0;
 }
 
 static long /*int*/ dialogProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
@@ -5641,96 +5684,148 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel) {
 	}
 	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
-	if (sel == OS.sel_sendSelection) {
-		widget.sendSelection();
-	} else if (sel == OS.sel_dealloc) {
-		widget.dealloc(id, sel);
-	} else if (sel == OS.sel_sendDoubleSelection) {
-		widget.sendDoubleSelection();
-	} else if (sel == OS.sel_sendVerticalSelection) {
-		widget.sendVerticalSelection();
-	} else if (sel == OS.sel_sendHorizontalSelection) {
-		widget.sendHorizontalSelection();
-	} else if (sel == OS.sel_sendSearchSelection) {
-		widget.sendSearchSelection();
-	} else if (sel == OS.sel_sendCancelSelection) {
-		widget.sendCancelSelection();
-	} else if (sel == OS.sel_acceptsFirstResponder) {
-		return widget.acceptsFirstResponder(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_becomeFirstResponder) {
-		return widget.becomeFirstResponder(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_resignFirstResponder) {
-		return widget.resignFirstResponder(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_isOpaque) {
-		return widget.isOpaque(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_isFlipped) {
-		return widget.isFlipped(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_canBecomeKeyView) {
-		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
-	} else if (sel == OS.sel_needsPanelToBecomeKey) {
-		return widget.needsPanelToBecomeKey(id,sel) ? 1 : 0;
-	} else if (sel == OS.sel_canBecomeKeyView) {
-		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
-	} else if (sel == OS.sel_becomeKeyWindow) {
-		widget.becomeKeyWindow(id, sel);
-	} else if (sel == OS.sel_unmarkText) {
-		//TODO not called?
-	} else if (sel == OS.sel_validAttributesForMarkedText) {
-		return widget.validAttributesForMarkedText (id, sel);
-	} else if (sel == OS.sel_markedRange) {
-		NSRange range = widget.markedRange (id, sel);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRange.sizeof);
-		OS.memmove (result, range, NSRange.sizeof);
-		return result;
-	} else if (sel == OS.sel_selectedRange) {
-		NSRange range = widget.selectedRange (id, sel);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRange.sizeof);
-		OS.memmove (result, range, NSRange.sizeof);
-		return result;
-	} else if (sel == OS.sel_cellSize) {
-		NSSize size = widget.cellSize (id, sel);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSSize.sizeof);
-		OS.memmove (result, size, NSSize.sizeof);
-		return result;
-	} else if (sel == OS.sel_hasMarkedText) {
-		return widget.hasMarkedText (id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_canBecomeKeyWindow) {
-		return widget.canBecomeKeyWindow (id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_accessibilityActionNames) {
-		return widget.accessibilityActionNames(id, sel);
-	} else if (sel == OS.sel_accessibilityAttributeNames) {
-		return widget.accessibilityAttributeNames(id, sel);
-	} else if (sel == OS.sel_accessibilityParameterizedAttributeNames) {
-		return widget.accessibilityParameterizedAttributeNames(id, sel);
-	} else if (sel == OS.sel_getImageView) {
-		return widget.imageView();
-	} else if (sel == OS.sel_mouseDownCanMoveWindow) {
-		return (widget.mouseDownCanMoveWindow(id, sel) ? 1 : 0);
-	} else if (sel == OS.sel_accessibilityFocusedUIElement) {
-		return widget.accessibilityFocusedUIElement(id, sel);
-	} else if (sel == OS.sel_accessibilityIsIgnored) {
-		return (widget.accessibilityIsIgnored(id, sel) ? 1 : 0);
-	} else if (sel == OS.sel_nextState) {
-		return widget.nextState(id, sel);
-	} else if (sel == OS.sel_resetCursorRects) {
-		widget.resetCursorRects(id, sel);
-	} else if (sel == OS.sel_updateTrackingAreas) {
-		widget.updateTrackingAreas(id, sel);
-	} else if (sel == OS.sel_viewDidMoveToWindow) {
-		widget.viewDidMoveToWindow(id, sel);
-	} else if (sel == OS.sel_image) {
-		return widget.image(id, sel);
-	} else if (sel == OS.sel_shouldDrawInsertionPoint) {
-		return widget.shouldDrawInsertionPoint(id, sel) ? 1 : 0;
-	} else if (sel == OS.sel_accessibleHandle) {
-		return widget.accessibleHandle();
-	} else if (sel == OS.sel_clearDeferFlushing) {
-		widget.clearDeferFlushing(id, sel);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_sendSelection: {
+			widget.sendSelection();
+			return 0;
+		}
+		case sel_dealloc: {
+			widget.dealloc(id, sel);
+			return 0;
+		}
+		case sel_sendDoubleSelection: {
+			widget.sendDoubleSelection();
+			return 0;
+		}
+		case sel_sendVerticalSelection: {
+			widget.sendVerticalSelection();
+			return 0;
+		}
+		case sel_sendHorizontalSelection: {
+			widget.sendHorizontalSelection();
+			return 0;
+		}
+		case sel_sendSearchSelection: {
+			widget.sendSearchSelection();
+			return 0;
+		}
+		case sel_sendCancelSelection: {
+			widget.sendCancelSelection();
+			return 0;
+		}
+		case sel_acceptsFirstResponder: {
+			return widget.acceptsFirstResponder(id, sel) ? 1 : 0;
+		}
+		case sel_becomeFirstResponder: {
+			return widget.becomeFirstResponder(id, sel) ? 1 : 0;
+		}
+		case sel_resignFirstResponder: {
+			return widget.resignFirstResponder(id, sel) ? 1 : 0;
+		}
+		case sel_isOpaque: {
+			return widget.isOpaque(id, sel) ? 1 : 0;
+		}
+		case sel_isFlipped: {
+			return widget.isFlipped(id, sel) ? 1 : 0;
+		}
+		case sel_canBecomeKeyView: {
+			return widget.canBecomeKeyView(id,sel) ? 1 : 0;
+		}
+		case sel_needsPanelToBecomeKey: {
+			return widget.needsPanelToBecomeKey(id,sel) ? 1 : 0;
+		}
+		case sel_becomeKeyWindow: {
+			widget.becomeKeyWindow(id, sel);
+			return 0;
+		}
+		case sel_unmarkText: {
+			//TODO not called?
+			return 0;
+		}
+		case sel_validAttributesForMarkedText: {
+			return widget.validAttributesForMarkedText (id, sel);
+		}
+		case sel_markedRange: {
+			NSRange range = widget.markedRange (id, sel);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRange.sizeof);
+			OS.memmove (result, range, NSRange.sizeof);
+			return result;
+		}
+		case sel_selectedRange: {
+			NSRange range = widget.selectedRange (id, sel);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRange.sizeof);
+			OS.memmove (result, range, NSRange.sizeof);
+			return result;
+		}
+		case sel_cellSize: {
+			NSSize size = widget.cellSize (id, sel);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSSize.sizeof);
+			OS.memmove (result, size, NSSize.sizeof);
+			return result;
+		}
+		case sel_hasMarkedText: {
+			return widget.hasMarkedText (id, sel) ? 1 : 0;
+		}
+		case sel_canBecomeKeyWindow: {
+			return widget.canBecomeKeyWindow (id, sel) ? 1 : 0;
+		}
+		case sel_accessibilityActionNames: {
+			return widget.accessibilityActionNames(id, sel);
+		}
+		case sel_accessibilityAttributeNames: {
+			return widget.accessibilityAttributeNames(id, sel);
+		}
+		case sel_accessibilityParameterizedAttributeNames: {
+			return widget.accessibilityParameterizedAttributeNames(id, sel);
+		}
+		case sel_getImageView: {
+			return widget.imageView();
+		}
+		case sel_mouseDownCanMoveWindow: {
+			return (widget.mouseDownCanMoveWindow(id, sel) ? 1 : 0);
+		}
+		case sel_accessibilityFocusedUIElement: {
+			return widget.accessibilityFocusedUIElement(id, sel);
+		}
+		case sel_accessibilityIsIgnored: {
+			return (widget.accessibilityIsIgnored(id, sel) ? 1 : 0);
+		}
+		case sel_nextState: {
+			return widget.nextState(id, sel);
+		}
+		case sel_resetCursorRects: {
+			widget.resetCursorRects(id, sel);
+			return 0;
+		}
+		case sel_updateTrackingAreas: {
+			widget.updateTrackingAreas(id, sel);
+			return 0;
+		}
+		case sel_viewDidMoveToWindow: {
+			widget.viewDidMoveToWindow(id, sel);
+			return 0;
+		}
+		case sel_image: {
+			return widget.image(id, sel);
+		}
+		case sel_shouldDrawInsertionPoint: {
+			return widget.shouldDrawInsertionPoint(id, sel) ? 1 : 0;
+		}
+		case sel_accessibleHandle: {
+			return widget.accessibleHandle();
+		}
+		case sel_clearDeferFlushing: {
+			widget.clearDeferFlushing(id, sel);
+			return 0;
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
@@ -5748,452 +5843,723 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 			return 0;
 		}
 	}
-	if (sel == OS.sel_changeColor_) {
-		NSColorPanel panel = NSColorPanel.sharedColorPanel();
-		id delegate = panel.delegate();
-		if (delegate != null) {
-			if (OS.objc_msgSend_bool(delegate.id, OS.sel_isKindOfClass_, OS.objc_getClass("SWTPanelDelegate"))) {
-				OS.objc_msgSend(delegate.id, OS.sel_changeColor_, arg0);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_changeColor_: {
+			NSColorPanel panel = NSColorPanel.sharedColorPanel();
+			id delegate = panel.delegate();
+			if (delegate != null) {
+				if (OS.objc_msgSend_bool(delegate.id, OS.sel_isKindOfClass_, OS.objc_getClass("SWTPanelDelegate"))) {
+					OS.objc_msgSend(delegate.id, OS.sel_changeColor_, arg0);
+				}
 			}
+			return 0;
 		}
-		return 0;
+		case sel_timerProc_: {
+			//TODO optimize getting the display
+			Display display = getCurrent ();
+			if (display == null) return 0;
+			return display.timerProc (id, sel, arg0);
+		}
+		case sel_screenParametersChanged_: {
+			//TODO optimize getting the display
+			Display display = getCurrent ();
+			if (display == null) return 0;
+			display.runSettings = true;
+			display.setDeviceZoom();
+			return 0;
+		}
+		case sel_systemColorSettingsChanged_: {
+			//TODO optimize getting the display
+			Display display = getCurrent ();
+			if (display == null) return 0;
+			display.runSettings = true;
+			return 0;
+		}
+		default: {
+			break;
+		}
 	}
-	if (sel == OS.sel_timerProc_) {
-		//TODO optimize getting the display
-		Display display = getCurrent ();
-		if (display == null) return 0;
-		return display.timerProc (id, sel, arg0);
-	}
-	if (sel == OS.sel_screenParametersChanged_) {
-		//TODO optimize getting the display
-		Display display = getCurrent ();
-		if (display == null) return 0;
-		display.runSettings = true;
-		display.setDeviceZoom();
-		return 0;
-	}
-	if (sel == OS.sel_systemColorSettingsChanged_) {
-		//TODO optimize getting the display
-		Display display = getCurrent ();
-		if (display == null) return 0;
-		display.runSettings = true;
-		return 0;
-	}
+
 	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
-	if (sel == OS.sel_windowWillClose_) {
-		widget.windowWillClose(id, sel, arg0);
-	} else if (sel == OS.sel_drawRect_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawRect(id, sel, rect);
-	} else if (sel == OS.sel_columnAtPoint_) {
-		NSPoint point = new NSPoint();
-		OS.memmove(point, arg0, NSPoint.sizeof);
-		return widget.columnAtPoint(id, sel, point);
-	} else if (sel == OS.sel__drawThemeProgressArea_) {
-		widget._drawThemeProgressArea(id, sel, arg0);
-	} else if (sel == OS.sel_setFrameOrigin_) {
-		NSPoint point = new NSPoint();
-		OS.memmove(point, arg0, NSPoint.sizeof);
-		widget.setFrameOrigin(id, sel, point);
-	} else if (sel == OS.sel_setFrameSize_) {
-		NSSize size = new NSSize();
-		OS.memmove(size, arg0, NSSize.sizeof);
-		widget.setFrameSize(id, sel, size);
-	} else if (sel == OS.sel_hitTest_) {
-		NSPoint point = new NSPoint();
-		OS.memmove(point, arg0, NSPoint.sizeof);
-		return widget.hitTest(id, sel, point);
-	} else if (sel == OS.sel_windowShouldClose_) {
-		return widget.windowShouldClose(id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_mouseDown_) {
-		widget.mouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_keyDown_) {
-		widget.keyDown(id, sel, arg0);
-	} else if (sel == OS.sel_keyUp_) {
-		widget.keyUp(id, sel, arg0);
-	} else if (sel == OS.sel_flagsChanged_) {
-		widget.flagsChanged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseUp_) {
-		widget.mouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseDown_) {
-		widget.rightMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseDragged_) {
-		widget.rightMouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseUp_) {
-		widget.rightMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseDown_) {
-		widget.otherMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseUp_) {
-		widget.otherMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseDragged_) {
-		widget.otherMouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseMoved_) {
-		widget.mouseMoved(id, sel, arg0);
-	} else if (sel == OS.sel_mouseDragged_) {
-		widget.mouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseEntered_) {
-		widget.mouseEntered(id, sel, arg0);
-	} else if (sel == OS.sel_mouseExited_) {
-		widget.mouseExited(id, sel, arg0);
-	} else if (sel == OS.sel_cursorUpdate_) {
-		widget.cursorUpdate(id, sel, arg0);
-	} else if (sel == OS.sel_menuForEvent_) {
-		return widget.menuForEvent(id, sel, arg0);
-	} else if (sel == OS.sel_noResponderFor_) {
-		widget.noResponderFor(id, sel, arg0);
-	} else if (sel == OS.sel_shouldDelayWindowOrderingForEvent_) {
-		return widget.shouldDelayWindowOrderingForEvent(id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_acceptsFirstMouse_) {
-		return widget.acceptsFirstMouse(id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_numberOfRowsInTableView_) {
-		return widget.numberOfRowsInTableView(id, sel, arg0);
-	} else if (sel == OS.sel_tableViewSelectionDidChange_) {
-		widget.tableViewSelectionDidChange(id, sel, arg0);
-	} else if (sel == OS.sel_tableViewSelectionIsChanging_) {
-		widget.tableViewSelectionIsChanging(id, sel, arg0);
-	} else if (sel == OS.sel_windowDidResignKey_) {
-		widget.windowDidResignKey(id, sel, arg0);
-	} else if (sel == OS.sel_windowDidBecomeKey_) {
-		widget.windowDidBecomeKey(id, sel, arg0);
-	} else if (sel == OS.sel_windowDidResize_) {
-		widget.windowDidResize(id, sel, arg0);
-	} else if (sel == OS.sel_windowDidMove_) {
-		widget.windowDidMove(id, sel, arg0);
-	} else if (sel == OS.sel_menuWillOpen_) {
-		widget.menuWillOpen(id, sel, arg0);
-	} else if (sel == OS.sel_menuDidClose_) {
-		widget.menuDidClose(id, sel, arg0);
-	} else if (sel == OS.sel_menuNeedsUpdate_) {
-		widget.menuNeedsUpdate(id, sel, arg0);
-	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
-		widget.outlineViewSelectionDidChange(id, sel, arg0);
-	} else if (sel == OS.sel_outlineViewSelectionIsChanging_) {
-		widget.outlineViewSelectionIsChanging(id, sel, arg0);
-	} else if (sel == OS.sel_sendEvent_) {
-		widget.windowSendEvent(id, sel, arg0);
-	} else if (sel == OS.sel_helpRequested_) {
-		widget.helpRequested(id, sel, arg0);
-	} else if (sel == OS.sel_scrollWheel_) {
-		widget.scrollWheel(id, sel, arg0);
-	} else if (sel == OS.sel_pageDown_) {
-		widget.pageDown(id, sel, arg0);
-	} else if (sel == OS.sel_pageUp_) {
-		widget.pageUp(id, sel, arg0);
-	} else if (sel == OS.sel_textViewDidChangeSelection_) {
-		widget.textViewDidChangeSelection(id, sel, arg0);
-	} else if (sel == OS.sel_textDidChange_) {
-		widget.textDidChange(id, sel, arg0);
-	} else if (sel == OS.sel_textDidEndEditing_) {
-		widget.textDidEndEditing(id, sel, arg0);
-	} else if (sel == OS.sel_attributedSubstringFromRange_) {
-		return widget.attributedSubstringFromRange (id, sel, arg0);
-	} else if (sel == OS.sel_characterIndexForPoint_) {
-		return widget.characterIndexForPoint (id, sel, arg0);
-	} else if (sel == OS.sel_firstRectForCharacterRange_) {
-		NSRect rect = widget.firstRectForCharacterRange (id, sel, arg0);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_insertText_) {
-		return widget.insertText (id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_doCommandBySelector_) {
-		widget.doCommandBySelector (id, sel, arg0);
-	} else if (sel == OS.sel_highlightSelectionInClipRect_) {
-		widget.highlightSelectionInClipRect (id, sel, arg0);
-	} else if (sel == OS.sel_reflectScrolledClipView_) {
-		widget.reflectScrolledClipView (id, sel, arg0);
-	} else if (sel == OS.sel_accessibilityHitTest_) {
-		NSPoint point = new NSPoint();
-		OS.memmove(point, arg0, NSPoint.sizeof);
-		return widget.accessibilityHitTest(id, sel, point);
-	} else if (sel == OS.sel_accessibilityAttributeValue_) {
-		return widget.accessibilityAttributeValue(id, sel, arg0);
-	} else if (sel == OS.sel_accessibilityPerformAction_) {
-		widget.accessibilityPerformAction(id, sel, arg0);
-	} else if (sel == OS.sel_accessibilityActionDescription_) {
-		return widget.accessibilityActionDescription(id, sel, arg0);
-	} else if (sel == OS.sel_accessibilityIsAttributeSettable_) {
-		return widget.accessibilityIsAttributeSettable(id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_makeFirstResponder_) {
-		return widget.makeFirstResponder(id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_tableViewColumnDidMove_) {
-		widget.tableViewColumnDidMove(id, sel, arg0);
-	} else if (sel == OS.sel_tableViewColumnDidResize_) {
-		widget.tableViewColumnDidResize(id, sel, arg0);
-	} else if (sel == OS.sel_outlineViewColumnDidMove_) {
-		widget.outlineViewColumnDidMove(id, sel, arg0);
-	} else if (sel == OS.sel_outlineViewColumnDidResize_) {
-		widget.outlineViewColumnDidResize(id, sel, arg0);
-	} else if (sel == OS.sel_setNeedsDisplay_) {
-		widget.setNeedsDisplay(id, sel, arg0 != 0);
-	} else if (sel == OS.sel_setNeedsDisplayInRect_) {
-		widget.setNeedsDisplayInRect(id, sel, arg0);
-	} else if (sel == OS.sel_setImage_) {
-		widget.setImage(id, sel, arg0);
-	} else if (sel == OS.sel_headerRectOfColumn_) {
-		NSRect rect = widget.headerRectOfColumn(id, sel, arg0);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_imageRectForBounds_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		rect = widget.imageRectForBounds(id, sel, rect);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_titleRectForBounds_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		rect = widget.titleRectForBounds(id, sel, rect);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_cellSizeForBounds_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		NSSize size = widget.cellSizeForBounds(id, sel, rect);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSSize.sizeof);
-		OS.memmove (result, size, NSSize.sizeof);
-		return result;
-	} else if (sel == OS.sel_setObjectValue_) {
-		widget.setObjectValue(id, sel, arg0);
-	} else if (sel == OS.sel_updateOpenGLContext_) {
-		widget.updateOpenGLContext(id, sel, arg0);
-	} else if (sel == OS.sel_sizeOfLabel_) {
-		NSSize size = widget.sizeOfLabel(id, sel, arg0 != 0);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc(NSSize.sizeof);
-		OS.memmove(result, size, NSSize.sizeof);
-		return result;
-	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
-		widget.comboBoxSelectionDidChange(id, sel, arg0);
-	} else if (sel == OS.sel_comboBoxWillDismiss_) {
-		widget.comboBoxWillDismiss(id, sel, arg0);
-	} else if (sel == OS.sel_comboBoxWillPopUp_) {
-		widget.comboBoxWillPopUp(id, sel, arg0);
-	} else if (sel == OS.sel_drawViewBackgroundInRect_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawViewBackgroundInRect(id, sel, rect);
-	} else if (sel == OS.sel_drawBackgroundInClipRect_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawBackgroundInClipRect(id, sel, rect);
-	} else if (sel == OS.sel_windowDidMiniaturize_) {
-		widget.windowDidMiniturize(id, sel, arg0);
-	} else if (sel == OS.sel_windowDidDeminiaturize_) {
-		widget.windowDidDeminiturize(id, sel, arg0);
-	} else if (sel == OS.sel_touchesBeganWithEvent_) {
-		widget.touchesBeganWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_touchesMovedWithEvent_) {
-		widget.touchesMovedWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_touchesEndedWithEvent_) {
-		widget.touchesEndedWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_touchesCancelledWithEvent_) {
-		widget.touchesCancelledWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_beginGestureWithEvent_) {
-		widget.beginGestureWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_endGestureWithEvent_) {
-		widget.endGestureWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_swipeWithEvent_) {
-		widget.swipeWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_magnifyWithEvent_) {
-		widget.magnifyWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_rotateWithEvent_) {
-		widget.rotateWithEvent(id, sel, arg0);
-	} else if (sel == OS.sel_toolbarAllowedItemIdentifiers_) {
-		return widget.toolbarAllowedItemIdentifiers(id, sel, arg0);
-	} else if (sel == OS.sel_toolbarDefaultItemIdentifiers_) {
-		return widget.toolbarDefaultItemIdentifiers(id, sel, arg0);
-	} else if (sel == OS.sel_toolbarSelectableItemIdentifiers_) {
-		return widget.toolbarSelectableItemIdentifiers(id, sel, arg0);
-	} else if (sel == OS.sel_validateMenuItem_) {
-		return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
-	} else if (sel == OS.sel_readSelectionFromPasteboard_) {
-		return (widget.readSelectionFromPasteboard(id, sel, arg0) ? 1 : 0);
-	} else if (sel == OS.sel_viewWillMoveToWindow_) {
-		widget.viewWillMoveToWindow(id, sel, arg0);
-	} else if (sel == OS.sel_cancelOperation_) {
-		widget.cancelOperation(id, sel, arg0);
-	} else if (sel == OS.sel_setShouldExpandItem_) {
-		widget.setShouldExpandItem(id, sel, arg0 != 0);
-	} else if (sel == OS.sel_setShouldScrollClipView_) {
-		widget.setShouldScrollClipView(id, sel, arg0 != 0);
-	} else if (sel == OS.sel_deselectRow_) {
-		widget.deselectRow(id, sel, arg0);
-	} else if (sel == OS.sel_deselectAll_) {
-		widget.deselectAll(id, sel, arg0);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_windowWillClose_: {
+			widget.windowWillClose(id, sel, arg0);
+			return 0;
+		}
+		case sel_drawRect_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			widget.drawRect(id, sel, rect);
+			return 0;
+		}
+		case sel_columnAtPoint_: {
+			NSPoint point = new NSPoint();
+			OS.memmove(point, arg0, NSPoint.sizeof);
+			return widget.columnAtPoint(id, sel, point);
+		}
+		case sel__drawThemeProgressArea_: {
+			widget._drawThemeProgressArea(id, sel, arg0);
+			return 0;
+		}
+		case sel_setFrameOrigin_: {
+			NSPoint point = new NSPoint();
+			OS.memmove(point, arg0, NSPoint.sizeof);
+			widget.setFrameOrigin(id, sel, point);
+			return 0;
+		}
+		case sel_setFrameSize_: {
+			NSSize size = new NSSize();
+			OS.memmove(size, arg0, NSSize.sizeof);
+			widget.setFrameSize(id, sel, size);
+			return 0;
+		}
+		case sel_hitTest_: {
+			NSPoint point = new NSPoint();
+			OS.memmove(point, arg0, NSPoint.sizeof);
+			return widget.hitTest(id, sel, point);
+		}
+		case sel_windowShouldClose_: {
+			return widget.windowShouldClose(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_mouseDown_: {
+			widget.mouseDown(id, sel, arg0);
+			return 0;
+		}
+		case sel_keyDown_: {
+			widget.keyDown(id, sel, arg0);
+			return 0;
+		}
+		case sel_keyUp_: {
+			widget.keyUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_flagsChanged_: {
+			widget.flagsChanged(id, sel, arg0);
+			return 0;
+		}
+		case sel_mouseUp_: {
+			widget.mouseUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_rightMouseDown_: {
+			widget.rightMouseDown(id, sel, arg0);
+			return 0;
+		}
+		case sel_rightMouseDragged_: {
+			widget.rightMouseDragged(id, sel, arg0);
+			return 0;
+		}
+		case sel_rightMouseUp_: {
+			widget.rightMouseUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_otherMouseDown_: {
+			widget.otherMouseDown(id, sel, arg0);
+			return 0;
+		}
+		case sel_otherMouseUp_: {
+			widget.otherMouseUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_otherMouseDragged_: {
+			widget.otherMouseDragged(id, sel, arg0);
+			return 0;
+		}
+		case sel_mouseMoved_: {
+			widget.mouseMoved(id, sel, arg0);
+			return 0;
+		}
+		case sel_mouseDragged_: {
+			widget.mouseDragged(id, sel, arg0);
+			return 0;
+		}
+		case sel_mouseEntered_: {
+			widget.mouseEntered(id, sel, arg0);
+			return 0;
+		}
+		case sel_mouseExited_: {
+			widget.mouseExited(id, sel, arg0);
+			return 0;
+		}
+		case sel_cursorUpdate_: {
+			widget.cursorUpdate(id, sel, arg0);
+			return 0;
+		}
+		case sel_menuForEvent_: {
+			return widget.menuForEvent(id, sel, arg0);
+		}
+		case sel_noResponderFor_: {
+			widget.noResponderFor(id, sel, arg0);
+			return 0;
+		}
+		case sel_shouldDelayWindowOrderingForEvent_: {
+			return widget.shouldDelayWindowOrderingForEvent(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_acceptsFirstMouse_: {
+			return widget.acceptsFirstMouse(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_numberOfRowsInTableView_: {
+			return widget.numberOfRowsInTableView(id, sel, arg0);
+		}
+		case sel_tableViewSelectionDidChange_: {
+			widget.tableViewSelectionDidChange(id, sel, arg0);
+			return 0;
+		}
+		case sel_tableViewSelectionIsChanging_: {
+			widget.tableViewSelectionIsChanging(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowDidResignKey_: {
+			widget.windowDidResignKey(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowDidBecomeKey_: {
+			widget.windowDidBecomeKey(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowDidResize_: {
+			widget.windowDidResize(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowDidMove_: {
+			widget.windowDidMove(id, sel, arg0);
+			return 0;
+		}
+		case sel_menuWillOpen_: {
+			widget.menuWillOpen(id, sel, arg0);
+			return 0;
+		}
+		case sel_menuDidClose_: {
+			widget.menuDidClose(id, sel, arg0);
+			return 0;
+		}
+		case sel_menuNeedsUpdate_: {
+			widget.menuNeedsUpdate(id, sel, arg0);
+			return 0;
+		}
+		case sel_outlineViewSelectionDidChange_: {
+			widget.outlineViewSelectionDidChange(id, sel, arg0);
+			return 0;
+		}
+		case sel_outlineViewSelectionIsChanging_: {
+			widget.outlineViewSelectionIsChanging(id, sel, arg0);
+			return 0;
+		}
+		case sel_sendEvent_: {
+			widget.windowSendEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_helpRequested_: {
+			widget.helpRequested(id, sel, arg0);
+			return 0;
+		}
+		case sel_scrollWheel_: {
+			widget.scrollWheel(id, sel, arg0);
+			return 0;
+		}
+		case sel_pageDown_: {
+			widget.pageDown(id, sel, arg0);
+			return 0;
+		}
+		case sel_pageUp_: {
+			widget.pageUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_textViewDidChangeSelection_: {
+			widget.textViewDidChangeSelection(id, sel, arg0);
+			return 0;
+		}
+		case sel_textDidChange_: {
+			widget.textDidChange(id, sel, arg0);
+			return 0;
+		}
+		case sel_textDidEndEditing_: {
+			widget.textDidEndEditing(id, sel, arg0);
+			return 0;
+		}
+		case sel_attributedSubstringFromRange_: {
+			return widget.attributedSubstringFromRange(id, sel, arg0);
+		}
+		case sel_characterIndexForPoint_: {
+			return widget.characterIndexForPoint(id, sel, arg0);
+		}
+		case sel_firstRectForCharacterRange_: {
+			NSRect rect = widget.firstRectForCharacterRange(id, sel, arg0);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSRect.sizeof);
+			OS.memmove(result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_insertText_: {
+			return widget.insertText(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_doCommandBySelector_: {
+			widget.doCommandBySelector(id, sel, arg0);
+			return 0;
+		}
+		case sel_highlightSelectionInClipRect_: {
+			widget.highlightSelectionInClipRect(id, sel, arg0);
+			return 0;
+		}
+		case sel_reflectScrolledClipView_: {
+			widget.reflectScrolledClipView(id, sel, arg0);
+			return 0;
+		}
+		case sel_accessibilityHitTest_: {
+			NSPoint point = new NSPoint();
+			OS.memmove(point, arg0, NSPoint.sizeof);
+			return widget.accessibilityHitTest(id, sel, point);
+		}
+		case sel_accessibilityAttributeValue_: {
+			return widget.accessibilityAttributeValue(id, sel, arg0);
+		}
+		case sel_accessibilityPerformAction_: {
+			widget.accessibilityPerformAction(id, sel, arg0);
+			return 0;
+		}
+		case sel_accessibilityActionDescription_: {
+			return widget.accessibilityActionDescription(id, sel, arg0);
+		}
+		case sel_accessibilityIsAttributeSettable_: {
+			return widget.accessibilityIsAttributeSettable(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_makeFirstResponder_: {
+			return widget.makeFirstResponder(id, sel, arg0) ? 1 : 0;
+		}
+		case sel_tableViewColumnDidMove_: {
+			widget.tableViewColumnDidMove(id, sel, arg0);
+			return 0;
+		}
+		case sel_tableViewColumnDidResize_: {
+			widget.tableViewColumnDidResize(id, sel, arg0);
+			return 0;
+		}
+		case sel_outlineViewColumnDidMove_: {
+			widget.outlineViewColumnDidMove(id, sel, arg0);
+			return 0;
+		}
+		case sel_outlineViewColumnDidResize_: {
+			widget.outlineViewColumnDidResize(id, sel, arg0);
+			return 0;
+		}
+		case sel_setNeedsDisplay_: {
+			widget.setNeedsDisplay(id, sel, arg0 != 0);
+			return 0;
+		}
+		case sel_setNeedsDisplayInRect_: {
+			widget.setNeedsDisplayInRect(id, sel, arg0);
+			return 0;
+		}
+		case sel_setImage_: {
+			widget.setImage(id, sel, arg0);
+			return 0;
+		}
+		case sel_headerRectOfColumn_: {
+			NSRect rect = widget.headerRectOfColumn(id, sel, arg0);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSRect.sizeof);
+			OS.memmove(result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_imageRectForBounds_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			rect = widget.imageRectForBounds(id, sel, rect);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSRect.sizeof);
+			OS.memmove(result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_titleRectForBounds_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			rect = widget.titleRectForBounds(id, sel, rect);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSRect.sizeof);
+			OS.memmove(result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_cellSizeForBounds_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			NSSize size = widget.cellSizeForBounds(id, sel, rect);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSSize.sizeof);
+			OS.memmove(result, size, NSSize.sizeof);
+			return result;
+		}
+		case sel_setObjectValue_: {
+			widget.setObjectValue(id, sel, arg0);
+			return 0;
+		}
+		case sel_updateOpenGLContext_: {
+			widget.updateOpenGLContext(id, sel, arg0);
+			return 0;
+		}
+		case sel_sizeOfLabel_: {
+			NSSize size = widget.sizeOfLabel(id, sel, arg0 != 0);
+			/* NOTE that this is freed in C */
+			long /* int */ result = C.malloc(NSSize.sizeof);
+			OS.memmove(result, size, NSSize.sizeof);
+			return result;
+		}
+		case sel_comboBoxSelectionDidChange_: {
+			widget.comboBoxSelectionDidChange(id, sel, arg0);
+			return 0;
+		}
+		case sel_comboBoxWillDismiss_: {
+			widget.comboBoxWillDismiss(id, sel, arg0);
+			return 0;
+		}
+		case sel_comboBoxWillPopUp_: {
+			widget.comboBoxWillPopUp(id, sel, arg0);
+			return 0;
+		}
+		case sel_drawViewBackgroundInRect_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			widget.drawViewBackgroundInRect(id, sel, rect);
+			return 0;
+		}
+		case sel_drawBackgroundInClipRect_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			widget.drawBackgroundInClipRect(id, sel, rect);
+			return 0;
+		}
+		case sel_windowDidMiniaturize_: {
+			widget.windowDidMiniturize(id, sel, arg0);
+			return 0;
+		}
+		case sel_windowDidDeminiaturize_: {
+			widget.windowDidDeminiturize(id, sel, arg0);
+			return 0;
+		}
+		case sel_touchesBeganWithEvent_: {
+			widget.touchesBeganWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_touchesMovedWithEvent_: {
+			widget.touchesMovedWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_touchesEndedWithEvent_: {
+			widget.touchesEndedWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_touchesCancelledWithEvent_: {
+			widget.touchesCancelledWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_beginGestureWithEvent_: {
+			widget.beginGestureWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_endGestureWithEvent_: {
+			widget.endGestureWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_swipeWithEvent_: {
+			widget.swipeWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_magnifyWithEvent_: {
+			widget.magnifyWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_rotateWithEvent_: {
+			widget.rotateWithEvent(id, sel, arg0);
+			return 0;
+		}
+		case sel_toolbarAllowedItemIdentifiers_: {
+			return widget.toolbarAllowedItemIdentifiers(id, sel, arg0);
+		}
+		case sel_toolbarDefaultItemIdentifiers_: {
+			return widget.toolbarDefaultItemIdentifiers(id, sel, arg0);
+		}
+		case sel_toolbarSelectableItemIdentifiers_: {
+			return widget.toolbarSelectableItemIdentifiers(id, sel, arg0);
+		}
+		case sel_validateMenuItem_: {
+			return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
+		}
+		case sel_readSelectionFromPasteboard_: {
+			return (widget.readSelectionFromPasteboard(id, sel, arg0) ? 1 : 0);
+		}
+		case sel_viewWillMoveToWindow_: {
+			widget.viewWillMoveToWindow(id, sel, arg0);
+			return 0;
+		}
+		case sel_cancelOperation_: {
+			widget.cancelOperation(id, sel, arg0);
+			return 0;
+		}
+		case sel_setShouldExpandItem_: {
+			widget.setShouldExpandItem(id, sel, arg0 != 0);
+			return 0;
+		}
+		case sel_setShouldScrollClipView_: {
+			widget.setShouldScrollClipView(id, sel, arg0 != 0);
+			return 0;
+		}
+		case sel_deselectRow_: {
+			widget.deselectRow(id, sel, arg0);
+			return 0;
+		}
+		case sel_deselectAll_: {
+			widget.deselectAll(id, sel, arg0);
+			return 0;
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
-		widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_tabView_didSelectTabViewItem_) {
-		widget.tabView_didSelectTabViewItem(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_outlineView_isItemExpandable_) {
-		return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {
-		return widget.outlineView_numberOfChildrenOfItem(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_menu_willHighlightItem_) {
-		widget.menu_willHighlightItem(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
-		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_cacheDisplayInRect_toBitmapImageRep_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg0, NSRect.sizeof);
-		widget.cacheDisplayInRect_toBitmapImageRep(id, sel, rect, arg1);
-	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg0, NSRect.sizeof);
-		widget.drawInteriorWithFrame_inView (id, sel, rect, arg1);
-	} else if (sel == OS.sel_drawWithExpansionFrame_inView_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawWithExpansionFrame_inView (id, sel, rect, arg1);
-	} else if (sel == OS.sel_drawBezelWithFrame_inView_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg0, NSRect.sizeof);
-		widget.drawBezelWithFrame_inView (id, sel, rect, arg1);
-	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
-		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
-		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
-		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
-		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_canDragRowsWithIndexes_atPoint_) {
-		NSPoint clickPoint = new NSPoint();
-		OS.memmove(clickPoint, arg1, NSPoint.sizeof);
-		return widget.canDragRowsWithIndexes_atPoint(id, sel, arg0, clickPoint) ? 1 : 0;
-	} else if (sel == OS.sel_expandItem_expandChildren_) {
-		widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
-	} else if (sel == OS.sel_collapseItem_collapseChildren_) {
-		widget.collapseItem_collapseChildren(id, sel, arg0, arg1 != 0);
-	} else if (sel == OS.sel_expansionFrameWithFrame_inView_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		rect = widget.expansionFrameWithFrame_inView(id, sel, rect, arg1);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_focusRingMaskBoundsForFrame_inView_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		rect = widget.focusRingMaskBoundsForFrame(id, sel, rect, arg1);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_drawLabel_inRect_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg1, NSRect.sizeof);
-		widget.drawLabelInRect(id, sel, arg0==1, rect);
-	} else if (sel == OS.sel_scrollClipView_toPoint_) {
-		NSPoint point = new NSPoint();
-		OS.memmove(point, arg1, NSPoint.sizeof);
-		widget.scrollClipViewToPoint (id, sel, arg0, point);
-	} else if (sel == OS.sel_accessibilitySetValue_forAttribute_) {
-		widget.accessibilitySetValue_forAttribute(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_validRequestorForSendType_returnType_) {
-		return widget.validRequestorForSendType(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_writeSelectionToPasteboard_types_) {
-		return (widget.writeSelectionToPasteboard(id, sel, arg0, arg1) ? 1 : 0);
-	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
-		return (widget.outlineView_shouldExpandItem_item(id, sel, arg0, arg1) ? 1 : 0);
-	} else if (sel == OS.sel_selectRowIndexes_byExtendingSelection_) {
-		widget.selectRowIndexes_byExtendingSelection(id, sel, arg0, arg1 != 0);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_tabView_willSelectTabViewItem_: {
+			widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_tabView_didSelectTabViewItem_: {
+			widget.tabView_didSelectTabViewItem(id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_outlineView_isItemExpandable_: {
+			return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
+		}
+		case sel_outlineView_numberOfChildrenOfItem_: {
+			return widget.outlineView_numberOfChildrenOfItem(id, sel, arg0, arg1);
+		}
+		case sel_menu_willHighlightItem_: {
+			widget.menu_willHighlightItem(id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_setMarkedText_selectedRange_: {
+			widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_cacheDisplayInRect_toBitmapImageRep_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg0, NSRect.sizeof);
+			widget.cacheDisplayInRect_toBitmapImageRep(id, sel, rect, arg1);
+			return 0;
+		}
+		case sel_drawInteriorWithFrame_inView_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg0, NSRect.sizeof);
+			widget.drawInteriorWithFrame_inView (id, sel, rect, arg1);
+			return 0;
+		}
+		case sel_drawWithExpansionFrame_inView_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			widget.drawWithExpansionFrame_inView (id, sel, rect, arg1);
+			return 0;
+		}
+		case sel_drawBezelWithFrame_inView_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg0, NSRect.sizeof);
+			widget.drawBezelWithFrame_inView (id, sel, rect, arg1);
+			return 0;
+		}
+		case sel_accessibilityAttributeValue_forParameter_: {
+			return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
+		}
+		case sel_tableView_didClickTableColumn_: {
+			widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_outlineView_didClickTableColumn_: {
+			widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_shouldChangeTextInRange_replacementString_: {
+			return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
+		}
+		case sel_canDragRowsWithIndexes_atPoint_: {
+			NSPoint clickPoint = new NSPoint();
+			OS.memmove(clickPoint, arg1, NSPoint.sizeof);
+			return widget.canDragRowsWithIndexes_atPoint(id, sel, arg0, clickPoint) ? 1 : 0;
+		}
+		case sel_expandItem_expandChildren_: {
+			widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
+			return 0;
+		}
+		case sel_collapseItem_collapseChildren_: {
+			widget.collapseItem_collapseChildren(id, sel, arg0, arg1 != 0);
+			return 0;
+		}
+		case sel_expansionFrameWithFrame_inView_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			rect = widget.expansionFrameWithFrame_inView(id, sel, rect, arg1);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRect.sizeof);
+			OS.memmove (result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_focusRingMaskBoundsForFrame_inView_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			rect = widget.focusRingMaskBoundsForFrame(id, sel, rect, arg1);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRect.sizeof);
+			OS.memmove (result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_drawLabel_inRect_: {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg1, NSRect.sizeof);
+			widget.drawLabelInRect(id, sel, arg0==1, rect);
+			return 0;
+		}
+		case sel_scrollClipView_toPoint_: {
+			NSPoint point = new NSPoint();
+			OS.memmove(point, arg1, NSPoint.sizeof);
+			widget.scrollClipViewToPoint (id, sel, arg0, point);
+			return 0;
+		}
+		case sel_accessibilitySetValue_forAttribute_: {
+			widget.accessibilitySetValue_forAttribute(id, sel, arg0, arg1);
+			return 0;
+		}
+		case sel_validRequestorForSendType_returnType_: {
+			return widget.validRequestorForSendType(id, sel, arg0, arg1);
+		}
+		case sel_writeSelectionToPasteboard_types_: {
+			return (widget.writeSelectionToPasteboard(id, sel, arg0, arg1) ? 1 : 0);
+		}
+		case sel_outlineView_shouldExpandItem_: {
+			return (widget.outlineView_shouldExpandItem_item(id, sel, arg0, arg1) ? 1 : 0);
+		}
+		case sel_selectRowIndexes_byExtendingSelection_: {
+			widget.selectRowIndexes_byExtendingSelection(id, sel, arg0, arg1 != 0);
+			return 0;
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
 	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
-		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
-	} else if (sel == OS.sel_tableView_shouldReorderColumn_toColumn_) {
-		return widget.tableView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_tableView_shouldEditTableColumn_row_) {
-		return widget.tableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_shouldReorderColumn_toColumn_) {
-		return widget.outlineView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_shouldEditTableColumn_item_) {
-		return widget.outlineView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_textView_clickedOnLink_atIndex_) {
-		 return widget.textView_clickOnLink_atIndex(id, sel, arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_child_ofItem_) {
-		 return widget.outlineView_child_ofItem(id, sel, arg0, arg1, arg2);
-	} else if (sel == OS.sel_outlineView_objectValueForTableColumn_byItem_) {
-		 return widget.outlineView_objectValueForTableColumn_byItem(id, sel, arg0, arg1, arg2);
-	} else if (sel == OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_) {
-		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(id, sel, arg0, arg1, arg2);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRange.sizeof);
-		OS.memmove (result, range, NSRange.sizeof);
-		return result;
-	} else if (sel == OS.sel_dragSelectionWithEvent_offset_slideBack_) {
-		NSSize offset = new NSSize();
-		OS.memmove(offset, arg0, NSSize.sizeof);
-		return (widget.dragSelectionWithEvent(id, sel, arg0, arg1, arg2) ? 1 : 0);
-	} else if (sel == OS.sel_drawImage_withFrame_inView_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg1, NSRect.sizeof);
-		widget.drawImageWithFrameInView (id, sel, arg0, rect, arg2);
-	} else if (sel == OS.sel_drawTitle_withFrame_inView_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg1, NSRect.sizeof);
-		rect = widget.drawTitleWithFrameInView (id, sel, arg0, rect, arg2);
-		/* NOTE that this is freed in C */
-		long /*int*/ result = C.malloc (NSRect.sizeof);
-		OS.memmove (result, rect, NSRect.sizeof);
-		return result;
-	} else if (sel == OS.sel_hitTestForEvent_inRect_ofView_) {
-		NSRect rect = new NSRect ();
-		OS.memmove (rect, arg1, NSRect.sizeof);
-		return widget.hitTestForEvent (id, sel, arg0, rect, arg2);
-	} else if (sel == OS.sel_tableView_writeRowsWithIndexes_toPasteboard_) {
-		return (widget.tableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
-	} else if (sel == OS.sel_outlineView_writeItems_toPasteboard_) {
-		return (widget.outlineView_writeItems_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
-	} else if (sel == OS.sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_) {
-		return widget.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(id, sel, arg0, arg1, arg2 != 0);
+
+	switch (Selector.valueOf(sel)) {
+		case sel_tableView_objectValueForTableColumn_row_: {
+			return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
+		}
+		case sel_tableView_shouldReorderColumn_toColumn_: {
+			return widget.tableView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
+		}
+		case sel_tableView_shouldEditTableColumn_row_: {
+			return widget.tableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
+		}
+		case sel_outlineView_shouldReorderColumn_toColumn_: {
+			return widget.outlineView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
+		}
+		case sel_outlineView_shouldEditTableColumn_item_: {
+			return widget.outlineView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
+		}
+		case sel_textView_clickedOnLink_atIndex_: {
+			return widget.textView_clickOnLink_atIndex(id, sel, arg0, arg1, arg2) ? 1 : 0;
+		}
+		case sel_outlineView_child_ofItem_: {
+			return widget.outlineView_child_ofItem(id, sel, arg0, arg1, arg2);
+		}
+		case sel_outlineView_objectValueForTableColumn_byItem_: {
+			return widget.outlineView_objectValueForTableColumn_byItem(id, sel, arg0, arg1, arg2);
+		}
+		case sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_: {
+			NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(id, sel, arg0, arg1, arg2);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRange.sizeof);
+			OS.memmove (result, range, NSRange.sizeof);
+			return result;
+		}
+		case sel_dragSelectionWithEvent_offset_slideBack_: {
+			NSSize offset = new NSSize();
+			OS.memmove(offset, arg0, NSSize.sizeof);
+			return (widget.dragSelectionWithEvent(id, sel, arg0, arg1, arg2) ? 1 : 0);
+		}
+		case sel_drawImage_withFrame_inView_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg1, NSRect.sizeof);
+			widget.drawImageWithFrameInView (id, sel, arg0, rect, arg2);
+			return 0;
+		}
+		case sel_drawTitle_withFrame_inView_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg1, NSRect.sizeof);
+			rect = widget.drawTitleWithFrameInView (id, sel, arg0, rect, arg2);
+			/* NOTE that this is freed in C */
+			long /*int*/ result = C.malloc (NSRect.sizeof);
+			OS.memmove (result, rect, NSRect.sizeof);
+			return result;
+		}
+		case sel_hitTestForEvent_inRect_ofView_: {
+			NSRect rect = new NSRect ();
+			OS.memmove (rect, arg1, NSRect.sizeof);
+			return widget.hitTestForEvent (id, sel, arg0, rect, arg2);
+		}
+		case sel_tableView_writeRowsWithIndexes_toPasteboard_: {
+			return (widget.tableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
+		}
+		case sel_outlineView_writeItems_toPasteboard_: {
+			return (widget.outlineView_writeItems_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
+		}
+		case sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_: {
+			return widget.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(id, sel, arg0, arg1, arg2 != 0);
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3) {
 	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
-		widget.tableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_outlineView_willDisplayCell_forTableColumn_item_) {
-		widget.outlineView_willDisplayCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3);
-	} else  if (sel == OS.sel_outlineView_setObjectValue_forTableColumn_byItem_) {
-		widget.outlineView_setObjectValue_forTableColumn_byItem(id, sel, arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_tableView_setObjectValue_forTableColumn_row_) {
-		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_view_stringForToolTip_point_userData_) {
-		return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_tableView_shouldTrackCell_forTableColumn_row_) {
-		return widget.tableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_shouldTrackCell_forTableColumn_item_) {
-		return widget.outlineView_shouldTrackCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
+
+	switch (Selector.valueOf(sel)) {
+		case sel_tableView_willDisplayCell_forTableColumn_row_: {
+			widget.tableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
+			return 0;
+		}
+		case sel_outlineView_willDisplayCell_forTableColumn_item_: {
+			widget.outlineView_willDisplayCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3);
+			return 0;
+		}
+		case sel_outlineView_setObjectValue_forTableColumn_byItem_: {
+			widget.outlineView_setObjectValue_forTableColumn_byItem(id, sel, arg0, arg1, arg2, arg3);
+			return 0;
+		}
+		case sel_tableView_setObjectValue_forTableColumn_row_: {
+			widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
+			return 0;
+		}
+		case sel_view_stringForToolTip_point_userData_: {
+			return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
+		}
+		case sel_tableView_shouldTrackCell_forTableColumn_row_: {
+			return widget.tableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
+		}
+		case sel_outlineView_shouldTrackCell_forTableColumn_item_: {
+			return widget.outlineView_shouldTrackCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
+		}
+		default: {
+			return 0;
+		}
 	}
-	return 0;
 }
 
 }
