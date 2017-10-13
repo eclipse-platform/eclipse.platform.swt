@@ -48,16 +48,18 @@ public class Snippet356 {
 			// It is up to the application to determine when and how a link should be activated.
 			// In this snippet links are activated on mouse down when the control key is held down
 			if ((event.stateMask & SWT.MOD1) != 0) {
-				try {
-					int offset = styledText.getOffsetAtLocation(new Point (event.x, event.y));
-					StyleRange style1 = styledText.getStyleRangeAtOffset(offset);
+				int offset = styledText.getOffsetAtPoint(new Point (event.x, event.y));
+				if (offset != -1) {
+					StyleRange style1 = null;
+					try {
+						style1 = styledText.getStyleRangeAtOffset(offset);
+					} catch (IllegalArgumentException e) {
+						// no character under event.x, event.y
+					}
 					if (style1 != null && style1.underline && style1.underlineStyle == SWT.UNDERLINE_LINK) {
 						System.out.println("Click on a Link");
 					}
-				} catch (IllegalArgumentException e) {
-					// no character under event.x, event.y
 				}
-
 			}
 		});
 		shell.setSize (600, 400);

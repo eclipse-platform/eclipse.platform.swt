@@ -10,6 +10,7 @@
  *     Andrey Loskutov <loskutov@gmx.de> - bug 488172
  *     Stefan Xenos (Google) - bug 487254 - StyledText.getTopIndex() can return negative values
  *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
+ *     Karsten Thoms <thoms@itemis.de> - bug 528746 add getOffsetAtPoint(Point)
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -4443,9 +4444,9 @@ public int getOffsetAtLine(int lineIndex) {
  * </p>
  *
  * @param point the origin of character bounding box relative to
- * 	the origin of the widget client area.
+ *  the origin of the widget client area.
  * @return offset of the character at the given location relative
- * 	to the first character in the document.
+ *  to the first character in the document.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4454,7 +4455,10 @@ public int getOffsetAtLine(int lineIndex) {
  *   <li>ERROR_NULL_ARGUMENT when point is null</li>
  *   <li>ERROR_INVALID_ARGUMENT when there is no character at the specified location</li>
  * </ul>
+ *
+ * @deprecated Use {@link #getOffsetAtPoint(Point)} instead for better performance
  */
+@Deprecated
 public int getOffsetAtLocation(Point point) {
 	checkWidget();
 	if (point == null) {
@@ -4467,6 +4471,44 @@ public int getOffsetAtLocation(Point point) {
 	}
 	return offset + trailing[0];
 }
+
+/**
+ * Returns the offset of the character at the given point relative
+ * to the first character in the document.
+ * <p>
+ * The return value reflects the character offset that the caret will
+ * be placed at if a mouse click occurred at the specified point.
+ * If the x coordinate of the point is beyond the center of a character
+ * the returned offset will be behind the character.
+ * </p>
+ * Note: This method is functionally similar to {@link #getOffsetAtLocation(Point)} except that
+ * it does not throw an exception when no character is found and thus performs faster.
+ *
+ * @param point the origin of character bounding box relative to
+ *  the origin of the widget client area.
+ * @return offset of the character at the given point relative
+ *  to the first character in the document.
+ * -1 when there is no character at the specified location.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when point is <code>null</code></li>
+ * </ul>
+ *
+ * @since 3.107
+ */
+public int getOffsetAtPoint(Point point) {
+	checkWidget();
+	if (point == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	int[] trailing = new int[1];
+	int offset = getOffsetAtPoint(point.x, point.y, trailing, true);
+	return offset != -1 ? offset + trailing[0] : -1;
+}
+
 int getOffsetAtPoint(int x, int y, int[] alignment) {
 	int lineIndex = getLineIndex(y);
 	y -= getLinePixel(lineIndex);
