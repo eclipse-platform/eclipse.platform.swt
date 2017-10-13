@@ -764,11 +764,13 @@ static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *accessible);
 static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface);
 static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface);
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface);
+static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init))
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init))
 
 struct _SwtFixedAccessiblePrivate {
 	// A boolean flag which is set to TRUE when an Accessible Java
@@ -1115,6 +1117,11 @@ static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface)
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface) {
 	iface->is_child_selected = swt_fixed_accessible_selection_is_child_selected;
 	iface->ref_selection = swt_fixed_accessible_selection_ref_selection;
+}
+
+static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface) {
+	// TODO_a11y: add this interface to stop warnings from text signals.
+	// Will be implemented later.
 }
 
 jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...) {
