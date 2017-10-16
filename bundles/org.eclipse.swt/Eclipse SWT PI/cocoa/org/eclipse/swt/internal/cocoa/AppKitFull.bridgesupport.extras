@@ -5096,11 +5096,6 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
-	<function name="NSWindowList" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-		<retval></retval>
-	</function>
 	<informal_protocol name="NSAccessibility" swt_gen="true">
 		<method selector="accessibilityActionDescription:" swt_gen="true">
 			<arg swt_gen="true"></arg>
