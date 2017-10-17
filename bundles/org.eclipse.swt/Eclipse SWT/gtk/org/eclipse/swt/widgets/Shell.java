@@ -981,13 +981,15 @@ void forceResize (int width, int height) {
 		if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 	}
 	GtkRequisition requisition = new GtkRequisition ();
-	gtk_widget_get_preferred_size (vboxHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	allocation.x = border;
 	allocation.y = border;
 	allocation.width = width;
 	allocation.height = height;
+	// Call gtk_widget_get_preferred_size() on GTK 3.20+ to prevent warnings.
+	// See bug 486068.
+	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) gtk_widget_get_preferred_size (vboxHandle, requisition);
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
 	if (OS.GTK3) {
 		if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
