@@ -175,9 +175,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -280,9 +285,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -385,9 +395,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -490,9 +505,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -595,9 +615,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -700,9 +725,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -805,9 +835,14 @@
       <repositoryList
           name="None"/>
       <repositoryList
+          name="Photon">
+        <repository
+            url="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
+      </repositoryList>
+      <repositoryList
           name="Oxygen">
         <repository
-            url="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+            url="http://download.eclipse.org/eclipse/updates/4.7"/>
       </repositoryList>
       <repositoryList
           name="Neon">
@@ -914,7 +949,7 @@
   <setupTask
       xsi:type="setup:VariableTask"
       name="swt.tools.update.url"
-      defaultValue="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+      defaultValue="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
   <setupTask
       xsi:type="setup.p2:P2Task"
       label="SWT Tools">
@@ -1658,7 +1693,7 @@
     <setupTask
         xsi:type="setup:VariableTask"
         name="swt.tools.update.url"
-        value="http://download.eclipse.org/eclipse/updates/4.7-I-builds"/>
+        value="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
