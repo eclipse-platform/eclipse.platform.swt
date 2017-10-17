@@ -1226,7 +1226,7 @@ private static class Webkit2JavascriptEvaluator {
 		// Mechanism to generate unique ID's
 		private static int nextCallbackId = 1;
 		private static HashSet<Integer> usedCallbackIds = new HashSet<>();
-		private static int getNextId() {
+		static int getNextId() {
 			int value = 0;
 			boolean unique = false;
 			while (unique == false) {
@@ -1246,28 +1246,26 @@ private static class Webkit2JavascriptEvaluator {
 	}
 
 	static Object evaluate(String script, Browser browser, long /*int*/ webView, boolean doNotBlock) {
-		/* Webkit2: We remove the 'return' prefix that normally comes with the script.
-		 * The reason is that in Webkit1, script was wrapped into a function and if an exception occured
-		 * it was caught on Javascript side and a callback to java was made.
-		 * In Webkit2, we handle errors in the callback, no need to wrap them in a function anymore.
+		/* Wrap script around a function for backwards compatibility,
+		 * user can specify 'return', which may not be at the beginning of the script.
+		 *  Valid scripts:
+		 *      'hi'
+		 *  	return 'hi'
+		 *  	var x = 1; return 'hi'
 		 */
-		String fixedScript;
-		if (script.length() > 7 && script.substring(0, 7).equals("return ")) {
-			fixedScript = script.substring(7);
-		} else {
-			fixedScript = script;
-		}
+		String swtUniqueExecFunc = "SWTWebkit2TempFunc" + CallBackMap.getNextId() + "()";
+		String wrappedScript = "function " + swtUniqueExecFunc +"{" + script + "}; " + swtUniqueExecFunc;
 
 		if (doNotBlock) {
 			// Execute script, but do not wait for async call to complete. (assume it does). Bug 512001.
-			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, 0, 0);
+			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(wrappedScript, true), 0, 0, 0);
 			return null;
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
 			// The callback comes back in javascriptExecutionFinishedProc(..) below.
 			Webkit2EvalReturnObj retObj = new Webkit2EvalReturnObj();
 			int callbackId = CallBackMap.putObject(retObj);
-			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(fixedScript, true), 0, callback.getAddress(), callbackId);
+			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(wrappedScript, true), 0, callback.getAddress(), callbackId);
 			Shell shell = browser.getShell();
 			Display display = browser.getDisplay();
 			while (!shell.isDisposed()) {
@@ -1280,7 +1278,7 @@ private static class Webkit2JavascriptEvaluator {
 			CallBackMap.removeObject(callbackId);
 
 			if (retObj.errorNum != 0) {
-				throw new SWTException(retObj.errorNum, retObj.errorMsg);
+				throw new SWTException(retObj.errorNum, retObj.errorMsg +"\nScript that was evaluated:\n" + wrappedScript);
 			} else {
 				return retObj.returnValue;
 			}
