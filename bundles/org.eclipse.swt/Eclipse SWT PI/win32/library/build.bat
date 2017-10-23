@@ -18,7 +18,7 @@ echo SWT build dir: %SWT_BUILDDIR%
 IF "x.%MSSDK%"=="x." set "MSSDK=%SWT_BUILDDIR%\MSSDKs\Windows Server 2003 SP1 SDK"
 IF "x.%WEBKIT_DIR%"=="x." set "WEBKIT_DIR=%SWT_BUILDDIR%\webkit\WebKit-r72896"
 IF "x.%WEBKIT_SUPPORT_DIR%"=="x." set "WEBKIT_SUPPORT_DIR=%SWT_BUILDDIR%\webkit\WebKitSupportLibrary"
-IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8"
+IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 9.0"
 
 IF x.%1==x.x86 GOTO X86
 IF x.%1==x.x86_64 GOTO X86_64
