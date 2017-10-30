@@ -21,8 +21,6 @@ import org.eclipse.swt.internal.cairo.*;
 public class OS extends C {
 	static {
 		String scalingProperty = "GDK_SCALE";
-		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
-		String propertyName = "SWT_GTK3";
 		String gtk3 = getEnvironmentalVariable (propertyName);
 		if (gtk3 != null && gtk3.equals("0")) {
 			Library.loadLibrary("swt-pi");
@@ -34,6 +32,8 @@ public class OS extends C {
 				Library.loadLibrary("swt-pi");
 			}
 		}
+		OS.setenv(ascii(scalingProperty), ascii("1"), 1);
+		String propertyName = "SWT_GTK3";
 	}
 
 	//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
