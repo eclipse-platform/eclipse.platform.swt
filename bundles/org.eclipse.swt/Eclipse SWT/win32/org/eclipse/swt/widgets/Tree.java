@@ -1447,7 +1447,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ l
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (explorerTheme) {
-		if ((OS.IsWindowEnabled (handle) && hooks (SWT.EraseItem)) || hasCustomBackground() || findImageControl () != null) {
+		if ((OS.IsWindowEnabled (handle) && hooks (SWT.EraseItem)) || findImageControl () != null) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			drawBackground (nmcd.hdc, rect);
@@ -2700,18 +2700,26 @@ void enableDrag (boolean enabled) {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
+	* Feature in Windows.  When a tree is given a background color
+	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
+	* the tree using the background color rather than the disabled
+	* colors.  This is different from the table which draws grayed.
+	* The fix is to set the default background color while the tree
+	* is disabled and restore it when enabled.
+	*/
+	Control control = findBackgroundControl ();
+	/*
 	* Bug in Windows.  On Vista only, Windows does not draw using
 	* the background color when the tree is disabled.  The fix is
 	* to set the default color, even when the color has not been
 	* changed, causing Windows to draw correctly.
 	*/
-	Control control = findBackgroundControl ();
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		if (control == null) control = this;
 	}
 	if (control != null) {
 		if (control.backgroundImage == null) {
-			_setBackgroundPixel (hasCustomBackground() ? control.getBackgroundPixel () : -1);
+			_setBackgroundPixel (enabled ? control.getBackgroundPixel () : -1);
 		}
 	}
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
@@ -2721,7 +2729,7 @@ void enableWidget (boolean enabled) {
 	* TVS_FULLROWSELECT, the background color for the
 	* entire row is filled when an item is painted,
 	* drawing on top of the sort column color.  The fix
-	* is to clear TVS_FULLROWSELECT when there is
+	* is to clear TVS_FULLROWSELECT when a their is
 	* as sort column.
 	*/
 	updateFullSelection ();
@@ -3662,8 +3670,20 @@ public TreeColumn getSortColumn () {
 }
 
 int getSortColumnPixel () {
-	int pixel = OS.IsWindowEnabled (handle) || hasCustomBackground() ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
-	return getSlightlyDifferentColor(pixel);
+	int pixel = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
+	int red = pixel & 0xFF;
+	int green = (pixel & 0xFF00) >> 8;
+	int blue = (pixel & 0xFF0000) >> 16;
+	if (red > 240 && green > 240 && blue > 240) {
+		red -= 8;
+		green -= 8;
+		blue -= 8;
+	} else {
+		red = Math.min (0xFF, (red / 10) + red);
+		green = Math.min (0xFF, (green / 10) + green);
+		blue = Math.min (0xFF, (blue / 10) + blue);
+	}
+	return (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 }
 
 /**
@@ -4579,7 +4599,15 @@ void setBackgroundPixel (int pixel) {
 		setBackgroundImage (control.backgroundImage);
 		return;
 	}
-	_setBackgroundPixel (pixel);
+	/*
+	* Feature in Windows.  When a tree is given a background color
+	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
+	* the tree using the background color rather than the disabled
+	* colors.  This is different from the table which draws grayed.
+	* The fix is to set the default background color while the tree
+	* is disabled and restore it when enabled.
+	*/
+	if (OS.IsWindowEnabled (handle)) _setBackgroundPixel (pixel);
 
 	/*
 	* Feature in Windows.  When the tree has the style

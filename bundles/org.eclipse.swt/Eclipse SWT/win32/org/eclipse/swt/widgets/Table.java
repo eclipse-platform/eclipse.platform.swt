@@ -2944,6 +2944,14 @@ boolean hasChildren () {
 	return false;
 }
 
+boolean hasCustomBackground() {
+	return background != -1;
+}
+
+boolean hasCustomForeground() {
+	return foreground != -1;
+}
+
 boolean hitTestSelection (int index, int x, int y) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (count == 0) return false;

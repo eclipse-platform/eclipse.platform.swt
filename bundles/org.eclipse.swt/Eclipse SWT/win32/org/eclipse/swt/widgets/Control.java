@@ -1749,14 +1749,6 @@ boolean hasCursor () {
 	return OS.GetCursorPos (pt) && OS.PtInRect (rect, pt);
 }
 
-boolean hasCustomBackground() {
-	return background != -1;
-}
-
-boolean hasCustomForeground() {
-	return foreground != -1;
-}
-
 boolean hasFocus () {
 	/*
 	* If a non-SWT child of the control has focus,
