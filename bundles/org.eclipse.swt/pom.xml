@@ -47,4 +47,46 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>build-all</id>
+      <activation>
+        <property>
+          <name>checkAllWS</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>buildAll</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <property name="repo.src" value="../../"/>
+                    <ant antfile="buildSWT.xml" target="check_compilation_all_platforms"/>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+            <dependencies>
+          <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>0.0.0</version>
+            <scope>system</scope>
+            <systemPath>${toolsjar}</systemPath>
+          </dependency>
+        </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
