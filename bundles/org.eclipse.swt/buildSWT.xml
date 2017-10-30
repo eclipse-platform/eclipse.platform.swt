@@ -31,6 +31,7 @@
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
+	<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 	<property name="tmp_sha1_file" value="${tmphome}/build.sha1"/>
 
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
@@ -418,13 +419,16 @@
 	</target>
 
 	<target name="check_compilation" depends="check_source_changed" if="source_changed">
+		<antcall target="check_compilation_all_platforms"/>
+		<antcall target="update_sha1_file"/>
+	</target>
+	
+	<target name="check_compilation_all_platforms">
 		<mkdir dir="${tmphome}"/>
-		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
-		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
+		<!-- <property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/> -->
 		<property name="buildDir" value="${tmpdir}/build"/>
-
-		<antcall target="check_preprocessing"/>
-
+		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
+		
 		<!-- 64 bit -->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
@@ -438,18 +442,19 @@
 			<param name="cp" value=".classpath_win32"/>
 			<param name="is64" value="64 bit"/>
 		</antcall>
-
-		<!-- Not building cocoa 32-bit
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_cocoa"/>
-		</antcall>
-		-->
+		
+		<antcall target="check_preprocessing"/>
+		
+		<!-- 32 bit -->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_gtk"/>
 		</antcall>
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
 		</antcall>
+	</target>
+	
+	<target name="update_sha1_file">
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
