@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,8 +58,6 @@ static String arch() {
 	String osArch = System.getProperty("os.arch"); //$NON-NLS-1$
 	if (osArch.equals ("i386") || osArch.equals ("i686")) return "x86"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
 	if (osArch.equals ("amd64")) return "x86_64"; //$NON-NLS-1$ $NON-NLS-2$
-	if (osArch.equals ("IA64N")) return "ia64_32"; //$NON-NLS-1$ $NON-NLS-2$
-	if (osArch.equals ("IA64W")) return "ia64"; //$NON-NLS-1$ $NON-NLS-2$
 	return osArch;
 }
 
@@ -67,7 +65,7 @@ static String os() {
 	String osName = System.getProperty("os.name"); //$NON-NLS-1$
 	if (osName.equals ("Linux")) return "linux"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.equals ("AIX")) return "aix"; //$NON-NLS-1$ $NON-NLS-2$
-	if (osName.equals ("Solaris") || osName.equals ("SunOS")) return "solaris"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+	if (osName.equals ("Solaris")) return "solaris"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
 	if (osName.equals ("HP-UX")) return "hpux"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.equals ("Mac OS X")) return "macosx"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.startsWith ("Win")) return "win32"; //$NON-NLS-1$ $NON-NLS-2$
@@ -193,14 +191,6 @@ static boolean isLoadable () {
 		return true;
 	}
 
-	/*
-	* Mac has a special case since SWT's 32-bit libraries on Mac contain natives
-	* for both the x86 and PPC architectures.  For this reason SWT's manifest file
-	* for 32-bit Mac does not specify a value for SWT-Arch.
-	*/
-	if (os.equals ("macosx") && os.equals (manifestOS)) { //$NON-NLS-1$
-		return manifestArch.length () == 0 && (arch.equals ("ppc") || arch.equals ("x86")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
 	return false;
 }
 
