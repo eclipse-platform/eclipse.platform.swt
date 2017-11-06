@@ -6927,6 +6927,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1window_1lookup_1for_1display)
 }
 #endif
 
+#ifndef NO__1getpid
+JNIEXPORT jint JNICALL OS_NATIVE(_1getpid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1getpid_FUNC);
+	rc = (jint)getpid();
+	OS_NATIVE_EXIT(env, that, _1getpid_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1glib_1major_1version
 JNIEXPORT jint JNICALL OS_NATIVE(_1glib_1major_1version)
 	(JNIEnv *env, jclass that)

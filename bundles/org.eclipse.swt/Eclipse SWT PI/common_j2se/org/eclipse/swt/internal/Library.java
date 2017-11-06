@@ -12,6 +12,7 @@ package org.eclipse.swt.internal;
 
 import java.io.*;
 import java.net.*;
+import java.util.function.*;
 import java.util.jar.*;
 
 public class Library {
@@ -37,9 +38,14 @@ public class Library {
 	 * The JAVA and SWT versions
 	 */
 	public static final int JAVA_VERSION, SWT_VERSION;
+	public static final String USER_HOME;
 
 	static final String SEPARATOR;
 	static final String DELIMITER;
+
+	static final String JAVA_LIB_PATH = "java.library.path";
+	static final String SWT_LIB_PATH = "swt.library.path";
+
 
 	/* 64-bit support */
 	static final boolean IS_64 = longConst() == (long /*int*/)longConst();
@@ -49,6 +55,7 @@ public class Library {
 static {
 	DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
 	SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
+	USER_HOME = System.getProperty ("user.home");
 	SWT_LIB_DIR = ".swt" + SEPARATOR + "lib" + SEPARATOR + os() + SEPARATOR + arch(); //$NON-NLS-1$ $NON-NLS-2$
 	JAVA_VERSION = parseVersion(System.getProperty("java.version")); //$NON-NLS-1$
 	SWT_VERSION = SWT_VERSION(MAJOR_VERSION, MINOR_VERSION);
@@ -128,10 +135,17 @@ public static int SWT_VERSION (int major, int minor) {
 	return major * 1000 + minor;
 }
 
-static boolean extract (String fileName, String mappedName, StringBuffer message) {
+/**
+ *	Extract file with 'mappedName' into path 'extractToFilePath'. Cleanup leftovers if extract failed.
+ * @param extractToFilePath full path of where the file is to be extacted to, inc name of file,
+ *                          e.g /home/USER/.swt/lib/linux/x86_64/libswt-MYLIB-gtk-4826.so
+ * @param mappedName file to be searched in jar.
+ * @return	true upon success, failure if something went wrong.
+ */
+static boolean extract (String extractToFilePath, String mappedName, StringBuffer message) {
 	FileOutputStream os = null;
 	InputStream is = null;
-	File file = new File(fileName);
+	File file = new File(extractToFilePath);
 	boolean extracted = false;
 	try {
 		if (!file.exists ()) {
@@ -140,14 +154,14 @@ static boolean extract (String fileName, String mappedName, StringBuffer message
 				extracted = true;
 				int read;
 				byte [] buffer = new byte [4096];
-				os = new FileOutputStream (fileName);
+				os = new FileOutputStream (extractToFilePath);
 				while ((read = is.read (buffer)) != -1) {
 					os.write(buffer, 0, read);
 				}
 				os.close ();
 				is.close ();
-				chmod ("755", fileName);
-				if (load (fileName, message)) return true;
+				chmod ("755", extractToFilePath);
+				return true;
 			}
 		}
 	} catch (Throwable e) {
@@ -253,19 +267,7 @@ public static void loadLibrary (String name, boolean mapName) {
 	/* Compute the library name and mapped name */
 	String libName1, libName2, mappedName1, mappedName2;
 	if (mapName) {
-		String version = System.getProperty ("swt.version"); //$NON-NLS-1$
-		if (version == null) {
-			version = "" + MAJOR_VERSION; //$NON-NLS-1$
-			/* Force 3 digits in minor version number */
-			if (MINOR_VERSION < 10) {
-				version += "00"; //$NON-NLS-1$
-			} else {
-				if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
-			}
-			version += MINOR_VERSION;
-			/* No "r" until first revision */
-			if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
-		}
+		String version = getVersionString ();
 		libName1 = name + "-" + Platform.PLATFORM + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
 		libName2 = name + "-" + Platform.PLATFORM;  //$NON-NLS-1$
 		mappedName1 = mapLibraryName (libName1);
@@ -277,7 +279,7 @@ public static void loadLibrary (String name, boolean mapName) {
 	StringBuffer message = new StringBuffer();
 
 	/* Try loading library from swt library path */
-	String path = System.getProperty ("swt.library.path"); //$NON-NLS-1$
+	String path = System.getProperty (SWT_LIB_PATH); //$NON-NLS-1$
 	if (path != null) {
 		path = new File (path).getAbsolutePath ();
 		if (load (path + SEPARATOR + mappedName1, message)) return;
@@ -288,13 +290,16 @@ public static void loadLibrary (String name, boolean mapName) {
 	if (load (libName1, message)) return;
 	if (mapName && load (libName2, message)) return;
 
-	/* Try loading library from the tmp directory if swt library path is not specified */
+	/* Try loading library from the tmp directory if swt library path is not specified.
+	 * Create the tmp folder if it doesn't exist. Tmp folder looks like this:
+	 * ~/.swt/lib/<platform>/<arch>/
+	 */
 	String fileName1 = mappedName1;
 	String fileName2 = mappedName2;
 	if (path == null) {
-		path = System.getProperty ("user.home"); //$NON-NLS-1$
+		path = USER_HOME;
 		File dir = new File (path, SWT_LIB_DIR);
-		if ((dir.exists () && dir.isDirectory ()) || dir.mkdirs ()) {
+		if ((dir.exists () && dir.isDirectory ()) || dir.mkdirs ()) { // Create if not exist.
 			path = dir.getAbsolutePath ();
 		} else {
 			/* fall back to using the home dir directory */
@@ -307,10 +312,16 @@ public static void loadLibrary (String name, boolean mapName) {
 		if (mapName && load (path + SEPARATOR + fileName2, message)) return;
 	}
 
-	/* Try extracting and loading library from jar */
+	/* Try extracting and loading library from jar. */
 	if (path != null) {
-		if (extract (path + SEPARATOR + fileName1, mappedName1, message)) return;
-		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2, message)) return;
+		if (extract (path + SEPARATOR + fileName1, mappedName1, message)) {
+			load(path + SEPARATOR + fileName1, message);
+			return;
+		}
+		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2, message)) {
+			load(path + SEPARATOR + fileName2, message);
+			return;
+		}
 	}
 
 	/* Failed to find the library */
@@ -326,5 +337,101 @@ static String mapLibraryName (String libName) {
 	}
 	return libName;
 }
+
+/**
+ * @return String Combined SWT version like 4826
+ */
+public static String getVersionString () {
+	String version = System.getProperty ("swt.version"); //$NON-NLS-1$
+	if (version == null) {
+		version = "" + MAJOR_VERSION; //$NON-NLS-1$
+		/* Force 3 digits in minor version number */
+		if (MINOR_VERSION < 10) {
+			version += "00"; //$NON-NLS-1$
+		} else {
+			if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
+		}
+		version += MINOR_VERSION;
+		/* No "r" until first revision */
+		if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
+	}
+	return version;
+}
+
+/**
+ * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
+ * This function supports a single level subfolder, e.g SubFolder/resource.
+ *
+ * @param subDir  'null' or a folder name without slashes. E.g Correct: 'mysubdir',  incorrect: '/subdir/'.
+ *                Platform specific Slashes will be added automatically.
+ * @param resourceName e.g swt-webkitgtk
+ * @param mapResourceName  true if you like platform specific mapping applied to resource name. e.g  MyLib -> libMyLib-gtk-4826.so
+ */
+public static File findResource(String subDir, String resourceName, boolean mapResourceName){
+	                                                                         //       subdir  e.g:  subdir
+	String maybeSubDirPath = subDir != null ? subDir + SEPARATOR : "";       //               e.g:  subdir/  or ""
+	String maybeSubDirPathWithPrefix = subDir != null ? SEPARATOR + maybeSubDirPath : ""; //  e.g: /subdir/  or ""
+	final String finalResourceName = mapResourceName ?
+			mapLibraryName(resourceName + "-" + Platform.PLATFORM + "-" + getVersionString ()) // e.g libMyLib-gtk-3826.so
+			: resourceName;
+
+	// 1) Look for the resource in the java/swt library path(s)
+	// This code commonly finds the resource if the swt project is a required project and the swt binary (for your platform)
+	// project is open in your workplace  (found in the JAVA_LIBRARY_PATH) or if you're explicitly specified SWT_LIBRARY_PATH.
+	{
+		Function<String, File> lookForFileInPath = searchPath -> {
+			String classpath = System.getProperty(searchPath);
+			if (classpath != null){
+				String[] paths = classpath.split(":");
+				for (String path : paths) {
+				File file = new File(path + SEPARATOR + maybeSubDirPath + finalResourceName);
+					if (file.exists()){
+						return file;
+					}
+				}
+			}
+			return null;
+		};
+		File result = null;
+		for (String path : new String[] {JAVA_LIB_PATH,SWT_LIB_PATH}) {
+			result = lookForFileInPath.apply(path);
+			if (result != null)
+				return result;
+		}
+	}
+
+	// 2) Need to try to pull the resource out of the swt.jar.
+	// Look for the resource in the user's home directory, (if already extracted in the temp swt folder. (~/.swt/lib...)
+	// Extract from the swt.jar if not there already.
+	{
+		// Developer note:
+		// To test this piece of code, you need to compile SWT into a jar and use it in a test project. E.g
+		//   cd ~/git/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.linux.x86_64/
+		//   mvn clean verify -Pbuild-individual-bundles -Dnative=gtk.linux.x86_64
+		// then ./target/ will contain org.eclipse.swt.gtk.linux.x86_64-3.106.100-SNAPSHOT.jar (and it's source),
+		//  you can copy those into your test swt project and test that your resource is extracted into something like ~/.swt/...
+		// Lastly, if using subDir, you need to edit the build.properties and specify the folder you wish to have included in your jar in the includes.
+		File file = new File (USER_HOME + SEPARATOR +  SWT_LIB_DIR + maybeSubDirPathWithPrefix, finalResourceName);
+		if (file.exists()){
+			return file;
+		} else { // Try to extract file from jar if not found.
+
+			// Create temp directory if it doesn't exist
+			File tempDir = new File (USER_HOME, SWT_LIB_DIR + maybeSubDirPathWithPrefix);
+			if ((!tempDir.exists () || tempDir.isDirectory ())) {
+				 tempDir.mkdirs ();
+			}
+
+			StringBuffer message = new StringBuffer("");
+			if (extract(file.getPath(), maybeSubDirPath + finalResourceName, message)) {
+				if (file.exists()) {
+					return file;
+				}
+			}
+		}
+	}
+	throw new UnsatisfiedLinkError("Could not find resource" + resourceName +  (subDir != null ? " (in subdirectory: " + subDir + " )" : ""));
+}
+
 
 }

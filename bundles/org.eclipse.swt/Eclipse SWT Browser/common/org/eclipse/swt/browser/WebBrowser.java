@@ -403,7 +403,7 @@ public Object evaluate (String script) throws SWTException {
 	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
 	int index = getNextFunctionIndex ();
 	function.index = index;
-	function.isEvaluate = true;
+	function.isEvaluate = true;  // Note, Webkit2 doesn't use 'isEvaluate' machinery because it doesn't use a function for evaluation.
 	registerFunction (function);
 	String functionName = EXECUTE_ID + index;
 

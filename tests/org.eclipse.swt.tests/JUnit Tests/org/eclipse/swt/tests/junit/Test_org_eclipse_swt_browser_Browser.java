@@ -2082,10 +2082,6 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 	// culprit seems to be the main_context_iteration() call in shell.setVisible().
 	// See Bug 509587.  Solution: Webkit2.
 	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
-	// Skip till Bug 510905 is implemented.
-	assumeFalse("Skipping test_BrowserFunction_callback_with_javaReturningInt. Java's callback to Javascript doesn't support return yet", isWebkit2);
-
 	AtomicInteger returnInt = new AtomicInteger(0);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.

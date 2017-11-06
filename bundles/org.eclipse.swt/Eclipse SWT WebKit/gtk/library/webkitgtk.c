@@ -613,6 +613,445 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1SoupMessage_1request_1headers)
 }
 #endif
 
+#ifndef NO__1g_1bus_1own_1name
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1g_1bus_1own_1name)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1bus_1own_1name_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)g_bus_own_name(arg0, lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_bus_own_name)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jbyte *, jint, jintLong, jintLong, jintLong, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1bus_1own_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1dbus_1connection_1register_1object
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1g_1dbus_1connection_1register_1object)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3, jintLong arg4, jintLong arg5, jintLongArray arg6)
+{
+	jbyte *lparg1=NULL;
+	jintLong *lparg3=NULL;
+	jintLong *lparg6=NULL;
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1dbus_1connection_1register_1object_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)g_dbus_connection_register_object(arg0, lparg1, arg2, lparg3, arg4, arg5, lparg6);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_dbus_connection_register_object)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jbyte *, jintLong, jintLong *, jintLong, jintLong, jintLong *))fp)(arg0, lparg1, arg2, lparg3, arg4, arg5, lparg6);
+		}
+	}
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseIntLongArrayElements(env, arg6, lparg6, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1dbus_1connection_1register_1object_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1dbus_1method_1invocation_1return_1value
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1g_1dbus_1method_1invocation_1return_1value)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1dbus_1method_1invocation_1return_1value_FUNC);
+/*
+	g_dbus_method_invocation_return_value(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_dbus_method_invocation_return_value)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1dbus_1method_1invocation_1return_1value_FUNC);
+}
+#endif
+
+#ifndef NO__1g_1dbus_1node_1info_1lookup_1interface
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1dbus_1node_1info_1lookup_1interface)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1dbus_1node_1info_1lookup_1interface_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_dbus_node_info_lookup_interface(arg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_dbus_node_info_lookup_interface)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1dbus_1node_1info_1lookup_1interface_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1dbus_1node_1info_1new_1for_1xml
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1dbus_1node_1info_1new_1for_1xml)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLongArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jintLong *lparg1=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1dbus_1node_1info_1new_1for_1xml_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_dbus_node_info_new_for_xml(lparg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_dbus_node_info_new_for_xml)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte *, jintLong *))fp)(lparg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1dbus_1node_1info_1new_1for_1xml_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1boolean
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1boolean)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1boolean_FUNC);
+/*
+	rc = (jboolean)g_variant_get_boolean(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_boolean)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1boolean_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1byte
+JNIEXPORT jbyte JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1byte)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jbyte rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1byte_FUNC);
+/*
+	rc = (jbyte)g_variant_get_byte(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_byte)
+		if (fp) {
+			rc = (jbyte)((jbyte (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1byte_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1child_1value
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1child_1value)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1child_1value_FUNC);
+/*
+	rc = (jintLong)g_variant_get_child_value(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_child_value)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1child_1value_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1double
+JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1double)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1double_FUNC);
+/*
+	rc = (jdouble)g_variant_get_double(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_double)
+		if (fp) {
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1double_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1string
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1string)
+	(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1)
+{
+	jlong *lparg1=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1string_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_variant_get_string(arg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jlong *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1string_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1type
+JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1type)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1type_FUNC);
+/*
+	rc = (jint)g_variant_get_type(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_type)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1type_1string
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1get_1type_1string)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1get_1type_1string_FUNC);
+/*
+	rc = (jintLong)g_variant_get_type_string(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_get_type_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1get_1type_1string_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1is_1of_1type
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(_1g_1variant_1is_1of_1type)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1is_1of_1type_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)g_variant_is_of_type(arg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_is_of_type)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1is_1of_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1n_1children
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1g_1variant_1n_1children)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1n_1children_FUNC);
+/*
+	rc = (jlong)g_variant_n_children(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_n_children)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1n_1children_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1boolean
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1boolean)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1boolean_FUNC);
+/*
+	rc = (jintLong)g_variant_new_boolean(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_boolean)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jboolean))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1boolean_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1byte
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1byte)
+	(JNIEnv *env, jclass that, jbyte arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1byte_FUNC);
+/*
+	rc = (jintLong)g_variant_new_byte(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_byte)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1byte_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1double
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1double)
+	(JNIEnv *env, jclass that, jdouble arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1double_FUNC);
+/*
+	rc = (jintLong)g_variant_new_double(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_double)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jdouble))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1double_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1int32
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1int32)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1int32_FUNC);
+/*
+	rc = (jintLong)g_variant_new_int32(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_int32)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jint))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1int32_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1string
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1string)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1string_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_variant_new_string(lparg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1string_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1tuple
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1g_1variant_1new_1tuple)
+	(JNIEnv *env, jclass that, jintLongArray arg0, jlong arg1)
+{
+	jintLong *lparg0=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1g_1variant_1new_1tuple_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntLongArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_variant_new_tuple(lparg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, g_variant_new_tuple)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong *, jlong))fp)(lparg0, arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntLongArrayElements(env, arg0, lparg0, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1g_1variant_1new_1tuple_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1soup_1auth_1authenticate
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1auth_1authenticate)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2)
@@ -2417,6 +2856,46 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1favicon
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1set_1favicon_1database_1directory_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1web_1context_1set_1web_1extensions_1directory
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1web_1extensions_1directory)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1set_1web_1extensions_1directory_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	webkit_web_context_set_web_extensions_directory(arg0, lparg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_web_extensions_directory)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1set_1web_1extensions_1directory_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data_FUNC);
+/*
+	webkit_web_context_set_web_extensions_initialization_user_data(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_web_extensions_initialization_user_data)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data_FUNC);
 }
 #endif
 

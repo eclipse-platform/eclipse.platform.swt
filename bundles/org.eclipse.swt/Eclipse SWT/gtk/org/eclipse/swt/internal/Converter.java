@@ -81,6 +81,16 @@ public static byte [] wcsToMbcs (String string, boolean terminate) {
 }
 
 /**
+ * Given a java String, convert it to a regular null terimnated C string,
+ * to be used when calling a native C function.
+ * @param string A java string.
+ * @return a pointer to a C String. In C, this would be a 'char *'
+ */
+public static byte [] javaStringToCString (String string) {
+	return wcsToMbcs(string, true);
+}
+
+/**
  * This method takes a 'C' pointer (char *) or (gchar *), reads characters up to the terminating symbol '\0' and
  * converts it into a Java String.
  *

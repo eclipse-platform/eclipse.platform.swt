@@ -584,6 +584,7 @@ typedef enum {
 	_1gdk_1x11_1visual_1get_1xvisual_FUNC,
 	_1gdk_1x11_1window_1get_1xid_FUNC,
 	_1gdk_1x11_1window_1lookup_1for_1display_FUNC,
+	_1getpid_FUNC,
 	_1glib_1major_1version_FUNC,
 	_1glib_1micro_1version_FUNC,
 	_1glib_1minor_1version_FUNC,

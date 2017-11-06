@@ -48,7 +48,11 @@ public class WebKitGTK extends C {
 				System.out.println("SWT_LIB  Webkit1   Webkitgtk:"+ webkit_major_version() +"."+ webkit_minor_version() + "." + webkit_micro_version() + "  (webkitgtk < 2.5 is Webkit1)");
 			}
 			if (WEBKIT2) {
-				System.out.println("SWT_LIB  Webkit2   Webkitgtk:"+ webkit_get_major_version()+"."+ webkit_get_minor_version() + "." + webkit_get_micro_version() + "  (webkitgtk >=2.5 is Webkit2)");
+				String featureInfo = "   Implemented: BrowserFunction over GDBus, \n"
+						+ "   not finished: setUrl(..postData)\n";
+				System.out.println("SWT_LIB  Webkit2   Webkitgtk:"+ webkit_get_major_version()+"."+ webkit_get_minor_version() + "."
+						+ webkit_get_micro_version() + "  (webkitgtk >=2.5 is Webkit2)\n"
+						+ featureInfo);
 			}
 		}
 	};
@@ -85,10 +89,14 @@ public class WebKitGTK extends C {
 
 	/** Signals */
 	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 (soup) & Webkit2 WebkitWebView
-	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$
-	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$
+
+	// Close webview
+	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$   // Webkit1
+	public static final byte[] close = ascii ("close"); // $NON-NLS-1$					   // Webkit2
+
+	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$ // Webkit1. (On W2 see 'console-message-sent'). Not printed to stderr on W2.
+
 	public static final byte[] context_menu = ascii ("context-menu"); // $NON-NLS-1$
-	public static final byte[] close = ascii ("close"); // $NON-NLS-1$
 	public static final byte[] create = ascii ("create"); // $NON-NLS-1$
 	public static final byte[] create_web_view = ascii ("create-web-view"); // $NON-NLS-1$
 	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$
@@ -98,6 +106,7 @@ public class WebKitGTK extends C {
 	public static final byte[] failed = ascii ("failed"); // $NON-NLS-1$							// Webkit2
 	public static final byte[] finished = ascii ("finished"); // $NON-NLS-1$						// Webkit2
 
+	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions"); // Webkit2
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$   		// Webkit1 -> StatusTextListener.changed()
 	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$	// Webkit2 -> StatusTextListener.changed()
 
@@ -175,6 +184,92 @@ public class WebKitGTK extends C {
 	public static final byte[] mousemove = ascii ("mousemove"); // $NON-NLS-1$
 	public static final byte[] mouseup = ascii ("mouseup"); // $NON-NLS-1$
 	public static final byte[] mousewheel = ascii ("mousewheel"); // $NON-NLS-1$
+
+
+
+
+
+
+	/*
+	 * GDBus related
+	 */
+
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_STARTER = -1; //An alias for the message bus that activated the process, if any.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_NONE = 0;    // Not a message bus.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_SYSTEM  = 1; // The system-wide message bus.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_SESSION = 2; //The login session message bus.
+
+	/** @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_NONE = 0; //No flags set.
+	/** @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT = (1<<0); //Allow another message bus connection to claim the name.
+	/** @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_REPLACE = (1<<1); //If another message bus connection owns the name and have
+	 																 // specified #G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT, then take the name from the other connection.
+
+
+	/* TYPE NOTES
+	 *
+	 * GDBus doesn't support all the types that we need. I used encoded 'byte' to translate some types.
+	 *
+	 * - 'null' is not supported. I thought to potentially use  'maybe' types, but they imply a possible NULL of a certain type, but not null itself.
+	 *   so I use 'byte=48' (meaning '0' in ASCII) to denote null.
+	 *
+	 * - Empty arrays/structs are not supported by gdbus.
+	 *    "Container types ... Empty structures are not allowed; there must be at least one type code between the parentheses"
+	 *	   src: https://dbus.freedesktop.org/doc/dbus-specification.html
+	 *	I used byte=101  (meaning 'e' in ASCII) to denote empty array.
+	 *
+	 * In Javascript all Number types seem to be 'double', (int/float/double/short  -> Double). So we convert everything into double accordingly.
+	 *
+	 * DBus Type info:  https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
+	 * GDBus Type info: https://developer.gnome.org/glib/stable/glib-GVariantType.html
+	 */
+
+	/*
+	 * DBus types as defined by:
+	 * https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
+	 */
+	/** @category gdbus */
+	public static final String DBUS_TYPE_BYTE = "y"; // 8 bit, unsigned int.
+	/** @category gdbus */
+	public static final String DBUS_TYPE_BOOLEAN = "b";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_STRING = "s";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_DOUBLE = "d";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_STRUCT = "r"; // Not used by Dbus, but implemented by GDBus.
+	/** @category gdbus */
+	public static final String DBUS_TYPE_SINGLE_COMPLETE = "*";
+
+
+	/** @category gdbus */
+	public static final byte SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY = 101;  // See TYPE NOTE above
+	/** @category gdbus */
+	public static final byte SWT_DBUS_MAGIC_NUMBER_NULL = 48;		   // See TYPE NOTE above
+
+	/*
+	 * GVariant Types
+	 * These are for the most part quite similar to DBus types with a few differences. Read:
+	 * https://developer.gnome.org/glib/stable/glib-GVariantType.html
+	 */
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_BYTE = ascii(DBUS_TYPE_BYTE);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_BOOLEAN = ascii(DBUS_TYPE_BOOLEAN);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_STRING = ascii(DBUS_TYPE_STRING);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii(DBUS_TYPE_DOUBLE);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_TUPLE = ascii(DBUS_TYPE_STRUCT);
+
+
 
 protected static byte [] ascii (String name) {
 	int length = name.length ();
@@ -1829,6 +1924,32 @@ public static final long /*int*/ webkit_web_view_new () {
 	}
 }
 
+
+/** @method flags=dynamic */ // @param context cast=(WebKitWebContext*)  @param directory cast=(const gchar *)
+public static final native void _webkit_web_context_set_web_extensions_directory (long /*int*/ context, byte[] directory);
+public static final void webkit_web_context_set_web_extensions_directory (long /*int*/ context, byte[] directory) {
+	assert WEBKIT2;
+	lock.lock();
+	try {
+		_webkit_web_context_set_web_extensions_directory (context, directory);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_web_context_set_web_extensions_initialization_user_data(long /* int */ context, long /* int */ user_data);
+public static final void webkit_web_context_set_web_extensions_initialization_user_data(long /* int */ context,
+		long /* int */ user_data) {
+	assert WEBKIT2;
+	lock.lock();
+	try {
+		_webkit_web_context_set_web_extensions_initialization_user_data(context, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_user_content_manager_new();
 public static final long /*int*/ webkit_user_content_manager_new() {
@@ -2059,6 +2180,296 @@ public static final long /*int*/  webkit_uri_response_get_mime_type (long /*int*
 		lock.unlock();
 	}
 }
+
+
+
+
+
+
+/*
+ * GDBus related
+ */
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error);
+public static final long /*int*/ g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error) {
+  lock.lock();
+  try {
+    return _g_dbus_node_info_new_for_xml (xml_data, error);
+  } finally {
+    lock.unlock();
+  }
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native int _g_bus_own_name (int bus_type, byte[] name, int flags, long /*int*/ bus_acquired_handler, long /*int*/ name_acquired_handler, long /*int*/ name_lost_handler, long /*int*/  user_data, long /*int*/ user_data_free_func);
+public static final int g_bus_own_name (int bus_type, byte[] name, int flags, long /*int*/ bus_acquired_handler, long /*int*/ name_acquired_handler, long /*int*/ name_lost_handler, long /*int*/  user_data, long /*int*/ user_data_free_func) {
+	lock.lock();
+	try {
+		return _g_bus_own_name(bus_type, name, flags, bus_acquired_handler, name_acquired_handler, name_lost_handler, user_data, user_data_free_func);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native int _g_dbus_connection_register_object (long /*int*/ connection, byte[] object_path, long /*int*/ interface_info, long /*int*/[] vtable, long /*int*/ user_data, long /*int*/ user_data_free_func, long /*int*/[] error);
+public static final int g_dbus_connection_register_object (long /*int*/ connection, byte[] object_path, long /*int*/ interface_info, long /*int*/[] vtable, long /*int*/ user_data, long /*int*/ user_data_free_func, long /*int*/[] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_register_object( connection,  object_path,  interface_info,  vtable,  user_data,  user_data_free_func, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_node_info_lookup_interface (long /*int*/ info, byte [] name);
+public static final long /*int*/ g_dbus_node_info_lookup_interface (long /*int*/ info, byte [] name) {
+	lock.lock();
+	try {
+		return _g_dbus_node_info_lookup_interface(info, name);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native void _g_dbus_method_invocation_return_value (long /*int*/ invocation, long /*int*/ parameters);
+public static final void g_dbus_method_invocation_return_value (long /*int*/ invocation, long /*int*/ parameters) {
+	lock.lock();
+	try {
+		_g_dbus_method_invocation_return_value (invocation, parameters);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_int32 (int intval);
+public static final long /*int*/ g_variant_new_int32 (int intval) {
+	lock.lock();
+	try {
+		return _g_variant_new_int32(intval);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ * @return guchar
+ */
+public static final native byte _g_variant_get_byte (long /*int*/ gvariant);
+public static final byte g_variant_get_byte (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_byte (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native boolean /*int*/ _g_variant_get_boolean (long /*int*/ gvariant);
+public static final boolean /*int*/ g_variant_get_boolean (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_boolean (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_get_child_value (long /*int*/ gvariant, int index);
+public static final long /*int*/ g_variant_get_child_value (long /*int*/ gvariant, int index) {
+	lock.lock();
+	try {
+		return _g_variant_get_child_value (gvariant, index);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native double _g_variant_get_double (long /*int*/ gvariant);
+public static final double g_variant_get_double (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_double (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_get_string (long /*int*/ gvariant, long[] length);
+public static final long /*int*/ g_variant_get_string (long /*int*/ gvariant, long[] length) {
+	lock.lock();
+	try {
+		return _g_variant_get_string (gvariant, length);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native int _g_variant_get_type (long /*int*/ gvariant);
+public static final int g_variant_get_type (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_type (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/  _g_variant_get_type_string (long /*int*/ gvariant);
+public static final long /*int*/ g_variant_get_type_string (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_type_string (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native boolean _g_variant_is_of_type (long /*int*/ gvariant, byte[] type);
+public static final boolean g_variant_is_of_type (long /*int*/ gvariant, byte[] type) {
+	lock.lock();
+	try {
+		return _g_variant_is_of_type (gvariant, type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long _g_variant_n_children (long gvariant);
+public static final long g_variant_n_children (long gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_n_children (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_boolean (boolean value);
+public static final long /*int*/ g_variant_new_boolean (boolean value) {
+	lock.lock();
+	try {
+		return _g_variant_new_boolean (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_double (double value);
+public static final long /*int*/ g_variant_new_double (double value) {
+	lock.lock();
+	try {
+		return _g_variant_new_double (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_byte (byte value);
+public static final long /*int*/ g_variant_new_byte (byte value) {
+	lock.lock();
+	try {
+		return _g_variant_new_byte (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_tuple (long /*int*/[] items, long length);
+public static final long /*int*/ g_variant_new_tuple (long /*int*/[] items, long length ) {
+	lock.lock();
+	try {
+		return _g_variant_new_tuple (items, length);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_string (byte[] string);
+public static final long /*int*/ g_variant_new_string (byte[] string) {
+	lock.lock();
+	try {
+		return _g_variant_new_string (string);
+	} finally {
+		lock.unlock();
+	}
+}
+
 
 /* --------------------- start SWT natives --------------------- */
 

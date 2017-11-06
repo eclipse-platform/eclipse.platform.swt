@@ -14989,6 +14989,20 @@ public static final void gtk_window_unmaximize(long /*int*/ handle) {
 		lock.unlock();
 	}
 }
+
+// Technically works on OSX also, but currently only used on Linux.
+// Once SWT is moved to Java 9, consider using 'ProcessHandle.current().getPid();' instead,
+// but for now getpid() should do.
+// https://stackoverflow.com/questions/35842/how-can-a-java-program-get-its-own-process-id
+public static final native int _getpid ();
+public static final int getpid() {
+	lock.lock();
+	try {
+		return _getpid();
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out

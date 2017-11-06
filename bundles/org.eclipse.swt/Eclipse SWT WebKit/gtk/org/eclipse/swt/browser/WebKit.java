@@ -44,6 +44,14 @@ class WebKit extends WebBrowser {
 	byte[] htmlBytes;
 	BrowserFunction eventFunction; //Webkit1 only.
 
+	static final String reportErrMsg = "Please report this issue via: https://bugs.eclipse.org/bugs/enter_bug.cgi?"
+			+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
+			+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
+			+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
+			+ "&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug"
+			+ "&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact="
+			+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=[webkit2]BrowserProblem";
+
 	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
 
 	/**
@@ -169,7 +177,7 @@ class WebKit extends WebBrowser {
 			}
 
 			if (WEBKIT2) {
-				new Webkit2JavaCallback();
+				Webkit2Extension.init();
 			} else {
 				JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
 				if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -292,100 +300,156 @@ class WebKit extends WebBrowser {
 			}
 	}
 
+	@Override
+	public void createFunction(BrowserFunction function) {
+		if (WEBKIT2) {
+			if (!Webkit2Extension.gdbus_init()) {
+				System.err.println("SWT Webkit Warning: Webkit extension failed to initialize. BrowserFunction will not work.: " + function.name);
+				return;
+			}
+		}
+		super.createFunction(function);
+	}
 
 	/**
-	 * For javascript to call java.
-	 * This callback is special in that we link Javascript to a C function and a C function to
-	 * the SWT java function.
+	 * This class deals with the Webkit2 extension.
 	 *
-	 * Note there is an architecture difference how callJava is implemented in Webkit1 vs Webkit2:
-	 *
-	 * Webkit1: See JSObjectHasPropertyProc.
-	 *
-	 * Webkit2: - callJava is implemented by connecting and calling a webkit signal:
-	 *  - webkit2JavaCallProc is linked from C to java.
-	 *  - Each webkit instance connects a signal (Webkit2JavaCallback.signal) to Webkit2JavaCallback.webkit2JavaCallProc
-	 *    via Webkit2JavaCallback.connectSignal(..)
-	 *  - (Note, webView is created with user_content_manager on webkit2.)
-	 *  - callJava is a wrapper that calls window.webkit.messageHandlers.webkit2JavaCallProc.postMessage([index,token, args]),
-	 *  	 which triggers the script-message-received::webkit2JavaCallProc signal and is forwarded to webkit2JavaCallProc.
-	 **/
-	static class Webkit2JavaCallback {
-		private static final String JavaScriptFunctionName = "webkit2JavaCallProc";  // $NON-NLS-1$
-		private static final String Signal = "script-message-received::" + JavaScriptFunctionName; // $NON-NLS-1$
+	 * Extension is separately loaded and deals Javascript callbacks to Java.
+	 * Extension is needed so that Javascript can receive a return value from Java
+	 * (for which currently there is no api in WebkitGtk 2.18)
+	 */
+	static class Webkit2Extension {
+		/** Note, if updating this, you need to change it also in webkitgtk_extension.c */
+		private static final String javaScriptFunctionName = "webkit2callJava";  // $NON-NLS-1$
+		private static Callback initializeWebExtensions_callback;
+		private static int uniqueID = OS.getpid();
 
-		static final String JavaScriptFunctionDeclaration =
-				"if (!window.callJava) {\n"
-				+ "		window.callJava = function callJava(index, token, args) {\n"
-				+ "         window.webkit.messageHandlers." + JavaScriptFunctionName + ".postMessage([index,token, args]);\n"
-				+ "		}\n"
-				+ "};\n";
+		/**
+		 * Don't continue initialization if something failed. This allows Browser to carryout some functionality
+		 * even if the webextension failed to load.
+		 */
+		private static boolean loadFailed;
 
-		private static Callback callback;
-		static {
-			callback = new Callback (Webkit2JavaCallback.class, JavaScriptFunctionName, void.class, new Type[] {long.class, long.class, long.class});
-			if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		static String getJavaScriptFunctionName() {
+			return javaScriptFunctionName;
+		}
+		static String getJavaScriptFunctionDeclaration(long /*int*/ webView) {
+			return "if (!window.callJava) {\n"
+			+ "		window.callJava = function callJava(index, token, args) {\n"
+			+ "          return " + javaScriptFunctionName + "('" + String.valueOf(webView) +  "', index, token, args);\n"
+			+ "		}\n"
+			+ "};\n";
+		}
+
+		static void init() {
+			initializeWebExtensions_callback = new Callback(Webkit2Extension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
+			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
 		}
 
 		/**
-		 * This method is called directly from javascript via something like: <br>
-		 * 	   window.webkit.messageHandlers.webkit2JavaCallProc.postMessage('helloWorld') <br>
-		 * - Note, this method is async when called from javascript.  <br>
-		 * - This method name MUST match: this.JavaScriptFunctionName <br>
-		 * - This method somewhat mirrors 'long callJava(ctx,func...)'. Except that it doesn't return a value.
-		 * Docu: <br>
-		 * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitUserContentManager.html#WebKitUserContentManager-script-message-received
-		 * */
-		@SuppressWarnings("unused")  // Method is called only directly from javascript.
-		private static void webkit2JavaCallProc (long /*int*/ WebKitUserContentManagerPtr, long /*int*/ WebKitJavascriptResultPtr, long /*int*/ webViewPtr) {
-			try {
-				long /*int*/ context = WebKitGTK.webkit_javascript_result_get_global_context (WebKitJavascriptResultPtr);
-				long /*int*/ value = WebKitGTK.webkit_javascript_result_get_value (WebKitJavascriptResultPtr);
-				Object[] arguments = (Object[]) convertToJava(context, value);
-				if (arguments.length != 3) throw new IllegalArgumentException("Expected 3 args. Received: " + arguments.length);
-
-				Double index = (Double) arguments[0];
-				String token = (String) arguments[1];
-
-				Browser browser = FindBrowser(webViewPtr);
-				if (browser == null) throw new NullPointerException("Could not find assosiated browser instance for handle: " + webViewPtr);
-
-				BrowserFunction function = browser.webBrowser.functions.get(index.intValue());
-
-				if (function == null) throw new NullPointerException("Could not find function with index: " + index);
-				if (!token.equals(function.token)) throw new IllegalStateException("Function token missmatch. Expected:" + function.token + " actual:" + token);
-				if (! (arguments[2] instanceof Object[])) {
-					throw new IllegalArgumentException("Javascript did not provide any arguments. An empty callback [like call()] should still provide an empty array");
-				}
-
-				try {
-					// TODO someday : Support return values. See Bug 510905
-					function.function ((Object[]) arguments[2]);
-				} catch (Exception e) {
-					// Exception in user function.
-					// Normally we would return an error to javascript. See callJava(..).
-					// But support for returning item back to java not implemented yet.
-				}
-
-			} catch (RuntimeException e) {
-				System.err.println("\nSWT Webkit2 internal error: Javascript callback from Webkit to Java encountered an error while processing the callback:");
-				System.err.println("Please report this via: https://bugs.eclipse.org/bugs/enter_bug.cgi?alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact=&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=&version=4.7");
-				e.printStackTrace();
+		 * GDbus initialization can cause performance slow downs. So we int GDBus in lazy way.
+		 * It can be initialized upon first use of BrowserFunction.
+		 */
+		static boolean gdbus_init() {
+			if (!loadFailed) {
+				WebkitGDBus.init(String.valueOf(uniqueID));
+				return true;
+			} else {
+				return false;
 			}
-			return;
 		}
 
-		/** Connect an instance of a webkit to the callback. */
-		static void connectSignal(long /*int*/ WebKitUserContentManager, long /*int*/ webView) {
-			OS.g_signal_connect (WebKitUserContentManager, Converter.wcsToMbcs (Signal, true), callback.getAddress (), webView);
-			WebKitGTK.webkit_user_content_manager_register_script_message_handler(WebKitUserContentManager, Converter.wcsToMbcs(JavaScriptFunctionName, true));
+		/**
+		 * This callback is called to initialize webextension.
+		 * It is the optimum place to set extension directory and set initialization user data.
+		 *
+		 * I've experimented with loading webextension later (to see if we can get performance gains),
+		 * but found breakage. Webkitgtk doc says it should be loaded as early as possible and specifically best
+		 * to do it in this calllback.
+		 *
+		 * See documenation: WebKitWebExtension (Description)
+		 */
+		@SuppressWarnings("unused") // Only called directly from C
+		private static void initializeWebExtensions_callback (long /*int*/ WebKitWebContext, long /*int*/ user_data) {
+
+			// 1) GDBus:
+			// Normally we'd first initialize gdbus channel. But gdbus makes Browser slower and isn't always needed.
+			// So WebkitGDBus is lazy-initialized, although it can be initialized here if gdbus is ever needed
+			// for more than BrowserFunction, like:
+			// WebkitGDBus.init(String.valueOf(uniqueID));
+			// Also consider only loading gdbus if the extension initialized properly.
+
+			// 2) Load Webkit Extension:
+			// Webkit extensions should be in their own directory.
+			String swtVersion = Library.getVersionString();
+			File extension = Library.findResource("webkitextensions" + swtVersion,"swt-webkit2extension", true);
+			if (extension == null){
+				System.err.println("SWT Webkit.java Error: Could not find webkit extension. BrowserFunction functionality will not be available. \n"
+						+ "(swt version: " + swtVersion + ")");
+				int [] vers = internalGetWebkitVersion();
+				System.err.println(String.format("WebKit2Gtk version %s.%s.%s", vers[0], vers[1], vers[2]));
+				System.err.println(reportErrMsg);
+				loadFailed = true;
+				return;
+			}
+
+			String extensionsFolder = extension.getParent();
+
+			/* Dev note:
+			 * As per
+			 * - WebkitSrc: WebKitExtensionManager.cpp,
+			 * - IRC discussion with annulen
+			 * you cannot load the webextension GModule directly, (webkitgtk 2.18). You can only specify directory and user data.
+			 * So we need to treat this  '.so' in a special way.
+			 * (as a note, the webprocess would have to load the gmodule).
+			 */
+			WebKitGTK.webkit_web_context_set_web_extensions_directory(WebKitGTK.webkit_web_context_get_default(), Converter.wcsToMbcs (extensionsFolder, true));
+			long /*int*/ gvariantUserData = WebKitGTK.g_variant_new_int32(uniqueID);
+			WebKitGTK.webkit_web_context_set_web_extensions_initialization_user_data(WebKitGTK.webkit_web_context_get_default(), gvariantUserData);
+
+		}
+
+		/**
+		 * @param cb_args Raw callback arguments by function.
+		 */
+		static Object webkit2callJavaCallback(Object [] cb_args) {
+			assert cb_args.length == 4;
+			Object returnValue = null;
+
+			Long webViewLocal = (Double.valueOf((String) cb_args[0])).longValue();
+			Browser browser = FindBrowser((long /*int*/) webViewLocal.longValue());
+			Integer functionIndex = ((Double) cb_args[1]).intValue();
+			String token = (String) cb_args[2];
+
+			BrowserFunction function = browser.webBrowser.functions.get(functionIndex);
+			if (function == null) {
+				System.err.println("SWT Webkit Error: Failed to find function with index: " + functionIndex);
+				return null;
+			}
+			if (!function.token.equals(token)) {
+				System.err.println("SWT Webkit Error: token mismatch for function with index: " + functionIndex);
+				return null;
+			}
+			try {
+				// Call user code. Exceptions can occur.
+				Object [] user_args = (Object []) cb_args[3];
+				returnValue = function.function(user_args);
+			} catch (Exception e ) {
+				// - Something went wrong in user code.
+				// - Dev note, webkit1 uses a browserFunction and function.isEvaluate for evaluate(),
+				//   webkit2 doesn't, so we don't have 'if (function.isEvaluate)' logic here.
+				System.err.println("SWT Webkit: Exception occured in user code of function: " + function.name);
+				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+			}
+			return returnValue;
 		}
 	}
 
 	@Override
 	String getJavaCallDeclaration() {
 		if (WEBKIT2) {
-			return Webkit2JavaCallback.JavaScriptFunctionDeclaration;
+			return Webkit2Extension.getJavaScriptFunctionDeclaration(webView);
 		} else {
 			return super.getJavaCallDeclaration();
 		}
@@ -837,14 +901,7 @@ public void create (Composite parent, int style) {
 		OS.gtk_scrolled_window_set_policy (scrolledWindow, OS.GTK_POLICY_AUTOMATIC, OS.GTK_POLICY_AUTOMATIC);
 	}
 
-	if (WEBKIT2) {
-			// On Webkit2, webView has to be created with  UserContentManager so that Javascript callbacks work. See #508217
-			long /*int*/ WebKitUserContentManager = WebKitGTK.webkit_user_content_manager_new();
-			webView = WebKitGTK.webkit_web_view_new_with_user_content_manager (WebKitUserContentManager);
-			Webkit2JavaCallback.connectSignal(WebKitUserContentManager, webView);
-		} else { // Webkit1
-		  webView = WebKitGTK.webkit_web_view_new ();
-		}
+	webView = WebKitGTK.webkit_web_view_new ();
 
 	// Bug 522733 Webkit2 workaround for crash
 	//   As of Webkitgtk 2.18, webkitgtk2 crashes if the first instance of webview is not referenced when JVM shuts down.
