@@ -186,30 +186,32 @@ class WebKit extends WebBrowser {
 				if (!WebKitGTK.LibraryLoaded) return;
 
 				if (WEBKIT2) {
-					// TODO - implement equivalent. Bug 522181
-					// Currently 'webkit_get_default_session()' is a webkit1-only function.
-					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
-					return;
+					 // TODO: webkit_website_data_manager_clear currently does not
+					 // support more fine grained removals. (I.e, session vs all cookies)
+					long /*int*/ context = WebKitGTK.webkit_web_context_get_default();
+					long /*int*/ manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
+					WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
+				} else {
+					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
+					long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
+					long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
+					if (jar == 0) return;
+					long /*int*/ cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
+					int length = OS.g_slist_length (cookies);
+					long /*int*/ current = cookies;
+					for (int i = 0; i < length; i++) {
+						long /*int*/ cookie = OS.g_slist_data (current);
+						long /*int*/ expires = WebKitGTK.SoupCookie_expires (cookie);
+						if (expires == 0) {
+							/* indicates a session cookie */
+							WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
+						}
+						WebKitGTK.soup_cookie_free (cookie);
+						current = OS.g_slist_next (current);
+					}
+					OS.g_slist_free (cookies);
 				}
 
-				long /*int*/ session = WebKitGTK.webkit_get_default_session ();
-				long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
-				long /*int*/ jar = WebKitGTK.soup_session_get_feature (session, type);
-				if (jar == 0) return;
-				long /*int*/ cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
-				int length = OS.g_slist_length (cookies);
-				long /*int*/ current = cookies;
-				for (int i = 0; i < length; i++) {
-					long /*int*/ cookie = OS.g_slist_data (current);
-					long /*int*/ expires = WebKitGTK.SoupCookie_expires (cookie);
-					if (expires == 0) {
-						/* indicates a session cookie */
-						WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
-					}
-					WebKitGTK.soup_cookie_free (cookie);
-					current = OS.g_slist_next (current);
-				}
-				OS.g_slist_free (cookies);
 			};
 
 			NativeGetCookie = () -> {

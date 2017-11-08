@@ -2380,6 +2380,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1get_1type)
 }
 #endif
 
+#ifndef NO__1webkit_1web_1context_1get_1website_1data_1manager
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1get_1website_1data_1manager)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1get_1website_1data_1manager_FUNC);
+/*
+	rc = (jintLong)webkit_web_context_get_website_data_manager(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_get_website_data_manager)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1get_1website_1data_1manager_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1web_1context_1set_1favicon_1database_1directory
 JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1favicon_1database_1directory)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -3254,6 +3274,24 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1stop_1loading)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1stop_1loading_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1website_1data_1manager_1clear
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1website_1data_1manager_1clear)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1website_1data_1manager_1clear_FUNC);
+/*
+	webkit_website_data_manager_clear(arg0, arg1, arg2, arg3, arg4, arg5);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_website_data_manager_clear)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3, arg4, arg5);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1website_1data_1manager_1clear_FUNC);
 }
 #endif
 

@@ -140,6 +140,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1user_1content_1manager_1register_1script_1message_1handler",
 	"_1webkit_1web_1context_1get_1default",
 	"_1webkit_1web_1context_1get_1type",
+	"_1webkit_1web_1context_1get_1website_1data_1manager",
 	"_1webkit_1web_1context_1set_1favicon_1database_1directory",
 	"_1webkit_1web_1data_1source_1get_1data",
 	"_1webkit_1web_1data_1source_1get_1encoding",
@@ -183,6 +184,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1run_1javascript",
 	"_1webkit_1web_1view_1run_1javascript_1finish",
 	"_1webkit_1web_1view_1stop_1loading",
+	"_1webkit_1website_1data_1manager_1clear",
 	"_1webkit_1window_1properties_1get_1geometry",
 	"memmove",
 };

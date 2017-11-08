@@ -150,6 +150,113 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	browser = new Browser(null, SWT.NONE); // Should throw.
 }
 
+
+@Test
+public void test_evalute_Cookies () {
+	final AtomicBoolean loaded = new AtomicBoolean(false);
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+
+	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+	browser.setUrl("http://www.eclipse.org/swt");
+	waitForPassCondition(() -> loaded.get());
+
+	// Set the cookies
+	// document.cookie behaves different from other global vars
+	browser.evaluate("document.cookie = \"cookie1=value1\";");
+	browser.evaluate("document.cookie = \"cookie2=value2\";");
+
+	// Retrieve entire cookie store
+	String res = (String) browser.evaluate("return document.cookie;");
+
+	assertTrue(!res.isEmpty());
+}
+
+@Test
+public void test_ClearAllSessionCookies () {
+	final AtomicBoolean loaded = new AtomicBoolean(false);
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+
+	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+	browser.setUrl("http://www.eclipse.org/swt");
+	waitForPassCondition(() -> loaded.get());
+
+	// Set the cookies
+	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
+		browser.evaluate("document.cookie = \"cookie1=value1\";");
+		browser.evaluate("document.cookie = \"cookie2=value2\";");
+	} else {
+		Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
+		Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
+	}
+
+	// Get the cookies
+	String v1, v2;
+	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
+		v1 = (String) browser.evaluate(toCookieEvalString("cookie1"));
+		v2 = (String) browser.evaluate(toCookieEvalString("cookie2"));
+	} else {
+		v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+		v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	}
+	assertEquals("value1", v1);
+	assertEquals("value2", v2);
+
+	Browser.clearSessions();
+
+	// Should be empty
+	String e1, e2;
+	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
+		e1 = (String) browser.evaluate(toCookieEvalString("cookie1"));
+		e2 = (String) browser.evaluate(toCookieEvalString("cookie2"));
+	} else {
+		e1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+		e2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	}
+	assertTrue(e1 == null || e1.isEmpty());
+	assertTrue(e2 == null || e2.isEmpty());
+}
+
+/**
+ * TODO: Remove this once Webkit2 Cookie port complete
+ */
+private String toCookieEvalString (String key) {
+	return  "var name = \"" + key + "=\";\n" +
+			"    var decodedCookie = decodeURIComponent(document.cookie);\n" +
+			"    var ca = decodedCookie.split(';');\n" +
+			"    for(var i = 0; i < ca.length; i++) {\n" +
+			"        var c = ca[i];\n" +
+			"        while (c.charAt(0) == ' ') {\n" +
+			"            c = c.substring(1);\n" +
+			"        }\n" +
+			"        if (c.indexOf(name) == 0) {\n" +
+			"            return c.substring(name.length, c.length);\n" +
+			"        }\n" +
+			"    }\n" +
+			"    return \"\";";
+}
+
+@Test
+public void test_get_set_Cookies() {
+	assumeFalse("Not implemented on webkit2 yet. Bug 522181.", isWebkit2);
+
+	final AtomicBoolean loaded = new AtomicBoolean(false);
+	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
+
+	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
+	browser.setUrl("http://www.eclipse.org/swt");
+	waitForPassCondition(() -> loaded.get());
+
+	// Set the cookies
+	Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
+	Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
+
+	// Get the cookies
+	String v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+	assertEquals("value1", v1);
+	String v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	assertEquals("value2", v2);
+}
+
 @Override
 @Test
 public void test_getChildren() {

@@ -150,6 +150,7 @@ typedef enum {
 	_1webkit_1user_1content_1manager_1register_1script_1message_1handler_FUNC,
 	_1webkit_1web_1context_1get_1default_FUNC,
 	_1webkit_1web_1context_1get_1type_FUNC,
+	_1webkit_1web_1context_1get_1website_1data_1manager_FUNC,
 	_1webkit_1web_1context_1set_1favicon_1database_1directory_FUNC,
 	_1webkit_1web_1data_1source_1get_1data_FUNC,
 	_1webkit_1web_1data_1source_1get_1encoding_FUNC,
@@ -193,6 +194,7 @@ typedef enum {
 	_1webkit_1web_1view_1run_1javascript_FUNC,
 	_1webkit_1web_1view_1run_1javascript_1finish_FUNC,
 	_1webkit_1web_1view_1stop_1loading_FUNC,
+	_1webkit_1website_1data_1manager_1clear_FUNC,
 	_1webkit_1window_1properties_1get_1geometry_FUNC,
 	memmove_FUNC,
 } WebKitGTK_FUNCS;

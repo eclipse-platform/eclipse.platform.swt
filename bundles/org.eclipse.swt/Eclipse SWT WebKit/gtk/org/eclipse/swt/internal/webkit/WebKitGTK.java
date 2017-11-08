@@ -80,6 +80,8 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_FOR_SESSION = 1;
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_PERMANENT = 2;
 
+	public static final int WEBKIT_WEBSITE_DATA_COOKIES = 1 << 8; // Webkit2
+
 
 	/** Signals */
 	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 (soup) & Webkit2 WebkitWebView
@@ -1362,6 +1364,18 @@ public static final long /*int*/ webkit_web_context_get_default () {
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_context_get_website_data_manager (long /*int*/ context);
+public static final long /*int*/ webkit_web_context_get_website_data_manager (long /*int*/ context) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+lock.lock();
+try {
+	return _webkit_web_context_get_website_data_manager (context);
+} finally {
+	lock.unlock();
+}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path);
 public static final long /*int*/ webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path) { // Never called.
 	assert WEBKIT2 : Webkit2AssertMsg;
@@ -1957,6 +1971,18 @@ public static final void webkit_web_view_stop_loading (long /*int*/ web_view) {
 	lock.lock();
 	try {
 		_webkit_web_view_stop_loading (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_website_data_manager_clear (long /*int*/ manager, long /*int*/ types, long /*int*/ timespan, long /*int*/ cancellable, long /*int*/ callback, long /*int*/ user_data);
+public static final void webkit_website_data_manager_clear (long /*int*/ manager, long /*int*/ types, long /*int*/ timespan, long /*int*/ cancellable, long /*int*/ callback, long /*int*/ user_data) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_website_data_manager_clear (manager, types, timespan, cancellable, callback, user_data);
 	} finally {
 		lock.unlock();
 	}
