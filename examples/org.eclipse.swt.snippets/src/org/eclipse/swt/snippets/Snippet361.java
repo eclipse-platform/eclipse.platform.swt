@@ -197,7 +197,7 @@ public class Snippet361 {
 		/* Allow user-entered numbers. */
 		Double d = (double) 0;
 		try {
-			d = new Double(string);
+			d = Double.valueOf(string);
 		} catch(NumberFormatException ex) {
 		}
 		return d;

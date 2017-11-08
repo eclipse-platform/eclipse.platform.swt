@@ -3584,9 +3584,9 @@ class AccessibleObject {
 	static Number getGValue (long /*int*/ value) {
 		long /*int*/ type = OS.G_VALUE_TYPE(value);
 		if (type == 0) return null;
-		if (type == OS.G_TYPE_DOUBLE()) return new Double(OS.g_value_get_double(value));
-		if (type == OS.G_TYPE_FLOAT()) return new Float(OS.g_value_get_float(value));
-		if (type == OS.G_TYPE_INT64()) return new Long(OS.g_value_get_int64(value));
+		if (type == OS.G_TYPE_DOUBLE()) return Double.valueOf(OS.g_value_get_double(value));
+		if (type == OS.G_TYPE_FLOAT()) return Float.valueOf(OS.g_value_get_float(value));
+		if (type == OS.G_TYPE_INT64()) return Long.valueOf(OS.g_value_get_int64(value));
 		return Integer.valueOf(OS.g_value_get_int(value));
 	}
 

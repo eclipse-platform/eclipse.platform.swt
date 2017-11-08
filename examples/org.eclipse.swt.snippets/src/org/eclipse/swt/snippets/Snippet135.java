@@ -64,7 +64,7 @@ public class Snippet135 {
 		@Override
 		public Object getValueAt (int row, int col) {
 			if (col == 0) return files[row].getName();
-			if (col == 1) return new Long(files[row].length());
+			if (col == 1) return Long.valueOf(files[row].length());
 			if (col == 2) return new Date(files[row].lastModified());
 			return "";
 		}

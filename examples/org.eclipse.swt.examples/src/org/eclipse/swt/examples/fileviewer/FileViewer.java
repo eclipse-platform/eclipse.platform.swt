@@ -952,7 +952,7 @@ public class FileViewer {
 				fileSize += file.length();
 			}
 			diskSpaceLabel.setText(getResourceString("details.FileSize.text",
-				new Object[] { new Long(fileSize) }));
+				new Object[] { Long.valueOf(fileSize) }));
 		} else {
 			// No files selected
 			diskSpaceLabel.setText("");
@@ -1569,7 +1569,7 @@ public class FileViewer {
 			iconImage = iconCache.stockImages[iconCache.iconClosedFolder];
 		} else {
 			sizeString = getResourceString("filesize.KB",
-				new Object[] { new Long((file.length() + 512) / 1024) });
+				new Object[] { Long.valueOf((file.length() + 512) / 1024) });
 
 			int dot = nameString.lastIndexOf('.');
 			if (dot != -1) {

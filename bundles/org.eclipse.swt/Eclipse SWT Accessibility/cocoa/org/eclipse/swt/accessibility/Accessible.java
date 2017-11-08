@@ -1535,7 +1535,7 @@ public class Accessible {
 		if (accessibleValueListenersSize() > 0) {
 			AccessibleValueEvent event = new AccessibleValueEvent(this);
 			NSNumber number = new NSNumber(value);
-			event.value = new Double(number.doubleValue());
+			event.value = Double.valueOf(number.doubleValue());
 			for (int i = 0; i < accessibleValueListenersSize(); i++) {
 				AccessibleValueListener listener = accessibleValueListeners.get(i);
 				listener.setCurrentValue(event);

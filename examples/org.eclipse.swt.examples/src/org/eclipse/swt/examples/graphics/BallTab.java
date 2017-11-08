@@ -89,8 +89,8 @@ public class BallTab extends AnimatedGraphicsTab {
 		for (int i = 0; i < bc.length; i++) {
 			if (bc[i] == null) return;
 			if (bc[i].prevx.size() == 0) {
-				bc[i].prevx.addLast(new Float(bc[i].x));
-				bc[i].prevy.addLast(new Float(bc[i].y));
+				bc[i].prevx.addLast(Float.valueOf(bc[i].x));
+				bc[i].prevy.addLast(Float.valueOf(bc[i].y));
 			} else if (bc[i].prevx.size() == bc[i].capacity) {
 				bc[i].prevx.removeFirst();
 				bc[i].prevy.removeFirst();
@@ -121,8 +121,8 @@ public class BallTab extends AnimatedGraphicsTab {
 				bc[i].y = 0;
 				bc[i].incY = random * height / 16 + 1;
 			}
-			bc[i].prevx.addLast(new Float(bc[i].x));
-			bc[i].prevy.addLast(new Float(bc[i].y));
+			bc[i].prevx.addLast(Float.valueOf(bc[i].x));
+			bc[i].prevy.addLast(Float.valueOf(bc[i].y));
 		}
 	}
 

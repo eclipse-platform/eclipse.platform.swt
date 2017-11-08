@@ -2193,7 +2193,7 @@ void openDownloadWindow (final long /*int*/ webkitDownload, final String suggest
 				long /*int*/ response = WebKitGTK.webkit_download_get_response(webkitDownload);
 				total = WebKitGTK.webkit_uri_response_get_content_length(response) / 1024L;
 			}
-			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {new Long(current), new Long(total)}); //$NON-NLS-1$
+			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {Long.valueOf(current), new Long(total)}); //$NON-NLS-1$
 			statusLabel.setText (message);
 			display.timerExec (INTERVAL, this);
 		}
@@ -3176,7 +3176,7 @@ static Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
 		}
 		case WebKitGTK.kJSTypeNumber: {
 			double result = WebKitGTK.JSValueToNumber (ctx, value, null);
-			return new Double(result);
+			return Double.valueOf(result);
 		}
 		case WebKitGTK.kJSTypeString: {
 			long /*int*/ string = WebKitGTK.JSValueToStringCopy (ctx, value, null);

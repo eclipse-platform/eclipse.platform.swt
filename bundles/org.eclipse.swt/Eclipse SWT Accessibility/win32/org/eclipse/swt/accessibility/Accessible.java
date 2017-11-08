@@ -5313,7 +5313,7 @@ public class Accessible {
 	Number getNumberVARIANT(long /*int*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
-		if (v.vt == COM.VT_I8) return new Long(v.lVal); // TODO: Fix this - v.lVal is an int - don't use struct
+		if (v.vt == COM.VT_I8) return Long.valueOf(v.lVal); // TODO: Fix this - v.lVal is an int - don't use struct
 		return Integer.valueOf(v.lVal);
 	}
 
