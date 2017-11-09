@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -491,10 +491,14 @@ Widget findItem (long /*int*/ id) {
 }
 
 char [] fixMnemonic (String string) {
-	return fixMnemonic (string, false);
+	return fixMnemonic (string, false, false);
 }
 
 char [] fixMnemonic (String string, boolean spaces) {
+	return fixMnemonic (string, spaces, false);
+}
+
+char [] fixMnemonic (String string, boolean spaces, boolean removeAppended) {
 	char [] buffer = new char [string.length () + 1];
 	string.getChars (0, string.length (), buffer, 0);
 	int i = 0, j = 0;
@@ -505,6 +509,9 @@ char [] fixMnemonic (String string, boolean spaces) {
 				i++;
 			}
 			i++;
+		} else if (buffer [i] == '(' && removeAppended && i + 4 == string.length () && buffer [i + 1] == '&' && buffer [i + 3] == ')') {
+			if (spaces) buffer [j++] = ' ';
+			i += 4;
 		} else {
 			buffer [j++] = buffer [i++];
 		}

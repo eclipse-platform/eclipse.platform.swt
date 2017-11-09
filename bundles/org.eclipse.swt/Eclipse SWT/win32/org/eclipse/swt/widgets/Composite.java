@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1982,7 +1982,13 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							string = string.substring(0, TOOLTIP_LIMIT);
 						}
 					}
-					char [] chars = fixMnemonic (string);
+					/*
+					 * Bug 475858: In Japanese like languages where mnemonics are not taken from the
+					 * source label text but appended in parentheses like "(&M)" at end. In order to
+					 * allow the reuse of such label text as a tool-tip text as well, "(&M)" like
+					 * character sequence has to be removed from the end of CJK-style mnemonics.
+					 */
+					char [] chars = fixMnemonic (string, false, true);
 
 					/*
 					* Ensure that the orientation of the tool tip matches
