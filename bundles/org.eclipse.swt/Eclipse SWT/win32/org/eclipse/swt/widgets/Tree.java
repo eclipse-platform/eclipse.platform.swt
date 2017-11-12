@@ -4326,7 +4326,7 @@ public void setLinesVisible (boolean show) {
 	linesVisible = show;
 	if (hwndParent == 0 && linesVisible) customDraw = true;
 	OS.InvalidateRect (handle, null, true);
-	OS.InvalidateRect (hwndHeader, null, true);
+	if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
 }
 
 @Override
