@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,7 +93,6 @@
 #define SetWindowTheme_LIB "uxtheme.dll"
 #define SHCreateItemFromRelativeName_LIB "shell32.dll"
 #define SHCreateItemInKnownFolder_LIB "shell32.dll"
-#define SHCreateItemFromParsingName_LIB "shell32.dll"
 #define TransparentBlt_LIB "msimg32.dll"
 #define UnregisterTouchWindow_LIB "user32.dll"
 #define UpdateLayeredWindow_LIB "user32.dll"

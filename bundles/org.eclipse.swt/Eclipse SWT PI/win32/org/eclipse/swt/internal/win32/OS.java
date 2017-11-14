@@ -7,7 +7,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Martin Karpisek <martin.karpisek@gmail.com> - Bug 443250
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
@@ -26,7 +25,6 @@ public class OS extends C {
 	public static final boolean IsWin95;
 	public static final boolean IsWinNT;
 	public static final boolean IsWinCE;
-	public static final boolean IsWinVista;
 	public static final boolean IsPPC;
 	public static final boolean IsHPC;
 	public static final boolean IsSP;
@@ -92,7 +90,6 @@ public class OS extends C {
 		WIN32_MINOR = info.dwMinorVersion;
 		WIN32_VERSION = VERSION (WIN32_MAJOR, WIN32_MINOR);
 		IsUnicode = !IsWin32s && !IsWin95;
-		IsWinVista = OS.WIN32_VERSION >= OS.VERSION (6, 0);
 
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
@@ -706,9 +703,6 @@ public class OS extends C {
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
-	public static final int FOS_NOCHANGEDIR = 0x8;
-	public static final int FOS_PICKFOLDERS = 0x20;
-	public static final int FOS_FORCEFILESYSTEM = 0x40;
 	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
@@ -6869,8 +6863,6 @@ public static final native boolean SHGetPathFromIDListA (long /*int*/ pidl, byte
 public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, long /*int*/ [] ppv);
 /** @method flags=dynamic */
 public static final native int SHCreateItemFromRelativeName (long /*int*/ psiParent, char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
-/** @method flags=dynamic */
-public static final native int SHCreateItemFromParsingName (char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
 /**
  * @param bVk cast=(BYTE)
  * @param hwnd cast=(HWND)
