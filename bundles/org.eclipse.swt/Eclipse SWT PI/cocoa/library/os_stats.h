@@ -30,6 +30,7 @@ extern char* OS_nativeFunctionNames[];
 typedef enum {
 	ATSFontActivateFromFileReference_FUNC,
 	AcquireRootMenu_FUNC,
+	CALLBACK_1NSTextAttachmentCell_1attachment_FUNC,
 	CALLBACK_1NSTextAttachmentCell_1cellSize_FUNC,
 	CALLBACK_1accessibilityHitTest_1_FUNC,
 	CALLBACK_1attributedSubstringFromRange_1_FUNC,

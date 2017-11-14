@@ -1588,6 +1588,16 @@ void initClasses () {
 	OS.class_addProtocol(cls, OS.protocol_NSTextAttachmentCell);
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_cellBaselineOffset, cellBaselineOffsetProc, "@:");
+	/*
+	 * On macOS 10.13, entire text after an attachment goes missing.
+	 * NSTextAttachmentCellProtocol has a new and required property 'attachment'
+	 * since 10.11 and attachment method has to be added to SWTTextAttachmentCell.
+         * Adding it for versions >= 10.13, as this is broken from 10.13 only.
+	 */
+	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 13, 0)) {
+		long /*int*/ attachmentProc = OS.CALLBACK_NSTextAttachmentCell_attachment(proc2);
+		OS.class_addMethod(cls, OS.sel_attachment, attachmentProc, "@:");
+	}
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2226,6 +2236,8 @@ static long /*int*/ textLayoutProc(long /*int*/ id, long /*int*/ sel) {
 		long /*int*/ result = OS.malloc(NSPoint.sizeof);
 		OS.memmove(result, point, NSPoint.sizeof);
 		return result;
+	} else if (sel == OS.sel_attachment) {
+		return 0;
 	}
 	return 0;
 }
