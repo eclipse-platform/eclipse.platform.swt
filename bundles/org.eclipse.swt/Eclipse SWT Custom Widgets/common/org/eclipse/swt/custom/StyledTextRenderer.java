@@ -816,7 +816,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			if (0 <= layoutIndex && layoutIndex < layouts.length) {
 				layout = layouts[layoutIndex];
 				if (layout != null) {
-					if (lineWidth[lineIndex] != -1) return layout;
+					// Bug 520374: lineIndex can be >= lineWidth.length
+					if(lineIndex < lineWidth.length && lineWidth[lineIndex] != -1) {
+						return layout;
+					}
 				} else {
 					layout = layouts[layoutIndex] = new TextLayout(device);
 				}
