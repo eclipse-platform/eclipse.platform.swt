@@ -766,13 +766,15 @@ static void swt_fixed_accessible_editable_text_iface_init (AtkEditableTextIface 
 static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface);
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface);
 static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
+static void swt_fixed_accessible_value_iface_init (AtkValueIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init))
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init))
 
 struct _SwtFixedAccessiblePrivate {
 	// A boolean flag which is set to TRUE when an Accessible Java
@@ -845,13 +847,13 @@ void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_nativ
 	SwtFixedAccessiblePrivate *private = fixed->priv;
 	private->has_accessible = TRUE;
 
-	// TODO_a11y: implement support for native GTK widgets on the Java side,
-	// some work might need to be done here.
 	if (!is_native) {
-		private->has_accessible = TRUE;
-		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), private->widget);
+		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), to_map);
+		private->widget = to_map;
+	} else {
+		// TODO_a11y: implement support for native GTK widgets on the Java side,
+		// some work might need to be done here.
 	}
-
 	return;
 }
 
@@ -870,7 +872,6 @@ static void swt_fixed_accessible_initialize (AtkObject *obj, gpointer data) {
 		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), GTK_WIDGET (data));
 	} else {
 		gtk_accessible_set_widget (GTK_ACCESSIBLE (obj), NULL);
-		private->widget = GTK_WIDGET (data);
 	}
 }
 
@@ -1381,6 +1382,47 @@ static gboolean swt_fixed_accessible_text_set_selection (AtkText *text, gint sel
 	return ((gint) returned_value == 1) ? TRUE : FALSE;
 }
 
+static void swt_fixed_accessible_value_get_current_value (AtkValue *obj, GValue *value) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		call_accessible_object_function("atkValue_get_current_value", "(JJ)J", obj, value);
+	}
+	return;
+}
+
+static void swt_fixed_accessible_value_get_maximum_value (AtkValue *obj, GValue *value) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		call_accessible_object_function("atkValue_get_maximum_value", "(JJ)J", obj, value);
+	}
+	return;
+}
+
+static void swt_fixed_accessible_value_get_minimum_value (AtkValue *obj, GValue *value) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		call_accessible_object_function("atkValue_get_minimum_value", "(JJ)J", obj, value);
+	}
+	return;
+}
+
+static gboolean swt_fixed_accessible_value_set_current_value (AtkValue *obj, const GValue *value) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (obj);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkValue_set_current_value", "(JJ)J", obj, value);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
 // Interfaces initializers and implementations
 static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
 	iface->do_action = swt_fixed_accessible_action_do_action;
@@ -1430,6 +1472,17 @@ static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface) {
 	iface->remove_selection = swt_fixed_accessible_text_remove_selection;
 	iface->set_caret_offset = swt_fixed_accessible_text_set_caret_offset;
 	iface->set_selection = swt_fixed_accessible_text_set_selection;
+}
+
+static void swt_fixed_accessible_value_iface_init (AtkValueIface *iface) {
+	/*
+	 * TODO_a11y: add support for get_range, get_value_and_text, and set_value
+	 * once Orca is updated.
+	 */
+	iface->get_current_value = swt_fixed_accessible_value_get_current_value;
+	iface->get_maximum_value = swt_fixed_accessible_value_get_maximum_value;
+	iface->get_minimum_value = swt_fixed_accessible_value_get_minimum_value;
+	iface->set_current_value = swt_fixed_accessible_value_set_current_value;
 }
 
 jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...) {

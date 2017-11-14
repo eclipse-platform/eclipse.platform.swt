@@ -57,7 +57,7 @@ class AccessibleObject {
 			if (type == OS.swt_fixed_get_type()) {
 				if (widget != 0 && !isLightweight) {
 					atkHandle = OS.gtk_widget_get_accessible(widget);
-					OS.swt_fixed_accessible_register_accessible(atkHandle, false, 0);
+					OS.swt_fixed_accessible_register_accessible(atkHandle, false, widget);
 				} else {
 					// TODO_a11y: this is where lightweight "child" widgets are created,
 					// this functionality needs to be implemented. Currently objects are
@@ -3257,8 +3257,6 @@ class AccessibleObject {
 		return 0;
 	}
 
-	// TODO_a11y: implement atk_text_get_string_at_offset() once Orca is updated
-
 	/**
 	 * Gets the specified text.
 	 *
@@ -3972,19 +3970,42 @@ class AccessibleObject {
 		return Integer.valueOf(OS.g_value_get_int(value));
 	}
 
-	// TODO_a11y: refactor this
-	static AtkValueIface getValueIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
+	/**
+	 * Fills a Java AtkValueIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkValueIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkValueIface getParentValueIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_VALUE_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;
 	}
+
+	/**
+	 * Gets the value of this atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param value a pointer to a GValue that represents the current value
+	 *
+	 * @return 0, this is a void function -- the value is stored in the parameter
+	 */
 	static long /*int*/ atkValue_get_current_value (long /*int*/ atkObject, long /*int*/ value) {
-		if (DEBUG) print ("-->atkValue_get_current_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		AtkValueIface iface = getValueIface (atkObject);
+		AtkValueIface iface = getParentValueIface (atkObject);
 		if (iface != null && iface.get_current_value != 0) {
 			ATK.call (iface.get_current_value, atkObject, value);
 		}
@@ -4005,10 +4026,23 @@ class AccessibleObject {
 		return 0;
 	}
 
+	/**
+	 * Gets the maximum value of this atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param value a pointer to a GValue that represents the current maximum
+	 * value
+	 *
+	 * @return 0, this is a void function -- the value is stored in the parameter
+	 */
 	static long /*int*/ atkValue_get_maximum_value (long /*int*/ atkObject, long /*int*/ value) {
-		if (DEBUG) print ("-->atkValue_get_maximum_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		AtkValueIface iface = getValueIface (atkObject);
+		AtkValueIface iface = getParentValueIface (atkObject);
 		if (iface != null && iface.get_maximum_value != 0) {
 			ATK.call (iface.get_maximum_value, atkObject, value);
 		}
@@ -4029,10 +4063,23 @@ class AccessibleObject {
 		return 0;
 	}
 
+	/**
+	 * Gets the minimum value of this atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param value a pointer to a GValue that represents the current minimum
+	 * value
+	 *
+	 * @return 0, this is a void function -- the value is stored in the parameter
+	 */
 	static long /*int*/ atkValue_get_minimum_value (long /*int*/ atkObject, long /*int*/ value) {
-		if (DEBUG) print ("-->atkValue_get_minimum_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		AtkValueIface iface = getValueIface (atkObject);
+		AtkValueIface iface = getParentValueIface (atkObject);
 		if (iface != null && iface.get_minimum_value != 0) {
 			ATK.call (iface.get_minimum_value, atkObject, value);
 		}
@@ -4053,8 +4100,20 @@ class AccessibleObject {
 		return 0;
 	}
 
+	/**
+	 * Sets the value of this atkObject.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param value a pointer to the new GValue to be set
+	 *
+	 * @return a long int representation of 1 for success, 0 otherwise
+	 */
 	static long /*int*/ atkValue_set_current_value (long /*int*/ atkObject, long /*int*/ value) {
-		if (DEBUG) print ("-->atkValue_set_current_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -4071,7 +4130,7 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkValueIface iface = getValueIface (atkObject);
+		AtkValueIface iface = getParentValueIface (atkObject);
 		if (iface != null && iface.set_current_value != 0) {
 			parentResult = ATK.call (iface.set_current_value, atkObject, value);
 		}
