@@ -20,6 +20,7 @@
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
+	"CALLBACK_1NSTextAttachmentCell_1attachment",
 	"CALLBACK_1NSTextAttachmentCell_1cellSize",
 	"CALLBACK_1accessibilityHitTest_1",
 	"CALLBACK_1attributedSubstringFromRange_1",

@@ -153,7 +153,8 @@ public class OS extends C {
 	public static final native long /*int*/ CALLBACK_cellBaselineOffset(long /*int*/ func);
 	/** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
 	public static final native long /*int*/ CALLBACK_NSTextAttachmentCell_cellSize(long /*int*/ func);
-	public static final long /*int*/ protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
+	/** @method callback_types=id;id;SEL;,callback_flags=struct;none;none; */
+	public static final native long /*int*/ CALLBACK_NSTextAttachmentCell_attachment(long /*int*/ func);
 	public static final long /*int*/ sel_cellBaselineOffset = sel_registerName("cellBaselineOffset");
 
 	/*10.6 Accessibility Strings*/
@@ -934,6 +935,7 @@ public static final long /*int*/ protocol_NSTabViewDelegate = objc_getProtocol("
 public static final long /*int*/ protocol_NSTableDataSource = objc_getProtocol("NSTableDataSource");
 public static final long /*int*/ protocol_NSTableViewDelegate = objc_getProtocol("NSTableViewDelegate");
 public static final long /*int*/ protocol_NSTableViewNotifications = objc_getProtocol("NSTableViewNotifications");
+public static final long /*int*/ protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
 public static final long /*int*/ protocol_NSTextDelegate = objc_getProtocol("NSTextDelegate");
 public static final long /*int*/ protocol_NSTextInput = objc_getProtocol("NSTextInput");
 public static final long /*int*/ protocol_NSTextViewDelegate = objc_getProtocol("NSTextViewDelegate");
@@ -1048,6 +1050,7 @@ public static final long /*int*/ sel_arrayWithObject_ = sel_registerName("arrayW
 public static final long /*int*/ sel_arrowCursor = sel_registerName("arrowCursor");
 public static final long /*int*/ sel_ascender = sel_registerName("ascender");
 public static final long /*int*/ sel_attachColorList_ = sel_registerName("attachColorList:");
+public static final long /*int*/ sel_attachment = sel_registerName("attachment");
 public static final long /*int*/ sel_attribute_atIndex_effectiveRange_ = sel_registerName("attribute:atIndex:effectiveRange:");
 public static final long /*int*/ sel_attributedStringValue = sel_registerName("attributedStringValue");
 public static final long /*int*/ sel_attributedStringWithAttachment_ = sel_registerName("attributedStringWithAttachment:");

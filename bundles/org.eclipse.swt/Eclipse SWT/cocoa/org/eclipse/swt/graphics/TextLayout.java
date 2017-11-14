@@ -1588,6 +1588,10 @@ void initClasses () {
 	OS.class_addProtocol(cls, OS.protocol_NSTextAttachmentCell);
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_cellBaselineOffset, cellBaselineOffsetProc, "@:");
+	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+		long /*int*/ attachmentProc = OS.CALLBACK_NSTextAttachmentCell_attachment(proc2);
+		OS.class_addMethod(cls, OS.sel_attachment, attachmentProc, "@:");
+	}
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2226,6 +2230,8 @@ static long /*int*/ textLayoutProc(long /*int*/ id, long /*int*/ sel) {
 		long /*int*/ result = C.malloc(NSPoint.sizeof);
 		OS.memmove(result, point, NSPoint.sizeof);
 		return result;
+	} else if (sel == OS.sel_attachment) {
+		return 0;
 	}
 	return 0;
 }

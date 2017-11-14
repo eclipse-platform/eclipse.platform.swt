@@ -5475,6 +5475,11 @@
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSTextAttachmentCell" swt_gen="mixed">
+		<method selector="attachment" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</informal_protocol>
 	<informal_protocol name="NSTextDelegate" swt_gen="mixed">
 		<method selector="textDidChange:" swt_gen="true">
 			<arg swt_gen="true"></arg>

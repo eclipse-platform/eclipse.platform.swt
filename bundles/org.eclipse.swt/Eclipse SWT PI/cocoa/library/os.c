@@ -67,6 +67,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(AcquireRootMenu)
 }
 #endif
 
+#ifndef NO_CALLBACK_1NSTextAttachmentCell_1attachment
+static jintLong CALLBACK_1NSTextAttachmentCell_1attachment;
+static id proc_CALLBACK_1NSTextAttachmentCell_1attachment(id arg0, SEL arg1) {
+	id* lprc = ((id* (*)(id, SEL))CALLBACK_1NSTextAttachmentCell_1attachment)(arg0, arg1);
+	id rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(id));
+	}
+	return rc;
+}
+static jintLong CALLBACK_NSTextAttachmentCell_attachment(jintLong func) {
+	CALLBACK_1NSTextAttachmentCell_1attachment = func;
+	return (jintLong)proc_CALLBACK_1NSTextAttachmentCell_1attachment;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1NSTextAttachmentCell_1attachment)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1NSTextAttachmentCell_1attachment_FUNC);
+	rc = (jintLong)CALLBACK_NSTextAttachmentCell_attachment(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1NSTextAttachmentCell_1attachment_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1NSTextAttachmentCell_1cellSize
 static jintLong CALLBACK_1NSTextAttachmentCell_1cellSize;
 static NSSize proc_CALLBACK_1NSTextAttachmentCell_1cellSize(id arg0, SEL arg1) {
