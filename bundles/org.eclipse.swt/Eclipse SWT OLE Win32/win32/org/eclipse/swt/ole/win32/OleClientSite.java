@@ -128,9 +128,14 @@ protected OleClientSite(Composite parent, int style) {
 			case SWT.Dispose : onDispose(e); break;
 			case SWT.FocusIn:
 				nestedFocusEvents++;
+				boolean hasFocus = isFocusControl();
 				onFocusIn(e);
 				nestedFocusEvents--;
-				if (nestedFocusEvents == 0)
+				/*
+				 * Added additional check below to avoid calling OleFrame#onFocusIn() twice,
+				 * which other wise lead to Main Menu refresh problem as seen in bug 527268
+				 */
+				if (nestedFocusEvents == 0 && hasFocus == isFocusControl())
 					frame.onFocusIn(e);
 				break;
 			case SWT.FocusOut:
