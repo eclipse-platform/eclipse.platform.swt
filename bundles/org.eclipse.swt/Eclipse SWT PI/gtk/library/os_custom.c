@@ -765,6 +765,7 @@ static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface);
 static void swt_fixed_accessible_editable_text_iface_init (AtkEditableTextIface *iface);
 static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface);
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface);
+static void swt_fixed_accessible_table_iface_init (AtkTableIface *iface);
 static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
 static void swt_fixed_accessible_value_iface_init (AtkValueIface *iface);
 
@@ -773,6 +774,7 @@ G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONT
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE, swt_fixed_accessible_table_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init))
 
@@ -1176,6 +1178,274 @@ static AtkObject *swt_fixed_accessible_selection_ref_selection (AtkSelection *se
 	return (AtkObject *) returned_value;
 }
 
+static AtkObject *swt_fixed_accessible_table_ref_at (AtkTable *table, gint row, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_ref_at", "(JJJ)J", table, row, column);
+	}
+	return (AtkObject *) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_index_at (AtkTable *table, gint row, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_index_at", "(JJJ)J", table, row, column);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_column_at_index (AtkTable *table, gint index) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_column_at_index", "(JJ)J", table, index);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_row_at_index (AtkTable *table, gint index) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_row_at_index", "(JJ)J", table, index);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_n_columns (AtkTable *table) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_n_columns", "(J)J", table);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_n_rows (AtkTable *table) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_n_rows", "(J)J", table);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_column_extent_at (AtkTable *table, gint row, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_column_extent_at", "(JJJ)J",
+			table, row, column);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_row_extent_at (AtkTable *table, gint row, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_row_extent_at", "(JJJ)J",
+			table, row, column);
+	}
+	return (gint) returned_value;
+}
+
+static AtkObject *swt_fixed_accessible_table_get_caption (AtkTable *table) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_caption", "(J)J", table);
+	}
+	return (AtkObject *) returned_value;
+}
+
+static AtkObject *swt_fixed_accessible_table_get_summary (AtkTable *table) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_summary", "(J)J", table);
+	}
+	return (AtkObject *) returned_value;
+}
+
+static const gchar *swt_fixed_accessible_table_get_column_description (AtkTable *table, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_column_description", "(JJ)J",
+			table, column);
+	}
+	return (const gchar *) returned_value;
+}
+
+static AtkObject *swt_fixed_accessible_table_get_column_header (AtkTable *table, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_column_header", "(JJ)J",
+			table, column);
+	}
+	return (AtkObject *) returned_value;
+}
+
+static const gchar *swt_fixed_accessible_table_get_row_description (AtkTable *table, gint row) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_row_description", "(JJ)J",
+			table, row);
+	}
+	return (const gchar *) returned_value;
+}
+
+static AtkObject *swt_fixed_accessible_table_get_row_header (AtkTable *table, gint row) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_row_header", "(JJ)J",
+			table, row);
+	}
+	return (AtkObject *) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_selected_rows (AtkTable *table, gint **selected) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_selected_rows", "(JJ)J",
+			table, selected);
+	}
+	return (gint) returned_value;
+}
+
+static gint swt_fixed_accessible_table_get_selected_columns (AtkTable *table, gint **selected) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_get_selected_columns", "(JJ)J",
+			table, selected);
+	}
+	return (gint) returned_value;
+}
+
+static gboolean swt_fixed_accessible_table_is_column_selected (AtkTable *table, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_is_column_selected", "(JJ)J",
+			table, column);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_is_row_selected (AtkTable *table, gint row) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_is_row_selected", "(JJ)J",
+			table, row);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_is_selected (AtkTable *table, gint row, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_is_selected", "(JJJ)J",
+			table, row, column);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_add_row_selection (AtkTable *table, gint row) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_add_row_selection", "(JJ)J",
+			table, row);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_remove_row_selection (AtkTable *table, gint row) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_remove_row_selection", "(JJ)J",
+			table, row);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_add_column_selection (AtkTable *table, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_add_column_selection", "(JJ)J",
+			table, column);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
+static gboolean swt_fixed_accessible_table_remove_column_selection (AtkTable *table, gint column) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (table);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkTable_remove_row_selection", "(JJ)J",
+			table, column);
+	}
+	return ((gint) returned_value == 1) ? TRUE : FALSE;
+}
+
 static gboolean swt_fixed_accessible_text_add_selection (AtkText *text, gint start_offset, gint end_offset) {
 	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (text);
 	SwtFixedAccessiblePrivate *private = fixed->priv;
@@ -1451,6 +1721,32 @@ static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface)
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface) {
 	iface->is_child_selected = swt_fixed_accessible_selection_is_child_selected;
 	iface->ref_selection = swt_fixed_accessible_selection_ref_selection;
+}
+
+static void swt_fixed_accessible_table_iface_init (AtkTableIface *iface) {
+	iface->ref_at = swt_fixed_accessible_table_ref_at;
+	iface->get_index_at = swt_fixed_accessible_table_get_index_at;
+	iface->get_column_at_index = swt_fixed_accessible_table_get_column_at_index;
+	iface->get_row_at_index = swt_fixed_accessible_table_get_row_at_index;
+	iface->get_n_columns = swt_fixed_accessible_table_get_n_columns;
+	iface->get_n_rows = swt_fixed_accessible_table_get_n_rows;
+	iface->get_column_extent_at = swt_fixed_accessible_table_get_column_extent_at;
+	iface->get_row_extent_at = swt_fixed_accessible_table_get_row_extent_at;
+	iface->get_caption = swt_fixed_accessible_table_get_caption;
+	iface->get_summary = swt_fixed_accessible_table_get_summary;
+	iface->get_column_description = swt_fixed_accessible_table_get_column_description;
+	iface->get_column_header = swt_fixed_accessible_table_get_column_header;
+	iface->get_row_description = swt_fixed_accessible_table_get_row_description;
+	iface->get_row_header = swt_fixed_accessible_table_get_row_header;
+	iface->get_selected_columns = swt_fixed_accessible_table_get_selected_columns;
+	iface->get_selected_rows = swt_fixed_accessible_table_get_selected_rows;
+	iface->is_column_selected = swt_fixed_accessible_table_is_column_selected;
+	iface->is_row_selected = swt_fixed_accessible_table_is_row_selected;
+	iface->is_selected = swt_fixed_accessible_table_is_selected;
+	iface->add_row_selection = swt_fixed_accessible_table_add_row_selection;
+	iface->remove_row_selection = swt_fixed_accessible_table_remove_row_selection;
+	iface->add_column_selection = swt_fixed_accessible_table_add_column_selection;
+	iface->remove_column_selection = swt_fixed_accessible_table_remove_column_selection;
 }
 
 static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface) {
