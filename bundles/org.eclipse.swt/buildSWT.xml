@@ -28,7 +28,7 @@
 
 <project name="swtbuild" basedir=".">
 	
-	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
+	<property name="gitroot" value="committer-id@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
 	<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
@@ -59,28 +59,12 @@
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="5"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="5"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="7"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="7"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="8"/>
@@ -90,14 +74,6 @@
 			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="6"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparcv9"/>
-		</antcall>		
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="6"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86_64"/>
-		</antcall>		
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
@@ -111,7 +87,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="80"/>
+		<property name="library_count" value="44"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -155,29 +131,6 @@
 			trust="true"
 			outputproperty="m_linux_x86_64_output"
 			command="hostname"/>
-		<!-- These machines are only used for 3.5.x builds. -->
-		<!--sshexec host="${m_linux_rh3_x86}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_rh3_x86_output"
-			command="hostname"/>
-		<sshexec host="${m_linux_rh3_x86_64}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_rh3_x86_64_output"
-			command="hostname"/-->
-
-		<sshexec host="${m_linux_ppc}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_ppc_output"
-			command="hostname"/>
 		<sshexec host="${m_linux_ppc64}"
 			port="2254"
 			username="swtbuild"
@@ -193,37 +146,6 @@
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64le_output"
-			command="hostname"/>
-
-		<sshexec host="${m_solaris_sparc}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_solaris_sparc_output"
-			command="hostname"/>
-		<sshexec host="${m_solaris_x86_64}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_solaris_x86_64_output"
-			command="hostname"/>
-
-		<sshexec host="${m_aix}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_aix_output"
-			command="hostname"/>
-
-		<sshexec host="${m_hpux}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_hpux_output"
 			command="hostname"/>
 		<sshexec host="${m_mac}"
 			username="swtbuild"
@@ -247,25 +169,6 @@
 				<matches pattern="x${m_linux_x86_64_output}*" string="x${m_linux_x86_64}"/>
 			</and>
 		</condition>
-		<!--condition property="m_linux_rh3_x86_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_rh3_x86_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_rh3_x86_output}*" string="x${m_linux_rh3_x86}"/>
-			</and>
-		</condition>
-		<condition property="m_linux_rh3_x86_64_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_rh3_x86_64_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_rh3_x86_64_output}*" string="x${m_linux_rh3_x86_64}"/>
-			</and>
-		</condition-->
-
-		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_ppc_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_ppc_output}*" string="x${m_linux_ppc}"/>
-			</and>
-		</condition>
 		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_linux_ppc64_output}" when="greater" length="0"/>
@@ -276,30 +179,6 @@
 			<and>
 				<length string="${m_linux_ppc64le_output}" when="greater" length="0"/>
 				<matches pattern="x${m_linux_ppc64le_output}*" string="x${m_linux_ppc64le}"/>
-			</and>
-		</condition>
-		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_solaris_sparc_output}" when="greater" length="0"/>
-				<matches pattern="x${m_solaris_sparc_output}*" string="x${m_solaris_sparc}"/>
-			</and>
-		</condition>
-		<condition property="m_solaris_x86_64_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_solaris_x86_64_output}" when="greater" length="0"/>
-				<matches pattern="x${m_solaris_x86_64_output}*" string="x${m_solaris_x86_64}"/>
-			</and>
-		</condition>
-		<condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_aix_output}" when="greater" length="0"/>
-				<matches pattern="x${m_aix_output}*" string="x${m_aix}"/>
-			</and>
-		</condition>
-		<condition property="m_hpux_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_hpux_output}" when="greater" length="0"/>
-				<matches pattern="x${m_hpux_output}*" string="x${m_hpux}"/>
 			</and>
 		</condition>
 		<condition property="m_mac_test" value="${success_msg}" else="${fail_msg}">
@@ -313,62 +192,12 @@
 		<echo></echo>
 		<echo>${m_linux_x86} - ${m_linux_x86_test}</echo>
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
-		<!--echo>${m_linux_rh3_x86} ${m_linux_rh3_x86_test}</echo>
-		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
-		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
 		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
 		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
-		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
-		<echo>${m_solaris_x86_64} - ${m_solaris_x86_64_test}</echo>
-		<echo>${m_aix} - ${m_aix_test}</echo>
-		<echo>${m_hpux} - ${m_hpux_test}</echo>
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
 		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc_test} ${m_linux_ppc64_test} ${m_solaris_sparc_test} ${m_solaris_x86_64_test} ${m_aix_test} ${m_hpux_test} ${m_mac_test}"/>
-		</condition>
-		<fail if="m_fail" message="Failed"/>
-	</target>
-
-	<target name="check_s390_machines" depends="init_keyfile">
-		<parallel>
-		<sshexec host="${m_linux_s390}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_s390_output"
-			command="hostname"/>
-		<sshexec host="${m_linux_s390x}"
-				username="swtbuild"
-				keyfile="${keyfile}"
-				failonerror="false"
-				trust="true"
-				outputproperty="m_linux_s390x_output"
-				command="hostname"/>
-		</parallel>
-		<property name="success_msg" value="Success"/>
-		<property name="fail_msg" value="*** Fail ***"/>
-		<condition property="m_linux_s390x_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_s390x_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_s390x_output}*" string="x${m_linux_s390x}"/>
-			</and>
-		</condition>
-		<condition property="m_linux_s390_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_s390_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_s390_output}*" string="x${m_linux_s390}"/>
-			</and>
-		</condition>
-		<echo>-------------------------</echo>
-		<echo>Status:</echo>
-		<echo></echo>
-		<echo>${m_linux_s390} - ${m_linux_s390_test}</echo>
-		<echo>${m_linux_s390x} - ${m_linux_s390x_test}</echo>
-		<echo>-------------------------</echo>
-		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_s390_test} ${m_linux_s390x_test}"/>
+			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc64_test} ${m_mac_test}"/>
 		</condition>
 		<fail if="m_fail" message="Failed"/>
 	</target>
