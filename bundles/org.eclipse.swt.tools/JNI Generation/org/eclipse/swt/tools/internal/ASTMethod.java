@@ -64,7 +64,8 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	paramTypes64 = new ASTType[parameters.size()];
 	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
-	for (SingleVariableDeclaration param : parameters) {
+	for (Iterator<SingleVariableDeclaration> iterator = parameters.iterator(); iterator.hasNext(); i++) {
+		SingleVariableDeclaration param = iterator.next();
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
 		paramTypes64[i] = paramTypes[i];
 		this.parameters[i] = new ASTParameter(this, i, param.getName().getIdentifier());
