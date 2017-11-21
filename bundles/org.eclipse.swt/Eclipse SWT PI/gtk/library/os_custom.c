@@ -762,6 +762,7 @@ static AtkRole swt_fixed_accessible_get_role (AtkObject *obj);
 static AtkObject *swt_fixed_accessible_ref_child (AtkObject *obj, gint i);
 static AtkStateSet *swt_fixed_accesssible_ref_state_set (AtkObject *accessible);
 static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface);
+static void swt_fixed_accessible_component_iface_init (AtkComponentIface *iface);
 static void swt_fixed_accessible_editable_text_iface_init (AtkEditableTextIface *iface);
 static void swt_fixed_accessible_hypertext_iface_init (AtkHypertextIface *iface);
 static void swt_fixed_accessible_selection_iface_init (AtkSelectionIface *iface);
@@ -771,6 +772,7 @@ static void swt_fixed_accessible_value_iface_init (AtkValueIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
@@ -1051,6 +1053,54 @@ static const gchar *swt_fixed_accessible_action_get_name (AtkAction *action, gin
 		returned_value = call_accessible_object_function("atkAction_get_name", "(JJ)J", action, i);
 	}
 	return (const gchar *) returned_value;
+}
+
+static void swt_fixed_accessible_component_get_extents (AtkComponent *component, gint *x, gint *y,
+		gint *width, gint *height, AtkCoordType coord_type) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		call_accessible_object_function("atkComponent_get_extents", "(JJJJJJ)J", component, x, y,
+			width, height, coord_type);
+	}
+	return;
+}
+
+static void swt_fixed_accessible_component_get_position (AtkComponent *component, gint *x, gint *y,
+		AtkCoordType coord_type) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		call_accessible_object_function("atkComponent_get_position", "(JJJJ)J", component, x, y, coord_type);
+	}
+	return;
+}
+
+static void swt_fixed_accessible_component_get_size (AtkComponent *component, gint *width, gint *height) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+
+	if (private->has_accessible) {
+		// Note we are calling the Java method with 4 arguments: on GTK2 atk_component_get_size
+		// accepts 4 parameters, on GTK3 it only accepts 3.
+		call_accessible_object_function("atkComponent_get_size", "(JJJJ)J", component, width, height, 0);
+	}
+	return;
+}
+
+static AtkObject *swt_fixed_accessible_component_ref_accessible_at_point (AtkComponent *component, gint *x,
+		gint *y, AtkCoordType coord_type) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
+	jintLong returned_value = 0;
+
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("atkComponent_ref_accessible_at_point", "(JJJJ)J",
+				component, x, y, coord_type);
+	}
+	return (AtkObject *) returned_value;
 }
 
 static void swt_fixed_accessible_editable_text_copy_text (AtkEditableText *text, gint start_pos, gint end_pos) {
@@ -1704,6 +1754,13 @@ static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
 	iface->get_keybinding = swt_fixed_accessible_action_get_keybinding;
 	iface->get_n_actions = swt_fixed_accessible_action_get_n_actions;
 	iface->get_name = swt_fixed_accessible_action_get_name;
+}
+
+static void swt_fixed_accessible_component_iface_init (AtkComponentIface *iface) {
+	iface->get_extents = swt_fixed_accessible_component_get_extents;
+	iface->get_position = swt_fixed_accessible_component_get_position;
+	iface->get_size = swt_fixed_accessible_component_get_size;
+	iface->ref_accessible_at_point = swt_fixed_accessible_component_ref_accessible_at_point;
 }
 
 static void swt_fixed_accessible_editable_text_iface_init (AtkEditableTextIface *iface) {

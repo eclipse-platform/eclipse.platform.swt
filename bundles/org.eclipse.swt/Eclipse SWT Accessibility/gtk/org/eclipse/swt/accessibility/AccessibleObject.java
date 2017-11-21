@@ -336,9 +336,19 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	// TODO_a11y: refactor this
-	static AtkComponentIface getComponentIface (long /*int*/ atkObject) {
-		if (OS.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
+	/**
+	 * Fills a Java AtkComponentIface struct with that of the parent class.
+	 * This is a Java implementation of what is referred to in GObject as "chaining up".
+	 * See: https://developer.gnome.org/gobject/stable/howto-gobject-chainup.html
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 *
+	 * @return an AtkComponentIface Java object representing the interface struct of atkObject's
+	 * parent
+	 */
+	static AtkComponentIface getParentComponentIface (long /*int*/ atkObject) {
+		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (atkObject)));
 			return iface;
@@ -346,14 +356,32 @@ class AccessibleObject {
 		return null;
 	}
 
-	static long /*int*/ atkComponent_get_extents (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_get_extents: " + atkObject);
+	/**
+	 * Gets the rectangle which gives the extent of the component.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param x memory address of gint to put x coordinate
+	 * @param y memory address of gint to put y coordinate
+	 * @param width memory address of gint to put width coordinate
+	 * @param height memory address of gint to put height coordinate
+	 * @param coord_type specifies whether the coordinates are relative to
+	 * the screen or to the components top level window
+	 *
+	 * @return 0 (this is a void function at the native level)
+	 */
+	static long /*int*/ atkComponent_get_extents (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y,
+			long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		C.memmove (x, new int[] {0}, 4);
 		C.memmove (y, new int[] {0}, 4);
 		C.memmove (width, new int[] {0}, 4);
 		C.memmove (height, new int[] {0}, 4);
-		AtkComponentIface iface = getComponentIface (atkObject);
+		AtkComponentIface iface = getParentComponentIface (atkObject);
 		if (iface != null && iface.get_extents != 0) {
 			OS.call (iface.get_extents, atkObject, x, y, width, height, coord_type);
 		}
@@ -390,19 +418,34 @@ class AccessibleObject {
 				C.memmove (y, new int[] {event.y}, 4);
 				C.memmove (width, new int[] {event.width}, 4);
 				C.memmove (height, new int[] {event.height}, 4);
-				if (DEBUG) print("--->" + event.x + "," + event.y + "," + event.width + "x" + event.height);
 			}
 		}
 		return 0;
 	}
 
-	// TODO_a11y: deprecated, should not be used on GTK3.14+
-	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_get_position, object: " + atkObject + " x: " + x + " y: " + y + " coord: " + coord_type);
+	/**
+	 * Gets the position of component in the form of a point specifying
+	 * component's top-left corner.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param x memory address of gint to put x coordinate
+	 * @param y memory address of gint to put y coordinate
+	 * @param coord_type specifies whether the coordinates are relative to
+	 * the screen or to the components top level window
+	 *
+	 * @return 0 (this is a void function at the native level)
+	 */
+	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x,
+			long /*int*/ y, long /*int*/ coord_type) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		C.memmove (x, new int[] {0}, 4);
 		C.memmove (y, new int[] {0}, 4);
-		AtkComponentIface iface = getComponentIface (atkObject);
+		AtkComponentIface iface = getParentComponentIface (atkObject);
 		if (iface != null && iface.get_position != 0) {
 			OS.call (iface.get_position, atkObject, x, y, coord_type);
 		}
@@ -438,14 +481,36 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static long /*int*/ atkComponent_get_size (long /*int*/ atkObject, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_get_size");
+	/**
+	 * Gets the size of the component in terms of width and height.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param width memory address of gint to put x coordinate
+	 * @param height memory address of gint to put y coordinate
+	 * @param coord_type specifies whether the coordinates are relative to
+	 * the screen or to the components top level window (this parameter is always 0
+	 * on GTK3)
+	 *
+	 * @return 0 (this is a void function at the native level)
+	 */
+	static long /*int*/ atkComponent_get_size (long /*int*/ atkObject, long /*int*/ width,
+			long /*int*/ height, long /*int*/ coord_type) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		C.memmove (width, new int[] {0}, 4);
 		C.memmove (height, new int[] {0}, 4);
-		AtkComponentIface iface = getComponentIface (atkObject);
+		AtkComponentIface iface = getParentComponentIface (atkObject);
 		if (iface != null && iface.get_size != 0) {
-			OS.call (iface.get_size, atkObject, width, height, coord_type);
+			// ATK with GTK3 doesn't have the coord_type parameter
+			if (!OS.GTK3) {
+				OS.call (iface.get_size, atkObject, width, height, coord_type);
+			} else {
+				ATK.call (iface.get_size, atkObject, width, height);
+			}
 		}
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -469,8 +534,25 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static long /*int*/ atkComponent_ref_accessible_at_point (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_ref_accessible_at_point: " + atkObject + " " + x + "," + y);
+	/**
+	 * Gets a reference to the accessible child, if one exists,
+	 * at the coordinate point specified by x and y.
+	 *
+	 * This is the implementation of an ATK function which
+	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
+	 * interfaces are implemented in os_custom.c and access this method via
+	 * JNI.
+	 *
+	 * @param atkObject a pointer to the current AtkObject
+	 * @param x long integer representing the x coordinate
+	 * @param y long integer representing the y coordinate
+	 * @param coord_type specifies whether the coordinates are relative to
+	 * the screen or to the components top level window
+	 *
+	 * @return a pointer to the accessible child, if one exists
+	 */
+	static long /*int*/ atkComponent_ref_accessible_at_point (long /*int*/ atkObject, long /*int*/ x,
+			long /*int*/ y, long /*int*/ coord_type) {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -499,7 +581,7 @@ class AccessibleObject {
 			}
 		}
 		long /*int*/ parentResult = 0;
-		AtkComponentIface iface = getComponentIface (atkObject);
+		AtkComponentIface iface = getParentComponentIface (atkObject);
 		if (iface != null && iface.ref_accessible_at_point != 0) {
 			parentResult = OS.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
 		}
