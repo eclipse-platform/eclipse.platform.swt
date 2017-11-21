@@ -1624,7 +1624,7 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
-	NSEvent event = application.currentEvent();
+	NSEvent event = application != null ? application.currentEvent() : null;
 	if (event == null) return 0;
 	double timestamp = event.timestamp() * 1000;
 	while (timestamp > 0x7FFFFFFF) {
