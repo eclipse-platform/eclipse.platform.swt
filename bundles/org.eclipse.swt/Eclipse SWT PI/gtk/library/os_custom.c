@@ -830,12 +830,16 @@ AtkObject *swt_fixed_accessible_new (GtkWidget *widget) {
 }
 
 static void swt_fixed_accessible_finalize (GObject *object) {
+	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (object);
+	SwtFixedAccessiblePrivate *private = fixed->priv;
 	jintLong returned_value = 0;
 
 	// Call the Java implementation to ensure AccessibleObjects are removed
 	// from the HashMap on the Java side.
-	returned_value = call_accessible_object_function("gObjectClass_finalize", "(J)J", object);
-	if (returned_value != 0) g_critical ("Undefined behavior calling gObjectClass_finalize from C\n");
+	if (private->has_accessible) {
+		returned_value = call_accessible_object_function("gObjectClass_finalize", "(J)J", object);
+		if (returned_value != 0) g_critical ("Undefined behavior calling gObjectClass_finalize from C\n");
+	}
 
 	// Chain up to the parent class
 	G_OBJECT_CLASS (swt_fixed_accessible_parent_class)->finalize (object);
@@ -1812,6 +1816,7 @@ jintLong call_accessible_object_function (const char *method_name, const char *m
 	// If the method ID isn't NULL
 	if (mid == NULL) {
 		g_critical("JNI method ID pointer is NULL for method %s\n", method_name);
+		return 0;
 	} else {
 		va_start(arg_list, method_signature);
 		result = (*env)->CallStaticLongMethodV(env, cls, mid, arg_list);
