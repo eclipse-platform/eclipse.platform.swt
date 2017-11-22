@@ -13,7 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.*;
 
 /**
  * This class is the abstract superclass of all non-windowed
@@ -32,6 +32,15 @@ import org.eclipse.swt.internal.BidiUtil;
 public abstract class Item extends Widget {
 	String text;
 	Image image;
+	/**
+	 * Maximum number of characters Windows can reliably display in one line.
+	 * Mac and Linux can display more but we are limited by windows here.
+	 */
+	static final int TEXT_LIMIT = 8192;
+
+	static final String ELLIPSIS = "...";
+
+
 
 /**
  * Constructs a new instance of this class given its parent

@@ -37,6 +37,7 @@ public class TableItem extends Item {
 	Table parent;
 	Font font;
 	Font[] cellFont;
+	String [] strings;
 	boolean cached, grayed;
 	int columnSetHeight, columnSetWidth;
 
@@ -255,6 +256,7 @@ void clear () {
 	cached = false;
 	font = null;
 	cellFont = null;
+	strings = null;
 }
 
 @Override
@@ -714,6 +716,12 @@ public String getText () {
 public String getText (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (strings != null) {
+		if (0 <= index && index < strings.length) {
+			String string = strings [index];
+			return string != null ? string : "";
+		}
+	}
 	return _getText (index);
 }
 
@@ -827,6 +835,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	font = null;
 	cellFont = null;
+	strings = null;
 }
 
 /**
@@ -1351,6 +1360,14 @@ public void setText (int index, String string) {
 	if (_getText (index).equals (string)) return;
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
+	if (0 <= index && index < count) {
+		if (strings == null) strings = new String [count];
+		if (string.equals (strings [index])) return;
+		strings [index] = string;
+	}
+	if ((string != null) && (string.length() > TEXT_LIMIT)) {
+		string = string.substring(0, TEXT_LIMIT - ELLIPSIS.length()) + ELLIPSIS;
+	}
 	byte[] buffer = Converter.wcsToMbcs (string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, buffer, -1);

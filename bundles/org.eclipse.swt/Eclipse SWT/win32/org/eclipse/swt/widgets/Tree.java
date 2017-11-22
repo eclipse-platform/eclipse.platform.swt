@@ -818,6 +818,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 								if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 								if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
 							}
+							if ((string != null) && (string.length() > Item.TEXT_LIMIT)) {
+								string = string.substring(0, Item.TEXT_LIMIT - Item.ELLIPSIS.length()) + Item.ELLIPSIS;
+							}
 							TCHAR buffer = new TCHAR (getCodePage (), string, false);
 							if (!ignoreDrawForeground) OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 							OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);

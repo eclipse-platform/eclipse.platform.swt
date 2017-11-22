@@ -132,6 +132,9 @@ int calculateWidth (int index, GC gc, boolean rowSelected) {
 	if (font == null) font = parent.font;
 	if (font == null) font = parent.defaultFont();
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	if ((text != null) && (text.length() > TEXT_LIMIT)) {
+		text = text.substring(0, TEXT_LIMIT - ELLIPSIS.length()) + ELLIPSIS;
+	}
 	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
 	NSCell cell = parent.dataCell;
 	if (font.extraTraits != 0) {
@@ -203,6 +206,9 @@ void clear () {
 
 NSObject createString (int index) {
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	if ((text != null) && (text.length() > TEXT_LIMIT)) {
+		text = text.substring(0, TEXT_LIMIT - ELLIPSIS.length()) + ELLIPSIS;
+	}
 	return NSString.stringWith(text != null ? text : "");
 }
 
