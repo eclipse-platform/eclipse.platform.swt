@@ -57,16 +57,12 @@ class AccessibleObject {
 			if (type == OS.swt_fixed_get_type()) {
 				if (widget != 0 && !isLightweight) {
 					atkHandle = OS.gtk_widget_get_accessible(widget);
-					OS.swt_fixed_accessible_register_accessible(atkHandle, false, widget);
 				} else {
-					// TODO_a11y: this is where lightweight "child" widgets are created,
-					// this functionality needs to be implemented. Currently objects are
-					// created but aren't linked to the parent in a meaningful way.
-					widget = accessible.getControlHandle();
+					// Lightweight widgets map to no "real" GTK widget, so we
+					// just instantiate a new SwtFixedAccessible
 					atkHandle = OS.g_object_new (OS.swt_fixed_accessible_get_type(), 0);
-					ATK.atk_object_initialize (atkHandle, widget);
-					OS.swt_fixed_accessible_register_accessible(atkHandle, false, 0);
 				}
+				OS.swt_fixed_accessible_register_accessible(atkHandle, false, widget);
 			} else {
 				// TODO_a11y: accessibility listeners on the Java side have not yet
 				// been implemented for native GTK widgets on GTK3.
@@ -5027,10 +5023,9 @@ class AccessibleObject {
 						if (object != null)	OS.g_object_ref(object.atkHandle);
 					} else {
 						if (OS.GTK3) {
-							// TODO_a11y: creation of child AccessibleObjects needs
-							// to be looked at for the GTK3 implementation
 							long /*int*/ type = OS.G_OBJECT_TYPE (accessible.getControlHandle());
-							object = new AccessibleObject(type, 0, accessible, true);
+							long /*int*/ widget = accessible.getControlHandle();
+							object = new AccessibleObject(type, widget, accessible, true);
 						} else {
 							object = AccessibleFactory.createChildAccessible (accessible, id);
 						}
