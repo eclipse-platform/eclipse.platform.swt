@@ -1090,8 +1090,8 @@ static void swt_fixed_accessible_component_get_size (AtkComponent *component, gi
 	return;
 }
 
-static AtkObject *swt_fixed_accessible_component_ref_accessible_at_point (AtkComponent *component, gint *x,
-		gint *y, AtkCoordType coord_type) {
+static AtkObject *swt_fixed_accessible_component_ref_accessible_at_point (AtkComponent *component, gint x,
+		gint y, AtkCoordType coord_type) {
 	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
 	SwtFixedAccessiblePrivate *private = fixed->priv;
 	jintLong returned_value = 0;
