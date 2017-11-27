@@ -72,7 +72,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	}
 	String string = (String)object;
 	byte[] utf8 = Converter.wcsToMbcs (string, true);
-	if  (transferData.type ==  COMPOUND_TEXT_ID) {
+	if  (OS.isX11() && transferData.type ==  COMPOUND_TEXT_ID) {
 		long /*int*/[] encoding = new long /*int*/[1];
 		int[] format = new int[1];
 		long /*int*/[] ctext = new long /*int*/[1];
@@ -136,12 +136,18 @@ public Object nativeToJava(TransferData transferData){
 
 @Override
 protected int[] getTypeIds() {
-	return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
+	if (OS.isX11()) {
+		return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
+	}
+	return new int[] {UTF8_STRING_ID, STRING_ID};
 }
 
 @Override
 protected String[] getTypeNames() {
-	return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
+	if (OS.isX11()) {
+		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
+	}
+	return new String[] {UTF8_STRING, STRING};
 }
 
 boolean checkText(Object object) {
