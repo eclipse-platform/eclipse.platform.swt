@@ -1252,13 +1252,25 @@ boolean close (boolean showPrompters) {
 }
 
 
+private boolean isJavascriptEnabled() {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	// If you try to run javascript while javascript is turned off, then:
+	// - on Webkit1: nothing happens.
+	// - on Webkit2: an exception is thrown.
+	// To ensure consistent behavior, do not even try to execute js on webkit2 if it's off.
+	return webkit_settings_get(WebKitGTK.enable_javascript) != 0;
+}
+
 @Override
 public boolean execute (String script) {
-
-	long /*int*/ result = 0;
 	if (WEBKIT2){
+        if (!isJavascriptEnabled()) {
+        	System.err.println("SWT Webkit Warning: Attempting to execute javascript when javascript is dissabled."
+        			+ "Execution has no effect. Script:\n" + script);
+        	return false;
+        }
 		try {
-			evaluate(script);
+			Webkit2AsyncToSync.runjavascript(script, this.browser, webView);
 		} catch (SWTException e) {
 			return false;
 		}
@@ -1273,12 +1285,11 @@ public boolean execute (String script) {
 		long /*int*/ jsSourceUrlString = WebKitGTK.JSStringCreateWithUTF8CString (sourceUrlbytes);
 		long /*int*/ frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
 		long /*int*/ context = WebKitGTK.webkit_web_frame_get_global_context (frame);
-		result = WebKitGTK.JSEvaluateScript (context, jsScriptString, 0, jsSourceUrlString, 0, null);
-
+		long /*int*/ result = WebKitGTK.JSEvaluateScript (context, jsScriptString, 0, jsSourceUrlString, 0, null);
 		WebKitGTK.JSStringRelease (jsSourceUrlString);
 		WebKitGTK.JSStringRelease (jsScriptString);
+		return result != 0;
 	}
-	return result != 0;
 }
 
 /**
@@ -1288,11 +1299,11 @@ public boolean execute (String script) {
  */
 private static class Webkit2AsyncToSync {
 
-	private static Callback evaluate_callback;
+	private static Callback runjavascript_callback;
 	private static Callback getText_callback;
 	static {
-		evaluate_callback = new Callback(Webkit2AsyncToSync.class, "evaluate_callback", void.class, new Type[] {long.class, long.class, long.class});
-		if (evaluate_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		runjavascript_callback = new Callback(Webkit2AsyncToSync.class, "runjavascript_callback", void.class, new Type[] {long.class, long.class, long.class});
+		if (runjavascript_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		getText_callback = new Callback(Webkit2AsyncToSync.class, "getText_callback", void.class, new Type[] {long.class, long.class, long.class});
 		if (getText_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1359,30 +1370,34 @@ private static class Webkit2AsyncToSync {
 		}
 	}
 
-	static Object evaluate(String script, Browser browser, long /*int*/ webView, boolean doNotBlock) {
-		/* Wrap script around a function for backwards compatibility,
-		 * user can specify 'return', which may not be at the beginning of the script.
-		 *  Valid scripts:
-		 *      'hi'
-		 *  	return 'hi'
-		 *  	var x = 1; return 'hi'
-		 */
+	static Object evaluate (String script, Browser browser, long /*int*/ webView)  {
+//		/* Wrap script around a temporary function for backwards compatibility,
+//		 * user can specify 'return', which may not be at the beginning of the script.
+//		 *  Valid scripts:
+//		 *      'hi'
+//		 *  	return 'hi'
+//		 *  	var x = 1; return 'hi'
+//		 */
 		String swtUniqueExecFunc = "SWTWebkit2TempFunc" + CallBackMap.getNextId() + "()";
 		String wrappedScript = "function " + swtUniqueExecFunc +"{" + script + "}; " + swtUniqueExecFunc;
+		return runjavascript(wrappedScript, browser, webView);
 
+	}
+
+	static Object runjavascript(String script, Browser browser, long /*int*/ webView) {
+		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
 		if (doNotBlock) {
 			// Execute script, but do not wait for async call to complete. (assume it does). Bug 512001.
-			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(wrappedScript, true), 0, 0, 0);
+			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, 0, 0);
 			return null;
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
-			// The callback comes back in evaluate_callback(..) below.
-
-			Consumer <Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(wrappedScript, true), 0, evaluate_callback.getAddress(), callbackId);
+			// The callback comes back in runjavascript_callback(..) below.
+			Consumer <Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, runjavascript_callback.getAddress(), callbackId);
 			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
 
 			if (retObj.errorNum != 0) {
-				throw new SWTException(retObj.errorNum, retObj.errorMsg +"\nScript that was evaluated:\n" + wrappedScript);
+				throw new SWTException(retObj.errorNum, retObj.errorMsg +"\nScript that was evaluated:\n" + script);
 			} else {
 				return retObj.returnValue;
 			}
@@ -1390,7 +1405,7 @@ private static class Webkit2AsyncToSync {
 	}
 
 	@SuppressWarnings("unused") // Only called directly from C (from javascript).
-	private static void evaluate_callback (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
+	private static void runjavascript_callback (long /*int*/ GObject_source, long /*int*/ GAsyncResult, long /*int*/ user_data) {
 		int callbackId = (int) user_data;
 		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
@@ -1476,15 +1491,10 @@ private static class Webkit2AsyncToSync {
 @Override
 public Object evaluate (String script) throws SWTException {
 	if (WEBKIT2){
-        if (webkit_settings_get(WebKitGTK.enable_javascript) == 0) {
-        	// If you try to run javascript while scripts are turned off, then:
-        	// - on Webkit1: nothing happens.
-        	// - on Webkit2: an exception is thrown.
-        	// To ensure consistent behavior, do not even try to execute js on webkit2 if it's off.
+        if (!isJavascriptEnabled()) {
         	return null;
         }
-		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
-		return Webkit2AsyncToSync.evaluate(script, this.browser, webView, doNotBlock);
+		return Webkit2AsyncToSync.evaluate(script, this.browser, webView);
 	} else {
 		return super.evaluate(script);
 	}
@@ -2781,6 +2791,7 @@ long /*int*/ webkit_notify_load_status (long /*int*/ web_view, long /*int*/ pspe
  * The webkit1 equivalent is webkit_window_object_cleared;
  */
 long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_data) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	switch (status) {
 		case WebKitGTK.WEBKIT2_LOAD_COMMITTED: {
 			long /*int*/ uri = WebKitGTK.webkit_web_view_get_uri (webView);
