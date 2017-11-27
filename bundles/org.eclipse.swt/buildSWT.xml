@@ -968,7 +968,24 @@
 	<!-- targets to run the builds on the Eclipse Foundation Hudson in master-slave setup -->
 	<!-- ******************************************************************************** -->
 	
-	<target name="copy_library_src_and_create_zip" depends="init_fragment,check_sha1_changed">
+	<target name="new_build_with_create_file">
+		<antcall target="new_build"/>
+		<antcall target="create_file_if_property_exists">
+			<param name="property" value="${build_changed}"/>
+			<param name="fileName" value="${tmphome}/build_changed.txt"/>
+		</antcall>
+		<antcall target="create_file_if_property_exists">
+			<param name="property" value="${natives_changed}"/>
+			<param name="fileName" value="${tmphome}/natives_changed.txt"/>
+		</antcall>
+	</target>
+	
+	<target name="create_file_if_property_exists" if="${property}">
+		<echo>"Creating file ${fileName}"</echo>
+		<echo file="${fileName}" append="false">true</echo>
+	</target>
+	
+	<target name="copy_library_src_and_create_zip" depends="init_fragment,check_sha1_changed" if="natives_changed">
 		<property name="swt.arch" value=""/>
 		<property name="project_dir" value="${basedir}/${repo.src}"/>
 		<property name="output_dir" value="${basedir}/${fragment_dir}"/>
