@@ -968,8 +968,15 @@
 	<!-- targets to run the builds on the Eclipse Foundation Hudson in master-slave setup -->
 	<!-- ******************************************************************************** -->
 	
-	<target name="new_build_with_create_file">
-		<antcall target="new_build"/>
+	<target name="new_build_with_create_file" depends="check_build_changed, check_natives_changed" if="build_changed">
+		<!-- Update the version files -->
+		<property name="increment_version_target" value="increment_version"/>
+		<antcall target="${increment_version_target}"/>
+
+		<!-- Commit the files -->
+		<antcall target="commit_sources"/>
+		
+		<!-- Create tmp files if the properties are set -->
 		<antcall target="create_file_if_property_exists">
 			<param name="property" value="${build_changed}"/>
 			<param name="fileName" value="${tmphome}/build_changed.txt"/>
