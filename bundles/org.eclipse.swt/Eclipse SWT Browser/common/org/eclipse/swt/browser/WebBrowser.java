@@ -361,7 +361,7 @@ public void createFunction (BrowserFunction function) {
 	buffer.append ("}} catch(e) {}};"); //$NON-NLS-1$
 
 	function.functionString = buffer.toString ();
-	execute (function.functionString);
+	nonBlockingExecute (function.functionString);
 }
 
 /**
@@ -385,9 +385,15 @@ public void destroyFunction (BrowserFunction function) {
 	StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
 	buffer.append (deleteString);
 	buffer.append ("\");} catch (e) {}}"); //$NON-NLS-1$
-	execute (buffer.toString ());
-	execute (deleteString);
+	nonBlockingExecute (buffer.toString ());
+	nonBlockingExecute (deleteString);
 	deregisterFunction (function);
+}
+
+// Designed to be overriden by platform implementations, used for optimization and avoiding deadlocks.
+// Webkit2 is async, we often don't need to bother waiting for a return type if we never use it.
+void nonBlockingExecute(String script) {
+	execute(script);
 }
 
 public abstract boolean execute (String script);
@@ -397,7 +403,7 @@ public Object evaluate (String script, boolean trusted) throws SWTException {
 }
 
 public Object evaluate (String script) throws SWTException {
-	// Developer note:
+	// Gtk Developer note:
 	// Webkit1 uses this mechanism.
 	// Webkit2 uses a different mechanism. See WebKit:evaluate();
 	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
@@ -414,7 +420,7 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append ("() {\n"); // $NON-NLS-1$
 	buffer.append (script);
 	buffer.append ("\n};"); // $NON-NLS-1$
-	execute (buffer.toString ());
+	nonBlockingExecute (buffer.toString ());
 
 	buffer = new StringBuffer ("if (window."); // $NON-NLS-1$
 	buffer.append (functionName);
@@ -437,8 +443,8 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append ("', ['"); // $NON-NLS-1$
 	buffer.append (ERROR_ID);
 	buffer.append ("' + e.message]);}}"); // $NON-NLS-1$
-	execute (buffer.toString ());
-	execute (getDeleteFunctionString (functionName));
+	nonBlockingExecute (buffer.toString ());
+	nonBlockingExecute (getDeleteFunctionString (functionName));
 	deregisterFunction (function);
 
 	Object result = evaluateResult;

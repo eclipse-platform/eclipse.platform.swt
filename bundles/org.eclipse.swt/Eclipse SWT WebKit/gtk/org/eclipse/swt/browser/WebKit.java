@@ -19,6 +19,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.nio.charset.*;
+import java.time.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -44,7 +45,18 @@ class WebKit extends WebBrowser {
 	byte[] htmlBytes;
 	BrowserFunction eventFunction; //Webkit1 only.
 
-	static final String reportErrMsg = "Please report this issue via: https://bugs.eclipse.org/bugs/enter_bug.cgi?"
+	/**
+	 * Timeout used for javascript execution / deadlock detection.
+	 * Loosely based on the 10s limit commonly found in browsers.
+	 * (Except for SWT browser we use 3s as chunks of the UI is blocked).
+	 * https://www.nczonline.net/blog/2009/01/05/what-determines-that-a-script-is-long-running/
+	 * https://stackoverflow.com/questions/3030024/maximum-execution-time-for-javascript
+	 */
+	static final int ASYNC_EXEC_TIMEOUT_MS = 3000; // Webkit2.
+
+
+	static final String reportErrMsg = "Please report this issue with steps to reproduce via:\n"
+			+ " https://bugs.eclipse.org/bugs/enter_bug.cgi?"
 			+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
 			+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
 			+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
@@ -1144,10 +1156,10 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 		/* install the JS call-out to the registered BrowserFunction */
 		StringBuffer buffer = new StringBuffer ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
-		execute (buffer.toString ());
+		nonBlockingExecute (buffer.toString ());
 		buffer = new StringBuffer ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
-		execute (buffer.toString ());
+		nonBlockingExecute (buffer.toString ());
 
 		if (top) {
 			/* DOM API is not available, so add listener to top-level document */
@@ -1168,7 +1180,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 			//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
 			//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
 
-			execute (buffer.toString ());
+			nonBlockingExecute (buffer.toString ());
 			return;
 		}
 
@@ -1185,7 +1197,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 		buffer.append ("frames[i].document.addEventListener('mousewheel', window.SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('dragstart', window.SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ('}');
-		execute (buffer.toString ());
+		nonBlockingExecute (buffer.toString ());
 	}
 }
 
@@ -1230,7 +1242,7 @@ boolean close (boolean showPrompters) {
 	buffer.append (functionName);
 	buffer.append ("(win.frames[i]); if (!result) return false;}} catch (e) {} return true;"); // $NON-NLS-1$
 	buffer.append ("\n};"); // $NON-NLS-1$
-	execute (buffer.toString ());
+	nonBlockingExecute (buffer.toString ());
 
 	Boolean result;
 	if (WEBKIT1) {
@@ -1259,6 +1271,16 @@ private boolean isJavascriptEnabled() {
 	// - on Webkit2: an exception is thrown.
 	// To ensure consistent behavior, do not even try to execute js on webkit2 if it's off.
 	return webkit_settings_get(WebKitGTK.enable_javascript) != 0;
+}
+
+@Override
+void nonBlockingExecute(String script) {
+	try {
+		nonBlockingEvaluate++;
+		execute(script);
+	} finally {
+		nonBlockingEvaluate--;
+	}
 }
 
 @Override
@@ -1295,6 +1317,8 @@ public boolean execute (String script) {
 /**
  * Webkit2 introduces async api. However SWT has sync execution model. This class it to convert async api to sync.
  *
+ * Be careful about using these methods in synchronous callbacks from webkit, as those can cause deadlocks. (See inner javadocs).
+ *
  * The mechanism generates an ID for each callback and waits for that callback to complete.
  */
 private static class Webkit2AsyncToSync {
@@ -1317,6 +1341,9 @@ private static class Webkit2AsyncToSync {
 		/** 0=no error. >0 means error. **/
 		int errorNum = 0;
 		String errorMsg;
+
+		/** Set to true if call timed out. Not set by javascript execution itself */
+		boolean swtAsyncTimeout;
 	}
 
 	/**
@@ -1384,9 +1411,44 @@ private static class Webkit2AsyncToSync {
 
 	}
 
+	/**
+	 * Run javascript, wait for a return value.
+	 *
+	 * Developer note:
+	 * Be EXTRA careful with this method, it can cause deadlocks in situations where
+	 * javascript is executed in a callback that provides a return value to webkit.
+	 * In otherwords, if webkit does a sync callback (one that requires a return value),
+	 * then running javascript will lead to a deadlock because webkit will not execute
+	 * the javascript until it's sync callback finished.
+	 * As a note, SWT's callback mechanism hard-codes 'long' return even when a callback
+	 * is actually 'void'. So reference webkit callback signature documentation and not
+	 * SWT implementation.
+	 *
+	 * If in doubt, you should use nonBlockingExecute() where possible :-).
+	 *
+	 * TODO_SOMEDAY:
+	 * - Instead of async js execution and waiting for return value, it might be
+	 *   better to use gdbus, connect to webextension and execute JS synchronously.
+	 *   See: https://blogs.igalia.com/carlosgc/2013/09/10/webkit2gtk-web-process-extensions/
+	 *    'Extending JavaScript'
+	 *   Pros:
+	 *    - less likely deadlocks would occur due to developer error/not being careful.
+	 *    - js execution can work in synchronous callbacks from webkit.
+	 *   Cons:
+	 *    - High implementation cost/complexity.
+	 *    - Unexpected errors/behaviour due to GDBus timeouts.
+	 *   Proof of concept:
+	 *   https://git.eclipse.org/r/#/c/23416/16/bundles/org.eclipse.swt/Eclipse+SWT+WebKit/gtk/library/webkit_extension.c
+	 *     > 'webkit_extension_execute_script'
+	 *   Tennative structure:
+	 *   - Webextension should create gdbus server, make & communicate UniqueID (pid) to main proc
+	 *   - main proc should make a note of webextension's name+uniqueID
+	 *   - implement mechanism for packaging Java objects into gvariants, (see WebkitGDBus.java),
+	 *   - call webextension over gdbus, parse return value.
+	 *
+	 */
 	static Object runjavascript(String script, Browser browser, long /*int*/ webView) {
-		boolean doNotBlock = nonBlockingEvaluate > 0 ? true : false;
-		if (doNotBlock) {
+		if (nonBlockingEvaluate > 0) {
 			// Execute script, but do not wait for async call to complete. (assume it does). Bug 512001.
 			WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, 0, 0);
 			return null;
@@ -1396,7 +1458,9 @@ private static class Webkit2AsyncToSync {
 			Consumer <Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, runjavascript_callback.getAddress(), callbackId);
 			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
 
-			if (retObj.errorNum != 0) {
+			if (retObj.swtAsyncTimeout) {
+				return null;
+			} else if (retObj.errorNum != 0) {
 				throw new SWTException(retObj.errorNum, retObj.errorMsg +"\nScript that was evaluated:\n" + script);
 			} else {
 				return retObj.returnValue;
@@ -1409,29 +1473,30 @@ private static class Webkit2AsyncToSync {
 		int callbackId = (int) user_data;
 		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
-		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
-		long /*int*/ js_result = WebKitGTK.webkit_web_view_run_javascript_finish(GObject_source, GAsyncResult, gerror);
+		if (retObj != null) { // retObj can be null if there was a timeout.
+			long /*int*/[] gerror = new long /*int*/ [1]; // GError **
+			long /*int*/ js_result = WebKitGTK.webkit_web_view_run_javascript_finish(GObject_source, GAsyncResult, gerror);
+			if (js_result == 0) {
+				long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+				String msg = Converter.cCharPtrToJavaString(errMsg, false);
+				OS.g_error_free(gerror[0]);
 
-		if (js_result == 0) {
-			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
-			String msg = Converter.cCharPtrToJavaString(errMsg, false);
-			OS.g_error_free(gerror[0]);
+				retObj.errorNum = SWT.ERROR_FAILED_EVALUATE;
+				retObj.errorMsg = msg != null ? msg : "";
+			} else {
+				long /*int*/ context = WebKitGTK.webkit_javascript_result_get_global_context (js_result);
+				long /*int*/ value = WebKitGTK.webkit_javascript_result_get_value (js_result);
 
-			retObj.errorNum = SWT.ERROR_FAILED_EVALUATE;
-			retObj.errorMsg = msg != null ? msg : "";
-		} else {
-			long /*int*/ context = WebKitGTK.webkit_javascript_result_get_global_context (js_result);
-			long /*int*/ value = WebKitGTK.webkit_javascript_result_get_value (js_result);
-
-			try {
-				retObj.returnValue = convertToJava(context, value);
-			} catch (IllegalArgumentException ex) {
-				retObj.errorNum = SWT.ERROR_INVALID_RETURN_VALUE;
-				retObj.errorMsg = "Type of return value not is not valid. For supported types see: Browser.evaluate() JavaDoc";
+				try {
+					retObj.returnValue = convertToJava(context, value);
+				} catch (IllegalArgumentException ex) {
+					retObj.errorNum = SWT.ERROR_INVALID_RETURN_VALUE;
+					retObj.errorMsg = "Type of return value not is not valid. For supported types see: Browser.evaluate() JavaDoc";
+				}
+				WebKitGTK.webkit_javascript_result_unref (js_result);
 			}
-			WebKitGTK.webkit_javascript_result_unref (js_result);
+			retObj.callbackFinished = true;
 		}
-		retObj.callbackFinished = true;
 		Display.getCurrent().wake();
 	}
 
@@ -1440,11 +1505,20 @@ private static class Webkit2AsyncToSync {
 		if (WebKitWebResource == 0) { // No page yet loaded.
 			return "";
 		}
+		if (nonBlockingEvaluate > 0) {
+			System.err.println("SWT Webkit Warning: getText() called inside a synchronous callback, which can lead to a deadlock.\n"
+					+ "Avoid using getText in OpenWindowListener, Authentication listener and when webkit is about to change to a new page\n"
+					+ "Return value is empty string '' instead of actual text");
+			return "";
+		}
 
 		Consumer<Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_resource_get_data(WebKitWebResource, 0, getText_callback.getAddress(), callbackId);
 		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
 
-		return (String) retObj.returnValue;
+		if (retObj.swtAsyncTimeout)
+			return "SWT WEBKIT TIMEOUT ERROR";
+		else
+			return (String) retObj.returnValue;
 	}
 
 	@SuppressWarnings("unused") // Callback only called only by C directly
@@ -1470,16 +1544,40 @@ private static class Webkit2AsyncToSync {
 		Display.getCurrent().wake();
 	}
 
+	/**
+	 * You should check 'retObj.swtAsyncTimeout' after making a call to this.
+	 */
 	private static Webkit2AsyncReturnObj execAsyncAndWaitForReturn(Browser browser, Consumer<Integer> asyncFunc) {
 		Webkit2AsyncReturnObj retObj = new Webkit2AsyncReturnObj();
 		int callbackId = CallBackMap.putObject(retObj);
 		asyncFunc.accept(callbackId);
 		Shell shell = browser.getShell();
 		Display display = browser.getDisplay();
+		final Instant timeOut = Instant.now().plusMillis(ASYNC_EXEC_TIMEOUT_MS);
 		while (!shell.isDisposed()) {
 			boolean eventsDispatched = OS.g_main_context_iteration (0, false);
 			if (retObj.callbackFinished)
 				break;
+			else if (Instant.now().isAfter(timeOut)) {
+
+				// Get a stacktrace. Note, this doesn't actually throw anything, we just get the stacktrace.
+				StringWriter sw = new StringWriter();
+				new Throwable("").printStackTrace(new PrintWriter(sw));
+				String stackTrace = sw.toString();
+
+				System.err.println("SWT call to Webkit timed out after " + ASYNC_EXEC_TIMEOUT_MS
+						+ "ms. No return value will be provided.\n"
+						+ "Possible reasons:\n"
+						+ "1) Problem: Your javascript needs more than " + ASYNC_EXEC_TIMEOUT_MS +"ms to execute.\n"
+						+ "   Solution: Don't run such javascript, it blocks UI. Instead register a BrowserFunction\n"
+						+ "             and call the BrowserFunction upon completion"
+						+ "2) Deadlock in swt/webkit2 logic. This is probably a bug in SWT.\n"
+						+ reportErrMsg + "\n"
+						+ "For bug report, please atatch this stack trace:\n"
+						+ stackTrace);
+				retObj.swtAsyncTimeout = true;
+				break;
+			}
 			else if (!eventsDispatched)
 				display.sleep();
 		}
@@ -3151,7 +3249,7 @@ private void webkit_settings_set(byte [] property, int value) {
 
 private void registerBrowserFunctions() {
 	for (BrowserFunction current : functions.values()) {
-		execute(current.functionString);
+		nonBlockingExecute(current.functionString);
 	}
 }
 
