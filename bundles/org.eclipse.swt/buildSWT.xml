@@ -87,14 +87,14 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="80"/>
+		<property name="library_count" value="44"/>
 		<property name="fragment" value=""/>
-		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
+		<fileset id="match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}."/>
 			<exclude name="**/.git/**"/>
 		</fileset>
-		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}">
+		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
@@ -591,7 +591,7 @@
 	<!-- Params: fragment, swt_version -->
 	<target name="commit_binaries" depends="get_version">
 		<!-- Get libraries to remove from repo -->
-		<fileset id="removeid" dir="${repo.bin}">
+		<fileset id="removeid" dir="${repo.bin}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
@@ -605,7 +605,7 @@
 		<property name="rfiles" refid="removeid"/>
 
 		<!-- Get list of files to commit -->
-		<fileset id="addid" dir="${repo.bin}">
+		<fileset id="addid" dir="${repo.bin}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<include name="bundles/*/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<exclude name="**/.git/**"/>
@@ -1019,7 +1019,7 @@
 			<equals arg1="${swt.os}" arg2="win32"/>
 		</condition>	
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
-		<property name="lib_output" value="${remotetmpdir}/libs"/>	
+		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<condition property="build_task" value="build_win_slave" else="build_remote_slave">
 			<equals arg1="${swt.ws}" arg2="win32"/>
 		</condition>
