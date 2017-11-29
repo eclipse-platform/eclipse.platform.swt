@@ -969,22 +969,22 @@
 	<!-- ******************************************************************************** -->
 	
 	<target name="push_remote_from_workspace" depends="get_tag">
-		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
-		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
 		</exec>
-		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
-		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
