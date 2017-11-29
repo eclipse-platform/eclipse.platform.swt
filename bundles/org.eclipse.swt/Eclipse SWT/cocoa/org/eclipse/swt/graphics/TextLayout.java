@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,7 @@ public final class TextLayout extends Resource {
 	char[] segmentsChars;
 	int wrapWidth;
 	int orientation;
+	private double defaultTabWidth;
 
 	int[] lineOffsets;
 	NSRect[] lineBounds;
@@ -184,7 +185,18 @@ void computeRuns() {
 	if (tabs != null && tabs.length > 0) {
 		int count = tabs.length;
 		if (count == 1) {
-			paragraph.setDefaultTabInterval(tabs[0]);
+			/**
+			 * defaultTabWidth holds the tabstop in points. There are two conditions
+			 * we need to consider if this value is 0 we need to use tabstop from
+			 * tabs[]. Also in case of user setting only one tabstop we need to use
+			 * the values from tab[] this can be determined by comparing tab[0] with
+			 * defaultTabWidth
+			 */
+			double tabWidth = defaultTabWidth;
+			if (defaultTabWidth == 0 || Math.ceil(defaultTabWidth) != tabs[0]) {
+				tabWidth = tabs[0];
+			}
+			paragraph.setDefaultTabInterval(tabWidth);
 		} else {
 			int i, pos = 0;
 			for (i = 0; i < count; i++) {
@@ -2277,5 +2289,52 @@ int untranslateOffset (int offset) {
 	}
 	return offset;
 }
+
+/**
+ * Sets Default Tab Width in terms if number of space characters.
+ *
+ * @param tabLength in number of characters
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tabLength is less than <code>0</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ *
+ * DO NOT USE This might be removed in 4.8
+ *
+ * @since 3.107
+ */
+public void setDefaultTabWidth(int tabLength) {
+
+	if (tabLength < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+	checkLayout();
+	String oldString = getText();
+	StringBuffer tabBuffer = new StringBuffer(tabLength);
+	for (int i = 0; i < tabLength; i++) {
+		tabBuffer.append(' ');
+	}
+	setText(tabBuffer.toString());
+	this.defaultTabWidth = this.getTabWidth();
+	setText (oldString);
+}
+
+double getTabWidth() {
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		computeRuns();
+		NSRect rect = layoutManager.usedRectForTextContainer(textContainer);
+		if (wrapWidth != -1) rect.width = wrapWidth;
+		return rect.width;
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
 
 }
