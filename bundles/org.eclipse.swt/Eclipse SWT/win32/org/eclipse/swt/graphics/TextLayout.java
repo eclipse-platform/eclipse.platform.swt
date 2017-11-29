@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3691,5 +3691,26 @@ int untranslateOffset(int offset) {
 		offset--;
 	}
 	return offset;
+}
+
+/**
+ * Sets Default Tab Width in terms if number of space characters.
+ *
+ * @param tabLength in number of characters
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tabLength is less than <code>0</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @noreference This method is not intended to be referenced by clients. 
+ * 
+ * DO NOT USE This might be removed in 4.8
+ * @since 3.107
+ */
+public void setDefaultTabWidth(int tabLength) {
+	// unused in win32
 }
 }

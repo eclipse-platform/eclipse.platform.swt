@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ class StyledTextRenderer {
 	int tabWidth;
 	int ascent, descent;
 	int averageCharWidth;
+	int tabLength;	//tab length in spaces
 
 	/* Line data */
 	int topIndex = -1;
@@ -883,6 +884,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setWidth(width);
 	layout.setSpacing(lineSpacing);
 	layout.setTabs(tabs);
+	layout.setDefaultTabWidth(tabLength);
 	layout.setIndent(indent);
 	layout.setWrapIndent(wrapIndent);
 	layout.setAlignment(alignment);
@@ -1084,6 +1086,7 @@ void setContent(StyledTextContent content) {
 void setFont(Font font, int tabs) {
 	TextLayout layout = new TextLayout(device);
 	layout.setFont(regularFont);
+	tabLength = tabs;
 	if (font != null) {
 		if (boldFont != null) boldFont.dispose();
 		if (italicFont != null) italicFont.dispose();
