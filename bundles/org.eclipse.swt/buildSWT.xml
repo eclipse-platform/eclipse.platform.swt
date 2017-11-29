@@ -968,6 +968,33 @@
 	<!-- targets to run the builds on the Eclipse Foundation Hudson in master-slave setup -->
 	<!-- ******************************************************************************** -->
 	
+	<target name="push_remote_from_workspace" depends="get_tag">
+		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
+		<exec dir="eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="push origin ${TAG}"/>
+		</exec>
+		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
+		<exec dir="eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="push origin ${TAG}"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="push origin refs/tags/${swt_tag}"/>
+		</exec>
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
+			<arg line="push origin refs/tags/${swt_tag}"/>
+		</exec>
+	</target>
+	
 	<target name="new_build_with_create_file" depends="check_build_changed, check_natives_changed" if="build_changed">
 		<!-- Update the version files -->
 		<property name="increment_version_target" value="increment_version"/>
