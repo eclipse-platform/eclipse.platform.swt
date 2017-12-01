@@ -203,6 +203,8 @@ typedef enum {
 	_1g_1app_1info_1launch_1default_1for_1uri_FUNC,
 	_1g_1app_1info_1should_1show_FUNC,
 	_1g_1app_1info_1supports_1uris_FUNC,
+	_1g_1bytes_1new_FUNC,
+	_1g_1bytes_1unref_FUNC,
 	_1g_1cclosure_1new_FUNC,
 	_1g_1closure_1ref_FUNC,
 	_1g_1closure_1sink_FUNC,

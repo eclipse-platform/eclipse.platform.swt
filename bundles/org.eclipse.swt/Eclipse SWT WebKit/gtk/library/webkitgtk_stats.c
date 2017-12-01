@@ -194,6 +194,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1get_1window_1properties",
 	"_1webkit_1web_1view_1go_1back",
 	"_1webkit_1web_1view_1go_1forward",
+	"_1webkit_1web_1view_1load_1bytes",
 	"_1webkit_1web_1view_1load_1html",
 	"_1webkit_1web_1view_1load_1request",
 	"_1webkit_1web_1view_1load_1string",

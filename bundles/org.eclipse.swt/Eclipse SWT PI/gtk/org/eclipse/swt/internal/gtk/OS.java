@@ -2719,6 +2719,41 @@ public static final void g_object_unref(long /*int*/ object) {
 		lock.unlock();
 	}
 }
+
+
+/**
+ * @method flags=dynamic
+ * @param data cast=(gconstpointer)
+ * @param size cast=(gsize)
+ */
+public static final native long /*int*/ _g_bytes_new (byte [] data, long /*int*/ size);
+public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
+	assert GTK3;
+	// Since glib 2.32. (gtk2.24 = glib2.28)
+	lock.lock();
+	try {
+		return _g_bytes_new (data, size);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param gBytes cast=(GBytes *)
+ */
+public static final native void _g_bytes_unref (long /*int*/ gBytes);
+public static final void g_bytes_unref (long /*int*/ gBytes) {
+	// Since glib 2.32. (gtk2.24 = glib2.28)
+	assert GTK3;
+	lock.lock();
+	try {
+		_g_bytes_unref (gBytes);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** @param string cast=(const gchar *),flags=no_out */
 public static final native int _g_quark_from_string(byte[] string);
 public static final int g_quark_from_string(byte[] string) {

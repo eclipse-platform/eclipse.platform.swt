@@ -204,6 +204,7 @@ typedef enum {
 	_1webkit_1web_1view_1get_1window_1properties_FUNC,
 	_1webkit_1web_1view_1go_1back_FUNC,
 	_1webkit_1web_1view_1go_1forward_FUNC,
+	_1webkit_1web_1view_1load_1bytes_FUNC,
 	_1webkit_1web_1view_1load_1html_FUNC,
 	_1webkit_1web_1view_1load_1request_FUNC,
 	_1webkit_1web_1view_1load_1string_FUNC,

@@ -3494,6 +3494,34 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1go_1forward)
 }
 #endif
 
+#ifndef NO__1webkit_1web_1view_1load_1bytes
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1load_1bytes)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1load_1bytes_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	webkit_web_view_load_bytes(arg0, arg1, lparg2, lparg3, lparg4);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_load_bytes)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jbyte *, jbyte *, jbyte *))fp)(arg0, arg1, lparg2, lparg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1load_1bytes_FUNC);
+}
+#endif
+
 #ifndef NO__1webkit_1web_1view_1load_1html
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1load_1html)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2)

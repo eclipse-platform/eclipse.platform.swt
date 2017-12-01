@@ -193,6 +193,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1app_1info_1launch_1default_1for_1uri",
 	"_1g_1app_1info_1should_1show",
 	"_1g_1app_1info_1supports_1uris",
+	"_1g_1bytes_1new",
+	"_1g_1bytes_1unref",
 	"_1g_1cclosure_1new",
 	"_1g_1closure_1ref",
 	"_1g_1closure_1sink",

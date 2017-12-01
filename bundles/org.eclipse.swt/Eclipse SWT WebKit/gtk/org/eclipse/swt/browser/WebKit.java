@@ -21,6 +21,7 @@ import java.net.*;
 import java.nio.charset.*;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -39,11 +40,14 @@ class WebKit extends WebBrowser {
 	long /*int*/ webViewData;
 
 	int failureCount, lastKeyCode, lastCharCode;
-	String postData;
-	String[] headers;
-	boolean ignoreDispose, loadingText, untrustedText;
-	byte[] htmlBytes;
+
+	String postData;  // Webkit1 only.
+	String[] headers; // Webkit1 only.
+	byte[] htmlBytes;  // Webkit1 only.
+	boolean loadingText, untrustedText; // Webkit1 only.
 	BrowserFunction eventFunction; //Webkit1 only.
+
+	boolean ignoreDispose; // Webkit1 & Webkit2.
 
 	/**
 	 * Timeout used for javascript execution / deadlock detection.
@@ -65,6 +69,9 @@ class WebKit extends WebBrowser {
 			+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=webkit2_BrowserProblem";
 
 	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
+
+	/** Part of workaround in Bug 527738. Prevent old request overring newer request */
+	static AtomicInteger w2_bug527738LastRequestCounter = new AtomicInteger(); // Webkit 2 only (Bug 527738)
 
 	/**
 	 * Webkit2: In a few situations, evaluate() should not wait for it's asynchronous callback to finish.
@@ -2248,9 +2255,11 @@ void onDispose (Event e) {
 		C.free (webViewData);
 	}
 
-	postData = null;
-	headers = null;
-	htmlBytes = null;
+	if (WEBKIT1) {
+		postData = null;
+		headers = null;
+		htmlBytes = null;
+	}
 }
 
 void onResize (Event e) {
@@ -2390,24 +2399,27 @@ public void refresh () {
 @Override
 public boolean setText (String html, boolean trusted) {
 	/* convert the String containing HTML to an array of bytes with UTF-8 data */
-	byte[] bytes = (html + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
+	byte[] html_bytes = (html + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
 	/*
 	* If this.htmlBytes is not null then the about:blank page is already being loaded,
 	* so no navigate is required.  Just set the html that is to be shown.
 	*/
-	boolean blankLoading = htmlBytes != null;
-	htmlBytes = bytes;
-	untrustedText = !trusted;
+	boolean blankLoading = htmlBytes != null; // Webkit1 only.
+	if (WEBKIT1) {
+		this.htmlBytes = html_bytes;
+		untrustedText = !trusted;
+	}
 
 	if (WEBKIT2) {
+		w2_bug527738LastRequestCounter.incrementAndGet();
 		byte[] uriBytes;
-		if (untrustedText) {
+		if (!trusted) {
 			uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
 		} else {
 			uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
 		}
-		WebKitGTK.webkit_web_view_load_html (webView, htmlBytes, uriBytes);
+		WebKitGTK.webkit_web_view_load_html (webView, html_bytes, uriBytes);
 	} else {
 		if (blankLoading) return true;
 
@@ -2420,9 +2432,13 @@ public boolean setText (String html, boolean trusted) {
 
 @Override
 public boolean setUrl (String url, String postData, String[] headers) {
-	this.postData = postData;
-	this.headers = headers;
-
+	if (WEBKIT1) {
+		this.postData = postData;
+		this.headers = headers;
+	}
+	if (WEBKIT2) {
+		w2_bug527738LastRequestCounter.incrementAndGet();
+	}
 	/*
 	* WebKitGTK attempts to open the exact url string that is passed to it and
 	* will not infer a protocol if it's not specified.  Detect the case of an
@@ -2475,19 +2491,127 @@ public boolean setUrl (String url, String postData, String[] headers) {
 
 	byte[] uriBytes = Converter.wcsToMbcs (url, true);
 
-	if (WEBKIT2 && headers != null){
+	if (WEBKIT2 && postData==null && headers != null) {
 		long /*int*/ request = WebKitGTK.webkit_uri_request_new (uriBytes);
 		long /*int*/ requestHeaders = WebKitGTK.webkit_uri_request_get_http_headers (request);
 		if (requestHeaders != 0) {
 			addRequestHeaders(requestHeaders, headers);
 		}
 		WebKitGTK.webkit_web_view_load_request (webView, request);
-
+		OS.g_object_set (settings, WebKitGTK.user_agent, 0, 0);
 		return true;
 	}
 
-	WebKitGTK.webkit_web_view_load_uri (webView, uriBytes);
-	OS.g_object_set (settings, WebKitGTK.user_agent, 0, 0);
+	// Bug 527738
+	// Webkit2 doesn't have api to set url with data. (2.18). While we wait for them to implement,
+	// this  workaround uses java to query a server and then manually populate webkit with content.
+	// This should be version guarded and replaced with proper functions once webkit2 has implemented api.
+	if (WEBKIT2 && postData != null) {
+		final String base_url = url;
+
+		// Use Webkit User-Agent
+		long /*int*/ [] user_agent_str_ptr = new long /*int*/ [1];
+		OS.g_object_get (settings, WebKitGTK.user_agent, user_agent_str_ptr, 0);
+		final String userAgent = Converter.cCharPtrToJavaString(user_agent_str_ptr[0], true);
+		final int lastRequest = w2_bug527738LastRequestCounter.incrementAndGet(); // Webkit 2 only
+		Thread send_request = new Thread(() -> {
+			String html = null;
+			String mime_type = null;
+			String encoding_type = null;
+			try {
+				URL base = new URL(base_url);
+				URLConnection url_conn = base.openConnection();
+				if (url_conn instanceof HttpURLConnection) {
+					HttpURLConnection conn = (HttpURLConnection) url_conn;
+
+					{ // Configure connection.
+						conn.setRequestMethod("POST"); //$NON-NLS-1$
+
+						// Use Webkit Accept
+						conn.setRequestProperty( "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); //$NON-NLS-1$ $NON-NLS-2$
+
+						conn.setRequestProperty("User-Agent", userAgent); //$NON-NLS-1$
+						conn.setDoOutput(true); // because default value is false
+
+						// Set headers
+						if (headers != null) {
+							for (String header : headers) {
+								int index = header.indexOf(':');
+								if (index > 0) {
+									String key = header.substring(0, index).trim();
+									String value = header.substring(index + 1).trim();
+									conn.setRequestProperty(key, value);
+								}
+							}
+						}
+					}
+
+					{ // Query server
+						try (OutputStream out = conn.getOutputStream()) {
+							out.write(postData.getBytes());
+						}
+
+						StringBuffer response = new StringBuffer();
+						try (BufferedReader buff = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+							char [] cbuff = new char[4096];
+							while (buff.read(cbuff, 0, cbuff.length) > 0) {
+								response.append(new String(cbuff));
+								Arrays.fill(cbuff, '\0');
+							}
+						}
+						html = response.toString();
+					}
+
+					{ // Extract result meta data
+						// Get Media Type from Content-Type
+						String content_type = conn.getContentType();
+						int paramaterSeparatorIndex = content_type.indexOf(';');
+						mime_type = paramaterSeparatorIndex > 0 ? content_type.substring(0, paramaterSeparatorIndex) : content_type;
+
+						// Get Encoding if defined
+						if (content_type.indexOf(';') > 0) {
+							String [] attrs = content_type.split(";");
+							for (String attr : attrs) {
+								int i = attr.indexOf('=');
+								if (i > 0) {
+									String key = attr.substring(0, i).trim();
+									String value = attr.substring(i + 1).trim();
+									if ("charset".equalsIgnoreCase(key)) { //$NON-NLS-1$
+										encoding_type = value;
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (IOException e) { // MalformedURLException is an IOException also.
+				html = e.getMessage();
+			} finally {
+				if (html != null && lastRequest == w2_bug527738LastRequestCounter.get()) {
+					final String final_html = html;
+					final String final_mime_type = mime_type;
+					final String final_encoding_type = encoding_type;
+					Display.getDefault().syncExec(() -> {
+						byte [] html_bytes = Converter.wcsToMbcs(final_html, false);
+						byte [] mime_type_bytes = final_mime_type != null ? Converter.javaStringToCString(final_mime_type) : Converter.javaStringToCString("text/plain");
+						byte [] encoding_bytes = final_encoding_type != null ? Converter.wcsToMbcs(final_encoding_type, true) : new byte [] {0};
+						long /*int*/ gByte = OS.g_bytes_new(html_bytes, html_bytes.length);
+						WebKitGTK.webkit_web_view_load_bytes (webView, gByte, mime_type_bytes, encoding_bytes, uriBytes);
+						OS.g_bytes_unref (gByte); // as per glib/tests/keyfile:test_bytes()..
+						OS.g_object_set (settings, WebKitGTK.user_agent, 0, 0);
+					});
+				}
+			}
+		});
+		send_request.start();
+	} else {
+		WebKitGTK.webkit_web_view_load_uri (webView, uriBytes);
+	}
+
+	// Handle when !(WEBKIT2 && postData != null)
+	if (WEBKIT1 || (WEBKIT2 && postData == null)) {
+		OS.g_object_set (settings, WebKitGTK.user_agent, 0, 0);
+	}
 	return true;
 }
 

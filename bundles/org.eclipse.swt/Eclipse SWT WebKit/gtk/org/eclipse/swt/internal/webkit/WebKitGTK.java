@@ -1904,6 +1904,18 @@ public static final void webkit_web_view_load_html (long /*int*/ web_view, byte[
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_web_view_load_bytes (long /*int*/ web_view, long /*int*/ bytes, byte [] mime_type, byte [] encoding, byte [] base_uri);
+public static final void webkit_web_view_load_bytes (long /*int*/ web_view, long /*int*/ bytes, byte [] mime_type, byte [] encoding, byte [] base_uri) {
+	assert WEBKIT1 || WEBKIT2;
+	lock.lock();
+	try {
+		_webkit_web_view_load_bytes (web_view, bytes, mime_type, encoding, base_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_web_view_load_string (long /*int*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri);
 public static final void webkit_web_view_load_string (long /*int*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri) {
 	assert WEBKIT1 : Webkit1AssertMsg;

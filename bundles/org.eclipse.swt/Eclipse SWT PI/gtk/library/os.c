@@ -1914,6 +1914,48 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1app_1info_1supports_1uris)
 }
 #endif
 
+#ifndef NO__1g_1bytes_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1bytes_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1bytes_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_bytes_new((gconstpointer)lparg0, (gsize)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_bytes_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(gconstpointer, gsize))fp)((gconstpointer)lparg0, (gsize)arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1bytes_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1bytes_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1bytes_1unref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1bytes_1unref_FUNC);
+/*
+	g_bytes_unref((GBytes *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_bytes_unref)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GBytes *))fp)((GBytes *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1g_1bytes_1unref_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1cclosure_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1cclosure_1new)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
