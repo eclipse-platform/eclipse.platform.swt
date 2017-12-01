@@ -2727,14 +2727,8 @@ public Color getBackground () {
 	checkWidget();
 	Color color;
 	if (OS.GTK3) {
-		if (backgroundAlpha == 0) {
-			color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), 0);
-			return color;
-		} else {
-			Control control = findBackgroundControl ();
-			if (control == null) control = this;
-			return Color.gtk_new (display, control.getBackgroundGdkRGBA(), backgroundAlpha);
-		}
+		color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), backgroundAlpha);
+		return color;
 	} else {
 		if (backgroundAlpha == 0) {
 			color = Color.gtk_new (display, this.getBackgroundGdkColor (), 0);
@@ -2780,19 +2774,19 @@ public Image getBackgroundImage () {
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
-	if ((state & BACKGROUND) == 0) {
-		return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
-	}
 	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		if (provider != 0) {
 			return display.gtk_css_parse_background (provider, null);
 		} else {
-			return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
+			return display.COLOR_WIDGET_BACKGROUND_RGBA;
 		}
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = new GdkRGBA ();
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		if ((state & BACKGROUND) == 0) {
+			return display.COLOR_WIDGET_BACKGROUND_RGBA;
+		}
 		return rgba;
 	}
 }
@@ -4448,21 +4442,6 @@ public void setBackground (Color color) {
 	}
 }
 
-/**
- * This method determines whether or not a background color should be set.
- *
- * Since bug 421836, the default behavior on GTK3 is to always set the background
- * color (and this method still reflects that). However, if a widget needs to implement
- * different behavior, this method can be overridden on a per widget basis.
- *
- * @param color the color which is to be set as the background color
- *
- * @return true if the background color needs to be changed, false otherwise
- */
-boolean backgroundChangeNeeded (Color color) {
-	return true;
-}
-
 private void _setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
 	boolean set = false;
@@ -4470,11 +4449,8 @@ private void _setBackground (Color color) {
 		GdkRGBA rgba = null;
 		if (color != null) {
 			rgba = color.handleRGBA;
-			backgroundAlpha = color.getAlpha();
-		} else {
-			rgba = defaultBackground();
 		}
-		set = backgroundChangeNeeded(color);
+		set = true;
 		if (set) {
 			if (color == null) {
 				state &= ~BACKGROUND;
@@ -4498,6 +4474,7 @@ private void _setBackground (Color color) {
 			set = oldColor.pixel != gdkColor.pixel;
 		}
 		if (set) {
+
 			if (color == null) {
 				state &= ~BACKGROUND;
 			} else {
@@ -4605,28 +4582,20 @@ void setBackgroundGdkRGBA(GdkRGBA rgba) {
 
 void setBackgroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	double alpha = 1.0;
+	backgroundAlpha = 255;
 	if (rgba == null) {
 		if ((state & PARENT_BACKGROUND) != 0) {
-			alpha = 0;
+			backgroundAlpha = 0;
 			Control control = findBackgroundControl();
-			if (control == null) {
-				// If we end up using this Control, set the bg color to
-				// be transparent.
-				rgba = display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA;
-			} else {
-				rgba = control.getBackgroundGdkRGBA();
-			}
+			if (control == null) control = this;
+			rgba = control == this ? null : control.getBackgroundGdkRGBA();
 		} else {
-			// In some cases _setBackground() won't be calling this method,
-			// so a null rgba needs to be converted into the default bg color
-			rgba = defaultBackground();
-			alpha = rgba.alpha * (float) 255;
+			rgba = defaultBackground ();
 		}
 	} else {
-		alpha = backgroundAlpha;
+		backgroundAlpha = (int) (rgba.alpha * 255);
 	}
-	if (rgba != null) rgba.alpha = alpha / (float)255;
+	if (rgba != null) rgba.alpha = (float) backgroundAlpha / 255;
 	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
 	setBackgroundGdkRGBA (context, handle, rgba);
 	OS.gtk_style_context_invalidate (context);
@@ -5356,8 +5325,7 @@ public boolean setParent (Composite parent) {
 
 void setParentBackground () {
 	if (OS.GTK3) {
-		setBackgroundGdkRGBA (handle, null);
-		if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, null);
+		backgroundAlpha = 0;
 	} else {
 		setBackgroundGdkColor (handle, null);
 		if (fixedHandle != 0) setBackgroundGdkColor (fixedHandle, null);
