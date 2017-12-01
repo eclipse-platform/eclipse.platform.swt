@@ -88,54 +88,73 @@ public class WebKitGTK extends C {
 
 
 	/** Signals */
-	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 (soup) & Webkit2 WebkitWebView
+
+	// Authentication.
+	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 & Webkit2
 
 	// Close webview
 	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$   // Webkit1
 	public static final byte[] close = ascii ("close"); // $NON-NLS-1$					   // Webkit2
 
-	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$ // Webkit1. (On W2 see 'console-message-sent'). Not printed to stderr on W2.
+	// Supress javascript execution warnings from bleeding into SWT's console.
+	public static final byte[] console_message = ascii ("console-message"); // $NON-NLS-1$ // Webkit1. (On W2 see 'console-message-sent'). Not printed to stderr by the looks.
 
-	public static final byte[] context_menu = ascii ("context-menu"); // $NON-NLS-1$
-	public static final byte[] create = ascii ("create"); // $NON-NLS-1$
-	public static final byte[] create_web_view = ascii ("create-web-view"); // $NON-NLS-1$
-	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$
+	// Context menu signals.
+	public static final byte[] populate_popup = ascii ("populate-popup"); // $NON-NLS-1$   // Webkit1, deprecated in 1.10.
+	public static final byte[] context_menu = ascii ("context-menu"); // $NON-NLS-1$       // Webkit2.
+
+	// Create webView
+	public static final byte[] create_web_view = ascii ("create-web-view"); // $NON-NLS-1$ // Webkit1
+	public static final byte[] create = ascii ("create"); // $NON-NLS-1$				   // Webkit2
+
+	// Policy decision signals.
+	public static final byte[] mime_type_policy_decision_requested = ascii ("mime-type-policy-decision-requested"); // $NON-NLS-1$   // Webkit1
+	public static final byte[] navigation_policy_decision_requested = ascii ("navigation-policy-decision-requested"); // $NON-NLS-1$ // Webkit1
+	public static final byte[] decide_policy = ascii ("decide-policy"); // $NON-NLS-1$		// Webkit2
 	public static final byte[] decide_destination = ascii ("decide-destination"); // $NON-NLS-1$	// Webkit2
-	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$
-	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$		// Webkit2
+
+	// Download signal
+	public static final byte[] download_requested = ascii ("download-requested"); // $NON-NLS-1$	// Webkit1
+	public static final byte[] download_started = ascii ("download-started"); // $NON-NLS-1$		// Webkit2  (has 3 signals for downloading)
 	public static final byte[] failed = ascii ("failed"); // $NON-NLS-1$							// Webkit2
 	public static final byte[] finished = ascii ("finished"); // $NON-NLS-1$						// Webkit2
 
-	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions"); // Webkit2
+	// Webkit2 extension
+	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions");         // Webkit2. Extension exists only on w2.
+
+	// Status text signals
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$   		// Webkit1 -> StatusTextListener.changed()
 	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$	// Webkit2 -> StatusTextListener.changed()
+	/*  Webkit1 only.
+	 *  On webkit2 & newer browsers 'window.status=txt' has no effect anymore.
+	 *  Status bar only updated when you hover mouse over hyperlink. See signals above.*/
+	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$    // Webkit1. Doesn't exist on W2 due to security risk.
 
-	/** Webkit2 only, to implement equivalent of webkit1 window_object_cleared*/
-	public static final byte[] load_changed = ascii ("load-changed"); // $NON-NLS-1$
-	public static final byte[] mime_type_policy_decision_requested = ascii ("mime-type-policy-decision-requested"); // $NON-NLS-1$ // webkit1
-	public static final byte[] navigation_policy_decision_requested = ascii ("navigation-policy-decision-requested"); // $NON-NLS-1$
-	public static final byte[] notify_load_status = ascii ("notify::load-status"); // $NON-NLS-1$ // Webkit1
+	// Load changed/page reload.
+	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$  // Webkit1. On W2 this is found in the webextension. On w2, 'load-changed' is used.
+	public static final byte[] load_changed = ascii ("load-changed"); // $NON-NLS-1$ // Webkit2 only, to implement equivalent of webkit1 window_object_cleared
 
+	// Load progress/estimation/notification mechanism.
+	public static final byte[] notify_load_status = ascii ("notify::load-status"); // $NON-NLS-1$                           // Webkit1
 	public static final byte[] notify_progress = ascii ("notify::progress"); // $NON-NLS-1$									// ->Webkit1 Progress.changed()
 	public static final byte[] notify_estimated_load_progress = ascii ("notify::estimated-load-progress"); // $NON-NLS-1$   // ->Webkit2 Progress.changed()
 
-	public static final byte[] notify_title = ascii ("notify::title"); // $NON-NLS-1$
-	public static final byte[] populate_popup = ascii ("populate-popup"); // $NON-NLS-1$
-	public static final byte[] resource_request_starting = ascii ("resource-request-starting"); // $NON-NLS-1$ //Webkit1
-	public static final byte[] resource_load_started = ascii ("resource-load-started"); // $NON-NLS-1$
-	/** Webkit1 only. On webkit2 & newer browsers 'window.status=txt' has no effect anymore.
-	 *  Status bar only updated when you hover mouse over hyperlink.*/
-	public static final byte[] status_bar_text_changed = ascii ("status-bar-text-changed"); // $NON-NLS-1$
+	// Notify that the webpage title has changed.
+	public static final byte[] notify_title = ascii ("notify::title"); // $NON-NLS-1$	// Webkit1, Webkit2.
 
+	// Intercept a page load request to inject postData and custom headers.
+	public static final byte[] resource_request_starting = ascii ("resource-request-starting"); // $NON-NLS-1$ // Webkit1.
+	public static final byte[] resource_load_started = ascii ("resource-load-started"); // $NON-NLS-1$         // Webkit1. (unused, left over?)
+	// api for this doesn't exist in Webkitgtk (2.18). Bug 527738.
+
+
+	// Signal to indicate when the view should be shown to user. I.e, page load is complete.
 	public static final byte[] web_view_ready = ascii ("web-view-ready"); // $NON-NLS-1$	// Webkit1
 	public static final byte[] ready_to_show = ascii ("ready-to-show"); // $NON-NLS-1$		// Webkit2
 
-	/** Webkit1 only. On Webkit2 this is found in a webextension. Instead 'load_changed' is used on webkit2 **/
-	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
 
 
-
-	// Properties:
+	/** Properties: */
 	// Webkit1: https://webkitgtk.org/reference/webkitgtk/unstable/WebKitWebSettings.html#WebKitWebSettings.properties
 	// Webkit2: https://webkitgtk.org/reference/webkit2gtk/unstable/WebKitSettings.html#WebKitSettings.properties
 	//
@@ -176,16 +195,14 @@ public class WebKitGTK extends C {
 	public static final byte[] SOUP_SESSION_PROXY_URI = ascii ("proxy-uri"); // $NON-NLS-1$		// libsoup
 
 	/** DOM events */
-	public static final byte[] dragstart = ascii ("dragstart"); // $NON-NLS-1$
-	public static final byte[] keydown = ascii ("keydown"); // $NON-NLS-1$
-	public static final byte[] keypress = ascii ("keypress"); // $NON-NLS-1$
-	public static final byte[] keyup = ascii ("keyup"); // $NON-NLS-1$
-	public static final byte[] mousedown = ascii ("mousedown"); // $NON-NLS-1$
-	public static final byte[] mousemove = ascii ("mousemove"); // $NON-NLS-1$
-	public static final byte[] mouseup = ascii ("mouseup"); // $NON-NLS-1$
-	public static final byte[] mousewheel = ascii ("mousewheel"); // $NON-NLS-1$
-
-
+	public static final byte[] dragstart = ascii ("dragstart"); // $NON-NLS-1$		// Webkit1
+	public static final byte[] keydown = ascii ("keydown"); // $NON-NLS-1$			// Webkit1
+	public static final byte[] keypress = ascii ("keypress"); // $NON-NLS-1$        // Webkit1
+	public static final byte[] keyup = ascii ("keyup"); // $NON-NLS-1$              // Webkit1
+	public static final byte[] mousedown = ascii ("mousedown"); // $NON-NLS-1$      // Webkit1
+	public static final byte[] mousemove = ascii ("mousemove"); // $NON-NLS-1$      // Webkit1
+	public static final byte[] mouseup = ascii ("mouseup"); // $NON-NLS-1$          // Webkit1
+	public static final byte[] mousewheel = ascii ("mousewheel"); // $NON-NLS-1$    // Webkit1
 
 
 

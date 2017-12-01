@@ -2986,7 +2986,7 @@ long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
 }
 
 long /*int*/ webkit_context_menu (long /*int*/ web_view, long /*int*/ context_menu, long /*int*/ eventXXX, long /*int*/ hit_test_result) {
-	Point pt = browser.getDisplay ().getCursorLocation ();
+	Point pt = browser.getDisplay ().getCursorLocation (); // might break on Wayland? Wouldn't hurt to verify.
 	Event event = new Event ();
 	event.x = pt.x;
 	event.y = pt.y;
@@ -3008,6 +3008,7 @@ long /*int*/ webkit_context_menu (long /*int*/ web_view, long /*int*/ context_me
 	return 0;
 }
 
+// Seems to be reached only by Webkit1 at the moment.
 long /*int*/ webkit_populate_popup (long /*int*/ web_view, long /*int*/ webkit_menu) {
 	Point pt = browser.getDisplay ().getCursorLocation ();
 	Event event = new Event ();
