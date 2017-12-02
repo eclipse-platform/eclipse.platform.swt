@@ -105,7 +105,8 @@ gboolean is_js_valid(JSContextRef context, JSValueRef value) {
 		JSValueRef valuePtr = JSObjectGetProperty(context, object, propertyName, NULL);
 		JSStringRelease(propertyName);
 		int length = (int) JSValueToNumber(context, valuePtr, NULL);
-		for (int i = 0; i < length; i++) {
+		int i;
+		for (i = 0; i < length; i++) {
 			const JSValueRef child = JSObjectGetPropertyAtIndex(context, object, i, NULL);
 			if (!is_js_valid(context, child)) {
 				return false;
