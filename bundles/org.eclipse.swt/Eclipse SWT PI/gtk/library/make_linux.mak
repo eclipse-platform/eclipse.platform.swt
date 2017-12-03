@@ -52,7 +52,7 @@ ALL_SWT_LIBS = $(SWT_LIB) $(AWT_LIB) $(SWTPI_LIB) $(CAIRO_LIB) $(ATK_LIB) $(GLX_
 
 # Webkit extension lib has to be put into a separate folder and is treated differently from the other libraries.
 WEBKIT_EXTENSION_LIB = lib$(WEBKIT_EXTENSION_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-WEBEXTENSION_DIR = webkitextensions$(maj_ver)$(min_ver)
+WEBEXTENSION_DIR = webkitextensions
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
@@ -246,7 +246,6 @@ install: all
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
 ifeq ($(GTK_VERSION), 3.0) # Copy webextension into it's own folder, but create folder first.
-	[ -d $(OUTPUT_DIR)/$(WEBEXTENSION_DIR) ] || mkdir $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)  # If folder not exist, make it.
 	cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
 #
