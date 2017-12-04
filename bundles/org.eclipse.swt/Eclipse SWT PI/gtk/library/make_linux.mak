@@ -246,6 +246,7 @@ install: all
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
 ifeq ($(GTK_VERSION), 3.0) # Copy webextension into it's own folder, but create folder first.
+	[ -d $(OUTPUT_DIR)/$(WEBEXTENSION_DIR) ] || mkdir $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)  # If folder not exist, make it.
 	cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
 #
