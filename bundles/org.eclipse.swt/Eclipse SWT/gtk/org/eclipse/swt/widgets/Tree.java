@@ -2869,7 +2869,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 		long /*int*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TreeItem item = null;
 		if (iter != 0) item = _getItem (iter);
-		if (item != null) {
+		if (item != null && !item.isDisposed()) {
 			int columnIndex = 0;
 			if (columnCount > 0) {
 				long /*int*/ columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
@@ -2888,7 +2888,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			}
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
-			if (image != null) {
+			if (image != null && !image.isDisposed()) {
 				Rectangle bounds = image.getBoundsInPixels ();
 				imageWidth = bounds.width;
 			}
