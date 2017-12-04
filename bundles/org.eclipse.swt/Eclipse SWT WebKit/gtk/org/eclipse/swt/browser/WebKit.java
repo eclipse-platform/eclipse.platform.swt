@@ -383,7 +383,7 @@ class WebKit extends WebBrowser {
 			// 2) Load Webkit Extension:
 			// Webkit extensions should be in their own directory.
 			String swtVersion = Library.getVersionString();
-			File extension = Library.findResource("webkitextensions" + swtVersion,"swt-webkit2extension", true);
+			File extension = Library.findResource("webkitextensions","swt-webkit2extension", true);
 			if (extension == null){
 				System.err.println("SWT Webkit.java Error: Could not find webkit extension. BrowserFunction functionality will not be available. \n"
 						+ "(swt version: " + swtVersion + ")");
