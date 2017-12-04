@@ -930,7 +930,7 @@ public class StyledText extends Canvas {
 	 * Use the colors and font styles specified in "styles" and "lineBackground".
 	 * Formatting is written to reflect the text rendering by the text widget.
 	 * Style background colors take precedence over the line background color.
-	 * Background colors are written using the \highlight tag (vs. the \cb tag).
+	 * Background colors are written using the \chshdng0\chcbpat tag (vs. the \cb tag).
 	 * </p>
 	 *
 	 * @param line line text to write as RTF. Must not contain line breaks
@@ -960,7 +960,7 @@ public class StyledText extends Canvas {
 		write(" ");
 
 		if (lineBackground != null) {
-			write("{\\highlight");
+			write("{\\chshdng0\\chcbpat");
 			write(getColorIndex(lineBackground, DEFAULT_BACKGROUND));
 			write(" ");
 		}
@@ -997,7 +997,7 @@ public class StyledText extends Canvas {
 			write(getColorIndex(style.foreground, DEFAULT_FOREGROUND));
 			int colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
 			if (colorIndex != DEFAULT_BACKGROUND) {
-				write("\\highlight");
+				write("\\chshdng0\\chcbpat");
 				write(colorIndex);
 			}
 			int fontStyle = style.fontStyle;
