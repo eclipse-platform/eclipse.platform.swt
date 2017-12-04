@@ -607,6 +607,7 @@
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
+			<include name="bundles/*/webkitextensions/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
