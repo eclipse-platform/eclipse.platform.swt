@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -898,7 +898,8 @@ boolean updateTextDirection(int textDirection) {
  * escaped by doubling it in the string.
  * </p>
  * <p>
- * For CJK-style mnemonics of the form " (&C)" at the end of the tooltip text
+ * NOTE: This operation is a hint and behavior is platform specific, on Windows
+ * for CJK-style mnemonics of the form " (&C)" at the end of the tooltip text
  * are not shown in tooltip.
  * </p>
  *
