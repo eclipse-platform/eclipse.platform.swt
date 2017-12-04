@@ -783,6 +783,11 @@
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"/>
+		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}/webkitextensions/*"
+			todir="${output_dir}/webkitextensions/"
+			port="${port}"
+			keyfile="${keyfile}"
+			trust="true"/>
 		<sshexec host="${build_machine}"
 			username="swtbuild"
 			port="${port}"
