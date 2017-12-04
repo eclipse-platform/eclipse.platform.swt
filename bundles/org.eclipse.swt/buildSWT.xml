@@ -783,15 +783,12 @@
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<condition property="webkit" value="true">
-			<equals arg1="${libs}" arg2="*pi*"/>
-		</condition>
 		<scp file="swtbuild@${build_machine}:${lib_output}/webkitextensions/*"
 			todir="${output_dir}/webkitextensions/"
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"
-			if="${webkit}"/>
+		    failonerror="false"/>
 		<sshexec host="${build_machine}"
 			username="swtbuild"
 			port="${port}"
