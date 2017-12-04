@@ -627,6 +627,9 @@ void destroyWidget () {
 }
 
 void fixMenus (Decorations newParent) {
+	if (isDisposed()) {
+		return;
+	}
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		items [i].fixMenus (newParent);
