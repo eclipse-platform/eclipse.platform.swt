@@ -59,19 +59,19 @@
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
