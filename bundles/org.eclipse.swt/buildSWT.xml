@@ -741,6 +741,10 @@
 	</target>
 
 	<target name="build_gtk3" if="machine_gtk3">
+		<exec executable="mkdir">
+			<arg value="-p"/>
+			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
+		</exec>
 		<antcall target="${build_task}">
 			<param name="build_machine" value="${machine_gtk3}"/>
 			<param name="build_targets" value="install"/>
