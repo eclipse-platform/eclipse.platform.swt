@@ -701,7 +701,7 @@
 	</target>
 
 	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_libraries" depends="init_fragment,init_keyfile">
+	<target name="build_libraries" depends="init_fragment,init_keyfile,get_version">
 		<property name="swt.arch" value=""/>
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -740,7 +740,7 @@
 		<antcall target="refresh_fragment"/>
 	</target>
 
-	<target name="build_gtk3" if="machine_gtk3">
+	<target name="build_gtk3"  depends="get_version" if="machine_gtk3">
 		<exec executable="mkdir">
 			<arg value="-p"/>
 			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
