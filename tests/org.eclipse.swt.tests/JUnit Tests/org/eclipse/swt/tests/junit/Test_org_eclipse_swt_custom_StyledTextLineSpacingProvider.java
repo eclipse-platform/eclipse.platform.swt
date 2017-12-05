@@ -38,7 +38,7 @@ public class Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider {
 				return null;
 			}
 		}
-	};
+	}
 
 	Shell shell;
 	StyledText styledText;

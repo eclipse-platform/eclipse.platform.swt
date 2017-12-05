@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Widget;
  * Expected results: The "getBounds" line should have the same values as the "correct bounds" line
  * GTK Version(s): GTK3
  */
-@SuppressWarnings("restriction")
 public class Bug526083_MenuGetBounds {
 
 	public static void main(String[] args) {
