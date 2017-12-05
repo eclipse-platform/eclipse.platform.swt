@@ -89,6 +89,7 @@ class WebkitGDBus {
 	static void init(String uniqueId) {
 		if (initialized)
 			return;
+		if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: Webkit GDBus is being initialized with id: " + uniqueId);
 		initialized = true;
 		DBUS_SERVICE_NAME = "org.eclipse.swt" + uniqueId;
 		int owner_id = WebKitGTK.g_bus_own_name(WebKitGTK.G_BUS_TYPE_SESSION,

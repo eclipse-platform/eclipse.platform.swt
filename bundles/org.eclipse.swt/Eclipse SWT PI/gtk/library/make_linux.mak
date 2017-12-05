@@ -52,7 +52,8 @@ ALL_SWT_LIBS = $(SWT_LIB) $(AWT_LIB) $(SWTPI_LIB) $(CAIRO_LIB) $(ATK_LIB) $(GLX_
 
 # Webkit extension lib has to be put into a separate folder and is treated differently from the other libraries.
 WEBKIT_EXTENSION_LIB = lib$(WEBKIT_EXTENSION_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-WEBEXTENSION_DIR = webkitextensions
+WEBEXTENSION_BASE_DIR = webkitextensions
+WEBEXTENSION_DIR = $(WEBEXTENSION_BASE_DIR)$(maj_ver)$(min_ver)
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
@@ -239,16 +240,25 @@ glx_stats.o: glx_stats.c glx_stats.h
 #
 # Install
 #
-install: all
-	cp *.so $(OUTPUT_DIR)
-
-
+# Note on syntax because below might be confusing even for bash-Gods:
+# @    do not print command
+# -    do not stop if there is a fail..  => @-  is combination of both.
+# [ COND ] && CMD     only run CMD if condition is true like 'if COND then CMD'. Single line to be makefile compatible.
+# -d   test if file exists and is a directory.
+# $$(val)    in makefile, you have to escape $(..) into $$(..)
+# I hope there are no spaces in the path :-).
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
 ifeq ($(GTK_VERSION), 3.0) # Copy webextension into it's own folder, but create folder first.
-	[ -d $(OUTPUT_DIR)/$(WEBEXTENSION_DIR) ] || mkdir $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)  # If folder not exist, make it.
-	cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
+	@# CAREFULLY delete '.so' files inside webextension*. Then carefully remove the directories. 'rm -rf' seemed too risky of an approach.
+	@-[ "$$(ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*/*.so)" ] && rm -v `ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*/*.so`
+	@-[ "$$(ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*)" ] && rmdir -v `ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*`
+	
+	# Copying webextension is not critical for build to succeed, thus we use '-'. SWT can still function without a webextension.
+	@-[ -d $(OUTPUT_DIR)/$(WEBEXTENSION_DIR) ] || mkdir -v $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)  # If folder does not exist, make it.
+	-cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
+
 #
 # Clean
 #

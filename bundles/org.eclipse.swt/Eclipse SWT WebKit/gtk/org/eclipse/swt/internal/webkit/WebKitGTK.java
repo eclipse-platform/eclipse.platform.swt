@@ -25,6 +25,21 @@ public class WebKitGTK extends C {
 	public static final String Webkit1AssertMsg = "Webkit2 code reached by webkit1"; // $NON-NLS-1$
 	public static final String Webkit2AssertMsg = "Webkit1 code reached by webkit2"; // $NON-NLS-1$
 
+	/**
+	 * Internal version of "Webkit glue code", used mainly during webkit2 port.
+	 * Used to make it easier to support users on bugzilla. Updated by hand.
+	 */
+	private static final String swtWebkitGlueCodeVersion = " SWT Glue code version: 50.0";
+	private static final String swtWebkitGlueCodeVersionInfo = " info: +BrowserFunction/GDBus, +WebkitExtension Folder versioning, -setUrl(..postData..), -setCookie(), -getCookie";
+
+
+	/**
+	 * Temporary variable used during webkit2 port, to debug various problems for situations when it's time consuming to rebuild/debug.
+	 * e.g debug issues in compiled eclipse builds, OSGI loading of the extension etc..
+	 * Should be removed once webkit2 (and it's enhancements) are completed, no need to keep these msgs around.
+	 */
+	public static boolean SWT_WEBKIT_DEBUG_MSGS = System.getenv("SWT_WEBKIT_DEBUG_MSGS") != null ? true : false;
+
 	static {
 		try {
 			Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
@@ -48,11 +63,8 @@ public class WebKitGTK extends C {
 				System.out.println("SWT_LIB  Webkit1   Webkitgtk:"+ webkit_major_version() +"."+ webkit_minor_version() + "." + webkit_micro_version() + "  (webkitgtk < 2.5 is Webkit1)");
 			}
 			if (WEBKIT2) {
-				String featureInfo = "   Implemented: BrowserFunction over GDBus, \n"
-						+ "   not finished: setUrl(..postData)\n";
 				System.out.println("SWT_LIB  Webkit2   Webkitgtk:"+ webkit_get_major_version()+"."+ webkit_get_minor_version() + "."
-						+ webkit_get_micro_version() + "  (webkitgtk >=2.5 is Webkit2)\n"
-						+ featureInfo);
+						+ webkit_get_micro_version() + "  (webkitgtk >=2.5 is Webkit2) " + swtWebkitGlueCodeVersion + swtWebkitGlueCodeVersionInfo);
 			}
 		}
 	};

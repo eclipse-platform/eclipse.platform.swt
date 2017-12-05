@@ -358,6 +358,10 @@ public static String getVersionString () {
 	return version;
 }
 
+
+/** TEMP VAR to figure out how to package webkitextensions* folder into OSGI mechanism. To re removed upon completion of Bug 510905 */
+private static boolean SWT_WEBKIT_DEBUG_MSGS = System.getenv("SWT_WEBKIT_DEBUG_MSGS") != null ? true : false;
+
 /**
  * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
  * This function supports a single level subfolder, e.g SubFolder/resource.
@@ -379,6 +383,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 	// This code commonly finds the resource if the swt project is a required project and the swt binary (for your platform)
 	// project is open in your workplace  (found in the JAVA_LIBRARY_PATH) or if you're explicitly specified SWT_LIBRARY_PATH.
 	{
+
 		Function<String, File> lookForFileInPath = searchPath -> {
 			String classpath = System.getProperty(searchPath);
 			if (classpath != null){
@@ -386,6 +391,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 				for (String path : paths) {
 				File file = new File(path + SEPARATOR + maybeSubDirPath + finalResourceName);
 					if (file.exists()){
+						if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource has found a file in search path: " + file.getPath()); // Temp, will be removed. Bug 510905
 						return file;
 					}
 				}
@@ -399,6 +405,8 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 				return result;
 		}
 	}
+
+	if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource didn't find file in paths. Will attempt to extract."); // Temp, will be removed. Bug 510905
 
 	// 2) Need to try to pull the resource out of the swt.jar.
 	// Look for the resource in the user's home directory, (if already extracted in the temp swt folder. (~/.swt/lib...)
@@ -423,8 +431,10 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 			}
 
 			StringBuffer message = new StringBuffer("");
+			if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource Attempting to extract: " + maybeSubDirPath + finalResourceName); // Temp, will be removed. Bug 510905
 			if (extract(file.getPath(), maybeSubDirPath + finalResourceName, message)) {
 				if (file.exists()) {
+					if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource extracted file sucessfully!"); // Temp, will be removed. Bug 510905
 					return file;
 				}
 			}
