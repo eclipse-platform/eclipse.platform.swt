@@ -607,7 +607,7 @@
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
-			<include name="bundles/*/webkitextensions/*${swt_version}*"/>
+			<include name="bundles/*/webkitextensions${swt_version}/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
@@ -784,8 +784,8 @@
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<scp file="swtbuild@${build_machine}:${lib_output}/webkitextensions/*"
-			todir="${output_dir}/webkitextensions/"
+		<scp file="swtbuild@${build_machine}:${lib_output}/webkitextensions${swt_version}/*"
+			todir="${output_dir}/webkitextensions${swt_version}/"
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"
