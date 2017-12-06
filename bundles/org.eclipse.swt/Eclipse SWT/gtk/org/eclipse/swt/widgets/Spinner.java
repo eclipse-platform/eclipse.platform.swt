@@ -1213,19 +1213,20 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	selection = Math.min (Math.max (minimum, selection), maximum);
 	double factor = 1;
 	for (int i = 0; i < digits; i++) factor *= 10;
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_spin_button_set_range (handle, minimum / factor, maximum / factor);
-	OS.gtk_spin_button_set_increments (handle, increment / factor, pageIncrement / factor);
-	OS.gtk_spin_button_set_value (handle, selection / factor);
 	/*
 	* The value of climb-rate indicates the acceleration rate
 	* to spin the value when the button is pressed and hold
 	* on the arrow button. This value should be varied
 	* depending upon the value of digits.
 	*/
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	climbRate = 1.0 / factor;
 	long /*int*/ adjustment = OS.gtk_spin_button_get_adjustment(handle);
 	OS.gtk_spin_button_configure (handle, adjustment, climbRate, digits);
+
+	OS.gtk_spin_button_set_range (handle, minimum / factor, maximum / factor);
+	OS.gtk_spin_button_set_increments (handle, increment / factor, pageIncrement / factor);
+	OS.gtk_spin_button_set_value (handle, selection / factor);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
