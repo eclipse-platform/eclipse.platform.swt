@@ -29,8 +29,8 @@ public class WebKitGTK extends C {
 	 * Internal version of "Webkit glue code", used mainly during webkit2 port.
 	 * Used to make it easier to support users on bugzilla. Updated by hand.
 	 */
-	public static final String swtWebkitGlueCodeVersion = " SWT Glue code version: 51.0";
-	public static final String swtWebkitGlueCodeVersionInfo = " info: +BrowserFunction/GDBus, +WebkitExtension Folder versioning, +WebKitExtension OSGI support, -setUrl(..postData..), -setCookie(), -getCookie";
+	private static final String swtWebkitGlueCodeVersion = " SWT Glue code version: 50.0";
+	private static final String swtWebkitGlueCodeVersionInfo = " info: +BrowserFunction/GDBus, +WebkitExtension Folder versioning, -setUrl(..postData..), -setCookie(), -getCookie";
 
 
 	/**
