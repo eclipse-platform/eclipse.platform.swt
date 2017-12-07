@@ -132,7 +132,7 @@ public class WebKitGTK extends C {
 	public static final byte[] finished = ascii ("finished"); // $NON-NLS-1$						// Webkit2
 
 	// Webkit2 extension
-	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions");         // Webkit2. Extension exists only on w2.
+	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions");         // Webkit2. Extension exists only on w2. Since 2.4
 
 	// Status text signals
 	public static final byte[] hovering_over_link = ascii ("hovering-over-link"); // $NON-NLS-1$   		// Webkit1 -> StatusTextListener.changed()
@@ -187,7 +187,7 @@ public class WebKitGTK extends C {
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$				// Webkit1 & Webkit2
 
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$  // Webkit1
-	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2
+	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2 Since 2.14
 
 	public static final byte[] user_agent = ascii ("user-agent"); // $NON-NLS-1$				// Webkit1 & Webkit2
 
@@ -1490,7 +1490,7 @@ public static final long /*int*/ webkit_web_context_get_default () {
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_context_get_website_data_manager (long /*int*/ context);
 public static final long /*int*/ webkit_web_context_get_website_data_manager (long /*int*/ context) {
-	assert WEBKIT2 : Webkit2AssertMsg;
+	assert WEBKIT2 : Webkit2AssertMsg; // Since 2.10
 lock.lock();
 try {
 	return _webkit_web_context_get_website_data_manager (context);
@@ -1979,17 +1979,6 @@ public static final void webkit_web_context_set_web_extensions_initialization_us
 	}
 }
 
-/** @method flags=dynamic */
-public static final native long /*int*/ _webkit_user_content_manager_new();
-public static final long /*int*/ webkit_user_content_manager_new() {
-	assert WEBKIT2 : Webkit2AssertMsg;
-	lock.lock();
-	try {
-		return _webkit_user_content_manager_new ();
-	} finally {
-		lock.unlock();
-	}
-}
 
 /**
  * @method flags=dynamic
@@ -2018,30 +2007,6 @@ public static final long /*int*/ webkit_javascript_result_get_value(long /*int*/
 	lock.lock();
 	try {
 		return _webkit_javascript_result_get_value (js_result);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
-public static final native boolean _webkit_user_content_manager_register_script_message_handler(long /*int*/ WebKitUserContentManager, byte[] name);
-public static final boolean webkit_user_content_manager_register_script_message_handler(long /*int*/ WebKitUserContentManager, byte[] name) {
-	assert WEBKIT2 : Webkit2AssertMsg;
-	lock.lock();
-	try {
-		return _webkit_user_content_manager_register_script_message_handler (WebKitUserContentManager, name);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
-public static final native long /*int*/ _webkit_web_view_new_with_user_content_manager (long /*int*/ WebKitUserContentManager);
-public static final long /*int*/ webkit_web_view_new_with_user_content_manager (long /*int*/ WebKitUserContentManager) {
-	assert WEBKIT2 : Webkit2AssertMsg;
-	lock.lock();
-	try {
-		return _webkit_web_view_new_with_user_content_manager (WebKitUserContentManager);
 	} finally {
 		lock.unlock();
 	}
@@ -2129,7 +2094,7 @@ public static final void webkit_web_view_stop_loading (long /*int*/ web_view) {
 /** @method flags=dynamic */
 public static final native void _webkit_website_data_manager_clear (long /*int*/ manager, long /*int*/ types, long /*int*/ timespan, long /*int*/ cancellable, long /*int*/ callback, long /*int*/ user_data);
 public static final void webkit_website_data_manager_clear (long /*int*/ manager, long /*int*/ types, long /*int*/ timespan, long /*int*/ cancellable, long /*int*/ callback, long /*int*/ user_data) {
-	assert WEBKIT2 : Webkit2AssertMsg;
+	assert WEBKIT2 : Webkit2AssertMsg; // Since 2.16
 	lock.lock();
 	try {
 		_webkit_website_data_manager_clear (manager, types, timespan, cancellable, callback, user_data);

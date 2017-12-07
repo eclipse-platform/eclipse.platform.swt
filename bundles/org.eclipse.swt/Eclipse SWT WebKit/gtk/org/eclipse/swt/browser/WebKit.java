@@ -206,11 +206,15 @@ class WebKit extends WebBrowser {
 				if (!WebKitGTK.LibraryLoaded) return;
 
 				if (WEBKIT2) {
-					 // TODO: webkit_website_data_manager_clear currently does not
-					 // support more fine grained removals. (I.e, session vs all cookies)
-					long /*int*/ context = WebKitGTK.webkit_web_context_get_default();
-					long /*int*/ manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
-					WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
+					if (WebKitGTK.webkit_get_minor_version() >= 16) {
+						// TODO: webkit_website_data_manager_clear currently does not
+						 // support more fine grained removals. (I.e, session vs all cookies)
+						long /*int*/ context = WebKitGTK.webkit_web_context_get_default();
+						long /*int*/ manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
+						WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
+					} else {
+						System.err.println("SWT Webkit. Warning, clear cookies only supported on Webkitgtk version 2.16 and above. Your version is:" + internalGetWebKitVersionStr());
+					}
 				} else {
 					long /*int*/ session = WebKitGTK.webkit_get_default_session ();
 					long /*int*/ type = WebKitGTK.soup_cookie_jar_get_type ();
@@ -356,7 +360,9 @@ class WebKit extends WebBrowser {
 		static void init() {
 			initializeWebExtensions_callback = new Callback(Webkit2Extension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
 			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
+			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
+				OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
+			}
 		}
 
 		/**
@@ -364,6 +370,13 @@ class WebKit extends WebBrowser {
 		 * It can be initialized upon first use of BrowserFunction.
 		 */
 		static boolean gdbus_init() {
+			if (WebKitGTK.webkit_get_minor_version() < 4) {
+				System.err.println("SWT Webkit: Warning, You are using an old version of webkitgtk. (pre 2.4)"
+						+ " BrowserFunction functionality will not be avaliable");
+				return false;
+			}
+
+
 			if (!loadFailed) {
 				WebkitGDBus.init(String.valueOf(uniqueID));
 				return true;
@@ -490,6 +503,12 @@ class WebKit extends WebBrowser {
 		}
 		return vers;
 	}
+
+	private static String internalGetWebKitVersionStr () {
+		int [] vers = internalGetWebkitVersion();
+		return String.valueOf(vers[0]) + "." + String.valueOf(vers[1]) + "." + String.valueOf(vers[2]);
+	}
+
 
 static String getString (long /*int*/ strPtr) {
 	int length = C.strlen (strPtr);
@@ -956,7 +975,6 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
 	} else {
 		OS.gtk_container_add (browser.handle, webView);
-
 		OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
 		OS.g_signal_connect (webView, WebKitGTK.create, Proc3.getAddress (), CREATE_WEB_VIEW);
 		OS.g_signal_connect (webView, WebKitGTK.load_changed, Proc3.getAddress (), LOAD_CHANGED);
@@ -1005,7 +1023,13 @@ public void create (Composite parent, int style) {
 
 	if (WEBKIT2){
 		OS.g_object_set (settings, WebKitGTK.default_charset, bytes, 0);
-		OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
+		if (WebKitGTK.webkit_get_minor_version() >= 14) {
+			OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
+		} else {
+			System.err.println("SWT WEBKIT: Warning, you are using Webkitgtk below version 2.14. Your version is: "
+					+ "Your version is: " + internalGetWebKitVersionStr()
+					+ "\nJavascript execution limited to same origin due to unimplemented feature of this version.");
+		}
 	} else {
 		OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
 		OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
@@ -2641,7 +2665,10 @@ long /*int*/ webkit_download_decide_destination(long /*int*/ download, long /*in
 		if (path != null) {
 			path = URI_FILEROOT + path;
 			byte[] uriBytes = Converter.wcsToMbcs (path, true);
-			WebKitGTK.webkit_download_set_allow_overwrite (download, true);
+
+			if (WebKitGTK.webkit_get_minor_version() >= 6) {
+				WebKitGTK.webkit_download_set_allow_overwrite (download, true);
+			}
 			WebKitGTK.webkit_download_set_destination (download, uriBytes);
 			openDownloadWindow (download, fileName);
 		}
