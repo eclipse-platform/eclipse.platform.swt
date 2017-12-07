@@ -62,7 +62,7 @@ class WebKit extends WebBrowser {
 			+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
 			+ "&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug"
 			+ "&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact="
-			+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=[webkit2]BrowserProblem";
+			+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=webkit2_BrowserProblem";
 
 	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
 
@@ -397,19 +397,24 @@ class WebKit extends WebBrowser {
 			// Webkit extensions should be in their own directory.
 			String swtVersion = Library.getVersionString();
 			if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: Webkit dir is:" + "webkitextensions" + swtVersion);
-			File extension = Library.findResource("webkitextensions" + swtVersion ,"swt-webkit2extension", true);
-			if (extension == null){
+			File extension;
+			try {
+				extension = Library.findResource("webkitextensions" + swtVersion ,"swt-webkit2extension", true);
+				if (extension == null){
+					throw new UnsatisfiedLinkError("SWT Webkit could not find it's webextension");
+				}
+			} catch (UnsatisfiedLinkError e) {
 				System.err.println("SWT Webkit.java Error: Could not find webkit extension. BrowserFunction functionality will not be available. \n"
-						+ "(swt version: " + swtVersion + ")");
+						+ "(swt version: " + swtVersion + ")" + WebKitGTK.swtWebkitGlueCodeVersion + WebKitGTK.swtWebkitGlueCodeVersionInfo);
 				int [] vers = internalGetWebkitVersion();
 				System.err.println(String.format("WebKit2Gtk version %s.%s.%s", vers[0], vers[1], vers[2]));
 				System.err.println(reportErrMsg);
 				loadFailed = true;
 				return;
 			}
+			if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS && extension != null) System.out.println(" SWT_WEBKIT: Found extension in: " + extension.getAbsolutePath());
 
 			String extensionsFolder = extension.getParent();
-
 			/* Dev note:
 			 * As per
 			 * - WebkitSrc: WebKitExtensionManager.cpp,
@@ -421,7 +426,6 @@ class WebKit extends WebBrowser {
 			WebKitGTK.webkit_web_context_set_web_extensions_directory(WebKitGTK.webkit_web_context_get_default(), Converter.wcsToMbcs (extensionsFolder, true));
 			long /*int*/ gvariantUserData = WebKitGTK.g_variant_new_int32(uniqueID);
 			WebKitGTK.webkit_web_context_set_web_extensions_initialization_user_data(WebKitGTK.webkit_web_context_get_default(), gvariantUserData);
-
 		}
 
 		/**
