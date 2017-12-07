@@ -278,7 +278,7 @@ static JSValueRef webkit2callJava (JSContextRef context,
 	JSValueRef retVal = 0;
 	if (g_variant_is_of_type(g_var_result, G_VARIANT_TYPE_TUPLE)) {
 		if (g_variant_n_children(g_var_result) != 1) {
-			g_error("Should only receive a single item in the tuple, but length is: %lu\n", g_variant_n_children(g_var_result));
+			g_error("Should only receive a single item in the tuple, but length is: %ud\n", (unsigned int) g_variant_n_children(g_var_result));
 		}
 		retVal = convert_gvariant_to_js(context, g_variant_get_child_value(g_var_result, 0));
 	} else {
