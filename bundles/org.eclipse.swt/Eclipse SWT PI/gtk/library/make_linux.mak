@@ -189,7 +189,7 @@ atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
 #
 # WebKit lib
 #
-ifeq ($(GTK_VERSION), 3.0)
+ifeq ($(BUILD_WEBKIT2EXTENSION),yes)
 make_webkit: $(WEBKIT_LIB) make_webkit2extension  #Webkit2 only used by gtk3.
 else
 make_webkit: $(WEBKIT_LIB)
@@ -249,12 +249,13 @@ glx_stats.o: glx_stats.c glx_stats.h
 # I hope there are no spaces in the path :-).
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
-ifeq ($(GTK_VERSION), 3.0) # Copy webextension into it's own folder, but create folder first.
+ifeq ($(BUILD_WEBKIT2EXTENSION),yes)
+	@# Copy webextension into it's own folder, but create folder first.
 	@# CAREFULLY delete '.so' files inside webextension*. Then carefully remove the directories. 'rm -rf' seemed too risky of an approach.
 	@-[ "$$(ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*/*.so)" ] && rm -v `ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*/*.so`
 	@-[ "$$(ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*)" ] && rmdir -v `ls -d $(OUTPUT_DIR)/$(WEBEXTENSION_BASE_DIR)*`
-	
-	# Copying webextension is not critical for build to succeed, thus we use '-'. SWT can still function without a webextension.
+
+	@# Copying webextension is not critical for build to succeed, thus we use '-'. SWT can still function without a webextension.
 	@-[ -d $(OUTPUT_DIR)/$(WEBEXTENSION_DIR) ] || mkdir -v $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)  # If folder does not exist, make it.
 	-cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
