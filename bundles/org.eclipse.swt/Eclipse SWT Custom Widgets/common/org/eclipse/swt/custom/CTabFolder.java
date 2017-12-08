@@ -370,13 +370,7 @@ void onDeactivate(Event event) {
 	if (!highlightEnabled) {
 		return;
 	}
-	Composite current = this;
-	while (current != null) {
-		if (current instanceof CTabFolder) {
-			((CTabFolder) current).highlight = false;
-		}
-		current = current.getParent();
-	}
+	this.highlight = false;
 	redraw();
 }
 
@@ -384,13 +378,7 @@ void onActivate(Event event) {
 	if (!highlightEnabled) {
 		return;
 	}
-	Composite current = this;
-	while (current != null) {
-		if (current instanceof CTabFolder) {
-			((CTabFolder) current).highlight = true;
-		}
-		current = current.getParent();
-	}
+	this.highlight = true;
 	redraw();
 }
 
