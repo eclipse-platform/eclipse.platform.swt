@@ -86,7 +86,6 @@ class WebKit extends WebBrowser {
 	static long /*int*/ ExternalClass;
 
 	static long /*int*/ PostString, WebViewType;
-	static boolean IsWebKit14orNewer;
 	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
 	static Map<LONG, Integer> webKitDownloadStatus = new HashMap<> (); // Webkit2
 
@@ -533,9 +532,6 @@ static boolean IsInstalled () {
 	// Linux distro-provided builds then replace the following with this call.
 	int [] vers = internalGetWebkitVersion();
 	int major = vers[0], minor = vers[1], micro = vers[2];
-	IsWebKit14orNewer = major > 1 ||
-		(major == 1 && minor > 4) ||
-		(major == 1 && minor == 4 && micro >= 0);
 	return major > MIN_VERSION[0] ||
 		(major == MIN_VERSION[0] && minor > MIN_VERSION[1]) ||
 		(major == MIN_VERSION[0] && minor == MIN_VERSION[1] && micro >= MIN_VERSION[2]);
@@ -1152,7 +1148,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 	*/
 	if (!jsEnabled) return;
 
-	if (top && IsWebKit14orNewer) {
+	if (top) {
 		if (WEBKIT2) {
 			// TODO implement equivalent?
 			// As a note, this entire function only seems to do webkit1-only stuff at the moment...
@@ -2046,16 +2042,6 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
 			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
 			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
-		}
-		/*
-		* Bug in WebKitGTK 1.2.x.  Dragging an image quickly and repeatedly can
-		* cause WebKitGTK to take the mouse grab indefinitely and lock up the
-		* display, see https://bugs.webkit.org/show_bug.cgi?id=32840.  The
-		* workaround is to veto all drag attempts if using WebKitGTK 1.2.x.
-		*/
-		if (!IsWebKit14orNewer) {
-			browser.notifyListeners (mouseEvent.type, mouseEvent);
-			return false;
 		}
 	}
 
