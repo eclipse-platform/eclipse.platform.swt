@@ -131,7 +131,7 @@ static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorde
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (background != null) {
+	if (background != null && (state & BACKGROUND) != 0) {
 		return background;
 	}
 	return defaultBackground();

@@ -940,11 +940,10 @@ void removeVerifyListener (VerifyListener listener) {
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (background != null) {
+	if (background != null && (state & BACKGROUND) != 0) {
 		return background;
-	} else {
-		return defaultBackground();
 	}
+	return defaultBackground();
 }
 
 @Override
