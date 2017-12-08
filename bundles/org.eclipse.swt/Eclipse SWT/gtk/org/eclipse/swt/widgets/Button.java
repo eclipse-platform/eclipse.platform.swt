@@ -134,7 +134,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	if (background != null) {
 		return background;
 	}
-	return display.COLOR_WIDGET_BACKGROUND_RGBA;
+	return defaultBackground();
 }
 
 /**

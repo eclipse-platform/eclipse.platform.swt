@@ -1421,7 +1421,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	} else {
 		// For Tables and Trees, the default background is
 		// COLOR_LIST_BACKGROUND instead of COLOR_WIDGET_BACKGROUND.
-		return display.COLOR_LIST_BACKGROUND_RGBA;
+		return defaultBackground();
 	}
 }
 
@@ -3398,7 +3398,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
 	 */
 	if (rgba == null) {
-		background = display.COLOR_LIST_BACKGROUND_RGBA;
+		background = defaultBackground();
 	} else {
 		background = rgba;
 	}
@@ -3549,7 +3549,7 @@ public void setHeaderBackground (Color color) {
 		if (headerBackground != null) {
 			background = headerBackground.handleRGBA;
 		} else {
-			background = display.COLOR_LIST_BACKGROUND_RGBA;
+			background = defaultBackground();
 		}
 		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
 		// background works for 3.18 and later, background-color only as of 3.20

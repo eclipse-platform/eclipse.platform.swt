@@ -2778,14 +2778,14 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 		if (provider != 0) {
 			return display.gtk_css_parse_background (provider, null);
 		} else {
-			return display.COLOR_WIDGET_BACKGROUND_RGBA;
+			return defaultBackground();
 		}
 	} else {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = new GdkRGBA ();
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		if ((state & BACKGROUND) == 0) {
-			return display.COLOR_WIDGET_BACKGROUND_RGBA;
+			return defaultBackground();
 		}
 		return rgba;
 	}

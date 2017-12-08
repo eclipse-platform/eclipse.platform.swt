@@ -943,7 +943,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	if (background != null) {
 		return background;
 	} else {
-		return display.COLOR_WIDGET_BACKGROUND_RGBA;
+		return defaultBackground();
 	}
 }
 

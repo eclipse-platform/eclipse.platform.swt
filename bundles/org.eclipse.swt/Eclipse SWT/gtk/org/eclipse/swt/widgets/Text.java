@@ -2290,7 +2290,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	if (background != null) {
 		return background;
 	} else {
-		return display.COLOR_LIST_BACKGROUND_RGBA;
+		return defaultBackground();
 	}
 }
 
@@ -2303,7 +2303,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	 * gtk_widget_override_background_color() on versions of GTK3 less than 3.16.
 	 */
 	if (rgba == null) {
-		background = display.COLOR_LIST_BACKGROUND_RGBA;
+		background = defaultBackground();
 	} else {
 		background = rgba;
 	}
