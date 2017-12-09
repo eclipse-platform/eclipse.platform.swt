@@ -592,8 +592,8 @@
 	<target name="commit_binaries" depends="get_version">
 		<!-- Get libraries to remove from repo -->
 		<fileset id="removeid" dir="${repo.bin}">
-			<filename regex="[0-9][0-9][0-9][0-9]."/>
-			<filename regex="${swt_version}." negate="true"/>
+			<filename regex="[0-9][0-9][0-9][0-9]"/>
+			<filename regex="${swt_version}" negate="true"/>
 			<exclude name="**/.git/**"/>
 		</fileset>
 
