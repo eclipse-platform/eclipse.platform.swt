@@ -645,6 +645,9 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="rm ${removed_files}"/>
 		</exec>
+		<exec dir="${repo.bin}" executable="rm" failonerror="false">
+			<arg line="-r ${removed_files}"/>
+		</exec>
 	</target>
 
 	<target name="git_commit">
