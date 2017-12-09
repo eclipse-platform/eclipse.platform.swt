@@ -592,8 +592,8 @@
 	<target name="commit_binaries" depends="get_version">
 		<!-- Get libraries to remove from repo -->
 		<fileset id="removeid" dir="${repo.bin}">
-			<filename regex="[0-9][0-9][0-9][0-9]"/>
-			<filename regex="${swt_version}" negate="true"/>
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
 		</fileset>
 
@@ -644,9 +644,6 @@
 	<target name="git_rm" if="removed_files">
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="rm ${removed_files}"/>
-		</exec>
-		<exec dir="${repo.bin}" executable="rm" failonerror="false">
-			<arg line="-r ${removed_files}"/>
 		</exec>
 	</target>
 
