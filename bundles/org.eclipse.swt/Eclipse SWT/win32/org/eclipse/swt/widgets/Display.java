@@ -96,7 +96,6 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings("rawtypes")
 public class Display extends Device {
 
 	/**
@@ -1713,7 +1712,7 @@ public static Display getDefault () {
 	}
 }
 
-static boolean isValidClass (Class clazz) {
+static boolean isValidClass (Class<?> clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
