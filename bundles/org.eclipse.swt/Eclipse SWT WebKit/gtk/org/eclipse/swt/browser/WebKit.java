@@ -396,8 +396,6 @@ class WebKit extends WebBrowser {
 		 */
 		@SuppressWarnings("unused") // Only called directly from C
 		private static void initializeWebExtensions_callback (long /*int*/ WebKitWebContext, long /*int*/ user_data) {
-			if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: Initializing webextension");
-
 			// 1) GDBus:
 			// Normally we'd first initialize gdbus channel. But gdbus makes Browser slower and isn't always needed.
 			// So WebkitGDBus is lazy-initialized, although it can be initialized here if gdbus is ever needed
@@ -408,7 +406,6 @@ class WebKit extends WebBrowser {
 			// 2) Load Webkit Extension:
 			// Webkit extensions should be in their own directory.
 			String swtVersion = Library.getVersionString();
-			if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: Webkit dir is:" + "webkitextensions" + swtVersion);
 			File extension;
 			try {
 				extension = Library.findResource("webkitextensions" + swtVersion ,"swt-webkit2extension", true);
@@ -424,7 +421,6 @@ class WebKit extends WebBrowser {
 				loadFailed = true;
 				return;
 			}
-			if (WebKitGTK.SWT_WEBKIT_DEBUG_MSGS && extension != null) System.out.println(" SWT_WEBKIT: Found extension in: " + extension.getAbsolutePath());
 
 			String extensionsFolder = extension.getParent();
 			/* Dev note:

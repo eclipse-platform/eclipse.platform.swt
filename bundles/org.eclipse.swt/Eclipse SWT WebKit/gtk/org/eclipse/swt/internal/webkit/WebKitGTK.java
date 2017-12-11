@@ -38,8 +38,6 @@ public class WebKitGTK extends C {
 	 * e.g debug issues in compiled eclipse builds, OSGI loading of the extension etc..
 	 * Should be removed once webkit2 (and it's enhancements) are completed, no need to keep these msgs around.
 	 */
-	public static boolean SWT_WEBKIT_DEBUG_MSGS = System.getenv("SWT_WEBKIT_DEBUG_MSGS") != null ? true : false;
-
 	static {
 		try {
 			Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$

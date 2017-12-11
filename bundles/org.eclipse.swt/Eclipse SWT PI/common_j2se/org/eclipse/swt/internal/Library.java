@@ -360,9 +360,6 @@ public static String getVersionString () {
 }
 
 
-/** TEMP VAR to figure out how to package webkitextensions* folder into OSGI mechanism. To re removed upon completion of Bug 510905 */
-private static boolean SWT_WEBKIT_DEBUG_MSGS = System.getenv("SWT_WEBKIT_DEBUG_MSGS") != null ? true : false;
-
 /**
  * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
  * This function supports a single level subfolder, e.g SubFolder/resource.
@@ -395,7 +392,6 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 				for (String path : paths) {
 				File file = new File(path + SEPARATOR + maybeSubDirPath + finalResourceName);
 					if (file.exists()){
-						if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource has found a file in search path: " + file.getPath()); // Temp, will be removed. Bug 510905
 						return file;
 					}
 				}
@@ -413,8 +409,6 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 	// 2) If SWT is ran as OSGI bundle (e.g inside Eclipse), then local resources are extracted to
 	// eclipse/configuration/org.eclipse.osgi/NN/N/.cp/<resource> and we're given a pointer to the file.
 	{
-		if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource is attempting to find resource from OSGI Bundle."); // Temp, will be removed. Bug 510905
-
 		// If this is an OSGI bundle look for the resource using getResource
 		URL url = Library.class.getClassLoader().getResource(maybeSubDirPathWithPrefix + finalResourceName);
 		URLConnection connection;
@@ -424,16 +418,12 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 			if (getFileURLMethod != null){
 				// This method does the actual extraction of file to: ../eclipse/configuration/org.eclipse.osgi/NN/N/.cp/<SubDir>/resource.ext
 				URL result = (URL) getFileURLMethod.invoke(connection);
-				File returnedFile = new File(result.toURI());
-				if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: OSGI found resource in: " + returnedFile.getAbsolutePath());
-				return returnedFile;
+				return new File(result.toURI());
 			}
 		} catch (Exception e) {
 			// If any exceptions are thrown the resource cannot be located this way.
 		}
 	}
-
-	if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource didn't find file in paths. Will attempt to extract."); // Temp, will be removed. Bug 510905
 
 	// 3) Need to try to pull the resource out of the swt.jar.
 	// Look for the resource in the user's home directory, (if already extracted in the temp swt folder. (~/.swt/lib...)
@@ -458,10 +448,8 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 			}
 
 			StringBuffer message = new StringBuffer("");
-			if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource Attempting to extract: " + maybeSubDirPath + finalResourceName); // Temp, will be removed. Bug 510905
 			if (extract(file.getPath(), maybeSubDirPath + finalResourceName, message)) {
 				if (file.exists()) {
-					if (SWT_WEBKIT_DEBUG_MSGS) System.out.println("SWT_WEBKIT: findResource extracted file sucessfully!"); // Temp, will be removed. Bug 510905
 					return file;
 				}
 			}
