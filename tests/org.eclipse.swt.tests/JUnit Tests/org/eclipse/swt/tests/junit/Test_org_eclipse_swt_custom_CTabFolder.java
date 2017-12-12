@@ -14,16 +14,20 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -180,6 +184,85 @@ public void test_checkSize() {
 	int folderY = folder.getSize().y;
 	int expectedminHeight = systemImage.getImageData().height + text2.getFont().getFontData()[0].getHeight();
 	assertTrue("\nBug 507611 - CTabFolder is too thin for its actual content. \nCtabFolder height:"+folderY+"\nExpected min:"+expectedminHeight,  folderY > expectedminHeight);
+}
+
+/**
+ * Test for bug 528251.
+ *
+ * We define two {@link CTabFolder tab folders}, of which one has a nested tab folder.
+ * We validate that selecting the nested tab does not break selection highlight for the top-level tabs.
+ *
+ * @see Bug528251_CTabFolder_nested_highlighting
+ */
+@Test
+public void test_nestedTabHighlighting () {
+	CTabFolder partStackTabFolder = new CTabFolder(shell, SWT.NONE);
+
+	CTabItem consoleViewTab = new CTabItem(partStackTabFolder, SWT.NONE);
+	consoleViewTab.setText("Console View");
+
+	SashForm anotherView = new SashForm(partStackTabFolder, SWT.NONE);
+	CTabItem anotherViewTab = new CTabItem(partStackTabFolder, SWT.NONE);
+	anotherViewTab.setText("Other View");
+	anotherViewTab.setControl(anotherView);
+	CTabFolder anotherViewNestedTabFolder = new CTabFolder(anotherView, SWT.NONE);
+	CTabItem anotherViewNestedTab = new CTabItem(anotherViewNestedTabFolder, SWT.NONE);
+	anotherViewNestedTab.setText("nested tab");
+
+	shell.pack();
+	shell.open();
+
+	processEvents();
+
+	// nothing is selected, expect no highlight
+	boolean shouldHighlightConsoleViewTab = reflection_shouldHighlight(partStackTabFolder);
+	assertFalse("expected CTabFolder to not need highlighting without any selection",
+			shouldHighlightConsoleViewTab);
+
+	// "click" on the Console View tab
+	partStackTabFolder.notifyListeners(SWT.Activate, new Event());
+	partStackTabFolder.setSelection(consoleViewTab);
+	// "click" on the Other View tab, per default the first sub-tab is also highlighted
+	partStackTabFolder.setSelection(anotherViewTab);
+	anotherViewNestedTabFolder.notifyListeners(SWT.Activate, new Event());
+	// "click" on the nested tab
+	anotherViewNestedTabFolder.setSelection(anotherViewNestedTab);
+	partStackTabFolder.setSelection(consoleViewTab);
+	// "click" on the Console View tab, this hides and deactivates the nested CTabFolder
+	anotherViewNestedTabFolder.notifyListeners(SWT.Deactivate, new Event());
+	processEvents();
+
+	// the Console View tab is selected, so it should still be highlighted
+	shouldHighlightConsoleViewTab = reflection_shouldHighlight(partStackTabFolder);
+	assertTrue("Bug 528251 - View tab not highlighted due to another view with a CTabFolder",
+			shouldHighlightConsoleViewTab);
+}
+
+private void processEvents() {
+	Display display = shell.getDisplay();
+
+	while (display.readAndDispatch()) {
+		//
+	}
+}
+
+private static boolean reflection_shouldHighlight(CTabFolder partStackTabs) {
+	String shouldHighlightMethodName = "shouldHighlight";
+	Class<?> cTabFolderClass = CTabFolder.class;
+
+	boolean shouldHighlightConsoleViewTab = false;
+	try {
+		Method method = cTabFolderClass.getDeclaredMethod(shouldHighlightMethodName);
+		method.setAccessible(true);
+		Object result = method.invoke(partStackTabs);
+		Boolean shouldHighlight = (Boolean) result;
+		shouldHighlightConsoleViewTab = shouldHighlight.booleanValue();
+	} catch (Throwable t) {
+		String message = "reflection call to " + cTabFolderClass.getName() + "." + shouldHighlightMethodName + "() failed";
+		throw new AssertionError(message, t);
+	}
+
+	return shouldHighlightConsoleViewTab;
 }
 
 }
