@@ -3458,18 +3458,17 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	OS.gdk_cairo_get_clip_rectangle (cairo, rect);
 	Event event = new Event ();
 	event.count = 1;
-	Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
-	event.setBounds (DPIUtil.autoScaleDown (eventRect));
-	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
+	Rectangle eventBounds = DPIUtil.autoScaleDown (new Rectangle (rect.x, rect.y, rect.width, rect.height));
+	if ((style & SWT.MIRRORED) != 0) eventBounds.x = DPIUtil.autoScaleDown (getClientWidth ()) - eventBounds.width - eventBounds.x;
+	event.setBounds (eventBounds);
 	GCData data = new GCData ();
 //	data.damageRgn = gdkEvent.region;
 	if (OS.GTK_VERSION <= OS.VERSION (3, 9, 0)) {
 		data.cairo = cairo;
 	}
 	GC gc = event.gc = GC.gtk_new (this, data);
-	Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
-	// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
-	gc.setClipping (rect2.x, rect2.y, rect2.width, rect2.height);
+	// Note: use GC#setClipping(x,y,width,height) because GC#setClipping(Rectangle) got broken by bug 446075
+	gc.setClipping (eventBounds.x, eventBounds.y, eventBounds.width, eventBounds.height);
 	drawWidget (gc);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
