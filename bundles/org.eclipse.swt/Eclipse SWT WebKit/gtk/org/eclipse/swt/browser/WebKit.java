@@ -177,6 +177,10 @@ class WebKit extends WebBrowser {
 	/** Webkit1 & Webkit2, Process key/mouse events from javascript. */
 	static Callback JSDOMEventProc;
 
+	/** Webkit2: We propograte some events to gtk */
+	static long [] w2_passThroughSwtEvents = null;
+
+
 	static {
 			WebViewType = WebKitGTK.webkit_web_view_get_type ();
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
@@ -606,9 +610,11 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 		* in one or more WebKit instances (indicates that this instance may not be
 		* receiving events from the DOM).  This check is done up-front for performance.
 		*/
-		if (DisabledJSCount > 0) {
+		if ((WEBKIT1 && DisabledJSCount > 0) || WEBKIT2){
 			final Browser browser = FindBrowser (arg0);
-			if (browser != null && !browser.webBrowser.jsEnabled) {
+			if (browser != null &&
+					(WEBKIT1 && !browser.webBrowser.jsEnabled)
+					|| (WEBKIT2 && Arrays.binarySearch(w2_passThroughSwtEvents, user_data) >= 0)){
 				/* this instance does need to use the GDK event to create an SWT event to send */
 				switch (OS.GDK_EVENT_TYPE (event)) {
 					case OS.GDK_KEY_PRESS: {
@@ -637,7 +643,15 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 									if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
 									if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
 									if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+									try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
+										  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
+										nonBlockingEvaluate++;
 									browser.webBrowser.sendKeyEvent (keyEvent);
+									} catch (Exception e) {
+										throw e;
+									} finally {
+										nonBlockingEvaluate--;
+									}
 									return 1;
 								}
 							}
@@ -645,18 +659,25 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 						break;
 					}
 				}
-				OS.gtk_widget_event (browser.handle, event);
+				if (WEBKIT1 || (WEBKIT2 && browser != null)) {
+					OS.gtk_widget_event (browser.handle, event);
+				}
 			}
 		}
 		return 0;
 	}
 
-	LONG webViewHandle = WindowMappings.get (new LONG (arg0));
-	if (webViewHandle == null) return 0;
-	Browser browser = FindBrowser (webViewHandle.value);
-	if (browser == null) return 0;
-	WebKit webkit = (WebKit)browser.webBrowser;
-	return webkit.handleDOMEvent (event, (int)user_data) ? 0 : STOP_PROPOGATE;
+	if (WEBKIT1) {
+		LONG webViewHandle = WindowMappings.get (new LONG (arg0));
+		if (webViewHandle == null) return 0;
+		Browser browser = FindBrowser (webViewHandle.value);
+		if (browser == null) return 0;
+		WebKit webkit = (WebKit)browser.webBrowser;
+		return webkit.handleDOMEvent (event, (int)user_data) ? 0 : STOP_PROPOGATE;
+	}
+
+	// Webkit2
+	return 0;
 }
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ user_data) {
@@ -992,8 +1013,21 @@ public void create (Composite parent, int style) {
 	OS.g_signal_connect (webView, WebKitGTK.notify_title, Proc3.getAddress (), NOTIFY_TITLE);
 
 	/* Callback to get events before WebKit receives and consumes them */
-	OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
-	OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
+	if (WEBKIT2) {
+		if (w2_passThroughSwtEvents == null) {
+			w2_passThroughSwtEvents = new long [] {SWT.MouseDown, SWT.MouseUp, SWT.FocusIn, SWT.FocusOut};
+			Arrays.sort(w2_passThroughSwtEvents);
+		}
+		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), SWT.MouseDown);
+		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), SWT.MouseUp);
+		OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), SWT.FocusIn);
+		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), SWT.FocusOut);
+		// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
+	}
+	if (WEBKIT1) {
+		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
+		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
+	}
 	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (), 0);
 	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (), 0);
 	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 0);
@@ -2981,7 +3015,6 @@ long /*int*/ webkit_decide_policy (long /*int*/ web_view, long /*int*/ decision,
        if (newEvent.doit && !browser.isDisposed ()) {
           if (jsEnabled != jsEnabledOnNextPage) {
              jsEnabled = jsEnabledOnNextPage;
-             DisabledJSCount += !jsEnabled ? 1 : -1;
              webkit_settings_set(WebKitGTK.enable_javascript, jsEnabled ? 1 : 0);
           }
        }
