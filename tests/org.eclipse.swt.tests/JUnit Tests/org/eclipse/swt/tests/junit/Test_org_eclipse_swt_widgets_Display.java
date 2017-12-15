@@ -20,6 +20,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Font;
@@ -414,14 +416,14 @@ public void test_getSyncThread() {
 
 			// Create a runnable and invoke with asyncExec to verify that
 			// the syncThread is null while it's running.
-			final boolean[] asyncExecRan = new boolean[] {false};
+			AtomicBoolean asyncExecRan = new AtomicBoolean(false);
 			display.asyncExec(() -> {
 				assertNull(display.getSyncThread());
-				asyncExecRan[0] = true;
+				asyncExecRan.set(true);
 			});
 
 			try {
-				while (!asyncExecRan[0]) {
+				while (!asyncExecRan.get()) {
 					Thread.sleep(100);
 				}
 			} catch (InterruptedException ex) {
