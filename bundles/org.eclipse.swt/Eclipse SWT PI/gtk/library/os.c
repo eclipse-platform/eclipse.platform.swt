@@ -12598,6 +12598,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1hscrollbar)
 }
 #endif
 
+#ifndef NO__1gtk_1scrolled_1window_1get_1overlay_1scrolling
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1overlay_1scrolling)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1overlay_1scrolling_FUNC);
+/*
+	rc = (jboolean)gtk_scrolled_window_get_overlay_scrolling((GtkScrolledWindow *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_get_overlay_scrolling)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkScrolledWindow *))fp)((GtkScrolledWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1overlay_1scrolling_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1scrolled_1window_1get_1policy
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1policy)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)

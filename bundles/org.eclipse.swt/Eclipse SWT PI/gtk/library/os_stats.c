@@ -1015,6 +1015,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1scrolled_1window_1add_1with_1viewport",
 	"_1gtk_1scrolled_1window_1get_1hadjustment",
 	"_1gtk_1scrolled_1window_1get_1hscrollbar",
+	"_1gtk_1scrolled_1window_1get_1overlay_1scrolling",
 	"_1gtk_1scrolled_1window_1get_1policy",
 	"_1gtk_1scrolled_1window_1get_1shadow_1type",
 	"_1gtk_1scrolled_1window_1get_1vadjustment",

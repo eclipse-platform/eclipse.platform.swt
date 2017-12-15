@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -182,6 +182,7 @@
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
 #define gtk_scrolled_window_add_with_viewport_LIB LIB_GTK
+#define gtk_scrolled_window_get_overlay_scrolling_LIB LIB_GTK
 #define gtk_settings_set_string_property_LIB LIB_GTK
 #define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_false_LIB LIB_GTK

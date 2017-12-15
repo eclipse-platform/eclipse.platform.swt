@@ -1025,6 +1025,7 @@ typedef enum {
 	_1gtk_1scrolled_1window_1add_1with_1viewport_FUNC,
 	_1gtk_1scrolled_1window_1get_1hadjustment_FUNC,
 	_1gtk_1scrolled_1window_1get_1hscrollbar_FUNC,
+	_1gtk_1scrolled_1window_1get_1overlay_1scrolling_FUNC,
 	_1gtk_1scrolled_1window_1get_1policy_FUNC,
 	_1gtk_1scrolled_1window_1get_1shadow_1type_FUNC,
 	_1gtk_1scrolled_1window_1get_1vadjustment_FUNC,

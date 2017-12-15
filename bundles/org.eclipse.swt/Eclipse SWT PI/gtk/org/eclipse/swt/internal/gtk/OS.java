@@ -10865,6 +10865,19 @@ public static final void gtk_scrolled_window_set_policy(long /*int*/ scrolled_wi
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param scrolled_window cast=(GtkScrolledWindow *)
+ */
+public static final native boolean _gtk_scrolled_window_get_overlay_scrolling(long /*int*/ scrolled_window);
+public static final boolean gtk_scrolled_window_get_overlay_scrolling(long /*int*/ scrolled_window) {
+	lock.lock();
+	try {
+		return _gtk_scrolled_window_get_overlay_scrolling(scrolled_window);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param scrolled_window cast=(GtkScrolledWindow *)
  * @param type cast=(GtkShadowType)
  */
