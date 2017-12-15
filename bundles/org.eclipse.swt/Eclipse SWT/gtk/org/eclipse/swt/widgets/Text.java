@@ -1804,7 +1804,7 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
 	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
 	String newText = verifyText (oldText, start, end);
-	if (newText != oldText) {
+	if (newText != oldText && handle != 0) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
 		if (newText != null) {
