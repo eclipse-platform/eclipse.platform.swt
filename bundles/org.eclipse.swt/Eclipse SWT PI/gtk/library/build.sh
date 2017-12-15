@@ -278,6 +278,9 @@ if [ -z "${AWT_LIB_PATH}" ]; then
 	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/${AWT_LIB_EXPR} ]; then
 		AWT_LIB_PATH=${JAVA_HOME}/jre/lib/${AWT_ARCH}
 		export AWT_LIB_PATH
+	elif [ -f ${JAVA_HOME}/lib/${AWT_LIB_EXPR} ]; then
+		AWT_LIB_PATH=${JAVA_HOME}/lib
+		export AWT_LIB_PATH
 	else
 		AWT_LIB_PATH=${JAVA_HOME}/jre/bin
 		export AWT_LIB_PATH
