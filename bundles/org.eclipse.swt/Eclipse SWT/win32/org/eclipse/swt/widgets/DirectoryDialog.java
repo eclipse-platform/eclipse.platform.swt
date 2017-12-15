@@ -378,6 +378,11 @@ public void setFilterPath (String string) {
  * Sets the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
  * visible on the dialog while it is open.
+ * <p>
+ * NOTE: This operation is a hint and is not supported on some platforms. For
+ * example, on Windows (Vista and later), the <code>DirectoryDialog</code>
+ * doesn't have any provision to set a message.
+ * </p>
  *
  * @param string the message
  *

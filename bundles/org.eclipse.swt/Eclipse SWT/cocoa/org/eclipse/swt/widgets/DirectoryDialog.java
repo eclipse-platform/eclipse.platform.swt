@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -192,6 +192,11 @@ void releaseHandles () {
  * Sets the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
  * visible on the dialog while it is open.
+ * <p>
+ * NOTE: This operation is a hint and is not supported on some platforms. For
+ * example, on Windows (Vista and later), the <code>DirectoryDialog</code>
+ * doesn't have any provision to set a message.
+ * </p>
  *
  * @param string the message
  *
