@@ -160,7 +160,7 @@ case $SWT_OS.$SWT_ARCH in
 			else
 				# Cross-platform method of finding JAVA_HOME.
 				# Tested on Fedora 24 and Ubuntu 16
-				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
+				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/::" | sed "s:bin/java::"`
 				if [ -a "${DYNAMIC_JAVA_HOME}include/jni.h" ]; then
                 	func_echo_plus "JAVA_HOME not set, but jni.h found, dynamically configured to $DYNAMIC_JAVA_HOME"
             		export JAVA_HOME="$DYNAMIC_JAVA_HOME"
