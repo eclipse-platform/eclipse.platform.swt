@@ -33,6 +33,86 @@ import org.eclipse.swt.internal.webkit.GdkRectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * Webkit2 port developer architecture notes: (Dec 2017)
+ * ##########################################
+ * I'm (Leo Ufimtsev) writing this as part of the completion of the webkit1->webkit2 port,
+ * so that either swt/webkit2 maintainers or maybe webkit3 port-guy has a better understanding
+ * of what's going on.
+ * I didn't write the initial webkit1 implementation and only wrote half of the webkit2 port. So I don't
+ * know the details/reasons behind webkit1 decisions too well, I can only speculate.
+ *
+ *
+ * VERSIONS:
+ * Versioning for webkit is somewhat confusing because it's trying to incorporate webkit, gtk and (various linux distribution) versions.
+ * The way they version webkitGTK is different from webkit.
+ *   WebkitGTK:
+ *    1.4 - 2013                         (v1 is  webkit1/Gtk2)
+ *    2.4 is the last webkit1 version.   [2.0-2.4) is Gtk3.
+ *    2.5 is webkit2.                    [2.4-..)  is Gtk3.
+ *  Further, linux distributions might refer to webkit1/2 bindings linked against gtk2/3 differently.
+ *  E.g on Fedora:
+ *     webkitgtk2 = webkit1 / Gtk2
+ *     webkitgtk3 = Webkit1 / Gtk3
+ *     webkitgtk4 = webkit2 / Gtk3
+ *
+ * Webkit1 & Webkit2 loading:
+ * - This code dynamically uses either webkit1 or webkit2 depending on what's available.
+ * - Dynamic bindings are auto generated and linked when the @dynamic keyword is used in WebKitGTK.java
+ *   Unlike in OS.java, you don't have to add any code saying what lib the dynamic method is linked to. It's auto-linked to webkit lib by default.
+ * - At no point should you have hard-compiled code, because this will cause crashes on older machines without webkit2.
+ *   (the exception is the webextension, because it runs as a separate process and is only loaded dynamically).
+ * - Try to keep all of your logic in Java and avoid writing custom C-code. (I went down this pit). Because if you
+ *   use native code, then you have to write dynamic native code (get function pointers, cast types etc.. big pain in the ass).
+ *   (Webextension is again an exception).
+ * - Don't try to add webkit2 include flags to pkg-config, as this will tie the swt-glue code to specific webkit versions. Thou shall not do this.
+ *   (webextension is an exception).
+ *
+ * Webextension:
+ * - Webkit1 implemented javascript execution and function callback by calling javascript core directly, but on webkit2 we can't do this anymore since
+ *   webkit2 runs the network logic in a separate process.
+ * - On Webkit2, a webextension is used to provide browserfunction/javascript callback functionality. (See the whole WebkitGDBus.java business).
+ * - I've initially implemented javascript execution by running javascript and then waiting in a display-loop until webkit makes a return call.
+ *   I then added a whole bunch of logic to avoid deadlocks.
+ *   In retrospec, the better approach would be to send things off via GDBus and let the webextension run the javascript synchronously.
+ *   But this would take another 1-2 months of implementation time and wouldn't guarantee dead-lock free behaviour as callbacks could potentailly still
+ *   cause deadlocks. It's an interesting thought however..
+ * - Note, most GDBus tutorials talk about compiling GDBus bindings. But using them dynamically I found is much easier. See this guide:
+ *   http://www.cs.grinnell.edu/~rebelsky/Courses/CSC195/2013S/Outlines/
+ *
+ *
+ * EVENT_HANDLING_DOC:
+ * - On Pre-webkit1.4, event handles (mouseMove/Click/keyoard/Dnd etc..) were implemented as javascript hooks.
+ * 	  but if javascript was not enabled, hooks would not work either.
+ * - On Post-Webkit1.4 gtk provided DOM hooks that generated signals. There still seems to be some strange logic
+ *   that either uses javascript or webkitDom events to generate the equivalent SWT.MouseDown/SWT.Key* events etc...
+ *   I haven't really taken the time to fully understand why there's such a mix and musch between the two. I just left the code as is.
+ * - On webkit2, signals are implemented via regular gtk mechanism, hook events and pass them along as we receive them.
+ *   I haven't found a need to use the dom events, because webkitgtk seems to adequately meet the requirements via regular gtk
+ *   events, but maybe I missed something? Who knows.
+ * - With that said, I haven't done a deep dive/investigation in how things work. It works, so I left it.
+ *
+ * setUrl(..) with 'post data' was implemented in a very hacky way, via native Java due to missing webkit2gtk api.
+ * It's the best that could be done at the time, but it could result in strange behavior like some webpages loading in funky ways if post-data is used.
+ *
+ * Some good resources that I found are as following:
+ * - Webkit1 reference: https://webkitgtk.org/reference/webkitgtk/unstable/
+ * - Webkit2 reference: https://webkitgtk.org/reference/webkit2gtk/stable/
+ *
+ * - My github repository has a lot of snippets to prototype individual features (e.g gdbus, barebone webkit extension, GVariants etc..):
+ *   https://github.com/LeoUfimtsev/LeoGtk3
+ *   Be also mindful about snippets found in org.eclipse.swt.gtk.linux.x86_64 -> snippets -> widget.browser.
+ *
+ * - To understand GDBus, consider reading this guide:
+ *   http://www.cs.grinnell.edu/~rebelsky/Courses/CSC195/2013S/Outlines/
+ *   And then see the relevant reference I made in WebkitGDBus.java.
+ *   Note, DBus is not the same as GDBus. GDBus is an implementation of the DBus protocol (with it's own quirks).
+ *
+ * - This is a good starting point for webkit2 extension reading:
+ *   https://blogs.igalia.com/carlosgc/2013/09/10/webkit2gtk-web-process-extensions/
+ *
+ * ~May the force be with you.
+ */
 class WebKit extends WebBrowser {
 	long /*int*/ webView, scrolledWindow;
 
