@@ -882,6 +882,34 @@ public void test_setUrl_remote() {
 	validateTitleChanged(expectedTitle, browserSetFunc);
 }
 
+/** This test requires working Internet connection */
+@Test
+public void test_setUrl_remote_with_post() {
+	assumeFalse(webkit1SkipMsg(), isWebkit1); // Fails on webkit1 but likely not going to try to support it.
+
+	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
+	secondsToWaitTillFail = 35;
+
+	String url = "https://bugs.eclipse.org/bugs/buglist.cgi";
+
+	// Skip this test if we don't have a working Internet connection.
+	assumeTrue("Skipping test due to bad internet connection", checkInternet(url));
+	testLog.append("checkInternet() passed");
+
+	String expectedTitle = "Bug List";
+	Runnable browserSetFunc = () -> {
+		testLog.append("Setting Browser url to:" + url);
+		boolean opSuccess = browser.setUrl(
+				url, "bug_severity=enhancement&bug_status=NEW&email1=rgrunber&emailassigned_to1=1&emailtype1=substring",
+				null);
+		assertTrue("Expecting setUrl() to return true", opSuccess);
+	};
+	validateTitleChanged(expectedTitle, browserSetFunc);
+	// Even a successfull empty query returns about 10000 chars of HTML
+	int numChars = browser.getText().length();
+	assertTrue("Response data contained " + numChars + " chars.", numChars > 10000);
+}
+
 private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc) {
 	final AtomicReference<String> actualTitle = new AtomicReference<>("");
 	browser.addTitleListener(event ->  {
