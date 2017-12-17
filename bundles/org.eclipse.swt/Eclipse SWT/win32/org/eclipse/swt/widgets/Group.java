@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -227,6 +227,9 @@ void enableWidget (boolean enabled) {
 	if (string != null) {
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
+	}
+	if (enabled && hasCustomForeground()) {
+		OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -504,6 +507,40 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	* The fix is to avoid calling the group window proc.
 	*/
 	return LRESULT.ZERO;
+}
+
+@Override
+LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	LRESULT result = super.WM_PAINT(wParam, lParam);
+
+	if (hasCustomForeground() && text.length () != 0) {
+		String string = fixText (false);
+		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, false);
+
+		// We cannot use BeginPaint and EndPaint, because that removes the group border
+		long /*int*/ hDC = OS.GetDC(handle);
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		rect.left += 3*CLIENT_INSET;
+
+		long /*int*/ newFont, oldFont = 0;
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+
+		OS.DrawText(hDC, buffer, buffer.length(), rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP | OS.DT_CALCRECT);
+		// The calculated rectangle is a little bit too small. Italic fonts would show some small part in the default color.
+		rect.right += CLIENT_INSET;
+		drawBackground(hDC, rect);
+		OS.SetBkMode(hDC, OS.TRANSPARENT);
+		OS.SetTextColor(hDC, getForegroundPixel());
+		OS.DrawText(hDC, buffer, buffer.length(), rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP);
+
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC(handle, hDC);
+		// Without validating the drawn area it would be overdrawn by windows
+		OS.ValidateRect(handle, rect);
+	}
+	return result;
 }
 
 @Override
