@@ -707,7 +707,7 @@ public void test_marginsCorrect(){
     assertEquals(leftMargin, singleText.getLeftMargin());
     singleText.setLeftMargin(leftMargin);
     assertEquals(leftMargin, singleText.getLeftMargin());
-    singleText.dispose();        
+    singleText.dispose();
 }
 @Test
 public void test_copy() {
@@ -1426,6 +1426,38 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	assertTrue(":m:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
 	text.setHorizontalIndex(0);
 	assertTrue(":n:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
+}
+
+@Test
+public void test_getOffsetAtPointLorg_eclipse_swt_graphics_Point() {
+	Point location;
+	final int XINSET = isBidiCaret() ? 2 : 0;
+
+	assertEquals(":a:",  0, text.getOffsetAtPoint(new Point(XINSET, 0)));
+	assertEquals(":b:", -1, text.getOffsetAtPoint(new Point(-1, 0)));
+	assertEquals(":c:", -1, text.getOffsetAtPoint(new Point(0, -1)));
+
+	text.setText("Line0\r\nLine1");
+	location = text.getLocationAtOffset(5);
+	assertTrue  (":d:", text.getOffsetAtPoint(new Point(10, 0)) > 0);
+	assertEquals(":e:",  5, text.getOffsetAtPoint(new Point(location.x - 1, 0)));
+	location = text.getLocationAtOffset(7);
+	assertEquals(":f:",  7, text.getOffsetAtPoint(location));
+	assertEquals(":g:", -1, text.getOffsetAtPoint(new Point(100, 0)));
+	assertEquals(":h:", -1, text.getOffsetAtPoint(new Point(100, 50)));
+
+	text.setTopIndex(1);
+	assertEquals(":i:",  0, text.getOffsetAtPoint(new Point(XINSET, -5)));
+	assertEquals(":j:",  7, text.getOffsetAtPoint(new Point(XINSET, 0)));
+
+	text.setHorizontalIndex(1);
+	assertEquals(":k:",  0, text.getOffsetAtPoint(new Point(XINSET + -5, -5)));
+	assertEquals(":l:",  7, text.getOffsetAtPoint(new Point(XINSET + -5, 0)));
+
+	// 1GL4ZVE
+	assertEquals(":m:",  2, text.getOffsetAtPoint(text.getLocationAtOffset(2)));
+	text.setHorizontalIndex(0);
+	assertEquals(":n:",  2, text.getOffsetAtPoint(text.getLocationAtOffset(2)));
 }
 
 void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRange[] resultStyles, StyleRange[] expectedStyles) {
