@@ -6,7 +6,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
@@ -24,7 +24,7 @@ public final class Bug483791_setBackgroundGC {
         final Shell shell = new Shell(display);
         shell.setLayout(new GridLayout());
 
-        final Link l = new Link(shell, SWT.PUSH);
+        final Label l = new Label(shell, SWT.None);
         l.setText("ASDQWE");
         l.addPaintListener(arg0 -> arg0.gc.drawLine(0, 0, arg0.width, arg0.height));
 
