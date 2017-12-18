@@ -100,7 +100,7 @@ public Browser (Composite parent, int style) {
 		return;
 	}
 	dispose ();
-	SWT.error (SWT.ERROR_NO_HANDLES);
+	SWT.error (SWT.ERROR_NO_HANDLES, null, " because no underlying browser available. Linux:Webkitgtk(1 or 2),  Mac:Webkit,  Windows:Webkit or IE");
 }
 
 static Composite checkParent (Composite parent) {
@@ -733,10 +733,10 @@ public int getStyle () {
  *
  * @return HTML representing the current page or an empty <code>String</code>
  * if this is empty.<br>
- * <p> Note, the exact return value is platform dependent. 
+ * <p> Note, the exact return value is platform dependent.
  * For example on Windows, the returned string is the proccessed webpage
- * with javascript executed and missing html tags added. 
- * On Linux and OS X, this returns the original HTML before the browser has 
+ * with javascript executed and missing html tags added.
+ * On Linux and OS X, this returns the original HTML before the browser has
  * processed it.</p>
  *
  * @exception SWTException <ul>
