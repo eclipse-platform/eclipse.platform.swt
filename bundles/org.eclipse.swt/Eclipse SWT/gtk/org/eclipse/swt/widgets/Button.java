@@ -176,6 +176,25 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 @Override
+void connectPaint () {
+	/*
+	 * Feature in GTK3.10+: when attaching a paint listener to a Button
+	 * widget, re-drawing happens on GtkButton and not the GtkBox.
+	 * This causes issues when setting a background color, as whatever
+	 * is drawn on the Button is not re-drawn. See bug 483791.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION (3, 9, 0) && boxHandle != 0) {
+		int paintMask = OS.GDK_EXPOSURE_MASK;
+		OS.gtk_widget_add_events (boxHandle, paintMask);
+
+		OS.g_signal_connect_closure_by_id (boxHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
+		OS.g_signal_connect_closure_by_id (boxHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+	} else {
+		super.connectPaint();
+	}
+}
+
+@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
