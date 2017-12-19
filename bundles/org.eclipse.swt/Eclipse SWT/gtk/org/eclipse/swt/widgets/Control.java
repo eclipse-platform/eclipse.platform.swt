@@ -131,6 +131,16 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
+void connectPaint () {
+	long /*int*/ paintHandle = paintHandle ();
+	int paintMask = OS.GDK_EXPOSURE_MASK;
+	OS.gtk_widget_add_events (paintHandle, paintMask);
+
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
+
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+}
+
 Font defaultFont () {
 	return display.getSystemFont ();
 }
@@ -388,13 +398,7 @@ void hookEvents () {
 	}
 
 	/* Connect the paint signal */
-	long /*int*/ paintHandle = paintHandle ();
-	int paintMask = OS.GDK_EXPOSURE_MASK;
-	OS.gtk_widget_add_events (paintHandle, paintMask);
-
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
-
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), true);
+	connectPaint ();
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [REALIZE], 0, display.getClosure (REALIZE), true);
@@ -405,7 +409,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.getClosure (PREEDIT_CHANGED), false);
 	}
 
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_SET], 0, display.getClosure (STYLE_SET), false);
+	OS.g_signal_connect_closure_by_id (paintHandle (), display.signalIds [STYLE_SET], 0, display.getClosure (STYLE_SET), false);
 
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);

@@ -114,6 +114,25 @@ void addRelation (Control control) {
 }
 
 @Override
+void connectPaint () {
+	/*
+	 * Feature in GTK3.10+: when attaching a paint listener to a Label
+	 * widget, re-drawing happens on GtkEventBox and not the GtkLabel.
+	 * This causes issues when setting a background color, as whatever
+	 * is drawn on the Label is not re-drawn. See bug 483791.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION (3, 9, 0) && labelHandle != 0) {
+		int paintMask = OS.GDK_EXPOSURE_MASK;
+		OS.gtk_widget_add_events (labelHandle, paintMask);
+
+		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
+		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+	} else {
+		super.connectPaint();
+	}
+}
+
+@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
