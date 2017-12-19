@@ -1191,9 +1191,9 @@ public void test_setCursorLocationII() {
 		display.setCursorLocation(location.x, location.y); // don't put cursor into a corner, since that could trigger special platform events
 		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
 		Point actual = display.getCursorLocation();
-		if (!BUG_492569) {
+		if (!BUG_492569 && SwtTestUtil.isX11) {
 			if (!location.equals(actual)) {
-				Screenshots.takeScreenshot(getClass(), testName.getMethodName());
+				Screenshots.takeScreenshot(getClass(), testName.getMethodName()); // Bug 528968 This call causes crash on Wayland.
 				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
 			}
 		} else {
@@ -1223,9 +1223,9 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 		}
 		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/492569
 		Point actual = display.getCursorLocation();
-		if (!BUG_492569) {
+		if (!BUG_492569 && SwtTestUtil.isX11) {
 			if (!location.equals(actual)) {
-				Screenshots.takeScreenshot(getClass(), testName.getMethodName());
+				Screenshots.takeScreenshot(getClass(), testName.getMethodName()); // Bug 528968 This call causes crash on Wayland.
 				fail("\nExpected:"+location.toString()+"  Actual:"+actual.toString());
 			}
 		} else {

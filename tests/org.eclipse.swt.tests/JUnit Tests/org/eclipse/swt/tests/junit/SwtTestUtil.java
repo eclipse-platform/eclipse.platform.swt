@@ -73,6 +73,9 @@ public class SwtTestUtil {
 			&& ("hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
 			|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
+	public final static boolean isX11 = isGTK
+			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
+
 	static {
 		testFontName = "Helvetica";
 	}

@@ -749,6 +749,10 @@ public class OS extends C {
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK_VERSION >>> 16) + "." + (GTK_VERSION >>> 8 & 0xFF) + "." + (GTK_VERSION & 0xFF));
+		// set GDK backend if we are on X11
+		if (isX11()) {
+			System.setProperty("org.eclipse.swt.internal.gdk.backend", "x11");
+		}
 	}
 
 protected static byte [] ascii (String name) {
