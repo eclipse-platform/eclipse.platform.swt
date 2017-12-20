@@ -368,6 +368,14 @@ int hScrollBarWidth() {
 	hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
 	if (hBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
+	/*
+	 * Feature in GTK3: sometimes the size reported lags on GTK3.20+.
+	 * Calling gtk_widget_queue_resize() before querying the size
+	 * fixes this issue.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		OS.gtk_widget_queue_resize (hBarHandle);
+	}
 	gtk_widget_get_preferred_size (hBarHandle, requisition);
 	int [] padding = new int [1];
 	OS.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
