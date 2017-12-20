@@ -98,6 +98,7 @@ abstract class WebBrowser {
 		{192,	'`'},
 		{220,	'\\'},
 		{108,	'|'},
+		{226,	'<'},
 
 		/* Non-Numeric Keypad Keys */
 		{37,	SWT.ARROW_LEFT},
