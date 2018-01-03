@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -163,8 +163,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSynchronize",
 	"_1XTestFakeKeyEvent",
 	"_1access",
-	"_1atk_1object_1add_1relationship",
-	"_1atk_1object_1remove_1relationship",
 	"_1cachejvmptr",
 #ifndef JNI64
 	"_1call__IIIII",

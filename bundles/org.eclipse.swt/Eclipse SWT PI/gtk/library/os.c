@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1654,46 +1654,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1access)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1access_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1object_1add_1relationship
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1add_1relationship)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
-/*
-	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, atk_object_add_relationship)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(AtkObject *, AtkRelationType, AtkObject *))fp)((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1object_1remove_1relationship
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1remove_1relationship)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1atk_1object_1remove_1relationship_FUNC);
-/*
-	rc = (jboolean)atk_object_remove_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, atk_object_remove_relationship)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(AtkObject *, AtkRelationType, AtkObject *))fp)((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1atk_1object_1remove_1relationship_FUNC);
 	return rc;
 }
 #endif

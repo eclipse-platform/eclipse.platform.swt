@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -16346,36 +16346,6 @@ public static final long /*int*/ ubuntu_menu_proxy_get() {
 	lock.lock();
 	try {
 		return _ubuntu_menu_proxy_get();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param object cast=(AtkObject *)
- * @param relationship cast=(AtkRelationType)
- * @param target cast=(AtkObject *)
- */
-public static final native boolean _atk_object_add_relationship (long /*int*/ object, int relationship, long /*int*/ target);
-public static final boolean atk_object_add_relationship (long /*int*/ object, int relationship, long /*int*/ target) {
-	lock.lock();
-	try {
-		return _atk_object_add_relationship(object, relationship, target);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param object cast=(AtkObject *)
- * @param relationship cast=(AtkRelationType)
- * @param target cast=(AtkObject *)
- */
-public static final native boolean _atk_object_remove_relationship (long /*int*/ object, int relationship, long /*int*/ target);
-public static final boolean atk_object_remove_relationship (long /*int*/ object, int relationship, long /*int*/ target) {
-	lock.lock();
-	try {
-		return _atk_object_remove_relationship(object, relationship, target);
 	} finally {
 		lock.unlock();
 	}

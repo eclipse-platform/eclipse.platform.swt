@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -47,9 +47,11 @@ char * ATK_nativeFunctionNames[] = {
 	"_1ATK_1TEXT_1GET_1IFACE",
 	"_1ATK_1VALUE_1GET_1IFACE",
 	"_1atk_1get_1default_1registry",
+	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1factory_1get_1accessible_1type",
 	"_1atk_1object_1initialize",
 	"_1atk_1object_1notify_1state_1change",
+	"_1atk_1object_1remove_1relationship",
 	"_1atk_1registry_1get_1factory",
 	"_1atk_1registry_1set_1factory_1type",
 	"_1atk_1role_1register",

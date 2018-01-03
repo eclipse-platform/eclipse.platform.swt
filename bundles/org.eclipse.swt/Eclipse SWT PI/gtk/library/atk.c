@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -324,6 +324,18 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 }
 #endif
 
+#ifndef NO__1atk_1object_1add_1relationship
+JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1add_1relationship)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
+{
+	jboolean rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
+	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1atk_1object_1factory_1get_1accessible_1type
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1factory_1get_1accessible_1type)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -353,6 +365,18 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1notify_1state_1change)
 	ATK_NATIVE_ENTER(env, that, _1atk_1object_1notify_1state_1change_FUNC);
 	atk_object_notify_state_change((AtkObject *)arg0, arg1, arg2);
 	ATK_NATIVE_EXIT(env, that, _1atk_1object_1notify_1state_1change_FUNC);
+}
+#endif
+
+#ifndef NO__1atk_1object_1remove_1relationship
+JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1remove_1relationship)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
+{
+	jboolean rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1remove_1relationship_FUNC);
+	rc = (jboolean)atk_object_remove_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1remove_1relationship_FUNC);
+	return rc;
 }
 #endif
 

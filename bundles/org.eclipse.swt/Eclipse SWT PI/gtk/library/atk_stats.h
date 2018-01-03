@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -57,9 +57,11 @@ typedef enum {
 	_1ATK_1TEXT_1GET_1IFACE_FUNC,
 	_1ATK_1VALUE_1GET_1IFACE_FUNC,
 	_1atk_1get_1default_1registry_FUNC,
+	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1factory_1get_1accessible_1type_FUNC,
 	_1atk_1object_1initialize_FUNC,
 	_1atk_1object_1notify_1state_1change_FUNC,
+	_1atk_1object_1remove_1relationship_FUNC,
 	_1atk_1registry_1get_1factory_FUNC,
 	_1atk_1registry_1set_1factory_1type_FUNC,
 	_1atk_1role_1register_FUNC,
