@@ -523,7 +523,7 @@ class WebKit extends WebBrowser {
 			 * (as a note, the webprocess would have to load the gmodule).
 			 */
 			WebKitGTK.webkit_web_context_set_web_extensions_directory(WebKitGTK.webkit_web_context_get_default(), Converter.wcsToMbcs (extensionsFolder, true));
-			long /*int*/ gvariantUserData = WebKitGTK.g_variant_new_int32(uniqueID);
+			long /*int*/ gvariantUserData = OS.g_variant_new_int32(uniqueID);
 			WebKitGTK.webkit_web_context_set_web_extensions_initialization_user_data(WebKitGTK.webkit_web_context_get_default(), gvariantUserData);
 		}
 
@@ -2620,7 +2620,8 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	// Webkit2 doesn't have api to set url with data. (2.18). While we wait for them to implement,
 	// this  workaround uses java to query a server and then manually populate webkit with content.
 	// This should be version guarded and replaced with proper functions once webkit2 has implemented api.
-	if (WEBKIT2 && postData != null) {
+	if (WEBKIT2 && postData != null
+			&& OS.GLIB_VERSION >= OS.VERSION(2, 32, 0)) {  // OS.g_bytes_new (and unref) introduced in glib 2.32
 		final String base_url = url;
 
 		// Use Webkit User-Agent

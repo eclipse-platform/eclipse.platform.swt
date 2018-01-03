@@ -778,7 +778,29 @@ public class OS extends C {
 	public static final byte[] GTK_NAMED_LABEL_CANCEL = ascii("_Cancel");
 
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version());
+
+	/**
+	 * Gtk has a minimum glib version. (But it's not a 1:1 link, one can have a newer version of glib and older gtk).
+	 *
+	 * Minimum Glib version requirement of gtk (for gtk2/gtk3) can be found in gtk's 'configure.ac' file, see line 'm4_define([glib_required_version],[2.*.*]).
+	 *
+	 * For reference:
+	 * Gtk2.24 has min version of glib 2.28
+	 * Gtk3.0  has min version of glib 2.28
+	 * Gtk3.2  has min version of glib 2.29.14
+	 * Gtk3.4  has min version of glib 2.32
+	 * Gtk3.6  has min version of glib 2.33.1
+	 * Gtk3.8  has min version of glib 2.35.3
+	 * Gtk3.10 has min version of glib 2.37.5
+ 	 * Gtk3.12 has min version of glib 2.39.5
+	 * Gtk3.14 has min version of glib 2.41.2
+	 * Gtk3.16 has min version of glib 2.43.4
+	 * Gtk3.18 has min version of glib 2.45.8
+	 * Gtk3.20 has min version of glib 2.45.8
+	 * Gtk3.22 has min version of glib 2.49.4
+	 */
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
+	private static final boolean MIN_GLIB_2_32 = GLIB_VERSION >= VERSION(2, 32, 0);
 
 	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
 
@@ -2788,8 +2810,7 @@ public static final void g_object_unref(long /*int*/ object) {
  */
 public static final native long /*int*/ _g_bytes_new (byte [] data, long /*int*/ size);
 public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
-	assert GTK3;
-	// Since glib 2.32. (gtk2.24 = glib2.28)
+	assert MIN_GLIB_2_32;  // Note Gtk3.4 == glib 2.32
 	lock.lock();
 	try {
 		return _g_bytes_new (data, size);
@@ -2804,8 +2825,7 @@ public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
  */
 public static final native void _g_bytes_unref (long /*int*/ gBytes);
 public static final void g_bytes_unref (long /*int*/ gBytes) {
-	// Since glib 2.32. (gtk2.24 = glib2.28)
-	assert GTK3;
+	assert MIN_GLIB_2_32;  // Note Gtk3.4 == glib 2.32
 	lock.lock();
 	try {
 		_g_bytes_unref (gBytes);
@@ -16553,5 +16573,328 @@ public static final void setDarkThemePreferred(boolean preferred){
 			preferred, 0);
 	g_object_notify(gtk_settings_get_default(),
 			gtk_application_prefer_dark_theme);
+}
+
+
+/**
+ * @param xml_data cast=(const gchar *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error);
+/** @category gdbus */
+public static final long /*int*/ g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error) {
+  lock.lock();
+  try {
+    return _g_dbus_node_info_new_for_xml (xml_data, error);
+  } finally {
+    lock.unlock();
+  }
+}
+
+/**
+ * @param bus_type cast=(GBusType)
+ * @param name cast=(const gchar *)
+ * @param flags cast=(GBusNameOwnerFlags)
+ * @param bus_acquired_handler cast=(GBusAcquiredCallback)
+ * @param name_acquired_handler cast=(GBusNameAcquiredCallback)
+ * @param name_lost_handler cast=(GBusNameLostCallback)
+ * @param user_data cast=(gpointer)
+ * @param user_data_free_func cast=(GDestroyNotify)
+ * @category gdbus
+ */
+public static final native int _g_bus_own_name (int bus_type, byte[] name, int flags, long /*int*/ bus_acquired_handler, long /*int*/ name_acquired_handler, long /*int*/ name_lost_handler, long /*int*/  user_data, long /*int*/ user_data_free_func);
+/** @category gdbus */
+public static final int g_bus_own_name (int bus_type, byte[] name, int flags, long /*int*/ bus_acquired_handler, long /*int*/ name_acquired_handler, long /*int*/ name_lost_handler, long /*int*/  user_data, long /*int*/ user_data_free_func) {
+	lock.lock();
+	try {
+		return _g_bus_own_name(bus_type, name, flags, bus_acquired_handler, name_acquired_handler, name_lost_handler, user_data, user_data_free_func);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param connection cast=(GDBusConnection *)
+ * @param object_path cast=(const gchar *)
+ * @param interface_info cast=(GDBusInterfaceInfo *)
+ * @param vtable cast=(const GDBusInterfaceVTable *)
+ * @param user_data cast=(gpointer)
+ * @param user_data_free_func cast=(GDestroyNotify)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native int _g_dbus_connection_register_object (long /*int*/ connection, byte[] object_path, long /*int*/ interface_info, long /*int*/[] vtable, long /*int*/ user_data, long /*int*/ user_data_free_func, long /*int*/[] error);
+/** @category gdbus */
+public static final int g_dbus_connection_register_object (long /*int*/ connection, byte[] object_path, long /*int*/ interface_info, long /*int*/[] vtable, long /*int*/ user_data, long /*int*/ user_data_free_func, long /*int*/[] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_register_object( connection,  object_path,  interface_info,  vtable,  user_data,  user_data_free_func, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param info cast=(GDBusNodeInfo *)
+ * @param name cast=(const gchar *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_node_info_lookup_interface (long /*int*/ info, byte [] name);
+/** @category gdbus */
+public static final long /*int*/ g_dbus_node_info_lookup_interface (long /*int*/ info, byte [] name) {
+	lock.lock();
+	try {
+		return _g_dbus_node_info_lookup_interface(info, name);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param invocation cast=(GDBusMethodInvocation *)
+ * @param parameters cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native void _g_dbus_method_invocation_return_value (long /*int*/ invocation, long /*int*/ parameters);
+/** @category gdbus */
+public static final void g_dbus_method_invocation_return_value (long /*int*/ invocation, long /*int*/ parameters) {
+	lock.lock();
+	try {
+		_g_dbus_method_invocation_return_value (invocation, parameters);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param intval cast=(gint32)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_int32 (int intval);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_int32 (int intval) {
+	lock.lock();
+	try {
+		return _g_variant_new_int32(intval);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ * @return guchar
+ */
+public static final native byte _g_variant_get_byte (long /*int*/ gvariant);
+/** @category gdbus */
+public static final byte g_variant_get_byte (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_byte (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native boolean /*int*/ _g_variant_get_boolean (long /*int*/ gvariant);
+/** @category gdbus */
+public static final boolean /*int*/ g_variant_get_boolean (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_boolean (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @param index cast=(gsize)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_get_child_value (long /*int*/ gvariant, int index);
+/** @category gdbus */
+public static final long /*int*/ g_variant_get_child_value (long /*int*/ gvariant, int index) {
+	lock.lock();
+	try {
+		return _g_variant_get_child_value (gvariant, index);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native double _g_variant_get_double (long /*int*/ gvariant);
+/** @category gdbus */
+public static final double g_variant_get_double (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_double (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @param length cast=(gsize *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_get_string (long /*int*/ gvariant, long[] length);
+/** @category gdbus */
+public static final long /*int*/ g_variant_get_string (long /*int*/ gvariant, long[] length) {
+	lock.lock();
+	try {
+		return _g_variant_get_string (gvariant, length);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @return const GVariantType *
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_get_type (long /*int*/ gvariant);
+/** @category gdbus */
+public static final long /*int*/ g_variant_get_type (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_type (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native long /*int*/  _g_variant_get_type_string (long /*int*/ gvariant);
+/** @category gdbus */
+public static final long /*int*/ g_variant_get_type_string (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_type_string (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @param type cast=(const GVariantType *)
+ * @category gdbus
+ */
+public static final native boolean _g_variant_is_of_type (long /*int*/ gvariant, byte[] type);
+/** @category gdbus */
+public static final boolean g_variant_is_of_type (long /*int*/ gvariant, byte[] type) {
+	lock.lock();
+	try {
+		return _g_variant_is_of_type (gvariant, type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native long _g_variant_n_children (long gvariant);
+/** @category gdbus */
+public static final long g_variant_n_children (long gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_n_children (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param value cast=(gboolean)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_boolean (boolean value);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_boolean (boolean value) {
+	lock.lock();
+	try {
+		return _g_variant_new_boolean (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param value cast=(gboolean)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_double (double value);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_double (double value) {
+	lock.lock();
+	try {
+		return _g_variant_new_double (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param value cast=(guchar)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_byte (byte value);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_byte (byte value) {
+	lock.lock();
+	try {
+		return _g_variant_new_byte (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param items cast=(GVariant * const *)
+ * @param length cast=(gsize)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_tuple (long /*int*/[] items, long length);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_tuple (long /*int*/[] items, long length ) {
+	lock.lock();
+	try {
+		return _g_variant_new_tuple (items, length);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param string cast=(const gchar *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_new_string (byte[] string);
+/** @category gdbus */
+public static final long /*int*/ g_variant_new_string (byte[] string) {
+	lock.lock();
+	try {
+		return _g_variant_new_string (string);
+	} finally {
+		lock.unlock();
+	}
 }
 }

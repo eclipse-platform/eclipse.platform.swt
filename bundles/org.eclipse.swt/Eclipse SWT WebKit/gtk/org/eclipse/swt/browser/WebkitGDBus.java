@@ -102,7 +102,7 @@ class WebkitGDBus {
 			return;
 		initialized = true;
 		DBUS_SERVICE_NAME = "org.eclipse.swt" + uniqueId;
-		int owner_id = WebKitGTK.g_bus_own_name(OS.G_BUS_TYPE_SESSION,
+		int owner_id = OS.g_bus_own_name(OS.G_BUS_TYPE_SESSION,
 				Converter.javaStringToCString(DBUS_SERVICE_NAME),
 				OS.G_BUS_NAME_OWNER_FLAGS_REPLACE | OS.G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT,
 				onBusAcquiredCallback.getAddress(),
@@ -136,7 +136,7 @@ class WebkitGDBus {
 		// Parse XML
 		{
 			long /*int*/ [] error = new long /*int*/ [1];
-			gdBusNodeInfo = WebKitGTK.g_dbus_node_info_new_for_xml(Converter.javaStringToCString(dbus_introspection_xml), error);
+			gdBusNodeInfo = OS.g_dbus_node_info_new_for_xml(Converter.javaStringToCString(dbus_introspection_xml), error);
 			if (gdBusNodeInfo == 0 || error[0] != 0) {
 				System.err.println("SWT WebkitGDBus: Failed to get introspection data");
 			}
@@ -146,11 +146,11 @@ class WebkitGDBus {
 		// Register object
 		{
 			long /*int*/ [] error = new long /*int*/ [1];
-			long /*int*/ interface_info = WebKitGTK.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
+			long /*int*/ interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
 			long /*int*/ vtable [] = { handleMethodCallback.getAddress(), 0, 0 };
 			// SWT Dev Note: SWT Tool's "32/64 bit" checking mechanism sometimes get's confused by this method signature and shows an incorrect warning.
 			// Other times it validates it fine. We ignore for now as 32bit will be dropped anyway.
-			WebKitGTK.g_dbus_connection_register_object(
+			OS.g_dbus_connection_register_object(
 					connection,
 					Converter.javaStringToCString(DBUS_OBJECT_NAME),
 					interface_info,
@@ -240,7 +240,7 @@ class WebkitGDBus {
 			String errMsg = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			resultGVariant = convertJavaToGVariant(new Object [] {errMsg});
 		}
-		WebKitGTK.g_dbus_method_invocation_return_value(invocation, resultGVariant);
+		OS.g_dbus_method_invocation_return_value(invocation, resultGVariant);
 		return 0; // void return value.
 	}
 
@@ -274,13 +274,13 @@ class WebkitGDBus {
 	 */
 	private static Object convertGVariantToJava(long /*int*/ gVariant){
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
-			return new Boolean(WebKitGTK.g_variant_get_boolean(gVariant));
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
+			return new Boolean(OS.g_variant_get_boolean(gVariant));
 		}
 
 		// see: WebKitGTK.java 'TYPE NOTES'
-		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BYTE)) {
-			byte byteVal = WebKitGTK.g_variant_get_byte(gVariant);
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BYTE)) {
+			byte byteVal = OS.g_variant_get_byte(gVariant);
 
 			switch (byteVal) {
 			case WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL:
@@ -293,24 +293,24 @@ class WebkitGDBus {
 			}
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_DOUBLE)){
-			return new Double(WebKitGTK.g_variant_get_double(gVariant));
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_DOUBLE)){
+			return new Double(OS.g_variant_get_double(gVariant));
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_STRING)){
-			return Converter.cCharPtrToJavaString(WebKitGTK.g_variant_get_string(gVariant, null), false);
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_STRING)){
+			return Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariant, null), false);
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_TUPLE)){
-			int length = (int)WebKitGTK.g_variant_n_children (gVariant);
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_TUPLE)){
+			int length = (int)OS.g_variant_n_children (gVariant);
 			Object[] result = new Object[length];
 			for (int i = 0; i < length; i++) {
-				result[i] = convertGVariantToJava (WebKitGTK.g_variant_get_child_value(gVariant, i));
+				result[i] = convertGVariantToJava (OS.g_variant_get_child_value(gVariant, i));
 			}
 			return result;
 		}
 
-		String typeString = Converter.cCharPtrToJavaString(WebKitGTK.g_variant_get_type_string(gVariant), false);
+		String typeString = Converter.cCharPtrToJavaString(OS.g_variant_get_type_string(gVariant), false);
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT, new Throwable("Unhandled variant type " + typeString ));
 		return null;
 	}
@@ -326,21 +326,21 @@ class WebkitGDBus {
 	private static long /*int*/ convertJavaToGVariant(Object javaObject) throws SWTException {
 
 		if (javaObject == null) {
-			return WebKitGTK.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
+			return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
 		}
 
 		if (javaObject instanceof String) {
-			return WebKitGTK.g_variant_new_string (Converter.javaStringToCString((String) javaObject));
+			return OS.g_variant_new_string (Converter.javaStringToCString((String) javaObject));
 		}
 
 		if (javaObject instanceof Boolean) {
-			return WebKitGTK.g_variant_new_boolean((Boolean) javaObject);
+			return OS.g_variant_new_boolean((Boolean) javaObject);
 		}
 
 		// We treat Integer, Long, Double, Short as a 'double' because in Javascript these are all 'double'.
 		// Note,  they all extend 'Number' java type, so they are an instance of it.
 		if (javaObject instanceof Number) {  // see: WebKitGTK.java 'TYPE NOTES'
-			return WebKitGTK.g_variant_new_double (((Number) javaObject).doubleValue());
+			return OS.g_variant_new_double (((Number) javaObject).doubleValue());
 		}
 
 		if (javaObject instanceof Object[]) {
@@ -348,7 +348,7 @@ class WebkitGDBus {
 			int length = arrayValue.length;
 
 			if (length == 0) {
-				return WebKitGTK.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
+				return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
 			}
 
 			long /*int*/ variants[] = new long /*int*/[length];
@@ -357,7 +357,7 @@ class WebkitGDBus {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);
 			}
 
-			return WebKitGTK.g_variant_new_tuple(variants, length);
+			return OS.g_variant_new_tuple(variants, length);
 		}
 		System.err.println("SWT Webkit: Invalid object being returned to javascript: " + javaObject.toString() + "\n"
 				+ "Only the following are supported: null, String, Boolean, Number(Long,Integer,Double...), Object[] of basic types");

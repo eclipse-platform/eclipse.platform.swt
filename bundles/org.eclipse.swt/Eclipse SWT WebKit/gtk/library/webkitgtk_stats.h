@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -62,26 +62,6 @@ typedef enum {
 	_1SoupMessage_1method_FUNC,
 	_1SoupMessage_1request_1body_FUNC,
 	_1SoupMessage_1request_1headers_FUNC,
-	_1g_1bus_1own_1name_FUNC,
-	_1g_1dbus_1connection_1register_1object_FUNC,
-	_1g_1dbus_1method_1invocation_1return_1value_FUNC,
-	_1g_1dbus_1node_1info_1lookup_1interface_FUNC,
-	_1g_1dbus_1node_1info_1new_1for_1xml_FUNC,
-	_1g_1variant_1get_1boolean_FUNC,
-	_1g_1variant_1get_1byte_FUNC,
-	_1g_1variant_1get_1child_1value_FUNC,
-	_1g_1variant_1get_1double_FUNC,
-	_1g_1variant_1get_1string_FUNC,
-	_1g_1variant_1get_1type_FUNC,
-	_1g_1variant_1get_1type_1string_FUNC,
-	_1g_1variant_1is_1of_1type_FUNC,
-	_1g_1variant_1n_1children_FUNC,
-	_1g_1variant_1new_1boolean_FUNC,
-	_1g_1variant_1new_1byte_FUNC,
-	_1g_1variant_1new_1double_FUNC,
-	_1g_1variant_1new_1int32_FUNC,
-	_1g_1variant_1new_1string_FUNC,
-	_1g_1variant_1new_1tuple_FUNC,
 	_1soup_1auth_1authenticate_FUNC,
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,

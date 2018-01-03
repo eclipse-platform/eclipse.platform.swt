@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -52,26 +52,6 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1SoupMessage_1method",
 	"_1SoupMessage_1request_1body",
 	"_1SoupMessage_1request_1headers",
-	"_1g_1bus_1own_1name",
-	"_1g_1dbus_1connection_1register_1object",
-	"_1g_1dbus_1method_1invocation_1return_1value",
-	"_1g_1dbus_1node_1info_1lookup_1interface",
-	"_1g_1dbus_1node_1info_1new_1for_1xml",
-	"_1g_1variant_1get_1boolean",
-	"_1g_1variant_1get_1byte",
-	"_1g_1variant_1get_1child_1value",
-	"_1g_1variant_1get_1double",
-	"_1g_1variant_1get_1string",
-	"_1g_1variant_1get_1type",
-	"_1g_1variant_1get_1type_1string",
-	"_1g_1variant_1is_1of_1type",
-	"_1g_1variant_1n_1children",
-	"_1g_1variant_1new_1boolean",
-	"_1g_1variant_1new_1byte",
-	"_1g_1variant_1new_1double",
-	"_1g_1variant_1new_1int32",
-	"_1g_1variant_1new_1string",
-	"_1g_1variant_1new_1tuple",
 	"_1soup_1auth_1authenticate",
 	"_1soup_1auth_1get_1host",
 	"_1soup_1auth_1get_1scheme_1name",
