@@ -66,6 +66,12 @@ public void testBrowser4() {
 
 @Test
 public void testBrowser5() {
+	if (SwtTestUtil.isCocoa) {
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded testBrowser5(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite).");
+		}
+		return;
+	}
 	manualSetUp();
 	assertTrue(Browser5_sizing_and_bounds.test());
 	manualTearDown();
