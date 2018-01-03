@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -223,8 +223,6 @@
 #define gtk_widget_set_focus_on_click_LIB LIB_GTK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
-#define atk_object_add_relationship_LIB LIB_ATK
-#define atk_object_remove_relationship_LIB LIB_ATK
 #define gdk_cairo_reset_clip_LIB LIB_GDK
 #define gdk_cairo_get_clip_rectangle_LIB LIB_GDK
 #define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
