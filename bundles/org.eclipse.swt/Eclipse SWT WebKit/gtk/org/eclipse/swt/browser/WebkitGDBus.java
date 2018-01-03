@@ -1,9 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Red Hat and others. All rights reserved.
+ * The contents of this file are made available under the terms
+ * of the GNU Lesser General Public License (LGPL) Version 2.1 that
+ * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
+ * available at http://www.gnu.org/licenses/lgpl.html.  If the version
+ * of the LGPL at http://www.gnu.org is different to the version of
+ * the LGPL accompanying this distribution and there is any conflict
+ * between the two license versions, the terms of the LGPL accompanying
+ * this distribution shall govern.
+ *
+ * Contributors:
+ *     Red Hat - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.internal.webkit.*;
 
 /**
  * Logic for Webkit to interact with it's Webkit extension via GDBus.
@@ -71,9 +85,9 @@ class WebkitGDBus {
 	 * To get around this, we use magic numbers to represent special cases.
 	 * Currently this is specific to Webkit to deal with Javascript data type conversions.
 	 * @category gdbus */
-	public static final byte SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY = 101;
+	private static final byte SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY = 101;
 	/** @category gdbus */
-	public static final byte SWT_DBUS_MAGIC_NUMBER_NULL = 48;
+	private static final byte SWT_DBUS_MAGIC_NUMBER_NULL = 48;
 
 
 	/** GDBusNodeInfo */
@@ -97,6 +111,8 @@ class WebkitGDBus {
 	}
 
 	static private boolean initialized;
+
+	/** This method is not intended to be referenced by clients. Internal class. */
 	static void init(String uniqueId) {
 		if (initialized)
 			return;
@@ -116,7 +132,8 @@ class WebkitGDBus {
 		}
 	}
 
-	static void teardown_gdbus() {
+	@SuppressWarnings("unused")
+	private static void teardown_gdbus() {
 		// Currently GDBus is persistent across browser instances.
 		// If ever needed, gdbus can be disposed via:
 		// g_bus_unown_name (owner_id);					// owner_id would need to be made global
