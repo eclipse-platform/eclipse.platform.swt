@@ -364,7 +364,7 @@ public static String getVersionString () {
  * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
  * This function supports a single level subfolder, e.g SubFolder/resource.
  *
- * Dev note: (17·12·07) This has been developed and throughly tested on GTK. Designed to work on Cocoa/Win as well, but not tested.
+ * Dev note: (17/12/07) This has been developed and throughly tested on GTK. Designed to work on Cocoa/Win as well, but not tested.
  *
  * @param subDir  'null' or a folder name without slashes. E.g Correct: 'mysubdir',  incorrect: '/subdir/'.
  *                Platform specific Slashes will be added automatically.
