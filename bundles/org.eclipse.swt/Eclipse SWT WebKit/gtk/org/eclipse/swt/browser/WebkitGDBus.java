@@ -2,6 +2,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.webkit.*;
 
 /**
@@ -56,14 +57,24 @@ class WebkitGDBus {
 			"<node>"
 			+  "  <interface name='" + INTERFACE_NAME + "'>"
 			+  "    <method name='" + webkit2callJava + "'>"
-			+  "      <arg type='"+ WebKitGTK.DBUS_TYPE_STRING + "' name='webViewPtr' direction='in'/>"
-			+  "      <arg type='"+ WebKitGTK.DBUS_TYPE_DOUBLE + "' name='index' direction='in'/>"
-			+  "      <arg type='"+ WebKitGTK.DBUS_TYPE_STRING + "' name='token' direction='in'/>"
-			+  "      <arg type='" + WebKitGTK.DBUS_TYPE_SINGLE_COMPLETE + "' name='arguments' direction='in'/>"
-			+  "      <arg type='" + WebKitGTK.DBUS_TYPE_SINGLE_COMPLETE + "' name='result' direction='out'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webViewPtr' direction='in'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_DOUBLE + "' name='index' direction='in'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='token' direction='in'/>"
+			+  "      <arg type='" + OS.DBUS_TYPE_SINGLE_COMPLETE + "' name='arguments' direction='in'/>"
+			+  "      <arg type='" + OS.DBUS_TYPE_SINGLE_COMPLETE + "' name='result' direction='out'/>"
 			+  "    </method>"
 			+  "  </interface>"
 			+  "</node>";
+
+	/**
+	 * GDBus/DBus doesn't have a notion of Null.
+	 * To get around this, we use magic numbers to represent special cases.
+	 * Currently this is specific to Webkit to deal with Javascript data type conversions.
+	 * @category gdbus */
+	public static final byte SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY = 101;
+	/** @category gdbus */
+	public static final byte SWT_DBUS_MAGIC_NUMBER_NULL = 48;
+
 
 	/** GDBusNodeInfo */
 	private static Callback onBusAcquiredCallback;
@@ -91,9 +102,9 @@ class WebkitGDBus {
 			return;
 		initialized = true;
 		DBUS_SERVICE_NAME = "org.eclipse.swt" + uniqueId;
-		int owner_id = WebKitGTK.g_bus_own_name(WebKitGTK.G_BUS_TYPE_SESSION,
+		int owner_id = WebKitGTK.g_bus_own_name(OS.G_BUS_TYPE_SESSION,
 				Converter.javaStringToCString(DBUS_SERVICE_NAME),
-				WebKitGTK.G_BUS_NAME_OWNER_FLAGS_REPLACE | WebKitGTK.G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT,
+				OS.G_BUS_NAME_OWNER_FLAGS_REPLACE | OS.G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT,
 				onBusAcquiredCallback.getAddress(),
 				onNameAcquiredCallback.getAddress(), // name_acquired_handler
 				onNameLostCallback.getAddress(), // name_lost_handler
@@ -233,6 +244,26 @@ class WebkitGDBus {
 		return 0; // void return value.
 	}
 
+
+
+	/* TYPE NOTES
+	 *
+	 * GDBus doesn't support all the types that we need. I used encoded 'byte' to translate some types.
+	 *
+	 * - 'null' is not supported. I thought to potentially use  'maybe' types, but they imply a possible NULL of a certain type, but not null itself.
+	 *   so I use 'byte=48' (meaning '0' in ASCII) to denote null.
+	 *
+	 * - Empty arrays/structs are not supported by gdbus.
+	 *    "Container types ... Empty structures are not allowed; there must be at least one type code between the parentheses"
+	 *	   src: https://dbus.freedesktop.org/doc/dbus-specification.html
+	 *	I used byte=101  (meaning 'e' in ASCII) to denote empty array.
+	 *
+	 * In Javascript all Number types seem to be 'double', (int/float/double/short  -> Double). So we convert everything into double accordingly.
+	 *
+	 * DBus Type info:  https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
+	 * GDBus Type info: https://developer.gnome.org/glib/stable/glib-GVariantType.html
+	 */
+
 	/**
 	 * Converts the given GVariant to a Java object.
 	 * (Only subset of types is currently supported).
@@ -243,18 +274,18 @@ class WebkitGDBus {
 	 */
 	private static Object convertGVariantToJava(long /*int*/ gVariant){
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, WebKitGTK.G_VARIANT_TYPE_BOOLEAN)){
+		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
 			return new Boolean(WebKitGTK.g_variant_get_boolean(gVariant));
 		}
 
 		// see: WebKitGTK.java 'TYPE NOTES'
-		if (WebKitGTK.g_variant_is_of_type(gVariant, WebKitGTK.G_VARIANT_TYPE_BYTE)) {
+		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BYTE)) {
 			byte byteVal = WebKitGTK.g_variant_get_byte(gVariant);
 
 			switch (byteVal) {
-			case WebKitGTK.SWT_DBUS_MAGIC_NUMBER_NULL:
+			case WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL:
 				return null;
-			case WebKitGTK.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY:
+			case WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY:
 				return new Object [0];
 			default:
 				System.err.println("SWT Error, received unsupported byte type via gdbus: " + byteVal);
@@ -262,15 +293,15 @@ class WebkitGDBus {
 			}
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, WebKitGTK.G_VARIANT_TYPE_DOUBLE)){
+		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_DOUBLE)){
 			return new Double(WebKitGTK.g_variant_get_double(gVariant));
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, WebKitGTK.G_VARIANT_TYPE_STRING)){
+		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_STRING)){
 			return Converter.cCharPtrToJavaString(WebKitGTK.g_variant_get_string(gVariant, null), false);
 		}
 
-		if (WebKitGTK.g_variant_is_of_type(gVariant, WebKitGTK.G_VARIANT_TYPE_TUPLE)){
+		if (WebKitGTK.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_TUPLE)){
 			int length = (int)WebKitGTK.g_variant_n_children (gVariant);
 			Object[] result = new Object[length];
 			for (int i = 0; i < length; i++) {
@@ -295,7 +326,7 @@ class WebkitGDBus {
 	private static long /*int*/ convertJavaToGVariant(Object javaObject) throws SWTException {
 
 		if (javaObject == null) {
-			return WebKitGTK.g_variant_new_byte(WebKitGTK.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
+			return WebKitGTK.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
 		}
 
 		if (javaObject instanceof String) {
@@ -317,7 +348,7 @@ class WebkitGDBus {
 			int length = arrayValue.length;
 
 			if (length == 0) {
-				return WebKitGTK.g_variant_new_byte(WebKitGTK.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
+				return WebKitGTK.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
 			}
 
 			long /*int*/ variants[] = new long /*int*/[length];

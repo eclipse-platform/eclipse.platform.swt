@@ -548,6 +548,62 @@ public class OS extends C {
 	public static final int RTLD_MEMBER = 0x00040000;
 	public static final int RTLD_NOW = OS.IsWin32 ? 0 : OS.RTLD_NOW();
 
+
+	/**
+	 * GDBus Session types.
+	 * @category gdbus */
+	public static final int G_BUS_TYPE_STARTER = -1; //An alias for the message bus that activated the process, if any.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_NONE = 0;    // Not a message bus.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_SYSTEM  = 1; // The system-wide message bus.
+	/** @category gdbus */
+	public static final int G_BUS_TYPE_SESSION = 2; //The login session message bus.
+	/** @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_NONE = 0; //No flags set.
+	/** @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT = (1<<0); //Allow another message bus connection to claim the name.
+	/**
+	 * If another message bus connection owns the name and have
+	 * specified #G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT, then take the name from the other connection.
+	 * @category gdbus */
+	public static final int G_BUS_NAME_OWNER_FLAGS_REPLACE = (1<<1);
+
+
+	/**
+	 * DBus Data types as defined by:
+	 * https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
+	 * @category gdbus */
+	public static final String DBUS_TYPE_BYTE = "y"; // 8 bit, unsigned int.
+	/** @category gdbus */
+	public static final String DBUS_TYPE_BOOLEAN = "b";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_STRING = "s";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_DOUBLE = "d";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_STRUCT = "r"; // Not used by Dbus, but implemented by GDBus.
+	/** @category gdbus */
+	public static final String DBUS_TYPE_SINGLE_COMPLETE = "*";
+
+	/**
+	 * GVariant Types
+	 * These are for the most part quite similar to DBus types with a few differences. Read:
+	 * https://developer.gnome.org/glib/stable/glib-GVariantType.html
+	 *
+	 * @category gdbus
+	 */
+	public static final byte[] G_VARIANT_TYPE_BYTE = ascii(DBUS_TYPE_BYTE);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_BOOLEAN = ascii(DBUS_TYPE_BOOLEAN);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_STRING = ascii(DBUS_TYPE_STRING);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii(DBUS_TYPE_DOUBLE);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_TUPLE = ascii(DBUS_TYPE_STRUCT);
+
+
 	/** Signals */
 	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");
 	public static final byte[] activate = ascii("activate");
