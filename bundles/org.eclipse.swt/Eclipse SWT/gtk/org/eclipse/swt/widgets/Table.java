@@ -2890,6 +2890,7 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 
 void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
 	TableItem item = null;
+	boolean wasSelected = false;
 	long /*int*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 	if (iter != 0) {
 		long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
@@ -2968,7 +2969,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 
 
 			if (hooks (SWT.EraseItem)) {
-				boolean wasSelected = (drawState & SWT.SELECTED) != 0;
+				/*
+				 * Cache the selection state so that it is not lost if a
+				 * PaintListener wants to draw custom selection foregrounds.
+				 * See bug 528155.
+				 */
+				wasSelected = (drawState & SWT.SELECTED) != 0;
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
@@ -3082,6 +3088,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 	if (item != null) {
 		if (OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			if (hooks (SWT.PaintItem)) {
+				if (wasSelected) drawState |= SWT.SELECTED;
 				GdkRectangle rect = new GdkRectangle ();
 				long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
