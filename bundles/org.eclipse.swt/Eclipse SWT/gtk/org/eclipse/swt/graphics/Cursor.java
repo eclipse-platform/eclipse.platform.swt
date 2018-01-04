@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -145,9 +145,9 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_HAND:			shape = OS.GDK_HAND2; break;
 		case SWT.CURSOR_HELP:			shape = OS.GDK_QUESTION_ARROW; break;
 		case SWT.CURSOR_SIZEALL:		shape = OS.GDK_FLEUR; break;
-		case SWT.CURSOR_SIZENESW:		shape = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZENESW:		shape = OS.GDK_SIZING; name=Converter.wcsToMbcs("nesw-resize", true); break;
 		case SWT.CURSOR_SIZENS:			shape = OS.GDK_DOUBLE_ARROW; break;
-		case SWT.CURSOR_SIZENWSE:		shape = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZENWSE:		shape = OS.GDK_SIZING; name=Converter.wcsToMbcs("nwse-resize", true); break;
 		case SWT.CURSOR_SIZEWE:			shape = OS.GDK_SB_H_DOUBLE_ARROW; break;
 		case SWT.CURSOR_SIZEN:			shape = OS.GDK_TOP_SIDE; break;
 		case SWT.CURSOR_SIZES:			shape = OS.GDK_BOTTOM_SIDE; break;
