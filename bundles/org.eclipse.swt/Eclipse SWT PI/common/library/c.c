@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -279,7 +279,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3BJJ)(JNIEnv *env, jclass that, jbyteA
 #else
 	C_NATIVE_ENTER(env, that, memmove___3BJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -305,7 +306,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3B_3CJ)(JNIEnv *env, jclass that, jbyt
 #else
 	C_NATIVE_ENTER(env, that, memmove___3B_3CJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
 fail:
@@ -332,7 +334,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3CJJ)(JNIEnv *env, jclass that, jcharA
 #else
 	C_NATIVE_ENTER(env, that, memmove___3CJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -357,7 +360,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3DJJ)(JNIEnv *env, jclass that, jdoubl
 #else
 	C_NATIVE_ENTER(env, that, memmove___3DJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -382,7 +386,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3FJJ)(JNIEnv *env, jclass that, jfloat
 #else
 	C_NATIVE_ENTER(env, that, memmove___3FJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -407,7 +412,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3IJJ)(JNIEnv *env, jclass that, jintAr
 #else
 	C_NATIVE_ENTER(env, that, memmove___3IJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -434,7 +440,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3I_3BJ)(JNIEnv *env, jclass that, jint
 	C_NATIVE_ENTER(env, that, memmove___3I_3BJ_FUNC);
 #endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -460,7 +467,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3JJJ)(JNIEnv *env, jclass that, jlongA
 #else
 	C_NATIVE_ENTER(env, that, memmove___3JJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -485,7 +493,8 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3SJJ)(JNIEnv *env, jclass that, jshort
 #else
 	C_NATIVE_ENTER(env, that, memmove___3SJJ_FUNC);
 #endif
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+		if (!arg0) goto fail;
+		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
