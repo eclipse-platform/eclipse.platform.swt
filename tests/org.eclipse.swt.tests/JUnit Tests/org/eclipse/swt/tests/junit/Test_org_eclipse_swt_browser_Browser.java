@@ -87,6 +87,8 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	boolean isWebkit1 = false;
 	boolean isWebkit2 = false;
 
+	static int[] webkitGtkVersionInts = new int[3];
+
 	/** Accumiliate logs, print only if test case fails. Cleared for each test case. */
 	StringBuffer testLog;
 	private void testLogAppend(String msg) {
@@ -117,7 +119,6 @@ public void setUp() {
 		shellTitle = shellTitle + " Webkit version: " + webkitGtkVersionStr;
 
 		String[] webkitGtkVersionStrParts = webkitGtkVersionStr.split("\\.");
-		int[] webkitGtkVersionInts = new int[3];
 		for (int i = 0; i < 3; i++) {
 			webkitGtkVersionInts[i] = Integer.parseInt(webkitGtkVersionStrParts[i]);
 		}
@@ -173,6 +174,11 @@ public void test_evalute_Cookies () {
 
 @Test
 public void test_ClearAllSessionCookies () {
+	if (isWebkit2) {
+		// clearSessions will only work for Webkit2 when >= 2.16
+		assumeTrue(webkitGtkVersionInts[1] >= 16);
+	}
+
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
