@@ -147,7 +147,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/" excludes="**/*.extras,**/*.bridgesupport"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
@@ -182,7 +181,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/cairo/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/gtk/"/>
@@ -214,7 +212,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT OLE Win32/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>

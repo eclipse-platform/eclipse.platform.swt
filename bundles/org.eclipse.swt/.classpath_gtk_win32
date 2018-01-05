@@ -16,7 +16,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="Eclipse SWT PI/cairo"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/common"/>
-	<classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
 	<classpathentry kind="src" path="Eclipse SWT AWT/gtk"/>

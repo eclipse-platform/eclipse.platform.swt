@@ -14,7 +14,6 @@
 			<attribute value="org.eclipse.swt.cocoa.macosx.x86_64" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
 		</attributes>
     </classpathentry>
-    <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT AWT/common"/>
