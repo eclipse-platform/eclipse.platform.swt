@@ -435,6 +435,22 @@ void setAllowedFileType (String fileTypes) {
 		} else if (fileType.startsWith(".")) {
 			fileType = fileType.substring(1);
 		}
+		/*
+		 * In Cocoa, only the part of the file name after the last extension divider (.)
+		 * is considered as extension. But, SWT FileDialog supports extensions with more than one (.).
+		 * When files with extensions which have more than 1 separator are filtered, they are not
+		 * shown as enabled in the File Open Dialog. For example, using tar.gz in the filter
+		 * extension doesn't show the tar.gz files enabled in the FileDialog.
+		 *
+		 * The workaround is for Open FileDialog, add only the extension after the last (.) as the allowed
+		 * file type. For example, for tar.gz, only gz is added as the allowed file type.
+		 */
+		if ((style & SWT.SAVE) == 0) {
+			int index = fileType.lastIndexOf(".");
+			if (index != -1 && index+1 < fileType.length()) {
+				fileType = fileType.substring(index+1);
+			}
+		}
 		allowedFileTypes.addObject(NSString.stringWith(fileType));
 	}
 
