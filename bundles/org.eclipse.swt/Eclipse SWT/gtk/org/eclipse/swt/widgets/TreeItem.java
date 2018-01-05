@@ -1541,7 +1541,13 @@ public void setImage (int index, Image image) {
 					 * bug 480261.
 					 */
 					if ((parent.style & SWT.VIRTUAL) != 0) {
-						parent.createRenderers(column, modelIndex, ((parent.style & SWT.CHECK) != 0) , parent.style);
+						/*
+						 * Only re-create SWT.CHECK renderers if this is the first column.
+						 * Otherwise check-boxes will be rendered in columns they are not
+						 * supposed to be rendered in. See bug 513761.
+						 */
+						boolean check = modelIndex == Tree.FIRST_COLUMN && (parent.style & SWT.CHECK) != 0;
+						parent.createRenderers(column, modelIndex, check, parent.style);
 					}
 				}
 			}
