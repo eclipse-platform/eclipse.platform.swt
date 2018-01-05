@@ -350,6 +350,10 @@ public String open () {
 }
 
 long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
+	if ((style & SWT.SAVE) != 0) {
+		/* All filenames are always disabled in the NSSavePanel, so return from here. */
+		return 1;
+	}
 	NSString path = new NSString(arg1);
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		NSFileManager manager = NSFileManager.defaultManager();
@@ -372,7 +376,11 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 					String filter = extensions.substring (start, index).trim ();
 					if (filter.equalsIgnoreCase (fileName)) return 1;
 					if (filter.equals ("*") || filter.equals ("*.*")) return 1;
-					if (filter.startsWith ("*.")) filter = filter.substring (2);
+					if (filter.startsWith ("*.")) {
+						filter = filter.substring (2);
+					} else if (filter.startsWith (".")) {
+						filter = filter.substring (1);
+					}
 					if ((fileName.toLowerCase ()).endsWith("." + filter.toLowerCase ())) return 1;
 					start = index + 1;
 				}
@@ -447,8 +455,8 @@ void setAllowedFileType (String fileTypes) {
 		 */
 		if ((style & SWT.SAVE) == 0) {
 			int index = fileType.lastIndexOf(".");
-			if (index != -1 && index+1 < fileType.length()) {
-				fileType = fileType.substring(index+1);
+			if (index != -1 && ((index + 1) < fileType.length())) {
+				fileType = fileType.substring(index + 1);
 			}
 		}
 		allowedFileTypes.addObject(NSString.stringWith(fileType));
