@@ -1,5 +1,5 @@
 @rem ***************************************************************************
-@rem Copyright (c) 2000, 2017 IBM Corporation and others.
+@rem Copyright (c) 2000, 2018 IBM Corporation and others.
 @rem All rights reserved. This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License v1.0
 @rem which accompanies this distribution, and is available at
@@ -15,10 +15,10 @@ IF EXIST C:\BUILD\swt-builddir set "SWT_BUILDDIR=C:\BUILD\swt-builddir"
 IF "x.%SWT_BUILDDIR%"=="x." set "SWT_BUILDDIR=S:\swt-builddir"
 echo SWT build dir: %SWT_BUILDDIR%
 
-IF "x.%MSSDK%"=="x." set "MSSDK=%SWT_BUILDDIR%\MSSDKs\Windows Server 2003 SP1 SDK"
+IF "x.%MSSDK%"=="x." set "%ProgramFiles(x86)%\Windows Kits\10"
 IF "x.%WEBKIT_DIR%"=="x." set "WEBKIT_DIR=%SWT_BUILDDIR%\webkit\WebKit-r72896"
 IF "x.%WEBKIT_SUPPORT_DIR%"=="x." set "WEBKIT_SUPPORT_DIR=%SWT_BUILDDIR%\webkit\WebKitSupportLibrary"
-IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 9.0"
+IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\2017"
 
 IF x.%1==x.x86 GOTO X86
 IF x.%1==x.x86_64 GOTO X86_64
@@ -26,7 +26,7 @@ IF x.%1==x.x86_64 GOTO X86_64
 :X86
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-i386\sdk"
-call "%MSVC_HOME%\Common7\Tools\vsvars32.bat"
+call "%MSVC_HOME%\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
 call "%MSSDK%\setenv" /XP32 /RETAIL
 IF x.%1==x.x86 shift
 GOTO MAKE
@@ -36,7 +36,7 @@ set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%SWT_BUILDDIR%\ibm-java-sdk-80-win-x86_64\sdk"
 set CFLAGS=-DJNI64
-call "%MSSDK%\setenv" /X64 /RETAIL
+call "%MSVC_HOME%\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 shift
 GOTO MAKE
 

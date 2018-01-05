@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2017 IBM Corporation and others.
+# Copyright (c) 2000, 2018 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -16,7 +16,6 @@
 #	OUTPUT_DIR
 
 !include <make_common.mak>
-!include <win32.mak>
 
 SWT_PREFIX  = swt
 WS_PREFIX   = win32
@@ -60,10 +59,14 @@ WEBKITCFLAGS = -c -O1\
 	-I"$(WEBKIT_SUPPORT_DIR)\win\include"
 
 #CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
-CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
+CFLAGS = -O1 -DNDEBUG /c $(cflags) $(cvarsmt) $(CFLAGS) \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER \
 	/I"$(SWT_JAVA_HOME)\include" /I"$(SWT_JAVA_HOME)\include\win32" /I.
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
+ldebug = /RELEASE  /INCREMENTAL:NO /NOLOGO
+dlllflags = -dll
+guilibsmt = kernel32.lib  ws2_32.lib mswsock.lib advapi32.lib bufferoverflowu.lib user32.lib gdi32.lib comdlg32.lib winspool.lib
+olelibsmt = ole32.lib uuid.lib oleaut32.lib $(guilibsmt)
 
 all: make_swt make_awt make_gdip make_wgl
 

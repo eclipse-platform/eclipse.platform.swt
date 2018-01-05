@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,7 @@
 #include <shellapi.h>
 #include <wininet.h>
 #include <mshtmhst.h>
+#include <Tabflicks.h>
 
 #ifndef _WIN32_WCE
 #include <initguid.h>
@@ -696,12 +697,6 @@
 #ifndef _WIN32_WCE
 #ifndef _BP_PAINTPARAMS
 typedef HANDLE HPAINTBUFFER;
-typedef struct _BP_PAINTPARAMS {
-    DWORD cbSize;
-    DWORD dwFlags;
-    const RECT *prcExclude;
-    const BLENDFUNCTION *pBlendFunction;
-} BP_PAINTPARAMS, *PBP_PAINTPARAMS;
 #endif
 
 #ifndef PROPERTYKEY_DEFINED
@@ -735,26 +730,6 @@ int
     __in LPARAM lParam);
 #endif
     
-#ifndef _DTTOPTS
-typedef struct _DTTOPTS
-{
-    DWORD             dwSize;
-    DWORD             dwFlags;
-    COLORREF          crText;
-    COLORREF          crBorder;
-    COLORREF          crShadow;
-    int               iTextShadowType;
-    POINT             ptShadowOffset;
-    int               iBorderSize;
-    int               iFontPropId;
-    int               iColorPropId;
-    int               iStateId;
-    BOOL              fApplyOverlay;
-    int               iGlowSize;
-    DTT_CALLBACK_PROC pfnDrawTextCallback;
-    LPARAM            lParam;
-} DTTOPTS, *PDTTOPTS; 
-#endif
 #endif /* _WIN32_WCE */
 
 
