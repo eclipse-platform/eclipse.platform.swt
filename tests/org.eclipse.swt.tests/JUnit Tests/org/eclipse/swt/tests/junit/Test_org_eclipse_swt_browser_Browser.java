@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,7 +90,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	static int[] webkitGtkVersionInts = new int[3];
 
 	/** Accumiliate logs, print only if test case fails. Cleared for each test case. */
-	StringBuffer testLog;
+	StringBuilder testLog;
 	private void testLogAppend(String msg) {
 		testLog.append("  " + msg + "\n");
 	}
@@ -133,7 +133,7 @@ public void setUp() {
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
 
-	testLog = new StringBuffer("\nTest log:\n");
+	testLog = new StringBuilder("\nTest log:\n");
 }
 
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -111,7 +111,7 @@ class BrowserTab extends Tab {
 		} else if (lastText != null) {
 			browser.setText(lastText);
 		} else {
-			StringBuffer sb= new StringBuffer(300);
+			StringBuilder sb= new StringBuilder(300);
 
 			try (InputStream htmlStream = ControlExample.class.getResourceAsStream("browser-content.html");
 					BufferedReader br = new BufferedReader(new InputStreamReader(htmlStream))) {
@@ -219,7 +219,7 @@ class BrowserTab extends Tab {
 	}
 
 	public static String getContents(InputStream in) throws IOException {
-		StringBuffer sb= new StringBuffer(300);
+		StringBuilder sb= new StringBuilder(300);
 		try (BufferedReader br= new BufferedReader(new InputStreamReader(in))) {
 			int read= 0;
 			while ((read= br.read()) != -1)

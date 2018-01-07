@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2012 IBM Corporation and others.
+ * Copyright (c) 2008, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.Random;
+import java.util.*;
 
 import org.eclipse.swt.*;
 
@@ -139,7 +139,7 @@ BrowserFunction (Browser browser, String name, boolean top, String[] frameNames,
 	Random random = new Random ();
 	byte[] bytes = new byte[16];
 	random.nextBytes (bytes);
-	StringBuffer buffer = new StringBuffer ();
+	StringBuilder buffer = new StringBuilder ();
 	for (int i = 0; i < bytes.length; i++) {
 		buffer.append (Integer.toHexString (bytes[i] & 0xff));
 	}

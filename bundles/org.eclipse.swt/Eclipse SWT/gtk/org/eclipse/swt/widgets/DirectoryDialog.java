@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -146,13 +146,13 @@ String openChooserDialog () {
 		OS.g_list_free (pixbufs);
 	}
 	if (filterPath != null && filterPath.length () > 0) {
-		StringBuffer stringBuffer = new StringBuffer ();
+		StringBuilder stringBuilder = new StringBuilder ();
 		/* filename must be a full path */
 		if (!filterPath.startsWith (SEPARATOR)) {
-			stringBuffer.append (SEPARATOR);
+			stringBuilder.append (SEPARATOR);
 		}
-		stringBuffer.append (filterPath);
-		byte [] buffer = Converter.wcsToMbcs (stringBuffer.toString (), true);
+		stringBuilder.append (filterPath);
+		byte [] buffer = Converter.wcsToMbcs (stringBuilder.toString (), true);
 		/*
 		 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
 		 * to be true canonical path. So using realpath to convert the path to

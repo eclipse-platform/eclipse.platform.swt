@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -914,7 +914,7 @@ String getClassString(JNIType type) {
 
 String getFlagsString(String[] flags) {
 	if (flags.length == 0) return "";
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	for (int j = 0; j < flags.length; j++) {
 		String flag = flags[j];
 		if (buffer.length() != 0) buffer.append(", ");
@@ -925,7 +925,7 @@ String getFlagsString(String[] flags) {
 
 String getMethodString(JNIMethod method) {
 	String pkgName = getPackageString();
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	buffer.append(method.getName());
 	buffer.append("(");
 	JNIParameter[] params = method.getParameters();

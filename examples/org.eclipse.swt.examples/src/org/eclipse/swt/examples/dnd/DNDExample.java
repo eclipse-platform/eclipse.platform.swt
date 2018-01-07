@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -319,7 +319,7 @@ private void createDragSource() {
 					if (items.length == 0) {
 						event.doit = false;
 					} else {
-						StringBuffer buffer = new StringBuffer();
+						StringBuilder buffer = new StringBuilder();
 						for (int i = 0; i < items.length; i++) {
 							buffer.append(items[i].getText());
 							if (items.length > 1 && i < items.length - 1) {
@@ -346,7 +346,7 @@ private void createDragSource() {
 					if (items.length == 0) {
 						event.doit = false;
 					} else {
-						StringBuffer buffer = new StringBuffer();
+						StringBuilder buffer = new StringBuilder();
 						for (int i = 0; i < items.length; i++) {
 							buffer.append(items[i].getText());
 							if (items.length > 1 && i < items.length - 1) {
@@ -362,7 +362,7 @@ private void createDragSource() {
 					if (strings == null || strings.length == 0) {
 						event.doit = false;
 					} else {
-						StringBuffer buffer = new StringBuffer();
+						StringBuilder buffer = new StringBuilder();
 						for (int i = 0; i < strings.length; i++) {
 							buffer.append(strings[i]);
 							if (strings.length > 1 && i < strings.length - 1) {
@@ -389,7 +389,7 @@ private void createDragSource() {
 					if (selection.length == 0) {
 						event.doit = false;
 					} else {
-						StringBuffer buffer = new StringBuffer();
+						StringBuilder buffer = new StringBuilder();
 						for (int i = 0; i < selection.length; i++) {
 							buffer.append(selection[i]);
 							if (selection.length > 1 && i < selection.length - 1) {

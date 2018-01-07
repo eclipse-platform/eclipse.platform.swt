@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2017 IBM Corporation and others.
+ * Copyright (c) 2010, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1297,16 +1297,16 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 
 	if (WEBKIT1) { // add HandleWebKitEvent key/mouse handlers
 		/* install the JS call-out to the registered BrowserFunction */
-		StringBuffer buffer = new StringBuffer ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
+		StringBuilder buffer = new StringBuilder ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
 		nonBlockingExecute (buffer.toString ());
-		buffer = new StringBuffer ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
+		buffer = new StringBuilder ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
 		nonBlockingExecute (buffer.toString ());
 
 		if (top) {
 			/* DOM API is not available, so add listener to top-level document */
-			buffer = new StringBuffer ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
+			buffer = new StringBuilder ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
 			buffer.append ("document.addEventListener('keypress', SWTkeyhandler, true);"); //$NON-NLS-1$
 			buffer.append ("document.addEventListener('keyup', SWTkeyhandler, true);"); //$NON-NLS-1$
 			buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
@@ -1328,7 +1328,7 @@ void addEventHandlers (long /*int*/ web_view, boolean top) {
 		}
 
 		/* add JS event listener in frames */
-		buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
+		buffer = new StringBuilder ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keydown', window.SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keypress', window.SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keyup', window.SWTkeyhandler, true);"); //$NON-NLS-1$
@@ -1367,7 +1367,7 @@ boolean close (boolean showPrompters) {
 	String message1 = Compatibility.getMessage("SWT_OnBeforeUnload_Message1"); // $NON-NLS-1$
 	String message2 = Compatibility.getMessage("SWT_OnBeforeUnload_Message2"); // $NON-NLS-1$
 	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
-	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
+	StringBuilder buffer = new StringBuilder ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win) {\n"); // $NON-NLS-1$
 	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); "); // $NON-NLS-1$
@@ -2666,7 +2666,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 							out.write(postData.getBytes());
 						}
 
-						StringBuffer response = new StringBuffer();
+						StringBuilder response = new StringBuilder();
 						try (BufferedReader buff = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
 							char [] cbuff = new char[4096];
 							while (buff.read(cbuff, 0, cbuff.length) > 0) {

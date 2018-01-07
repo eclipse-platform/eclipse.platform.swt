@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,7 +48,7 @@ public class Snippet133 {
 	int index, end;
 	String textToPrint;
 	String tabs;
-	StringBuffer wordBuffer;
+	StringBuilder wordBuffer;
 
 	public static void main(String[] args) {
 		new Snippet133().open();
@@ -111,7 +111,7 @@ public class Snippet133 {
 		try (FileInputStream stream = new FileInputStream(file.getPath())) {
 			Reader in = new BufferedReader(new InputStreamReader(stream));
 			char[] readBuffer = new char[2048];
-			StringBuffer buffer = new StringBuffer((int) file.length());
+			StringBuilder buffer = new StringBuilder((int) file.length());
 			int n;
 			while ((n = in.read(readBuffer)) > 0) {
 				buffer.append(readBuffer, 0, n);
@@ -206,7 +206,7 @@ public class Snippet133 {
 
 			/* Create a buffer for computing tab width. */
 			int tabSize = 4; // is tab width a user setting in your UI?
-			StringBuffer tabBuffer = new StringBuffer(tabSize);
+			StringBuilder tabBuffer = new StringBuilder(tabSize);
 			for (int i = 0; i < tabSize; i++) tabBuffer.append(' ');
 			tabs = tabBuffer.toString();
 
@@ -236,7 +236,7 @@ public class Snippet133 {
 
 	void printText() {
 		printer.startPage();
-		wordBuffer = new StringBuffer();
+		wordBuffer = new StringBuilder();
 		x = leftMargin;
 		y = topMargin;
 		index = 0;
@@ -279,7 +279,7 @@ public class Snippet133 {
 			}
 			gc.drawString(word, x, y, false);
 			x += wordWidth;
-			wordBuffer = new StringBuffer();
+			wordBuffer = new StringBuilder();
 		}
 	}
 

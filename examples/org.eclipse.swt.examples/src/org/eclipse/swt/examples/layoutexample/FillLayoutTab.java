@@ -146,8 +146,8 @@ class FillLayoutTab extends Tab {
 	 * Generates code for the example layout.
 	 */
 	@Override
-	StringBuffer generateLayoutCode () {
-		StringBuffer code = new StringBuffer ();
+	StringBuilder generateLayoutCode () {
+		StringBuilder code = new StringBuilder ();
 		code.append ("\t\tFillLayout fillLayout = new FillLayout ();\n");
 		if (fillLayout.type == SWT.VERTICAL) {
 			code.append ("\t\tfillLayout.type = SWT.VERTICAL;\n");

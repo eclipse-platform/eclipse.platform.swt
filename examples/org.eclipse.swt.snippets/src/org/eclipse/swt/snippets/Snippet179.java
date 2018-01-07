@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,7 @@ public static void main(String[] args) {
 		public void handleEvent(Event e) {
 			if (ignore) return;
 			e.doit = false;
-			StringBuffer buffer = new StringBuffer(e.text);
+			StringBuilder buffer = new StringBuilder(e.text);
 			char[] chars = new char[buffer.length()];
 			buffer.getChars(0, chars.length, chars, 0);
 			if (e.character == '\b') {
@@ -91,7 +91,7 @@ public static void main(String[] args) {
 			}
 			String newText = buffer.toString();
 			int length = newText.length();
-			StringBuffer date = new StringBuffer(text.getText());
+			StringBuilder date = new StringBuilder(text.getText());
 			date.replace(e.start, e.start + length, newText);
 			calendar.set(Calendar.YEAR, 1901);
 			calendar.set(Calendar.MONTH, Calendar.JANUARY);

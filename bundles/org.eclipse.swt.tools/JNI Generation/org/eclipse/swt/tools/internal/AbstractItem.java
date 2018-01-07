@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 IBM Corporation and others.
+ * Copyright (c) 2008, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ void checkParams() {
 
 public String flatten() {
 	checkParams();
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	Set<String> set = params.keySet();
 	String[] keys = set.toArray(new String[set.size()]);
 	Arrays.sort(keys);
@@ -39,7 +39,7 @@ public String flatten() {
 			valueStr = (String)value;
 		} else if (value instanceof String[]) {
 			String[] values = (String[])value;
-			StringBuffer valueBuffer = new StringBuffer();
+			StringBuilder valueBuffer = new StringBuilder();
 			for (int i = 0; i < values.length; i++) {
 				if (i != 0) valueBuffer.append(" ");
 				valueBuffer.append(values[i]);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -492,7 +492,7 @@ public String getLine(int index) {
 		return new String(textStore, start, length);
 	} else {
 		// gap is in the specified range, strip out the gap
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int gapLength = gapEnd - gapStart;
 		buf.append(textStore, start, gapStart - start);
 		buf.append(textStore, gapEnd, length - gapLength - (gapStart - start));
@@ -531,7 +531,7 @@ String getFullLine(int index) {
 		return new String(textStore, start, length);
 	} else {
 		// gap is in the specified range, strip out the gap
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		int gapLength = gapEnd - gapStart;
 		buffer.append(textStore, start, gapStart - start);
 		buffer.append(textStore, gapEnd, length - gapLength - (gapStart - start));
@@ -721,7 +721,7 @@ public String getTextRange(int start, int length) {
 		int gapLength= gapEnd - gapStart;
 		return new String(textStore, start + gapLength , length);
 	}
-	StringBuffer buf = new StringBuffer();
+	StringBuilder buf = new StringBuilder();
 	buf.append(textStore, start, gapStart - start);
 	buf.append(textStore, gapEnd, end - gapStart);
 	return buf.toString();

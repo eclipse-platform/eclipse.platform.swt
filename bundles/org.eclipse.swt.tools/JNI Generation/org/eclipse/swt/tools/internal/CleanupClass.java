@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ void loadFiles () {
 String loadFile (File file) {
 	try (FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr)){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char[] buffer = new char[1024];
 		int read;
 		while ((read = br.read(buffer)) != -1) {

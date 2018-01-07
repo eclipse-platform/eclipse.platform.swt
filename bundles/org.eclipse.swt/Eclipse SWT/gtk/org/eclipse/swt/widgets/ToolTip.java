@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -815,7 +815,7 @@ public void setVisible (boolean visible) {
 			OS.gtk_widget_show (handle);
 		} else {
 			long /*int*/ vboxHandle = parent.vboxHandle;
-			StringBuffer string = new StringBuffer (text);
+			StringBuilder string = new StringBuilder (text);
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
 			byte [] buffer = Converter.wcsToMbcs (string.toString(), true);

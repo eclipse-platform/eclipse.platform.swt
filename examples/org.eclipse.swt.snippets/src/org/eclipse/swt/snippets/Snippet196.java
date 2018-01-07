@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,9 +18,10 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import java.util.regex.*;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -52,7 +53,7 @@ public static void main(String[] args) {
 			if (ignore) return;
 			e.doit = false;
 			if (e.start > 13 || e.end > 14) return;
-			StringBuffer buffer = new StringBuffer(e.text);
+			StringBuilder buffer = new StringBuilder(e.text);
 
 			//handle backspace
 			if (e.character == '\b') {
@@ -95,7 +96,7 @@ public static void main(String[] args) {
 				return;
 			}
 
-			StringBuffer newText = new StringBuffer(defaultText);
+			StringBuilder newText = new StringBuilder(defaultText);
 			char[] chars = e.text.toCharArray();
 			int index = e.start - 1;
 			for (int i = 0; i < e.text.length(); i++) {

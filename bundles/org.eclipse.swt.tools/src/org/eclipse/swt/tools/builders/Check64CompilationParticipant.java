@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2017 IBM Corporation and others.
+ * Copyright (c) 2008, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,7 +46,7 @@ static String loadFile (String file) {
 	if (file == null) return null;
 	try (FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr)) {
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char[] buffer = new char[1024];
 		int read;
 		while ((read = br.read(buffer)) != -1) {
@@ -61,7 +61,7 @@ static String loadFile (String file) {
 
 void build(IJavaProject project, String root) throws CoreException {
 	try {
-		StringBuffer sourcePath = new StringBuffer(), cp = new StringBuffer();
+		StringBuilder sourcePath = new StringBuilder(), cp = new StringBuilder();
 		IClasspathEntry[] entries = project.getResolvedClasspath(true);
 		for (int i = 0; i < entries.length; i++) {
 			IClasspathEntry entry = entries[i]; 

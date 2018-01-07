@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -842,7 +842,7 @@ public int getSeconds () {
  */
 String getSpokenText () {
 	// TODO: needs more work for locale
-	StringBuffer result = new StringBuffer ();
+	StringBuilder result = new StringBuilder ();
 	if (isTime ()) {
 		int h = calendar.get (Calendar.HOUR); if (h == 0) h = 12;
 		result.append (h);

@@ -143,7 +143,7 @@ public static int SWT_VERSION (int major, int minor) {
  * @param mappedName file to be searched in jar.
  * @return	true upon success, failure if something went wrong.
  */
-static boolean extract (String extractToFilePath, String mappedName, StringBuffer message) {
+static boolean extract (String extractToFilePath, String mappedName, StringBuilder message) {
 	FileOutputStream os = null;
 	InputStream is = null;
 	File file = new File(extractToFilePath);
@@ -209,7 +209,7 @@ static boolean isLoadable () {
 	return false;
 }
 
-static boolean load (String libName, StringBuffer message) {
+static boolean load (String libName, StringBuilder message) {
 	try {
 		if (libName.indexOf (SEPARATOR) != -1) {
 			System.load (libName);
@@ -277,7 +277,7 @@ public static void loadLibrary (String name, boolean mapName) {
 		libName1 = libName2 = mappedName1 = mappedName2 = name;
 	}
 
-	StringBuffer message = new StringBuffer();
+	StringBuilder message = new StringBuilder();
 
 	/* Try loading library from swt library path */
 	String path = System.getProperty (SWT_LIB_PATH); //$NON-NLS-1$
@@ -447,7 +447,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 				 tempDir.mkdirs ();
 			}
 
-			StringBuffer message = new StringBuffer("");
+			StringBuilder message = new StringBuilder("");
 			if (extract(file.getPath(), maybeSubDirPath + finalResourceName, message)) {
 				if (file.exists()) {
 					return file;

@@ -64,7 +64,7 @@ public void generate(JNIMethod[] methods) {
 }
 
 public void generate(JNIMethod method) {
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	buffer.append(method.getDeclaringClass().getSimpleName());
 	buffer.append("_");
 	if (method.isNativeUnique()) {

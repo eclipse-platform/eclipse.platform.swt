@@ -1164,7 +1164,7 @@ void setFont(Font font, int tabs) {
 	layout.dispose();
 	layout = new TextLayout(device);
 	layout.setFont(regularFont);
-	StringBuffer tabBuffer = new StringBuffer(tabs);
+	StringBuilder tabBuffer = new StringBuilder(tabs);
 	for (int i = 0; i < tabs; i++) {
 		tabBuffer.append(' ');
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,7 +33,7 @@ public JNIGenerator() {
 
 public static String skipCopyrights(InputStream is) throws IOException {
 	int state = 0;
-	StringBuffer copyrights = new StringBuffer();
+	StringBuilder copyrights = new StringBuilder();
 	while (state != 5) {
 		int c = is.read();
 		if (c == -1) return null;
@@ -105,7 +105,7 @@ public static String getDelimiter(String fileName) {
 String fixDelimiter(String str) {
 	if (delimiter.equals("\n")) return str;
 	int index = 0, length = str.length();
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	while (index != -1) {
 		int start = index;
 		index = str.indexOf('\n', start);
@@ -128,7 +128,7 @@ static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 	if ((method.getModifiers() & Modifier.NATIVE) == 0) return method.getName();
 	String function = toC(method.getName());
 	if (!method.isNativeUnique()) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append(function);
 		buffer.append("__");
 		for (int i = 0; i < paramTypes.length; i++) {
@@ -143,7 +143,7 @@ static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 static String loadFile (String file) {
 	try (FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr)){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char[] buffer = new char[1024];
 		int read;
 		while ((read = br.read(buffer)) != -1) {
@@ -182,7 +182,7 @@ static String[] split(String str, String separator) {
 
 static String toC(String str) {
 	int length = str.length();
-	StringBuffer buffer = new StringBuffer(length * 2);
+	StringBuilder buffer = new StringBuilder(length * 2);
 	for (int i = 0; i < length; i++) {
 		char c = str.charAt(i);
 		switch (c) {

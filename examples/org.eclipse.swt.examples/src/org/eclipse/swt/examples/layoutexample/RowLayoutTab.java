@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -250,8 +250,8 @@ class RowLayoutTab extends Tab {
 	 * Generates code for the example layout.
 	 */
 	@Override
-	StringBuffer generateLayoutCode () {
-		StringBuffer code = new StringBuffer ();
+	StringBuilder generateLayoutCode () {
+		StringBuilder code = new StringBuilder ();
 		code.append ("\t\tRowLayout rowLayout = new RowLayout ();\n");
 		if (rowLayout.type == SWT.VERTICAL) {
 			code.append ("\t\trowLayout.type = SWT.VERTICAL;\n");

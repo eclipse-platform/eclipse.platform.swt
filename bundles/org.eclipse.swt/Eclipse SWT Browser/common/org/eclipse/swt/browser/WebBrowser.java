@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2017 IBM Corporation and others.
+ * Copyright (c) 2003, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -320,7 +320,7 @@ public void createFunction (BrowserFunction function) {
 	function.index = getNextFunctionIndex ();
 	registerFunction (function);
 
-	StringBuffer functionBuffer = new StringBuffer (function.name);
+	StringBuilder functionBuffer = new StringBuilder (function.name);
 	functionBuffer.append (" = function "); //$NON-NLS-1$
 	functionBuffer.append (function.name);
 	functionBuffer.append ("() {var result = callJava("); //$NON-NLS-1$
@@ -335,7 +335,7 @@ public void createFunction (BrowserFunction function) {
 
 	String javaCallDeclaration = getJavaCallDeclaration();
 
-	StringBuffer buffer = new StringBuffer (); //$NON-NLS-1$
+	StringBuilder buffer = new StringBuilder (); //$NON-NLS-1$
 	buffer.append (javaCallDeclaration); //$NON-NLS-1$
 	if (function.top) {
 		buffer.append (functionBuffer.toString ());
@@ -382,7 +382,7 @@ void deregisterFunction (BrowserFunction function) {
 
 public void destroyFunction (BrowserFunction function) {
 	String deleteString = getDeleteFunctionString (function.name);
-	StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
+	StringBuilder buffer = new StringBuilder ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
 	buffer.append (deleteString);
 	buffer.append ("\");} catch (e) {}}"); //$NON-NLS-1$
 	nonBlockingExecute (buffer.toString ());
@@ -413,7 +413,7 @@ public Object evaluate (String script) throws SWTException {
 	registerFunction (function);
 	String functionName = EXECUTE_ID + index;
 
-	StringBuffer buffer = new StringBuffer ("window."); // $NON-NLS-1$
+	StringBuilder buffer = new StringBuilder ("window."); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append (" = function "); // $NON-NLS-1$
 	buffer.append (functionName);
@@ -422,7 +422,7 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append ("\n};"); // $NON-NLS-1$
 	nonBlockingExecute (buffer.toString ());
 
-	buffer = new StringBuffer ("if (window."); // $NON-NLS-1$
+	buffer = new StringBuilder ("if (window."); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append (" == undefined) {window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);

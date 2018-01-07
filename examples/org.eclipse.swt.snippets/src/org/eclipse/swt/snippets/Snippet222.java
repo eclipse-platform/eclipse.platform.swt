@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,7 +32,7 @@ public static void main(String[] args) {
 	shell.setText("StyledText Bullet Example");
 	shell.setLayout(new FillLayout());
 	final StyledText styledText = new StyledText (shell, SWT.FULL_SELECTION | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-	StringBuffer text = new StringBuffer();
+	StringBuilder text = new StringBuilder();
 	text.append("Here is StyledText with some bulleted lists:\n\n");
 	for (int i = 0; i < 4; i++) text.append("Red Bullet List Item " + i + "\n");
 	text.append("\n");

@@ -231,7 +231,7 @@ void generateCSource() {
 String fixDelimiter(String str) {
 	if (delimiter.equals("\n")) return str;
 	int index = 0, length = str.length();
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	while (index != -1) {
 		int start = index;
 		index = str.indexOf('\n', start);
@@ -789,7 +789,7 @@ void generateMainClass() {
 	String fileName = outputDir + mainClassName.replace('.', '/') + ".java";
 	try (FileInputStream is = new FileInputStream(fileName);
 		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is))){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char[] buffer = new char[4096];
 		int read;
 		while ((read = input.read(buffer)) != -1) {
@@ -863,7 +863,7 @@ void generateSelectorEnum() {
 	String fileName = outputDir + selectorEnumName.replace('.', '/') + ".java";
 	try (FileInputStream is = new FileInputStream(fileName);
 		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is))){
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		char[] buffer = new char[4096];
 		int read;
 		while ((read = input.read(buffer)) != -1) {
@@ -1065,11 +1065,11 @@ int indexOfNode(Node node) {
 }
 
 String getKey (Node node) {
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	while (node != null) {
 		if (buffer.length() > 0) buffer.append("_");
 		String name = node.getNodeName();
-		StringBuffer key = new StringBuffer(name);
+		StringBuilder key = new StringBuilder(name);
 		if ("arg".equals(name)) {
 			key.append("-");
 			key.append(indexOfNode(node));
@@ -1480,7 +1480,7 @@ void generateStructNatives() {
 
 String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 	Node returnNode = getReturnNode(method.getChildNodes());
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	buffer.append("public static final native ");
 	if (returnNode != null && isStruct(returnNode)) {
 		buffer.append("void ");

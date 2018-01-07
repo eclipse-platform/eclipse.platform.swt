@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -568,7 +568,7 @@ public class StyledText extends Canvas {
 		
 		if (pageIndex != -1) {
 			final int PageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
-			StringBuffer buffer = new StringBuffer(segment.substring (0, pageIndex));
+			StringBuilder buffer = new StringBuilder(segment.substring (0, pageIndex));
 			buffer.append (page);
 			buffer.append (segment.substring(pageIndex + PageTagLength));
 			segment = buffer.toString();
@@ -785,7 +785,7 @@ public class StyledText extends Canvas {
 	 * Writes the RTF header including font table and color table.
 	 */
 	void writeHeader() {
-		StringBuffer header = new StringBuffer();
+		StringBuilder header = new StringBuilder();
 		FontData fontData = getFont().getFontData()[0];
 		header.append("{\\rtf1\\ansi");
 		// specify code page, necessary for copy to work in bidi 
@@ -991,7 +991,7 @@ public class StyledText extends Canvas {
 	 * has been called. 
 	 */
 	class TextWriter {
-		private StringBuffer buffer;
+		private StringBuilder buffer;
 		private int startOffset;	// offset of first character that will be written
 		private int endOffset;		// offset of last character that will be written. 
 									// 0 based from the beginning of the widget text. 
@@ -1006,7 +1006,7 @@ public class StyledText extends Canvas {
 	 * @param length length of content to write
 	 */
 	public TextWriter(int start, int length) {
-		buffer = new StringBuffer(length);
+		buffer = new StringBuilder(length);
 		startOffset = start;
 		endOffset = start + length;
 	}
@@ -2225,7 +2225,7 @@ public void copy(int clipboardType) {
  * 	has the SWT.SINGLE style.
  */
 String getModelDelimitedText(String text) {
-	StringBuffer convertedText;
+	StringBuilder convertedText;
 	String delimiter = getLineDelimiter();
 	int length = text.length();	
 	int crIndex = 0;
@@ -2235,7 +2235,7 @@ String getModelDelimitedText(String text) {
 	if (length == 0) {
 		return text;
 	}
-	convertedText = new StringBuffer(length);
+	convertedText = new StringBuilder(length);
 	while (i < length) {
 		if (crIndex != -1) {
 			crIndex = text.indexOf(SWT.CR, i);

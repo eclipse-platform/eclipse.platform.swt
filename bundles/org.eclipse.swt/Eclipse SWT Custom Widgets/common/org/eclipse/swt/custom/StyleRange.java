@@ -187,7 +187,7 @@ public Object clone() {
  */
 @Override
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	buffer.append("StyleRange {");
 	buffer.append(start);
 	buffer.append(", ");

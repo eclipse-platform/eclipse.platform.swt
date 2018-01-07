@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,9 @@
 package org.eclipse.swt.internal.image;
 
 
-import org.eclipse.swt.*;
 import java.io.*;
+
+import org.eclipse.swt.*;
 
 class PngChunk extends Object {
 	byte[] reference;
@@ -351,7 +352,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
  * Provided so that subclasses can override and add
  * data to the toString() call.
  */
-void contributeToString(StringBuffer buffer) {}
+void contributeToString(StringBuilder buffer) {}
 
 /**
  * Returns a string containing a concise, human-readable
@@ -361,7 +362,7 @@ void contributeToString(StringBuffer buffer) {}
  */
 @Override
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	buffer.append("{");
 	buffer.append("\n\tLength: ");
 	buffer.append(getLength());

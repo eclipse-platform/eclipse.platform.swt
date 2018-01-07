@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -410,7 +410,7 @@ void presetChooserDialog () {
 			}
 		}
 		if (fileName.length () > 0) {
-			StringBuffer filenameWithExt = new StringBuffer();
+			StringBuilder filenameWithExt = new StringBuilder();
 			filenameWithExt.append (fileName);
 			if ((fileName.lastIndexOf (FILE_EXTENSION_SEPARATOR) == -1) &&
 					(filterExtensions.length != 0)) {  // Filename doesn't contain the extension and user has provided filter extensions
@@ -439,19 +439,19 @@ void presetChooserDialog () {
 			OS.gtk_file_chooser_set_current_name (handle, buffer);
 		}
 	} else {
-		StringBuffer stringBuffer = new StringBuffer();
+		StringBuilder stringBuilder = new StringBuilder();
 		if (filterPath.length () > 0) {
 			if (!uriMode) {
 				/* filename must be a full path */
-				stringBuffer.append(SEPARATOR);
+				stringBuilder.append(SEPARATOR);
 			}
-			stringBuffer.append(filterPath);
-			stringBuffer.append(SEPARATOR);
+			stringBuilder.append(filterPath);
+			stringBuilder.append(SEPARATOR);
 		}
 		if (fileName.length () > 0) {
-			stringBuffer.append(fileName);
+			stringBuilder.append(fileName);
 		}
-		byte [] buffer = Converter.wcsToMbcs (stringBuffer.toString(), true);
+		byte [] buffer = Converter.wcsToMbcs (stringBuilder.toString(), true);
 		if (uriMode) {
 			OS.gtk_file_chooser_set_uri (handle, buffer);
 		} else {

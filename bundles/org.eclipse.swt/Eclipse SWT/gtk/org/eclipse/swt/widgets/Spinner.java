@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -217,7 +217,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	for (int i = 0; i < digits; i++) upper *= 10;
 	String string = String.valueOf ((int) upper);
 	if (digits > 0) {
-		StringBuffer buffer = new StringBuffer ();
+		StringBuilder buffer = new StringBuilder ();
 		buffer.append (string);
 		buffer.append (getDecimalSeparator ());
 		int count = digits - string.length ();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2017 IBM Corporation and others.
+ * Copyright (c) 2009, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -101,7 +101,7 @@ public String toString () {
 
 String toAttributeString(String [] attributes) {
 	if (attributes == null || attributes.length == 0) return "" + attributes;   //$NON-NLS-1$
-	StringBuffer attributeString = new StringBuffer();
+	StringBuilder attributeString = new StringBuilder();
 	for (int i = 0; i < attributes.length; i++) {
 		attributeString.append(attributes[i]);
 		attributeString.append((i % 2 == 0) ? ":" : ";");   //$NON-NLS-1$   //$NON-NLS-2$

@@ -147,7 +147,7 @@ void open(String name) {
 		try (Reader in = new BufferedReader(new InputStreamReader(stream))) {
 
 			char[] readBuffer= new char[2048];
-			StringBuffer buffer= new StringBuffer((int) file.length());
+			StringBuilder buffer= new StringBuilder((int) file.length());
 			int n;
 			while ((n = in.read(readBuffer)) > 0) {
 				buffer.append(readBuffer, 0, n);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -445,7 +445,7 @@ abstract class Tab {
 	/**
 	 * Generates the code needed to produce the example layout.
 	 */
-	StringBuffer generateCode () {
+	StringBuilder generateCode () {
 		/* Make sure all information being entered is stored in the table */
 		resetEditors ();
 
@@ -464,8 +464,8 @@ abstract class Tab {
 			}
 		}
 
-		/* Create StringBuffer containing the code */
-		StringBuffer code = new StringBuffer ();
+		/* Create StringBuilder containing the code */
+		StringBuilder code = new StringBuilder ();
 		code.append ("import org.eclipse.swt.*;\n");
 		code.append ("import org.eclipse.swt.layout.*;\n");
 		code.append ("import org.eclipse.swt.widgets.*;\n");
@@ -500,16 +500,16 @@ abstract class Tab {
 	 * Generates layout specific code for the example layout.
 	 * Subclasses override this method.
 	 */
-	StringBuffer generateLayoutCode () {
-		return new StringBuffer ();
+	StringBuilder generateLayoutCode () {
+		return new StringBuilder ();
 	}
 
 	/**
-	 * Returns the StringBuffer for the code which will
+	 * Returns the StringBuilder for the code which will
 	 * create a child control.
 	 */
-	StringBuffer getChildCode (Control control, int i) {
-		StringBuffer code = new StringBuffer ();
+	StringBuilder getChildCode (Control control, int i) {
+		StringBuilder code = new StringBuilder ();
 		/* Find the type of control */
 		String controlClass = control.getClass().toString ();
 		String controlType = controlClass.substring (controlClass.lastIndexOf ('.') + 1);

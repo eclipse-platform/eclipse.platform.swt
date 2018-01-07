@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -477,7 +477,7 @@ public class StyledText extends Canvas {
 					}
 				}
 			} else {
-				StringBuffer buffer = new StringBuffer("0");
+				StringBuilder buffer = new StringBuilder("0");
 				while ((count /= 10) > 0) buffer.append("0");
 				printLayout.setText(buffer.toString());
 				numberingWidth = printLayout.getBounds().width;
@@ -585,7 +585,7 @@ public class StyledText extends Canvas {
 		int pageIndex = segment.indexOf(StyledTextPrintOptions.PAGE_TAG);
 		if (pageIndex != -1) {
 			int pageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
-			StringBuffer buffer = new StringBuffer(segment.substring (0, pageIndex));
+			StringBuilder buffer = new StringBuilder(segment.substring (0, pageIndex));
 			buffer.append (page);
 			buffer.append (segment.substring(pageIndex + pageTagLength));
 			segment = buffer.toString();
@@ -823,7 +823,7 @@ public class StyledText extends Canvas {
 	 * Writes the RTF header including font table and color table.
 	 */
 	void writeHeader() {
-		StringBuffer header = new StringBuffer();
+		StringBuilder header = new StringBuilder();
 		FontData fontData = getFont().getFontData()[0];
 		header.append("{\\rtf1\\ansi");
 		// specify code page, necessary for copy to work in bidi
@@ -1062,7 +1062,7 @@ public class StyledText extends Canvas {
 	 * </p>
 	 */
 	class TextWriter {
-		private StringBuffer buffer;
+		private StringBuilder buffer;
 		private int startOffset;	// offset of first character that will be written
 		private int endOffset;		// offset of last character that will be written.
 									// 0 based from the beginning of the widget text.
@@ -1076,7 +1076,7 @@ public class StyledText extends Canvas {
 	 * @param length length of content to write
 	 */
 	public TextWriter(int start, int length) {
-		buffer = new StringBuffer(length);
+		buffer = new StringBuilder(length);
 		startOffset = start;
 		endOffset = start + length;
 	}
@@ -1949,7 +1949,7 @@ String getModelDelimitedText(String text) {
 	int crIndex = 0;
 	int lfIndex = 0;
 	int i = 0;
-	StringBuffer convertedText = new StringBuffer(length);
+	StringBuilder convertedText = new StringBuilder(length);
 	String delimiter = getLineDelimiter();
 	while (i < length) {
 		if (crIndex != -1) {
@@ -3628,7 +3628,7 @@ String getBlockSelectionText(String delimiter) {
 	int lastLine = rect.height;
 	int left = rect.x;
 	int right = rect.width;
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
 		int start = getOffsetAtPoint(left, 0, lineIndex, null);
 		int end = getOffsetAtPoint(right, 0, lineIndex, null);
@@ -5642,7 +5642,7 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 			int length = line.length();
 			if (length < maxLength) {
 				int numSpaces = maxLength - length;
-				StringBuffer buffer = new StringBuffer(length + numSpaces);
+				StringBuilder buffer = new StringBuilder(length + numSpaces);
 				buffer.append(line);
 				for (int j = 0; j < numSpaces; j++) buffer.append(' ');
 				lines[i] = buffer.toString();
@@ -8286,7 +8286,7 @@ void sendSelectionEvent() {
 }
 int sendTextEvent(int left, int right, int lineIndex, String text, boolean fillWithSpaces) {
 	int lineWidth = 0, start, end;
-	StringBuffer buffer = new StringBuffer();
+	StringBuilder buffer = new StringBuilder();
 	if (lineIndex < content.getLineCount()) {
 		int[] trailing = new int[1];
 		start = getOffsetAtPoint(left, getLinePixel(lineIndex), trailing, true);

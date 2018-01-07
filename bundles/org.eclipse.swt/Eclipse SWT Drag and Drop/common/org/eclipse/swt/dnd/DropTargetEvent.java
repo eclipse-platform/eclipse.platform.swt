@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.events.TypedEvent;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * The DropTargetEvent contains the event information passed in the methods of the DropTargetListener.
@@ -125,7 +125,7 @@ void updateEvent(DNDEvent e) {
 @Override
 public String toString() {
 	String string = super.toString ();
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(string.substring (0, string.length() - 1)); // remove trailing '}'
 	sb.append(" x="); sb.append(x);
 	sb.append(" y="); sb.append(y);
