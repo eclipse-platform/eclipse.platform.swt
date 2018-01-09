@@ -40,7 +40,6 @@ public class TreeItem extends Item {
 	Font[] cellFont;
 	boolean cached, grayed, isExpanded;
 	static final int EXPANDER_EXTRA_PADDING = 4;
-	int columnSetHeight, columnSetWidth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1528,8 +1527,6 @@ public void setImage (int index, Image image) {
 				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 					OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 					parent.pixbufSizeSet = true;
-					columnSetHeight = iHeight;
-					columnSetWidth = iWidth;
 					parent.pixbufHeight = iHeight;
 					parent.pixbufWidth = iWidth;
 					/*
@@ -1558,8 +1555,8 @@ public void setImage (int index, Image image) {
 			 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
 			 * which results in icons being set to 0. Fix is to compare only positive sizes.
 			 */
-			if (columnSetWidth > Math.max(currentWidth [0], 0) || columnSetHeight > Math.max(currentHeight [0], 0)) {
-				OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, columnSetWidth, columnSetHeight);
+			if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
+				OS.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
 			}
 		}
 	}

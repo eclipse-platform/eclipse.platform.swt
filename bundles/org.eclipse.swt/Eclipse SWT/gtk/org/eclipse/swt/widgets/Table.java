@@ -89,7 +89,7 @@ public class Table extends Composite {
 	int maxWidth = 0;
 	int topIndex;
 	double cachedAdjustment, currentAdjustment;
-
+	int pixbufHeight, pixbufWidth;
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
 	static final int FOREGROUND_COLUMN = 2;
