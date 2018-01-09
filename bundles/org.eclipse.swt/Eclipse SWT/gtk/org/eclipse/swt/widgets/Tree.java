@@ -855,6 +855,15 @@ void createItem (TreeColumn column, int index) {
 					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
 					item.cellFont = temp;
 				}
+				String [] strings = item.strings;
+				if (strings != null) {
+					String [] temp = new String [columnCount];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+					temp [index] = "";
+					item.strings = temp;
+				}
+
 			}
 		}
 	}
