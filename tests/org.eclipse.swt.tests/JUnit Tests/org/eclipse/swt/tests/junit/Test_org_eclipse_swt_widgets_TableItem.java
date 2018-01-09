@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -838,6 +838,32 @@ public void test_setTextILjava_lang_String(){
 	catch (IllegalArgumentException e) {
 	}
 
+
+	/*
+ 	* Test the getText/setText API with a small table that
+ 	* will be extended by a column:
+ 	* First the table has only one column and one row (TableItem) with text.
+	* Then it is extended by one more column.
+	* After this the existing row gets one more text for the new column.
+ 	*/
+
+	makeCleanEnvironment();
+
+	//create first column and set row text
+	new TableColumn(table, SWT.NONE);
+	tableItem = new TableItem (table, SWT.NONE);
+	tableItem.setText(0, TestString);
+	assertEquals(TestString, tableItem.getText(0));
+
+	//create second column and set a second text in the same row
+	new TableColumn(table, SWT.NONE);
+	tableItem.setText(1, TestString);
+	assertEquals(TestString, tableItem.getText(1));
+
+	//create third column and set a third text in the same row
+	new TableColumn(table, SWT.NONE);
+	tableItem.setText(2, TestString);
+	assertEquals(TestString, tableItem.getText(2));
 
 }
 
