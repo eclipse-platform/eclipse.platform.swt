@@ -855,10 +855,10 @@ ImageData _getImageData (NSBitmapImageRep imageRep, AlphaInfo info) {
 	ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 1, srcData);
 	data.bytesPerLine = (int)/*64*/bpr;
 	if (imageRep.hasAlpha() && info.transparentPixel == -1 && info.alpha == -1 && info.alphaData == null) {
-		byte[] alphaD = new byte[(int)/*64*/(width * height)];
+		byte[] alphaD = new byte[(int) (dataSize/4)];
 		int offset = (bitmapFormat & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3, a = 0;
-		for (int i = offset; i < srcData.length; i+= 4) {
-			alphaD[a++] = srcData[i];
+		for (int i = offset; i < srcData.length && a < alphaD.length; i+= 4, a++) {
+			alphaD[a] = srcData[i];
 		}
 		data.alphaData = alphaD;
 	} else {
