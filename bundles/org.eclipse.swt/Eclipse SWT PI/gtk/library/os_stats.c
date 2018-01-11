@@ -633,6 +633,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1box_1set_1spacing",
 	"_1gtk_1button_1clicked",
 	"_1gtk_1button_1new",
+	"_1gtk_1button_1set_1image",
 	"_1gtk_1calendar_1clear_1marks",
 	"_1gtk_1calendar_1get_1date",
 	"_1gtk_1calendar_1mark_1day",

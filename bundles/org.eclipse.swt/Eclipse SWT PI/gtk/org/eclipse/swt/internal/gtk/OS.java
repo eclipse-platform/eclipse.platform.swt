@@ -6180,6 +6180,15 @@ public static final long /*int*/ gtk_button_new() {
 		lock.unlock();
 	}
 }
+public static final native void /*int*/ _gtk_button_set_image(long /*int*/ handle, long /*int*/ image);
+public static final void /*int*/ gtk_button_set_image(long /*int*/ handle, long /*int*/ image) {
+	lock.lock();
+	try {
+		_gtk_button_set_image(handle, image);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _gtk_calendar_new();
 public static final long /*int*/ gtk_calendar_new() {
 	lock.lock();

@@ -643,6 +643,7 @@ typedef enum {
 	_1gtk_1box_1set_1spacing_FUNC,
 	_1gtk_1button_1clicked_FUNC,
 	_1gtk_1button_1new_FUNC,
+	_1gtk_1button_1set_1image_FUNC,
 	_1gtk_1calendar_1clear_1marks_FUNC,
 	_1gtk_1calendar_1get_1date_FUNC,
 	_1gtk_1calendar_1mark_1day_FUNC,

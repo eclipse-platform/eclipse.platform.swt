@@ -7741,6 +7741,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1button_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1button_1set_1image
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1image)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1button_1set_1image_FUNC);
+	gtk_button_set_image(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1button_1set_1image_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1calendar_1clear_1marks
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1clear_1marks)
 	(JNIEnv *env, jclass that, jintLong arg0)

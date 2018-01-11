@@ -347,7 +347,13 @@ void createHandle (int index) {
 			break;
 	}
 	if ((style & SWT.ARROW) != 0) {
-		OS.gtk_container_add (handle, arrowHandle);
+		// Use gtk_button_set_image() on GTK3 to prevent icons from being
+		// trimmed with smaller sized buttons; see bug 528284.
+		if (OS.GTK3) {
+			OS.gtk_button_set_image(handle, arrowHandle);
+		} else {
+			OS.gtk_container_add (handle, arrowHandle);
+		}
 	} else {
 		boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 4);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
