@@ -108,11 +108,13 @@ public class OS extends C {
 
 	// Bug 519124
 	static {
-		String swt_lib_versions = getEnvironmentalVariable ("SWT_LIB_VERSIONS"); // Note, this is read in multiple places.
+		String swt_lib_versions = getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
 			System.out.println("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
 		}
 	}
+
+	public static final String SWT_LIB_VERSIONS = "SWT_LIB_VERSIONS";
 
 	public static String getEnvironmentalVariable (String envVarName) {
 		String envVarValue = null;
@@ -573,12 +575,17 @@ public class OS extends C {
 	/**
 	 * DBus Data types as defined by:
 	 * https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
+	 * If using these, make sure they're properly handled in all GDBus code. Only some of these are supported by some GDBus classes.
 	 * @category gdbus */
 	public static final String DBUS_TYPE_BYTE = "y"; // 8 bit, unsigned int.
 	/** @category gdbus */
 	public static final String DBUS_TYPE_BOOLEAN = "b";
 	/** @category gdbus */
+	public static final String DBUS_TYPE_ARRAY = "a";
+	/** @category gdbus */
 	public static final String DBUS_TYPE_STRING = "s";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_STRING_ARRAY = "as";
 	/** @category gdbus */
 	public static final String DBUS_TYPE_DOUBLE = "d";
 	/** @category gdbus */
@@ -596,6 +603,8 @@ public class OS extends C {
 	public static final byte[] G_VARIANT_TYPE_BYTE = ascii(DBUS_TYPE_BYTE);
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_BOOLEAN = ascii(DBUS_TYPE_BOOLEAN);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_STRING_ARRAY = ascii(DBUS_TYPE_STRING_ARRAY);
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_STRING = ascii(DBUS_TYPE_STRING);
 	/** @category gdbus */

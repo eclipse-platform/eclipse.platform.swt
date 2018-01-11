@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -29,7 +29,7 @@ public class WebKitGTK extends C {
 	 * Internal version of "Webkit glue code", used mainly during webkit2 port.
 	 * Used to make it easier to support users on bugzilla. Updated by hand.
 	 */
-	public static final String swtWebkitGlueCodeVersion = " SWT Glue code version: 53.0";
+	public static final String swtWebkitGlueCodeVersion = " SWT Glue code version: 54.0";
 	public static final String swtWebkitGlueCodeVersionInfo = " info: +BrowserFunction/GDBus, +WebkitExtension Folder versioning, +WebKitExtension OSGI support, +setUrl(..postData..), -setCookie(), -getCookie +mouseDown/Focus";
 
 
@@ -55,7 +55,7 @@ public class WebKitGTK extends C {
 			WEBKIT1 = !WEBKIT2;
 		}
 
-		String swt_lib_versions = OS.getEnvironmentalVariable ("SWT_LIB_VERSIONS"); // Note, this is read in multiple places.
+		String swt_lib_versions = OS.getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
 			if (WEBKIT1) {
 				System.out.println("SWT_LIB  Webkit1   Webkitgtk:"+ webkit_major_version() +"."+ webkit_minor_version() + "." + webkit_micro_version() + "  (webkitgtk < 2.5 is Webkit1)");

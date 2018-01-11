@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.GDBus.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -1103,6 +1104,31 @@ void createDisplay (DeviceData data) {
 	keysChangedProc = keysChangedCallback.getAddress ();
 	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.g_signal_connect (OS.gdk_keymap_get_default (), OS.keys_changed, keysChangedProc, 0);
+
+
+	{ // GDBus
+
+		// Handle files passed  to Eclipse via GDBus. (e.g from Equinox launcher).
+		// For example, this call can be reached via:
+		// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','/tmp/there']"
+		// In a child eclipse, this will open the files in a new editor.
+		// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
+		GDBusMethod fileOpenMethod = new GDBusMethod(
+				"FileOpen",
+				new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"FileNameArray"}},
+				new String [0][0],
+				(args) -> {
+					String[] fileNames = (String[]) args[0]; // Arg 1 is an arraay of strings.
+					for (int i = 0; i < fileNames.length; i++) {
+						Event event = new Event ();
+						event.text = fileNames[i];
+						sendEvent (SWT.OpenDocument, event);
+					}
+					return null;
+				});
+		GDBusMethod[] methods = {fileOpenMethod};
+		GDBus.init(methods);
+	}
 }
 
 /**
@@ -5686,6 +5712,9 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 			settingsChanged = true;
 			break;
 		case PROPERTY_NOTIFY:
+
+			// Bug 528414 This whole mechanism is to be removed.
+			// Files passed by changing a window property. Uses X, which doesn't work on wayland.
 			GdkEventProperty gdkEvent = new GdkEventProperty ();
 			OS.memmove (gdkEvent, arg1);
 			if (gdkEvent.type == OS.GDK_PROPERTY_NOTIFY) {
