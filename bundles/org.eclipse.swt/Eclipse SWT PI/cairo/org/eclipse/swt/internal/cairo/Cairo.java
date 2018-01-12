@@ -33,6 +33,7 @@ public class Cairo extends Platform {
 	public static final int CAIRO_ANTIALIAS_NONE = 1;
 	public static final int CAIRO_ANTIALIAS_GRAY = 2;
 	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;
+	public static final int CAIRO_ANTIALIAS_BEST = 6;
 	public static final int CAIRO_CONTENT_COLOR = 0x1000;
 	public static final int CAIRO_CONTENT_ALPHA = 0x2000;
 	public static final int CAIRO_CONTENT_COLOR_ALPHA = 0x3000;

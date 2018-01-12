@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -898,6 +898,9 @@ void drawLineInPixels(int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
 	long /*int*/ cairo = data.cairo;
 	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+	if (Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
+		Cairo.cairo_set_antialias(cairo, Cairo.CAIRO_ANTIALIAS_BEST);
+	}
 	Cairo.cairo_move_to(cairo, x1 + xOffset, y1 + yOffset);
 	Cairo.cairo_line_to(cairo, x2 + xOffset, y2 + yOffset);
 	Cairo.cairo_stroke(cairo);
