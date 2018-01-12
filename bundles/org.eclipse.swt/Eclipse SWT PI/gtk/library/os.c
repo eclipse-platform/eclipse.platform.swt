@@ -6905,7 +6905,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1process_1all_1updates)
 	(JNIEnv *env, jclass that)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1process_1all_1updates_FUNC);
+/*
 	gdk_window_process_all_updates();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_process_all_updates)
+		if (fp) {
+			((void (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1process_1all_1updates_FUNC);
 }
 #endif
@@ -6915,7 +6923,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1process_1updates)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1process_1updates_FUNC);
+/*
 	gdk_window_process_updates((GdkWindow *)arg0, (gboolean)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_process_updates)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, gboolean))fp)((GdkWindow *)arg0, (gboolean)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1process_1updates_FUNC);
 }
 #endif

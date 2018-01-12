@@ -5657,6 +5657,9 @@ public static final void gdk_window_lower(long /*int*/ window) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
 public static final native void _gdk_window_process_all_updates();
 public static final void gdk_window_process_all_updates() {
 	lock.lock();
@@ -5667,6 +5670,7 @@ public static final void gdk_window_process_all_updates() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param update_children cast=(gboolean)
  */

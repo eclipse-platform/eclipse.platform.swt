@@ -193,6 +193,8 @@
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
+#define gdk_window_process_all_updates_LIB LIB_GDK
+#define gdk_window_process_updates_LIB LIB_GDK
 #define gdk_window_get_device_position_LIB LIB_GDK
 #define gdk_window_get_pointer_LIB LIB_GDK
 #define gdk_window_at_pointer_LIB LIB_GDK
