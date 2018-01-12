@@ -1106,16 +1106,24 @@ void createDisplay (DeviceData data) {
 	OS.g_signal_connect (OS.gdk_keymap_get_default (), OS.keys_changed, keysChangedProc, 0);
 
 
-	{ // GDBus
 
-		// Handle files passed  to Eclipse via GDBus. (e.g from Equinox launcher).
-		// For example, this call can be reached via:
+	// Handle gdbus on 'org.eclipse.swt' DBus session.
+	// E.g equinox launcher passes files to SWT via gdbus. "./eclipse myFile".
+	//
+	// Only one SWT instance can hold the unique and well-known name at one time, so we have to be mindful
+	// of the case where an SWT app could steal the well-known name and make the equinox launcher confused.
+	// We only initiate GDBus if system property is set.
+	//
+	// To force enable this, in a run-configuration, under arguments, append to the "VM arguments" : -Dswt.dbus.init.
+	// For equinox launcher, See eclipseGtk.c:argVM_JAVA
+	if (System.getProperty("swt.dbus.init") != null) {
+		// For example, fileOpenMethod call can be reached via:
 		// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','/tmp/there']"
 		// In a child eclipse, this will open the files in a new editor.
 		// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
 		GDBusMethod fileOpenMethod = new GDBusMethod(
 				"FileOpen",
-				new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"FileNameArray"}},
+				new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"FileNameArray"}}, // 'FileNameArray' is only descriptive name for arg for human use from gdbus cmdline.
 				new String [0][0],
 				(args) -> {
 					String[] fileNames = (String[]) args[0]; // Arg 1 is an arraay of strings.

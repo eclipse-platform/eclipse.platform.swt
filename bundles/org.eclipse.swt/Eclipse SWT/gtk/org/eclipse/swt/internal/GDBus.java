@@ -81,6 +81,13 @@ public class GDBus {
 		}
 	}
 
+	/**
+	 * Instantiate GDBus for use by SWT.
+	 * Note, a new SWT instance that runs this "Steals" org.eclipse.swt session bus,
+	 * but upon termination it returns the session back to the previous owner.
+	 *
+	 * @param methods GDBus methods that we should handle.
+	 */
 	public static void init (GDBusMethod[] methods) {
 		if (!initialized)
 			initialized = true;
@@ -133,9 +140,9 @@ public class GDBus {
 		handleMethod = new Callback (GDBus.class, "handleMethod", 8); //$NON-NLS-1$
 		if (handleMethod.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		String swt_lib_versions = OS.getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places. //leotask move string to a constant in OS.java
+		String swt_lib_versions = OS.getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
-			System.out.println("SWT_LIB GDbus implementation v1.");
+			System.out.println("SWT_LIB GDbus firing up. Implementation v1.1");
 		}
 	}
 
@@ -209,7 +216,8 @@ public class GDBus {
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
 	private static long /*int*/ onNameLost (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
-		System.err.println("SWT GDBus.java: Lost GDBus name. Maybe stolen?");
+		// Currently not used, but can be used if losing the gdbus name should trigger something.
+		// As a note, if another instance steals the name, upon it's terminate the session is returned to it's former owner.
 		return 0;
 	}
 
