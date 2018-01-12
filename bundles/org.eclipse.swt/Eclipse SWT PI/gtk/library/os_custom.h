@@ -102,6 +102,7 @@
 #define gtk_image_menu_item_set_image_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_image_menu_item_new_with_label_LIB LIB_GTK
+#define gtk_im_multicontext_append_menuitems_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK

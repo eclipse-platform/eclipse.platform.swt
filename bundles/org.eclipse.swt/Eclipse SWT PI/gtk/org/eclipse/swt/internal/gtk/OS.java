@@ -8802,6 +8802,7 @@ public static final void gtk_im_context_set_cursor_location(long /*int*/ context
 	}
 }
 /**
+ * @method flags=dynamic
  * @param context cast=(GtkIMMulticontext *)
  * @param menushell cast=(GtkMenuShell *)
  */
