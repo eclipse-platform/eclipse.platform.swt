@@ -33,6 +33,7 @@
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
+#define LIB_GLIB "libglib-2.0.a(libglib-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
 #elif _WIN32
@@ -55,6 +56,7 @@
 #define LIB_GDK "libgdk-x11-2.0.so.0"
 #endif
 #define LIB_GTHREAD "libgthread-2.0.so.0"
+#define LIB_GLIB "libglib-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
 #endif
@@ -305,8 +307,8 @@
 #define gtk_drag_set_icon_surface_LIB LIB_GTK
 #define gtk_accel_label_set_accel_LIB LIB_GTK
 #define gtk_drag_begin_with_coordinates_LIB LIB_GTK
-#define g_bytes_new_LIB LIB_GTK
-#define g_bytes_unref_LIB LIB_GTK
+#define g_bytes_new_LIB LIB_GLIB
+#define g_bytes_unref_LIB LIB_GLIB
 
 #ifndef g_thread_supported
 #define g_thread_supported() 0
