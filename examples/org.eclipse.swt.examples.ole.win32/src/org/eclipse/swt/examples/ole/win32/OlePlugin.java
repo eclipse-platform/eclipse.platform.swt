@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,7 +55,8 @@ public class OlePlugin extends AbstractUIPlugin {
 		plugin = this;
 	}
 	
-    public void start(BundleContext context) throws Exception {
+    @Override
+	public void start(BundleContext context) throws Exception {
         super.start(context);
         resourceBundle = Platform.getResourceBundle(getBundle());
     }
@@ -63,6 +64,7 @@ public class OlePlugin extends AbstractUIPlugin {
 	/**
 	 * Clean up
 	 */
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		freeResources();
 		super.stop(context);

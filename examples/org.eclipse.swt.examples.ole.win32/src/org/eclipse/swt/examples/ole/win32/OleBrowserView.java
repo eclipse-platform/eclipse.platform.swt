@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,6 +60,7 @@ public class OleBrowserView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		displayArea = new Composite(parent, SWT.NONE);
 
@@ -76,6 +77,7 @@ public class OleBrowserView extends ViewPart {
 	/**
 	 * Cleanup
 	 */
+	@Override
 	public void dispose() {
 		if (activated) {
 			webControlSite.deactivateInPlaceClient();
@@ -91,6 +93,7 @@ public class OleBrowserView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus()  {
 		webUrl.setFocus();
 	}
@@ -111,11 +114,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandBackward.setText(OlePlugin.getResourceString("browser.Back.text"));
 		webCommandBackward.setImage(OlePlugin.images[OlePlugin.biBack]);
 		webCommandBackward.setEnabled(false);
-		webCommandBackward.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.GoBack();
-			}
+		webCommandBackward.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.GoBack();
 		});
 	
 		// Add a button to navigate forward through previously visited web sites
@@ -124,11 +125,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandForward.setText(OlePlugin.getResourceString("browser.Forward.text"));
 		webCommandForward.setImage(OlePlugin.images[OlePlugin.biForward]);
 		webCommandForward.setEnabled(false);
-		webCommandForward.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.GoForward();
-			}
+		webCommandForward.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.GoForward();
 		});
 
 		// Add a separator
@@ -140,11 +139,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandHome.setText(OlePlugin.getResourceString("browser.Home.text"));
 		webCommandHome.setImage(OlePlugin.images[OlePlugin.biHome]);
 		webCommandHome.setEnabled(false);
-		webCommandHome.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.GoHome();
-			}
+		webCommandHome.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.GoHome();
 		});
 
 		// Add a button to abort web page loading
@@ -153,11 +150,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandStop.setText(OlePlugin.getResourceString("browser.Stop.text"));
 		webCommandStop.setImage(OlePlugin.images[OlePlugin.biStop]);
 		webCommandStop.setEnabled(false);
-		webCommandStop.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.Stop();
-			}
+		webCommandStop.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.Stop();
 		});
 
 		// Add a button to refresh the current web page
@@ -166,11 +161,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandRefresh.setText(OlePlugin.getResourceString("browser.Refresh.text"));
 		webCommandRefresh.setImage(OlePlugin.images[OlePlugin.biRefresh]);
 		webCommandRefresh.setEnabled(false);
-		webCommandRefresh.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.Refresh();
-			}
+		webCommandRefresh.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.Refresh();
 		});
 
 		// Add a separator
@@ -182,11 +175,9 @@ public class OleBrowserView extends ViewPart {
 		webCommandSearch.setText(OlePlugin.getResourceString("browser.Search.text"));
 		webCommandSearch.setImage(OlePlugin.images[OlePlugin.biSearch]);
 		webCommandSearch.setEnabled(false);
-		webCommandSearch.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				if (webBrowser == null) return;
-				webBrowser.GoSearch();
-			}
+		webCommandSearch.addListener(SWT.Selection, e -> {
+			if (webBrowser == null) return;
+			webBrowser.GoSearch();
 		});
 
 		// Add a text area for Users to enter a url
@@ -208,11 +199,8 @@ public class OleBrowserView extends ViewPart {
 		webUrl.setFont(OlePlugin.browserFont);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
 		webUrl.setLayoutData(gridData);
-		webUrl.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				webNavigateButton.getShell().setDefaultButton(webNavigateButton);
-			}
-		});
+		webUrl.addFocusListener(FocusListener
+				.focusGainedAdapter(e -> webNavigateButton.getShell().setDefaultButton(webNavigateButton)));
 	
 		// Add a button to navigate to the web site specified in the Text area defined above
 		webNavigateButton = new Button(addressBar, SWT.PUSH);
@@ -220,11 +208,9 @@ public class OleBrowserView extends ViewPart {
 		webNavigateButton.setLayoutData(gridData);
 		webNavigateButton.setText(OlePlugin.getResourceString("browser.Go.text"));
 		webNavigateButton.setFont(OlePlugin.browserFont);
-		webNavigateButton.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				if (webBrowser == null) return;
-				webBrowser.Navigate(webUrl.getText());
-			}
+		webNavigateButton.addListener(SWT.Selection, event -> {
+			if (webBrowser == null) return;
+			webBrowser.Navigate(webUrl.getText());
 		});
 	}
 
@@ -278,88 +264,80 @@ public class OleBrowserView extends ViewPart {
 		}
 
 		// Respond to ProgressChange events by updating the Progress bar
-		webControlSite.addEventListener(OleWebBrowser.ProgressChange, new OleListener() {
-			public void handleEvent(OleEvent event) {
-				Variant progress = event.arguments[0];
-				Variant maxProgress = event.arguments[1];
-				if (progress == null || maxProgress == null)
-					return;
-				webProgress.setMaximum(maxProgress.getInt());
-				webProgress.setSelection(progress.getInt());
-			}
+		webControlSite.addEventListener(OleWebBrowser.ProgressChange, event -> {
+			Variant progress = event.arguments[0];
+			Variant maxProgress = event.arguments[1];
+			if (progress == null || maxProgress == null)
+				return;
+			webProgress.setMaximum(maxProgress.getInt());
+			webProgress.setSelection(progress.getInt());
 		});
 		
 		// Respond to StatusTextChange events by updating the Status Text label
-		webControlSite.addEventListener(OleWebBrowser.StatusTextChange, new OleListener() {
-			public void handleEvent(OleEvent event) {
-				Variant statusText = event.arguments[0];
-				if (statusText == null)	return;
-				String text = statusText.getString();
-				if (text != null)
-					webStatus.setText(text);
-			}
+		webControlSite.addEventListener(OleWebBrowser.StatusTextChange, event -> {
+			Variant statusText = event.arguments[0];
+			if (statusText == null)	return;
+			String text = statusText.getString();
+			if (text != null)
+				webStatus.setText(text);
 		});
 		
 		// Listen for changes to the ready state and print out the current state 
-		webControlSite.addPropertyListener(OleWebBrowser.DISPID_READYSTATE, new OleListener() {
-			public void handleEvent(OleEvent event) {
-				if (event.detail == OLE.PROPERTY_CHANGING) return;
-				int state = webBrowser.getReadyState();
-				switch (state) {
-					case OleWebBrowser.READYSTATE_UNINITIALIZED:
-						webStatus.setText(
-							OlePlugin.getResourceString("browser.State.Uninitialized.text"));
-						webCommandBackward.setEnabled(false);
-						webCommandForward.setEnabled(false);
-						webCommandHome.setEnabled(false);
-						webCommandRefresh.setEnabled(false);
-						webCommandStop.setEnabled(false);
-						webCommandSearch.setEnabled(false);
-						break;
-					case OleWebBrowser.READYSTATE_LOADING:
-						webStatus.setText(
-							OlePlugin.getResourceString("browser.State.Loading.text"));
-						webCommandHome.setEnabled(true);
-						webCommandRefresh.setEnabled(true);
-						webCommandStop.setEnabled(true);
-						webCommandSearch.setEnabled(true);
-						break;
-					case OleWebBrowser.READYSTATE_LOADED:
-						webStatus.setText(
-							OlePlugin.getResourceString("browser.State.Loaded.text"));
-						webCommandStop.setEnabled(true);
-						break;
-					case OleWebBrowser.READYSTATE_INTERACTIVE:
-						webStatus.setText(
-							OlePlugin.getResourceString("browser.State.Interactive.text"));
-						webCommandStop.setEnabled(true);
-						break;
-					case OleWebBrowser.READYSTATE_COMPLETE:
-						webStatus.setText(
-							OlePlugin.getResourceString("browser.State.Complete.text"));
-						webCommandStop.setEnabled(false);
-						break;
-				}
+		webControlSite.addPropertyListener(OleWebBrowser.DISPID_READYSTATE, event -> {
+			if (event.detail == OLE.PROPERTY_CHANGING) return;
+			int state = webBrowser.getReadyState();
+			switch (state) {
+				case OleWebBrowser.READYSTATE_UNINITIALIZED:
+					webStatus.setText(
+						OlePlugin.getResourceString("browser.State.Uninitialized.text"));
+					webCommandBackward.setEnabled(false);
+					webCommandForward.setEnabled(false);
+					webCommandHome.setEnabled(false);
+					webCommandRefresh.setEnabled(false);
+					webCommandStop.setEnabled(false);
+					webCommandSearch.setEnabled(false);
+					break;
+				case OleWebBrowser.READYSTATE_LOADING:
+					webStatus.setText(
+						OlePlugin.getResourceString("browser.State.Loading.text"));
+					webCommandHome.setEnabled(true);
+					webCommandRefresh.setEnabled(true);
+					webCommandStop.setEnabled(true);
+					webCommandSearch.setEnabled(true);
+					break;
+				case OleWebBrowser.READYSTATE_LOADED:
+					webStatus.setText(
+						OlePlugin.getResourceString("browser.State.Loaded.text"));
+					webCommandStop.setEnabled(true);
+					break;
+				case OleWebBrowser.READYSTATE_INTERACTIVE:
+					webStatus.setText(
+						OlePlugin.getResourceString("browser.State.Interactive.text"));
+					webCommandStop.setEnabled(true);
+					break;
+				case OleWebBrowser.READYSTATE_COMPLETE:
+					webStatus.setText(
+						OlePlugin.getResourceString("browser.State.Complete.text"));
+					webCommandStop.setEnabled(false);
+					break;
 			}
 		});
 
 		// Listen for changes to the active command states
-		webControlSite.addEventListener(OleWebBrowser.CommandStateChange, new OleListener() {
-			public void handleEvent(OleEvent event) {
-				if (event.type != OleWebBrowser.CommandStateChange) return;
-				final int commandID =
-					(event.arguments[0] != null) ? event.arguments[0].getInt() : 0;
-				final boolean commandEnabled =
-					(event.arguments[1] != null) ? event.arguments[1].getBoolean() : false;
-				
-				switch (commandID) {
-					case OleWebBrowser.CSC_NAVIGATEBACK:
-					 	webCommandBackward.setEnabled(commandEnabled);
-					 	break;
-					case OleWebBrowser.CSC_NAVIGATEFORWARD:
-					 	webCommandForward.setEnabled(commandEnabled);
-						break;
-				}
+		webControlSite.addEventListener(OleWebBrowser.CommandStateChange, event -> {
+			if (event.type != OleWebBrowser.CommandStateChange) return;
+			final int commandID =
+				(event.arguments[0] != null) ? event.arguments[0].getInt() : 0;
+			final boolean commandEnabled =
+				(event.arguments[1] != null) ? event.arguments[1].getBoolean() : false;
+			
+			switch (commandID) {
+				case OleWebBrowser.CSC_NAVIGATEBACK:
+				 	webCommandBackward.setEnabled(commandEnabled);
+				 	break;
+				case OleWebBrowser.CSC_NAVIGATEFORWARD:
+				 	webCommandForward.setEnabled(commandEnabled);
+					break;
 			}
 		});
 

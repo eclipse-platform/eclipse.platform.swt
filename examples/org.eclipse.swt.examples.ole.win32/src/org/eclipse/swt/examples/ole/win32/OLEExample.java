@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,11 +57,7 @@ public class OLEExample {
 		
 		MenuItem menuFileExit = new MenuItem(menuFile, SWT.CASCADE);
 		menuFileExit.setText("Exit");
-		menuFileExit.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				shell.dispose();
-			}
-		});
+		menuFileExit.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> shell.dispose()));
 	}
 
 	OleClientSite createSite(OleFrame frame, String progID) {
@@ -259,54 +255,43 @@ public class OLEExample {
 
 		Button excelButton = new Button(buttons, SWT.RADIO);
 		excelButton.setText("New Excel Sheet");
-		excelButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.widget).getSelection())
-					newClientSite("Excel.Sheet");
-			}
-		});
+		excelButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (((Button) e.widget).getSelection())
+				newClientSite("Excel.Sheet");
+		}));
 		Button mediaPlayerButton = new Button(buttons, SWT.RADIO);
 		mediaPlayerButton.setText("New MPlayer");
-		mediaPlayerButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.widget).getSelection())
-					newClientSite("MPlayer");
-			}
-		});
+		mediaPlayerButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (((Button) e.widget).getSelection())
+				newClientSite("MPlayer");
+		}));
 		Button powerPointButton = new Button(buttons, SWT.RADIO);
 		powerPointButton.setText("New PowerPoint Slide");
-		powerPointButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.widget).getSelection())
-					newClientSite("PowerPoint.Slide");
-			}
-		});
+		powerPointButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (((Button) e.widget).getSelection())
+				newClientSite("PowerPoint.Slide");
+		}));
 		Button wordButton = new Button(buttons, SWT.RADIO);
 		wordButton.setText("New Word Document");
-		wordButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.widget).getSelection())
-					newClientSite("Word.Document");
-			}
-		});
+		wordButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (((Button) e.widget).getSelection())
+				newClientSite("Word.Document");
+		}));
 		new Label(buttons, SWT.NONE);
 		Button openButton = new Button(buttons, SWT.RADIO);
 		openButton.setText("Open file...");
-		openButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.widget).getSelection())
-					fileOpen();
-			}
-		});
+		openButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			if (((Button) e.widget).getSelection())
+				fileOpen();
+		}));
 		new Label(buttons, SWT.NONE);
 		closeButton = new Button(buttons, SWT.RADIO);
 		closeButton.setText("Close file");
-		closeButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		closeButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e ->{
 				if (((Button) e.widget).getSelection())
 					disposeClient();
 			}
-		});	
+		));	
 		closeButton.setSelection(true);
 		
 		oleFrame = new OleFrame(displayArea, SWT.NONE);
