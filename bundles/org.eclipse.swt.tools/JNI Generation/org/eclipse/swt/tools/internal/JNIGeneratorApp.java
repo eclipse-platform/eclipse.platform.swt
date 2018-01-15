@@ -296,6 +296,9 @@ String[] getClassNames() {
 			File file = new File(path + File.separator + pkgPath);
 			if (file.exists()) {
 				String[] entries = file.list();
+				if(entries == null) {
+					entries = new String[0];
+				}
 				for (int i = 0; i < entries.length; i++) {
 					String entry = entries[i];
 					File f = new File(file, entry);
@@ -348,6 +351,9 @@ JNIClass[] getASTClasses() {
 	String packageName = getPackageName();
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
 	File[] files = dir.listFiles();
+	if (files == null) {
+		files = new File[0];
+	}
 	for (int i = 0; i < files.length; i++) {
 		File file = files[i];
 		try {

@@ -96,6 +96,9 @@ String loadFile (File file) {
 
 void loadDirectory(File file) {
 	String[] entries = file.list();
+	if (entries == null) {
+		entries = new String[0];
+	}
 	for (int i = 0; i < entries.length; i++) {
 		String entry = entries[i];
 		File f = new File(file, entry);

@@ -936,6 +936,9 @@ public String[] getXmls() {
 			String packageName = getPackageName();
 			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
 			File[] files = folder.listFiles((FilenameFilter) (dir, name) -> name.endsWith("Full.bridgesupport"));
+			if(files == null) {
+				files = new File[0];
+			}
 			for (int i = 0; i < files.length; i++) {
 				array.add(files[i].getAbsolutePath());
 			}
