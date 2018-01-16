@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -107,7 +107,7 @@ class ShellTab extends Tab {
 		Button close = new Button(currentShell, SWT.PUSH);
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
-		close.addListener(SWT.Selection, event1 -> currentShell.dispose());
+		close.addListener(SWT.Selection, event1 -> {currentShell.dispose(); shellCount--;});
 
 		/* Set the size, title, and image, and open the shell */
 		currentShell.setSize (300, 100);
