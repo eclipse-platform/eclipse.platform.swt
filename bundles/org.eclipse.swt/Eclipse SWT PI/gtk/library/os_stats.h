@@ -398,6 +398,7 @@ typedef enum {
 	_1g_1variant_1get_1byte_FUNC,
 	_1g_1variant_1get_1child_1value_FUNC,
 	_1g_1variant_1get_1double_FUNC,
+	_1g_1variant_1get_1int32_FUNC,
 	_1g_1variant_1get_1string_FUNC,
 	_1g_1variant_1get_1type_FUNC,
 	_1g_1variant_1get_1type_1string_FUNC,

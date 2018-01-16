@@ -1114,27 +1114,29 @@ void createDisplay (DeviceData data) {
 	// of the case where an SWT app could steal the well-known name and make the equinox launcher confused.
 	// We only initiate GDBus if system property is set.
 	//
-	// To force enable this, in a run-configuration, under arguments, append to the "VM arguments" : -Dswt.dbus.init.
+	// To force enable this, in a run-configuration, under arguments, append to the "VM arguments" : -Dswt.dbus.init
 	// For equinox launcher, See eclipseGtk.c:argVM_JAVA
-	if (System.getProperty("swt.dbus.init") != null) {
-		// For example, fileOpenMethod call can be reached via:
-		// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','/tmp/there']"
-		// In a child eclipse, this will open the files in a new editor.
-		// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
-		GDBusMethod fileOpenMethod = new GDBusMethod(
-				"FileOpen",
-				new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"FileNameArray"}}, // 'FileNameArray' is only descriptive name for arg for human use from gdbus cmdline.
-				new String [0][0],
-				(args) -> {
-					String[] fileNames = (String[]) args[0]; // Arg 1 is an arraay of strings.
-					for (int i = 0; i < fileNames.length; i++) {
-						Event event = new Event ();
-						event.text = fileNames[i];
-						sendEvent (SWT.OpenDocument, event);
-					}
-					return null;
-				});
-		GDBusMethod[] methods = {fileOpenMethod};
+	if (System.getProperty(OS.GDBUS_SYSTEM_PROPERTY) != null) {
+		GDBusMethod[] methods = {
+				new GDBusMethod(
+						// FileOpen call can be reached via:
+						// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','/tmp/there']"
+						// In a child eclipse, this will open the files in a new editor.
+						// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
+						"FileOpen",
+						new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"A String array containing file paths for OpenDocument signal"}},
+						new String [0][0],
+						(args) -> {
+							// Dev note: GDBus Arguments are typically packaged into an Object of sort. First step is normally to un-pack them.
+							String[] fileNames = (String[]) args[0]; // Arg 1 is an array of strings.
+							for (int i = 0; i < fileNames.length; i++) {
+								Event event = new Event ();
+								event.text = fileNames[i];
+								sendEvent (SWT.OpenDocument, event);
+							}
+							return null;
+						})
+				};
 		GDBus.init(methods);
 	}
 }

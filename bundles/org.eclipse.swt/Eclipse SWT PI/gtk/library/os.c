@@ -3858,6 +3858,18 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1g_1variant_1get_1double)
 }
 #endif
 
+#ifndef NO__1g_1variant_1get_1int32
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1variant_1get_1int32)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1get_1int32_FUNC);
+	rc = (jint)g_variant_get_int32((GVariant *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1get_1int32_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1variant_1get_1string
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1get_1string)
 	(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1)

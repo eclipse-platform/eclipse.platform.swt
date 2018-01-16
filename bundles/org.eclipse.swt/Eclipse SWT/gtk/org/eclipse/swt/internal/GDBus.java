@@ -37,10 +37,14 @@ import org.eclipse.swt.internal.gtk.*;
  *    Meaning if you don't like org.eclipse.swt, you can add more session names.
  *  - This implementation is only a small subset of GDBus.
  *    E.g not all types are translated and not functionality implemented. Add them as you need them.
+ *  - At time of writing (v 1.4), only handles incoming gdbus calls. But could be easily extended to
+ *    handle outgoing gdbus calls.
  *
  * @category gdbus
  */
 public class GDBus {
+
+	final static String SWT_GDBUS_VERSION_INFO = "SWT_LIB GDbus firing up. Implementation v1.4";
 
 	public static class GDBusMethod {
 		final private String name;
@@ -51,9 +55,51 @@ public class GDBus {
 		 * Create a method that GDBus will listen to.
 		 *
 		 * @param name of the method. It will be part of 'org.eclipse.swt.NAME'
-		 * @param inputArgs   2D array pair of Strings :  (DBUS_TYPE_*, argument_name). Where argument_name is only so that it's seen by command line by user.
+		 * @param inputArgs   2D array pair of Strings in the format of:  (DBUS_TYPE_*, argument_name).
+		 *                    Where argument_name is only so that it's seen by command line by user.
 		 * @param outputArgs  Same as inputArgs, but for returning values.
 		 * @param userFunction  A Function<Object[],Object[]>, that you would like to run when the user calls the method over gdbus.
+		 *                      Note, input argument(s) are provided as an Object[] array. You need to cast items manually.
+		 *                      Output must always be an Object[] array or null. (E.g Object[] with only 1 element in it).
+		 *
+		 * Here are examples that you can base your methods off of:
+		 *      // Multiple input types and multiple output types.
+		 *      // From command line, it can be called like this:
+		 *      //   gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.typeTest true "world" 1234
+		 *      // The call will return a tuple (struct) like: (true, 'world', 5678)
+ 		 * 		GDBusMethod typeTest = new GDBusMethod(
+		 * 		"typeTest",
+		 * 		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "boolean Test Val"}, {OS.DBUS_TYPE_STRING, "string Test Val"}, {OS.DBUS_TYPE_INT32, "int Test Val"}},
+		 * 		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "boolean Response"}, {OS.DBUS_TYPE_STRING, "string Test Response"}, {OS.DBUS_TYPE_INT32, "int Test Response"}},
+		 * 		(args) -> {
+		 * 			System.out.println(args[0] + " " + args[1] + " " + args[2]); // A
+		 * 			return new Object[] {new Boolean(true), new String("world"), new Integer(5678)} ;
+		 * 		});
+		 *
+		 * 		// Single input and single output. Observe input is an array with one item. Output is an array with one item.
+		 * 		// It can be called from cmd via:
+		 * 		//    gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.singleValueTest 123
+		 * 		// The return is a tuple with one element: (456,)
+		 * 		GDBusMethod singleValTest = new GDBusMethod(
+		 * 		"singleValueTest",
+		 * 		new String[][] {{OS.DBUS_TYPE_INT32, "int val"}},
+		 * 		new String[][] {{OS.DBUS_TYPE_INT32, "int ret"}},
+		 * 		(arg) -> {
+		 * 			System.out.println("Input int: " + arg[0]);
+		 * 			return new Object[] {(Integer) 456};
+		 * 		});
+		 *
+		 *      // A simple method for clients to check if org.eclipse.swt is up and running. (getting/parsing interface xml is too tedious).
+		 *		// Reached via: gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.PingResponse
+		 *		// return is: (true,)    #i.e (b)
+		 * 		new GDBusMethod(
+		 *		"PingResponse",
+		 *		new String [0][0], // No input args.
+		 *		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "Ping boolean response"}}, // Single boolean res
+		 *		(args) -> {
+		 *			return new Object[] {true}; // You should 'g_variant_unref(result)' on client side.
+		 *		})
+		 *
 		 */
 		public GDBusMethod(String name, String [][] inputArgs, String [][] outputArgs, Function<Object[], Object[]> userFunction) {
 			this.name = name;
@@ -142,7 +188,7 @@ public class GDBus {
 
 		String swt_lib_versions = OS.getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
-			System.out.println("SWT_LIB GDbus firing up. Implementation v1.1");
+			System.out.println(SWT_GDBUS_VERSION_INFO);
 		}
 	}
 
@@ -250,21 +296,23 @@ public class GDBus {
 		long /*int*/ resultGVariant = 0;
 		try {
 			String java_method_name = Converter.cCharPtrToJavaString(method_name, false);
-
 			for (GDBusMethod gdbusMethod : gdbusMethods) {
 				if (gdbusMethod.getName().equals(java_method_name)) {
 					Object [] args = convertGVariantToJava(gvar_parameters);
-					Object [] returnVal = gdbusMethod.getUserFunction().apply(args); // Return value currently not used. Can be added/implemented if required.
-					resultGVariant = convertJavaToGVariant(returnVal);
+					Object [] returnVal = gdbusMethod.getUserFunction().apply(args);
+					if (returnVal == null || (returnVal instanceof Object [])) {
+						resultGVariant = convertJavaToGVariant(returnVal);
+					} else {
+						System.err.println("SWT GDBus error processing user return value: " + returnVal.toString() + ". Return value must be an Object[] or null.");
+					}
 					break;
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("SWT GDBUS ERROR: Error in handling method.");
+			System.err.println("SWT GDBUS ERROR: Error in handling method: \n" + e.getMessage());
 		} finally {
 			// - GDBus method should always return to prevent caller from hanging.
-			// - Note, result must be a tuple. (or null..).
-
+			// - Note, result must be a tuple. (or null (0)..).
 			OS.g_dbus_method_invocation_return_value(invocation, resultGVariant);
 		}
 		return 0; // void return value.
@@ -303,7 +351,16 @@ public class GDBus {
 			return Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariant, null), false);
 		}
 
-		// <add your primitive types>
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)) {
+			return new Boolean(OS.g_variant_get_boolean(gVariant));
+		}
+
+		if (OS._g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_IN32)) {
+			return new Integer(OS.g_variant_get_int32(gVariant));
+		}
+
+		// <You can add more primitive types here>
+
 
 		//2) Handle struct of defined types. (Sort of like arrays, but note, tuples!=array).
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_TUPLE)) {
@@ -326,7 +383,9 @@ public class GDBus {
 		}
 
 		String typeString = Converter.cCharPtrToJavaString(OS.g_variant_get_type_string(gVariant), false);
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT, new Throwable("SWT GDBus: Unhandled variant type " + typeString ));
+		System.err.println("SWT GDBus: Error. Unhandled variant type (i.e DBus type):  " + typeString +
+				"     You probably need to update  (SWT) GDBus.java:convertGVariantToJavaHelper() to support this type.");
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		return null;
 	}
 
@@ -347,14 +406,22 @@ public class GDBus {
 			return OS.g_variant_new_string (Converter.javaStringToCString((String) javaObject));
 		}
 
-		// Add your types here.
+		if (javaObject instanceof Boolean) {
+			return OS.g_variant_new_boolean((Boolean) javaObject);
+		}
+
+		if (javaObject instanceof Integer) {
+			return OS.g_variant_new_int32((Integer) javaObject);
+		}
+
+		// <You can add more primitive types here>
+
 
 		// Dangers:
 		// Null values and empty arrays can cause problems.
 		//   - DBus doesn't have notion of 'null'.
 		//   - DBus doesn't support empty arrays.
 		// If needed, see workaround implemented in WebkitGDBus.java
-
 		if (javaObject instanceof Object[]) {
 			Object[] arrayValue = (Object[]) javaObject;
 			int length = arrayValue.length;
@@ -366,8 +433,8 @@ public class GDBus {
 			return OS.g_variant_new_tuple(variants, length);
 		}
 
-		System.err.println("SWT GDbus: Invalid object being returned to caller: " + javaObject.toString());
-		throw new SWTException(SWT.ERROR_INVALID_ARGUMENT, "Given object is not valid: " + javaObject.toString());
+		System.err.println("SWT GDbus: Invalid object being returned to caller: " + javaObject.toString() + "   You probably need to update (SWT) GDBus.java:convertJavaToGVariant()");
+		throw new SWTException(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
 

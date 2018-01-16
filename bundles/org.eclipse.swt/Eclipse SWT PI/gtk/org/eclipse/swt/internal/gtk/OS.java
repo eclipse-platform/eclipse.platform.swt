@@ -106,11 +106,19 @@ public class OS extends C {
 		}
 	}
 
+	public static final String GDBUS_SYSTEM_PROPERTY = "swt.dbus.init";
+
 	// Bug 519124
 	static {
 		String swt_lib_versions = getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
-			System.out.println("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
+			System.out.print("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
+			if (System.getProperty(GDBUS_SYSTEM_PROPERTY) != null) {
+				System.out.print(" (DBus enabled)");
+			} else {
+				System.out.print(" (DBus dissabled)");
+			}
+			System.out.print("\n");
 		}
 	}
 
@@ -587,6 +595,8 @@ public class OS extends C {
 	/** @category gdbus */
 	public static final String DBUS_TYPE_STRING_ARRAY = "as";
 	/** @category gdbus */
+	public static final String DBUS_TYPE_INT32 = "i";
+	/** @category gdbus */
 	public static final String DBUS_TYPE_DOUBLE = "d";
 	/** @category gdbus */
 	public static final String DBUS_TYPE_STRUCT = "r"; // Not used by Dbus, but implemented by GDBus.
@@ -607,6 +617,8 @@ public class OS extends C {
 	public static final byte[] G_VARIANT_TYPE_STRING_ARRAY = ascii(DBUS_TYPE_STRING_ARRAY);
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_STRING = ascii(DBUS_TYPE_STRING);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_IN32 = ascii(DBUS_TYPE_INT32);
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii(DBUS_TYPE_DOUBLE);
 	/** @category gdbus */
@@ -16777,6 +16789,23 @@ public static final long /*int*/ g_variant_new_int32 (int intval) {
 	lock.lock();
 	try {
 		return _g_variant_new_int32(intval);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ * @return int
+ */
+public static final native int _g_variant_get_int32 (long /*int*/ gvariant);
+/** @category gdbus */
+public static final int g_variant_get_int32 (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_int32 (gvariant);
 	} finally {
 		lock.unlock();
 	}

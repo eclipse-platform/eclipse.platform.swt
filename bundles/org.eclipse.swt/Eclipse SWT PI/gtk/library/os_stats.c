@@ -388,6 +388,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1variant_1get_1byte",
 	"_1g_1variant_1get_1child_1value",
 	"_1g_1variant_1get_1double",
+	"_1g_1variant_1get_1int32",
 	"_1g_1variant_1get_1string",
 	"_1g_1variant_1get_1type",
 	"_1g_1variant_1get_1type_1string",
