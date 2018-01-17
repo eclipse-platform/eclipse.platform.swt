@@ -6180,11 +6180,15 @@ public static final long /*int*/ gtk_button_new() {
 		lock.unlock();
 	}
 }
-public static final native void /*int*/ _gtk_button_set_image(long /*int*/ handle, long /*int*/ image);
-public static final void /*int*/ gtk_button_set_image(long /*int*/ handle, long /*int*/ image) {
+/**
+ * @param button cast=(GtkButton *)
+ * @param image cast=(GtkWidget *)
+ */
+public static final native void /*int*/ _gtk_button_set_image(long /*int*/ button, long /*int*/ image);
+public static final void /*int*/ gtk_button_set_image(long /*int*/ button, long /*int*/ image) {
 	lock.lock();
 	try {
-		_gtk_button_set_image(handle, image);
+		_gtk_button_set_image(button, image);
 	} finally {
 		lock.unlock();
 	}
