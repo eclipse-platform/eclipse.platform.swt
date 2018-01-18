@@ -60,7 +60,6 @@ public class PawnTab {
 	
 	static Pawns ttr = null;
 	static int[] move = new int[2];
-	static Menu menu = null;
 	
 	public PawnTab(TabItem item) {		
 		try {
@@ -72,7 +71,7 @@ public class PawnTab {
 		item.setText("Pawns");
 		item.setControl(browser);
 
-		menu = new Menu(browser.getShell(), SWT.POP_UP);
+		Menu menu = new Menu(browser.getShell(), SWT.POP_UP);
 		MenuItem item2 = new MenuItem(menu, SWT.PUSH);
 		item2.setText("End Game");
 		item2.addListener(SWT.Selection, e -> {

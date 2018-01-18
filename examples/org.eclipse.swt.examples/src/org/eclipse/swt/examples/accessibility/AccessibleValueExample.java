@@ -31,9 +31,9 @@ import org.eclipse.swt.widgets.Shell;
  * additional information to an AT.
  */
 public class AccessibleValueExample {
-	static int value = 40;
-	static int min = 0;
-	static int max = 100;
+	private static int value = 40;
+	private static int min = 0;
+	private static int max = 100;
 
 	public static void main(String[] args) {
 		Display display = new Display();
