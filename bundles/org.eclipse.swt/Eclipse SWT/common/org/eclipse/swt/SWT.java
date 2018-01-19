@@ -848,7 +848,6 @@ public class SWT {
 	 * This event is sent when SWT receives notification that a URL
 	 * should be opened.
 	 * </p>
-	 * Note that this event is not sent on Linux/GTK platforms.
 	 *
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Event

@@ -115,6 +115,7 @@ public class OS extends C {
 			System.out.print("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
 			if (System.getProperty(GDBUS_SYSTEM_PROPERTY) != null) {
 				System.out.print(" (DBus enabled)");
+				System.out.print(" (OpenUrl/OpenDocument supported)");
 			} else {
 				System.out.print(" (DBus dissabled)");
 			}
