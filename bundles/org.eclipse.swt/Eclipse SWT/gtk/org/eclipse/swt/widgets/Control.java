@@ -4342,7 +4342,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	 * - On Gtk2, mouseMove is sent during DnD. On Gtk3x11 it's not due to hacky implementation of DnD.
 	 *   On Wayland mouseMove is once again sent during DnD as per improved architecture.
 	 */
-	event.data = new Boolean(send);
+	event.data = Boolean.valueOf(send);
 	if (!OS.isX11()) {
 		if (type == SWT.MouseDown) {
 			// Delay MouseDown
@@ -4359,7 +4359,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 						// to determine DnD threshold.
 						// This is to preserve backwards Cocoa/Win32 compatibility.
 						Event mouseDownEvent = dragDetectionQueue.getFirst();
-						mouseDownEvent.data = new Boolean(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
+						mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
 						dragDetectionQueue = null;
 						sendOrPost(SWT.MouseDown, mouseDownEvent);
 					} else
@@ -4372,7 +4372,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 					// If mouseUp is send, then send all. If mouseUp is post, then decide based on previous
 					// send flag.
 					boolean sendOrPostAll = send ? true : (Boolean) dragDetectionQueue.getFirst().data;
-					dragDetectionQueue.forEach(queuedEvent -> queuedEvent.data = new Boolean(sendOrPostAll));
+					dragDetectionQueue.forEach(queuedEvent -> queuedEvent.data = Boolean.valueOf(sendOrPostAll));
 
 					// Flush queued up MouseDown/MouseMotion events, so they are triggered before MouseUp
 					sendOrPost(SWT.MouseDown, dragDetectionQueue.removeFirst());
