@@ -4239,6 +4239,20 @@ public static final int gdk_event_get_time(long /*int*/ event) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param event cast=(GdkEvent *)
+ */
+public static final native int _gdk_event_get_event_type(long /*int*/ event);
+/** [GTK3.10+] */
+public static final int gdk_event_get_event_type(long /*int*/ event) {
+	lock.lock();
+	try {
+		return _gdk_event_get_event_type(event);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param func cast=(GdkEventFunc)
  * @param data cast=(gpointer)
  * @param notify cast=(GDestroyNotify)
@@ -5234,6 +5248,18 @@ public static final void gdk_seat_ungrab(long /*int*/ seat) {
 	lock.lock();
 	try {
 		_gdk_seat_ungrab(seat);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gdk_seat_get_pointer(long /*int*/ seat);
+public static final long /*int*/ gdk_seat_get_pointer(long /*int*/ seat) {
+	lock.lock();
+	try {
+		return _gdk_seat_get_pointer(seat);
 	} finally {
 		lock.unlock();
 	}
@@ -15287,6 +15313,12 @@ public static final native void memmove(long /*int*/ dest, GdkRGBA src, long /*i
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GdkEventButton src, long /*int*/ size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param size cast=(size_t)
+ */
+public static final native void memmove(long /*int*/ dest, GdkEventKey src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out

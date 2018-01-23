@@ -454,6 +454,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1event_1free",
 	"_1gdk_1event_1get",
 	"_1gdk_1event_1get_1coords",
+	"_1gdk_1event_1get_1event_1type",
 	"_1gdk_1event_1get_1scroll_1deltas",
 	"_1gdk_1event_1get_1seat",
 	"_1gdk_1event_1get_1state",
@@ -531,6 +532,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1screen_1height",
 	"_1gdk_1screen_1width",
 	"_1gdk_1screen_1width_1mm",
+	"_1gdk_1seat_1get_1pointer",
 	"_1gdk_1seat_1grab",
 	"_1gdk_1seat_1ungrab",
 	"_1gdk_1selection_1owner_1get",
@@ -1607,6 +1609,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J",
+#endif
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventKey_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I",
