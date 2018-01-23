@@ -73,7 +73,7 @@ public class GDBus {
 		 * 		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "boolean Response"}, {OS.DBUS_TYPE_STRING, "string Test Response"}, {OS.DBUS_TYPE_INT32, "int Test Response"}},
 		 * 		(args) -> {
 		 * 			System.out.println(args[0] + " " + args[1] + " " + args[2]); // A
-		 * 			return new Object[] {new Boolean(true), new String("world"), new Integer(5678)} ;
+		 * 			return new Object[] {Boolean.valueOf(true), "world", Integer.valueOf(5678)} ;
 		 * 		});
 		 *
 		 * 		// Single input and single output. Observe input is an array with one item. Output is an array with one item.
@@ -352,11 +352,11 @@ public class GDBus {
 		}
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)) {
-			return new Boolean(OS.g_variant_get_boolean(gVariant));
+			return Boolean.valueOf(OS.g_variant_get_boolean(gVariant));
 		}
 
 		if (OS._g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_IN32)) {
-			return new Integer(OS.g_variant_get_int32(gVariant));
+			return Integer.valueOf(OS.g_variant_get_int32(gVariant));
 		}
 
 		// <You can add more primitive types here>
