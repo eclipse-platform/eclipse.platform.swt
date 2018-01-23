@@ -644,13 +644,13 @@ class GridLayoutTab extends Tab {
 				data.verticalAlignment = SWT.CENTER;
 			}
 			/* Set spans and indents */
-			hSpan = new Integer (items [i].getText (HSPAN_COL)).intValue ();
+			hSpan = Integer.valueOf (items [i].getText (HSPAN_COL));
 			data.horizontalSpan = hSpan;
-			vSpan = new Integer (items [i].getText (VSPAN_COL)).intValue ();
+			vSpan = Integer.valueOf(items [i].getText (VSPAN_COL));
 			data.verticalSpan = vSpan;
-			hIndent = new Integer (items [i].getText (HINDENT_COL)).intValue ();
+			hIndent = Integer.valueOf(items [i].getText (HINDENT_COL));
 			data.horizontalIndent = hIndent;
-			vIndent = new Integer (items [i].getText (VINDENT_COL)).intValue ();
+			vIndent = Integer.valueOf(items [i].getText (VINDENT_COL));
 			data.verticalIndent = vIndent;
 			/* Set grabs */
 			hGrab = items [i].getText (HGRAB_COL);
@@ -658,8 +658,8 @@ class GridLayoutTab extends Tab {
 			vGrab = items [i].getText (VGRAB_COL);
 			data.grabExcessVerticalSpace = vGrab.equals ("true");
 			/* Set minimum width and height */
-			data.minimumWidth = new Integer (items [i].getText (MINWIDTH_COL)).intValue ();
-			data.minimumHeight = new Integer (items [i].getText (MINHEIGHT_COL)).intValue ();
+			data.minimumWidth = Integer.valueOf(items [i].getText (MINWIDTH_COL));
+			data.minimumHeight = Integer.valueOf(items [i].getText (MINHEIGHT_COL));
 			/* Set exclude boolean */
 			exclude = items [i].getText (EXCLUDE_COL);
 			data.exclude = exclude.equals ("true");

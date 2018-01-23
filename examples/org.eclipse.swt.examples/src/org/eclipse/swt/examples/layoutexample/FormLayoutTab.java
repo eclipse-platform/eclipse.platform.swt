@@ -385,7 +385,7 @@ class FormLayoutTab extends Tab {
 					if (data.right.control != null) {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (RIGHT_COL);
-						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
+						int index = Integer.valueOf (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (',')));
 						code.append ("\t\tdata.right = new FormAttachment (" + names [index] + ", " + data.right.offset + ", SWT." + alignmentString (data.right.alignment) + ");\n");
 					} else {
 						code.append ("\t\tdata.right = new FormAttachment (" + data.right.numerator + ", " + data.right.offset + ");\n");
@@ -395,7 +395,7 @@ class FormLayoutTab extends Tab {
 					if (data.top.control != null) {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (TOP_COL);
-						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
+						int index = Integer.valueOf(controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (',')));
 						code.append ("\t\tdata.top = new FormAttachment (" + names [index] + ", " + data.top.offset + ", SWT." + alignmentString (data.top.alignment) + ");\n");
 					} else {
 						if (data.bottom != null || (data.top.numerator != 0 ||data.top.offset != 0)) {
@@ -407,7 +407,7 @@ class FormLayoutTab extends Tab {
 					if (data.bottom.control != null) {
 						TableItem item = table.getItem (i);
 						String controlString = item.getText (BOTTOM_COL);
-						int index = new Integer (controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (','))).intValue ();
+						int index = Integer.valueOf(controlString.substring (controlString.indexOf (',') - 1, controlString.indexOf (',')));
 						code.append ("\t\tdata.bottom = new FormAttachment (" + names [index] + ", " + data.bottom.offset + ", SWT." + alignmentString (data.bottom.alignment) + ");\n");
 					} else {
 						code.append ("\t\tdata.bottom = new FormAttachment (" + data.bottom.numerator + ", " + data.bottom.offset + ");\n");
@@ -530,12 +530,12 @@ class FormLayoutTab extends Tab {
 		} else {
 			/* Case where there is a position */
 			try {
-				position = new Integer (attachment.substring (0,comma)).intValue ();
+				position = Integer.valueOf(attachment.substring (0,comma));
 			} catch (NumberFormatException e) {
 				position = 0;
 			}
 			try {
-				offset = new Integer (attachment.substring (comma + 1)).intValue ();
+				offset = Integer.valueOf(attachment.substring (comma + 1));
 			} catch (NumberFormatException e) {
 				offset = 0;
 			}
