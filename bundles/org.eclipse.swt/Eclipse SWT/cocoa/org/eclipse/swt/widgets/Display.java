@@ -926,6 +926,7 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_applicationDockMenu_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_application_openFiles_, appProc4, "@:@@");
+		OS.class_addMethod(cls, OS.sel_application_openUrls_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
 		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
