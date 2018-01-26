@@ -8,10 +8,13 @@ import org.eclipse.swt.widgets.Shell;
 
 /*
  * Title: Handle files or URLs from eclipse launcher or gdbus.
- * How to run: 
-    - Open snippet with Launch Configuration VM Argument: -Dswt.dbus.init
-    - Run launcher with file or url
-      eclipse /myFile  htpp://www.google.com 
+ * How to run:
+ * - Launch snippet.
+ * - In terminal, run like:
+ * 	 gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','http://www.eclipse.org']"
+ * - Expect output:
+ *    "OpenUrl with .. "
+ *    "OpenDocument with .. "
  * Bug description:
  * Expected results: Browser opens URLs, filenames printed.
  * GTK Version(s): 3.22/2.24

@@ -44,7 +44,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class GDBus {
 
-	final static String SWT_GDBUS_VERSION_INFO = "SWT_LIB GDbus firing up. Implementation v1.4";
+	final static String SWT_GDBUS_VERSION_INFO = "SWT_LIB GDbus firing up. Implementation v1.5";
 
 	public static class GDBusMethod {
 		final private String name;

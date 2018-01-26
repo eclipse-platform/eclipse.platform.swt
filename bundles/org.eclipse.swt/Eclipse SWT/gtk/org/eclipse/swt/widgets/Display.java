@@ -695,7 +695,53 @@ public void addListener (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
+	if (eventType == SWT.OpenDocument || eventType == SWT.OpenUrl) {
+		gdbus_init_methods();
+	}
 	eventTable.hook (eventType, listener);
+}
+
+/**
+ * Handle gdbus on 'org.eclipse.swt' DBus session.
+ * E.g equinox launcher passes files/urls to SWT via gdbus. "./eclipse myFile" or "./eclipse http://www.google.com"
+ *
+ * Only one SWT instance can hold the unique and well-known name at one time, so we have to be mindful
+ * of the case where an SWT app could steal the well-known name and make the equinox launcher confused.
+ *
+ * For equinox launcher, See eclipseGtk.c:gtkPlatformJavaSystemProperties
+ */
+private void gdbus_init_methods() {
+	GDBusMethod[] methods = {
+		new GDBusMethod(
+			// FileOpen call can be reached via:
+			// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','http://www.eclipse.org']"
+			// See Bug525305_Browser_OpenUrl.java test snippet for testing/verification.
+			// In a child eclipse, this will open the files in a new editor.
+			// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
+			"FileOpen",
+			new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"A String array containing file paths or URLs for OpenDocument/OpenUrl signal"}},
+			new String [0][0],
+			(args) -> {
+				String[] fileNames = (String[]) args[0];
+				for (int i = 0; i < fileNames.length; i++) {
+					Event event = new Event ();
+					event.text = fileNames[i];
+					try {
+						if (new URI (fileNames[i]).getScheme() != null) { // For specs, see: https://docs.oracle.com/javase/8/docs/api/java/net/URI.html
+							// E.g: eclipse http://www.google.com
+							sendEvent (SWT.OpenUrl, event);
+						} else {
+							throw new URISyntaxException(fileNames[i], "Not a valid Url. Probably file.");
+						}
+					} catch (URISyntaxException e) {
+						// E.g eclipse /tmp/myfile (absolute)   or  eclipse myfile  (relative)
+						sendEvent (SWT.OpenDocument, event);
+					}
+				}
+				return null;
+			})
+		};
+	GDBus.init(methods);
 }
 
 long /*int*/ allChildrenProc (long /*int*/ widget, long /*int*/ recurse) {
@@ -1105,50 +1151,6 @@ void createDisplay (DeviceData data) {
 	keysChangedProc = keysChangedCallback.getAddress ();
 	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.g_signal_connect (OS.gdk_keymap_get_default (), OS.keys_changed, keysChangedProc, 0);
-
-
-	// Handle gdbus on 'org.eclipse.swt' DBus session.
-	// E.g equinox launcher passes files/urls to SWT via gdbus. "./eclipse myFile" or "./eclipse http://www.google.com"
-	//
-	// Only one SWT instance can hold the unique and well-known name at one time, so we have to be mindful
-	// of the case where an SWT app could steal the well-known name and make the equinox launcher confused.
-	// We only initiate GDBus if system property is set.
-	//
-	// To force enable this, in a run-configuration, under arguments, append to the "VM arguments" : -Dswt.dbus.init
-	// For equinox launcher, See eclipseGtk.c:gtkPlatformJavaSystemProperties
-	if (System.getProperty(OS.GDBUS_SYSTEM_PROPERTY) != null) {
-		GDBusMethod[] methods = {
-				new GDBusMethod(
-						// FileOpen call can be reached via:
-						// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','/tmp/there']"
-						// In a child eclipse, this will open the files in a new editor.
-						// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
-						"FileOpen",
-						new String [][] {{OS.DBUS_TYPE_STRING_ARRAY,"A String array containing file paths or URLs for OpenDocument/OpenUrl signal"}},
-						new String [0][0],
-						(args) -> {
-								String[] fileNames = (String[]) args[0];
-								for (int i = 0; i < fileNames.length; i++) {
-									Event event = new Event ();
-									event.text = fileNames[i];
-									try {
-										if (new URI (fileNames[i]).getScheme() != null) { // For specs, see: https://docs.oracle.com/javase/8/docs/api/java/net/URI.html
-											// E.g: eclipse http://www.google.com
-											sendEvent (SWT.OpenUrl, event);
-										} else {
-											throw new URISyntaxException(fileNames[i], "Not a valid Url. Probably file.");
-										}
-									} catch (URISyntaxException e) {
-										// E.g eclipse /tmp/myfile (absolute)   or  eclipse myfile  (relative)
-										sendEvent (SWT.OpenDocument, event);
-
-									}
-							}
-							return null;
-						})
-				};
-		GDBus.init(methods);
-	}
 }
 
 /**

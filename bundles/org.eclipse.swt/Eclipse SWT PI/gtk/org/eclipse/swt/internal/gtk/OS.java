@@ -106,20 +106,13 @@ public class OS extends C {
 		}
 	}
 
-	public static final String GDBUS_SYSTEM_PROPERTY = "swt.dbus.init";
-
 	// Bug 519124
 	static {
 		String swt_lib_versions = getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
 			System.out.print("SWT_LIB_Gtk:"+gtk_major_version()+"."+gtk_minor_version()+"."+gtk_micro_version());
-			if (System.getProperty(GDBUS_SYSTEM_PROPERTY) != null) {
-				System.out.print(" (DBus enabled)");
-				System.out.print(" (OpenUrl/OpenDocument supported)");
-			} else {
-				System.out.print(" (DBus dissabled)");
-			}
-			System.out.print("\n");
+			System.out.print(" (Dynamic gdbus)");
+			System.out.println("");
 		}
 	}
 
