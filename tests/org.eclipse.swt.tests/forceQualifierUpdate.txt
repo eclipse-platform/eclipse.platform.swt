@@ -1,2 +1,3 @@
 # To force a version qualifier update add the bug here
 Bug 511251 - Comparator errors in I20170127-2200
+Bug 521182 - [compiler] method reference on null object should throw NPE at runtime (JLS compliance)
