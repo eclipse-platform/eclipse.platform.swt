@@ -116,7 +116,7 @@ static int checkStyle (int style) {
 
 Control [] _getChildren () {
 	long /*int*/ parentHandle = parentingHandle ();
-	long /*int*/ list = OS.gtk_container_get_children (parentHandle);
+	long /*int*/ list = GTK.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
@@ -264,30 +264,30 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (fixed) {
 			fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 			if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_widget_set_has_window (fixedHandle, true);
+			GTK.gtk_widget_set_has_window (fixedHandle, true);
 		}
-		long /*int*/ vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		long /*int*/ vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-		long /*int*/ hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		long /*int*/ hadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
-		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
+		scrolledHandle = GTK.gtk_scrolled_window_new (hadj, vadj);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (handle, true);
-	OS.gtk_widget_set_can_focus (handle, true);
+	GTK.gtk_widget_set_has_window (handle, true);
+	GTK.gtk_widget_set_can_focus (handle, true);
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0) {
 			/* Prevent an input method context from being created for the Browser widget */
 			if (display.getData (NO_INPUT_METHOD) == null) {
-				imHandle = OS.gtk_im_multicontext_new ();
+				imHandle = GTK.gtk_im_multicontext_new ();
 				if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 		}
 	}
 	if (scrolled) {
-		if (fixed) OS.gtk_container_add (fixedHandle, scrolledHandle);
+		if (fixed) GTK.gtk_container_add (fixedHandle, scrolledHandle);
 		/*
 		* Force the scrolledWindow to have a single child that is
 		* not scrolled automatically.  Calling gtk_container_add()
@@ -295,14 +295,14 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		*/
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
-		OS.gtk_container_add (scrolledHandle, handle);
+		GTK.gtk_container_add (scrolledHandle, handle);
 		display.setWarnings (warnings);
 
-		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
-		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+		int hsp = (style & SWT.H_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
+		int vsp = (style & SWT.V_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
+		GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		if (hasBorder ()) {
-			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+			GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 	}
 	if ((style & SWT.EMBEDDED) != 0) {
@@ -312,13 +312,13 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 					+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();
 			}
 		} else {
-			socketHandle = OS.gtk_socket_new ();
+			socketHandle = GTK.gtk_socket_new ();
 			if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_container_add (handle, socketHandle);
+			GTK.gtk_container_add (handle, socketHandle);
 		}
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
-		OS.gtk_widget_set_redraw_on_allocate (handle, false);
+		GTK.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
 	/*
 	* Bug in GTK.  When a widget is double buffered and the back
@@ -330,21 +330,21 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	* is not explicitly set.
 	*/
 	if ((style & SWT.DOUBLE_BUFFERED) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
-		OS.gtk_widget_set_double_buffered (handle, false);
+		GTK.gtk_widget_set_double_buffered (handle, false);
 	}
 }
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		long /*int*/ context = OS.gtk_widget_get_style_context(widget);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		long /*int*/ context = GTK.gtk_widget_get_style_context(widget);
 		GtkAllocation allocation = new GtkAllocation();
-		OS.gtk_widget_get_allocation (widget, allocation);
+		GTK.gtk_widget_get_allocation (widget, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		// We specify a 0 value for x & y as we want the whole widget to be
 		// colored, not some portion of it.
-		OS.gtk_render_background(context, cairo, 0, 0, width, height);
+		GTK.gtk_render_background(context, cairo, 0, 0, width, height);
 	}
 	return super.gtk_draw(widget, cairo);
 }
@@ -432,7 +432,7 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 			Cairo.cairo_surface_destroy (surface);
 			Cairo.cairo_pattern_destroy (pattern);
 		} else {
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				GdkRGBA rgba = control.getBackgroundGdkRGBA ();
 				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 			} else {
@@ -556,9 +556,9 @@ long /*int*/ focusHandle () {
 
 @Override
 boolean forceFocus (long /*int*/ focusHandle) {
-	if (socketHandle != 0) OS.gtk_widget_set_can_focus (focusHandle, true);
+	if (socketHandle != 0) GTK.gtk_widget_set_can_focus (focusHandle, true);
 	boolean result = super.forceFocus (focusHandle);
-	if (socketHandle != 0) OS.gtk_widget_set_can_focus (focusHandle, false);
+	if (socketHandle != 0) GTK.gtk_widget_set_can_focus (focusHandle, false);
 	return result;
 }
 
@@ -616,7 +616,7 @@ int getChildrenCount () {
 	* NOTE: The current implementation will count
 	* non-registered children.
 	*/
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -633,7 +633,7 @@ Rectangle getClientAreaInPixels () {
 		forceResize ();
 		long /*int*/ clientHandle = clientHandle ();
 		GtkAllocation allocation = new GtkAllocation();
-		OS.gtk_widget_get_allocation (clientHandle, allocation);
+		GTK.gtk_widget_get_allocation (clientHandle, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		return new Rectangle (0, 0, width, height);
@@ -813,7 +813,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		long /*int*/ window = gtk_widget_get_window (paintHandle ());
 		if (window != 0) {
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				OS.gdk_window_set_background_pattern(window, 0);
 			} else {
 				OS.gdk_window_set_back_pixmap (window, 0, false);
@@ -821,7 +821,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		}
 	}
 	if (socketHandle != 0) {
-		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
+		embeddedHandle = GTK.gtk_socket_get_id (socketHandle);
 	}
 	return result;
 }
@@ -851,7 +851,7 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-		OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
+		GTK.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child, display.getClosure (SCROLL_CHILD), false);
 		}
@@ -1195,7 +1195,7 @@ void markLayout (boolean changed, boolean all) {
 void moveAbove (long /*int*/ child, long /*int*/ sibling) {
 	if (child == sibling) return;
 	long /*int*/ parentHandle = parentingHandle ();
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		OS.swt_fixed_restack (parentHandle, child, sibling, true);
 		return;
 	}
@@ -1240,7 +1240,7 @@ void moveBelow (long /*int*/ child, long /*int*/ sibling) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		OS.swt_fixed_restack (parentHandle, child, sibling, false);
 		return;
 	}
@@ -1285,7 +1285,7 @@ void moveChildren(int oldWidth) {
 		Control child = children[i];
 		long /*int*/ topHandle = child.topHandle ();
 		GtkAllocation allocation = new GtkAllocation();
-		OS.gtk_widget_get_allocation (topHandle, allocation);
+		GTK.gtk_widget_get_allocation (topHandle, allocation);
 		int x = allocation.x;
 		int y = allocation.y;
 		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
@@ -1305,7 +1305,7 @@ void moveChildren(int oldWidth) {
 		gtk_widget_size_request (topHandle, requisition);
 		allocation.x = x;
 		allocation.y = y;
-		OS.gtk_widget_size_allocate (topHandle, allocation);
+		GTK.gtk_widget_size_allocate (topHandle, allocation);
 		Control control = child.findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {
 			if (child.isVisible ()) child.redrawWidget (0, 0, 0, 0, true, true, true);
@@ -1428,10 +1428,10 @@ void reskinChildren (int flags) {
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
 	if (socketHandle != 0) {
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			OS.swt_fixed_resize (handle, socketHandle, width, height);
 		} else {
-			OS.gtk_widget_set_size_request (socketHandle, width, height);
+			GTK.gtk_widget_set_size_request (socketHandle, width, height);
 		}
 	}
 }
@@ -1482,11 +1482,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	 * consider moving this fix higher into Control's setBound(...) method instead.
 	 */
 	long /*int*/ topHandle = topHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0)
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 8, 0)
 			&& fixedHandle != 0 && handle != 0
-			&& getVisible() && !OS.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
+			&& getVisible() && !GTK.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
 			&& topHandle == fixedHandle && width > 0 && height > 0 && resize) {
-		OS.gtk_widget_show(topHandle);
+		GTK.gtk_widget_show(topHandle);
 	}
 
 	int result = super.setBounds (x, y, width, height, move, resize);
@@ -1604,10 +1604,10 @@ boolean setTabGroupFocus (boolean next) {
 boolean setTabItemFocus (boolean next) {
 	if (!super.setTabItemFocus (next)) return false;
 	if (socketHandle != 0) {
-		int direction = next ? OS.GTK_DIR_TAB_FORWARD : OS.GTK_DIR_TAB_BACKWARD;
-		OS.GTK_WIDGET_UNSET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
-		OS.gtk_widget_child_focus (socketHandle, direction);
-		OS.GTK_WIDGET_SET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
+		int direction = next ? GTK.GTK_DIR_TAB_FORWARD : GTK.GTK_DIR_TAB_BACKWARD;
+		GTK.GTK_WIDGET_UNSET_FLAGS (socketHandle, GTK.GTK_HAS_FOCUS);
+		GTK.gtk_widget_child_focus (socketHandle, direction);
+		GTK.GTK_WIDGET_SET_FLAGS (socketHandle, GTK.GTK_HAS_FOCUS);
 	}
 	return true;
 }
@@ -1647,8 +1647,8 @@ public void setTabList (Control [] tabList) {
 void showWidget () {
 	super.showWidget ();
 	if (socketHandle != 0) {
-		OS.gtk_widget_show (socketHandle);
-		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
+		GTK.gtk_widget_show (socketHandle);
+		embeddedHandle = GTK.gtk_socket_get_id (socketHandle);
 	}
 	if (scrolledHandle == 0) fixStyle (handle);
 }

@@ -124,25 +124,25 @@ String openChooserDialog () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ handle = 0;
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		if (OS.GTK3) {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, 0);
+		if (GTK.GTK3) {
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
 		} else {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, 0);
 		}
 	} else {
-		if (OS.GTK3) {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, 0);
+		if (GTK.GTK3) {
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
 		} else {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, 0);
 		}
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	long /*int*/ group = OS.gtk_window_get_group(0);
-	OS.gtk_window_group_add_window (group, handle);
-	OS.gtk_window_set_modal (handle, true);
-	long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+	long /*int*/ group = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window (group, handle);
+	GTK.gtk_window_set_modal (handle, true);
+	long /*int*/ pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
-		OS.gtk_window_set_icon_list (handle, pixbufs);
+		GTK.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
 	}
 	if (filterPath != null && filterPath.length () > 0) {
@@ -162,7 +162,7 @@ String openChooserDialog () {
 			byte [] outputBuffer = new byte [PATH_MAX];
 			long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
 			if (ptr != 0) {
-				OS.gtk_file_chooser_set_current_folder (handle, ptr);
+				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 			}
 			/* We are not doing free here because realpath returns the address of outputBuffer
 			 * which is created in this code and we let the garbage collector to take care of this
@@ -170,7 +170,7 @@ String openChooserDialog () {
 		} else {
 			long /*int*/ ptr = OS.realpath (buffer, null);
 			if (ptr != 0) {
-				OS.gtk_file_chooser_set_current_folder (handle, ptr);
+				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 				OS.g_free (ptr);
 			}
 		}
@@ -178,36 +178,36 @@ String openChooserDialog () {
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (message, true);
 		long /*int*/ box = 0;
-		if (OS.GTK3) {
-			box = OS.gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, 0);
-			OS.gtk_box_set_homogeneous (box, false);
+		if (GTK.GTK3) {
+			box = GTK.gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+			GTK.gtk_box_set_homogeneous (box, false);
 		} else {
-			box = OS.gtk_hbox_new (false, 0);
+			box = GTK.gtk_hbox_new (false, 0);
 		}
 		if (box == 0) error (SWT.ERROR_NO_HANDLES);
-		long /*int*/ label = OS.gtk_label_new (buffer);
+		long /*int*/ label = GTK.gtk_label_new (buffer);
 		if (label == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (box, label);
-		OS.gtk_widget_show (label);
-		OS.gtk_label_set_line_wrap (label, true);
-		OS.gtk_label_set_justify (label, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_file_chooser_set_extra_widget (handle, box);
+		GTK.gtk_container_add (box, label);
+		GTK.gtk_widget_show (label);
+		GTK.gtk_label_set_line_wrap (label, true);
+		GTK.gtk_label_set_justify (label, GTK.GTK_JUSTIFY_CENTER);
+		GTK.gtk_file_chooser_set_extra_widget (handle, box);
 	}
 	String answer = null;
 	display.addIdleProc ();
 	Dialog oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
 	display.sendPreExternalEventDispatchEvent ();
-	int response = OS.gtk_dialog_run (handle);
+	int response = GTK.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -219,11 +219,11 @@ String openChooserDialog () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	if (response == OS.GTK_RESPONSE_OK) {
-		long /*int*/ path = OS.gtk_file_chooser_get_filename (handle);
+	if (response == GTK.GTK_RESPONSE_OK) {
+		long /*int*/ path = GTK.gtk_file_chooser_get_filename (handle);
 		if (path != 0) {
 			long /*int*/ utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 			if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);
@@ -244,7 +244,7 @@ String openChooserDialog () {
 		}
 	}
 	display.removeIdleProc ();
-	OS.gtk_widget_destroy (handle);
+	GTK.gtk_widget_destroy (handle);
 	return answer;
 }
 /**

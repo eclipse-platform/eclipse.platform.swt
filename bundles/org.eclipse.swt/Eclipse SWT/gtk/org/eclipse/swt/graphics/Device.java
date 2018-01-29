@@ -639,30 +639,30 @@ protected void init () {
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
 
-	shellHandle = OS.gtk_window_new(OS.GTK_WINDOW_TOPLEVEL);
+	shellHandle = GTK.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_realize(shellHandle);
+	GTK.gtk_widget_realize(shellHandle);
 
 	/* Initialize the system font slot */
 	long /*int*/ [] defaultFontArray = new long /*int*/ [1];
 	long /*int*/ defaultFont;
-	if (OS.GTK3) {
-		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);
-		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
-			defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
-		} else if (OS.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
-			OS.gtk_style_context_save(context);
-			OS.gtk_style_context_set_state(context, OS.GTK_STATE_FLAG_NORMAL);
-			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, defaultFontArray, 0);
-			OS.gtk_style_context_restore(context);
+	if (GTK.GTK3) {
+		long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 8, 0)) {
+			defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
+		} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+			GTK.gtk_style_context_save(context);
+			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
+			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+			GTK.gtk_style_context_restore(context);
 			defaultFont = defaultFontArray [0];
 		} else {
-			OS.gtk_style_context_get(context, OS.GTK_STATE_FLAG_NORMAL, OS.gtk_style_property_font, defaultFontArray, 0);
+			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
 			defaultFont = defaultFontArray [0];
 		}
 	} else {
-		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);
-		defaultFont = OS.gtk_style_get_font_desc (style);
+		long /*int*/ style = GTK.gtk_widget_get_style (shellHandle);
+		defaultFont = GTK.gtk_style_get_font_desc (style);
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
 	Point dpi = getDPI(), screenDPI = getScreenDPI();
@@ -673,14 +673,14 @@ protected void init () {
 	systemFont = Font.gtk_new (this, defaultFont);
 
 	/* Load certain CSS globally to save native GTK calls */
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		long /*int*/ screen = OS.gdk_screen_get_default();
-		long /*int*/ provider = OS.gtk_css_provider_new();
+		long /*int*/ provider = GTK.gtk_css_provider_new();
 		String resourcePath = "";
 		if (screen != 0 && provider != 0) {
 			String userCSS = "";
 			String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
-			if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
 				try (BufferedReader buffer = new BufferedReader(new FileReader(
 						new File(additionalCSSPath)))) {
 					userCSS = buffer.lines().collect(Collectors.joining("\n"));
@@ -690,7 +690,7 @@ protected void init () {
 
 			}
 
-			if (OS.GTK_VERSION < OS.VERSION(3, 20, 0)) {
+			if (GTK.GTK_VERSION < OS.VERSION(3, 20, 0)) {
 				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_pre320.css";
 			} else {
 				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_320.css";
@@ -699,8 +699,8 @@ protected void init () {
 					Device.class.getResourceAsStream(resourcePath)))) {
 				String css = buffer.lines().collect(Collectors.joining("\n"));
 				String fullCSS = css + userCSS;
-				OS.gtk_style_context_add_provider_for_screen (screen, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (fullCSS, true), -1, null);
+				GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (fullCSS, true), -1, null);
 			} catch (IOException e) {
 				//Resource was not loaded thus no modifications to the gtk theme will be applied
 			}
@@ -854,7 +854,7 @@ static synchronized void register (Device device) {
  * @see #destroy
  */
 protected void release () {
-	if (shellHandle != 0) OS.gtk_widget_destroy(shellHandle);
+	if (shellHandle != 0) GTK.gtk_widget_destroy(shellHandle);
 	shellHandle = 0;
 
 	/* Dispose the default font */
@@ -862,7 +862,7 @@ protected void release () {
 	systemFont = null;
 
 	if (gdkColors != null) {
-		if (!OS.GTK3) {
+		if (!GTK.GTK3) {
 			long /*int*/ colormap = OS.gdk_colormap_get_system();
 			for (int i = 0; i < gdkColors.length; i++) {
 				GdkColor color = gdkColors [i];
@@ -1017,7 +1017,7 @@ protected int getDeviceZoom() {
 	long /*int*/ screen = OS.gdk_screen_get_default();
 	int dpi = (int) OS.gdk_screen_get_resolution (screen);
 	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
-	if (OS.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+	if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
 		int monitor_num = OS.gdk_screen_get_monitor_at_point (screen, 0, 0);
 		int scale = OS.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
 		dpi = dpi * scale;

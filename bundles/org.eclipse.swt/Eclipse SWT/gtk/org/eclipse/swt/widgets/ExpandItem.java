@@ -124,21 +124,21 @@ protected void checkSubclass () {
 @Override
 void createHandle (int index) {
 	state |= HANDLE;
-	handle = OS.gtk_expander_new (null);
+	handle = GTK.gtk_expander_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (handle, clientHandle);
-	boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 4);
+	GTK.gtk_container_add (handle, clientHandle);
+	boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 4);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	labelHandle = OS.gtk_label_new (null);
+	labelHandle = GTK.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	imageHandle = OS.gtk_image_new ();
+	imageHandle = GTK.gtk_image_new ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (boxHandle, imageHandle);
-	OS.gtk_container_add (boxHandle, labelHandle);
-	OS.gtk_expander_set_label_widget (handle, boxHandle);
-	OS.gtk_widget_set_can_focus (handle, true);
+	GTK.gtk_container_add (boxHandle, imageHandle);
+	GTK.gtk_container_add (boxHandle, labelHandle);
+	GTK.gtk_expander_set_label_widget (handle, boxHandle);
+	GTK.gtk_widget_set_can_focus (handle, true);
 }
 
 @Override
@@ -159,7 +159,7 @@ void deregister() {
 
 @Override
 void release (boolean destroy) {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		//454940 ExpandBar DND fix.
 		//Since controls are now nested under the Item,
 		//Item is responsible for it's release.
@@ -289,7 +289,7 @@ public int getHeaderHeight () {
 int getHeaderHeightInPixels () {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	// allocation.height normally returns the header height instead of the whole
 	// widget itself. This is to prevent situations where allocation.height actually
 	// returns the correct header height.
@@ -349,7 +349,7 @@ int getPreferredWidth (GC gc) {
 long /*int*/ gtk_activate (long /*int*/ widget) {
 	Event event = new Event ();
 	event.item = this;
-	int type = OS.gtk_expander_get_expanded (handle) ? SWT.Collapse : SWT.Expand;
+	int type = GTK.gtk_expander_get_expanded (handle) ? SWT.Collapse : SWT.Expand;
 	parent.sendEvent (type, event);
 	return 0;
 }
@@ -362,7 +362,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 
 @Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
-	OS.gtk_widget_set_can_focus (handle, false);
+	GTK.gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
@@ -380,7 +380,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 boolean hasFocus () {
-	return OS.gtk_widget_has_focus (handle);
+	return GTK.gtk_widget_has_focus (handle);
 }
 
 @Override
@@ -424,10 +424,10 @@ void releaseWidget () {
 
 void resizeControl (int yScroll) {
 	if (control != null && !control.isDisposed ()) {
-		boolean visible = OS.gtk_expander_get_expanded (handle);
+		boolean visible = GTK.gtk_expander_get_expanded (handle);
 		if (visible) {
 			GtkAllocation allocation = new GtkAllocation ();
-			OS.gtk_widget_get_allocation (clientHandle, allocation);
+			GTK.gtk_widget_get_allocation (clientHandle, allocation);
 
 			//454940 change in hierarchy
 			/* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
@@ -438,14 +438,14 @@ void resizeControl (int yScroll) {
 			* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
 			* is now neccessary.
 			* See also other 454940 notes and similar fix in: 453827 */
-			int x = (OS.GTK3) ? 0 : allocation.x;
-			int y = (OS.GTK3) ? 0 : allocation.y;
+			int x = (GTK.GTK3) ? 0 : allocation.x;
+			int y = (GTK.GTK3) ? 0 : allocation.y;
 
 			if (x != -1 && y != -1) {
 				int width = allocation.width;
 				int height = allocation.height;
 				int [] property = new int [1];
-				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+				GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 				y += property [0] * 2;
 				height -= property [0] * 2;
 
@@ -459,13 +459,13 @@ void resizeControl (int yScroll) {
 				*/
 				ScrollBar vBar = parent.verticalBar;
 				if (vBar != null) {
-					if (OS.gtk_widget_get_visible (vBar.handle)) {
-						OS.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
+					if (GTK.gtk_widget_get_visible (vBar.handle)) {
+						GTK.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
 						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 					}
 				}
 				// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
-				if (OS.GTK3) {
+				if (GTK.GTK3) {
 					control.setBounds (x, y, width, Math.max (0, height), true, true);
 				}
 				else {
@@ -525,7 +525,7 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			//454940 ExpandBar DND fix.
 			//Reparenting on the GTK side.
 			//Proper hierachy on gtk side is required for DND to function properly.
@@ -556,18 +556,18 @@ long /*int*/ clientHandle () {
 public void setExpanded (boolean expanded) {
 	checkWidget ();
 	this.expanded = expanded;
-	OS.gtk_expander_set_expanded (handle, expanded);
+	GTK.gtk_expander_set_expanded (handle, expanded);
 	parent.layoutItems (0, true);
 }
 
 boolean setFocus () {
-	if (!OS.gtk_widget_get_child_visible (handle)) return false;
-	OS.gtk_widget_set_can_focus (handle, true);
-	OS.gtk_widget_grab_focus (handle);
+	if (!GTK.gtk_widget_get_child_visible (handle)) return false;
+	GTK.gtk_widget_set_can_focus (handle, true);
+	GTK.gtk_widget_grab_focus (handle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
-	boolean result = OS.gtk_widget_is_focus (handle);
-	if (!result) OS.gtk_widget_set_can_focus (handle, false);
+	boolean result = GTK.gtk_widget_is_focus (handle);
+	if (!result) GTK.gtk_widget_set_can_focus (handle, false);
 	return result;
 }
 
@@ -578,14 +578,14 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	setForegroundColor (handle, color);
 	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	parent.setForegroundGdkRGBA (handle, rgba);
 	if (labelHandle != 0) parent.setForegroundGdkRGBA (labelHandle, rgba);
 	if (imageHandle != 0) parent.setForegroundGdkRGBA (imageHandle, rgba);
@@ -611,7 +611,7 @@ void setHeightInPixels (int height) {
 	checkWidget ();
 	if (height < 0) return;
 	this.height = height;
-	OS.gtk_widget_set_size_request (clientHandle, -1, height);
+	GTK.gtk_widget_set_size_request (clientHandle, -1, height);
 	parent.layoutItems (0, false);
 }
 
@@ -626,12 +626,12 @@ public void setImage (Image image) {
 		int imageIndex = imageList.add (image);
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
-		OS.gtk_widget_show (imageHandle);
+		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
+		GTK.gtk_widget_show (imageHandle);
 	} else {
 		gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_show (labelHandle);
-		OS.gtk_widget_hide (imageHandle);
+		GTK.gtk_widget_show (labelHandle);
+		GTK.gtk_widget_hide (imageHandle);
 	}
 }
 
@@ -639,9 +639,9 @@ public void setImage (Image image) {
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		OS.gtk_widget_set_direction (handle, dir);
-		OS.gtk_container_forall (handle, display.setDirectionProc, dir);
+		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		GTK.gtk_widget_set_direction (handle, dir);
+		GTK.gtk_container_forall (handle, display.setDirectionProc, dir);
 	}
 }
 
@@ -649,25 +649,25 @@ void setOrientation (boolean create) {
 public void setText (String string) {
 	super.setText (string);
 	byte [] buffer = Converter.wcsToMbcs (string, true);
-	OS.gtk_label_set_text (labelHandle, buffer);
+	GTK.gtk_label_set_text (labelHandle, buffer);
 }
 
 void showWidget (int index) {
-		OS.gtk_widget_show (handle);
-		OS.gtk_widget_show (clientHandle);
+		GTK.gtk_widget_show (handle);
+		GTK.gtk_widget_show (clientHandle);
 		if (labelHandle != 0)
-			OS.gtk_widget_show (labelHandle);
+			GTK.gtk_widget_show (labelHandle);
 		if (boxHandle != 0)
-			OS.gtk_widget_show (boxHandle);
-		OS.gtk_container_add (parent.handle, handle);
-		OS.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, OS.GTK_PACK_START);
+			GTK.gtk_widget_show (boxHandle);
+		GTK.gtk_container_add (parent.handle, handle);
+		GTK.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 }
 
 @Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case ACTIVATE_INVERSE: {
-			expanded = OS.gtk_expander_get_expanded (handle);
+			expanded = GTK.gtk_expander_get_expanded (handle);
 			parent.layoutItems (0, false);
 			return 0;
 		}

@@ -22,5 +22,5 @@ public class GtkTargetEntry {
 	public int flags;
 	/** @field cast=(guint) */
 	public int info;
-	public static final int sizeof = OS.GtkTargetEntry_sizeof();
+	public static final int sizeof = GTK.GtkTargetEntry_sizeof();
 }

@@ -69,6 +69,17 @@
 
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
 
+// Hard-link code generated from GTK.java to LIB_GTK
+#define GTK_LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			void* handle = dlopen(LIB_GTK, LOAD_FLAGS); \
+			if (handle) var = dlsym(handle, #name); \
+			initialized = 1; \
+	                CHECK_DLERROR \
+		}
+
 #ifdef GDK_WINDOWING_X11
 
 #include <gdk/gdkx.h>

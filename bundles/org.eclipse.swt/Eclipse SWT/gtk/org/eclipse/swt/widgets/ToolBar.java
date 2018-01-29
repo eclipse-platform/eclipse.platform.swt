@@ -104,8 +104,8 @@ public ToolBar (Composite parent, int style) {
 	} else {
 		this.style |= SWT.HORIZONTAL;
 	}
-	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
-	OS.gtk_orientable_set_orientation(handle, orientation);
+	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_ORIENTATION_VERTICAL : GTK.GTK_ORIENTATION_HORIZONTAL;
+	GTK.gtk_orientable_set_orientation(handle, orientation);
 }
 
 static int checkStyle (int style) {
@@ -129,13 +129,13 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
-	handle = OS.gtk_toolbar_new ();
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	handle = GTK.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (fixedHandle, handle);
-	if ((style & SWT.FLAT) != 0 && !OS.GTK3) {
+	GTK.gtk_container_add (fixedHandle, handle);
+	if ((style & SWT.FLAT) != 0 && !GTK.GTK3) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs ("swt-toolbar-flat", true);
-		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
+		GTK.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
 
 	/*
@@ -148,11 +148,11 @@ void createHandle (int index) {
 	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
 	* when the tool bar item has no image or text.
 	*/
-	OS.gtk_toolbar_set_icon_size (handle, OS.GTK3 ? OS.GTK_ICON_SIZE_SMALL_TOOLBAR : OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
+	GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK3 ? GTK.GTK_ICON_SIZE_SMALL_TOOLBAR : GTK.GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setFontDescription(defaultFont().handle);
 	}
 }
@@ -173,9 +173,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * to display. The fix is to disable it before the computation of
 	 * size and enable it if WRAP style is set.
 	 */
-	OS.gtk_toolbar_set_show_arrow (handle, false);
+	GTK.gtk_toolbar_set_show_arrow (handle, false);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	if ((style & SWT.WRAP) != 0) OS.gtk_toolbar_set_show_arrow (handle, true);
+	if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
 	return size;
 }
 
@@ -249,15 +249,15 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 
 @Override
 boolean forceFocus (long /*int*/ focusHandle) {
-	int dir = OS.GTK_DIR_TAB_FORWARD;
-	if ((style & SWT.MIRRORED) != 0) dir = OS.GTK_DIR_TAB_BACKWARD;
+	int dir = GTK.GTK_DIR_TAB_FORWARD;
+	if ((style & SWT.MIRRORED) != 0) dir = GTK.GTK_DIR_TAB_BACKWARD;
 	long /*int*/ childHandle = handle;
 	if (currentFocusItem != null)  childHandle = currentFocusItem.handle;
 	/*
 	 * Feature in GTK. GtkToolBar takes care of navigating through
 	 * items by Up/Down arrow keys.
 	 */
-	if (OS.gtk_widget_child_focus (childHandle, dir)) return true;
+	if (GTK.gtk_widget_child_focus (childHandle, dir)) return true;
 	return super.forceFocus (focusHandle);
 }
 
@@ -325,7 +325,7 @@ ToolItem getItemInPixels (Point point) {
  */
 public int getItemCount () {
 	checkWidget();
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int itemCount = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -354,7 +354,7 @@ public ToolItem [] getItems () {
 }
 
 ToolItem [] _getItems () {
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
 	ToolItem [] items = new ToolItem [count];
@@ -480,7 +480,7 @@ long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 			 */
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
-			OS.gtk_widget_get_allocation (widget, allocation);
+			GTK.gtk_widget_get_allocation (widget, allocation);
 			event.x = DPIUtil.autoScaleDown(allocation.x);
 			if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth () - allocation.width) - event.x;
 			event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
@@ -527,19 +527,19 @@ void relayout () {
 			hasImage |= item.image != null;
 		}
 	}
-	int type = OS.GTK_TOOLBAR_ICONS;
+	int type = GTK.GTK_TOOLBAR_ICONS;
 	if (hasText && hasImage) {
 		if ((style & SWT.RIGHT) != 0) {
-			type = OS.GTK_TOOLBAR_BOTH_HORIZ;
+			type = GTK.GTK_TOOLBAR_BOTH_HORIZ;
 		} else {
-			type = OS.GTK_TOOLBAR_BOTH;
+			type = GTK.GTK_TOOLBAR_BOTH;
 		}
 	} else if (hasText) {
-		type = OS.GTK_TOOLBAR_TEXT;
+		type = GTK.GTK_TOOLBAR_TEXT;
 	} else if (hasImage) {
-		type = OS.GTK_TOOLBAR_ICONS;
+		type = GTK.GTK_TOOLBAR_ICONS;
 	}
-	OS.gtk_toolbar_set_style (handle, type);
+	GTK.gtk_toolbar_set_style (handle, type);
 }
 
 @Override
@@ -585,19 +585,19 @@ void reskinChildren (int flags) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	OS.gtk_toolbar_set_show_arrow (handle, false);
+	GTK.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();
-	if ((style & SWT.WRAP) != 0) OS.gtk_toolbar_set_show_arrow (handle, true);
+	if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
 	return result;
 }
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
-		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
+		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
 		// Cache background color
@@ -613,7 +613,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 
 @Override
 void setParentBackground () {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setBackgroundGdkRGBA (handle, display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA);
 	}
 	super.setParentBackground();
@@ -621,21 +621,21 @@ void setParentBackground () {
 
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA toSet = new GdkRGBA();
 		if (rgba != null) {
 			toSet = rgba;
 		} else {
 			toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 		}
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
 		// Form foreground string
 		String color = display.gtk_rgba_to_css_string(toSet);
-		String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
 	    		: display.gtk_widget_get_name(handle);
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+		String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
 		String css = "* {color: " + color + ";}\n"
 				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
@@ -666,14 +666,14 @@ void restoreBackground () {
 	 * setting the foreground color from overriding the background color
 	 * (or replacing it with black).
 	 */
-	long /*int*/ context = OS.gtk_widget_get_style_context(handle);
+	long /*int*/ context = GTK.gtk_widget_get_style_context(handle);
 	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA (rgba);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
@@ -683,7 +683,7 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	super.setForegroundGdkColor (color);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

@@ -246,7 +246,7 @@ public boolean getWideCaret () {
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!isInlineEnabled ()) return 0;
 	long /*int*/ imHandle = imHandle ();
-	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
+	if (imHandle != 0) GTK.gtk_im_context_reset (imHandle);
 	return 0;
 }
 
@@ -290,7 +290,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	long /*int*/ [] preeditString = new long /*int*/ [1];
 	long /*int*/ [] pangoAttrs = new long /*int*/ [1];
 	int [] cursorPos = new int [1];
-	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, cursorPos);
+	GTK.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, cursorPos);
 	caretOffset = cursorPos [0];
 	char [] chars = null;
 	if (preeditString [0] != 0) {
@@ -318,7 +318,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 				long /*int*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
 				if (attr != 0) {
 					OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-					if (OS.GTK3) {
+					if (GTK.GTK3) {
 						GdkRGBA rgba = new GdkRGBA ();
 						rgba.alpha = 1.0;
 						// Manual conversion since PangoAttrColor is a special case.
@@ -338,7 +338,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 				attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_BACKGROUND);
 				if (attr != 0) {
 					OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-					if (OS.GTK3) {
+					if (GTK.GTK3) {
 						GdkRGBA rgba = new GdkRGBA ();
 						rgba.alpha = 1.0;
 						// Manual conversion since PangoAttrColor is a special case.

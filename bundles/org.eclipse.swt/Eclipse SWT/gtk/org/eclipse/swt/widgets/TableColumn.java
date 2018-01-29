@@ -256,7 +256,7 @@ public int getAlignment () {
  */
 public boolean getMoveable() {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_reorderable (handle);
+	return GTK.gtk_tree_view_column_get_reorderable (handle);
 }
 
 /**
@@ -288,7 +288,7 @@ public Table getParent () {
  */
 public boolean getResizable () {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_resizable (handle);
+	return GTK.gtk_tree_view_column_get_resizable (handle);
 }
 
 /**
@@ -326,11 +326,11 @@ public int getWidth () {
 
 int getWidthInPixels () {
 	checkWidget();
-	if (!OS.gtk_tree_view_column_get_visible (handle)) {
+	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
-	if (useFixedWidth) return OS.gtk_tree_view_column_get_fixed_width (handle);
-	return OS.gtk_tree_view_column_get_width (handle);
+	if (useFixedWidth) return GTK.gtk_tree_view_column_get_fixed_width (handle);
+	return GTK.gtk_tree_view_column_get_width (handle);
 }
 
 @Override
@@ -344,7 +344,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 	*/
 	boolean doubleClick = false;
 	boolean postEvent = true;
-	long /*int*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -392,7 +392,7 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (widget, widgetAllocation);
+	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
 	/*
 	 * GTK Feature: gtk_size_allocate is not a reliable signal to tell if the resizes are correct.
 	 * There is a phantom signal that is sent with size of 1x1 at x,y = 0,0 before sending out the
@@ -441,10 +441,10 @@ public void pack () {
 	int width = 0;
 	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		if (parent.getHeaderVisible() && OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(buttonHandle)) {
-			OS.gtk_widget_show(buttonHandle);
+		if (parent.getHeaderVisible() && GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(buttonHandle)) {
+			GTK.gtk_widget_show(buttonHandle);
 			gtk_widget_get_preferred_size (buttonHandle, requisition);
-			OS.gtk_widget_hide(buttonHandle);
+			GTK.gtk_widget_hide(buttonHandle);
 		} else {
 			gtk_widget_get_preferred_size (buttonHandle, requisition);
 		}
@@ -458,11 +458,11 @@ public void pack () {
 			}
 		}
 	} else {
-		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-		if (OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
+		long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		if (GTK.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
 			do {
 				width = Math.max (width, parent.calculateWidth (handle, iter));
-			} while (OS.gtk_tree_model_iter_next(parent.modelHandle, iter));
+			} while (GTK.gtk_tree_model_iter_next(parent.modelHandle, iter));
 		}
 		OS.g_free (iter);
 	}
@@ -586,10 +586,10 @@ public void setImage (Image image) {
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
 		long /*int*/ pixbuf = headerImageList.getPixbuf (imageIndex);
 		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-		OS.gtk_widget_show (imageHandle);
+		GTK.gtk_widget_show (imageHandle);
 	} else {
 		gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_hide (imageHandle);
+		GTK.gtk_widget_hide (imageHandle);
 	}
 }
 
@@ -609,7 +609,7 @@ public void setImage (Image image) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_resizable (handle, resizable);
+	GTK.gtk_tree_view_column_set_resizable (handle, resizable);
 }
 
 /**
@@ -635,16 +635,16 @@ public void setResizable (boolean resizable) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
+	GTK.gtk_tree_view_column_set_reorderable (handle, moveable);
 }
 
 @Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		if (buttonHandle != 0) {
-			int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-			OS.gtk_widget_set_direction (buttonHandle, dir);
-			OS.gtk_container_forall (buttonHandle, display.setDirectionProc, dir);
+			int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+			GTK.gtk_widget_set_direction (buttonHandle, dir);
+			GTK.gtk_container_forall (buttonHandle, display.setDirectionProc, dir);
 		}
 	}
 }
@@ -656,11 +656,11 @@ public void setText (String string) {
 	super.setText (string);
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
-		OS.gtk_widget_show (labelHandle);
+		GTK.gtk_widget_show (labelHandle);
 	} else {
-		OS.gtk_widget_hide (labelHandle);
+		GTK.gtk_widget_hide (labelHandle);
 	}
 }
 
@@ -718,15 +718,15 @@ void setWidthInPixels (int width) {
 	if (width == lastWidth) return;
 	if (width > 0) {
 		useFixedWidth = true;
-		OS.gtk_tree_view_column_set_fixed_width (handle, width);
+		GTK.gtk_tree_view_column_set_fixed_width (handle, width);
 	}
 	/*
 	 * Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
 	 * when the parent is not realized fails to show the column. The fix is to
 	 * ensure that the table has been realized.
 	 */
-	if (width != 0) OS.gtk_widget_realize (parent.handle);
-	OS.gtk_tree_view_column_set_visible (handle, width != 0);
+	if (width != 0) GTK.gtk_widget_realize (parent.handle);
+	GTK.gtk_tree_view_column_set_visible (handle, width != 0);
 	lastWidth = width;
 	/*
 	 * Bug in GTK. When the column is made visible the event window of column
@@ -737,7 +737,7 @@ void setWidthInPixels (int width) {
 	 */
 	if (width != 0) {
 		if (buttonHandle != 0) {
-			long /*int*/ window = OS.gtk_widget_get_parent_window (buttonHandle);
+			long /*int*/ window = GTK.gtk_widget_get_parent_window (buttonHandle);
 			if (window != 0) {
 				long /*int*/ windowList = OS.gdk_window_get_children (window);
 				if (windowList != 0) {

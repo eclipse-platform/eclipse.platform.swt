@@ -906,7 +906,7 @@ void createMask() {
 void createSurface() {
 	if (surface != 0) return;
 	/* There is no pixmaps in GTK 3. */
-	if (OS.GTK3) return;
+	if (GTK.GTK3) return;
 	/* Generate the mask if necessary. */
 	if (transparentPixel != -1) createMask();
 	int[] w = new int[1], h = new int[1];
@@ -1313,7 +1313,7 @@ public ImageData getImageData (int zoom) {
 public static Image gtk_new(Device device, int type, long /*int*/ imageHandle, long /*int*/ mask) {
 	Image image = new Image(device);
 	image.type = type;
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		image.surface = imageHandle;
 	} else {
 		image.pixmap = imageHandle;
@@ -1556,7 +1556,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.device = device;
 		data.drawable = pixmap;
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			data.foregroundRGBA = device.COLOR_BLACK.handleRGBA;
 			data.backgroundRGBA = device.COLOR_WHITE.handleRGBA;
 		} else {

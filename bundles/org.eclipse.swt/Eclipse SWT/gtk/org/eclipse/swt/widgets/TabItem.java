@@ -160,7 +160,7 @@ public Rectangle getBounds () {
 Rectangle getBoundsInPixels () {
 	checkWidget();
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
@@ -244,7 +244,7 @@ void register () {
 
 @Override
 void release (boolean destroy) {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		//Since controls are now nested under the tabItem,
 		//tabItem is responsible for it's release.
 		if (control != null && !control.isDisposed ()) {
@@ -292,9 +292,9 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 
-	if (control != null && OS.GTK3) {
+	if (control != null && GTK.GTK3) {
 		// See implementation note about bug 454936 at the start of TabFolder.
-		OS.gtk_widget_reparent (control.topHandle (), pageHandle);
+		GTK.gtk_widget_reparent (control.topHandle (), pageHandle);
 	}
 
 	Control oldControl = this.control, newControl = control;
@@ -325,27 +325,27 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	setForegroundGdkRGBA (labelHandle, rgba);
 	setForegroundGdkRGBA (imageHandle, rgba);
 }
 
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	/* Don't set the color in vbox handle (it doesn't draw) */
 	setForegroundColor (labelHandle, color, false);
 	setForegroundColor (imageHandle, color, false);
 }
 
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	GdkRGBA toSet = new GdkRGBA();
 	if (rgba != null) {
 		toSet = rgba;
 	} else {
 		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
-	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
 	String css = "* {color: " + color + ";}";
@@ -359,11 +359,11 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 	if (provider == 0) {
-		provider = OS.gtk_css_provider_new ();
-		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		provider = GTK.gtk_css_provider_new ();
+		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 @Override
@@ -381,21 +381,21 @@ public void setImage (Image image) {
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-		OS.gtk_widget_show (imageHandle);
+		GTK.gtk_widget_show (imageHandle);
 	} else {
 		gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_hide (imageHandle);
+		GTK.gtk_widget_hide (imageHandle);
 	}
 }
 
 @Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
-		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, dir);
-		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, dir);
-		if (pageHandle != 0) OS.gtk_widget_set_direction (pageHandle, dir);
+		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		if (handle != 0) GTK.gtk_widget_set_direction (handle, dir);
+		if (labelHandle != 0) GTK.gtk_widget_set_direction (labelHandle, dir);
+		if (imageHandle != 0) GTK.gtk_widget_set_direction (imageHandle, dir);
+		if (pageHandle != 0) GTK.gtk_widget_set_direction (pageHandle, dir);
 	}
 }
 
@@ -432,11 +432,11 @@ public void setText (String string) {
 	super.setText (string);
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
-		OS.gtk_widget_show (labelHandle);
+		GTK.gtk_widget_show (labelHandle);
 	} else {
-		OS.gtk_widget_hide (labelHandle);
+		GTK.gtk_widget_hide (labelHandle);
 	}
 }
 

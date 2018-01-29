@@ -25,7 +25,7 @@ class ClipboardProxy {
 	Object[] primaryClipboardData;
 	Transfer[] primaryClipboardDataTypes;
 
-	long /*int*/ clipboardOwner = OS.gtk_window_new(0);
+	long /*int*/ clipboardOwner = GTK.gtk_window_new(0);
 	Display display;
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -58,10 +58,10 @@ ClipboardProxy(Display display) {
 
 void clear (Clipboard owner, int clipboards) {
 	if ((clipboards & DND.CLIPBOARD) != 0 && activeClipboard == owner) {
-		OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+		GTK.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 	}
 	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && activePrimaryClipboard == owner) {
-		OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+		GTK.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 }
 
@@ -82,10 +82,10 @@ long /*int*/ clearFunc(long /*int*/ clipboard,long /*int*/ user_data_or_owner){
 void dispose () {
 	if (display == null) return;
 	if (activeClipboard != null) {
-		OS.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
+		GTK.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
 	}
 	if (activePrimaryClipboard != null) {
-		OS.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
+		GTK.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
@@ -96,7 +96,7 @@ void dispose () {
 	clipboardDataTypes = null;
 	primaryClipboardData = null;
 	primaryClipboardDataTypes = null;
-	if (clipboardOwner != 0) OS.gtk_widget_destroy (clipboardOwner);
+	if (clipboardOwner != 0) GTK.gtk_widget_destroy (clipboardOwner);
 	clipboardOwner = 0;
 }
 
@@ -106,7 +106,7 @@ void dispose () {
  */
 long /*int*/ getFunc(long /*int*/ clipboard, long /*int*/ selection_data, long /*int*/ info, long /*int*/ user_data_or_owner){
 	if (selection_data == 0) return 0;
-	long /*int*/ target = OS.gtk_selection_data_get_target(selection_data);
+	long /*int*/ target = GTK.gtk_selection_data_get_target(selection_data);
 	TransferData tdata = new TransferData();
 	tdata.type = target;
 	Transfer[] types = (clipboard == Clipboard.GTKCLIPBOARD) ? clipboardDataTypes : primaryClipboardDataTypes;
@@ -123,7 +123,7 @@ long /*int*/ getFunc(long /*int*/ clipboard, long /*int*/ selection_data, long /
 	if (tdata.format < 8 || tdata.format % 8 != 0) {
 		return 0;
 	}
-	OS.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);
+	GTK.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);
 	OS.g_free(tdata.pValue);
 	return 1;
 }
@@ -171,10 +171,10 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			* though we set the data again. So, this API has to be used whenever we
 			* are setting the contents.
 			*/
-			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
+			if (!GTK.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
-			OS.gtk_clipboard_set_can_store(Clipboard.GTKCLIPBOARD, 0, 0);
+			GTK.gtk_clipboard_set_can_store(Clipboard.GTKCLIPBOARD, 0, 0);
 			activeClipboard = owner;
 		}
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
@@ -182,10 +182,10 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			primaryClipboardDataTypes = dataTypes;
 			long /*int*/ getFuncProc = getFunc.getAddress();
 			long /*int*/ clearFuncProc = clearFunc.getAddress();
-			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
+			if (!GTK.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
-			OS.gtk_clipboard_set_can_store(Clipboard.GTKPRIMARYCLIPBOARD, 0, 0);
+			GTK.gtk_clipboard_set_can_store(Clipboard.GTKPRIMARYCLIPBOARD, 0, 0);
 			activePrimaryClipboard = owner;
 		}
 		return true;

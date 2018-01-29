@@ -127,38 +127,38 @@ public RGB[] getRGBs() {
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (title, true);
 	long /*int*/ handle = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
-		handle = OS.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+		handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
 	} else {
-		handle = OS.gtk_color_selection_dialog_new (buffer);
+		handle = GTK.gtk_color_selection_dialog_new (buffer);
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ colorsel = 0;
 	GdkRGBA rgba;
 	GdkColor color;
-	if (OS.GTK_VERSION <= OS.VERSION (3, 4, 0)) {
+	if (GTK.GTK_VERSION <= OS.VERSION (3, 4, 0)) {
 		if (parent != null) {
 			long /*int*/ shellHandle = parent.topHandle ();
-			OS.gtk_window_set_transient_for (handle, shellHandle);
-			long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+			GTK.gtk_window_set_transient_for (handle, shellHandle);
+			long /*int*/ pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
 			if (pixbufs != 0) {
-				OS.gtk_window_set_icon_list (handle, pixbufs);
+				GTK.gtk_window_set_icon_list (handle, pixbufs);
 				OS.g_list_free (pixbufs);
 			}
 		}
-		long /*int*/ group = OS.gtk_window_get_group (0);
-		OS.gtk_window_group_add_window (group, handle);
-		OS.gtk_window_set_modal (handle, true);
+		long /*int*/ group = GTK.gtk_window_get_group (0);
+		GTK.gtk_window_group_add_window (group, handle);
+		GTK.gtk_window_set_modal (handle, true);
 
-		colorsel = OS.gtk_color_selection_dialog_get_color_selection (handle);
+		colorsel = GTK.gtk_color_selection_dialog_get_color_selection (handle);
 		if (rgb != null) {
 			color = new GdkColor ();
 			color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
 			color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
 			color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-			OS.gtk_color_selection_set_current_color (colorsel, color);
+			GTK.gtk_color_selection_set_current_color (colorsel, color);
 		}
-		OS.gtk_color_selection_set_has_palette (colorsel, true);
+		GTK.gtk_color_selection_set_has_palette (colorsel, true);
 	} else {
 		rgba = new GdkRGBA ();
 		if (rgb != null) {
@@ -167,10 +167,10 @@ public RGB open () {
 			rgba.blue = (double) rgb.blue / 255;
 			rgba.alpha = 1;
 		}
-		OS.gtk_color_chooser_set_rgba (handle, rgba);
+		GTK.gtk_color_chooser_set_rgba (handle, rgba);
 	}
 	if (rgbs != null) {
-		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 			int colorsPerRow = 9;
 			long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
 			rgba = new GdkRGBA ();
@@ -183,13 +183,13 @@ public RGB open () {
 					OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
 				}
 			}
-			OS.gtk_color_chooser_add_palette(handle, OS.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
+			GTK.gtk_color_chooser_add_palette(handle, GTK.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
 					rgbs.length, gdkRGBAS);
-			OS.gtk_color_chooser_set_rgba (handle, rgba);
+			GTK.gtk_color_chooser_set_rgba (handle, rgba);
 
 
-			if (OS.gtk_color_chooser_get_use_alpha(handle)) {
-				OS.gtk_color_chooser_set_use_alpha (handle, false);
+			if (GTK.gtk_color_chooser_get_use_alpha(handle)) {
+				GTK.gtk_color_chooser_set_use_alpha (handle, false);
 			}
 			OS.g_free (gdkRGBAS);
 		} else {
@@ -204,7 +204,7 @@ public RGB open () {
 					OS.memmove (gdkColors + i * GdkColor.sizeof, color, GdkColor.sizeof);
 				}
 			}
-			long /*int*/ strPtr = OS.gtk_color_selection_palette_to_string(gdkColors, rgbs.length);
+			long /*int*/ strPtr = GTK.gtk_color_selection_palette_to_string(gdkColors, rgbs.length);
 			int length = C.strlen (strPtr);
 
 			buffer = new byte [length];
@@ -212,9 +212,9 @@ public RGB open () {
 			String paletteString = new String (Converter.mbcsToWcs (buffer));
 			buffer = Converter.wcsToMbcs (paletteString, true);
 			OS.g_free (gdkColors);
-			long /*int*/ settings = OS.gtk_settings_get_default ();
+			long /*int*/ settings = GTK.gtk_settings_get_default ();
 			if (settings != 0) {
-				OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs ("gtk_color_selection_palette_to_string", true));
+				GTK.gtk_settings_set_string_property(settings, GTK.gtk_color_palette, buffer, Converter.wcsToMbcs ("gtk_color_selection_palette_to_string", true));
 
 			}
 		}
@@ -222,18 +222,18 @@ public RGB open () {
 
 	display.addIdleProc ();
 	Dialog oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
 	display.sendPreExternalEventDispatchEvent ();
-	int response = OS.gtk_dialog_run (handle);
+	int response = GTK.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -245,32 +245,32 @@ public RGB open () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	boolean success = response == OS.GTK_RESPONSE_OK;
+	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 			rgba = new GdkRGBA ();
-			OS.gtk_color_chooser_get_rgba (handle, rgba);
+			GTK.gtk_color_chooser_get_rgba (handle, rgba);
 			red =  (int) (rgba.red * 255);
 			green = (int) (rgba.green * 255);
 			blue =  (int) (rgba.blue *  255);
 		} else {
 			color = new GdkColor ();
-			OS.gtk_color_selection_get_current_color (colorsel, color);
+			GTK.gtk_color_selection_get_current_color (colorsel, color);
 			red = (color.red >> 8) & 0xFF;
 			green = (color.green >> 8) & 0xFF;
 			blue = (color.blue >> 8) & 0xFF;
 
-			long /*int*/ settings = OS.gtk_settings_get_default ();
+			long /*int*/ settings = GTK.gtk_settings_get_default ();
 			if (settings != 0) {
 
 				long /*int*/ [] ptr = new long /*int*/ [1];
-				OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
+				OS.g_object_get (settings, GTK.gtk_color_palette, ptr, 0);
 				if (ptr [0] != 0) {
 					int length = C.strlen (ptr [0]);
 					buffer = new byte [length];
@@ -299,7 +299,7 @@ public RGB open () {
 	}
 
 	display.removeIdleProc ();
-	OS.gtk_widget_destroy (handle);
+	GTK.gtk_widget_destroy (handle);
 	if (!success) return null;
 
 	return rgb;

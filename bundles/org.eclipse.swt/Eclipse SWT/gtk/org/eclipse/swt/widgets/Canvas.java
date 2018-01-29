@@ -169,7 +169,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	long /*int*/ result;
-	if ( OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+	if ( GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 		boolean isFocus = caret != null && caret.isFocusCaret ();
 		if (isFocus) caret.killFocus ();
 		 result = super.gtk_draw (widget, cairo);
@@ -334,7 +334,7 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	if (isFocus) caret.killFocus ();
 	long /*int*/ window = paintWindow ();
 	long /*int*/ visibleRegion;
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		visibleRegion = OS.gdk_window_get_visible_region (window);
 	} else {
 		visibleRegion = OS.gdk_drawable_get_visible_region (window);
@@ -348,12 +348,12 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	 * location the scrollbars are re-painted when scrolling, causing the
 	 * hopping effect. See bug 480458.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		long /*int*/ hBarHandle = 0;
 		long /*int*/ vBarHandle = 0;
-		if (OS.GTK_IS_SCROLLED_WINDOW(scrolledHandle)) {
-			hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
-			vBarHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		if (GTK.GTK_IS_SCROLLED_WINDOW(scrolledHandle)) {
+			hBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+			vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
 		}
 		GtkRequisition requisition = new GtkRequisition();
 		if (hBarHandle != 0) {
@@ -452,7 +452,7 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	 * Due to overlay drawing of scrollbars current method of scrolling leaves scrollbar and notifiers for them inside the canvas
 	 * after scroll. Fix is to redraw once done.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
 		redraw(false);
 	}
 }
@@ -536,7 +536,7 @@ void updateCaret () {
 	rect.y = caret.y;
 	rect.width = caret.width;
 	rect.height = caret.height;
-	OS.gtk_im_context_set_cursor_location (imHandle, rect);
+	GTK.gtk_im_context_set_cursor_location (imHandle, rect);
 }
 
 }

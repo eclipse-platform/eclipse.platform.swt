@@ -336,7 +336,7 @@ class AccessibleFactory {
 		}
 		long /*int*/ widgetType = OS.G_OBJECT_TYPE (widget);
 		long /*int*/ parentType = getParentType (widgetType);
-		if (parentType == 0) parentType = OS.GTK_TYPE_ACCESSIBLE();
+		if (parentType == 0) parentType = GTK.GTK_TYPE_ACCESSIBLE();
 		long /*int*/ type = getType (getTypeName(widgetType), accessible, parentType, ACC.CHILDID_SELF);
 		AccessibleObject object = new AccessibleObject (type, widget, accessible, false);
 		accessible.accessibleObject = object;
@@ -345,13 +345,13 @@ class AccessibleFactory {
 	}
 
 	static AccessibleObject createChildAccessible (Accessible accessible, int childId) {
-		long /*int*/ childType = getType (CHILD_TYPENAME, accessible, OS.GTK_TYPE_ACCESSIBLE(), childId);
+		long /*int*/ childType = getType (CHILD_TYPENAME, accessible, GTK.GTK_TYPE_ACCESSIBLE(), childId);
 		return new AccessibleObject(childType, 0, accessible, true);
 	}
 
 	static void createAccessible (Accessible accessible) {
 		long /*int*/ controlHandle = accessible.getControlHandle ();
-		OS.gtk_widget_get_accessible(controlHandle);
+		GTK.gtk_widget_get_accessible(controlHandle);
 	}
 
 	static long /*int*/ getType (String widgetTypeName, Accessible accessible, long /*int*/ parentType, int childId) {

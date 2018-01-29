@@ -159,16 +159,16 @@ public FontData open () {
 	handle = gtk_font_chooser_dialog_new (titleBytes);
 	if (parent!=null) {
 		long /*int*/ shellHandle = parent.topHandle ();
-		OS.gtk_window_set_transient_for(handle, shellHandle);
-		long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+		GTK.gtk_window_set_transient_for(handle, shellHandle);
+		long /*int*/ pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
 		if (pixbufs != 0) {
-			OS.gtk_window_set_icon_list (handle, pixbufs);
+			GTK.gtk_window_set_icon_list (handle, pixbufs);
 			OS.g_list_free (pixbufs);
 		}
 	}
-	long /*int*/ group = OS.gtk_window_get_group(0);
-	OS.gtk_window_group_add_window (group, handle);
-	OS.gtk_window_set_modal (handle, true);
+	long /*int*/ group = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window (group, handle);
+	GTK.gtk_window_set_modal (handle, true);
 	if (fontData != null) {
 		Font font = new Font (display, fontData);
 		long /*int*/ fontName = OS.pango_font_description_to_string (font.handle);
@@ -181,18 +181,18 @@ public FontData open () {
 	}
 	display.addIdleProc ();
 	Dialog oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
 	display.sendPreExternalEventDispatchEvent ();
-	int response = OS.gtk_dialog_run (handle);
+	int response = GTK.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -204,10 +204,10 @@ public FontData open () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	boolean success = response == OS.GTK_RESPONSE_OK;
+	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
 		long /*int*/ fontName = gtk_font_chooser_get_font (handle);
 		int length = C.strlen (fontName);
@@ -220,7 +220,7 @@ public FontData open () {
 		OS.pango_font_description_free (fontDesc);
 	}
 	display.removeIdleProc ();
-	OS.gtk_widget_destroy(handle);
+	GTK.gtk_widget_destroy(handle);
 	if (!success) return null;
 	return fontData;
 }
@@ -288,27 +288,27 @@ public void setRGB (RGB rgb) {
 }
 
 long /*int*/ gtk_font_chooser_get_font(long /*int*/ fontchooser) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
-		return OS.gtk_font_chooser_get_font(fontchooser);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+		return GTK.gtk_font_chooser_get_font(fontchooser);
 	} else {
-		return OS.gtk_font_selection_dialog_get_font_name(fontchooser);
+		return GTK.gtk_font_selection_dialog_get_font_name(fontchooser);
 	}
 }
 
 long /*int*/ gtk_font_chooser_dialog_new (byte[] title) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
-		return OS.gtk_font_chooser_dialog_new (title, 0);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+		return GTK.gtk_font_chooser_dialog_new (title, 0);
 	} else {
-		return OS.gtk_font_selection_dialog_new (title);
+		return GTK.gtk_font_selection_dialog_new (title);
 	}
 }
 
 
 void gtk_font_chooser_set_font(long /*int*/ fsd, byte[] fontname) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
-		OS.gtk_font_chooser_set_font(fsd, fontname);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+		GTK.gtk_font_chooser_set_font(fsd, fontname);
 	} else {
-		OS.gtk_font_selection_dialog_set_font_name(fsd, fontname);
+		GTK.gtk_font_selection_dialog_set_font_name(fsd, fontname);
 	}
 }
 

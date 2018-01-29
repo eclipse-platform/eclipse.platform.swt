@@ -183,10 +183,10 @@ public static Frame new_Frame (final Composite parent) {
 					long /*int*/ awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
 					long /*int*/ xWindow;
-					if (OS.GTK3) {
-						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shell.handle));
+					if (GTK.GTK3) {
+						xWindow = OS.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (shell.handle));
 					} else {
-						xWindow = OS.gdk_x11_drawable_get_xid(OS.gtk_widget_get_window(OS.gtk_widget_get_toplevel(shell.handle)));
+						xWindow = OS.gdk_x11_drawable_get_xid(GTK.gtk_widget_get_window(GTK.gtk_widget_get_toplevel(shell.handle)));
 					}
 					OS.XSetTransientForHint(OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), awtHandle, xWindow);
 				});

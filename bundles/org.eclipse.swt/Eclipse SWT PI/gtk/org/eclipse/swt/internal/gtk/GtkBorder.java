@@ -20,5 +20,5 @@ public class GtkBorder {
 	public int right;
 	public int top;
 	public int bottom;
-	public static final int sizeof = OS.GtkBorder_sizeof();
+	public static final int sizeof = GTK.GtkBorder_sizeof();
 }

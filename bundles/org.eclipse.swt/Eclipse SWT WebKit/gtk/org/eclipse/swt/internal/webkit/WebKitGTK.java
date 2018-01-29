@@ -51,7 +51,7 @@ public class WebKitGTK extends C {
 			if (webkit2VersionFunction != 0) { // SWT_WEBKIT2 env variable is not set but webkit2 was loaded as fallback
 				webkit2 = "1";
 			}
-			WEBKIT2 = webkit2 != null && webkit2.equals("1") && OS.GTK3; // $NON-NLS-1$
+			WEBKIT2 = webkit2 != null && webkit2.equals("1") && GTK.GTK3; // $NON-NLS-1$
 			WEBKIT1 = !WEBKIT2;
 		}
 

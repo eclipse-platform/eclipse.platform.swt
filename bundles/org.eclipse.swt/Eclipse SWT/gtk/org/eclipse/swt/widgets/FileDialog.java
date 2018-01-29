@@ -105,9 +105,9 @@ String computeResultChooserDialog () {
 	if ((style & SWT.MULTI) != 0) {
 		long /*int*/ list = 0;
 		if (uriMode) {
-			list = OS.gtk_file_chooser_get_uris (handle);
+			list = GTK.gtk_file_chooser_get_uris (handle);
 		} else {
-			list = OS.gtk_file_chooser_get_filenames (handle);
+			list = GTK.gtk_file_chooser_get_filenames (handle);
 		}
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
@@ -147,9 +147,9 @@ String computeResultChooserDialog () {
 	} else {
 		long /*int*/ utf8Ptr = 0;
 		if (uriMode) {
-			utf8Ptr = OS.gtk_file_chooser_get_uri (handle);
+			utf8Ptr = GTK.gtk_file_chooser_get_uri (handle);
 		} else {
-			long /*int*/ path = OS.gtk_file_chooser_get_filename (handle);
+			long /*int*/ path = GTK.gtk_file_chooser_get_filename (handle);
 			if (path != 0) {
 				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);
@@ -172,9 +172,9 @@ String computeResultChooserDialog () {
 		}
 	}
 	filterIndex = -1;
-	long /*int*/ filter = OS.gtk_file_chooser_get_filter (handle);
+	long /*int*/ filter = GTK.gtk_file_chooser_get_filter (handle);
 	if (filter != 0) {
-		long /*int*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
+		long /*int*/ filterNamePtr = GTK.gtk_file_filter_get_name (filter);
 		if (filterNamePtr != 0) {
 			int length = C.strlen (filterNamePtr);
 			byte[] buffer = new byte [length];
@@ -302,51 +302,51 @@ public String open () {
 String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	int action = (style & SWT.SAVE) != 0 ?
-		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
-		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
+		GTK.GTK_FILE_CHOOSER_ACTION_SAVE :
+		GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
 	long /*int*/ shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		if (OS.GTK3) {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, 0);
+		if (GTK.GTK3) {
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
 		} else {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, 0);
 		}
 	} else {
-		if (OS.GTK3) {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_NAMED_LABEL_OK, OS.GTK_RESPONSE_OK, OS.GTK_NAMED_LABEL_CANCEL, OS.GTK_RESPONSE_CANCEL, 0);
+		if (GTK.GTK3) {
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
 		} else {
-			handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, 0);
 		}
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_window_set_modal (handle, true);
-	long /*int*/ group = OS.gtk_window_get_group(0);
-	OS.gtk_window_group_add_window (group, handle);
-	long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+	GTK.gtk_window_set_modal (handle, true);
+	long /*int*/ group = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window (group, handle);
+	long /*int*/ pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
-		OS.gtk_window_set_icon_list (handle, pixbufs);
+		GTK.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
 	}
 	if (uriMode) {
-		OS.gtk_file_chooser_set_local_only (handle, false);
+		GTK.gtk_file_chooser_set_local_only (handle, false);
 	}
 	presetChooserDialog ();
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
 	display.sendPreExternalEventDispatchEvent ();
-	int response = OS.gtk_dialog_run (handle);
+	int response = GTK.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -358,20 +358,20 @@ String openChooserDialog () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
-	if (response == OS.GTK_RESPONSE_OK) {
+	if (response == GTK.GTK_RESPONSE_OK) {
 		answer = computeResultChooserDialog ();
 	}
 	display.removeIdleProc ();
-	OS.gtk_widget_destroy (handle);
+	GTK.gtk_widget_destroy (handle);
 	return answer;
 }
 void presetChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
-		OS.gtk_file_chooser_set_select_multiple (handle, true);
+		GTK.gtk_file_chooser_set_select_multiple (handle, true);
 	}
 	if (filterPath == null) filterPath = "";
 	if (fileName == null) fileName = "";
@@ -382,7 +382,7 @@ void presetChooserDialog () {
 		if (filterPath.length () > 0) {
 			if (uriMode) {
 				byte [] buffer = Converter.wcsToMbcs (filterPath, true);
-				OS.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+				GTK.gtk_file_chooser_set_current_folder_uri (handle, buffer);
 			} else {
 				/* filename must be a full path */
 				byte [] buffer = Converter.wcsToMbcs (SEPARATOR + filterPath, true);
@@ -395,7 +395,7 @@ void presetChooserDialog () {
 					byte [] outputBuffer = new byte [PATH_MAX];
 					long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
 					if (ptr != 0) {
-						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 					}
 					/* We are not doing free here because realpath returns the address of outputBuffer
 					 * which is created in this code and we let the garbage collector to take care of this
@@ -403,7 +403,7 @@ void presetChooserDialog () {
 				} else {
 					long /*int*/ ptr = OS.realpath (buffer, null);
 					if (ptr != 0) {
-						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 						OS.g_free (ptr);
 					}
 				}
@@ -436,7 +436,7 @@ void presetChooserDialog () {
 				}
 			}
 			byte [] buffer = Converter.wcsToMbcs (filenameWithExt.toString (), true);
-			OS.gtk_file_chooser_set_current_name (handle, buffer);
+			GTK.gtk_file_chooser_set_current_name (handle, buffer);
 		}
 	} else {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -453,7 +453,7 @@ void presetChooserDialog () {
 		}
 		byte [] buffer = Converter.wcsToMbcs (stringBuilder.toString(), true);
 		if (uriMode) {
-			OS.gtk_file_chooser_set_uri (handle, buffer);
+			GTK.gtk_file_chooser_set_uri (handle, buffer);
 		} else {
 			/*
 			 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
@@ -465,9 +465,9 @@ void presetChooserDialog () {
 				long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
 				if (ptr != 0) {
 					if (fileName.length() > 0) {
-						OS.gtk_file_chooser_set_filename (handle, ptr);
+						GTK.gtk_file_chooser_set_filename (handle, ptr);
 					} else {
-						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 					}
 					/* We are not doing free here because realpath returns the address of outputBuffer
 					 * which is created in this code and we let the garbage collector to take care of this
@@ -477,9 +477,9 @@ void presetChooserDialog () {
 				long /*int*/ ptr = OS.realpath (buffer, null);
 				if (ptr != 0) {
 					if (fileName.length() > 0) {
-						OS.gtk_file_chooser_set_filename (handle, ptr);
+						GTK.gtk_file_chooser_set_filename (handle, ptr);
 					} else {
-						OS.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 					}
 					OS.g_free (ptr);
 				}
@@ -489,7 +489,7 @@ void presetChooserDialog () {
 
 	/* Set overwrite mode */
 	if ((style & SWT.SAVE) != 0) {
-		OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
+		GTK.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
 	}
 
 	/* Set the extension filters */
@@ -498,34 +498,34 @@ void presetChooserDialog () {
 	long /*int*/ initialFilter = 0;
 	for (int i = 0; i < filterExtensions.length; i++) {
 		if (filterExtensions [i] != null) {
-			long /*int*/ filter = OS.gtk_file_filter_new ();
+			long /*int*/ filter = GTK.gtk_file_filter_new ();
 			if (filterNames.length > i && filterNames [i] != null) {
 				byte [] name = Converter.wcsToMbcs (filterNames [i], true);
-				OS.gtk_file_filter_set_name (filter, name);
+				GTK.gtk_file_filter_set_name (filter, name);
 			} else {
 				byte [] name = Converter.wcsToMbcs (filterExtensions [i], true);
-				OS.gtk_file_filter_set_name (filter, name);
+				GTK.gtk_file_filter_set_name (filter, name);
 			}
 			int start = 0;
 			int index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR);
 			while (index != -1) {
 				String current = filterExtensions [i].substring (start, index);
 				byte [] filterString = Converter.wcsToMbcs (current, true);
-				OS.gtk_file_filter_add_pattern (filter, filterString);
+				GTK.gtk_file_filter_add_pattern (filter, filterString);
 				start = index + 1;
 				index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR, start);
 			}
 			String current = filterExtensions [i].substring (start);
 			byte [] filterString = Converter.wcsToMbcs (current, true);
-			OS.gtk_file_filter_add_pattern (filter, filterString);
-			OS.gtk_file_chooser_add_filter (handle, filter);
+			GTK.gtk_file_filter_add_pattern (filter, filterString);
+			GTK.gtk_file_chooser_add_filter (handle, filter);
 			if (i == filterIndex) {
 				initialFilter = filter;
 			}
 		}
 	}
 	if (initialFilter != 0) {
-		OS.gtk_file_chooser_set_filter(handle, initialFilter);
+		GTK.gtk_file_chooser_set_filter(handle, initialFilter);
 	}
 	fullPath = null;
 	fileNames = new String [0];

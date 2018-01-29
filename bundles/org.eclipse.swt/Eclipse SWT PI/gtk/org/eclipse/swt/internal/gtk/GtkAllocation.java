@@ -20,5 +20,5 @@ public class GtkAllocation {
 	public int y;
 	public int width;
 	public int height;
-	public static final int sizeof = OS.GtkAllocation_sizeof();
+	public static final int sizeof = GTK.GtkAllocation_sizeof();
 }

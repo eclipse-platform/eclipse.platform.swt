@@ -257,11 +257,11 @@ void createHandle (int index) {
 	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR | SWT.CASCADE;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
-			handle = OS.gtk_separator_menu_item_new ();
+			handle = GTK.gtk_separator_menu_item_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
-			if (OS.GTK_VERSION <= OS.VERSION (3, 10, 8)) {
+			if (GTK.GTK_VERSION <= OS.VERSION (3, 10, 8)) {
 				/*
 				 * Bug in Ubuntu <= 14.04 with UBUNTU_MENUPROXY. GTK crashes when
 				 * label of radio button is empty, see https://bugs.eclipse.org/419729 .
@@ -280,46 +280,46 @@ void createHandle (int index) {
 			* to the same group.  This allows the visible button to be
 			* unselected.
 			*/
-			groupHandle = OS.gtk_radio_menu_item_new (0);
+			groupHandle = GTK.gtk_radio_menu_item_new (0);
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
 			OS.g_object_ref_sink (groupHandle);
-			long /*int*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
-			if (OS.GTK3) {
-				handle = OS.gtk_radio_menu_item_new (group);
+			long /*int*/ group = GTK.gtk_radio_menu_item_get_group (groupHandle);
+			if (GTK.GTK3) {
+				handle = GTK.gtk_radio_menu_item_new (group);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = OS.gtk_accel_label_new (buffer);
+				labelHandle = GTK.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
+					imageHandle = GTK.gtk_image_new ();
 					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				}
 			} else { // Gtk2
-				handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
+				handle = GTK.gtk_radio_menu_item_new_with_label (group, buffer);
 			}
 			break;
 		case SWT.CHECK:
-			if (OS.GTK3) {
-				handle = OS.gtk_check_menu_item_new ();
+			if (GTK.GTK3) {
+				handle = GTK.gtk_check_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = OS.gtk_accel_label_new (buffer);
+				labelHandle = GTK.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
+					imageHandle = GTK.gtk_image_new ();
 					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				}
 			} else { // Gtk2
-				handle = OS.gtk_check_menu_item_new_with_label (buffer);
+				handle = GTK.gtk_check_menu_item_new_with_label (buffer);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 			break;
@@ -327,78 +327,78 @@ void createHandle (int index) {
 		// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
 		// not be padded. We only care about this in Gtk3.
 		case SWT.CASCADE:
-			if (OS.GTK3) {
-				handle = OS.gtk_menu_item_new ();
+			if (GTK.GTK3) {
+				handle = GTK.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = OS.gtk_accel_label_new (buffer);
+				labelHandle = GTK.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				if ((parent.style & bits) == SWT.BAR) {
 					break;
 				}
 				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
+					imageHandle = GTK.gtk_image_new ();
 					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				}
 				break;
 			}
 		case SWT.PUSH:
 		default:
-			if (OS.GTK3) {
-				handle = OS.gtk_menu_item_new ();
+			if (GTK.GTK3) {
+				handle = GTK.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = OS.gtk_accel_label_new (buffer);
+				labelHandle = GTK.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				if (OS.SWT_PADDED_MENU_ITEMS) {
-					imageHandle = OS.gtk_image_new ();
+					imageHandle = GTK.gtk_image_new ();
 					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				}
 			} else { // Gtk2
-				handle = OS.gtk_image_menu_item_new_with_label (buffer);
+				handle = GTK.gtk_image_menu_item_new_with_label (buffer);
 			}
 			break;
 	}
 	if (imageHandle != 0) {
 		if (OS.SWT_PADDED_MENU_ITEMS) {
-			OS.gtk_image_set_pixel_size (imageHandle, 16);
+			GTK.gtk_image_set_pixel_size (imageHandle, 16);
 		}
-		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_widget_show (imageHandle);
+		GTK.gtk_container_add (boxHandle, imageHandle);
+		GTK.gtk_widget_show (imageHandle);
 	}
 	if (labelHandle != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-			OS.gtk_label_set_xalign (labelHandle, 0);
-			OS.gtk_widget_set_halign (labelHandle, OS.GTK_ALIGN_FILL);
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+			GTK.gtk_label_set_xalign (labelHandle, 0);
+			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 		} else {
-			OS.gtk_misc_set_alignment(labelHandle, 0, 0);
+			GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 		}
-		OS.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-		OS.gtk_widget_show (labelHandle);
+		GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+		GTK.gtk_widget_show (labelHandle);
 	}
 	if (boxHandle != 0) {
-		OS.gtk_container_add (handle, boxHandle);
-		OS.gtk_widget_show (boxHandle);
+		GTK.gtk_container_add (handle, boxHandle);
+		GTK.gtk_widget_show (boxHandle);
 	}
 	if ((style & SWT.SEPARATOR) == 0) {
 		if (boxHandle == 0) {
-			labelHandle = OS.gtk_bin_get_child (handle);
+			labelHandle = GTK.gtk_bin_get_child (handle);
 		}
-		OS.gtk_accel_label_set_accel_widget (labelHandle, 0);
+		GTK.gtk_accel_label_set_accel_widget (labelHandle, 0);
 	}
 	long /*int*/ parentHandle = parent.handle;
-	boolean enabled = OS.gtk_widget_get_sensitive (parentHandle);
-	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, true);
-	OS.gtk_menu_shell_insert (parentHandle, handle, index);
-	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, false);
-	OS.gtk_widget_show (handle);
+	boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
+	if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
+	GTK.gtk_menu_shell_insert (parentHandle, handle, index);
+	if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, false);
+	GTK.gtk_widget_show (handle);
 }
 
 void fixMenus (Decorations newParent) {
@@ -438,11 +438,11 @@ long /*int*/ getAccelGroup () {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!OS.gtk_widget_get_mapped (handle)) {
+	if (!GTK.gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
@@ -467,7 +467,7 @@ long /*int*/ getAccelGroup () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return OS.gtk_widget_get_sensitive (handle);
+	return GTK.gtk_widget_get_sensitive (handle);
 }
 
 /**
@@ -544,7 +544,7 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return OS.gtk_check_menu_item_get_active(handle);
+	return GTK.gtk_check_menu_item_get_active(handle);
 }
 
 /**
@@ -600,7 +600,7 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 		handled = parent.sendHelpEvent (helpType);
 	}
 	if (handled) {
-		OS.gtk_menu_shell_deactivate (parent.handle);
+		GTK.gtk_menu_shell_deactivate (parent.handle);
 		return 1;
 	}
 	return 0;
@@ -801,10 +801,10 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	if (OS.gtk_widget_get_sensitive (handle) == enabled) return;
+	if (GTK.gtk_widget_get_sensitive (handle) == enabled) return;
 	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
-	OS.gtk_widget_set_sensitive (handle, enabled);
+	GTK.gtk_widget_set_sensitive (handle, enabled);
 	if (accelGroup != 0) addAccelerator (accelGroup);
 }
 
@@ -861,45 +861,45 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		if (OS.GTK3) {
-			if (!OS.GTK_IS_MENU_ITEM (handle)) return;
+		if (GTK.GTK3) {
+			if (!GTK.GTK_IS_MENU_ITEM (handle)) return;
 			if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-				OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+				GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 			} else {
 				if (imageHandle == 0 && boxHandle != 0) {
-					imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-					OS.gtk_container_add (boxHandle, imageHandle);
-					OS.gtk_box_reorder_child (boxHandle, imageHandle, 0);
+					imageHandle = GTK.gtk_image_new_from_pixbuf (pixbuf);
+					GTK.gtk_container_add (boxHandle, imageHandle);
+					GTK.gtk_box_reorder_child (boxHandle, imageHandle, 0);
 				} else {
-					OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+					GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 				}
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 		} else {
-			if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
-			imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-			OS.gtk_image_menu_item_set_image (handle, imageHandle);
+			if (!GTK.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
+			imageHandle = GTK.gtk_image_new_from_pixbuf (pixbuf);
+			GTK.gtk_image_menu_item_set_image (handle, imageHandle);
 			}
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_widget_show (imageHandle);
+		GTK.gtk_widget_show (imageHandle);
 	} else {
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			if (imageHandle != 0 && boxHandle != 0) {
 				if (OS.SWT_PADDED_MENU_ITEMS) {
-					OS.gtk_container_remove(boxHandle, imageHandle);
-					imageHandle = OS.gtk_image_new ();
+					GTK.gtk_container_remove(boxHandle, imageHandle);
+					imageHandle = GTK.gtk_image_new ();
 					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-					OS.gtk_image_set_pixel_size (imageHandle, 16);
-					OS.gtk_container_add (boxHandle, imageHandle);
-					OS.gtk_widget_show (imageHandle);
+					GTK.gtk_image_set_pixel_size (imageHandle, 16);
+					GTK.gtk_container_add (boxHandle, imageHandle);
+					GTK.gtk_widget_show (imageHandle);
 				} else {
-					OS.gtk_container_remove(boxHandle, imageHandle);
+					GTK.gtk_container_remove(boxHandle, imageHandle);
 					imageHandle = 0;
 				}
 			}
 		} else {
-			if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
-			OS.gtk_image_menu_item_set_image (handle, 0);
+			if (!GTK.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
+			GTK.gtk_image_menu_item_set_image (handle, 0);
 		}
 	}
 }
@@ -957,11 +957,11 @@ public void setMenu (Menu menu) {
 		* to replace or GTK will destroy it.
 		*/
 		OS.g_object_ref (oldMenu.handle);
-		OS.gtk_menu_item_set_submenu (handle, 0);
+		GTK.gtk_menu_item_set_submenu (handle, 0);
 	}
 	if ((this.menu = menu) != null) {
 		menu.cascade = this;
-		OS.gtk_menu_item_set_submenu (handle, menu.handle);
+		GTK.gtk_menu_item_set_submenu (handle, menu.handle);
 	}
 	if (accelGroup != 0) addAccelerators (accelGroup);
 }
@@ -970,9 +970,9 @@ public void setMenu (Menu menu) {
 void setOrientation (boolean create) {
     super.setOrientation (create);
     if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-    	int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-        OS.gtk_widget_set_direction (handle, dir);
-        OS.gtk_container_forall (handle, display.setDirectionProc, dir);
+    	int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+        GTK.gtk_widget_set_direction (handle, dir);
+        GTK.gtk_container_forall (handle, display.setDirectionProc, dir);
         if (menu != null) menu._setOrientation (parent.style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
     }
 }
@@ -1003,8 +1003,8 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
-	OS.gtk_check_menu_item_set_active (handle, selected);
-	if ((style & SWT.RADIO) != 0) OS.gtk_check_menu_item_set_active (groupHandle, !selected);
+	GTK.gtk_check_menu_item_set_active (handle, selected);
+	if ((style & SWT.RADIO) != 0) GTK.gtk_check_menu_item_set_active (groupHandle, !selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 }
 
@@ -1061,18 +1061,18 @@ public void setText (String string) {
 	}
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	if (boxHandle == 0 && !OS.GTK3) {
-		labelHandle = OS.gtk_bin_get_child (handle);
+	if (boxHandle == 0 && !GTK.GTK3) {
+		labelHandle = GTK.gtk_bin_get_child (handle);
 	}
-	if (labelHandle != 0 && OS.GTK_IS_LABEL (labelHandle)) {
-		OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-		if (OS.GTK_IS_ACCEL_LABEL (labelHandle)) {
-			if (OS.GTK3) {
-				if (OS.GTK_VERSION >= OS.VERSION(3, 6, 0)) {
+	if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
+		GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+		if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
+			if (GTK.GTK3) {
+				if (GTK.GTK_VERSION >= OS.VERSION(3, 6, 0)) {
 					MaskKeysym maskKeysym = getMaskKeysym();
 					if (maskKeysym != null) {
-						OS.gtk_accel_label_set_accel_widget (labelHandle, handle);
-						OS.gtk_accel_label_set_accel (labelHandle,
+						GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
+						GTK.gtk_accel_label_set_accel (labelHandle,
 								maskKeysym.keysym, maskKeysym.mask);
 					}
 				} else {
@@ -1091,8 +1091,8 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
 	byte[] buffer = Converter.wcsToMbcs (accelString, true);
 	long /*int*/ ptr = OS.g_malloc (buffer.length);
 	C.memmove (ptr, buffer, buffer.length);
-	long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
-	OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
+	long /*int*/ oldPtr = GTK.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
+	GTK.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
 	if (oldPtr != 0) OS.g_free (oldPtr);
 }
 
@@ -1148,9 +1148,9 @@ void updateAccelerator (long /*int*/ accelGroup, boolean add) {
 	/* When accel_key is zero, it causes GTK warnings */
 	if (keysym != 0) {
 		if (add) {
-			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+			GTK.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {
-			OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+			GTK.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
 		}
 	}
 }
@@ -1223,9 +1223,9 @@ boolean updateAcceleratorText (boolean show) {
 	if (maskKeysym.keysym != 0) {
 		long /*int*/ accelGroup = getAccelGroup ();
 		if (show) {
-			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, OS.GTK_ACCEL_VISIBLE);
+			GTK.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {
-			OS.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
+			GTK.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
 		}
 	}
 	return maskKeysym.keysym != 0;

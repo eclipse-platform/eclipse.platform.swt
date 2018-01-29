@@ -141,7 +141,7 @@ public DateTime (Composite parent, int style) {
 	}
 
 	if (isCalendar ()) {
-		OS.gtk_calendar_mark_day (calendarHandle, Calendar.getInstance ().get (Calendar.DAY_OF_MONTH));
+		GTK.gtk_calendar_mark_day (calendarHandle, Calendar.getInstance ().get (Calendar.DAY_OF_MONTH));
 	}
 
 	if (isDateWithDropDownButton ()) {
@@ -184,7 +184,7 @@ static int checkStyle (int style) {
 	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 
 	//Workaround. Right_to_left is buggy on gtk2. Only allow on gtk3 onwards
-	if (!OS.GTK3 && isDateWithDropDownButton (style)) {
+	if (!GTK.GTK3 && isDateWithDropDownButton (style)) {
 		style &= ~(SWT.RIGHT_TO_LEFT);
 	}
 
@@ -236,7 +236,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 	int width = 0, height = 0;
 	//For Date and Time, we cache the preffered size as there is no need to recompute it.
-	if (!changed && (isDate () || isTime ()) && OS.GTK3 && prefferedSize != null) {
+	if (!changed && (isDate () || isTime ()) && GTK.GTK3 && prefferedSize != null) {
 		width = (wHint != SWT.DEFAULT) ? wHint : prefferedSize.x;
 		height= (hHint != SWT.DEFAULT) ? hHint : prefferedSize.y;
 		return new Point (width,height);
@@ -255,7 +255,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 				width = trim.width + buttonSize.x;
 				height = Math.max (trim.height, buttonSize.y);
 			} else if (isDate () || isTime ()) {
-				if (OS.GTK3) {
+				if (GTK.GTK3) {
 					width = trim.width;
 					height = trim.height;
 				} else
@@ -272,7 +272,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int borderWidth = getBorderWidthInPixels ();
 
-	if (prefferedSize == null && (isDateWithDropDownButton () && OS.GTK3)) {
+	if (prefferedSize == null && (isDateWithDropDownButton () && GTK.GTK3)) {
 		prefferedSize = new Point (width + 2*borderWidth, height+ 2*borderWidth);
 		return prefferedSize;
 	} else {
@@ -289,23 +289,23 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			GtkBorder tmp = new GtkBorder ();
-			long /*int*/ context = OS.gtk_widget_get_style_context (textEntryHandle);
-			if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-				OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+			long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+			if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+				GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
 			} else {
-				OS.gtk_style_context_get_padding (context, OS.gtk_widget_get_state_flags(textEntryHandle), tmp);
+				GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
 			}
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
 			if ((style & SWT.BORDER) != 0) {
-				if (OS.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-					OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+				if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+					GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
 				} else {
-					OS.gtk_style_context_get_border (context, OS.gtk_widget_get_state_flags(textEntryHandle), tmp);
+					GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
 				}
 				trim.x -= tmp.left;
 				trim.y -= tmp.top;
@@ -357,9 +357,9 @@ void createHandle () {
 		} else {
 			createHandleForDateTime ();
 		}
-		OS.gtk_editable_set_editable (textEntryHandle, (style & SWT.READ_ONLY) == 0);
-		if (OS.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
-			OS.gtk_entry_set_has_frame (textEntryHandle, (style & SWT.BORDER) != 0);
+		GTK.gtk_editable_set_editable (textEntryHandle, (style & SWT.READ_ONLY) == 0);
+		if (GTK.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
+			GTK.gtk_entry_set_has_frame (textEntryHandle, (style & SWT.BORDER) != 0);
 		}
 	}
 }
@@ -367,63 +367,63 @@ void createHandle () {
 private void createHandleForFixed () {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
 }
 
 private void createHandleForCalendar () {
-	calendarHandle = OS.gtk_calendar_new ();
+	calendarHandle = GTK.gtk_calendar_new ();
 	if (calendarHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	//Calenadar becomes container in this case.
 	handle = calendarHandle;
 	containerHandle = calendarHandle;
 
-	OS.gtk_container_add (fixedHandle, calendarHandle);
-	OS.gtk_calendar_set_display_options (calendarHandle, OS.GTK_CALENDAR_SHOW_HEADING | OS.GTK_CALENDAR_SHOW_DAY_NAMES);
-	OS.gtk_widget_show (calendarHandle);
+	GTK.gtk_container_add (fixedHandle, calendarHandle);
+	GTK.gtk_calendar_set_display_options (calendarHandle, GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES);
+	GTK.gtk_widget_show (calendarHandle);
 }
 
 private void createHandleForDateWithDropDown () {
 	//Create box to put entry and button into box.
-	containerHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
+	containerHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
 	if (containerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (fixedHandle, containerHandle);
+	GTK.gtk_container_add (fixedHandle, containerHandle);
 
 	//Create entry
-	textEntryHandle = OS.gtk_entry_new ();
+	textEntryHandle = GTK.gtk_entry_new ();
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (containerHandle, textEntryHandle);
+	GTK.gtk_container_add (containerHandle, textEntryHandle);
 
-	OS.gtk_widget_show (containerHandle);
-	OS.gtk_widget_show (textEntryHandle);
+	GTK.gtk_widget_show (containerHandle);
+	GTK.gtk_widget_show (textEntryHandle);
 
 	handle = containerHandle;
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setFontDescription (defaultFont ().handle);
 	}
 }
 
 private void createHandleForDateTime () {
-	long /*int*/ adjusment = OS.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
-	textEntryHandle = OS.gtk_spin_button_new (adjusment, 1, 0);
+	long /*int*/ adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
+	textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	//in this case,the Entry becomes the container.
 	handle = textEntryHandle;
 	containerHandle = textEntryHandle;
 
-	OS.gtk_spin_button_set_numeric (textEntryHandle, false);
-	OS.gtk_container_add (fixedHandle, textEntryHandle);
-	OS.gtk_spin_button_set_wrap (textEntryHandle, (style & SWT.WRAP) != 0);
+	GTK.gtk_spin_button_set_numeric (textEntryHandle, false);
+	GTK.gtk_container_add (fixedHandle, textEntryHandle);
+	GTK.gtk_spin_button_set_wrap (textEntryHandle, (style & SWT.WRAP) != 0);
 }
 
 void createDropDownButton () {
 	down = new Button (this, SWT.ARROW  | SWT.DOWN);
-	OS.gtk_widget_set_can_focus (down.handle, false);
+	GTK.gtk_widget_set_can_focus (down.handle, false);
 	down.addListener (SWT.Selection, event -> {
 		popupCalendar.calendarDisplayed = !isDropped ();
 		setFocus ();
@@ -606,7 +606,7 @@ private void focusDayOnPopupCalendar () {
 
 	if (savedYear == currentYear && savedMonth == currentMonth) {
 		int currentDay = Calendar.getInstance ().get (Calendar.DAY_OF_MONTH);
-		OS.gtk_calendar_mark_day (popupCalendar.handle, currentDay);
+		GTK.gtk_calendar_mark_day (popupCalendar.handle, currentDay);
 	}
 }
 
@@ -629,7 +629,7 @@ private void recreateCalendar () {
 
 private void hideDropDownCalendar () {
 	popupShell.setVisible (false);
-	OS.gtk_calendar_clear_marks (popupCalendar.handle);
+	GTK.gtk_calendar_clear_marks (popupCalendar.handle);
 	display.removeFilter (SWT.MouseDown, mouseEventListener);
 	return;
 }
@@ -652,7 +652,7 @@ String formattedStringValue (int fieldName, int value, boolean adjust) {
 
 @Override
 GdkColor getBackgroundGdkColor () {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	if (isCalendar ()) {
 		return getBaseGdkColor ();
 	} else {
@@ -709,7 +709,7 @@ void getDate () {
 	int [] y = new int [1];
 	int [] m = new int [1];
 	int [] d = new int [1];
-	OS.gtk_calendar_get_date (calendarHandle, y, m, d);
+	GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
 	year = y[0];
 	month = m[0];
 	day = d[0];
@@ -958,13 +958,13 @@ void hookEvents () {
 		hookEventsForCalendar ();
 	} else {
 		int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
-		OS.gtk_widget_add_events (textEntryHandle, eventMask);
+		GTK.gtk_widget_add_events (textEntryHandle, eventMask);
 
 
 		if ((style & SWT.DROP_DOWN) == 0 ) {
 			hookEventsForDateTimeSpinner ();
 		}
-		if (OS.G_OBJECT_TYPE (textEntryHandle) == OS.GTK_TYPE_MENU ()) {
+		if (OS.G_OBJECT_TYPE (textEntryHandle) == GTK.GTK_TYPE_MENU ()) {
 			hookEventsForMenu ();
 		}
 	}
@@ -1314,7 +1314,7 @@ void sendSelectionEvent () {
 	int [] y = new int [1];
 	int [] m = new int [1];
 	int [] d = new int [1];
-	OS.gtk_calendar_get_date (calendarHandle, y, m, d);
+	GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
 	//TODO: hours, minutes, seconds?
 	if (d[0] != day ||
 		m[0] != month ||
@@ -1324,9 +1324,9 @@ void sendSelectionEvent () {
 		day = d[0];
 		/* Highlight the current (today) date */
 		if (year == Calendar.getInstance ().get (Calendar.YEAR) && month == Calendar.getInstance ().get (Calendar.MONTH)) {
-			OS.gtk_calendar_mark_day (calendarHandle, Calendar.getInstance ().get (Calendar.DAY_OF_MONTH));
+			GTK.gtk_calendar_mark_day (calendarHandle, Calendar.getInstance ().get (Calendar.DAY_OF_MONTH));
 		} else {
-			OS.gtk_calendar_clear_marks (calendarHandle);
+			GTK.gtk_calendar_clear_marks (calendarHandle);
 		}
 		sendSelectionEvent (SWT.Selection);
 	}
@@ -1335,9 +1335,9 @@ void sendSelectionEvent () {
 @Override
 public void setBackground (Color color) {
 	super.setBackground (color);
-	if (!OS.GTK3) {
+	if (!GTK.GTK3) {
 		if ((isCalendar ()) && color == null) {
-			OS.gtk_widget_modify_base (containerHandle, 0, null);
+			GTK.gtk_widget_modify_base (containerHandle, 0, null);
 		}
 	}
 	bg = color;
@@ -1346,9 +1346,9 @@ public void setBackground (Color color) {
 
 @Override
 void setBackgroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	if (isCalendar ()) {
-		OS.gtk_widget_modify_base (containerHandle, 0, color);
+		GTK.gtk_widget_modify_base (containerHandle, 0, color);
 	} else {
 		super.setBackgroundGdkColor (color);
 	}
@@ -1356,7 +1356,7 @@ void setBackgroundGdkColor (GdkColor color) {
 
 @Override
 void setBackgroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setBackgroundGdkRGBA(rgba);
 	if (calendarHandle != 0) {
 		setBackgroundGdkRGBA (calendarHandle, rgba);
@@ -1367,15 +1367,15 @@ void setBackgroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 
 	// We need to override here because DateTime widgets use "background" instead of
 	// "background-color" as their CSS property.
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
     	// Form background string
-        String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+        String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
-        String selection = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+        String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
         String css = name + " {background: " + display.gtk_rgba_to_css_string (rgba) + ";}\n" +
         		name + selection + " {background: " + display.gtk_rgba_to_css_string(display.COLOR_LIST_SELECTION_RGBA) + ";}";
 
@@ -1407,13 +1407,13 @@ public void setFont (Font font) {
 
 @Override
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	setForegroundColor (containerHandle, color, false);
 }
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	setForegroundGdkRGBA (containerHandle, rgba);
 }
 
@@ -1501,8 +1501,8 @@ public void setDate (int year, int month, int day) {
 		this.year = year;
 		this.month = month;
 		this.day = day;
-		OS.gtk_calendar_select_month (calendarHandle, month, year);
-		OS.gtk_calendar_select_day (calendarHandle, day);
+		GTK.gtk_calendar_select_month (calendarHandle, month, year);
+		GTK.gtk_calendar_select_day (calendarHandle, day);
 	} else {
 		calendar.set (year, month, day);
 		updateControl ();
@@ -1530,7 +1530,7 @@ public void setDay (int day) {
 	if (!isValidDate (getYear (), getMonth (), day)) return;
 	if (isCalendar ()) {
 		this.day = day;
-		OS.gtk_calendar_select_day (calendarHandle, day);
+		GTK.gtk_calendar_select_day (calendarHandle, day);
 	} else {
 		calendar.set (Calendar.DAY_OF_MONTH, day);
 		updateControl ();
@@ -1612,7 +1612,7 @@ public void setMonth (int month) {
 	if (!isValidDate (getYear (), month, getDay ())) return;
 	if (isCalendar ()) {
 		this.month = month;
-		OS.gtk_calendar_select_month (calendarHandle, month, year);
+		GTK.gtk_calendar_select_month (calendarHandle, month, year);
 	} else {
 		calendar.set (Calendar.MONTH, month);
 		updateControl ();
@@ -1695,7 +1695,7 @@ public void setYear (int year) {
 	if (!isValidDate (year, getMonth (), getDay ())) return;
 	if (isCalendar ()) {
 		this.year = year;
-		OS.gtk_calendar_select_month (calendarHandle, month, year);
+		GTK.gtk_calendar_select_month (calendarHandle, month, year);
 	} else {
 		calendar.set (Calendar.YEAR, year);
 		updateControl ();
@@ -1706,13 +1706,13 @@ public void setYear (int year) {
 void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
-	if (isDateWithDropDownButton () && OS.GTK3) {
+	if (isDateWithDropDownButton () && GTK.GTK3) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_get_preferred_size (textEntryHandle, null, requisition);
+		GTK.gtk_widget_get_preferred_size (textEntryHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
 
 		int newWidth = width - (down.getSizeInPixels ().x + getGtkBorderPadding ().right);
-		OS.gtk_widget_set_size_request (textEntryHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
+		GTK.gtk_widget_set_size_request (textEntryHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
 	}
 
 	/*
@@ -1729,7 +1729,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 	 * native height.
 	 */
 	int fixedGtkVersion = OS.VERSION (3, 14, 2);
-	if (isCalendar () && OS.GTK3 && (OS.GTK_VERSION < fixedGtkVersion)) {
+	if (isCalendar () && GTK.GTK3 && (GTK.GTK_VERSION < fixedGtkVersion)) {
 			int calendarPrefferedVerticalSize = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, true).y;
 			if (height > calendarPrefferedVerticalSize) {
 				height = calendarPrefferedVerticalSize;
@@ -1766,14 +1766,14 @@ private void setDropDownButtonSize () {
  * @return GtkBorder object that holds the padding values.
  */
 GtkBorder getGtkBorderPadding () {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		//In Gtk3, acquire border.
 		GtkBorder gtkBorderPadding = new GtkBorder ();
-		long /*int*/ context = OS.gtk_widget_get_style_context (textEntryHandle);
-		if (OS.GTK_VERSION < OS.VERSION(3, 18 , 0)) {
-			OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, gtkBorderPadding);
+		long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 18 , 0)) {
+			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, gtkBorderPadding);
 		} else {
-			OS.gtk_style_context_get_padding (context, OS.gtk_widget_get_state_flags(textEntryHandle), gtkBorderPadding);
+			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), gtkBorderPadding);
 		}
 		return gtkBorderPadding;
 	} else {
@@ -1905,7 +1905,7 @@ void deregister () {
 
 
 int getArrow (long /*int*/ widget) {
-	int adj_value = (int) OS.gtk_adjustment_get_value (OS.gtk_spin_button_get_adjustment (widget));
+	int adj_value = (int) GTK.gtk_adjustment_get_value (GTK.gtk_spin_button_get_adjustment (widget));
 	int new_value = 0;
 		if (isDate ()) {
 			// getMonth () return 0 as first month and 11 as last one, whereas adjusment does not, so adding one makes them comaprable
@@ -1935,8 +1935,8 @@ void setText (String dateTimeText) {
 	if (dateTimeText != null){
 		byte [] dateTimeConverted = Converter.wcsToMbcs (dateTimeText, true);
 		//note, this is ignored if the control is in a fill-layout.
-		OS.gtk_entry_set_width_chars (textEntryHandle, dateTimeText.length ());
-		OS.gtk_entry_set_text (textEntryHandle, dateTimeConverted);
+		GTK.gtk_entry_set_width_chars (textEntryHandle, dateTimeText.length ());
+		GTK.gtk_entry_set_text (textEntryHandle, dateTimeConverted);
 	}
 }
 
@@ -2007,8 +2007,8 @@ Point getSelection () {
 	Point selection;
 	int [] start = new int [1];
 	int [] end = new int [1];
-	OS.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
-	long /*int*/ ptr = OS.gtk_entry_get_text (textEntryHandle);
+	GTK.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
+	long /*int*/ ptr = GTK.gtk_entry_get_text (textEntryHandle);
 	start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 	end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	selection = new Point (start [0], end [0]);
@@ -2031,7 +2031,7 @@ Point getSelection () {
 String getText () {
 	checkWidget ();
 	if (textEntryHandle != 0) {
-		long /*int*/ str = OS.gtk_entry_get_text (textEntryHandle);
+		long /*int*/ str = GTK.gtk_entry_get_text (textEntryHandle);
 		if (str == 0) return "";
 		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
@@ -2062,11 +2062,11 @@ String getText (String str,int start, int end) {
 
 void setSelection (int start, int end) {
 	checkWidget ();
-	long /*int*/ ptr = OS.gtk_entry_get_text (textEntryHandle);
+	long /*int*/ ptr = GTK.gtk_entry_get_text (textEntryHandle);
 	start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 	end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
-	OS.gtk_editable_set_position (textEntryHandle, start);
-	OS.gtk_editable_select_region (textEntryHandle, start, end);
+	GTK.gtk_editable_set_position (textEntryHandle, start);
+	GTK.gtk_editable_select_region (textEntryHandle, start, end);
 }
 
 void setTextField (int fieldName, int value, boolean commitInternalDataStructure, boolean adjustDisplayedFormatting) {
@@ -2173,10 +2173,10 @@ void replaceCurrentlySelectedTextRegion (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (string, false);
 	int [] start = new int [1], end = new int [1];
-	OS.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
-	OS.gtk_editable_delete_selection (textEntryHandle);
-	OS.gtk_editable_insert_text (textEntryHandle, buffer, buffer.length, start);
-	OS.gtk_editable_set_position (textEntryHandle, start [0]);
+	GTK.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
+	GTK.gtk_editable_delete_selection (textEntryHandle);
+	GTK.gtk_editable_insert_text (textEntryHandle, buffer, buffer.length, start);
+	GTK.gtk_editable_set_position (textEntryHandle, start [0]);
 }
 
 void onTextMouseClick (GdkEventButton event) {
@@ -2209,13 +2209,13 @@ String getText (int start, int end) {
 void selectAll () {
 	checkWidget ();
 	if (textEntryHandle != 0)
-		OS.gtk_editable_select_region (textEntryHandle, 0, -1);
+		GTK.gtk_editable_select_region (textEntryHandle, 0, -1);
 }
 
 
 void hideDateTime () {
 	if (isDate () || isTime ()){
-		OS.gtk_widget_hide (fixedHandle);
+		GTK.gtk_widget_hide (fixedHandle);
 	}
 }
 

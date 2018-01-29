@@ -184,7 +184,7 @@ void _setImages (Image [] images) {
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);
 		}
 	}
-	OS.gtk_window_set_icon_list (topHandle (), pixbufs);
+	GTK.gtk_window_set_icon_list (topHandle (), pixbufs);
 	long /*int*/ [] data = new long /*int*/ [1];
 	long /*int*/ temp = pixbufs;
 	while (temp != 0) {
@@ -236,11 +236,11 @@ Control computeTabRoot () {
 
 void createAccelGroup () {
 	if (accelGroup != 0) return;
-	accelGroup = OS.gtk_accel_group_new ();
+	accelGroup = GTK.gtk_accel_group_new ();
 	if (accelGroup == 0) error (SWT.ERROR_NO_HANDLES);
 	//FIXME - what should we do for Decorations
 	long /*int*/ shellHandle = topHandle ();
-	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
+	GTK.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
 @Override
@@ -252,7 +252,7 @@ void createWidget (int index) {
 void destroyAccelGroup () {
 	if (accelGroup == 0) return;
 	long /*int*/ shellHandle = topHandle ();
-	OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
+	GTK.gtk_window_remove_accel_group (shellHandle, accelGroup);
 	//TEMPORARY CODE
 //	OS.g_object_unref (accelGroup);
 	accelGroup = 0;
@@ -560,7 +560,7 @@ public void setDefaultButton (Button button) {
 		buttonHandle = button.handle;
 	}
 	saveDefault = defaultButton = button;
-	OS.gtk_window_set_default (topHandle (), buttonHandle);
+	GTK.gtk_window_set_default (topHandle (), buttonHandle);
 }
 
 /**
@@ -783,7 +783,7 @@ boolean traverseReturn () {
 	*/
 	if (!button.isVisible () || !button.isEnabled ()) return true;
 	long /*int*/ shellHandle = _getShell ().topHandle ();
-	return OS.gtk_window_activate_default (shellHandle);
+	return GTK.gtk_window_activate_default (shellHandle);
 }
 
 }

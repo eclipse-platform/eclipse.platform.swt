@@ -148,8 +148,8 @@ void createHandle(int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (handle, true);
-	OS.gtk_widget_set_can_focus (handle, true);
+	GTK.gtk_widget_set_has_window (handle, true);
+	GTK.gtk_widget_set_can_focus (handle, true);
 	layout = new TextLayout (display);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
@@ -391,15 +391,15 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		long /*int*/ context = OS.gtk_widget_get_style_context(widget);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		long /*int*/ context = GTK.gtk_widget_get_style_context(widget);
 		GtkAllocation allocation = new GtkAllocation();
-		OS.gtk_widget_get_allocation (widget, allocation);
+		GTK.gtk_widget_get_allocation (widget, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		// We specify a 0 value for x & y as we want the whole widget to be
 		// colored, not some portion of it.
-		OS.gtk_render_background(context, cairo, 0, 0, width, height);
+		GTK.gtk_render_background(context, cairo, 0, 0, width, height);
 	}
 	return super.gtk_draw(widget, cairo);
 }

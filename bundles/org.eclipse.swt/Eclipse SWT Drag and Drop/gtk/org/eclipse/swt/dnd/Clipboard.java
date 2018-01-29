@@ -36,10 +36,10 @@ public class Clipboard {
 	private static long /*int*/ TARGET;
 
 	static {
-		GTKCLIPBOARD = OS.gtk_clipboard_get(OS.GDK_NONE);
+		GTKCLIPBOARD = GTK.gtk_clipboard_get(OS.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs("PRIMARY", true);
 		long /*int*/ primary = OS.gdk_atom_intern(buffer, false);
-		GTKPRIMARYCLIPBOARD = OS.gtk_clipboard_get(primary);
+		GTKPRIMARYCLIPBOARD = GTK.gtk_clipboard_get(primary);
 		buffer = Converter.wcsToMbcs("TARGETS", true);
 		TARGET = OS.gdk_atom_intern(buffer, false);
 	}
@@ -313,12 +313,12 @@ public Object getContents(Transfer transfer, int clipboards) {
 	}
 	if (selection_data == 0) return null;
 	TransferData tdata = new TransferData();
-	tdata.type = OS.gtk_selection_data_get_data_type(selection_data);
-	tdata.pValue = OS.gtk_selection_data_get_data(selection_data);
-	tdata.length = OS.gtk_selection_data_get_length(selection_data);
-	tdata.format = OS.gtk_selection_data_get_format(selection_data);
+	tdata.type = GTK.gtk_selection_data_get_data_type(selection_data);
+	tdata.pValue = GTK.gtk_selection_data_get_data(selection_data);
+	tdata.length = GTK.gtk_selection_data_get_length(selection_data);
+	tdata.format = GTK.gtk_selection_data_get_format(selection_data);
 	Object result = transfer.nativeToJava(tdata);
-	OS.gtk_selection_data_free(selection_data);
+	GTK.gtk_selection_data_free(selection_data);
 	return result;
 }
 
@@ -599,15 +599,15 @@ private  int[] getAvailablePrimaryTypes() {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			int length = OS.gtk_selection_data_get_length(selection_data);
-			int format = OS.gtk_selection_data_get_format(selection_data);
-			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
+			int length = GTK.gtk_selection_data_get_length(selection_data);
+			int format = GTK.gtk_selection_data_get_format(selection_data);
+			long /*int*/ data = GTK.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
 			}
 		} finally {
-			OS.gtk_selection_data_free(selection_data);
+			GTK.gtk_selection_data_free(selection_data);
 		}
 	}
 	return types;
@@ -624,15 +624,15 @@ private int[] getAvailableClipboardTypes () {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			int length = OS.gtk_selection_data_get_length(selection_data);
-			int format = OS.gtk_selection_data_get_format(selection_data);
-			long /*int*/ data = OS.gtk_selection_data_get_data(selection_data);
+			int length = GTK.gtk_selection_data_get_length(selection_data);
+			int format = GTK.gtk_selection_data_get_format(selection_data);
+			long /*int*/ data = GTK.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
 			}
 		} finally {
-			OS.gtk_selection_data_free(selection_data);
+			GTK.gtk_selection_data_free(selection_data);
 		}
 	}
 	return types;
@@ -643,7 +643,7 @@ long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*
 	String key = "org.eclipse.swt.internal.gtk.dispatchEvent";
 	Display display = this.display;
 	display.setData(key, new int[]{OS.GDK_PROPERTY_NOTIFY, OS.GDK_SELECTION_CLEAR, OS.GDK_SELECTION_REQUEST, OS.GDK_SELECTION_NOTIFY});
-	long /*int*/ selection_data = OS.gtk_clipboard_wait_for_contents(clipboard, target);
+	long /*int*/ selection_data = GTK.gtk_clipboard_wait_for_contents(clipboard, target);
 	display.setData(key, null);
 	long duration = System.currentTimeMillis() - startTime;
 	if (selection_data == 0 && duration > 5000) {

@@ -248,7 +248,7 @@ void checkGC (int mask) {
 		GdkRGBA colorRGBA = null;
 		Pattern pattern;
 		if ((state & FOREGROUND) != 0) {
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				colorRGBA = data.foregroundRGBA;
 			} else {
 				color = data.foreground;
@@ -256,7 +256,7 @@ void checkGC (int mask) {
 			pattern = data.foregroundPattern;
 			data.state &= ~BACKGROUND;
 		} else {
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				colorRGBA = data.backgroundRGBA;
 			} else {
 				color = data.background;
@@ -277,7 +277,7 @@ void checkGC (int mask) {
 				Cairo.cairo_set_source(cairo, pattern.handle);
 			}
 		} else {
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, data.alpha / (float)0xFF);
 			} else {
 				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
@@ -526,7 +526,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		Cairo.cairo_restore(handle);
 		if (paint) {
 			long /*int*/ visibleRegion;
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				visibleRegion = OS.gdk_window_get_visible_region (drawable);
 			} else {
 				visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
@@ -589,7 +589,7 @@ void createLayout() {
 	long /*int*/ layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
-	OS.pango_context_set_language(context, OS.gtk_get_default_language());
+	OS.pango_context_set_language(context, GTK.gtk_get_default_language());
 	OS.pango_context_set_base_dir(context, (data.style & SWT.MIRRORED) != 0 ? OS.PANGO_DIRECTION_RTL : OS.PANGO_DIRECTION_LTR);
 	OS.pango_layout_set_auto_dir(layout, false);
 }
@@ -724,12 +724,12 @@ public void drawFocus(int x, int y, int width, int height) {
 void drawFocusInPixels(int x, int y, int width, int height) {
 	long /*int*/ cairo = data.cairo;
 	checkGC(FOREGROUND);
-	if (OS.GTK3) {
-		long /*int*/  context = OS.gtk_widget_get_style_context(data.device.shellHandle);
-		OS.gtk_render_focus(context, cairo, x, y, width, height);
+	if (GTK.GTK3) {
+		long /*int*/  context = GTK.gtk_widget_get_style_context(data.device.shellHandle);
+		GTK.gtk_render_focus(context, cairo, x, y, width, height);
 	} else {
 		int[] lineWidth = new int[1];
-		OS.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
+		GTK.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
 		Cairo.cairo_save(cairo);
 		Cairo.cairo_set_line_width(cairo, lineWidth[0]);
 		double[] dashes = new double[]{1, 1};
@@ -1925,7 +1925,7 @@ public int getAntialias() {
  */
 public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return Color.gtk_new(data.device, data.backgroundRGBA);
 	} else {
 		return Color.gtk_new(data.device, data.background);
@@ -2169,7 +2169,7 @@ public FontMetrics getFontMetrics() {
  */
 public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return Color.gtk_new(data.device, data.foregroundRGBA);
 	} else {
 		return Color.gtk_new(data.device, data.foreground);
@@ -2528,7 +2528,7 @@ double[] identity() {
 }
 
 void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		if (data.foregroundRGBA != null) data.state &= ~FOREGROUND;
 		if (data.backgroundRGBA != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
 	} else {
@@ -2764,7 +2764,7 @@ public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		data.backgroundRGBA = color.handleRGBA;
 	} else {
 		data.background = color.handle;
@@ -2835,7 +2835,7 @@ static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		GdkRGBA rgba = c.handleRGBA;
 		Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, rgba.red, rgba.green, rgba.blue, alpha / 255f);
 	} else {
@@ -2850,7 +2850,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
-	if (data.drawable != 0 && !OS.GTK3) {
+	if (data.drawable != 0 && !GTK.GTK3) {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);
 	} else {
 		Cairo.cairo_reset_clip(cairo);
@@ -2987,7 +2987,7 @@ public void setClipping(Rectangle rect) {
 	setClippingInPixels(DPIUtil.autoScaleUp(drawable, rect));
 }
 void setClippingInPixels(Rectangle rect) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 9, 0) && (drawable instanceof Tree || drawable instanceof Table)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && (drawable instanceof Tree || drawable instanceof Table)) {
 		return; //FIXME: This is an atrocious hack for bug 446075
 	}
 	if (rect == null) {
@@ -3090,7 +3090,7 @@ public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		data.foregroundRGBA = color.handleRGBA;
 	} else {
 		data.foreground = color.handle;

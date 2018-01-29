@@ -607,9 +607,9 @@ static String getString (long /*int*/ strPtr) {
 
 static Browser FindBrowser (long /*int*/ webView) {
 	if (webView == 0) return null;
-	long /*int*/ parent = OS.gtk_widget_get_parent (webView);
+	long /*int*/ parent = GTK.gtk_widget_get_parent (webView);
 	if (WEBKIT1){
-		parent = OS.gtk_widget_get_parent (parent);
+		parent = GTK.gtk_widget_get_parent (parent);
 	}
 	return (Browser)Display.getCurrent ().findWidget (parent);
 }
@@ -678,7 +678,7 @@ static long /*int*/ JSObjectHasPropertyProc (long /*int*/ ctx, long /*int*/ obje
 }
 
 static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long /*int*/ user_data) {
-	if (OS.GTK_IS_SCROLLED_WINDOW (arg0)) {
+	if (GTK.GTK_IS_SCROLLED_WINDOW (arg0)) {
 		/*
 		 * Stop the propagation of events that are not consumed by WebKit, before
 		 * they reach the parent embedder.  These events have already been received.
@@ -742,7 +742,7 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 					}
 				}
 				if (WEBKIT1 || (WEBKIT2 && browser != null)) {
-					OS.gtk_widget_event (browser.handle, event);
+					GTK.gtk_widget_event (browser.handle, event);
 				}
 			}
 		}
@@ -1036,8 +1036,8 @@ public void create (Composite parent, int style) {
 	}
 
 	if (WEBKIT1){
-		scrolledWindow = OS.gtk_scrolled_window_new (0, 0);
-		OS.gtk_scrolled_window_set_policy (scrolledWindow, OS.GTK_POLICY_AUTOMATIC, OS.GTK_POLICY_AUTOMATIC);
+		scrolledWindow = GTK.gtk_scrolled_window_new (0, 0);
+		GTK.gtk_scrolled_window_set_policy (scrolledWindow, GTK.GTK_POLICY_AUTOMATIC, GTK.GTK_POLICY_AUTOMATIC);
 	}
 
 	webView = WebKitGTK.webkit_web_view_new ();
@@ -1057,9 +1057,9 @@ public void create (Composite parent, int style) {
 	}
 
 	if (WEBKIT1){
-		OS.gtk_container_add (scrolledWindow, webView);
-		OS.gtk_container_add (browser.handle, scrolledWindow);
-		OS.gtk_widget_show (scrolledWindow);
+		GTK.gtk_container_add (scrolledWindow, webView);
+		GTK.gtk_container_add (browser.handle, scrolledWindow);
+		GTK.gtk_widget_show (scrolledWindow);
 
 		OS.g_signal_connect (webView, WebKitGTK.close_web_view, Proc2.getAddress (), CLOSE_WEB_VIEW);
 		OS.g_signal_connect (webView, WebKitGTK.console_message, Proc5.getAddress (), CONSOLE_MESSAGE);
@@ -1076,7 +1076,7 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
 		OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
 	} else {
-		OS.gtk_container_add (browser.handle, webView);
+		GTK.gtk_container_add (browser.handle, webView);
 		OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
 		OS.g_signal_connect (webView, WebKitGTK.create, Proc3.getAddress (), CREATE_WEB_VIEW);
 		OS.g_signal_connect (webView, WebKitGTK.load_changed, Proc3.getAddress (), LOAD_CHANGED);
@@ -1089,8 +1089,8 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, WebKitGTK.authenticate, Proc3.getAddress (), AUTHENTICATE);
 	}
 
-	OS.gtk_widget_show (webView);
-	OS.gtk_widget_show (browser.handle);
+	GTK.gtk_widget_show (webView);
+	GTK.gtk_widget_show (browser.handle);
 
 	OS.g_signal_connect (webView, WebKitGTK.notify_title, Proc3.getAddress (), NOTIFY_TITLE);
 
@@ -1165,7 +1165,7 @@ public void create (Composite parent, int style) {
 				break;
 			}
 			case SWT.FocusIn: {
-				OS.gtk_widget_grab_focus (webView);
+				GTK.gtk_widget_grab_focus (webView);
 				break;
 			}
 			case SWT.Resize: {
@@ -1883,7 +1883,7 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 
 	/* key event */
 	int keyEventState = 0;
-	long /*int*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -2389,9 +2389,9 @@ void onDispose (Event e) {
 void onResize (Event e) {
 	Rectangle rect = DPIUtil.autoScaleUp(browser.getClientArea ());
 	if (WEBKIT2){
-		OS.gtk_widget_set_size_request (webView, rect.width, rect.height);
+		GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);
 	} else {
-		OS.gtk_widget_set_size_request (scrolledWindow, rect.width, rect.height);
+		GTK.gtk_widget_set_size_request (scrolledWindow, rect.width, rect.height);
 	}
 }
 
@@ -3280,11 +3280,11 @@ long /*int*/ webkit_populate_popup (long /*int*/ web_view, long /*int*/ webkit_m
 	browser.notifyListeners (SWT.MenuDetect, event);
 	if (!event.doit) {
 		/* clear the menu */
-		long /*int*/ children = OS.gtk_container_get_children (webkit_menu);
+		long /*int*/ children = GTK.gtk_container_get_children (webkit_menu);
 		long /*int*/ current = children;
 		while (current != 0) {
 			long /*int*/ item = OS.g_list_data (current);
-			OS.gtk_container_remove (webkit_menu, item);
+			GTK.gtk_container_remove (webkit_menu, item);
 			current = OS.g_list_next (current);
 		}
 		OS.g_list_free (children);
@@ -3297,11 +3297,11 @@ long /*int*/ webkit_populate_popup (long /*int*/ web_view, long /*int*/ webkit_m
 		}
 		menu.setVisible (true);
 		/* clear the menu */
-		long /*int*/ children = OS.gtk_container_get_children (webkit_menu);
+		long /*int*/ children = GTK.gtk_container_get_children (webkit_menu);
 		long /*int*/ current = children;
 		while (current != 0) {
 			long /*int*/ item = OS.g_list_data (current);
-			OS.gtk_container_remove (webkit_menu, item);
+			GTK.gtk_container_remove (webkit_menu, item);
 			current = OS.g_list_next (current);
 		}
 		OS.g_list_free (children);

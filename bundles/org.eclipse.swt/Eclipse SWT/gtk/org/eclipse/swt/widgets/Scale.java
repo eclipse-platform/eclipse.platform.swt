@@ -127,18 +127,18 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
-	long /*int*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	long /*int*/ hAdjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		handle = gtk_scale_new (OS.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
+		handle = gtk_scale_new (GTK.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
 	} else {
-		handle = gtk_scale_new (OS.GTK_ORIENTATION_VERTICAL, hAdjustment);
+		handle = gtk_scale_new (GTK.GTK_ORIENTATION_VERTICAL, hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_scale_set_digits (handle, 0);
-	OS.gtk_scale_set_draw_value (handle, false);
+	GTK.gtk_container_add (fixedHandle, handle);
+	GTK.gtk_scale_set_digits (handle, 0);
+	GTK.gtk_scale_set_draw_value (handle, false);
 }
 
 @Override
@@ -161,8 +161,8 @@ void hookEvents () {
  */
 public int getIncrement () {
 	checkWidget ();
-	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) OS.gtk_adjustment_get_step_increment (hAdjustment);
+	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	return (int) GTK.gtk_adjustment_get_step_increment (hAdjustment);
 }
 
 /**
@@ -177,8 +177,8 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) OS.gtk_adjustment_get_upper (hAdjustment);
+	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	return (int) GTK.gtk_adjustment_get_upper (hAdjustment);
 }
 
 /**
@@ -193,8 +193,8 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) OS.gtk_adjustment_get_lower (hAdjustment);
+	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	return (int) GTK.gtk_adjustment_get_lower (hAdjustment);
 }
 
 /**
@@ -211,8 +211,8 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) OS.gtk_adjustment_get_page_increment (hAdjustment);
+	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	return (int) GTK.gtk_adjustment_get_page_increment (hAdjustment);
 }
 
 /**
@@ -227,8 +227,8 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	return (int) OS.gtk_adjustment_get_value (hAdjustment);
+	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	return (int) GTK.gtk_adjustment_get_value (hAdjustment);
 }
 
 @Override
@@ -279,7 +279,7 @@ public void setIncrement (int increment) {
 	checkWidget ();
 	if (increment < 1) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_increments (handle, increment, getPageIncrement ());
+	GTK.gtk_range_set_increments (handle, increment, getPageIncrement ());
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -301,7 +301,7 @@ public void setMaximum (int value) {
 	int minimum = getMinimum();
 	if (value <= minimum) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_range (handle, minimum, value);
+	GTK.gtk_range_set_range (handle, minimum, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -324,7 +324,7 @@ public void setMinimum (int value) {
 	int maximum = getMaximum ();
 	if (value >= maximum) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_range (handle, value, maximum);
+	GTK.gtk_range_set_range (handle, value, maximum);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -345,7 +345,7 @@ public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
 	if (pageIncrement < 1) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_increments (handle, getIncrement (), pageIncrement);
+	GTK.gtk_range_set_increments (handle, getIncrement (), pageIncrement);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -363,19 +363,19 @@ public void setPageIncrement (int pageIncrement) {
 public void setSelection (int value) {
 	checkWidget ();
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_value (handle, value);
+	GTK.gtk_range_set_value (handle, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 long /*int*/ gtk_scale_new (int orientation, long /*int*/ adjustment) {
 	long /*int*/ scale = 0;
-	if (OS.GTK3)	{
-		scale = OS.gtk_scale_new (orientation, adjustment);
+	if (GTK.GTK3)	{
+		scale = GTK.gtk_scale_new (orientation, adjustment);
 	} else {
-		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
-			scale = OS.gtk_hscale_new (adjustment);
+		if (orientation == GTK.GTK_ORIENTATION_HORIZONTAL) {
+			scale = GTK.gtk_hscale_new (adjustment);
 		} else {
-			scale = OS.gtk_vscale_new (adjustment);
+			scale = GTK.gtk_vscale_new (adjustment);
 		}
 	}
 	return scale;

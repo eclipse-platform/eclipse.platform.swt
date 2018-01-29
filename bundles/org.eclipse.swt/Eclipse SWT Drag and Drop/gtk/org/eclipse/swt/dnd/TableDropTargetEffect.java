@@ -106,7 +106,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	public void dragLeave(DropTargetEvent event) {
 		Table table = (Table) control;
 		long /*int*/ handle = table.handle;
-		OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+		GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 
 		scrollBeginTime = 0;
 		scrollIndex = -1;
@@ -137,10 +137,10 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = DPIUtil.autoScaleUp(table.toControl(coordinates));
 		long /*int*/ [] path = new long /*int*/ [1];
-		OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
+		GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
 		if (path[0] != 0) {
-			long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
+			long /*int*/ indices = GTK.gtk_tree_path_get_indices (path[0]);
 			if (indices != 0) {
 				int[] temp = new int[1];
 				C.memmove (temp, indices, 4);
@@ -154,15 +154,15 @@ public class TableDropTargetEffect extends DropTargetEffect {
 			if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
 					if (coordinates.y < DPIUtil.autoScaleUp(table.getItemHeight())) {
-						OS.gtk_tree_path_prev(path[0]);
+						GTK.gtk_tree_path_prev(path[0]);
 					} else {
-						OS.gtk_tree_path_next(path[0]);
+						GTK.gtk_tree_path_next(path[0]);
 					}
 					if (path[0] != 0) {
-						OS.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
-						OS.gtk_tree_path_free(path[0]);
+						GTK.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
+						GTK.gtk_tree_path_free(path[0]);
 						path[0] = 0;
-						OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
+						GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 					}
 					scrollBeginTime = 0;
 					scrollIndex = -1;
@@ -174,17 +174,17 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		}
 		if (path[0] != 0) {
 			int position = -1;
-			if ((effect & DND.FEEDBACK_SELECT) != 0) position = OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
-			if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = OS.GTK_TREE_VIEW_DROP_BEFORE;
-			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;
+			if ((effect & DND.FEEDBACK_SELECT) != 0) position = GTK.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+			if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = GTK.GTK_TREE_VIEW_DROP_BEFORE;
+			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = GTK.GTK_TREE_VIEW_DROP_AFTER;
 			if (position != -1) {
-				OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
+				GTK.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
 			} else {
-				OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+				GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 			}
 		} else {
-			OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+			GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 		}
-		if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
+		if (path[0] != 0) GTK.gtk_tree_path_free (path [0]);
 	}
 }

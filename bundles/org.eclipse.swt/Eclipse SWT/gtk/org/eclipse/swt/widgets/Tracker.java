@@ -312,9 +312,9 @@ void drawRectangles (Rectangle [] rects) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
 	if (window == 0) return;
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		if (overlay == 0) return;
-		OS.gtk_widget_shape_combine_region (overlay, 0);
+		GTK.gtk_widget_shape_combine_region (overlay, 0);
 		long /*int*/ region = OS.gdk_region_new ();
 		GdkRectangle rect = new GdkRectangle();
 		for (int i = 0; i < rects.length; i++) {
@@ -335,9 +335,9 @@ void drawRectangles (Rectangle [] rects) {
 			rect.height = 1;
 			OS.gdk_region_union_with_rect(region, rect);
 		}
-		OS.gtk_widget_shape_combine_region (overlay, region);
+		GTK.gtk_widget_shape_combine_region (overlay, region);
 		OS.gdk_region_destroy (region);
-		long /*int*/ overlayWindow = OS.gtk_widget_get_window (overlay);
+		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 		OS.gdk_window_hide (overlayWindow);
 		OS.gdk_window_show (overlayWindow);
 		return;
@@ -494,7 +494,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				draw = true;
 			}
 			if (draw) {
-				if (!OS.GTK3) {
+				if (!GTK.GTK3) {
 					drawRectangles (rectsToErase);
 					update ();
 				}
@@ -621,7 +621,7 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 				draw = true;
 			}
 			if (draw) {
-				if (!OS.GTK3) {
+				if (!GTK.GTK3) {
 					drawRectangles (rectsToErase);
 					update ();
 				}
@@ -668,7 +668,7 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 				draw = true;
 			}
 			if (draw) {
-				if (!OS.GTK3) {
+				if (!GTK.GTK3) {
 					drawRectangles (rectsToErase);
 					update ();
 				}
@@ -718,7 +718,7 @@ public boolean open () {
 	if (window == 0) return false;
 	cancelled = false;
 	tracking = true;
-	if (!OS.GTK3) {
+	if (!GTK.GTK3) {
 		update ();
 		drawRectangles (rectangles);
 	}
@@ -758,35 +758,35 @@ public boolean open () {
 	grabbed = grab ();
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
-	if (OS.GTK3) {
-		overlay = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
-		OS.gtk_window_set_skip_taskbar_hint (overlay, true);
-		OS.gtk_window_set_title (overlay, new byte [1]);
-		OS.gtk_widget_realize (overlay);
-		long /*int*/ overlayWindow = OS.gtk_widget_get_window (overlay);
+	if (GTK.GTK3) {
+		overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+		GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
+		GTK.gtk_window_set_title (overlay, new byte [1]);
+		GTK.gtk_widget_realize (overlay);
+		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 		OS.gdk_window_set_override_redirect (overlayWindow, true);
-		if (OS.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-			OS.gtk_widget_override_background_color (overlay, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+			GTK.gtk_widget_override_background_color (overlay, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 		} else {
-			String name = OS.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
+			String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
 			String css = name + " {background-color: rgb(0,0,0);}";
 			long /*int*/ provider = 0;
-			long /*int*/ context = OS.gtk_widget_get_style_context (overlay);
+			long /*int*/ context = GTK.gtk_widget_get_style_context (overlay);
 			if (provider == 0) {
-				provider = OS.gtk_css_provider_new ();
-				OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+				provider = GTK.gtk_css_provider_new ();
+				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 				OS.g_object_unref (provider);
 			}
-			OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 		}
 		long /*int*/ region = OS.gdk_region_new ();
-		OS.gtk_widget_shape_combine_region (overlay, region);
-		OS.gtk_widget_input_shape_combine_region (overlay, region);
+		GTK.gtk_widget_shape_combine_region (overlay, region);
+		GTK.gtk_widget_input_shape_combine_region (overlay, region);
 		OS.gdk_region_destroy (region);
 		Rectangle bounds = display.getBoundsInPixels();
-		OS.gtk_window_move (overlay, bounds.x, bounds.y);
-		OS.gtk_window_resize (overlay, bounds.width, bounds.height);
-		OS.gtk_widget_show (overlay);
+		GTK.gtk_window_move (overlay, bounds.x, bounds.y);
+		GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
+		GTK.gtk_widget_show (overlay);
 	}
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
@@ -814,14 +814,14 @@ public boolean open () {
 		display.tracker = oldTracker;
 	}
 	if (!isDisposed ()) {
-		if (!OS.GTK3) {
+		if (!GTK.GTK3) {
 			update ();
 			drawRectangles (rectangles);
 		}
 	}
 	ungrab ();
 	if (overlay != 0) {
-		OS.gtk_widget_destroy (overlay);
+		GTK.gtk_widget_destroy (overlay);
 		overlay = 0;
 	}
 	window = 0;
@@ -831,7 +831,7 @@ public boolean open () {
 boolean processEvent (long /*int*/ eventPtr) {
 	GdkEvent gdkEvent = new GdkEvent();
 	OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
-	long /*int*/ widget = OS.gtk_get_event_widget (eventPtr);
+	long /*int*/ widget = GTK.gtk_get_event_widget (eventPtr);
 	switch (gdkEvent.type) {
 		case OS.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 		case OS.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
@@ -846,9 +846,9 @@ boolean processEvent (long /*int*/ eventPtr) {
 			break;
 		case OS.GDK_EXPOSE:
 			update ();
-			if (!OS.GTK3) drawRectangles (rectangles);
-			OS.gtk_main_do_event (eventPtr);
-			if (!OS.GTK3) drawRectangles (rectangles);
+			if (!GTK.GTK3) drawRectangles (rectangles);
+			GTK.gtk_main_do_event (eventPtr);
+			if (!GTK.GTK3) drawRectangles (rectangles);
 			break;
 		default:
 			return true;

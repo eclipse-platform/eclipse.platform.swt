@@ -44,7 +44,7 @@ class AccessibleObject {
 
 		// Gtk3.2 has a minimum requirement of ATK 2.1.5
 		// ATK_ROLE_TABLE_ROW was introduced in ATK 2.1.0. See Bug 470629  for details.
-		if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
 			ROW_ROLE = ATK.ATK_ROLE_TABLE_ROW;
 		} else {
 			ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs("row", true)); //$NON-NLS-1$
@@ -53,10 +53,10 @@ class AccessibleObject {
 
 	AccessibleObject (long /*int*/ type, long /*int*/ widget, Accessible accessible, boolean isLightweight) {
 		super ();
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			if (type == OS.swt_fixed_get_type()) {
 				if (widget != 0 && !isLightweight) {
-					atkHandle = OS.gtk_widget_get_accessible(widget);
+					atkHandle = GTK.gtk_widget_get_accessible(widget);
 				} else {
 					// Lightweight widgets map to no "real" GTK widget, so we
 					// just instantiate a new SwtFixedAccessible
@@ -66,7 +66,7 @@ class AccessibleObject {
 			} else {
 				// TODO_a11y: accessibility listeners on the Java side have not yet
 				// been implemented for native GTK widgets on GTK3.
-				atkHandle = OS.gtk_widget_get_accessible(widget);
+				atkHandle = GTK.gtk_widget_get_accessible(widget);
 			}
 		} else {
 			atkHandle = OS.g_object_new (type, 0);
@@ -96,7 +96,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkActionIface getParentActionIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_ACTION())) {
 			AtkActionIface iface = new AtkActionIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (atkObject)));
@@ -343,7 +343,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkComponentIface getParentComponentIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (atkObject)));
@@ -502,7 +502,7 @@ class AccessibleObject {
 		AtkComponentIface iface = getParentComponentIface (atkObject);
 		if (iface != null && iface.get_size != 0) {
 			// ATK with GTK3 doesn't have the coord_type parameter
-			if (!OS.GTK3) {
+			if (!GTK.GTK3) {
 				OS.call (iface.get_size, atkObject, width, height, coord_type);
 			} else {
 				ATK.call (iface.get_size, atkObject, width, height);
@@ -596,7 +596,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkEditableTextIface getParentEditableTextIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
@@ -1036,7 +1036,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkHypertextIface getParentHypertextIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_HYPERTEXT_GET_IFACE (atkObject)));
@@ -1171,7 +1171,7 @@ class AccessibleObject {
 	 */
 	static AtkObjectClass getParentAtkObjectClass (long /*int*/ atkObject) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (type != 0) {
 			long /*int*/ parentType = OS.g_type_parent (type);
 			if (parentType != 0) ATK.memmove (objectClass, OS.g_type_class_peek (parentType));
@@ -1722,7 +1722,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkSelectionIface getParentSelectionIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_SELECTION())) {
 			AtkSelectionIface iface = new AtkSelectionIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (atkObject)));
@@ -1827,7 +1827,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkTableIface getParentTableIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_TABLE())) {
 			AtkTableIface iface = new AtkTableIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_TABLE_GET_IFACE (atkObject)));
@@ -2798,7 +2798,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkTextIface getParentTextIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_TEXT())) {
 			AtkTextIface iface = new AtkTextIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (atkObject)));
@@ -3041,7 +3041,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
-						if (OS.GTK3) {
+						if (GTK.GTK3) {
 							attr.value = getStringPtr ((color.handleRGBA.red * 255) + "," + (color.handleRGBA.green * 255) + "," + (color.handleRGBA.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
 						} else {
 							attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3053,7 +3053,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
-						if (OS.GTK3) {
+						if (GTK.GTK3) {
 							attr.value = getStringPtr ((color.handleRGBA.red * 255) + "," + (color.handleRGBA.green * 255) + "," + (color.handleRGBA.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
 						} else {
 							attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -4393,7 +4393,7 @@ class AccessibleObject {
 	 * parent
 	 */
 	static AtkValueIface getParentValueIface (long /*int*/ atkObject) {
-		long /*int*/ type = OS.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
+		long /*int*/ type = GTK.GTK3 ? OS.swt_fixed_accessible_get_type() : OS.G_OBJECT_TYPE (atkObject);
 		if (OS.g_type_is_a (OS.g_type_parent (type), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
 			ATK.memmove (iface, OS.g_type_interface_peek_parent (ATK.ATK_VALUE_GET_IFACE (atkObject)));
@@ -4617,7 +4617,7 @@ class AccessibleObject {
 		 * Both GTK3 and GTK2 need to remove the AccessibleObject from
 		 * the map of AccessibleObjects, though.
 		 */
-		if (!OS.GTK3) {
+		if (!GTK.GTK3) {
 			long /*int*/ superType = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (atkObject));
 			long /*int*/ gObjectClass = OS.G_OBJECT_CLASS (superType);
 			GObjectClass objectClassStruct = new GObjectClass ();
@@ -4653,14 +4653,14 @@ class AccessibleObject {
 	}
 
 	static void windowPoint (AccessibleObject object, int [] x, int [] y) {
-		long /*int*/ widget = OS.gtk_accessible_get_widget(object.atkHandle);
+		long /*int*/ widget = GTK.gtk_accessible_get_widget(object.atkHandle);
 		while (widget == 0 && object.parent != null) {
 			object = object.parent;
-			widget = OS.gtk_accessible_get_widget(object.atkHandle);
+			widget = GTK.gtk_accessible_get_widget(object.atkHandle);
 		}
 		if (widget == 0) return;
-		long /*int*/ topLevel = OS.gtk_widget_get_toplevel (widget);
-		long /*int*/ window = OS.gtk_widget_get_window (topLevel);
+		long /*int*/ topLevel = GTK.gtk_widget_get_toplevel (widget);
+		long /*int*/ window = GTK.gtk_widget_get_window (topLevel);
 		OS.gdk_window_get_origin (window, x, y);
 	}
 
@@ -5022,7 +5022,7 @@ class AccessibleObject {
 						object = event.accessible.getAccessibleObject();
 						if (object != null)	OS.g_object_ref(object.atkHandle);
 					} else {
-						if (OS.GTK3) {
+						if (GTK.GTK3) {
 							long /*int*/ type = OS.G_OBJECT_TYPE (accessible.getControlHandle());
 							long /*int*/ widget = accessible.getControlHandle();
 							object = new AccessibleObject(type, widget, accessible, true);

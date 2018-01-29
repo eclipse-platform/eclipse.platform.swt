@@ -140,8 +140,8 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (handle, true);
-	OS.gtk_widget_set_can_focus (handle, true);
+	GTK.gtk_widget_set_has_window (handle, true);
+	GTK.gtk_widget_set_can_focus (handle, true);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
 	defaultCursor = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), type);
 }
@@ -182,7 +182,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
 	startY = (int) (gdkEvent.y_root - origin_y [0]);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation(handle, allocation);
+	GTK.gtk_widget_get_allocation(handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
@@ -226,7 +226,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPt
 	if (!dragging) return 0;
 	dragging = false;
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
 	Event event = new Event ();
@@ -249,15 +249,15 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPt
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		long /*int*/ context = OS.gtk_widget_get_style_context(widget);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		long /*int*/ context = GTK.gtk_widget_get_style_context(widget);
 		GtkAllocation allocation = new GtkAllocation();
-		OS.gtk_widget_get_allocation (widget, allocation);
+		GTK.gtk_widget_get_allocation (widget, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		// We specify a 0 value for x & y as we want the whole widget to be
 		// colored, not some portion of it.
-		OS.gtk_render_background(context, cairo, 0, 0, width, height);
+		GTK.gtk_render_background(context, cairo, 0, 0, width, height);
 	}
 	return super.gtk_draw(widget, cairo);
 }
@@ -269,7 +269,7 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
-		OS.gtk_widget_get_allocation (handle, allocation);
+		GTK.gtk_widget_get_allocation (handle, allocation);
 		lastX = allocation.x;
 		lastY = allocation.y;
 	}
@@ -300,10 +300,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			}
 			int parentBorder = 0;
 			GtkAllocation allocation = new GtkAllocation ();
-			OS.gtk_widget_get_allocation (handle, allocation);
+			GTK.gtk_widget_get_allocation (handle, allocation);
 			int width = allocation.width;
 			int height = allocation.height;
-			OS.gtk_widget_get_allocation (parent.handle, allocation);
+			GTK.gtk_widget_get_allocation (parent.handle, allocation);
 			int parentWidth = allocation.width;
 			int parentHeight = allocation.height;
 			int newX = lastX, newY = lastY;
@@ -376,13 +376,13 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	}
 	if ((eventState & OS.GDK_BUTTON1_MASK) == 0) return 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
 	int height = allocation.height;
 	int parentBorder = 0;
-	OS.gtk_widget_get_allocation (parent.handle, allocation);
+	GTK.gtk_widget_get_allocation (parent.handle, allocation);
 	int parentWidth = allocation.width;
 	int parentHeight = allocation.height;
 	int newX = lastX, newY = lastY;
@@ -428,7 +428,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
+	GTK.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 }
 
 @Override

@@ -155,10 +155,10 @@ void createWidget (int index) {
 @Override
 void createHandle (int index) {
 	state |= HANDLE;
-	handle = OS.gtk_status_icon_new ();
+	handle = GTK.gtk_status_icon_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	imageHandle = OS.gtk_image_new ();
-	OS.gtk_status_icon_set_visible (handle,true);
+	imageHandle = GTK.gtk_image_new ();
+	GTK.gtk_status_icon_set_visible (handle,true);
 }
 
 @Override
@@ -254,7 +254,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	long /*int*/ nextEvent = OS.gdk_event_peek ();
 	if (nextEvent != 0) {
 		int nextEventType = OS.GDK_EVENT_TYPE (nextEvent);
-		long /*int*/ currEvent = OS.gtk_get_current_event ();
+		long /*int*/ currEvent = GTK.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
 			currEventType = OS.GDK_EVENT_TYPE (currEvent);
@@ -290,9 +290,9 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	if (image != null && image.mask != 0) {
 		if (OS.gdk_drawable_get_depth (image.mask) == 1) {
 			GtkAllocation widgetAllocation = new GtkAllocation ();
-			OS.gtk_widget_get_allocation (widget, widgetAllocation);
-			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
-			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
+			GTK.gtk_widget_get_allocation (widget, widgetAllocation);
+			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -GTK.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
+			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - GTK.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
 			Rectangle b = image.getBoundsInPixels();
 			long /*int*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
@@ -313,7 +313,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 					}
 				}
 			}
-			OS.gtk_widget_realize (handle);
+			GTK.gtk_widget_realize (handle);
 			long /*int*/ window = gtk_widget_get_window (handle);
 			OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 			region.dispose ();
@@ -355,7 +355,7 @@ void hookEvents () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	return OS.gtk_status_icon_get_visible (handle);
+	return GTK.gtk_status_icon_get_visible (handle);
 }
 
 @Override
@@ -485,12 +485,12 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		OS.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
-		OS.gtk_status_icon_set_visible (handle, true);
+		GTK.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
+		GTK.gtk_status_icon_set_visible (handle, true);
 	} else {
-		OS.gtk_widget_set_size_request (handle, 1, 1);
-		OS.gtk_status_icon_set_from_pixbuf (handle, 0);
-		OS.gtk_status_icon_set_visible (handle, false);
+		GTK.gtk_widget_set_size_request (handle, 1, 1);
+		GTK.gtk_status_icon_set_from_pixbuf (handle, 0);
+		GTK.gtk_status_icon_set_visible (handle, false);
 	}
 }
 
@@ -542,7 +542,7 @@ public void setToolTipText (String string) {
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (string, true);
 	}
-	OS.gtk_status_icon_set_tooltip_text (handle, buffer);
+	GTK.gtk_status_icon_set_tooltip_text (handle, buffer);
 }
 
 /**
@@ -558,7 +558,7 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if(OS.gtk_status_icon_get_visible (handle) == visible) return;
+	if(GTK.gtk_status_icon_get_visible (handle) == visible) return;
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -567,9 +567,9 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		OS.gtk_status_icon_set_visible (handle, visible);
+		GTK.gtk_status_icon_set_visible (handle, visible);
 	} else {
-		OS.gtk_status_icon_set_visible (handle, visible);
+		GTK.gtk_status_icon_set_visible (handle, visible);
 		sendEvent (SWT.Hide);
 	}
 }

@@ -220,7 +220,7 @@ public Color(Device device, RGB rgb, int alpha) {
 
 @Override
 void destroy() {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		handleRGBA = null;
 	} else {
 		int pixel = handle.pixel;
@@ -251,7 +251,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		GdkRGBA gdkRGBA = color.handleRGBA;
 		if (handleRGBA == gdkRGBA) return true;
 		return device == color.device && Double.compare(handleRGBA.red, gdkRGBA.red) == 0 &&
@@ -292,7 +292,7 @@ public int getAlpha() {
  */
 public int getBlue() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return (int) (handleRGBA.blue * 255) & 0xFF;
 	} else {
 		return (handle.blue >> 8) & 0xFF;
@@ -310,7 +310,7 @@ public int getBlue() {
  */
 public int getGreen() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return (int) (handleRGBA.green * 255) & 0xFF;
 	} else {
 		return (handle.green >> 8) & 0xFF;
@@ -328,7 +328,7 @@ public int getGreen() {
  */
 public int getRed() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return (int) (handleRGBA.red * 255) & 0xFF;
 	} else {
 		return (handle.red >> 8) & 0xFF;
@@ -348,7 +348,7 @@ public int getRed() {
 @Override
 public int hashCode() {
 	if (isDisposed()) return 0;
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return Double.hashCode(handleRGBA.red) ^ Double.hashCode(handleRGBA.green) ^ Double.hashCode(handleRGBA.blue)
 				^ Double.hashCode(handleRGBA.alpha);
 	} else {
@@ -401,7 +401,7 @@ public RGBA getRGBA () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor gdkColor) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	return gtk_new(device, gdkColor, 255);
 }
 
@@ -421,7 +421,7 @@ public static Color gtk_new(Device device, GdkColor gdkColor) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	Color color = new Color(device);
 	color.handleRGBA = gdkRGBA;
 	color.alpha = (int) (gdkRGBA.alpha * 255);
@@ -445,7 +445,7 @@ public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor gdkColor, int alpha) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	Color color = new Color(device);
 	color.handle = gdkColor;
 	color.alpha = alpha;
@@ -469,7 +469,7 @@ public static Color gtk_new(Device device, GdkColor gdkColor, int alpha) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	Color color = new Color(device);
 	color.handleRGBA = gdkRGBA;
 	color.alpha = alpha;
@@ -499,7 +499,7 @@ void init(int red, int green, int blue, int alpha) {
 		(alpha > 255) || (alpha < 0)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (!OS.GTK3) {
+	if (!GTK.GTK3) {
 		GdkColor gdkColor = new GdkColor();
 		gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
 		gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
@@ -547,7 +547,7 @@ void init(int red, int green, int blue, int alpha) {
  */
 @Override
 public boolean isDisposed() {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return handleRGBA == null;
 	} else {
 		return handle == null;

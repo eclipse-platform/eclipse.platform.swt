@@ -290,20 +290,20 @@ public void setPrintToFile(boolean printToFile) {
 public PrinterData open() {
 	byte [] titleBytes = Converter.wcsToMbcs (getText(), true);
 	long /*int*/ topHandle = getParent().handle;
-	while (topHandle != 0 && !OS.GTK_IS_WINDOW(topHandle)) {
-		topHandle = OS.gtk_widget_get_parent(topHandle);
+	while (topHandle != 0 && !GTK.GTK_IS_WINDOW(topHandle)) {
+		topHandle = GTK.gtk_widget_get_parent(topHandle);
 	}
-	handle = OS.gtk_print_unix_dialog_new(titleBytes, topHandle);
+	handle = GTK.gtk_print_unix_dialog_new(titleBytes, topHandle);
 
 	//TODO: Not currently implemented. May need new API. For now, disable 'Current' in the dialog. (see gtk bug 344519)
-	OS.gtk_print_unix_dialog_set_current_page(handle, -1);
+	GTK.gtk_print_unix_dialog_set_current_page(handle, -1);
 
-	OS.gtk_print_unix_dialog_set_manual_capabilities(handle,
-		OS.GTK_PRINT_CAPABILITY_COLLATE | OS.GTK_PRINT_CAPABILITY_COPIES | OS.GTK_PRINT_CAPABILITY_PAGE_SET);
+	GTK.gtk_print_unix_dialog_set_manual_capabilities(handle,
+		GTK.GTK_PRINT_CAPABILITY_COLLATE | GTK.GTK_PRINT_CAPABILITY_COPIES | GTK.GTK_PRINT_CAPABILITY_PAGE_SET);
 
 	/* Set state into print dialog settings. */
-	long /*int*/ settings = OS.gtk_print_settings_new();
-	long /*int*/ page_setup = OS.gtk_page_setup_new();
+	long /*int*/ settings = GTK.gtk_print_settings_new();
+	long /*int*/ page_setup = GTK.gtk_page_setup_new();
 
 	if (printerData.otherData != null) {
 		Printer.restore(printerData.otherData, settings, page_setup);
@@ -322,59 +322,59 @@ public PrinterData open() {
 	}
 	if (printerName != null) {
 		byte [] nameBytes = Converter.wcsToMbcs (printerName, true);
-		OS.gtk_print_settings_set_printer(settings, nameBytes);
+		GTK.gtk_print_settings_set_printer(settings, nameBytes);
 	}
 
 	switch (printerData.scope) {
 		case PrinterData.ALL_PAGES:
-			OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
+			GTK.gtk_print_settings_set_print_pages(settings, GTK.GTK_PRINT_PAGES_ALL);
 			break;
 		case PrinterData.PAGE_RANGE:
-			OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_RANGES);
+			GTK.gtk_print_settings_set_print_pages(settings, GTK.GTK_PRINT_PAGES_RANGES);
 			int [] pageRange = new int[2];
 			pageRange[0] = printerData.startPage - 1;
 			pageRange[1] = printerData.endPage - 1;
-			OS.gtk_print_settings_set_page_ranges(settings, pageRange, 1);
+			GTK.gtk_print_settings_set_page_ranges(settings, pageRange, 1);
 			break;
 		case PrinterData.SELECTION:
 			//TODO: Not correctly implemented. May need new API. For now, set to ALL. (see gtk bug 344519)
-			OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
+			GTK.gtk_print_settings_set_print_pages(settings, GTK.GTK_PRINT_PAGES_ALL);
 			break;
 	}
 	if ((printerData.printToFile || Printer.GTK_FILE_BACKEND.equals(printerData.driver)) && printerData.fileName != null) {
 		// TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 		byte [] uri = Printer.uriFromFilename(printerData.fileName);
 		if (uri != null) {
-			OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
+			GTK.gtk_print_settings_set(settings, GTK.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
 		}
 	}
-	OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
-	OS.gtk_print_settings_set_collate(settings, printerData.collate);
+	GTK.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
+	GTK.gtk_print_settings_set_collate(settings, printerData.collate);
 	/*
 	 * Bug in GTK.  The unix dialog gives priority to the value of the non-API
 	 * field cups-Duplex in the print_settings (which we preserve in otherData).
 	 * The fix is to manually clear cups-Duplex before setting the duplex field.
 	 */
 	byte [] keyBuffer = Converter.wcsToMbcs ("cups-Duplex", true);
-	OS.gtk_print_settings_set(settings, keyBuffer, (byte[]) null);
+	GTK.gtk_print_settings_set(settings, keyBuffer, (byte[]) null);
 	if (printerData.duplex != SWT.DEFAULT) {
-		int duplex = printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.GTK_PRINT_DUPLEX_HORIZONTAL
-			: printerData.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.GTK_PRINT_DUPLEX_VERTICAL
-			: OS.GTK_PRINT_DUPLEX_SIMPLEX;
-		OS.gtk_print_settings_set_duplex (settings, duplex);
+		int duplex = printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? GTK.GTK_PRINT_DUPLEX_HORIZONTAL
+			: printerData.duplex == PrinterData.DUPLEX_SHORT_EDGE ? GTK.GTK_PRINT_DUPLEX_VERTICAL
+			: GTK.GTK_PRINT_DUPLEX_SIMPLEX;
+		GTK.gtk_print_settings_set_duplex (settings, duplex);
 	}
-	int orientation = printerData.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
-	OS.gtk_print_settings_set_orientation(settings, orientation);
-	OS.gtk_page_setup_set_orientation(page_setup, orientation);
+	int orientation = printerData.orientation == PrinterData.LANDSCAPE ? GTK.GTK_PAGE_ORIENTATION_LANDSCAPE : GTK.GTK_PAGE_ORIENTATION_PORTRAIT;
+	GTK.gtk_print_settings_set_orientation(settings, orientation);
+	GTK.gtk_page_setup_set_orientation(page_setup, orientation);
 
-	OS.gtk_print_unix_dialog_set_settings(handle, settings);
-	OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
-	OS.gtk_print_unix_dialog_set_embed_page_setup(handle, true);
+	GTK.gtk_print_unix_dialog_set_settings(handle, settings);
+	GTK.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
+	GTK.gtk_print_unix_dialog_set_embed_page_setup(handle, true);
 	OS.g_object_unref(settings);
 	OS.g_object_unref(page_setup);
-	long /*int*/ group = OS.gtk_window_get_group(0);
-	OS.gtk_window_group_add_window (group, handle);
-	OS.gtk_window_set_modal(handle, true);
+	long /*int*/ group = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window (group, handle);
+	GTK.gtk_window_set_modal(handle, true);
 	PrinterData data = null;
 	//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 	Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
@@ -382,17 +382,17 @@ public PrinterData open() {
 	int signalId = 0;
 	long /*int*/ hookId = 0;
 	if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_EMISSION_PROC_KEY)).value, handle, 0);
 	}
 	display.setData (ADD_IDLE_PROC_KEY, null);
 	Object oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		oldModal = display.getData (GET_MODAL_DIALOG);
 		display.setData (SET_MODAL_DIALOG, this);
 	}
 	display.sendPreExternalEventDispatchEvent ();
-	int response = OS.gtk_dialog_run (handle);
+	int response = GTK.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -401,28 +401,28 @@ public PrinterData open() {
 	*/
 	OS.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
-	if (OS.gtk_window_get_modal (handle)) {
+	if (GTK.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);
 	}
 	if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
-	if (response == OS.GTK_RESPONSE_OK) {
-		long /*int*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);
+	if (response == GTK.GTK_RESPONSE_OK) {
+		long /*int*/ printer = GTK.gtk_print_unix_dialog_get_selected_printer(handle);
 		if (printer != 0) {
 			/* Get state from print dialog. */
-			settings = OS.gtk_print_unix_dialog_get_settings(handle); // must unref
-			page_setup = OS.gtk_print_unix_dialog_get_page_setup(handle); // do not unref
+			settings = GTK.gtk_print_unix_dialog_get_settings(handle); // must unref
+			page_setup = GTK.gtk_print_unix_dialog_get_page_setup(handle); // do not unref
 			data = Printer.printerDataFromGtkPrinter(printer);
-			int print_pages = OS.gtk_print_settings_get_print_pages(settings);
+			int print_pages = GTK.gtk_print_settings_get_print_pages(settings);
 			switch (print_pages) {
-				case OS.GTK_PRINT_PAGES_ALL:
+				case GTK.GTK_PRINT_PAGES_ALL:
 					data.scope = PrinterData.ALL_PAGES;
 					break;
-				case OS.GTK_PRINT_PAGES_RANGES:
+				case GTK.GTK_PRINT_PAGES_RANGES:
 					data.scope = PrinterData.PAGE_RANGE;
 					int[] num_ranges = new int[1];
-					long /*int*/ page_ranges = OS.gtk_print_settings_get_page_ranges(settings, num_ranges);
+					long /*int*/ page_ranges = GTK.gtk_print_settings_get_page_ranges(settings, num_ranges);
 					int [] pageRange = new int[2];
 					int length = num_ranges[0];
 					int min = Integer.MAX_VALUE, max = 0;
@@ -435,29 +435,29 @@ public PrinterData open() {
 					data.startPage = min == Integer.MAX_VALUE ? 1 : min;
 					data.endPage = max == 0 ? 1 : max;
 					break;
-				case OS.GTK_PRINT_PAGES_CURRENT:
+				case GTK.GTK_PRINT_PAGES_CURRENT:
 					//TODO: Disabled in dialog (see above). This code will not run. (see gtk bug 344519)
 					data.scope = PrinterData.SELECTION;
-					data.startPage = data.endPage = OS.gtk_print_unix_dialog_get_current_page(handle);
+					data.startPage = data.endPage = GTK.gtk_print_unix_dialog_get_current_page(handle);
 					break;
 			}
 
 			data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 			if (data.printToFile) {
-				long /*int*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
+				long /*int*/ address = GTK.gtk_print_settings_get(settings, GTK.GTK_PRINT_SETTINGS_OUTPUT_URI);
 				int length = C.strlen (address);
 				byte [] buffer = new byte [length];
 				C.memmove (buffer, address, length);
 				data.fileName = new String (Converter.mbcsToWcs (buffer));
 			}
 
-			data.copyCount = OS.gtk_print_settings_get_n_copies(settings);
-			data.collate = OS.gtk_print_settings_get_collate(settings);
-			int duplex = OS.gtk_print_settings_get_duplex(settings);
-			data.duplex = duplex == OS.GTK_PRINT_DUPLEX_HORIZONTAL ? PrinterData.DUPLEX_LONG_EDGE
-					: duplex == OS.GTK_PRINT_DUPLEX_VERTICAL ? PrinterData.DUPLEX_SHORT_EDGE
+			data.copyCount = GTK.gtk_print_settings_get_n_copies(settings);
+			data.collate = GTK.gtk_print_settings_get_collate(settings);
+			int duplex = GTK.gtk_print_settings_get_duplex(settings);
+			data.duplex = duplex == GTK.GTK_PRINT_DUPLEX_HORIZONTAL ? PrinterData.DUPLEX_LONG_EDGE
+					: duplex == GTK.GTK_PRINT_DUPLEX_VERTICAL ? PrinterData.DUPLEX_SHORT_EDGE
 					: PrinterData.DUPLEX_NONE;
-			data.orientation = OS.gtk_page_setup_get_orientation(page_setup) == OS.GTK_PAGE_ORIENTATION_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+			data.orientation = GTK.gtk_page_setup_get_orientation(page_setup) == GTK.GTK_PAGE_ORIENTATION_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 
 			/* Save other print_settings data as key/value pairs in otherData. */
 			Callback printSettingsCallback = new Callback(this, "GtkPrintSettingsFunc", 3); //$NON-NLS-1$
@@ -465,32 +465,32 @@ public PrinterData open() {
 			if (GtkPrintSettingsFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			index = 0;
 			settingsData = new byte[1024];
-			OS.gtk_print_settings_foreach (settings, GtkPrintSettingsFunc, 0);
+			GTK.gtk_print_settings_foreach (settings, GtkPrintSettingsFunc, 0);
 			printSettingsCallback.dispose ();
 			index++; // extra null terminator after print_settings and before page_setup
 
 			/* Save page_setup data as key/value pairs in otherData.
 			 * Note that page_setup properties must be stored and restored in the same order.
 			 */
-			store("orientation", OS.gtk_page_setup_get_orientation(page_setup)); //$NON-NLS-1$
-			store("top_margin", OS.gtk_page_setup_get_top_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			store("bottom_margin", OS.gtk_page_setup_get_bottom_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			store("left_margin", OS.gtk_page_setup_get_left_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			store("right_margin", OS.gtk_page_setup_get_right_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			long /*int*/ paper_size = OS.gtk_page_setup_get_paper_size(page_setup); //$NON-NLS-1$
-			storeBytes("paper_size_name", OS.gtk_paper_size_get_name(paper_size)); //$NON-NLS-1$
-			storeBytes("paper_size_display_name", OS.gtk_paper_size_get_display_name(paper_size)); //$NON-NLS-1$
-			storeBytes("paper_size_ppd_name", OS.gtk_paper_size_get_ppd_name(paper_size)); //$NON-NLS-1$
-			store("paper_size_width", OS.gtk_paper_size_get_width(paper_size, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			store("paper_size_height", OS.gtk_paper_size_get_height(paper_size, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-			store("paper_size_is_custom", OS.gtk_paper_size_is_custom(paper_size)); //$NON-NLS-1$
+			store("orientation", GTK.gtk_page_setup_get_orientation(page_setup)); //$NON-NLS-1$
+			store("top_margin", GTK.gtk_page_setup_get_top_margin(page_setup, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			store("bottom_margin", GTK.gtk_page_setup_get_bottom_margin(page_setup, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			store("left_margin", GTK.gtk_page_setup_get_left_margin(page_setup, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			store("right_margin", GTK.gtk_page_setup_get_right_margin(page_setup, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			long /*int*/ paper_size = GTK.gtk_page_setup_get_paper_size(page_setup); //$NON-NLS-1$
+			storeBytes("paper_size_name", GTK.gtk_paper_size_get_name(paper_size)); //$NON-NLS-1$
+			storeBytes("paper_size_display_name", GTK.gtk_paper_size_get_display_name(paper_size)); //$NON-NLS-1$
+			storeBytes("paper_size_ppd_name", GTK.gtk_paper_size_get_ppd_name(paper_size)); //$NON-NLS-1$
+			store("paper_size_width", GTK.gtk_paper_size_get_width(paper_size, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			store("paper_size_height", GTK.gtk_paper_size_get_height(paper_size, GTK.GTK_UNIT_MM)); //$NON-NLS-1$
+			store("paper_size_is_custom", GTK.gtk_paper_size_is_custom(paper_size)); //$NON-NLS-1$
 			data.otherData = settingsData;
 			OS.g_object_unref(settings);
 			printerData = data;
 		}
 	}
 	display.setData (REMOVE_IDLE_PROC_KEY, null);
-	OS.gtk_widget_destroy (handle);
+	GTK.gtk_widget_destroy (handle);
 	return data;
 }
 

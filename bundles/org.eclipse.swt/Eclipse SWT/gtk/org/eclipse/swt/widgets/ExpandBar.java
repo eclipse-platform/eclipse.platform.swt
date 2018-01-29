@@ -122,7 +122,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	int border = OS.gtk_container_get_border_width (handle);
+	int border = GTK.gtk_container_get_border_width (handle);
 	size.x += 2 * border;
 	size.y += 2 * border;
 	return size;
@@ -133,28 +133,28 @@ void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
-	handle = gtk_box_new (OS.GTK_ORIENTATION_VERTICAL, false, 0);
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	handle = gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, false, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.V_SCROLL) != 0) {
-		scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
+		scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
-		OS.gtk_container_add (fixedHandle, scrolledHandle);
-		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
-			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+		GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, GTK.GTK_POLICY_AUTOMATIC);
+		GTK.gtk_container_add (fixedHandle, scrolledHandle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 8, 0)) {
+			GTK.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
 		} else {
-			OS.gtk_container_add(scrolledHandle, handle);
+			GTK.gtk_container_add(scrolledHandle, handle);
 		}
-		long /*int*/ viewport = OS.gtk_bin_get_child (scrolledHandle);
-		OS.gtk_viewport_set_shadow_type (viewport, OS.GTK_SHADOW_NONE);
+		long /*int*/ viewport = GTK.gtk_bin_get_child (scrolledHandle);
+		GTK.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
 	} else {
-		OS.gtk_container_add (fixedHandle, handle);
+		GTK.gtk_container_add (fixedHandle, handle);
 	}
-	OS.gtk_container_set_border_width (handle, 0);
+	GTK.gtk_container_set_border_width (handle, 0);
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setFontDescription(defaultFont().handle);
 	}
 }
@@ -434,7 +434,7 @@ void reskinChildren (int flags) {
 
 @Override
 void setWidgetBackground  () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
 		super.setBackgroundGdkRGBA (handle, rgba);
 	} else {
@@ -453,7 +453,7 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	super.setForegroundGdkColor (color);
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setForegroundColor (color);
@@ -462,7 +462,7 @@ void setForegroundGdkColor (GdkColor color) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setForegroundRGBA (rgba);
@@ -486,7 +486,7 @@ void setScrollbar () {
 	ExpandItem item = items [itemCount - 1];
 	int maxHeight = item.y + getBandHeight () + spacing;
 	if (item.expanded) maxHeight += item.height;
-	long /*int*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+	long /*int*/ adjustmentHandle = GTK.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	gtk_adjustment_get (adjustmentHandle, adjustment);
 	yCurrentScroll = (int)adjustment.value;
@@ -500,16 +500,16 @@ void setScrollbar () {
 	adjustment.value = Math.min (yCurrentScroll, maxHeight);
 	adjustment.upper = maxHeight;
 	adjustment.page_size = height;
-	OS.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
+	GTK.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
 		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
-	int policy = maxHeight > height ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
-	OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, policy);
+	int policy = maxHeight > height ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
+	GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, policy);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (fixedHandle, allocation);
+	GTK.gtk_widget_get_allocation (fixedHandle, allocation);
 	int width = allocation.width - spacing * 2;
-	if (policy == OS.GTK_POLICY_ALWAYS) {
+	if (policy == GTK.GTK_POLICY_ALWAYS) {
 		long /*int*/ vHandle = 0;
-		vHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		vHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (vHandle, requisition);
 		width -= requisition.width;
@@ -542,8 +542,8 @@ void setSpacingInPixels (int spacing) {
 	if (spacing < 0) return;
 	if (spacing == this.spacing) return;
 	this.spacing = spacing;
-	OS.gtk_box_set_spacing (handle, spacing);
-	OS.gtk_container_set_border_width (handle, spacing);
+	GTK.gtk_box_set_spacing (handle, spacing);
+	GTK.gtk_container_set_border_width (handle, spacing);
 }
 
 void showItem (ExpandItem item) {

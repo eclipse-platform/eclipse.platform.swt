@@ -146,13 +146,13 @@ public static Program[] getPrograms() {
 public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
-	long /*int*/ icon_theme =OS.gtk_icon_theme_get_default();
+	long /*int*/ icon_theme =GTK.gtk_icon_theme_get_default();
 	byte[] icon = Converter.wcsToMbcs (iconPath, true);
 	long /*int*/ gicon = OS.g_icon_new_for_string(icon, null);
 	if (gicon != 0) {
-		long /*int*/ gicon_info = OS.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
+		long /*int*/ gicon_info = GTK.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
 		if (gicon_info != 0) {
-			long /*int*/ pixbuf = OS.gtk_icon_info_load_icon(gicon_info, null);
+			long /*int*/ pixbuf = GTK.gtk_icon_info_load_icon(gicon_info, null);
 			if (pixbuf != 0) {
 				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 				long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
@@ -182,10 +182,10 @@ public ImageData getImageData() {
 					data.bytesPerLine = stride;
 				}
 			}
-			if (OS.GTK_VERSION >= OS.VERSION(3, 8, 0)) {
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 8, 0)) {
 				OS.g_object_unref(gicon_info);
 			} else {
-				OS.gtk_icon_info_free(gicon_info);
+				GTK.gtk_icon_info_free(gicon_info);
 			}
 		}
 		OS.g_object_unref(gicon);

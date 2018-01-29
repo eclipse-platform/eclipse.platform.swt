@@ -91,9 +91,9 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		 * to give a valid pointer instead.
 		 */
 		long /*int*/ handle = tree.handle;
-		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+		long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 		long /*int*/ [] model =  null;
-		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
+		long /*int*/ list = GTK.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));
 		long /*int*/ originalList = list;
@@ -101,9 +101,9 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		Display display = tree.getDisplay();
 		if (count == 1) {
 			long /*int*/ path = OS.g_list_nth_data (list, 0);
-			long /*int*/ icon = OS.gtk_tree_view_create_row_drag_icon (handle, path);
+			long /*int*/ icon = GTK.gtk_tree_view_create_row_drag_icon (handle, path);
 			dragSourceImage =  Image.gtk_new (display, SWT.ICON, icon, 0);
-			OS.gtk_tree_path_free (path);
+			GTK.gtk_tree_path_free (path);
 		} else {
 			int width = 0, height = 0;
 			int[] w = new int[1], h = new int[1];
@@ -112,9 +112,9 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			GdkRectangle rect = new GdkRectangle ();
 			for (int i=0; i<count; i++) {
 				long /*int*/ path = OS.g_list_data (list);
-				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-				icons[i] = OS.gtk_tree_view_create_row_drag_icon(handle, path);
-				if (OS.GTK3) {
+				GTK.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+				icons[i] = GTK.gtk_tree_view_create_row_drag_icon(handle, path);
+				if (GTK.GTK3) {
 					switch (Cairo.cairo_surface_get_type(icons[i])) {
 					case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
 						w[0] = Cairo.cairo_image_surface_get_width(icons[i]);
@@ -133,11 +133,11 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				yy[i] = rect.y;
 				hh[i] = h[0];
 				list = OS.g_list_next (list);
-				OS.gtk_tree_path_free (path);
+				GTK.gtk_tree_path_free (path);
 			}
 			long /*int*/ surface;
 			long /*int*/ cairo ;
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
 				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				cairo = Cairo.cairo_create(surface);
@@ -149,19 +149,19 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 			for (int i=0; i<count; i++) {
-				if (OS.GTK3) {
+				if (GTK.GTK3) {
 					Cairo.cairo_set_source_surface (cairo, icons[i], 2, yy[i] - yy[0] + 2);
 				} else {
 					OS.gdk_cairo_set_source_pixmap(cairo, icons[i], 0, yy[i] - yy[0]);
 				}
 				Cairo.cairo_rectangle(cairo, 0, yy[i] - yy[0], width, hh[i]);
 				Cairo.cairo_fill(cairo);
-				if (OS.GTK3) {
+				if (GTK.GTK3) {
 					Cairo.cairo_surface_destroy(icons[i]);
 				}
 			}
 			Cairo.cairo_destroy(cairo);
-			if (OS.GTK3) {
+			if (GTK.GTK3) {
 				dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
 			} else {
 				long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);

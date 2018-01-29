@@ -115,7 +115,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	public void dragLeave(DropTargetEvent event) {
 		Tree tree = (Tree) control;
 		long /*int*/ handle = tree.handle;
-		OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+		GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 
 		scrollBeginTime = 0;
 		scrollIndex = -1;
@@ -150,12 +150,12 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = DPIUtil.autoScaleUp(tree.toControl(coordinates));
 		long /*int*/ [] path = new long /*int*/ [1];
-		OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
+		GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
 		if (path[0] != 0) {
-			long /*int*/ indices = OS.gtk_tree_path_get_indices(path[0]);
+			long /*int*/ indices = GTK.gtk_tree_path_get_indices(path[0]);
 			if (indices != 0) {
-				int depth = OS.gtk_tree_path_get_depth(path[0]);
+				int depth = GTK.gtk_tree_path_get_depth(path[0]);
 				int[] temp = new int[depth];
 				C.memmove (temp, indices, temp.length * 4);
 				index = temp[temp.length - 1];
@@ -168,20 +168,20 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 			if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
 					GdkRectangle cellRect = new GdkRectangle ();
-					OS.gtk_tree_view_get_cell_area (handle, path[0], 0, cellRect);
+					GTK.gtk_tree_view_get_cell_area (handle, path[0], 0, cellRect);
 					if (cellRect.y < cellRect.height) {
 						int[] tx = new int[1], ty = new int[1];
-						OS.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
-						OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+						GTK.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
+						GTK.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 					} else {
 						//scroll down
-						OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y + cellRect.height, path, null, null, null);
+						GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y + cellRect.height, path, null, null, null);
 						if (path[0] != 0) {
-							OS.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
-							OS.gtk_tree_path_free(path[0]);
+							GTK.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
+							GTK.gtk_tree_path_free(path[0]);
 							path[0] = 0;
 						}
-						OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
+						GTK.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 					}
 					scrollBeginTime = 0;
 					scrollIndex = -1;
@@ -197,7 +197,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (index != -1 && expandIndex == index && expandBeginTime != 0) {
 				if (System.currentTimeMillis() >= expandBeginTime) {
-					OS.gtk_tree_view_expand_row (handle, path[0], false);
+					GTK.gtk_tree_view_expand_row (handle, path[0], false);
 					expandBeginTime = 0;
 					expandIndex = -1;
 				}
@@ -208,19 +208,19 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		}
 		if (path[0] != 0) {
 			int position = -1;
-			if ((effect & DND.FEEDBACK_SELECT) != 0) position = OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
-			if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = OS.GTK_TREE_VIEW_DROP_BEFORE;
-			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;
+			if ((effect & DND.FEEDBACK_SELECT) != 0) position = GTK.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+			if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = GTK.GTK_TREE_VIEW_DROP_BEFORE;
+			if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = GTK.GTK_TREE_VIEW_DROP_AFTER;
 			if (position != -1) {
-				OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
+				GTK.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
 			} else {
-				OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+				GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 			}
 		} else {
-			OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
+			GTK.gtk_tree_view_set_drag_dest_row(handle, 0, GTK.GTK_TREE_VIEW_DROP_BEFORE);
 		}
 
-		if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
+		if (path[0] != 0) GTK.gtk_tree_path_free (path [0]);
 	}
 
 }

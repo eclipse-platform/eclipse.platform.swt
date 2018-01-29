@@ -108,14 +108,14 @@ long /*int*/ clientHandle () {
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSizeInPixels(wHint, hHint, changed);
 	int width;
-	if(OS.GTK3){
+	if(GTK.GTK3){
 		width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	}
 	else{
-		int x_thickness = OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (handle));
+		int x_thickness = GTK.gtk_style_get_xthickness (GTK.gtk_widget_get_style (handle));
 		// GTK adds a LABEL_PAD and LABEL_SIDE_PAD to the label width, we also need to add
           	// the thickness of the frame border
-		int minimalSizeAroundLabel = 2 * (OS.GTK_FRAME_LABEL_PAD + OS.GTK_FRAME_LABEL_SIDE_PAD + x_thickness);
+		int minimalSizeAroundLabel = 2 * (GTK.GTK_FRAME_LABEL_PAD + GTK.GTK_FRAME_LABEL_SIDE_PAD + x_thickness);
 		width = computeNativeSize (labelHandle, SWT.DEFAULT, SWT.DEFAULT, false) .x + minimalSizeAroundLabel;
 	}
 	size.x = Math.max (size.x, width);
@@ -126,7 +126,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
 	GtkAllocation allocation = new GtkAllocation();
-	OS.gtk_widget_get_allocation (clientHandle, allocation);
+	GTK.gtk_widget_get_allocation (clientHandle, allocation);
 	int clientX = allocation.x;
 	int clientY = allocation.y;
 	x -= clientX;
@@ -159,8 +159,8 @@ Rectangle getClientAreaInPixels () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		if (foreground != null) {
 			return foreground;
 		} else {
@@ -173,13 +173,13 @@ GdkRGBA getContextColorGdkRGBA () {
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		return super.getContextBackgroundGdkRGBA();
 	} else {
-		long /*int*/ context = OS.gtk_widget_get_style_context (fixedHandle);
+		long /*int*/ context = GTK.gtk_widget_get_style_context (fixedHandle);
 		GdkRGBA rgba = new GdkRGBA ();
-		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
 		if ((state & BACKGROUND) == 0) {
 			return defaultBackground();
 		}
@@ -193,12 +193,12 @@ void createHandle(int index) {
 
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
 
-	handle = OS.gtk_frame_new (null);
+	handle = GTK.gtk_frame_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	labelHandle = OS.gtk_label_new (null);
+	labelHandle = GTK.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_object_ref (labelHandle);
 	OS.g_object_ref_sink (labelHandle);
@@ -210,25 +210,25 @@ void createHandle(int index) {
 	 * it can listen to events (clicking/tooltip etc.) and so that
 	 * background can be drawn on it.
 	 */
-	OS.gtk_widget_set_has_window (clientHandle, true);
+	GTK.gtk_widget_set_has_window (clientHandle, true);
 
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_container_add (handle, clientHandle);
+	GTK.gtk_container_add (fixedHandle, handle);
+	GTK.gtk_container_add (handle, clientHandle);
 	if ((style & SWT.SHADOW_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
+		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
 	}
 	if ((style & SWT.SHADOW_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
+		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_OUT);
 	}
 	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
+		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_IN);
 	}
 	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
+		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_OUT);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setFontDescription (defaultFont ().handle);
 	}
 }
@@ -247,7 +247,7 @@ void deregister () {
 
 @Override
 void enableWidget (boolean enabled) {
-	OS.gtk_widget_set_sensitive (labelHandle, enabled);
+	GTK.gtk_widget_set_sensitive (labelHandle, enabled);
 }
 
 @Override
@@ -335,13 +335,13 @@ void releaseWidget () {
 
 @Override
 void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setBackgroundGdkRGBA(fixedHandle, rgba);
 }
 
 @Override
 void setBackgroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	super.setBackgroundGdkColor (color);
 	setBackgroundGdkColor (fixedHandle, color);
 	// Bug 453827 - client handle should also be painted as it's visible to the user now.
@@ -356,8 +356,8 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
 	}
@@ -375,14 +375,14 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	super.setForegroundGdkColor (color);
 	setForegroundColor(labelHandle, color);
 }
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	setForegroundGdkRGBA (labelHandle, rgba);
 }
@@ -391,8 +391,8 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		OS.gtk_widget_set_direction (labelHandle, dir);
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		GTK.gtk_widget_set_direction (labelHandle, dir);
 	}
 }
 
@@ -429,16 +429,16 @@ public void setText (String string) {
 	text = string;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
-		if (OS.gtk_frame_get_label_widget (handle) == 0) {
-			OS.gtk_frame_set_label_widget (handle, labelHandle);
+		if (GTK.gtk_frame_get_label_widget (handle) == 0) {
+			GTK.gtk_frame_set_label_widget (handle, labelHandle);
 		}
 	} else {
-		OS.gtk_frame_set_label_widget (handle, 0);
+		GTK.gtk_frame_set_label_widget (handle, 0);
 	}
 	// Set the foreground now that the text has been set
-	if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0) && foreground != null) {
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0) && foreground != null) {
 		setForegroundGdkRGBA (labelHandle, foreground);
 	}
 }
@@ -446,26 +446,26 @@ public void setText (String string) {
 @Override
 void showWidget () {
 	super.showWidget ();
-	if (clientHandle != 0) OS.gtk_widget_show (clientHandle);
-	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+	if (clientHandle != 0) GTK.gtk_widget_show (clientHandle);
+	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
 }
 
 @Override
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			// Work around for bug 470129.
 			// See also https://bugzilla.gnome.org/show_bug.cgi?id=754976 :
 			// GtkFrame: Attempt to allocate size of width 1 (or a small number) fails
 			//
 			// GtkFrame does not handle well allocating less than its minimum size
 			GtkRequisition requisition = new GtkRequisition();
-			OS.gtk_widget_get_preferred_size(handle, requisition, null);
+			GTK.gtk_widget_get_preferred_size(handle, requisition, null);
 			/*
 			 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
 			 * elements which we cannot access. If the to-be-allocated size minus
 			 * these elements is < 0, allocate the preferred size instead.
 			 */
-			if (OS.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
 				height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
 			} else {
@@ -477,7 +477,7 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 
 @Override
 long /*int*/ paintHandle() {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		return super.paintHandle();
 	}
 	else {
@@ -485,8 +485,8 @@ long /*int*/ paintHandle() {
 		/* we draw all our children on the clientHandle*/
 		long /*int*/ paintHandle = clientHandle;
 		while (paintHandle != topHandle) {
-			if (OS.gtk_widget_get_has_window (paintHandle)) break;
-			paintHandle = OS.gtk_widget_get_parent (paintHandle);
+			if (GTK.gtk_widget_get_has_window (paintHandle)) break;
+			paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 		}
 		return paintHandle;
 	}
@@ -495,7 +495,7 @@ long /*int*/ paintHandle() {
 @Override
 long /*int*/ paintWindow () {
 	long /*int*/ paintHandle = clientHandle;
-	OS.gtk_widget_realize (paintHandle);
+	GTK.gtk_widget_realize (paintHandle);
 	return gtk_widget_get_window (paintHandle);
 }
 

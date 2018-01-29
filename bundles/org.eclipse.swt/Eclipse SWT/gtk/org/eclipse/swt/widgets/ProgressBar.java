@@ -85,11 +85,11 @@ void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
-	handle = OS.gtk_progress_bar_new ();
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	handle = GTK.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (fixedHandle, handle);
-	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_BOTTOM_TO_TOP : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
+	GTK.gtk_container_add (fixedHandle, handle);
+	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_PROGRESS_BOTTOM_TO_TOP : GTK.GTK_PROGRESS_LEFT_TO_RIGHT;
 	gtk_orientable_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {
 		timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
@@ -98,7 +98,7 @@ void createHandle (int index) {
 
 @Override
 long /*int*/ eventHandle () {
-	return OS.GTK3 ? fixedHandle : super.eventHandle ();
+	return GTK.GTK3 ? fixedHandle : super.eventHandle ();
 }
 
 /**
@@ -297,7 +297,7 @@ public void setState (int state) {
 
 @Override
 long /*int*/ timerProc (long /*int*/ widget) {
-	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
+	if (isVisible ()) GTK.gtk_progress_bar_pulse (handle);
 	return 1;
 }
 
@@ -308,11 +308,11 @@ void updateBar (int selection, int minimum, int maximum) {
 	* fix is to update the progress bar state only when realized and restore
 	* the state when the progress bar becomes realized.
 	*/
-	if (!OS.gtk_widget_get_realized (handle)) return;
+	if (!GTK.gtk_widget_get_realized (handle)) return;
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
-	OS.gtk_progress_bar_set_fraction (handle, fraction);
-	if (!OS.GTK3) {
+	GTK.gtk_progress_bar_set_fraction (handle, fraction);
+	if (!GTK.GTK3) {
 		/*
 		* Feature in GTK.  The progress bar does
 		* not redraw right away when a value is
@@ -327,19 +327,19 @@ void updateBar (int selection, int minimum, int maximum) {
 }
 
 void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		switch (orientation) {
-			case OS.GTK_PROGRESS_BOTTOM_TO_TOP:
-				OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_VERTICAL);
-				OS.gtk_progress_bar_set_inverted(pbar, true);
+			case GTK.GTK_PROGRESS_BOTTOM_TO_TOP:
+				GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_VERTICAL);
+				GTK.gtk_progress_bar_set_inverted(pbar, true);
 				break;
-			case OS.GTK_PROGRESS_LEFT_TO_RIGHT:
-				OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_HORIZONTAL);
-				OS.gtk_progress_bar_set_inverted(pbar, false);
+			case GTK.GTK_PROGRESS_LEFT_TO_RIGHT:
+				GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_HORIZONTAL);
+				GTK.gtk_progress_bar_set_inverted(pbar, false);
 				break;
 		}
 	} else {
-		OS.gtk_progress_bar_set_orientation(pbar, orientation);
+		GTK.gtk_progress_bar_set_orientation(pbar, orientation);
 	}
 }
 }

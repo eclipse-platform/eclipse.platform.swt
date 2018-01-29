@@ -102,10 +102,10 @@ public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (string, true);
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.gtk_list_store_append (modelHandle, iter);
-	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
+	GTK.gtk_list_store_append (modelHandle, iter);
+	GTK.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -138,23 +138,23 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	byte [] buffer = Converter.wcsToMbcs (string, true);
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	/*
 	* Feature in GTK.  It is much faster to append to a list store
 	* than to insert at the end using gtk_list_store_insert().
 	*/
 	if (index == count) {
-		OS.gtk_list_store_append (modelHandle, iter);
+		GTK.gtk_list_store_append (modelHandle, iter);
 	} else {
-		OS.gtk_list_store_insert (modelHandle, iter, index);
+		GTK.gtk_list_store_insert (modelHandle, iter, index);
 	}
-	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
+	GTK.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -199,37 +199,37 @@ void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_set_has_window (fixedHandle, true);
-	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
+	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
 	* Columns:
 	* 0 - text
 	*/
 	long /*int*/ [] types = new long /*int*/ [] {OS.G_TYPE_STRING ()};
-	modelHandle = OS.gtk_list_store_newv (types.length, types);
+	modelHandle = GTK.gtk_list_store_newv (types.length, types);
 	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = OS.gtk_tree_view_new_with_model (modelHandle);
+	handle = GTK.gtk_tree_view_new_with_model (modelHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	long /*int*/ textRenderer = OS.gtk_cell_renderer_text_new ();
+	long /*int*/ textRenderer = GTK.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-	long /*int*/ columnHandle = OS.gtk_tree_view_column_new ();
+	long /*int*/ columnHandle = GTK.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
-	OS.gtk_tree_view_column_set_min_width (columnHandle, 0);
-	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
-	OS.gtk_container_add (fixedHandle, scrolledHandle);
-	OS.gtk_container_add (scrolledHandle, handle);
+	GTK.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
+	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
+	GTK.gtk_tree_view_column_set_min_width (columnHandle, 0);
+	GTK.gtk_tree_view_insert_column (handle, columnHandle, index);
+	GTK.gtk_container_add (fixedHandle, scrolledHandle);
+	GTK.gtk_container_add (scrolledHandle, handle);
 
-	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_MULTIPLE : OS.GTK_SELECTION_BROWSE;
-	long /*int*/ selectionHandle = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_set_mode (selectionHandle, mode);
-	OS.gtk_tree_view_set_headers_visible (handle, false);
-	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
-	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
-	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
+	long /*int*/ selectionHandle = GTK.gtk_tree_view_get_selection (handle);
+	GTK.gtk_tree_selection_set_mode (selectionHandle, mode);
+	GTK.gtk_tree_view_set_headers_visible (handle, false);
+	int hsp = (style & SWT.H_SCROLL) != 0 ? GTK.GTK_POLICY_AUTOMATIC : GTK.GTK_POLICY_NEVER;
+	int vsp = (style & SWT.V_SCROLL) != 0 ? GTK.GTK_POLICY_AUTOMATIC : GTK.GTK_POLICY_NEVER;
+	GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+	if ((style & SWT.BORDER) != 0) GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 	/*
 	* Bug in GTK. When a treeview is the child of an override shell,
 	* and if the user has ever invokes the interactive search field,
@@ -238,11 +238,11 @@ void createHandle (int index) {
 	* shell.
 	*/
 	if ((getShell ().style & SWT.ON_TOP) != 0) {
-		OS.gtk_tree_view_set_search_column (handle, -1);
+		GTK.gtk_tree_view_set_search_column (handle, -1);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (OS.GTK3) {
+	if (GTK.GTK3) {
 		setFontDescription(defaultFont().handle);
 	}
 }
@@ -257,7 +257,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	OS.gtk_widget_realize(handle);
+	GTK.gtk_widget_realize(handle);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	/*
@@ -265,7 +265,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * So if the height is returned as zero calculate the table height
 	 * based on the number of items in the table
 	 */
-	 if (OS.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
+	 if (GTK.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
 	 size.y = getItemCount() * getItemHeightInPixels();
 	 }
 
@@ -289,7 +289,7 @@ GdkRGBA defaultBackground () {
 @Override
 void deregister() {
 	super.deregister ();
-	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
+	display.removeWidget (GTK.gtk_tree_view_get_selection (handle));
 }
 
 /**
@@ -306,12 +306,12 @@ void deregister() {
  */
 public void deselect (int index) {
 	checkWidget();
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	OS.gtk_tree_selection_unselect_iter (selection, iter);
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	GTK.gtk_tree_selection_unselect_iter (selection, iter);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
@@ -334,16 +334,16 @@ public void deselect (int index) {
 public void deselect (int start, int end) {
 	checkWidget();
 	if (start < 0 && end < 0) return;
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (start >= count && end >= count) return;
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_unselect_iter (selection, iter);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_tree_selection_unselect_iter (selection, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
@@ -369,15 +369,15 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index < 0 || index > count - 1) continue;
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_unselect_iter (selection, iter);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_tree_selection_unselect_iter (selection, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
@@ -393,9 +393,9 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_selection_unselect_all (selection);
+	GTK.gtk_tree_selection_unselect_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
@@ -405,11 +405,11 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	if (OS.isX11()) { //Wayland
 		if (filter) {
 			long /*int*/ [] path = new long /*int*/ [1];
-			if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
+			if (GTK.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
 				if (path [0] != 0) {
-					long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-					if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
-					OS.gtk_tree_path_free (path [0]);
+					long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+					if (GTK.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
+					GTK.gtk_tree_path_free (path [0]);
 				}
 			} else {
 				return false;
@@ -422,8 +422,8 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		double [] startX = new double[1];
 		double [] startY = new double [1];
 		long /*int*/ [] path = new long /*int*/ [1];
-		if (OS.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
-			if (OS.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
+		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
+			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int) startX[0], (int) startY[0], path, null, null, null)) {
 				if (path [0] != 0) {
 					boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
 					if (dragDetect && selected && consume != null) consume [0] = true;
@@ -445,7 +445,7 @@ long /*int*/ eventWindow () {
 
 @Override
 GdkColor getBackgroundGdkColor () {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	return getBaseGdkColor ();
 }
 
@@ -463,18 +463,18 @@ GdkColor getBackgroundGdkColor () {
 public int getFocusIndex () {
 	checkWidget();
 	long /*int*/ [] path = new long /*int*/ [1];
-	OS.gtk_tree_view_get_cursor (handle, path, null);
+	GTK.gtk_tree_view_get_cursor (handle, path, null);
 	if (path [0] == 0) return -1;
-	long /*int*/ indices = OS.gtk_tree_path_get_indices (path [0]);
+	long /*int*/ indices = GTK.gtk_tree_path_get_indices (path [0]);
 	int [] index = new int []{-1};
 	if (indices != 0) C.memmove (index, indices, 4);
-	OS.gtk_tree_path_free (path [0]);
+	GTK.gtk_tree_path_free (path [0]);
 	return index [0];
 }
 
 @Override
 GdkColor getForegroundGdkColor () {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	return getTextColor ();
 }
 
@@ -495,13 +495,13 @@ GdkColor getForegroundGdkColor () {
  */
 public String getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	long /*int*/ [] ptr = new long /*int*/ [1];
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	GTK.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 	OS.g_free (iter);
 	if (ptr [0] == 0) return null;
 	int length = C.strlen (ptr [0]);
@@ -523,7 +523,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	return OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	return GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 }
 
 /**
@@ -544,24 +544,24 @@ public int getItemHeight () {
 
 int getItemHeightInPixels () {
 	checkWidget();
-	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	long /*int*/ column = OS.gtk_tree_view_get_column (handle, 0);
+	int itemCount = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	long /*int*/ column = GTK.gtk_tree_view_get_column (handle, 0);
 	if (itemCount == 0) {
 		int [] w = new int [1], h = new int [1];
-		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 		int height = h [0];
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			long /*int*/ textRenderer = getTextRenderer (column);
-			OS.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+			GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
 			height += h [0];
 		}
 		return height;
 	} else {
-		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
-		OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
+		long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		GTK.gtk_tree_model_get_iter_first (modelHandle, iter);
+		GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 		int [] w = new int [1], h = new int [1];
-		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 		OS.g_free (iter);
 		return h [0];
 	}
@@ -585,13 +585,13 @@ int getItemHeightInPixels () {
  */
 public String [] getItems () {
 	checkWidget();
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	long /*int*/ [] ptr = new long /*int*/ [1];
 	String [] result = new String [count];
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	for (int index=0; index<count; index++) {
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 		if (ptr [0] != 0) {
 			int length = C.strlen (ptr [0]);
 			byte[] buffer = new byte [length];
@@ -642,8 +642,8 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-	return OS.gtk_tree_selection_count_selected_rows (selection);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+	return GTK.gtk_tree_selection_count_selected_rows (selection);
 }
 
 /**
@@ -659,8 +659,8 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+	long /*int*/ list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
 	long /*int*/ originalList = list;
 	if (list != 0) {
 		int [] index = new int [1];
@@ -668,14 +668,14 @@ public int getSelectionIndex () {
 		while (list != 0) {
 			long /*int*/ data = OS.g_list_data (list);
 			if (foundIndex == false) {
-				long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
+				long /*int*/ indices = GTK.gtk_tree_path_get_indices (data);
 				if (indices !=0) {
 					C.memmove (index, indices, 4);
 					foundIndex = true;
 				}
 			}
 			list = OS.g_list_next (list);
-			OS.gtk_tree_path_free (data);
+			GTK.gtk_tree_path_free (data);
 		}
 		OS.g_list_free (originalList);
 		return index [0];
@@ -701,8 +701,8 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-	long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+	long /*int*/ list = GTK.gtk_tree_selection_get_selected_rows (selection, null);
 	long /*int*/ originalList = list;
 	if (list != 0) {
 		int count = OS.g_list_length (list);
@@ -710,14 +710,14 @@ public int [] getSelectionIndices () {
 		int length = 0;
 		for (int i=0; i<count; i++) {
 			long /*int*/ data = OS.g_list_data (list);
-			long /*int*/ indices = OS.gtk_tree_path_get_indices (data);
+			long /*int*/ indices = GTK.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				int [] index = new int [1];
 				C.memmove (index, indices, 4);
 				treeSelection [length] = index [0];
 				length++;
 			}
-			OS.gtk_tree_path_free (data);
+			GTK.gtk_tree_path_free (data);
 			list = OS.g_list_next (list);
 		}
 		OS.g_list_free (originalList);
@@ -729,13 +729,13 @@ public int [] getSelectionIndices () {
 }
 
 long /*int*/ getTextRenderer (long /*int*/ column) {
-	long /*int*/ list = OS.gtk_cell_layout_get_cells(column);
+	long /*int*/ list = GTK.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ originalList = list;
 	long /*int*/ textRenderer = 0;
 	while (list != 0) {
 		long /*int*/ renderer = OS.g_list_data (list);
-		if (OS.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
+		if (GTK.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
 			textRenderer = renderer;
 			break;
 		}
@@ -765,23 +765,23 @@ public int getTopIndex () {
 	 * using the UI. Otherwise, fetch topIndex using GtkTreeView API.
 	 */
 	long /*int*/ vAdjustment;
-	if (OS.GTK3) {
-		vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);
+	if (GTK.GTK3) {
+		vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	} else {
-		vAdjustment = OS.gtk_tree_view_get_vadjustment (handle);
+		vAdjustment = GTK.gtk_tree_view_get_vadjustment (handle);
 	}
-	currentAdjustment = OS.gtk_adjustment_get_value (vAdjustment);
+	currentAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 	if (cachedAdjustment == currentAdjustment) {
 		return topIndex;
 	} else {
 		long /*int*/ [] path = new long /*int*/ [1];
-		OS.gtk_widget_realize (handle);
-		if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
+		GTK.gtk_widget_realize (handle);
+		if (!GTK.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
 		if (path [0] == 0) return 0;
-		long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
+		long /*int*/ indices = GTK.gtk_tree_path_get_indices (path[0]);
 		int[] index = new int [1];
 		if (indices != 0) C.memmove (index, indices, 4);
-		OS.gtk_tree_path_free (path [0]);
+		GTK.gtk_tree_path_free (path [0]);
 		return index [0];
 	}
 }
@@ -803,7 +803,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 			* The fix is to detect this case in 'event_after' and send the
 			* expose event.
 			*/
-			if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
+			if (GTK.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
 				gtk_expose_event (widget, gdkEvent);
 			}
 			break;
@@ -830,12 +830,12 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		long /*int*/ nextEvent = OS.gdk_event_peek ();
 		if (nextEvent == 0) {
 			long /*int*/ [] path = new long /*int*/ [1];
-			long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-			if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+			long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
 					path[0] != 0) {
 				//  selection count is used in the case of clicking an already selected item while holding Control
 				selectionCountOnPress = getSelectionCount();
-				if (OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
+				if (GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
 					if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
 							((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
 						/**
@@ -845,8 +845,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 						 * E.g to reproduce: Open DNDExample, select "Tree", select multiple items, try dragging.
 						 *   without line below, only one item is selected for drag.
 						 */
-						long /*int*/ gtk_false_funcPtr = OS.GET_FUNCTION_POINTER_gtk_false();
-						OS.gtk_tree_selection_set_select_function(selection, gtk_false_funcPtr, 0, 0);
+						long /*int*/ gtk_false_funcPtr = GTK.GET_FUNCTION_POINTER_gtk_false();
+						GTK.gtk_tree_selection_set_select_function(selection, gtk_false_funcPtr, 0, 0);
 					}
 				}
 			}
@@ -866,11 +866,11 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	int button = gdkEvent.button;
 	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
 		long /*int*/ [] path = new long /*int*/ [1];
-		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
-				long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-				if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) result = 1;
-				OS.gtk_tree_path_free (path [0]);
+				long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
+				if (GTK.gtk_tree_selection_path_is_selected (selection, path [0])) result = 1;
+				GTK.gtk_tree_path_free (path [0]);
 			}
 		}
 	}
@@ -884,13 +884,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	*/
 	if ((style & SWT.SINGLE) != 0 && getSelectionCount () == 0) {
 		long /*int*/ [] path = new long /*int*/ [1];
-		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
-				long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+				long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-				OS.gtk_tree_view_set_cursor (handle, path [0], 0, false);
+				GTK.gtk_tree_view_set_cursor (handle, path [0], 0, false);
 				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-				OS.gtk_tree_path_free (path [0]);
+				GTK.gtk_tree_path_free (path [0]);
 			}
 		}
 	}
@@ -917,7 +917,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	if (gdkEvent.window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
 	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
@@ -927,19 +927,19 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	 */
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && !OS.isX11()) { // Wayland
 		long /*int*/ [] path = new long /*int*/ [1];
-		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+		long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.
-		OS.gtk_tree_selection_set_select_function(selection,0,0,0);
-		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
-				path[0] != 0 && OS.gtk_tree_selection_path_is_selected (selection, path[0])) {
+		GTK.gtk_tree_selection_set_select_function(selection,0,0,0);
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+				path[0] != 0 && GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
 			selectionCountOnRelease = getSelectionCount();
 			if ((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) {
-				OS.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
+				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
 			 // Check to see if there has been a new tree item selected when holding Control in Path.
 			 // If not, deselect the item.
 			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
-				OS.gtk_tree_selection_unselect_path (selection,path[0]);
+				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
 		}
 	}
@@ -982,7 +982,7 @@ void sendTreeDefaultSelection() {
 @Override
 void hookEvents () {
 	super.hookEvents();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection(handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_closure (selection, OS.changed, display.getClosure (CHANGED), false);
 	OS.g_signal_connect_closure (handle, OS.row_activated, display.getClosure (ROW_ACTIVATED), false);
 }
@@ -1055,24 +1055,24 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	byte [] buffer = Converter.wcsToMbcs (Integer.toString (index), true);
-	long /*int*/ path = OS.gtk_tree_path_new_from_string (buffer);
-	boolean answer = OS.gtk_tree_selection_path_is_selected (selection, path);
-	OS.gtk_tree_path_free (path);
+	long /*int*/ path = GTK.gtk_tree_path_new_from_string (buffer);
+	boolean answer = GTK.gtk_tree_selection_path_is_selected (selection, path);
+	GTK.gtk_tree_path_free (path);
 	return answer;
 }
 
 @Override
 long /*int*/ paintWindow () {
-	OS.gtk_widget_realize (handle);
-	return OS.gtk_tree_view_get_bin_window (handle);
+	GTK.gtk_widget_realize (handle);
+	return GTK.gtk_tree_view_get_bin_window (handle);
 }
 
 @Override
 void register () {
 	super.register ();
-	display.addWidget (OS.gtk_tree_view_get_selection (handle), this);
+	display.addWidget (GTK.gtk_tree_view_get_selection (handle), this);
 }
 
 @Override
@@ -1098,14 +1098,14 @@ void releaseWidget () {
  */
 public void remove (int index) {
 	checkWidget();
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_list_store_remove (modelHandle, iter);
+	GTK.gtk_list_store_remove (modelHandle, iter);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
@@ -1129,16 +1129,16 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	int count =  OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count =  GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=end; index>=start; index--) {
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_list_store_remove (modelHandle, iter);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_list_store_remove (modelHandle, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
@@ -1195,15 +1195,15 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int last = -1;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
-			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-			OS.gtk_list_store_remove (modelHandle, iter);
+			GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+			GTK.gtk_list_store_remove (modelHandle, iter);
 			last = index;
 		}
 	}
@@ -1221,9 +1221,9 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_list_store_clear (modelHandle);
+	GTK.gtk_list_store_clear (modelHandle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
@@ -1266,16 +1266,16 @@ public void removeSelectionListener(SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	OS.gtk_tree_selection_select_iter (selection, iter);
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	GTK.gtk_tree_selection_select_iter (selection, iter);
 	if ((style & SWT.SINGLE) != 0) {
-		long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-		OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-		OS.gtk_tree_path_free (path);
+		long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+		GTK.gtk_tree_view_set_cursor (handle, path, 0, false);
+		GTK.gtk_tree_path_free (path);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
@@ -1306,20 +1306,20 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (count == 0 || start >= count) return;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_select_iter (selection, iter);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_tree_selection_select_iter (selection, iter);
 		if ((style & SWT.SINGLE) != 0) {
-			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-			OS.gtk_tree_path_free (path);
+			long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+			GTK.gtk_tree_view_set_cursor (handle, path, 0, false);
+			GTK.gtk_tree_path_free (path);
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1353,19 +1353,19 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<length; i++) {
 		int index = indices [i];
 		if (!(0 <= index && index < count)) continue;
-		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_select_iter (selection, iter);
+		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+		GTK.gtk_tree_selection_select_iter (selection, iter);
 		if ((style & SWT.SINGLE) != 0) {
-			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-			OS.gtk_tree_path_free (path);
+			long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+			GTK.gtk_tree_view_set_cursor (handle, path, 0, false);
+			GTK.gtk_tree_path_free (path);
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1385,9 +1385,9 @@ public void select (int [] indices) {
 public void selectAll () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_selection_select_all (selection);
+	GTK.gtk_tree_selection_select_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
@@ -1397,24 +1397,24 @@ void selectFocusIndex (int index) {
 	* specified index, so any previous selection in the list will be lost.
 	* gtk does not provide a way to just set focus to a specified list item.
 	*/
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (!(0 <= index && index < count))  return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+	GTK.gtk_tree_view_set_cursor (handle, path, 0, false);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_path_free (path);
+	GTK.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
 
 @Override
 void setBackgroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	super.setBackgroundGdkColor (color);
-	OS.gtk_widget_modify_base (handle, 0, color);
+	GTK.gtk_widget_modify_base (handle, 0, color);
 }
 
 @Override
@@ -1428,7 +1428,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* a new shell is created. The fix is to ensure the tree view is realized
 	* after it has been resized.
 	*/
-	OS.gtk_widget_realize (handle);
+	GTK.gtk_widget_realize (handle);
 	return result;
 }
 
@@ -1451,13 +1451,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 public void setItem (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	byte [] buffer = Converter.wcsToMbcs (string, true);
-	OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
+	GTK.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	OS.g_free (iter);
 }
 
@@ -1481,25 +1481,25 @@ public void setItems (String... items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_list_store_clear (modelHandle);
+	GTK.gtk_list_store_clear (modelHandle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
 		byte [] buffer = Converter.wcsToMbcs (string, true);
-		OS.gtk_list_store_append (modelHandle, iter);
-		OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
+		GTK.gtk_list_store_append (modelHandle, iter);
+		GTK.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);
 	}
 	OS.g_free (iter);
 }
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
 		setForegroundGdkRGBA (handle, toSet);
 	} else {
@@ -1509,7 +1509,7 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	setForegroundColor (handle, color, false);
 }
 
@@ -1562,7 +1562,7 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	if (count == 0 || start >= count) return;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
@@ -1683,22 +1683,22 @@ public void setTopIndex (int index) {
 	 * doesn't exist on GTK2.
 	 */
 	long /*int*/ vAdjustment;
-	if (OS.GTK3) {
-		vAdjustment = OS.gtk_scrollable_get_vadjustment (handle);
+	if (GTK.GTK3) {
+		vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	} else {
-		vAdjustment = OS.gtk_tree_view_get_vadjustment (handle);
+		vAdjustment = GTK.gtk_tree_view_get_vadjustment (handle);
 	}
-	cachedAdjustment = OS.gtk_adjustment_get_value (vAdjustment);
+	cachedAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 	topIndex = index;
 	/*
 	 * Scroll to the cell, now that the topIndex variable has been set.
 	 */
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0))) return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
-	OS.gtk_tree_path_free (path);
+	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0))) return;
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+	GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
+	GTK.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
 
@@ -1716,12 +1716,12 @@ public void showSelection () {
 	checkWidget();
 	int index = getSelectionIndex ();
 	if (index == -1) return;
-	long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 
-	OS.gtk_widget_realize (handle);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	GTK.gtk_widget_realize (handle);
+	GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
 
 	/*
 	 * Reverting the code for bug 459072. With gtk_tree_view_scroll_to_cell, there are some pending gtk events.
@@ -1729,21 +1729,21 @@ public void showSelection () {
 	 * all the pending events and update top index.
 	 */
 	GdkRectangle visibleRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+	GTK.gtk_tree_view_get_visible_rect (handle, visibleRect);
 	GdkRectangle cellRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+	GTK.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 	int[] tx = new int[1], ty = new int[1];
-	OS.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	GTK.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
 	if (ty[0] < visibleRect.y ) {
-		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+		GTK.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 	} else {
 		int height = Math.min (visibleRect.height, cellRect.height);
 		if (ty[0] + height > visibleRect.y + visibleRect.height) {
 			ty[0] += cellRect.height - visibleRect.height;
-			OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+			GTK.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 		}
 	}
-	OS.gtk_tree_path_free (path);
+	GTK.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
 

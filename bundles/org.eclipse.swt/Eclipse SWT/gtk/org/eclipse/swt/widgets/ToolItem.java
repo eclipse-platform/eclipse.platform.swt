@@ -185,32 +185,32 @@ void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
 	if ((style & SWT.SEPARATOR) == 0) {
-		labelHandle = OS.gtk_label_new_with_mnemonic (null);
+		labelHandle = GTK.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = OS.gtk_image_new_from_pixbuf (0);
+		imageHandle = GTK.gtk_image_new_from_pixbuf (0);
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	switch (style & bits) {
 		case SWT.SEPARATOR:
-			handle = OS.gtk_separator_tool_item_new ();
+			handle = GTK.gtk_separator_tool_item_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_separator_tool_item_set_draw (handle, true);
+			GTK.gtk_separator_tool_item_set_draw (handle, true);
 			break;
 		case SWT.DROP_DOWN:
-			handle = OS.gtk_menu_tool_button_new (0, null);
+			handle = GTK.gtk_menu_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			/*
 			 * Feature in GTK. The arrow button of DropDown tool-item is
 			 * disabled when it does not contain menu. The fix is to
 			 * find the arrow button handle and enable it.
 			 */
-			long /*int*/ child = OS.gtk_bin_get_child (handle);
-			long /*int*/ list = OS.gtk_container_get_children (child);
+			long /*int*/ child = GTK.gtk_bin_get_child (handle);
+			long /*int*/ list = GTK.gtk_container_get_children (child);
 			arrowHandle = OS.g_list_nth_data (list, 1);
 			if (arrowHandle != 0) {
-				OS.gtk_widget_set_sensitive (arrowHandle, true);
-				if (!OS.GTK3) {
-					OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
+				GTK.gtk_widget_set_sensitive (arrowHandle, true);
+				if (!GTK.GTK3) {
+					GTK.gtk_widget_set_size_request(GTK.gtk_bin_get_child(arrowHandle), 8, 6);
 				}
 			}
 			break;
@@ -222,20 +222,20 @@ void createHandle (int index) {
 			* The fix is to use toggle buttons instead.
 			*/
 		case SWT.CHECK:
-			handle = OS.gtk_toggle_tool_button_new ();
+			handle = GTK.gtk_toggle_tool_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
 		default:
-			handle = OS.gtk_tool_button_new (0, null);
+			handle = GTK.gtk_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 	}
 	if (labelHandle != 0) {
-		OS.gtk_tool_button_set_label_widget(handle, labelHandle);
+		GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
 	}
 	if (imageHandle != 0) {
-		OS.gtk_tool_button_set_icon_widget(handle, imageHandle);
+		GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
 	}
 	if ((parent.state & FOREGROUND) != 0) {
 		setForegroundColor (parent.getForegroundGdkColor());
@@ -248,8 +248,8 @@ void createHandle (int index) {
 	 * determine whether to show or hide its label when the toolbar
 	 * style is GTK_TOOLBAR_BOTH_HORIZ (or SWT.RIGHT).
 	 */
-	if ((parent.style & SWT.RIGHT) != 0) OS.gtk_tool_item_set_is_important (handle, true);
-	if ((style & SWT.SEPARATOR) == 0) OS.gtk_tool_button_set_use_underline (handle, true);
+	if ((parent.style & SWT.RIGHT) != 0) GTK.gtk_tool_item_set_is_important (handle, true);
+	if ((style & SWT.SEPARATOR) == 0) GTK.gtk_tool_button_set_use_underline (handle, true);
 }
 
 @Override
@@ -308,7 +308,7 @@ Rectangle getBoundsInPixels () {
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (topHandle, allocation);
+	GTK.gtk_widget_get_allocation (topHandle, allocation);
 	int x = allocation.x;
 	int y = allocation.y;
 	int width = allocation.width;
@@ -371,7 +371,7 @@ public Image getDisabledImage () {
 public boolean getEnabled () {
 	checkWidget();
 	long /*int*/ topHandle = topHandle ();
-	return OS.gtk_widget_get_sensitive (topHandle);
+	return GTK.gtk_widget_get_sensitive (topHandle);
 }
 
 /**
@@ -429,7 +429,7 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return OS.gtk_toggle_tool_button_get_active (handle);
+	return GTK.gtk_toggle_tool_button_get_active (handle);
 }
 
 /**
@@ -467,7 +467,7 @@ int getWidthInPixels () {
 	parent.forceResize ();
 	long /*int*/ topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation();
-	OS.gtk_widget_get_allocation (topHandle, allocation);
+	GTK.gtk_widget_get_allocation (topHandle, allocation);
 	return allocation.width;
 }
 
@@ -476,7 +476,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	double x = gdkEvent.x + allocation.x;
 	double y = gdkEvent.y + allocation.y;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
@@ -492,7 +492,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	double x = gdkEvent.x + allocation.x;
 	double y = gdkEvent.y + allocation.y;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
@@ -507,7 +507,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 long /*int*/ gtk_clicked (long /*int*/ widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ eventPtr = OS.gtk_get_current_event ();
+		long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			GdkEvent gdkEvent = new GdkEvent ();
 			OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
@@ -526,13 +526,13 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 						 * It is required to set back the state of arrow to normal state after it is clicked.
 						 */
 						OS.g_signal_handlers_block_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-						OS.gtk_toggle_button_set_active(widget, false);
+						GTK.gtk_toggle_button_set_active(widget, false);
 						OS.g_signal_handlers_unblock_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 					}
 					if (isArrow) {
 						event.detail = SWT.ARROW;
 						GtkAllocation allocation = new GtkAllocation ();
-						OS.gtk_widget_get_allocation (topHandle, allocation);
+						GTK.gtk_widget_get_allocation (topHandle, allocation);
 						event.x = DPIUtil.autoScaleDown(allocation.x);
 						if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
 						event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
@@ -568,7 +568,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 		 * for the tool-item. If the text/image of the item changes,
 		 * then the proxyMenu is reset.
 		 */
-		OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
+		GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
 		return 1;
 	}
 
@@ -580,11 +580,11 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				long /*int*/ pixbuf = imageList.getPixbuf (index);
 				byte[] label = null;
 				int [] showImages = new int []{1};
-				long /*int*/ settings = OS.gtk_settings_get_default();
+				long /*int*/ settings = GTK.gtk_settings_get_default();
 				if (settings != 0) {
-					if (!OS.GTK3) {
-						long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), OS.gtk_menu_images);
-						if (property != 0) OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
+					if (!GTK.GTK3) {
+						long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), GTK.gtk_menu_images);
+						if (property != 0) OS.g_object_get (settings, GTK.gtk_menu_images, showImages, 0);
 					}
 				}
 
@@ -607,45 +607,45 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 					label = Converter.wcsToMbcs(text, true);
 				}
 				long /*int*/ menuItem;
-				if (OS.GTK3) {
+				if (GTK.GTK3) {
 
-					menuItem = OS.gtk_menu_item_new ();
+					menuItem = GTK.gtk_menu_item_new ();
 					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
 
-					long /*int*/ boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 6);
+					long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 					if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-					long /*int*/ menuLabel = OS.gtk_accel_label_new (label);
+					long /*int*/ menuLabel = GTK.gtk_accel_label_new (label);
 					if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
-					if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-						OS.gtk_label_set_xalign (labelHandle, 0);
-						OS.gtk_widget_set_halign (labelHandle, OS.GTK_ALIGN_FILL);
+					if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+						GTK.gtk_label_set_xalign (labelHandle, 0);
+						GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 					} else {
-						OS.gtk_misc_set_alignment(labelHandle, 0, 0);
+						GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 					}
 
-					long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
+					long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
 					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
-					OS.gtk_container_add (boxHandle, menuImage);
-					OS.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
-					OS.gtk_container_add (menuItem, boxHandle);
+					GTK.gtk_container_add (boxHandle, menuImage);
+					GTK.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
+					GTK.gtk_container_add (menuItem, boxHandle);
 				} else {
-					menuItem = OS.gtk_image_menu_item_new_with_label (label);
+					menuItem = GTK.gtk_image_menu_item_new_with_label (label);
 					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
 
-					long /*int*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
+					long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
 					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
-					OS.gtk_image_menu_item_set_image (menuItem, menuImage);
+					GTK.gtk_image_menu_item_set_image (menuItem, menuImage);
 				}
-				OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
+				GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 
 				/*
 				 * Since the arrow button does not appear in the drop_down
 				 * item, we request the menu-item and then, hook the
 				 * activate signal to send the Arrow selection signal.
 				 */
-				proxyMenuItem = OS.gtk_tool_item_get_proxy_menu_item (widget, buffer);
+				proxyMenuItem = GTK.gtk_tool_item_get_proxy_menu_item (widget, buffer);
 				OS.g_signal_connect(menuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 				return 1;
 			}
@@ -658,11 +658,11 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 	if (provider == 0) {
-		provider = OS.gtk_css_provider_new ();
-		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		provider = GTK.gtk_css_provider_new ();
+		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 }
 
 @Override
@@ -752,9 +752,9 @@ void hookEvents () {
 	 * such as button-press, enter-notify to it. The fix is to assign
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
-	eventHandle = OS.gtk_bin_get_child(handle);
+	eventHandle = GTK.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ list = OS.gtk_container_get_children(eventHandle);
+		long /*int*/ list = GTK.gtk_container_get_children(eventHandle);
 		eventHandle = OS.g_list_nth_data(list, 0);
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 	}
@@ -778,7 +778,7 @@ void hookEvents () {
 		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (eventHandle, mask);
+	GTK.gtk_widget_add_events (eventHandle, mask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
@@ -890,7 +890,7 @@ void resizeControl () {
 }
 
 void resizeHandle(int width, int height) {
-	OS.gtk_widget_set_size_request (handle, width, height);
+	GTK.gtk_widget_set_size_request (handle, width, height);
 	/*
 	* Cause a size allocation this widget's topHandle.  Note that
 	* all calls to gtk_widget_size_allocate() must be preceded by
@@ -899,10 +899,10 @@ void resizeHandle(int width, int height) {
 	GtkRequisition requisition = new GtkRequisition ();
 	parent.gtk_widget_size_request (handle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	allocation.width = width;
 	allocation.height = height;
-	OS.gtk_widget_size_allocate (handle, allocation);
+	GTK.gtk_widget_size_allocate (handle, allocation);
 }
 
 void selectRadio () {
@@ -985,10 +985,10 @@ public void setDisabledImage (Image image) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	long /*int*/ topHandle = topHandle ();
-	if (OS.gtk_widget_get_sensitive (topHandle) == enabled) return;
-	OS.gtk_widget_set_sensitive (topHandle, enabled);
+	if (GTK.gtk_widget_get_sensitive (topHandle) == enabled) return;
+	GTK.gtk_widget_set_sensitive (topHandle, enabled);
 
-	if (!OS.GTK3) {
+	if (!GTK.GTK3) {
 		if (enabled) {
 			/*
 			* Bug in GTK (see Eclipse bug 82169). GtkButton requires an enter notify before it
@@ -999,8 +999,8 @@ public void setEnabled (boolean enabled) {
 			int [] x = new int [1], y = new int [1];
 			gdk_window_get_device_position (parent.paintWindow (), x, y, null);
 			if (getBoundsInPixels ().contains (x [0], y [0])) {
-				OS.gtk_widget_hide (handle);
-				OS.gtk_widget_show (handle);
+				GTK.gtk_widget_hide (handle);
+				GTK.gtk_widget_show (handle);
 			}
 		} else {
 			/*
@@ -1010,13 +1010,13 @@ public void setEnabled (boolean enabled) {
 			* As a result, when it is re-enabled it automatically enters
 			* a PRELIGHT state. The fix is to set a NORMAL state.
 			*/
-			OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
+			GTK.gtk_widget_set_state (topHandle, GTK.GTK_STATE_NORMAL);
 		}
 	}
 }
 
 boolean setFocus () {
-	return OS.gtk_widget_child_focus (handle, OS.GTK_DIR_TAB_FORWARD);
+	return GTK.gtk_widget_child_focus (handle, GTK.GTK_DIR_TAB_FORWARD);
 }
 
 void setFontDescription (long /*int*/ font) {
@@ -1024,26 +1024,26 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (labelHandle != 0) setForegroundRGBA (labelHandle, rgba);
 }
 
 void setBackgroundRGBA (GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (handle != 0) setBackgroundRGBA (handle, rgba);
 }
 
 void setForegroundColor (GdkColor color) {
-	assert !OS.GTK3 : "GTK2 code was run by GTK3";
+	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
 	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 }
 
 void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
-		long /*int*/ context = OS.gtk_widget_get_style_context(handle);
-		String name = OS.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+		long /*int*/ context = GTK.gtk_widget_get_style_context(handle);
+		String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
@@ -1054,13 +1054,13 @@ void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 }
 
 void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert OS.GTK3 : "GTK3 code was run by GTK2";
-	if (OS.GTK_VERSION < OS.VERSION(3, 14, 0)) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
-		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_SELECTED, selectedForeground);
-		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-		OS.gtk_style_context_invalidate (context);
+		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);
+		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_SELECTED, selectedForeground);
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		GTK.gtk_style_context_invalidate (context);
 		return;
 	}
 	GdkRGBA toSet = new GdkRGBA();
@@ -1069,7 +1069,7 @@ void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	} else {
 		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
-	long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
 	String css = "* {color: " + color + ";}";
@@ -1142,7 +1142,7 @@ public void setImage (Image image) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
-		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
 		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 	}
 	parent.relayout ();
@@ -1151,8 +1151,8 @@ public void setImage (Image image) {
 @Override
 void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
+		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		if (handle != 0) GTK.gtk_widget_set_direction (handle, dir);
 	}
 }
 
@@ -1184,7 +1184,7 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-	OS.gtk_toggle_tool_button_set_active (handle, selected);
+	GTK.gtk_toggle_tool_button_set_active (handle, selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
@@ -1231,7 +1231,7 @@ public void setText (String string) {
 	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	/*
 	* If Text/Image of a tool-item changes, then it is
 	* required to reset the proxy menu. Otherwise, the
@@ -1239,7 +1239,7 @@ public void setText (String string) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
-		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
 		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 	}
 	parent.relayout ();
@@ -1282,15 +1282,15 @@ public void setToolTipText (String string) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
-		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
 		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 	}
 }
 
 void setToolTipText (Shell shell, String newString) {
-	long /*int*/ child = OS.gtk_bin_get_child (handle);
+	long /*int*/ child = GTK.gtk_bin_get_child (handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ list = OS.gtk_container_get_children (child);
+		long /*int*/ list = GTK.gtk_container_get_children (child);
 		child = OS.g_list_nth_data (list, 0);
 		if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
 	}
@@ -1328,9 +1328,9 @@ void setWidthInPixels (int width) {
 }
 
 void showWidget (int index) {
-	if (handle != 0) OS.gtk_widget_show (handle);
-	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
-	if (imageHandle != 0) OS.gtk_widget_show (imageHandle);
-	OS.gtk_toolbar_insert(parent.handle, handle, index);
+	if (handle != 0) GTK.gtk_widget_show (handle);
+	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
+	if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
+	GTK.gtk_toolbar_insert(parent.handle, handle, index);
 }
 }

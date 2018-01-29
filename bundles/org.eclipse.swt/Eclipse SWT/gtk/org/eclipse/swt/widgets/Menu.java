@@ -193,7 +193,7 @@ static int checkStyle (int style) {
 }
 
 void _setVisible (boolean visible) {
-	if (visible == OS.gtk_widget_get_mapped (handle)) return;
+	if (visible == GTK.gtk_widget_get_mapped (handle)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
@@ -204,9 +204,9 @@ void _setVisible (boolean visible) {
 			* when it is being shown in an ON_TOP shell.
 			*/
 			if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
-				OS.gtk_menu_shell_set_take_focus (handle, false);
+				GTK.gtk_menu_shell_set_take_focus (handle, false);
 			}
-			if (OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+			if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 				long /*int*/ address = 0;
 				hasLocation = false;
 				long /*int*/ data = 0;
@@ -220,7 +220,7 @@ void _setVisible (boolean visible) {
 				TrayItem item = display.currentTrayItem;
 				if (item != null && !item.isDisposed()) {
 					 data = item.handle;
-					 address = OS.gtk_status_icon_position_menu_func ();
+					 address = GTK.gtk_status_icon_position_menu_func ();
 				}
 				/*
 				* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
@@ -228,7 +228,7 @@ void _setVisible (boolean visible) {
 				* will fail.  The fix is to ensure that the timestamp of the last
 				* event processed is used.
 				*/
-				OS.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
+				GTK.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
 			}
 			else {
 				/*
@@ -236,17 +236,17 @@ void _setVisible (boolean visible) {
 				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
 				 *  immediately and not as a post event in display, requiring the current event.
 				 */
-				long /*int*/ eventPtr = OS.gtk_get_current_event();
+				long /*int*/ eventPtr = GTK.gtk_get_current_event();
 				if (eventPtr == 0) {
 					eventPtr = OS.gdk_event_new(OS.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
 					event.type = OS.GDK_BUTTON_PRESS;
-					event.window = OS.g_object_ref(OS.gtk_widget_get_window (getShell().handle));
+					event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
 					long /*int*/ device_manager = OS.gdk_display_get_device_manager (OS.gdk_display_get_default ());
 					event.device = OS.gdk_device_manager_get_client_pointer (device_manager);
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
-					OS.gtk_menu_popup_at_pointer (handle, eventPtr);
+					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
 				} else {
 					if (!OS.isX11()) {
 						/*
@@ -280,14 +280,14 @@ void _setVisible (boolean visible) {
 						}
 					}
 				}
-				OS.gtk_menu_popup_at_pointer (handle, eventPtr);
+				GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
 				OS.gdk_event_free (eventPtr);
 			}
 		} else {
 			sendEvent (SWT.Hide);
 		}
 	} else {
-		OS.gtk_menu_popdown (handle);
+		GTK.gtk_menu_popdown (handle);
 	}
 }
 
@@ -356,33 +356,33 @@ public void addHelpListener (HelpListener listener) {
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.BAR) != 0) {
-		handle = OS.gtk_menu_bar_new ();
+		handle = GTK.gtk_menu_bar_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		long /*int*/ vboxHandle = parent.vboxHandle;
-		OS.gtk_container_add (vboxHandle, handle);
-		OS.gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, OS.GTK_PACK_START);
+		GTK.gtk_container_add (vboxHandle, handle);
+		GTK.gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 	} else {
-		handle = OS.gtk_menu_new ();
+		handle = GTK.gtk_menu_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 }
 
 void createIMMenu (long /*int*/ imHandle) {
 	boolean showInputMethod = false;
-	long /*int*/ settings = OS.gtk_settings_get_default ();
-	if (settings != 0 && OS.GTK_VERSION < OS.VERSION (3, 10, 0)) {
+	long /*int*/ settings = GTK.gtk_settings_get_default ();
+	if (settings != 0 && GTK.GTK_VERSION < OS.VERSION (3, 10, 0)) {
 		int [] buffer = new int [1];
-		OS.g_object_get (settings, OS.gtk_show_input_method_menu, buffer, 0);
+		OS.g_object_get (settings, GTK.gtk_show_input_method_menu, buffer, 0);
 		showInputMethod = buffer[0] != 0;
 	}
 	if (imHandle == 0 || !showInputMethod) {
 		this.imHandle = 0;
 		if (imItem != 0) {
-			OS.gtk_widget_destroy (imItem);
+			GTK.gtk_widget_destroy (imItem);
 			imItem = 0;
 		}
 		if (imSeparator != 0) {
-			OS.gtk_widget_destroy (imSeparator);
+			GTK.gtk_widget_destroy (imSeparator);
 			imSeparator = 0;
 		}
 		return;
@@ -391,53 +391,53 @@ void createIMMenu (long /*int*/ imHandle) {
 	this.imHandle = imHandle;
 
 	if (imSeparator == 0) {
-		imSeparator = OS.gtk_separator_menu_item_new ();
-		OS.gtk_widget_show (imSeparator);
-		OS.gtk_menu_shell_insert (handle, imSeparator, -1);
+		imSeparator = GTK.gtk_separator_menu_item_new ();
+		GTK.gtk_widget_show (imSeparator);
+		GTK.gtk_menu_shell_insert (handle, imSeparator, -1);
 	}
 	if (imItem == 0) {
 		byte[] buffer = Converter.wcsToMbcs (SWT.getMessage("SWT_InputMethods"), true);
-		if (OS.GTK3) {
-			imItem = OS.gtk_menu_item_new ();
+		if (GTK.GTK3) {
+			imItem = GTK.gtk_menu_item_new ();
 			if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
 			long /*int*/ imageHandle = 0;
-			long /*int*/ labelHandle = OS.gtk_accel_label_new (buffer);
+			long /*int*/ labelHandle = GTK.gtk_accel_label_new (buffer);
 			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			if (OS.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-				OS.gtk_label_set_xalign (labelHandle, 0);
-				OS.gtk_widget_set_halign (labelHandle, OS.GTK_ALIGN_FILL);
+			if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+				GTK.gtk_label_set_xalign (labelHandle, 0);
+				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 			} else {
-				OS.gtk_misc_set_alignment(labelHandle, 0, 0);
+				GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 			}
-			long /*int*/ boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
+			long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
 			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = OS.gtk_image_new();
+				imageHandle = GTK.gtk_image_new();
 				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				OS.gtk_image_set_pixel_size (imageHandle, 16);
+				GTK.gtk_image_set_pixel_size (imageHandle, 16);
 				if (boxHandle != 0) {
-					OS.gtk_container_add (boxHandle, imageHandle);
-					OS.gtk_widget_show (imageHandle);
+					GTK.gtk_container_add (boxHandle, imageHandle);
+					GTK.gtk_widget_show (imageHandle);
 				}
 			}
 			if (labelHandle != 0 && boxHandle != 0) {
-				OS.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-				OS.gtk_widget_show (labelHandle);
+				GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+				GTK.gtk_widget_show (labelHandle);
 			}
 			if (boxHandle != 0) {
-				OS.gtk_container_add (imItem, boxHandle);
-				OS.gtk_widget_show (boxHandle);
+				GTK.gtk_container_add (imItem, boxHandle);
+				GTK.gtk_widget_show (boxHandle);
 			}
 		} else {
-			imItem = OS.gtk_image_menu_item_new_with_label (buffer);
+			imItem = GTK.gtk_image_menu_item_new_with_label (buffer);
 			if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
 		}
-		OS.gtk_widget_show (imItem);
-		OS.gtk_menu_shell_insert (handle, imItem, -1);
+		GTK.gtk_widget_show (imItem);
+		GTK.gtk_menu_shell_insert (handle, imItem, -1);
 	}
-	long /*int*/ imSubmenu = OS.gtk_menu_new ();
-	OS.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
-	OS.gtk_menu_item_set_submenu (imItem, imSubmenu);
+	long /*int*/ imSubmenu = GTK.gtk_menu_new ();
+	GTK.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
+	GTK.gtk_menu_item_set_submenu (imItem, imSubmenu);
 }
 
 @Override
@@ -462,14 +462,14 @@ void fixMenus (Decorations newParent) {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!OS.gtk_widget_get_mapped (handle)) {
+	if (!GTK.gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	long /*int*/ window = gtk_widget_get_window (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	GtkAllocation allocation = new GtkAllocation ();
-	OS.gtk_widget_get_allocation (handle, allocation);
+	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = origin_x [0] + allocation.x;
 	int y = origin_y [0] + allocation.y;
 	int width = allocation.width;
@@ -511,7 +511,7 @@ public MenuItem getDefaultItem () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return OS.gtk_widget_get_sensitive (handle);
+	return GTK.gtk_widget_get_sensitive (handle);
 }
 
 /**
@@ -531,7 +531,7 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget();
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;
@@ -555,7 +555,7 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -582,7 +582,7 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget();
-	long /*int*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return new MenuItem [0];
 	long /*int*/ originalList = list;
 	int count = OS.g_list_length (list);
@@ -735,7 +735,7 @@ public boolean getVisible () {
 			}
 		}
 	}
-	return OS.gtk_widget_get_mapped (handle);
+	return GTK.gtk_widget_get_mapped (handle);
 }
 
 @Override
@@ -781,7 +781,7 @@ long /*int*/ gtk_show (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	if (sendHelpEvent (helpType)) {
-		OS.gtk_menu_shell_deactivate (handle);
+		GTK.gtk_menu_shell_deactivate (handle);
 		return 1;
 	}
 	return 0;
@@ -1015,7 +1015,7 @@ public void setDefaultItem (MenuItem item) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	OS.gtk_widget_set_sensitive (handle, enabled);
+	GTK.gtk_widget_set_sensitive (handle, enabled);
 }
 
 /**
@@ -1117,8 +1117,8 @@ void _setOrientation (int orientation) {
 @Override
 void setOrientation (boolean create) {
     if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-    	int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-        if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
+    	int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+        if (handle != 0) GTK.gtk_widget_set_direction (handle, dir);
         MenuItem [] items = getItems ();
         for (int i = 0; i < items.length; i++) {
             items [i].setOrientation (create);
@@ -1150,7 +1150,7 @@ public void setVisible (boolean visible) {
 	 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
 	 *  immediately and not as a post event in display.
 	 */
-	if (OS.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+	if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 		if (visible) {
 			display.addPopup (this);
 		} else {

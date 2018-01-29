@@ -71,7 +71,7 @@ static void gtk_init() {
 			OS.g_thread_init(0);
 		}
 	}
-	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
+	if (!GTK.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 	}
 }
@@ -92,7 +92,7 @@ public static PrinterData[] getPrinterList() {
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_List", 2); //$NON-NLS-1$
 	long /*int*/ GtkPrinterFunc_List = printerCallback.getAddress();
 	if (GtkPrinterFunc_List == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.gtk_enumerate_printers(GtkPrinterFunc_List, 0, 0, true);
+	GTK.gtk_enumerate_printers(GtkPrinterFunc_List, 0, 0, true);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -140,7 +140,7 @@ public static PrinterData getDefaultPrinterData() {
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
 	long /*int*/ GtkPrinterFunc_Default = printerCallback.getAddress();
 	if (GtkPrinterFunc_Default == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.gtk_enumerate_printers(GtkPrinterFunc_Default, 0, 0, true);
+	GTK.gtk_enumerate_printers(GtkPrinterFunc_Default, 0, 0, true);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -153,7 +153,7 @@ public static PrinterData getDefaultPrinterData() {
 }
 
 static long /*int*/ GtkPrinterFunc_Default (long /*int*/ printer, long /*int*/ user_data) {
-	if (OS.gtk_printer_is_default(printer)) {
+	if (GTK.gtk_printer_is_default(printer)) {
 		findData = printerDataFromGtkPrinter(printer);
 		return 1;
 	}
@@ -167,7 +167,7 @@ static long /*int*/ gtkPrinterFromPrinterData(PrinterData data) {
 	if (GtkPrinterFunc_FindNamedPrinter == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	findPrinter = 0;
 	findData = data;
-	OS.gtk_enumerate_printers(GtkPrinterFunc_FindNamedPrinter, 0, 0, true);
+	GTK.gtk_enumerate_printers(GtkPrinterFunc_FindNamedPrinter, 0, 0, true);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -192,14 +192,14 @@ static long /*int*/ GtkPrinterFunc_FindNamedPrinter (long /*int*/ printer, long 
 }
 
 static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
-	long /*int*/ backend = OS.gtk_printer_get_backend(printer);
+	long /*int*/ backend = GTK.gtk_printer_get_backend(printer);
 	long /*int*/ address = OS.G_OBJECT_TYPE_NAME(backend);
 	int length = C.strlen (address);
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, address, length);
 	String backendType = new String (Converter.mbcsToWcs (buffer));
 
-	address = OS.gtk_printer_get_name (printer);
+	address = GTK.gtk_printer_get_name (printer);
 	length = C.strlen (address);
 	buffer = new byte [length];
 	C.memmove (buffer, address, length);
@@ -225,7 +225,7 @@ static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup
 		end++;
 		byte [] valueBuffer = new byte [end - start];
 		System.arraycopy (settingsData, start, valueBuffer, 0, valueBuffer.length);
-		OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
+		GTK.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
 		if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (keyBuffer))+": "+new String (Converter.mbcsToWcs (valueBuffer)));
 	}
 	end++; // skip extra null terminator
@@ -233,11 +233,11 @@ static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup
 	/* Retrieve stored page_setup data.
 	 * Note that page_setup properties must be stored (in PrintDialog) and restored (here) in the same order.
 	 */
-	OS.gtk_page_setup_set_orientation(page_setup, restoreInt("orientation")); //$NON-NLS-1$
-	OS.gtk_page_setup_set_top_margin(page_setup, restoreDouble("top_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-	OS.gtk_page_setup_set_bottom_margin(page_setup, restoreDouble("bottom_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-	OS.gtk_page_setup_set_left_margin(page_setup, restoreDouble("left_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-	OS.gtk_page_setup_set_right_margin(page_setup, restoreDouble("right_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
+	GTK.gtk_page_setup_set_orientation(page_setup, restoreInt("orientation")); //$NON-NLS-1$
+	GTK.gtk_page_setup_set_top_margin(page_setup, restoreDouble("top_margin"), GTK.GTK_UNIT_MM); //$NON-NLS-1$
+	GTK.gtk_page_setup_set_bottom_margin(page_setup, restoreDouble("bottom_margin"), GTK.GTK_UNIT_MM); //$NON-NLS-1$
+	GTK.gtk_page_setup_set_left_margin(page_setup, restoreDouble("left_margin"), GTK.GTK_UNIT_MM); //$NON-NLS-1$
+	GTK.gtk_page_setup_set_right_margin(page_setup, restoreDouble("right_margin"), GTK.GTK_UNIT_MM); //$NON-NLS-1$
 	byte [] name = restoreBytes("paper_size_name", true); //$NON-NLS-1$
 	byte [] display_name = restoreBytes("paper_size_display_name", true); //$NON-NLS-1$
 	byte [] ppd_name = restoreBytes("paper_size_ppd_name", true); //$NON-NLS-1$
@@ -247,15 +247,15 @@ static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup
 	long /*int*/ paper_size = 0;
 	if (custom) {
 		if (ppd_name.length > 0) {
-			paper_size = OS.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
+			paper_size = GTK.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
 		} else {
-			paper_size = OS.gtk_paper_size_new_custom(name, display_name, width, height, OS.GTK_UNIT_MM);
+			paper_size = GTK.gtk_paper_size_new_custom(name, display_name, width, height, GTK.GTK_UNIT_MM);
 		}
 	} else {
-		paper_size = OS.gtk_paper_size_new(name);
+		paper_size = GTK.gtk_paper_size_new(name);
 	}
-	OS.gtk_page_setup_set_paper_size(page_setup, paper_size);
-	OS.gtk_paper_size_free(paper_size);
+	GTK.gtk_page_setup_set_paper_size(page_setup, paper_size);
+	GTK.gtk_paper_size_free(paper_size);
 }
 
 static byte [] uriFromFilename(String filename) {
@@ -405,7 +405,7 @@ public long /*int*/ internal_new_GC(GCData data) {
 		}
 		data.device = this;
 		data.drawable = drawable;
-		if (OS.GTK3) {
+		if (GTK.GTK3) {
 			data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
 			data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
 		} else {
@@ -414,12 +414,12 @@ public long /*int*/ internal_new_GC(GCData data) {
 		}
 		data.font = getSystemFont ();
 		Point dpi = getDPI(), screenDPI = getIndependentDPI();
-		data.width = (int)(OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x);
-		data.height = (int)(OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y);
+		data.width = (int)(GTK.gtk_page_setup_get_paper_width (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x);
+		data.height = (int)(GTK.gtk_page_setup_get_paper_height (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_identity_matrix(cairo);
-		double printX = OS.gtk_page_setup_get_left_margin(pageSetup, OS.GTK_UNIT_POINTS);
-		double printY = OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS);
+		double printX = GTK.gtk_page_setup_get_left_margin(pageSetup, GTK.GTK_UNIT_POINTS);
+		double printY = GTK.gtk_page_setup_get_top_margin(pageSetup, GTK.GTK_UNIT_POINTS);
 		Cairo.cairo_translate(cairo, printX, printY);
 		Cairo.cairo_scale(cairo, screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 		double[] matrix = new double[6];
@@ -483,9 +483,9 @@ public boolean isAutoScalable() {
 public boolean startJob(String jobName) {
 	checkDevice();
 	byte [] buffer = Converter.wcsToMbcs (jobName, true);
-	printJob = OS.gtk_print_job_new (buffer, printer, settings, pageSetup);
+	printJob = GTK.gtk_print_job_new (buffer, printer, settings, pageSetup);
 	if (printJob == 0) return false;
-	surface = OS.gtk_print_job_get_surface(printJob, null);
+	surface = GTK.gtk_print_job_get_surface(printJob, null);
 	if (surface == 0) {
 		OS.g_object_unref(printJob);
 		printJob = 0;
@@ -530,7 +530,7 @@ public void endJob() {
 	checkDevice();
 	if (printJob == 0) return;
 	Cairo.cairo_surface_finish(surface);
-	OS.gtk_print_job_send(printJob, 0, 0, 0);
+	GTK.gtk_print_job_send(printJob, 0, 0, 0);
 	OS.g_object_unref(printJob);
 	printJob = 0;
 }
@@ -572,8 +572,8 @@ public void cancelJob() {
 public boolean startPage() {
 	checkDevice();
 	if (printJob == 0) return false;
-	double width = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS);
-	double height = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS);
+	double width = GTK.gtk_page_setup_get_paper_width (pageSetup, GTK.GTK_UNIT_POINTS);
+	double height = GTK.gtk_page_setup_get_paper_height (pageSetup, GTK.GTK_UNIT_POINTS);
 	int type = Cairo.cairo_surface_get_type (surface);
 	switch (type) {
 		case Cairo.CAIRO_SURFACE_TYPE_PS:
@@ -616,7 +616,7 @@ public void endPage() {
 @Override
 public Point getDPI() {
 	checkDevice();
-	int resolution = OS.gtk_print_settings_get_resolution(settings);
+	int resolution = GTK.gtk_print_settings_get_resolution(settings);
 	if (DEBUG) System.out.println("print_settings.resolution=" + resolution);
 	//TODO: use new api for get x resolution and get y resolution
 	if (resolution == 0) return new Point(72, 72);
@@ -642,8 +642,8 @@ public Point getDPI() {
 public Rectangle getBounds() {
 	checkDevice();
 	Point dpi = getDPI(), screenDPI = getIndependentDPI();
-	double width = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
-	double height = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double width = GTK.gtk_page_setup_get_paper_width (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double height = GTK.gtk_page_setup_get_paper_height (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	return new Rectangle(0, 0, (int) width, (int) height);
 }
 
@@ -668,8 +668,8 @@ public Rectangle getBounds() {
 public Rectangle getClientArea() {
 	checkDevice();
 	Point dpi = getDPI(), screenDPI = getIndependentDPI();
-	double width = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
-	double height = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double width = GTK.gtk_page_setup_get_page_width(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double height = GTK.gtk_page_setup_get_page_height(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	return new Rectangle(0, 0, (int) width, (int) height);
 }
 
@@ -715,12 +715,12 @@ Point getIndependentDPI () {
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
 	Point dpi = getDPI(), screenDPI = getIndependentDPI();
-	double printWidth = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
-	double printHeight = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
-	double paperWidth = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
-	double paperHeight = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
-	double printX = -OS.gtk_page_setup_get_left_margin(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
-	double printY = -OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double printWidth = GTK.gtk_page_setup_get_page_width(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double printHeight = GTK.gtk_page_setup_get_page_height(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double paperWidth = GTK.gtk_page_setup_get_paper_width (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double paperHeight = GTK.gtk_page_setup_get_paper_height (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double printX = -GTK.gtk_page_setup_get_left_margin(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double printY = -GTK.gtk_page_setup_get_top_margin(pageSetup, GTK.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	double hTrim = paperWidth - printWidth;
 	double vTrim = paperHeight - printHeight;
 	return new Rectangle(x + (int)printX, y + (int)printY, width + (int)hTrim, height + (int)vTrim);
@@ -754,8 +754,8 @@ protected void create(DeviceData deviceData) {
  */
 @Override
 protected void init() {
-	settings = OS.gtk_print_settings_new();
-	pageSetup = OS.gtk_page_setup_new();
+	settings = GTK.gtk_print_settings_new();
+	pageSetup = GTK.gtk_page_setup_new();
 	if (data.otherData != null) {
 		restore(data.otherData, settings, pageSetup);
 	}
@@ -764,33 +764,33 @@ protected void init() {
 	if (data.printToFile && data.fileName != null) {
 		byte [] uri = uriFromFilename(data.fileName);
 		if (uri != null) {
-			OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
+			GTK.gtk_print_settings_set(settings, GTK.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
 		}
 	}
-	OS.gtk_print_settings_set_n_copies(settings, data.copyCount);
-	OS.gtk_print_settings_set_collate(settings, data.collate);
+	GTK.gtk_print_settings_set_n_copies(settings, data.copyCount);
+	GTK.gtk_print_settings_set_collate(settings, data.collate);
 	if (data.duplex != SWT.DEFAULT) {
-		int duplex = data.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.GTK_PRINT_DUPLEX_HORIZONTAL
-			: data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.GTK_PRINT_DUPLEX_VERTICAL
-			: OS.GTK_PRINT_DUPLEX_SIMPLEX;
-		OS.gtk_print_settings_set_duplex (settings, duplex);
+		int duplex = data.duplex == PrinterData.DUPLEX_LONG_EDGE ? GTK.GTK_PRINT_DUPLEX_HORIZONTAL
+			: data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? GTK.GTK_PRINT_DUPLEX_VERTICAL
+			: GTK.GTK_PRINT_DUPLEX_SIMPLEX;
+		GTK.gtk_print_settings_set_duplex (settings, duplex);
 		/*
 		 * Bug in GTK.  The cups backend only looks at the value
 		 * of the non-API field cups-Duplex in the print_settings.
 		 * The fix is to manually set cups-Duplex to Tumble or NoTumble.
 		 */
 		String cupsDuplexType = null;
-		if (duplex == OS.GTK_PRINT_DUPLEX_HORIZONTAL) cupsDuplexType = "DuplexNoTumble";
-		else if (duplex == OS.GTK_PRINT_DUPLEX_VERTICAL) cupsDuplexType = "DuplexTumble";
+		if (duplex == GTK.GTK_PRINT_DUPLEX_HORIZONTAL) cupsDuplexType = "DuplexNoTumble";
+		else if (duplex == GTK.GTK_PRINT_DUPLEX_VERTICAL) cupsDuplexType = "DuplexTumble";
 		if (cupsDuplexType != null) {
 			byte [] keyBuffer = Converter.wcsToMbcs ("cups-Duplex", true);
 			byte [] valueBuffer = Converter.wcsToMbcs (cupsDuplexType, true);
-			OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
+			GTK.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
 		}
 	}
-	int orientation = data.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
-	OS.gtk_page_setup_set_orientation(pageSetup, orientation);
-	OS.gtk_print_settings_set_orientation(settings, orientation);
+	int orientation = data.orientation == PrinterData.LANDSCAPE ? GTK.GTK_PAGE_ORIENTATION_LANDSCAPE : GTK.GTK_PAGE_ORIENTATION_PORTRAIT;
+	GTK.gtk_page_setup_set_orientation(pageSetup, orientation);
+	GTK.gtk_print_settings_set_orientation(settings, orientation);
 	super.init ();
 }
 
