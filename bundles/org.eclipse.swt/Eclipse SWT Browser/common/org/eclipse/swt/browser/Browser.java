@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -100,7 +100,29 @@ public Browser (Composite parent, int style) {
 		return;
 	}
 	dispose ();
-	SWT.error (SWT.ERROR_NO_HANDLES, null, " because no underlying browser available. Linux:Webkitgtk(1 or 2),  Mac:Webkit,  Windows:Webkit or IE");
+
+	String errMsg = " because no underlying browser available.\n";
+	switch (SWT.getPlatform()) {
+	case "gtk":
+		String gtkVersion = System.getProperty("org.eclipse.swt.internal.gtk.version");
+		boolean isGtk2 = Integer.parseInt(gtkVersion.substring(0,1)) == 2 ? true : false;
+		if (isGtk2) {
+			errMsg = errMsg + "   SWT on GTK 2.x detected. It is reccomended to use SWT on GTK 3.x and Webkit2 API.\n";
+		} else { // Gtk3 & above.
+			errMsg = errMsg + "   Please ensure Webkit with its Gtk 3.x bindings installed. Webkit2 API level preferred.\n";
+		}
+		break;
+	case "cocoa":
+		errMsg = errMsg + " SWT failed to load webkit library.\n";
+		break;
+	case "win32":
+		errMsg = errMsg + " SWT uses either IE or Webkit. Either SWT.WEBKIT flag is passed and Webkit library was not "
+				+ "loaded properly by SWT or SWT failed to load IE.\n";
+		break;
+	default:
+		break;
+	}
+	SWT.error (SWT.ERROR_NO_HANDLES, null, errMsg);
 }
 
 static Composite checkParent (Composite parent) {
