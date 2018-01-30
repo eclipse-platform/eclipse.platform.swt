@@ -54,6 +54,9 @@ public enum Selector {
 
 	, sel_beginSheetModalForWindow_completionHandler_("beginSheetModalForWindow:completionHandler:")
 
+	/** custom selector for SWT.OpenUrl event, also used in the launcher **/
+	, sel_application_openUrls_("application:openUrls:")
+
 	/** non-API selector for NSCursor **/
 	, sel_busyButClickableCursor("busyButClickableCursor")
 
@@ -163,7 +166,6 @@ public enum Selector {
 	, sel_appendString_("appendString:")
 	, sel_application_openFile_("application:openFile:")
 	, sel_application_openFiles_("application:openFiles:")
-	, sel_application_openUrls_("application:openUrls:")
 	, sel_applicationDidBecomeActive_("applicationDidBecomeActive:")
 	, sel_applicationDidFinishLaunching_("applicationDidFinishLaunching:")
 	, sel_applicationDidResignActive_("applicationDidResignActive:")
