@@ -2276,6 +2276,10 @@ protected void init () {
 	if (blink != null) blinkTime = (int)new NSNumber(blink).integerValue();
 	if (blinkTime == 0) blinkTime = 560;
 
+	/** Disable automatic quote & dash substitution for the application by default **/
+	defaults.setInteger(0, NSString.stringWith("NSAutomaticQuoteSubstitutionEnabled"));
+	defaults.setInteger(0, NSString.stringWith("NSAutomaticDashSubstitutionEnabled"));
+
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
 	isPainting = isPainting.initWithCapacity(12);
 }
