@@ -533,7 +533,6 @@ class WebKit extends WebBrowser {
 		static Object webkit2callJavaCallback(Object [] cb_args) {
 			assert cb_args.length == 4;
 			Object returnValue = null;
-
 			Long webViewLocal = (Double.valueOf((String) cb_args[0])).longValue();
 			Browser browser = FindBrowser((long /*int*/) webViewLocal.longValue());
 			Integer functionIndex = ((Double) cb_args[1]).intValue();
@@ -550,6 +549,7 @@ class WebKit extends WebBrowser {
 			}
 			try {
 				// Call user code. Exceptions can occur.
+				nonBlockingEvaluate++;
 				Object [] user_args = (Object []) cb_args[3];
 				returnValue = function.function(user_args);
 			} catch (Exception e ) {
@@ -558,6 +558,8 @@ class WebKit extends WebBrowser {
 				//   webkit2 doesn't, so we don't have 'if (function.isEvaluate)' logic here.
 				System.err.println("SWT Webkit: Exception occured in user code of function: " + function.name);
 				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+			} finally {
+				nonBlockingEvaluate--;
 			}
 			return returnValue;
 		}
@@ -1598,8 +1600,11 @@ private static class Webkit2AsyncToSync {
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
 			// The callback comes back in runjavascript_callback(..) below.
-			Consumer <Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, runjavascript_callback.getAddress(), callbackId);
-			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
+			Consumer <Integer> asyncFunc = (callbackId) -> {
+				WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, runjavascript_callback.getAddress(), callbackId);
+			};
+
+			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc, " The following javascript was executed:\n" + script +"\n\n");
 
 			if (retObj.swtAsyncTimeout) {
 				return null;
@@ -1656,7 +1661,7 @@ private static class Webkit2AsyncToSync {
 		}
 
 		Consumer<Integer> asyncFunc = (callbackId) -> WebKitGTK.webkit_web_resource_get_data(WebKitWebResource, 0, getText_callback.getAddress(), callbackId);
-		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc);
+		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc, " getText() was called");
 
 		if (retObj.swtAsyncTimeout)
 			return "SWT WEBKIT TIMEOUT ERROR";
@@ -1690,7 +1695,7 @@ private static class Webkit2AsyncToSync {
 	/**
 	 * You should check 'retObj.swtAsyncTimeout' after making a call to this.
 	 */
-	private static Webkit2AsyncReturnObj execAsyncAndWaitForReturn(Browser browser, Consumer<Integer> asyncFunc) {
+	private static Webkit2AsyncReturnObj execAsyncAndWaitForReturn(Browser browser, Consumer<Integer> asyncFunc, String additionalErrorInfo) {
 		Webkit2AsyncReturnObj retObj = new Webkit2AsyncReturnObj();
 		int callbackId = CallBackMap.putObject(retObj);
 		asyncFunc.accept(callbackId);
@@ -1717,7 +1722,9 @@ private static class Webkit2AsyncToSync {
 						+ "2) Deadlock in swt/webkit2 logic. This is probably a bug in SWT.\n"
 						+ reportErrMsg + "\n"
 						+ "For bug report, please atatch this stack trace:\n"
-						+ stackTrace);
+						+ stackTrace
+						+ "\n Additional information about the error is as following:\n"
+						+ additionalErrorInfo);
 				retObj.swtAsyncTimeout = true;
 				break;
 			}
@@ -1731,6 +1738,9 @@ private static class Webkit2AsyncToSync {
 
 @Override
 public Object evaluate (String script) throws SWTException {
+	if ("".equals(script)) {
+		return null; // A litte optimization. Sometimes evaluate() is called with a generated script, where the generated script is sometimes empty.
+	}
 	if (WEBKIT2){
         if (!isJavascriptEnabled()) {
         	return null;
