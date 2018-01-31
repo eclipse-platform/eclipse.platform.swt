@@ -176,25 +176,6 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 @Override
-void connectPaint () {
-	/*
-	 * Feature in GTK3.10+: when attaching a paint listener to a Button
-	 * widget, re-drawing happens on GtkButton and not the GtkBox.
-	 * This causes issues when setting a background color, as whatever
-	 * is drawn on the Button is not re-drawn. See bug 483791.
-	 */
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0) && boxHandle != 0) {
-		int paintMask = GDK.GDK_EXPOSURE_MASK;
-		GTK.gtk_widget_add_events (boxHandle, paintMask);
-
-		OS.g_signal_connect_closure_by_id (boxHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
-		OS.g_signal_connect_closure_by_id (boxHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
-	} else {
-		super.connectPaint();
-	}
-}
-
-@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -1220,6 +1201,24 @@ int traversalCode (int key, GdkEventKey event) {
 	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
+}
+
+@Override
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+	/*
+	 * For Labels/Buttons, the first widget in the tree with a GdkWindow is SwtFixed.
+	 * Unfortunately this fails the check in !GTK_IS_CONTAINER check Widget.windowProc().
+	 * Instead lets override windowProc() here and check for paintHandle() compatibility.
+	 * Fixes bug 481485 without re-introducing bug 483791.
+	 */
+	switch ((int)/*64*/user_data) {
+		case DRAW: {
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && paintHandle() == handle) {
+				return gtk_draw(handle, arg0);
+			}
+		}
+	}
+	return super.windowProc(handle, arg0, user_data);
 }
 
 }
