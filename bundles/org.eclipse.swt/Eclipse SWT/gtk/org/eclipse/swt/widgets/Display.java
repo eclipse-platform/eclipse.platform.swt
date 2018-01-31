@@ -1030,6 +1030,11 @@ void createDisplay (DeviceData data) {
 		int minor = GTK.gtk_minor_version (), micro = GTK.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
+	if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 9, 4)) {
+		System.out.println ("***WARNING: SWT requires Cairo 1.9.4 or newer"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String version = Converter.cCharPtrToJavaString(Cairo.cairo_version_string(), false);
+		System.out.println ("***WARNING: Detected: " + version);
+	}
 	if (GTK.GTK3) {
 		fixed_type = OS.swt_fixed_get_type();
 	}

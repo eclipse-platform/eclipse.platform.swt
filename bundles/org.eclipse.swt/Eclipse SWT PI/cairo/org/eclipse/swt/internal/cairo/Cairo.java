@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2018 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.cairo;
@@ -1196,6 +1196,7 @@ public static final void cairo_user_to_device_distance(long /*int*/ cr, double[]
 	}
 }
 public static final native int cairo_version();
+public static final native long /*int*/ cairo_version_string();
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(Drawable)
