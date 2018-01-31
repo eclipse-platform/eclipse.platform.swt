@@ -618,9 +618,9 @@
 		<![CDATA[
 			rfiles = project.getProperty("rfiles");
 			if (rfiles.length() > 0) {
-				project.setProperty("removed_files", rfiles.replace(";", " "));
+				project.setProperty("removed_files", rfiles.replaceAll(";", " "));
 			}
-			project.setProperty("added_files", project.getProperty("afiles").replace(";", " "));
+			project.setProperty("added_files", project.getProperty("afiles").replaceAll(";", " "));
    	 	]]>
 		</script>
 
