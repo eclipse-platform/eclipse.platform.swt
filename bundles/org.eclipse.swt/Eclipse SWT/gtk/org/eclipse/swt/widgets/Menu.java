@@ -270,11 +270,13 @@ void _setVisible (boolean visible) {
 								OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
 								eventButton.window = deviceWindow;
 								OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
+								break;
 							case OS.GDK_KEY_PRESS:
 								GdkEventKey eventKey = new GdkEventKey();
 								OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
 								eventKey.window = deviceWindow;
 								OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
+								break;
 						}
 					}
 				}
