@@ -389,7 +389,7 @@ long /*int*/ enterExitHandle () {
 
 @Override
 boolean filterKey (int keyval, long /*int*/ event) {
-	int time = OS.gdk_event_get_time (event);
+	int time = GDK.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
 		long /*int*/ imContext = imContext ();
@@ -646,11 +646,11 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -828,7 +828,7 @@ long /*int*/ imContext () {
 @Override
 long /*int*/ paintWindow () {
 	long /*int*/ window = super.paintWindow ();
-	long /*int*/ children = OS.gdk_window_get_children (window);
+	long /*int*/ children = GDK.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
 	return window;
@@ -963,7 +963,7 @@ void setBackgroundGdkColor (GdkColor color) {
 @Override
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
-	if (cursor == 0) defaultCursor = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), OS.GDK_XTERM);
+	if (cursor == 0) defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
 }
@@ -1238,8 +1238,8 @@ boolean checkSubwindow () {
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
-		case OS.GDK_KP_Enter:
-		case OS.GDK_Return: {
+		case GDK.GDK_KP_Enter:
+		case GDK.GDK_Return: {
 			long /*int*/ imContext =  imContext ();
 			if (imContext != 0) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
@@ -1266,11 +1266,11 @@ String verifyText (String string, int start, int end) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	int index = 0;
 	if (GTK.gtk_spin_button_get_digits (handle) > 0) {

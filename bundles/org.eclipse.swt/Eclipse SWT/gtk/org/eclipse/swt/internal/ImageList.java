@@ -52,10 +52,10 @@ public static long /*int*/ createPixbuf(Image image) {
 	int width = Cairo.cairo_image_surface_get_width(surface);
 	int height = Cairo.cairo_image_surface_get_height(surface);
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
-	long /*int*/ pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
+	long /*int*/ pixbuf = GDK.gdk_pixbuf_new (GDK.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
 	if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-	long /*int*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+	int stride = GDK.gdk_pixbuf_get_rowstride (pixbuf);
+	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
 	int oa, or, og, ob;
 	if (OS.BIG_ENDIAN) {
 		oa = 0; or = 1; og = 2; ob = 3;
@@ -188,21 +188,21 @@ public void remove (Image image) {
 
 void set (int index, Image image) {
 	long /*int*/ pixbuf = createPixbuf (image);
-	int w = OS.gdk_pixbuf_get_width(pixbuf);
-	int h = OS.gdk_pixbuf_get_height(pixbuf);
+	int w = GDK.gdk_pixbuf_get_width(pixbuf);
+	int h = GDK.gdk_pixbuf_get_height(pixbuf);
 	if (width == -1 || height == -1) {
 		width = w;
 		height = h;
 	}
 	if (w != width || h != height) {
-		long /*int*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, width, height, OS.GDK_INTERP_BILINEAR);
+		long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, width, height, GDK.GDK_INTERP_BILINEAR);
 		OS.g_object_unref (pixbuf);
 		pixbuf = scaledPixbuf;
 	}
 	long /*int*/ oldPixbuf = pixbufs [index];
 	if (oldPixbuf != 0) {
 		if (images [index] == image) {
-			OS.gdk_pixbuf_copy_area (pixbuf, 0, 0, width, height, oldPixbuf, 0, 0);
+			GDK.gdk_pixbuf_copy_area (pixbuf, 0, 0, width, height, oldPixbuf, 0, 0);
 			OS.g_object_unref (pixbuf);
 			pixbuf = oldPixbuf;
 		} else {

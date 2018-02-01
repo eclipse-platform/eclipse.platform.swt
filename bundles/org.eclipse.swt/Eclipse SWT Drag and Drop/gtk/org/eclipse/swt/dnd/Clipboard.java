@@ -36,12 +36,12 @@ public class Clipboard {
 	private static long /*int*/ TARGET;
 
 	static {
-		GTKCLIPBOARD = GTK.gtk_clipboard_get(OS.GDK_NONE);
+		GTKCLIPBOARD = GTK.gtk_clipboard_get(GDK.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs("PRIMARY", true);
-		long /*int*/ primary = OS.gdk_atom_intern(buffer, false);
+		long /*int*/ primary = GDK.gdk_atom_intern(buffer, false);
 		GTKPRIMARYCLIPBOARD = GTK.gtk_clipboard_get(primary);
 		buffer = Converter.wcsToMbcs("TARGETS", true);
-		TARGET = OS.gdk_atom_intern(buffer, false);
+		TARGET = GDK.gdk_atom_intern(buffer, false);
 	}
 
 /**
@@ -297,7 +297,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock acquired by the function above.
 			*/
-			OS.gdk_threads_leave();
+			GDK.gdk_threads_leave();
 		}
 		if (selection_data != 0) break;
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
@@ -308,7 +308,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock acquired by the function above.
 			*/
-			OS.gdk_threads_leave();
+			GDK.gdk_threads_leave();
 		}
 	}
 	if (selection_data == 0) return null;
@@ -560,7 +560,7 @@ public String[] getAvailableTypeNames() {
 	String[] result = new String[types1.length + types2.length];
 	int count = 0;
 	for (int i = 0; i < types1.length; i++) {
-		long /*int*/ pName = OS.gdk_atom_name(types1[i]);
+		long /*int*/ pName = GDK.gdk_atom_name(types1[i]);
 		if (pName == 0) {
 			continue;
 		}
@@ -570,7 +570,7 @@ public String[] getAvailableTypeNames() {
 		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
 	for (int i = 0; i < types2.length; i++) {
-		long /*int*/ pName = OS.gdk_atom_name(types2[i]);
+		long /*int*/ pName = GDK.gdk_atom_name(types2[i]);
 		if (pName == 0) {
 			continue;
 		}
@@ -596,7 +596,7 @@ private  int[] getAvailablePrimaryTypes() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
@@ -621,7 +621,7 @@ private int[] getAvailableClipboardTypes () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
@@ -642,7 +642,7 @@ long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*
 	long startTime = System.currentTimeMillis();
 	String key = "org.eclipse.swt.internal.gtk.dispatchEvent";
 	Display display = this.display;
-	display.setData(key, new int[]{OS.GDK_PROPERTY_NOTIFY, OS.GDK_SELECTION_CLEAR, OS.GDK_SELECTION_REQUEST, OS.GDK_SELECTION_NOTIFY});
+	display.setData(key, new int[]{GDK.GDK_PROPERTY_NOTIFY, GDK.GDK_SELECTION_CLEAR, GDK.GDK_SELECTION_REQUEST, GDK.GDK_SELECTION_NOTIFY});
 	long /*int*/ selection_data = GTK.gtk_clipboard_wait_for_contents(clipboard, target);
 	display.setData(key, null);
 	long duration = System.currentTimeMillis() - startTime;

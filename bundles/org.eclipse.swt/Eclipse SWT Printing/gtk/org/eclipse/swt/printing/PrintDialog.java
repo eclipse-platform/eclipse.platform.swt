@@ -399,7 +399,7 @@ public PrinterData open() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
 	if (GTK.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);

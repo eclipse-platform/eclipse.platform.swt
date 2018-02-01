@@ -361,15 +361,15 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * a drag is finished.
 	 */
 	if (GTK.GTK3) {
-		long /*int*/ display = OS.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
-		long /*int*/ device_manager = OS.gdk_display_get_device_manager(display);
-		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer(device_manager);
-		long /*int*/ keyboard = OS.gdk_device_get_associated_device(pointer);
-		OS.gdk_device_ungrab(pointer, OS.GDK_CURRENT_TIME);
-		OS.gdk_device_ungrab(keyboard, OS.GDK_CURRENT_TIME);
+		long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
+		long /*int*/ device_manager = GDK.gdk_display_get_device_manager(display);
+		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer(device_manager);
+		long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
+		GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
+		GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);
 	} else {
-		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME);
-		OS.gdk_keyboard_ungrab(OS.GDK_CURRENT_TIME);
+		GDK.gdk_pointer_ungrab(GDK.GDK_CURRENT_TIME);
+		GDK.gdk_keyboard_ungrab(GDK.GDK_CURRENT_TIME);
 	}
 
 	int operation = DND.DROP_NONE;
@@ -383,9 +383,9 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		 * gdk_drag_context_get_dest_window() call. See Bug 503431.
 		 */
 		if (GTK.GTK3) {
-			action = OS.gdk_drag_context_get_selected_action(context);
+			action = GDK.gdk_drag_context_get_selected_action(context);
 			if (OS.isX11()) { // Wayland
-				dest_window = OS.gdk_drag_context_get_dest_window(context);
+				dest_window = GDK.gdk_drag_context_get_dest_window(context);
 			}
 		} else {
 			GdkDragContext gdkDragContext = new GdkDragContext ();
@@ -563,11 +563,11 @@ int opToOsOp(int operation){
 	int osOperation = 0;
 
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
-		osOperation |= OS.GDK_ACTION_COPY;
+		osOperation |= GDK.GDK_ACTION_COPY;
 	if ((operation & DND.DROP_MOVE) == DND.DROP_MOVE)
-		osOperation |= OS.GDK_ACTION_MOVE;
+		osOperation |= GDK.GDK_ACTION_MOVE;
 	if ((operation & DND.DROP_LINK) == DND.DROP_LINK)
-		osOperation |= OS.GDK_ACTION_LINK;
+		osOperation |= GDK.GDK_ACTION_LINK;
 
 	return osOperation;
 }
@@ -575,11 +575,11 @@ int opToOsOp(int operation){
 int osOpToOp(int osOperation){
 	int operation = DND.DROP_NONE;
 
-	if ((osOperation & OS.GDK_ACTION_COPY) == OS.GDK_ACTION_COPY)
+	if ((osOperation & GDK.GDK_ACTION_COPY) == GDK.GDK_ACTION_COPY)
 		operation |= DND.DROP_COPY;
-	if ((osOperation & OS.GDK_ACTION_MOVE) == OS.GDK_ACTION_MOVE)
+	if ((osOperation & GDK.GDK_ACTION_MOVE) == GDK.GDK_ACTION_MOVE)
 		operation |= DND.DROP_MOVE;
-	if ((osOperation & OS.GDK_ACTION_LINK) == OS.GDK_ACTION_LINK)
+	if ((osOperation & GDK.GDK_ACTION_LINK) == GDK.GDK_ACTION_LINK)
 		operation |= DND.DROP_LINK;
 
 	return operation;

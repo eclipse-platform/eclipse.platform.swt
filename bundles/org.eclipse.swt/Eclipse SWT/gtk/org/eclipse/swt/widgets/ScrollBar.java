@@ -360,11 +360,11 @@ Rectangle getThumbBoundsInPixels () {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
-	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x += origin_x [0];
 	rect.y += origin_y [0];
 	window = gtk_widget_get_window (parent.handle);
-	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x -= origin_x [0];
 	rect.y -= origin_y [0];
 	return rect;
@@ -437,11 +437,11 @@ Rectangle getThumbTrackBoundsInPixels () {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
-	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x += origin_x [0];
 	rect.y += origin_y [0];
 	window = gtk_widget_get_window (parent.handle);
-	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x -= origin_x [0];
 	rect.y -= origin_y [0];
 	return rect;
@@ -531,7 +531,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent gtkEvent = new GdkEvent ();
 	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
 	switch (gtkEvent.type) {
-		case OS.GDK_BUTTON_RELEASE: {
+		case GDK.GDK_BUTTON_RELEASE: {
 			GdkEventButton gdkEventButton = new GdkEventButton ();
 			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
 			if (gdkEventButton.button == 1 && detail == GTK.GTK_SCROLL_JUMP) {

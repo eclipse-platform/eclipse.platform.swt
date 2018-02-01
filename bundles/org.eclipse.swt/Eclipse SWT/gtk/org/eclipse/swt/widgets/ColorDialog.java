@@ -240,7 +240,7 @@ public RGB open () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
@@ -286,7 +286,7 @@ public RGB open () {
 					for (int i=0; i<length; i++) {
 						String colorString = gdkColorStrings[i];
 						buffer = Converter.wcsToMbcs (colorString, true);
-						OS.gdk_color_parse(buffer, color);
+						GDK.gdk_color_parse(buffer, color);
 						int redI = (color.red >> 8) & 0xFF;
 						int greenI = (color.green >> 8) & 0xFF;
 						int blueI = (color.blue >> 8) & 0xFF;

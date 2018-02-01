@@ -81,7 +81,7 @@ public Region() {
  */
 public Region(Device device) {
 	super(device);
-	handle = OS.gdk_region_new();
+	handle = GDK.gdk_region_new();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
@@ -93,7 +93,7 @@ Region(Device device, long /*int*/ handle) {
 
 static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
 	if (!GTK.GTK3) {
-		return OS.gdk_region_polygon(pointArray, npoints, fill_rule);
+		return GDK.gdk_region_polygon(pointArray, npoints, fill_rule);
 	}
 	//TODO this does not perform well and could fail if the polygon is too big
 	int minX = pointArray[0], maxX = minX;
@@ -117,21 +117,21 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 	Cairo.cairo_close_path(cairo);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 	int cairo_rule = Cairo.CAIRO_FILL_RULE_WINDING;
-	if (fill_rule == OS.GDK_EVEN_ODD_RULE) {
+	if (fill_rule == GDK.GDK_EVEN_ODD_RULE) {
 		cairo_rule = Cairo.CAIRO_FILL_RULE_EVEN_ODD;
 	}
 	Cairo.cairo_set_fill_rule(cairo, cairo_rule);
 	Cairo.cairo_fill(cairo);
 	Cairo.cairo_destroy(cairo);
-	long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
-	OS.gdk_region_offset (polyRgn, minX, minY);
+	long /*int*/ polyRgn = GDK.gdk_cairo_region_create_from_surface(surface);
+	GDK.gdk_region_offset (polyRgn, minX, minY);
 	Cairo.cairo_surface_destroy(surface);
 	return polyRgn;
 }
 
 static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
 	if (!GTK.GTK3) {
-		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
+		GDK.gdk_region_get_rectangles (region, rectangles, n_rectangles);
 		return;
 	}
 	int num = Cairo.cairo_region_num_rectangles (region);
@@ -170,9 +170,9 @@ void addInPixels (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-	OS.gdk_region_union(handle, polyRgn);
-	OS.gdk_region_destroy(polyRgn);
+	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
+	GDK.gdk_region_union(handle, polyRgn);
+	GDK.gdk_region_destroy(polyRgn);
 }
 
 /**
@@ -227,7 +227,7 @@ void addInPixels(int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	OS.gdk_region_union_with_rect(handle, gdkRect);
+	GDK.gdk_region_union_with_rect(handle, gdkRect);
 }
 
 /**
@@ -249,7 +249,7 @@ public void add(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_union(handle, region.handle);
+	GDK.gdk_region_union(handle, region.handle);
 }
 
 /**
@@ -270,7 +270,7 @@ public boolean contains(int x, int y) {
 	return contains(new Point(x, y));
 }
 boolean containsInPixels(int x, int y) {
-	return OS.gdk_region_point_in(handle, x, y);
+	return GDK.gdk_region_point_in(handle, x, y);
 }
 
 /**
@@ -299,7 +299,7 @@ boolean containsInPixels(Point pt) {
 
 @Override
 void destroy() {
-	OS.gdk_region_destroy(handle);
+	GDK.gdk_region_destroy(handle);
 	handle = 0;
 }
 
@@ -340,7 +340,7 @@ public Rectangle getBounds() {
 }
 Rectangle getBoundsInPixels() {
 	GdkRectangle gdkRect = new GdkRectangle();
-	OS.gdk_region_get_clipbox(handle, gdkRect);
+	GDK.gdk_region_get_clipbox(handle, gdkRect);
 	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
 }
 
@@ -435,9 +435,9 @@ void intersectInPixels(int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
-	OS.gdk_region_intersect(handle, rectRgn);
-	OS.gdk_region_destroy(rectRgn);
+	long /*int*/ rectRgn = GDK.gdk_region_rectangle(gdkRect);
+	GDK.gdk_region_intersect(handle, rectRgn);
+	GDK.gdk_region_destroy(rectRgn);
 }
 
 /**
@@ -461,7 +461,7 @@ public void intersect(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_intersect(handle, region.handle);
+	GDK.gdk_region_intersect(handle, region.handle);
 }
 
 /**
@@ -492,7 +492,7 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	return OS.gdk_region_rect_in(handle, gdkRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;
+	return GDK.gdk_region_rect_in(handle, gdkRect) != GDK.GDK_OVERLAP_RECTANGLE_OUT;
 }
 /**
  * Returns <code>true</code> if the given rectangle intersects
@@ -549,7 +549,7 @@ public boolean isDisposed() {
  */
 public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.gdk_region_empty(handle);
+	return GDK.gdk_region_empty(handle);
 }
 
 /**
@@ -580,9 +580,9 @@ void subtractInPixels (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-	OS.gdk_region_subtract(handle, polyRgn);
-	OS.gdk_region_destroy(polyRgn);
+	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
+	GDK.gdk_region_subtract(handle, polyRgn);
+	GDK.gdk_region_destroy(polyRgn);
 }
 /**
  * Subtracts the given rectangle from the collection of polygons
@@ -640,9 +640,9 @@ void subtractInPixels(int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
-	OS.gdk_region_subtract(handle, rectRgn);
-	OS.gdk_region_destroy(rectRgn);
+	long /*int*/ rectRgn = GDK.gdk_region_rectangle(gdkRect);
+	GDK.gdk_region_subtract(handle, rectRgn);
+	GDK.gdk_region_destroy(rectRgn);
 }
 
 /**
@@ -666,7 +666,7 @@ public void subtract(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_subtract(handle, region.handle);
+	GDK.gdk_region_subtract(handle, region.handle);
 }
 
 /**
@@ -688,7 +688,7 @@ public void translate (int x, int y) {
 }
 
 void translateInPixels (int x, int y) {
-	OS.gdk_region_offset (handle, x, y);
+	GDK.gdk_region_offset (handle, x, y);
 }
 
 /**

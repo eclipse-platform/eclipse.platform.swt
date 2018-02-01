@@ -251,17 +251,17 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	* the single-click as the current event and for the double-click in the
 	* event queue.
 	*/
-	long /*int*/ nextEvent = OS.gdk_event_peek ();
+	long /*int*/ nextEvent = GDK.gdk_event_peek ();
 	if (nextEvent != 0) {
-		int nextEventType = OS.GDK_EVENT_TYPE (nextEvent);
+		int nextEventType = GDK.GDK_EVENT_TYPE (nextEvent);
 		long /*int*/ currEvent = GTK.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
-			currEventType = OS.GDK_EVENT_TYPE (currEvent);
-			OS.gdk_event_free (currEvent);
+			currEventType = GDK.GDK_EVENT_TYPE (currEvent);
+			GDK.gdk_event_free (currEvent);
 		}
-		OS.gdk_event_free (nextEvent);
-		if (currEventType == OS.GDK_BUTTON_PRESS && nextEventType == OS.GDK_2BUTTON_PRESS) {
+		GDK.gdk_event_free (nextEvent);
+		if (currEventType == GDK.GDK_BUTTON_PRESS && nextEventType == GDK.GDK_2BUTTON_PRESS) {
 			sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
@@ -272,12 +272,12 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
-	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
+	if (gdkEvent.button == 3 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
 		sendEvent (SWT.MenuDetect);
 		return 0;
 	}
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
 		sendSelectionEvent (SWT.DefaultSelection);
 	} else {
 		sendSelectionEvent (SWT.Selection);
@@ -288,13 +288,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 @Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	if (image != null && image.mask != 0) {
-		if (OS.gdk_drawable_get_depth (image.mask) == 1) {
+		if (GDK.gdk_drawable_get_depth (image.mask) == 1) {
 			GtkAllocation widgetAllocation = new GtkAllocation ();
 			GTK.gtk_widget_get_allocation (widget, widgetAllocation);
 			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -GTK.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
 			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - GTK.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
 			Rectangle b = image.getBoundsInPixels();
-			long /*int*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
+			long /*int*/ gdkImagePtr = GDK.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
 			GdkImage gdkImage = new GdkImage();
 			OS.memmove (gdkImage, gdkImagePtr);
@@ -315,7 +315,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 			}
 			GTK.gtk_widget_realize (handle);
 			long /*int*/ window = gtk_widget_get_window (handle);
-			OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
+			GDK.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 			region.dispose ();
 		}
 	}

@@ -38,5 +38,5 @@ public class GdkEventMotion extends GdkEvent {
 	public double x_root;
 	/** @field cast=(gdouble) */
 	public double y_root;
-	public static final int sizeof = OS.GdkEventMotion_sizeof();
+	public static final int sizeof = GDK.GdkEventMotion_sizeof();
 }

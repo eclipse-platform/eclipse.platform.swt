@@ -690,7 +690,7 @@ public void copy () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_copy_clipboard (handle);
 	} else {
-		long /*int*/ clipboard = GTK.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		applySegments ();
@@ -714,7 +714,7 @@ public void cut () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_cut_clipboard (handle);
 	} else {
-		long /*int*/ clipboard = GTK.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -788,7 +788,7 @@ long /*int*/ eventWindow () {
 
 @Override
 boolean filterKey (int keyval, long /*int*/ event) {
-	int time = OS.gdk_event_get_time (event);
+	int time = GDK.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
 		long /*int*/ imContext = imContext ();
@@ -1471,8 +1471,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (!doubleClick) {
 		switch (gdkEvent.type) {
-			case OS.GDK_2BUTTON_PRESS:
-			case OS.GDK_3BUTTON_PRESS:
+			case GDK.GDK_2BUTTON_PRESS:
+			case GDK.GDK_3BUTTON_PRESS:
 				return 1;
 		}
 	}
@@ -1494,11 +1494,11 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -1650,7 +1650,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 		GdkEvent event = new GdkEvent ();
 		OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 		switch (event.type) {
-			case OS.GDK_FOCUS_CHANGE:
+			case GDK.GDK_FOCUS_CHANGE:
 				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 				if (gdkEventFocus.in == 0) {
@@ -1714,13 +1714,13 @@ void drawMessage (long /*int*/ cr) {
 				Point thickness = getThickness (handle);
 				x += thickness.x;
 				y += thickness.y;
-				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+				long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
 				Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
 			} else {
 				long /*int*/ style = GTK.gtk_widget_get_style (handle);
 				GTK.gtk_style_get_text (style, GTK.GTK_STATE_INSENSITIVE, textColor);
 				GTK.gtk_style_get_base (style, GTK.GTK_STATE_NORMAL, baseColor);
-				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+				long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
 				Cairo.cairo_set_source_rgba_compatibility (cairo, textColor);
 				Cairo.cairo_move_to(cairo, x, y);
 				OS.pango_cairo_show_layout(cairo, layout);
@@ -1838,7 +1838,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-		if (gdkEvent.length > 0 && (gdkEvent.state & (OS.GDK_MOD1_MASK | OS.GDK_CONTROL_MASK)) == 0) {
+		if (gdkEvent.length > 0 && (gdkEvent.state & (GDK.GDK_MOD1_MASK | GDK.GDK_CONTROL_MASK)) == 0) {
 			handleSegments = true;
 			if (segments != null) {
 				clearSegments (true);
@@ -2097,7 +2097,7 @@ private void scrollIfNotVisible(byte [] iter, byte [] scrollTo, boolean insert) 
 long /*int*/ paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
 		long /*int*/ window = super.paintWindow ();
-		long /*int*/ children = OS.gdk_window_get_children (window);
+		long /*int*/ children = GDK.gdk_window_get_children (window);
 		if (children != 0) {
 			/*
 			* When search or cancel icons are added to Text, those
@@ -2133,7 +2133,7 @@ public void paste () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_paste_clipboard (handle);
 	} else {
-		long /*int*/ clipboard = GTK.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -2336,7 +2336,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 @Override
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
-	if (cursor == 0) defaultCursor = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), OS.GDK_XTERM);
+	if (cursor == 0) defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
 }
@@ -2857,8 +2857,8 @@ int translateOffset (int offset) {
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
-		case OS.GDK_KP_Enter:
-		case OS.GDK_Return: {
+		case GDK.GDK_KP_Enter:
+		case GDK.GDK_Return: {
 			long /*int*/ imContext =  imContext ();
 			if (imContext != 0) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
@@ -2880,9 +2880,9 @@ int traversalCode (int key, GdkEventKey event) {
 	if ((style & SWT.READ_ONLY) != 0)  return bits;
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
-		if (key == OS.GDK_Tab && event != null) {
-			boolean next = (event.state & OS.GDK_SHIFT_MASK) == 0;
-			if (next && (event.state & OS.GDK_CONTROL_MASK) == 0) {
+		if (key == GDK.GDK_Tab && event != null) {
+			boolean next = (event.state & GDK.GDK_SHIFT_MASK) == 0;
+			if (next && (event.state & GDK.GDK_CONTROL_MASK) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 			}
 		}
@@ -2909,11 +2909,11 @@ String verifyText (String string, int start, int end) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	/*
 	 * It is possible (but unlikely), that application

@@ -330,7 +330,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.button == 1 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+	if (gdkEvent.button == 1 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
 		if (focusIndex != -1) setFocus ();
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
@@ -410,7 +410,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
-		case OS.GDK_FOCUS_CHANGE:
+		case GDK.GDK_FOCUS_CHANGE:
 			redraw ();
 			break;
 	}
@@ -425,20 +425,20 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 	switch (gdkEvent.keyval) {
-		case OS.GDK_Return:
-		case OS.GDK_KP_Enter:
-		case OS.GDK_space:
+		case GDK.GDK_Return:
+		case GDK.GDK_KP_Enter:
+		case GDK.GDK_space:
 			Event event = new Event ();
 			event.text = ids [focusIndex];
 			sendSelectionEvent (SWT.Selection, event, true);
 			break;
-		case OS.GDK_Tab:
+		case GDK.GDK_Tab:
 			if (focusIndex < offsets.length - 1) {
 				focusIndex++;
 				redraw ();
 			}
 			break;
-		case OS.GDK_ISO_Left_Tab:
+		case GDK.GDK_ISO_Left_Tab:
 			if (focusIndex > 0) {
 				focusIndex--;
 				redraw ();
@@ -457,7 +457,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	int x = (int) gdkEvent.x;
 	int y = (int) gdkEvent.y;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-	if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+	if ((gdkEvent.state & GDK.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
 		selection.y = DPIUtil.autoScaleUp(layout.getOffset (x, y, null));
 		if (selection.y != oldSelection) {
@@ -850,10 +850,10 @@ void styleLinkParts() {
 int traversalCode (int key, GdkEventKey event) {
 	if (offsets.length == 0) return 0;
 	int bits = super.traversalCode (key, event);
-	if (key == OS.GDK_Tab && focusIndex < offsets.length - 1) {
+	if (key == GDK.GDK_Tab && focusIndex < offsets.length - 1) {
 		return bits & ~SWT.TRAVERSE_TAB_NEXT;
 	}
-	if (key == OS.GDK_ISO_Left_Tab && focusIndex > 0) {
+	if (key == GDK.GDK_ISO_Left_Tab && focusIndex > 0) {
 		return bits & ~SWT.TRAVERSE_TAB_PREVIOUS;
 	}
 	return bits;

@@ -78,7 +78,7 @@ public final class TextLayout extends Resource {
 public TextLayout (Device device) {
 	super(device);
 	device = this.device;
-	context = OS.gdk_pango_context_get();
+	context = GDK.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, GTK.gtk_get_default_language());
 	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
@@ -614,9 +614,9 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 		drawBorder(gc, x, y, null);
 	}
 	int[] ranges = new int[]{start, end};
-	long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+	long /*int*/ rgn = GDK.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 	if (rgn != 0) {
-		OS.gdk_cairo_region(cairo, rgn);
+		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
 		if (GTK.GTK3) {
 			Cairo.cairo_set_source_rgba(cairo, bg.handleRGBA.red, bg.handleRGBA.green, bg.handleRGBA.blue, bg.handleRGBA.alpha);
@@ -624,7 +624,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 			Cairo.cairo_set_source_rgba(cairo, (bg.handle.red & 0xFFFF) / (float)0xFFFF, (bg.handle.green & 0xFFFF) / (float)0xFFFF, (bg.handle.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 		}
 		Cairo.cairo_paint(cairo);
-		OS.gdk_region_destroy(rgn);
+		GDK.gdk_region_destroy(rgn);
 	}
 	if (GTK.GTK3) {
 		Cairo.cairo_set_source_rgba(cairo, fg.handleRGBA.red, fg.handleRGBA.green, fg.handleRGBA.blue, fg.handleRGBA.alpha);
@@ -661,7 +661,7 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 			int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
 			int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
-			long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			long /*int*/ rgn = GDK.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
 				int[] nRects = new int[1];
 				long /*int*/[] rects = new long /*int*/[1];
@@ -708,7 +708,7 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 				}
 				Cairo.cairo_stroke(cairo);
 				if (rects[0] != 0) OS.g_free(rects[0]);
-				OS.gdk_region_destroy(rgn);
+				GDK.gdk_region_destroy(rgn);
 			}
 		}
 	}
@@ -845,7 +845,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	byteStart = Math.min(byteStart, strlen);
 	byteEnd = Math.min(byteEnd, strlen);
 	int[] ranges = new int[]{byteStart, byteEnd};
-	long /*int*/ clipRegion = OS.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
+	long /*int*/ clipRegion = GDK.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle();
 
@@ -857,7 +857,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	PangoRectangle pangoRect = new PangoRectangle();
 	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	long /*int*/ linesRegion = OS.gdk_region_new();
+	long /*int*/ linesRegion = GDK.gdk_region_new();
 	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int lineEnd = 0;
 	do {
@@ -872,14 +872,14 @@ Rectangle getBoundsInPixels(int start, int end) {
 		rect.y = OS.PANGO_PIXELS(pangoRect.y);
 		rect.width = OS.PANGO_PIXELS(pangoRect.width);
 		rect.height = OS.PANGO_PIXELS(pangoRect.height);
-		OS.gdk_region_union_with_rect(linesRegion, rect);
+		GDK.gdk_region_union_with_rect(linesRegion, rect);
 	} while (lineEnd + 1 <= byteEnd);
-	OS.gdk_region_intersect(clipRegion, linesRegion);
-	OS.gdk_region_destroy(linesRegion);
+	GDK.gdk_region_intersect(clipRegion, linesRegion);
+	GDK.gdk_region_destroy(linesRegion);
 	OS.pango_layout_iter_free(iter);
 
-	OS.gdk_region_get_clipbox(clipRegion, rect);
-	OS.gdk_region_destroy(clipRegion);
+	GDK.gdk_region_get_clipbox(clipRegion, rect);
+	GDK.gdk_region_destroy(clipRegion);
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		rect.x = width() - rect.x - rect.width;
 	}

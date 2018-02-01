@@ -142,8 +142,8 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_set_has_window (handle, true);
 	GTK.gtk_widget_set_can_focus (handle, true);
-	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
-	defaultCursor = OS.gdk_cursor_new_for_display (OS.gdk_display_get_default(), type);
+	int type = (style & SWT.VERTICAL) != 0 ? GDK.GDK_SB_H_DOUBLE_ARROW : GDK.GDK_SB_V_DOUBLE_ARROW;
+	defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), type);
 }
 
 void drawBand (int x, int y, int width, int height) {
@@ -151,17 +151,17 @@ void drawBand (int x, int y, int width, int height) {
 	long /*int*/ window = gtk_widget_get_window (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
-	long /*int*/ stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
-	long /*int*/ gc = OS.gdk_gc_new (window);
-	long /*int*/ colormap = OS.gdk_colormap_get_system();
+	long /*int*/ stipplePixmap = GDK.gdk_bitmap_create_from_data (window, bits, 8, 8);
+	long /*int*/ gc = GDK.gdk_gc_new (window);
+	long /*int*/ colormap = GDK.gdk_colormap_get_system();
 	GdkColor color = new GdkColor ();
-	OS.gdk_color_white (colormap, color);
-	OS.gdk_gc_set_foreground (gc, color);
-	OS.gdk_gc_set_stipple (gc, stipplePixmap);
-	OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
-	OS.gdk_gc_set_fill (gc, OS.GDK_STIPPLED);
-	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
+	GDK.gdk_color_white (colormap, color);
+	GDK.gdk_gc_set_foreground (gc, color);
+	GDK.gdk_gc_set_stipple (gc, stipplePixmap);
+	GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
+	GDK.gdk_gc_set_fill (gc, GDK.GDK_STIPPLED);
+	GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
+	GDK.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
 	OS.g_object_unref (stipplePixmap);
 	OS.g_object_unref (gc);
 }
@@ -174,11 +174,11 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button != 1) return 0;
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) return 0;
-	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) return 0;
+	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
 	long /*int*/ window = gtk_widget_get_window (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
 	startY = (int) (gdkEvent.y_root - origin_y [0]);
 	GtkAllocation allocation = new GtkAllocation ();
@@ -284,19 +284,19 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 	int keyval = gdkEvent.keyval;
 	switch (keyval) {
-		case OS.GDK_Left:
-		case OS.GDK_Right:
-		case OS.GDK_Up:
-		case OS.GDK_Down:
+		case GDK.GDK_Left:
+		case GDK.GDK_Right:
+		case GDK.GDK_Up:
+		case GDK.GDK_Down:
 			int xChange = 0, yChange = 0;
 			int stepSize = PAGE_INCREMENT;
-			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) stepSize = INCREMENT;
+			if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0) stepSize = INCREMENT;
 			if ((style & SWT.VERTICAL) != 0) {
-				if (keyval == OS.GDK_Up || keyval == OS.GDK_Down) break;
-				xChange = keyval == OS.GDK_Left ? -stepSize : stepSize;
+				if (keyval == GDK.GDK_Up || keyval == GDK.GDK_Down) break;
+				xChange = keyval == GDK.GDK_Left ? -stepSize : stepSize;
 			} else {
-				if (keyval == OS.GDK_Left ||keyval == OS.GDK_Right) break;
-				yChange = keyval == OS.GDK_Up ? -stepSize : stepSize;
+				if (keyval == GDK.GDK_Left ||keyval == GDK.GDK_Right) break;
+				yChange = keyval == GDK.GDK_Up ? -stepSize : stepSize;
 			}
 			int parentBorder = 0;
 			GtkAllocation allocation = new GtkAllocation ();
@@ -316,9 +316,9 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 
 			/* Ensure that the pointer image does not change */
 			long /*int*/ window = gtk_widget_get_window (handle);
-			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+			int grabMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
 			long /*int*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
-			int ptrGrabResult = gdk_pointer_grab (window, OS.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
+			int ptrGrabResult = gdk_pointer_grab (window, GDK.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, GDK.GDK_CURRENT_TIME);
 
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
@@ -327,7 +327,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 			if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - event.x;
 			sendSelectionEvent (SWT.Selection, event, true);
-			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
+			if (ptrGrabResult == GDK.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (window, GDK.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
 
 			if (event.doit) {
@@ -369,12 +369,12 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 		eventState = mask [0];
 	} else {
 		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
+		GDK.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
 		eventX = (int) (gdkEvent.x_root - origin_x [0]);
 		eventY = (int) (gdkEvent.y_root - origin_y [0]);
 		eventState = gdkEvent.state;
 	}
-	if ((eventState & OS.GDK_BUTTON1_MASK) == 0) return 0;
+	if ((eventState & GDK.GDK_BUTTON1_MASK) == 0) return 0;
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
@@ -428,7 +428,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	GTK.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
+	GTK.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
 }
 
 @Override

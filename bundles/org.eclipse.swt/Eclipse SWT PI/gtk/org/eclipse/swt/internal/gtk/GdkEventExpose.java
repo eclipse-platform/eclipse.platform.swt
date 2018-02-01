@@ -32,6 +32,6 @@ public class GdkEventExpose extends GdkEvent {
 	public long /*int*/ region;
 	/** @field cast=(gint) */
 	public int count;
-	public static final int sizeof = OS.GdkEventExpose_sizeof();
+	public static final int sizeof = GDK.GdkEventExpose_sizeof();
 }
 

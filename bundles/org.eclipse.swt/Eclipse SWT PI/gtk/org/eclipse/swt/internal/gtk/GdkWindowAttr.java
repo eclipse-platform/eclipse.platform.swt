@@ -35,5 +35,5 @@ public class GdkWindowAttr {
 	/** @field cast=(gchar *) */
 	public long /*int*/ wmclass_class;
 	public boolean override_redirect;
-	public static final int sizeof = OS.GdkWindowAttr_sizeof();
+	public static final int sizeof = GDK.GdkWindowAttr_sizeof();
 }

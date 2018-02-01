@@ -311,9 +311,9 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		ScrollBar scrollBar;
 		GdkEventScroll gdkEvent = new GdkEventScroll ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
-		if (gdkEvent.direction == OS.GDK_SCROLL_SMOOTH) {
+		if (gdkEvent.direction == GDK.GDK_SCROLL_SMOOTH) {
 			double[] delta_x = new double[1], delta_y = new double [1];
-			if (OS.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
+			if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
 					scrollBar = horizontalBar;
 					if (scrollBar != null && !GTK.gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
@@ -340,7 +340,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				}
 			}
 		} else {
-			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_DOWN) {
+			if (gdkEvent.direction == GDK.GDK_SCROLL_UP || gdkEvent.direction == GDK.GDK_SCROLL_DOWN) {
 				scrollBar = verticalBar;
 			} else {
 				scrollBar = horizontalBar;
@@ -350,7 +350,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 				/* Calculate wheel delta to match GTK+ 2.4 and higher */
 				int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
-				if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)
+				if (gdkEvent.direction == GDK.GDK_SCROLL_UP || gdkEvent.direction == GDK.GDK_SCROLL_LEFT)
 					wheel_delta = -wheel_delta;
 				int value = (int) Math.max(adjustment.lower,
 						Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));
@@ -452,7 +452,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		rect.width = Math.max (0, width);
 		rect.height = Math.max (0, height);
 	}
-	OS.gdk_window_invalidate_rect (window, rect, all);
+	GDK.gdk_window_invalidate_rect (window, rect, all);
 }
 
 @Override

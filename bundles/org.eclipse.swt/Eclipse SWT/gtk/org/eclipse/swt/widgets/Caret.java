@@ -101,7 +101,7 @@ boolean drawCaret () {
 	if (parent.isDisposed ()) return false;
 	if (GTK.GTK_VERSION < OS.VERSION (3, 22, 0)) {
 		long /*int*/ window = parent.paintWindow ();
-		long /*int*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ cairo = GDK.gdk_cairo_create(window);
 		if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_source_rgba(cairo, 1.0, 1.0, 1.0, 1.0);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);

@@ -238,12 +238,12 @@ void _setVisible (boolean visible) {
 				 */
 				long /*int*/ eventPtr = GTK.gtk_get_current_event();
 				if (eventPtr == 0) {
-					eventPtr = OS.gdk_event_new(OS.GDK_BUTTON_PRESS);
+					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
-					event.type = OS.GDK_BUTTON_PRESS;
+					event.type = GDK.GDK_BUTTON_PRESS;
 					event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
-					long /*int*/ device_manager = OS.gdk_display_get_device_manager (OS.gdk_display_get_default ());
-					event.device = OS.gdk_device_manager_get_client_pointer (device_manager);
+					long /*int*/ device_manager = GDK.gdk_display_get_device_manager (GDK.gdk_display_get_default ());
+					event.device = GDK.gdk_device_manager_get_client_pointer (device_manager);
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
@@ -254,24 +254,24 @@ void _setVisible (boolean visible) {
 						 * If we are running on the Wayland the best way to pop-up a menu
 						 * is by using the location of the mouse pointer. See bug 530059.
 						 */
-						long /*int*/ seat = OS.gdk_event_get_seat(eventPtr);
-						long /*int*/ pointer = OS.gdk_seat_get_pointer(seat);
-						long /*int*/ deviceWindow = OS.gdk_device_get_window_at_position(pointer, null, null);
+						long /*int*/ seat = GDK.gdk_event_get_seat(eventPtr);
+						long /*int*/ pointer = GDK.gdk_seat_get_pointer(seat);
+						long /*int*/ deviceWindow = GDK.gdk_device_get_window_at_position(pointer, null, null);
 						OS.g_object_ref(deviceWindow);
 						/*
 						 * The event is most likely a button or key press. If it isn't
 						 * we don't want it -- fall back to the event found with
 						 * gtk_get_current_event().
 						 */
-						int eventType = OS.gdk_event_get_event_type(eventPtr);
+						int eventType = GDK.gdk_event_get_event_type(eventPtr);
 						switch (eventType) {
-							case OS.GDK_BUTTON_PRESS:
+							case GDK.GDK_BUTTON_PRESS:
 								GdkEventButton eventButton = new GdkEventButton();
 								OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
 								eventButton.window = deviceWindow;
 								OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
 								break;
-							case OS.GDK_KEY_PRESS:
+							case GDK.GDK_KEY_PRESS:
 								GdkEventKey eventKey = new GdkEventKey();
 								OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
 								eventKey.window = deviceWindow;
@@ -281,7 +281,7 @@ void _setVisible (boolean visible) {
 					}
 				}
 				GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
-				OS.gdk_event_free (eventPtr);
+				GDK.gdk_event_free (eventPtr);
 			}
 		} else {
 			sendEvent (SWT.Hide);
@@ -467,7 +467,7 @@ void fixMenus (Decorations newParent) {
 	}
 	long /*int*/ window = gtk_widget_get_window (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	GDK.gdk_window_get_origin (window, origin_x, origin_y);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = origin_x [0] + allocation.x;

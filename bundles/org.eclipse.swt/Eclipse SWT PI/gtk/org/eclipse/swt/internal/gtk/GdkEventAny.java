@@ -20,5 +20,5 @@ public class GdkEventAny extends GdkEvent {
 	public long /*int*/ window;
 	/** @field cast=(gint8) */
 	public byte send_event;
-	public static final int sizeof = OS.GdkEventAny_sizeof();
+	public static final int sizeof = GDK.GdkEventAny_sizeof();
 }

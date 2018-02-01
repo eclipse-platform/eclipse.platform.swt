@@ -27,5 +27,5 @@ public class GdkGeometry {
 	public double min_aspect;
 	public double max_aspect;
 	public int win_gravity;
-	public static final int sizeof = OS.GdkGeometry_sizeof();
+	public static final int sizeof = GDK.GdkGeometry_sizeof();
 }

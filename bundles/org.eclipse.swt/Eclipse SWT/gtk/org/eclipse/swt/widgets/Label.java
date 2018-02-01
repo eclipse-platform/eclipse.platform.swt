@@ -122,7 +122,7 @@ void connectPaint () {
 	 * is drawn on the Label is not re-drawn. See bug 483791.
 	 */
 	if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0) && labelHandle != 0) {
-		int paintMask = OS.GDK_EXPOSURE_MASK;
+		int paintMask = GDK.GDK_EXPOSURE_MASK;
 		GTK.gtk_widget_add_events (labelHandle, paintMask);
 
 		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);

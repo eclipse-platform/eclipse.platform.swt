@@ -794,8 +794,8 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
-		case OS.GDK_EXPOSE: {
+	switch (GDK.GDK_EVENT_TYPE (gdkEvent)) {
+		case GDK.GDK_EXPOSE: {
 			/*
 			* Bug in GTK. SWT connects the expose-event 'after' the default
 			* handler of the signal. If the tree has no children, then GTK
@@ -825,9 +825,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			!OS.isX11() && gdkEvent.type == OS.GDK_BUTTON_PRESS) { // Wayland
+			!OS.isX11() && gdkEvent.type == GDK.GDK_BUTTON_PRESS) { // Wayland
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long /*int*/ nextEvent = OS.gdk_event_peek ();
+		long /*int*/ nextEvent = GDK.gdk_event_peek ();
 		if (nextEvent == 0) {
 			long /*int*/ [] path = new long /*int*/ [1];
 			long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
@@ -836,8 +836,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				//  selection count is used in the case of clicking an already selected item while holding Control
 				selectionCountOnPress = getSelectionCount();
 				if (GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
-					if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
-							((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
+					if (((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) ||
+							((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0)) {
 						/**
 						 * Disable selection on a mouse click if there are multiple items already selected. Also,
 						 * if control is currently being held down, we will designate the selection logic over to release
@@ -851,7 +851,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				}
 			}
 		} else {
-			OS.gdk_event_free (nextEvent);
+			GDK.gdk_event_free (nextEvent);
 		}
 	}
 	/*
@@ -864,7 +864,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	*/
 
 	int button = gdkEvent.button;
-	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+	if (button == 3 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
 		long /*int*/ [] path = new long /*int*/ [1];
 		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
@@ -896,7 +896,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	}
 
 	//If Mouse double-click pressed, manually send a DefaultSelection.  See Bug 312568.
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
 		sendTreeDefaultSelection ();
 	}
 
@@ -933,12 +933,12 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
 				path[0] != 0 && GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
 			selectionCountOnRelease = getSelectionCount();
-			if ((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) {
+			if ((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
 			 // Check to see if there has been a new tree item selected when holding Control in Path.
 			 // If not, deselect the item.
-			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
+			if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
 		}
@@ -953,10 +953,10 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	int keymask = gdk_event_get_state (event);
 	switch (key) {
-		case OS.GDK_Return:
+		case GDK.GDK_Return:
 			// Send DefaultSelectionEvent when: Enter, Shift+Enter, Ctrl+Enter, Alt+Enter are pressed.
 			// Not when (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk. Does not trigger on Win32 either.
-			if ((keymask & (OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
+			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;

@@ -230,8 +230,8 @@ void destroy() {
 				device.gdkColors[pixel] = null;
 			}
 		}
-		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		OS.gdk_colormap_free_colors(colormap, handle, 1);
+		long /*int*/ colormap = GDK.gdk_colormap_get_system();
+		GDK.gdk_colormap_free_colors(colormap, handle, 1);
 		handle = null;
 	}
 }
@@ -505,11 +505,11 @@ void init(int red, int green, int blue, int alpha) {
 		gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
 		gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
 		this.alpha = alpha;
-		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
+		long /*int*/ colormap = GDK.gdk_colormap_get_system();
+		if (!GDK.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
 			/* Allocate black. */
 			gdkColor = new GdkColor();
-			OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+			GDK.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 		}
 		handle = gdkColor;
 		if (device.colorRefCount != null) {

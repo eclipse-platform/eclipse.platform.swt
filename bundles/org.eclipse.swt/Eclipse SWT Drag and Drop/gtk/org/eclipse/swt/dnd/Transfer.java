@@ -130,9 +130,9 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName){
-	if (formatName == null) return OS.GDK_NONE;
+	if (formatName == null) return GDK.GDK_NONE;
 	byte[] buffer = Converter.wcsToMbcs(formatName, true);
-	return (int)/*64*/OS.gdk_atom_intern(buffer, false);
+	return (int)/*64*/GDK.gdk_atom_intern(buffer, false);
 }
 
 /**

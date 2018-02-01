@@ -325,10 +325,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
 	boolean next = false;
 	switch (gdkEvent.keyval) {
-		case OS.GDK_Up:
-		case OS.GDK_Left: next = false; break;
-		case OS.GDK_Down:
-		case OS.GDK_Right: next = true; break;
+		case GDK.GDK_Up:
+		case GDK.GDK_Left: next = false; break;
+		case GDK.GDK_Down:
+		case GDK.GDK_Right: next = true; break;
 		default: return result;
 	}
 	int start = index, offset = next ? 1 : -1;

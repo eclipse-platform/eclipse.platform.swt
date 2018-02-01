@@ -555,7 +555,7 @@ void deregister () {
 
 @Override
 boolean filterKey (int keyval, long /*int*/ event) {
-	int time = OS.gdk_event_get_time (event);
+	int time = GDK.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
 		long /*int*/ imContext = imContext ();
@@ -744,7 +744,7 @@ void hookEvents () {
 }
 
 void hookEvents(long /*int*/ [] handles) {
-	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+	int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
 	for (int i=0; i<handles.length; i++) {
 		long /*int*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
@@ -1232,7 +1232,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	*/
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.type == OS.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
+	if (gdkEvent.type == GDK.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
 		return gtk_button_press_event(widget, event, false);
 	}
 	return super.gtk_button_press_event (widget, event);
@@ -1274,11 +1274,11 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -1371,7 +1371,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
-		case OS.GDK_BUTTON_PRESS: {
+		case GDK.GDK_BUTTON_PRESS: {
 			GdkEventButton gdkEventButton = new GdkEventButton ();
 			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
 			if (gdkEventButton.button == 1) {
@@ -1384,7 +1384,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 			}
 			break;
 		}
-		case OS.GDK_FOCUS_CHANGE: {
+		case GDK.GDK_FOCUS_CHANGE: {
 			if ((style & SWT.READ_ONLY) == 0) {
 				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
@@ -1472,14 +1472,14 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 		int newIndex = oldIndex;
 		int key = keyEvent.keyval;
 		switch (key) {
-			case OS.GDK_Down:
-			case OS.GDK_KP_Down:
+			case GDK.GDK_Down:
+			case GDK.GDK_KP_Down:
 				 if (oldIndex != (items.length - 1)) {
 					newIndex = oldIndex + 1;
 				 }
 				 break;
-			case OS.GDK_Up:
-			case OS.GDK_KP_Up:
+			case GDK.GDK_Up:
+			case GDK.GDK_KP_Up:
 				if (oldIndex != -1 && oldIndex != 0) {
 					newIndex = oldIndex - 1;
 				}
@@ -1490,12 +1490,12 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 			* a page at a time. The fix is to emulate this behavior for
 			* gtk_combo_box_entry.
 			*/
-			case OS.GDK_Page_Up:
-		    case OS.GDK_KP_Page_Up:
+			case GDK.GDK_Page_Up:
+		    case GDK.GDK_KP_Page_Up:
 		    	newIndex = 0;
 		    	break;
-		    case OS.GDK_Page_Down:
-		    case OS.GDK_KP_Page_Down:
+		    case GDK.GDK_Page_Down:
+		    case GDK.GDK_KP_Page_Down:
 		    	newIndex = items.length - 1;
 		    	break;
 		}
@@ -1599,7 +1599,7 @@ long /*int*/ paintWindow () {
 	GTK.gtk_widget_realize (childHandle);
 	long /*int*/ window = gtk_widget_get_window (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return window;
-	long /*int*/ children = OS.gdk_window_get_children (window);
+	long /*int*/ children = GDK.gdk_window_get_children (window);
 	if (children != 0) {
 		/*
 		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
@@ -2338,8 +2338,8 @@ boolean checkSubwindow () {
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
-		case OS.GDK_KP_Enter:
-		case OS.GDK_Return: {
+		case GDK.GDK_KP_Enter:
+		case GDK.GDK_Return: {
 			long /*int*/ imContext = imContext ();
 			if (imContext != 0) {
 				long /*int*/ [] preeditString = new long /*int*/ [1];
@@ -2366,11 +2366,11 @@ String verifyText (String string, int start, int end) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	/*
 	 * It is possible (but unlikely), that application

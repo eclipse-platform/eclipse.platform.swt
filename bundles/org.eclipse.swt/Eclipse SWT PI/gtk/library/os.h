@@ -80,6 +80,17 @@
 	                CHECK_DLERROR \
 		}
 
+// Hard-link code generated from GTK.java to LIB_GTK
+#define GDK_LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			void* handle = dlopen(LIB_GDK, LOAD_FLAGS); \
+			if (handle) var = dlsym(handle, #name); \
+			initialized = 1; \
+	                CHECK_DLERROR \
+		}
+
 #ifdef GDK_WINDOWING_X11
 
 #include <gdk/gdkx.h>

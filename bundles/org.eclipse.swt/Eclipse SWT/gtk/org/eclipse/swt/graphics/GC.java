@@ -367,9 +367,9 @@ void checkGC (int mask) {
 }
 
 long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
-	long /*int*/ newRgn = OS.gdk_region_new();
+	long /*int*/ newRgn = GDK.gdk_region_new();
 	if (isIdentity(matrix)) {
-		OS.gdk_region_union(newRgn, rgn);
+		GDK.gdk_region_union(newRgn, rgn);
 		return newRgn;
 	}
 	int[] nRects = new int[1];
@@ -400,9 +400,9 @@ long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
 		Cairo.cairo_matrix_transform_point(matrix, x, y);
 		pointArray[6] = (int)x[0];
 		pointArray[7] = (int)Math.round(y[0]);
-		long /*int*/ polyRgn = Region.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-		OS.gdk_region_union(newRgn, polyRgn);
-		OS.gdk_region_destroy(polyRgn);
+		long /*int*/ polyRgn = Region.gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
+		GDK.gdk_region_union(newRgn, polyRgn);
+		GDK.gdk_region_destroy(polyRgn);
 	}
 	if (rects[0] != 0) OS.g_free(rects[0]);
 	return newRgn;
@@ -439,7 +439,7 @@ void copyAreaInPixels(Image image, int x, int y) {
 	if (data.image != null) {
 		Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
 	} else if (data.drawable != 0) {
-		OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
+		GDK.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
 	} else {
 		Cairo.cairo_destroy(cairo);
 		return;
@@ -517,7 +517,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		Cairo.cairo_translate(handle, deltaX, deltaY);
 		Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_push_group(handle);
-		OS.gdk_cairo_set_source_window(handle, drawable, 0, 0);
+		GDK.gdk_cairo_set_source_window(handle, drawable, 0, 0);
 		Cairo.cairo_paint(handle);
 		Cairo.cairo_pop_group_to_source(handle);
 		Cairo.cairo_rectangle(handle, destX - deltaX, destY - deltaY, width, height);
@@ -527,24 +527,24 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		if (paint) {
 			long /*int*/ visibleRegion;
 			if (GTK.GTK3) {
-				visibleRegion = OS.gdk_window_get_visible_region (drawable);
+				visibleRegion = GDK.gdk_window_get_visible_region (drawable);
 			} else {
-				visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
+				visibleRegion = GDK.gdk_drawable_get_visible_region (drawable);
 			}
 			GdkRectangle srcRect = new GdkRectangle ();
 			srcRect.x = srcX;
 			srcRect.y = srcY;
 			srcRect.width = width;
 			srcRect.height = height;
-			long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
-			OS.gdk_region_intersect(copyRegion, visibleRegion);
-			long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);
-			OS.gdk_region_subtract (invalidateRegion, visibleRegion);
-			OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
-			OS.gdk_window_invalidate_region(drawable, invalidateRegion, false);
-			OS.gdk_region_destroy (visibleRegion);
-			OS.gdk_region_destroy (copyRegion);
-			OS.gdk_region_destroy (invalidateRegion);
+			long /*int*/ copyRegion = GDK.gdk_region_rectangle (srcRect);
+			GDK.gdk_region_intersect(copyRegion, visibleRegion);
+			long /*int*/ invalidateRegion = GDK.gdk_region_rectangle (srcRect);
+			GDK.gdk_region_subtract (invalidateRegion, visibleRegion);
+			GDK.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+			GDK.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+			GDK.gdk_region_destroy (visibleRegion);
+			GDK.gdk_region_destroy (copyRegion);
+			GDK.gdk_region_destroy (invalidateRegion);
 		}
 	}
 	if (data.image == null & paint) {
@@ -555,7 +555,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 			rect.y = srcY;
 			rect.width = Math.max (0, width);
 			rect.height = Math.max (0, height);
-			OS.gdk_window_invalidate_rect (drawable, rect, false);
+			GDK.gdk_window_invalidate_rect (drawable, rect, false);
 //			OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
 		} else {
 			if (deltaX != 0) {
@@ -565,7 +565,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 				rect.y = srcY;
 				rect.width = Math.abs(deltaX);
 				rect.height = Math.max (0, height);
-				OS.gdk_window_invalidate_rect (drawable, rect, false);
+				GDK.gdk_window_invalidate_rect (drawable, rect, false);
 //				OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
 			}
 			if (deltaY != 0) {
@@ -575,7 +575,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 				rect.y = newY;
 				rect.width = Math.max (0, width);
 				rect.height = Math.abs(deltaY);
-				OS.gdk_window_invalidate_rect (drawable, rect, false);
+				GDK.gdk_window_invalidate_rect (drawable, rect, false);
 //				OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
 			}
 		}
@@ -583,7 +583,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 }
 
 void createLayout() {
-	long /*int*/ context = OS.gdk_pango_context_get();
+	long /*int*/ context = GDK.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.context = context;
 	long /*int*/ layout = OS.pango_layout_new(context);
@@ -611,7 +611,7 @@ void destroy() {
 
 	/* Free resources */
 	long /*int*/ clipRgn = data.clipRgn;
-	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
+	if (clipRgn != 0) GDK.gdk_region_destroy(clipRgn);
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = null;
@@ -2001,23 +2001,23 @@ Rectangle getClippingInPixels() {
 	long /*int*/ clipRgn = data.clipRgn;
 	long /*int*/ damageRgn = data.damageRgn;
 	if (clipRgn != 0 || damageRgn != 0 || cairo != 0) {
-		long /*int*/ rgn = OS.gdk_region_new();
+		long /*int*/ rgn = GDK.gdk_region_new();
 		GdkRectangle rect = new GdkRectangle();
 		rect.width = width;
 		rect.height = height;
-		OS.gdk_region_union_with_rect(rgn, rect);
+		GDK.gdk_region_union_with_rect(rgn, rect);
 		if (damageRgn != 0) {
-			OS.gdk_region_intersect (rgn, damageRgn);
+			GDK.gdk_region_intersect (rgn, damageRgn);
 		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
 			if (data.clippingTransform != null) {
 				clipRgn = convertRgn(clipRgn, data.clippingTransform);
-				OS.gdk_region_intersect(rgn, clipRgn);
-				OS.gdk_region_destroy(clipRgn);
+				GDK.gdk_region_intersect(rgn, clipRgn);
+				GDK.gdk_region_destroy(clipRgn);
 			} else {
-				OS.gdk_region_intersect(rgn, clipRgn);
+				GDK.gdk_region_intersect(rgn, clipRgn);
 			}
 		}
 		/* Convert to user space */
@@ -2026,11 +2026,11 @@ Rectangle getClippingInPixels() {
 			Cairo.cairo_get_matrix(cairo, matrix);
 			Cairo.cairo_matrix_invert(matrix);
 			clipRgn = convertRgn(rgn, matrix);
-			OS.gdk_region_destroy(rgn);
+			GDK.gdk_region_destroy(rgn);
 			rgn = clipRgn;
 		}
-		OS.gdk_region_get_clipbox(rgn, rect);
-		OS.gdk_region_destroy(rgn);
+		GDK.gdk_region_get_clipbox(rgn, rect);
+		GDK.gdk_region_destroy(rgn);
 		x = rect.x;
 		y = rect.y;
 		width = rect.width;
@@ -2058,7 +2058,7 @@ public void getClipping(Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	long /*int*/ clipping = region.handle;
-	OS.gdk_region_subtract(clipping, clipping);
+	GDK.gdk_region_subtract(clipping, clipping);
 	long /*int*/ cairo = data.cairo;
 	long /*int*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
@@ -2067,19 +2067,19 @@ public void getClipping(Region region) {
 		getSize(width, height);
 		rect.width = width[0];
 		rect.height = height[0];
-		OS.gdk_region_union_with_rect(clipping, rect);
+		GDK.gdk_region_union_with_rect(clipping, rect);
 	} else {
 		/* Convert clipping to device space if needed */
 		if (data.clippingTransform != null) {
 			long /*int*/ rgn = convertRgn(clipRgn, data.clippingTransform);
-			OS.gdk_region_union(clipping, rgn);
-			OS.gdk_region_destroy(rgn);
+			GDK.gdk_region_union(clipping, rgn);
+			GDK.gdk_region_destroy(rgn);
 		} else {
-			OS.gdk_region_union(clipping, clipRgn);
+			GDK.gdk_region_union(clipping, clipRgn);
 		}
 	}
 	if (data.damageRgn != 0) {
-		OS.gdk_region_intersect(clipping, data.damageRgn);
+		GDK.gdk_region_intersect(clipping, data.damageRgn);
 	}
 	/* Convert to user space */
 	if (cairo != 0) {
@@ -2087,9 +2087,9 @@ public void getClipping(Region region) {
 		Cairo.cairo_get_matrix(cairo, matrix);
 		Cairo.cairo_matrix_invert(matrix);
 		long /*int*/ rgn = convertRgn(clipping, matrix);
-		OS.gdk_region_subtract(clipping, clipping);
-		OS.gdk_region_union(clipping, rgn);
-		OS.gdk_region_destroy(rgn);
+		GDK.gdk_region_subtract(clipping, clipping);
+		GDK.gdk_region_union(clipping, rgn);
+		GDK.gdk_region_destroy(rgn);
 	}
 }
 
@@ -2391,8 +2391,8 @@ void getSize(int[] width, int[] height) {
 		return;
 	}
 	if (data.drawable != 0) {
-		width[0] = OS.gdk_window_get_width(data.drawable);
-		height[0] = OS.gdk_window_get_height(data.drawable);
+		width[0] = GDK.gdk_window_get_width(data.drawable);
+		height[0] = GDK.gdk_window_get_height(data.drawable);
 		return;
 	}
 	long /*int*/ surface = Cairo.cairo_get_target(handle);
@@ -2562,7 +2562,7 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 void initCairo() {
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
-	data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
+	data.cairo = cairo = GDK.gdk_cairo_create(data.drawable);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
@@ -2831,7 +2831,7 @@ static void setCairoFont(long /*int*/ cairo, long /*int*/ font) {
 }
 
 static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
-	OS.gdk_cairo_region(cairo, rgn);
+	GDK.gdk_cairo_region(cairo, rgn);
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
@@ -2851,7 +2851,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
 	if (data.drawable != 0 && !GTK.GTK3) {
-		OS.gdk_cairo_reset_clip(cairo, data.drawable);
+		GDK.gdk_cairo_reset_clip(cairo, data.drawable);
 	} else {
 		Cairo.cairo_reset_clip(cairo);
 	}
@@ -2875,15 +2875,15 @@ void setClipping(long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {
-			OS.gdk_region_destroy(data.clipRgn);
+			GDK.gdk_region_destroy(data.clipRgn);
 			data.clipRgn = 0;
 		}
 		data.clippingTransform = null;
 		setCairoClip(data.damageRgn, 0);
 	} else {
-		if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
-		OS.gdk_region_subtract(data.clipRgn, data.clipRgn);
-		OS.gdk_region_union(data.clipRgn, clipRgn);
+		if (data.clipRgn == 0) data.clipRgn = GDK.gdk_region_new();
+		GDK.gdk_region_subtract(data.clipRgn, data.clipRgn);
+		GDK.gdk_region_union(data.clipRgn, clipRgn);
 		if (data.clippingTransform == null) data.clippingTransform = new double[6];
 		Cairo.cairo_get_matrix(cairo, data.clippingTransform);
 		setCairoClip(data.damageRgn, clipRgn);
@@ -2922,10 +2922,10 @@ void setClippingInPixels(int x, int y, int width, int height) {
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
-	long /*int*/ clipRgn = OS.gdk_region_new();
-	OS.gdk_region_union_with_rect(clipRgn, rect);
+	long /*int*/ clipRgn = GDK.gdk_region_new();
+	GDK.gdk_region_union_with_rect(clipRgn, rect);
 	setClipping(clipRgn);
-	OS.gdk_region_destroy(clipRgn);
+	GDK.gdk_region_destroy(clipRgn);
 }
 
 /**

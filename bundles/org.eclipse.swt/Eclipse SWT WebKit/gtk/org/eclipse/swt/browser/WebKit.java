@@ -698,33 +698,33 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 					(WEBKIT1 && !browser.webBrowser.jsEnabled)
 					|| (WEBKIT2 && Arrays.binarySearch(w2_passThroughSwtEvents, user_data) >= 0)){
 				/* this instance does need to use the GDK event to create an SWT event to send */
-				switch (OS.GDK_EVENT_TYPE (event)) {
-					case OS.GDK_KEY_PRESS: {
+				switch (GDK.GDK_EVENT_TYPE (event)) {
+					case GDK.GDK_KEY_PRESS: {
 						if (browser.isFocusControl ()) {
 							final GdkEventKey gdkEvent = new GdkEventKey ();
 							OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
 							switch (gdkEvent.keyval) {
-								case OS.GDK_ISO_Left_Tab:
-								case OS.GDK_Tab: {
-									if ((gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
+								case GDK.GDK_ISO_Left_Tab:
+								case GDK.GDK_Tab: {
+									if ((gdkEvent.state & (GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 										browser.getDisplay ().asyncExec (() -> {
 											if (browser.isDisposed ()) return;
 											if (browser.getDisplay ().getFocusControl () == null) {
-												int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+												int traversal = (gdkEvent.state & GDK.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
 												browser.traverse (traversal);
 											}
 										});
 									}
 									break;
 								}
-								case OS.GDK_Escape: {
+								case GDK.GDK_Escape: {
 									Event keyEvent = new Event ();
 									keyEvent.widget = browser;
 									keyEvent.type = SWT.KeyDown;
 									keyEvent.keyCode = keyEvent.character = SWT.ESC;
-									if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
-									if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
-									if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+									if ((gdkEvent.state & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
+									if ((gdkEvent.state & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
+									if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
 									try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
 										  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
 										nonBlockingEvaluate++;
@@ -1888,18 +1888,18 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
 		switch (gdkEvent.type) {
-			case OS.GDK_KEY_PRESS:
-			case OS.GDK_KEY_RELEASE:
+			case GDK.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_RELEASE:
 				keyEventState = gdkEvent.state;
 				break;
 		}
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 	}
 	int keyCode = (int)WebKitGTK.webkit_dom_ui_event_get_key_code (event);
 	int charCode = (int)WebKitGTK.webkit_dom_ui_event_get_char_code (event);
-	boolean altKey = (keyEventState & OS.GDK_MOD1_MASK) != 0;
-	boolean ctrlKey = (keyEventState & OS.GDK_CONTROL_MASK) != 0;
-	boolean shiftKey = (keyEventState & OS.GDK_SHIFT_MASK) != 0;
+	boolean altKey = (keyEventState & GDK.GDK_MOD1_MASK) != 0;
+	boolean ctrlKey = (keyEventState & GDK.GDK_CONTROL_MASK) != 0;
+	boolean shiftKey = (keyEventState & GDK.GDK_SHIFT_MASK) != 0;
 	return handleKeyEvent(typeString, keyCode, charCode, altKey, ctrlKey, shiftKey, false);
 }
 

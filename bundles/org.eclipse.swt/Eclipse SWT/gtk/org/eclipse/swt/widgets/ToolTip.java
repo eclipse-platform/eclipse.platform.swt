@@ -136,7 +136,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
-	long /*int*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = GDK.gdk_screen_get_default ();
 	GTK.gtk_widget_realize (handle);
 	/*
 	 * Feature in GTK: using gdk_screen_get_monitor_at_window() does not accurately get the correct monitor on the machine.
@@ -144,10 +144,10 @@ void configure () {
 	 * the coordinates for where the tooltip should appear on the host.
 	 */
 	Point point = getLocation();
-	boolean multipleMonitors = (OS.gdk_screen_get_n_monitors(screen) > 1) ? true : false;
-	int monitorNumber = OS.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+	boolean multipleMonitors = (GDK.gdk_screen_get_n_monitors(screen) > 1) ? true : false;
+	int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 	GdkRectangle dest = new GdkRectangle ();
-	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	point = getSize (dest.width / 4);
 	int w = point.x;
 	int h = point.y;
@@ -157,7 +157,7 @@ void configure () {
 	GTK.gtk_window_resize (handle, w, h + TIP_HEIGHT);
 	int[] polyline;
 	spikeAbove = dest.height >= y + h + TIP_HEIGHT;
-	if ((dest.width >= x + w) || (multipleMonitors && OS.gdk_screen_width() >= x + w)) {
+	if ((dest.width >= x + w) || (multipleMonitors && GDK.gdk_screen_width() >= x + w)) {
 		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
@@ -264,7 +264,7 @@ void configure () {
 		GTK.gtk_widget_shape_combine_region (handle, region.handle);
 	} else {
 		long /*int*/ window = gtk_widget_get_window (handle);
-		OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
+		GDK.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 	 }
 	region.dispose ();
 }
@@ -285,7 +285,7 @@ void createHandle (int index) {
 		} else {
 			GTK.gtk_widget_modify_bg (handle, GTK.GTK_STATE_NORMAL, background.handle);
 		}
-		GTK.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
+		GTK.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	}
 }
 
@@ -478,7 +478,7 @@ void drawTooltip (long /*int*/ cr) {
 	long /*int*/ window = gtk_widget_get_window (handle);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
-	long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
+	long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
 	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 	int count = borderPolygon.length / 2;
 	if (count != 0) {
@@ -501,7 +501,7 @@ void drawTooltip (long /*int*/ cr) {
 		}
 		if (buffer != null) {
 			long /*int*/ pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, GTK.GTK_ICON_SIZE_MENU, 0, 0);
-			OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
+			GDK.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
 			Cairo.cairo_paint (cairo);
 			OS.g_object_unref (pixbuf);
 			x += IMAGE_SIZE;
@@ -510,9 +510,9 @@ void drawTooltip (long /*int*/ cr) {
 		int [] w = new int [1], h = new int [1];
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
 		if (GTK.GTK3) {
-			OS.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+			GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
 		} else {
-			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+			GDK.gdk_cairo_set_source_color(cairo,foreground.handle);
 		}
 		Cairo.cairo_move_to(cairo, x,y );
 		OS.pango_cairo_show_layout(cairo, layoutText);
@@ -523,9 +523,9 @@ void drawTooltip (long /*int*/ cr) {
 		x = BORDER + PADDING + INSET;
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
 		if (GTK.GTK3) {
-			OS.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+			GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
 		} else {
-			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+			GDK.gdk_cairo_set_source_color(cairo,foreground.handle);
 		}
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layoutMessage);
@@ -552,11 +552,11 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	Point point = getLocation ();
 	int x = point.x;
 	int y = point.y;
-	long /*int*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = GDK.gdk_screen_get_default ();
 	GTK.gtk_widget_realize (widget);
-	int monitorNumber = OS.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+	int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 	GdkRectangle dest = new GdkRectangle ();
-	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
 	int w = widgetAllocation.width;
@@ -574,7 +574,7 @@ void hookEvents () {
 		if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0)) {
 			OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT_INVERSE], 0, display.getClosure (EXPOSE_EVENT_INVERSE), true);
 		}
-		GTK.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
+		GTK.gtk_widget_add_events (handle, GDK.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }

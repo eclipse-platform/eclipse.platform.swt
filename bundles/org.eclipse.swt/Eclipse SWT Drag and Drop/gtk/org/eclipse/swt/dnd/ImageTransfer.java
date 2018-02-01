@@ -106,7 +106,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		long /*int*/ [] buffer = new long /*int*/ [1];
 		long /*int*/ [] len = new long /*int*/ [1];
 		if (type == null) return;
-		OS.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
+		GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 		OS.g_object_unref(pixbuf);
 		transferData.pValue = buffer[0];
 		transferData.length = (int)(len[0] + 3) / 4 * 4;
@@ -130,11 +130,11 @@ public void javaToNative(Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData) {
 	ImageData imgData = null;
 	if (transferData.length > 0) {
-		long /*int*/ loader = OS.gdk_pixbuf_loader_new();
+		long /*int*/ loader = GDK.gdk_pixbuf_loader_new();
 		try {
-			OS.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
-			OS.gdk_pixbuf_loader_close(loader, null);
-			long /*int*/ pixbuf = OS.gdk_pixbuf_loader_get_pixbuf(loader);
+			GDK.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
+			GDK.gdk_pixbuf_loader_close(loader, null);
+			long /*int*/ pixbuf = GDK.gdk_pixbuf_loader_get_pixbuf(loader);
 			if (pixbuf != 0) {
 				Image img = Image.gtk_new_from_pixbuf(Display.getCurrent(), SWT.BITMAP, pixbuf);
 				imgData = img.getImageData();

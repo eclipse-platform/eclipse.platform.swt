@@ -321,8 +321,8 @@ void updateBar (int selection, int minimum, int maximum) {
 		* outstanding redraws to be delivered.
 		*/
 		long /*int*/ window = paintWindow ();
-		OS.gdk_window_process_updates (window, false);
-		OS.gdk_flush ();
+		GDK.gdk_window_process_updates (window, false);
+		GDK.gdk_flush ();
 	}
 }
 

@@ -24,5 +24,5 @@ public class GdkRectangle {
 	public int width;
 	/** @field cast=(gint) */
 	public int height;
-	public static final int sizeof = OS.GdkRectangle_sizeof();
+	public static final int sizeof = GDK.GdkRectangle_sizeof();
 }

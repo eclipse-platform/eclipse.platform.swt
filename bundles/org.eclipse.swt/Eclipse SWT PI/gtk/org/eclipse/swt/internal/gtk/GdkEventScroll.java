@@ -36,5 +36,5 @@ public class GdkEventScroll extends GdkEvent {
 	public double x_root;
 	/** @field cast=(gdouble) */
 	public double y_root;
-	public static final int sizeof = OS.GdkEventScroll_sizeof();
+	public static final int sizeof = GDK.GdkEventScroll_sizeof();
 }

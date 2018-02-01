@@ -513,10 +513,10 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 			OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
 			long /*int*/ topHandle = topHandle();
 			switch (gdkEvent.type) {
-				case OS.GDK_KEY_RELEASE: //Fall Through..
-				case OS.GDK_BUTTON_PRESS:
-				case OS.GDK_2BUTTON_PRESS:
-				case OS.GDK_BUTTON_RELEASE: {
+				case GDK.GDK_KEY_RELEASE: //Fall Through..
+				case GDK.GDK_BUTTON_PRESS:
+				case GDK.GDK_2BUTTON_PRESS:
+				case GDK.GDK_BUTTON_RELEASE: {
 					boolean isArrow = false;
 					if (widget == arrowHandle) {
 						isArrow = true;
@@ -540,7 +540,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 					break;
 				}
 			}
-			OS.gdk_event_free (eventPtr);
+			GDK.gdk_event_free (eventPtr);
 		}
 	}
 	if ((style & SWT.RADIO) != 0) {
@@ -687,7 +687,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
-		case OS.GDK_BUTTON_PRESS: {
+		case GDK.GDK_BUTTON_PRESS: {
 			GdkEventButton gdkEventButton = new GdkEventButton ();
 			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
 			if (gdkEventButton.button == 3) {
@@ -773,11 +773,11 @@ void hookEvents () {
 	* to the parent.
 	*/
 	int mask =
-		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
+		GDK.GDK_EXPOSURE_MASK | GDK.GDK_POINTER_MOTION_MASK |
+		GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK |
+		GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK |
+		GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK |
+		GDK.GDK_FOCUS_CHANGE_MASK;
 	GTK.gtk_widget_add_events (eventHandle, mask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);

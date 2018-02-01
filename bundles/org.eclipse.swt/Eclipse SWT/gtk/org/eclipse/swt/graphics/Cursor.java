@@ -139,32 +139,32 @@ public Cursor(Device device, int style) {
 	byte[] name = null;
 	switch (style) {
 		case SWT.CURSOR_APPSTARTING:	name = Converter.wcsToMbcs("progress", true) ; break;
-		case SWT.CURSOR_ARROW:			shape = OS.GDK_LEFT_PTR; break;
-		case SWT.CURSOR_WAIT:			shape = OS.GDK_WATCH; break;
-		case SWT.CURSOR_CROSS:			shape = OS.GDK_CROSS; break;
-		case SWT.CURSOR_HAND:			shape = OS.GDK_HAND2; break;
-		case SWT.CURSOR_HELP:			shape = OS.GDK_QUESTION_ARROW; break;
-		case SWT.CURSOR_SIZEALL:		shape = OS.GDK_FLEUR; break;
-		case SWT.CURSOR_SIZENESW:		shape = OS.GDK_SIZING; name=Converter.wcsToMbcs("nesw-resize", true); break;
-		case SWT.CURSOR_SIZENS:			shape = OS.GDK_DOUBLE_ARROW; break;
-		case SWT.CURSOR_SIZENWSE:		shape = OS.GDK_SIZING; name=Converter.wcsToMbcs("nwse-resize", true); break;
-		case SWT.CURSOR_SIZEWE:			shape = OS.GDK_SB_H_DOUBLE_ARROW; break;
-		case SWT.CURSOR_SIZEN:			shape = OS.GDK_TOP_SIDE; break;
-		case SWT.CURSOR_SIZES:			shape = OS.GDK_BOTTOM_SIDE; break;
-		case SWT.CURSOR_SIZEE:			shape = OS.GDK_RIGHT_SIDE; break;
-		case SWT.CURSOR_SIZEW:			shape = OS.GDK_LEFT_SIDE; break;
-		case SWT.CURSOR_SIZENE:			shape = OS.GDK_TOP_RIGHT_CORNER; break;
-		case SWT.CURSOR_SIZESE:			shape = OS.GDK_BOTTOM_RIGHT_CORNER; break;
-		case SWT.CURSOR_SIZESW:			shape = OS.GDK_BOTTOM_LEFT_CORNER; break;
-		case SWT.CURSOR_SIZENW:			shape = OS.GDK_TOP_LEFT_CORNER; break;
-		case SWT.CURSOR_UPARROW:		shape = OS.GDK_SB_UP_ARROW; break;
-		case SWT.CURSOR_IBEAM:			shape = OS.GDK_XTERM; break;
-		case SWT.CURSOR_NO:				shape = OS.GDK_X_CURSOR; name=Converter.wcsToMbcs("not-allowed", true) ; break;
+		case SWT.CURSOR_ARROW:			shape = GDK.GDK_LEFT_PTR; break;
+		case SWT.CURSOR_WAIT:			shape = GDK.GDK_WATCH; break;
+		case SWT.CURSOR_CROSS:			shape = GDK.GDK_CROSS; break;
+		case SWT.CURSOR_HAND:			shape = GDK.GDK_HAND2; break;
+		case SWT.CURSOR_HELP:			shape = GDK.GDK_QUESTION_ARROW; break;
+		case SWT.CURSOR_SIZEALL:		shape = GDK.GDK_FLEUR; break;
+		case SWT.CURSOR_SIZENESW:		shape = GDK.GDK_SIZING; name=Converter.wcsToMbcs("nesw-resize", true); break;
+		case SWT.CURSOR_SIZENS:			shape = GDK.GDK_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZENWSE:		shape = GDK.GDK_SIZING; name=Converter.wcsToMbcs("nwse-resize", true); break;
+		case SWT.CURSOR_SIZEWE:			shape = GDK.GDK_SB_H_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZEN:			shape = GDK.GDK_TOP_SIDE; break;
+		case SWT.CURSOR_SIZES:			shape = GDK.GDK_BOTTOM_SIDE; break;
+		case SWT.CURSOR_SIZEE:			shape = GDK.GDK_RIGHT_SIDE; break;
+		case SWT.CURSOR_SIZEW:			shape = GDK.GDK_LEFT_SIDE; break;
+		case SWT.CURSOR_SIZENE:			shape = GDK.GDK_TOP_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESE:			shape = GDK.GDK_BOTTOM_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESW:			shape = GDK.GDK_BOTTOM_LEFT_CORNER; break;
+		case SWT.CURSOR_SIZENW:			shape = GDK.GDK_TOP_LEFT_CORNER; break;
+		case SWT.CURSOR_UPARROW:		shape = GDK.GDK_SB_UP_ARROW; break;
+		case SWT.CURSOR_IBEAM:			shape = GDK.GDK_XTERM; break;
+		case SWT.CURSOR_NO:				shape = GDK.GDK_X_CURSOR; name=Converter.wcsToMbcs("not-allowed", true) ; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (name != null) {
-		handle = OS.gdk_cursor_new_from_name (OS.gdk_display_get_default(), name);
+		handle = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), name);
 	}
 	if (handle == 0) {
 		if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
@@ -174,7 +174,7 @@ public Cursor(Device device, int style) {
 			System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
 			handle = createCursor(src, mask, 32, 32, 2, 2, true);
 		} else {
-			handle = OS.gdk_cursor_new_for_display(OS.gdk_display_get_default(), shape);
+			handle = GDK.gdk_cursor_new_for_display(GDK.gdk_display_get_default(), shape);
 		}
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -307,14 +307,14 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	long /*int*/ display = 0;
-	if (OS.gdk_display_supports_cursor_color(display = OS.gdk_display_get_default ())) {
+	if (GDK.gdk_display_supports_cursor_color(display = GDK.gdk_display_get_default ())) {
 		int width = source.width;
 		int height = source.height;
 		PaletteData palette = source.palette;
-		long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+		long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		long /*int*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
+		int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
+		long /*int*/ data = GDK.gdk_pixbuf_get_pixels(pixbuf);
 		byte[] buffer = source.data;
 		if (!palette.isDirect || source.depth != 24 || stride != source.bytesPerLine || palette.redMask != 0xFF000000 || palette.greenMask != 0xFF0000 || palette.blueMask != 0xFF00) {
 			buffer = new byte[source.width * source.height * 4];
@@ -368,7 +368,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			}
 		}
 		C.memmove(data, buffer, stride * height);
-		handle = OS.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
+		handle = GDK.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
 		OS.g_object_unref(pixbuf);
 	} else {
 
@@ -498,24 +498,24 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 				offset += 4;
 			}
 		}
-		long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+		long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+		int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
+		long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
 		C.memmove(pixels, data, stride * height);
-		long /*int*/ cursor = OS.gdk_cursor_new_from_pixbuf(OS.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
+		long /*int*/ cursor = GDK.gdk_cursor_new_from_pixbuf(GDK.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
 		OS.g_object_unref(pixbuf);
 		return cursor;
 	}
-	long /*int*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
-	long /*int*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
+	long /*int*/ sourcePixmap = GDK.gdk_bitmap_create_from_data(0, sourceData, width, height);
+	long /*int*/ maskPixmap = GDK.gdk_bitmap_create_from_data(0, maskData, width, height);
 	long /*int*/ cursor = 0;
 	if (sourcePixmap != 0 && maskPixmap != 0) {
 		GdkColor foreground = new GdkColor();
 		if (!reverse) foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
 		GdkColor background = new GdkColor();
 		if (reverse) background.red = background.green = background.blue = (short)0xFFFF;
-		cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+		cursor = GDK.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	}
 	if (sourcePixmap != 0) OS.g_object_unref (sourcePixmap);
 	if (maskPixmap != 0) OS.g_object_unref (maskPixmap);
@@ -613,7 +613,7 @@ void gdk_cursor_unref (long /*int*/ cursor) {
 	if (GTK.GTK3) {
 		OS.g_object_unref (cursor);
 	} else {
-		OS.gdk_cursor_unref(cursor);
+		GDK.gdk_cursor_unref(cursor);
 	}
 }
 

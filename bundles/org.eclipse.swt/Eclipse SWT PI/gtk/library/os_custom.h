@@ -64,128 +64,15 @@
 /* Libraries for dynamic loaded functions */
 
 #define g_thread_init_LIB LIB_GTHREAD
-#define gdk_keyboard_ungrab_LIB LIB_GDK
-#define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
-#define gdk_cursor_unref_LIB LIB_GDK
-#define gdk_display_warp_pointer_LIB LIB_GDK
-#define gdk_device_warp_LIB LIB_GDK
-#define gdk_device_manager_get_client_pointer_LIB LIB_GDK
-#define gdk_device_get_window_at_position_LIB LIB_GDK
-#define gdk_device_grab_LIB LIB_GDK
-#define gdk_device_ungrab_LIB LIB_GDK
-#define gdk_display_get_device_manager_LIB LIB_GDK
-#define gdk_device_get_associated_device_LIB LIB_GDK
-#define gdk_display_get_default_LIB LIB_GDK
-#define gdk_display_get_default_seat_LIB LIB_GDK
-#define gdk_display_supports_cursor_color_LIB LIB_GDK
-#define gdk_drag_context_get_actions_LIB LIB_GDK
-#define gdk_drag_context_get_dest_window_LIB LIB_GDK
-#define gdk_drag_context_get_selected_action_LIB LIB_GDK
-#define gdk_drag_context_list_targets_LIB LIB_GDK
-#define gdk_draw_arc_LIB LIB_GDK
-#define gdk_draw_layout_LIB LIB_GDK
-#define gdk_draw_pixbuf_LIB LIB_GDK
-#define gdk_draw_image_LIB LIB_GDK
-#define gdk_drawable_get_image_LIB LIB_GDK
-#define gdk_drawable_get_visible_region_LIB LIB_GDK
-#define gdk_gc_new_LIB LIB_GDK
-#define gdk_draw_rectangle_LIB LIB_GDK
-#define gdk_gc_set_foreground_LIB LIB_GDK
-#define gdk_gc_set_function_LIB LIB_GDK
-#define gdk_gc_set_subwindow_LIB LIB_GDK
-#define gdk_drawable_get_depth_LIB LIB_GDK
-#define gdk_pixmap_new_LIB LIB_GDK
-#define gdk_color_white_LIB LIB_GDK
-#define gdk_color_free_LIB LIB_GDK
-#define gdk_color_parse_LIB LIB_GDK
-#define gdk_colormap_get_system_LIB LIB_GDK
-#define gdk_bitmap_create_from_data_LIB LIB_GDK
-#define gdk_cursor_new_from_pixmap_LIB LIB_GDK
-#define gdk_window_get_internal_paint_info_LIB LIB_GDK
-#define gdk_window_invalidate_region_LIB LIB_GDK
-#define gdk_window_shape_combine_region_LIB LIB_GDK
-#define gdk_window_set_back_pixmap_LIB LIB_GDK
-#define gdk_gc_set_stipple_LIB LIB_GDK
-#define gdk_gc_set_fill_LIB LIB_GDK
-#define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
-#define gdk_pixbuf_get_from_drawable_LIB LIB_GDK
-#define gdk_pixbuf_get_from_window_LIB LIB_GDK
-#define gdk_pointer_grab_LIB LIB_GDK
-#define gdk_pointer_ungrab_LIB LIB_GDK
-#define gdk_region_polygon_LIB LIB_GDK
-#define gdk_region_get_rectangles_LIB LIB_GDK
-#define gdk_rgba_to_string_LIB LIB_GDK
-#define gdk_rgba_free_LIB LIB_GDK
-#define gdk_rgba_hash_LIB LIB_GDK
-#define gdk_rgba_parse_LIB LIB_GDK
-#define gdk_screen_get_default_LIB LIB_GDK
-#define gdk_screen_get_resolution_LIB LIB_GDK
-#define gdk_screen_get_monitor_scale_factor_LIB LIB_GDK
-#define gdk_screen_get_monitor_at_point_LIB LIB_GDK
-#define gdk_screen_get_monitor_at_window_LIB LIB_GDK
-#define gdk_screen_get_monitor_geometry_LIB LIB_GDK
-#define gdk_screen_get_n_monitors_LIB LIB_GDK
-#define gdk_screen_get_monitor_width_mm_LIB LIB_GDK
-#define gdk_screen_get_primary_monitor_LIB LIB_GDK
-#define gdk_visual_get_depth_LIB LIB_GDK
-#define gdk_window_create_similar_surface_LIB LIB_GDK
-#define gdk_window_restack_LIB LIB_GDK
-#define gdk_window_process_all_updates_LIB LIB_GDK
-#define gdk_window_process_updates_LIB LIB_GDK
-#define gdk_window_get_device_position_LIB LIB_GDK
-#define gdk_window_get_pointer_LIB LIB_GDK
-#define gdk_window_at_pointer_LIB LIB_GDK
-#define gdk_window_get_height_LIB LIB_GDK
-#define gdk_window_get_width_LIB LIB_GDK
-#define gdk_pixmap_get_size_LIB LIB_GDK
-#define gdk_window_get_display_LIB LIB_GDK
-#define gdk_window_get_visible_region_LIB LIB_GDK
-#define gdk_window_set_keep_above_LIB LIB_GDK
-#define gdk_window_set_accept_focus_LIB LIB_GDK
-#define gdk_threads_set_lock_functions_LIB LIB_GDK
-
-#define gdk_cairo_reset_clip_LIB LIB_GDK
-#define gdk_cairo_get_clip_rectangle_LIB LIB_GDK
-#define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
-#define gdk_cairo_set_source_pixmap_LIB LIB_GDK
-#define gdk_cairo_set_source_color_LIB LIB_GDK
-#define gdk_cairo_set_source_rgba_LIB LIB_GDK
-#define gdk_cairo_set_source_window_LIB LIB_GDK
-#define gdk_cairo_region_create_from_surface_LIB LIB_GDK
-#define gdk_cairo_region_LIB LIB_GDK
-#define gdk_cairo_create_LIB LIB_GDK
-#define gdk_colormap_alloc_color_LIB LIB_GDK
-#define gdk_colormap_free_colors_LIB LIB_GDK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 
 // GTK3 only
-#define gdk_screen_get_monitor_workarea_LIB LIB_GDK
-#define gdk_seat_grab_LIB LIB_GDK
-#define gdk_seat_ungrab_LIB LIB_GDK
-#define gdk_seat_get_pointer_LIB LIB_GDK
-#define gdk_window_set_background_pattern_LIB LIB_GTK
-#define gdk_event_get_scroll_deltas_LIB LIB_GTK
-#define gdk_event_get_seat_LIB LIB_GDK
-#define gdk_event_get_event_type_LIB LIB_GDK
 #define g_bytes_new_LIB LIB_GLIB
 #define g_bytes_unref_LIB LIB_GLIB
 
 #ifndef g_thread_supported
 #define g_thread_supported() 0
-#endif
-
-
-#ifdef GDK_WINDOWING_X11
-
-#define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
-#define gdk_x11_screen_lookup_visual_LIB LIB_GDK
-#define gdk_x11_window_lookup_for_display_LIB LIB_GDK
-#define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
-#define gdk_x11_drawable_get_xid_LIB LIB_GDK
-#define gdk_x11_get_default_xdisplay_LIB LIB_GDK
-#define gdk_x11_window_get_xid_LIB LIB_GDK
-
 #endif
 
 /* Field accessors */

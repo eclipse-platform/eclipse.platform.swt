@@ -77,7 +77,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		int[] format = new int[1];
 		long /*int*/[] ctext = new long /*int*/[1];
 		int[] length = new int[1];
-		boolean result = OS.gdk_x11_display_utf8_to_compound_text (OS.gdk_display_get_default(), utf8, encoding, format, ctext, length);
+		boolean result = GDK.gdk_x11_display_utf8_to_compound_text (GDK.gdk_display_get_default(), utf8, encoding, format, ctext, length);
 		if (!result) return;
 		transferData.type = encoding[0];
 		transferData.format = format[0];
@@ -96,7 +96,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	}
 	if (transferData.type == STRING_ID) {
-		long /*int*/ string_target = OS.gdk_utf8_to_string_target(utf8);
+		long /*int*/ string_target = GDK.gdk_utf8_to_string_target(utf8);
 		if (string_target ==  0) return;
 		transferData.type = STRING_ID;
 		transferData.format = 8;
@@ -119,7 +119,7 @@ public void javaToNative (Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	long /*int*/[] list = new long /*int*/[1];
-	int count = OS.gdk_text_property_to_utf8_list_for_display(OS.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
+	int count = GDK.gdk_text_property_to_utf8_list_for_display(GDK.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 	if (count == 0) return null;
 	long /*int*/[] ptr = new long /*int*/[1];
 	C.memmove(ptr, list[0], C.PTR_SIZEOF);

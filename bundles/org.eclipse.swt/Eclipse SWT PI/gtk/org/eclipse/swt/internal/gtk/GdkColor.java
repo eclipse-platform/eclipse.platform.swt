@@ -24,5 +24,5 @@ public class GdkColor {
 	public short green;
 	/** @field cast=(guint16) */
 	public short blue;
-	public static final int sizeof = OS.GdkColor_sizeof();
+	public static final int sizeof = GDK.GdkColor_sizeof();
 }

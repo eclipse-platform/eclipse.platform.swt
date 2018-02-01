@@ -14,6 +14,12 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
+
+/**
+ * This class contains GTK specific native functions.
+ *
+ * In contrast to OS.java, dynamic functions are automatically linked, no need to add os_custom.h entries.
+ */
 public class GTK extends OS {
 
 	/** Constants */

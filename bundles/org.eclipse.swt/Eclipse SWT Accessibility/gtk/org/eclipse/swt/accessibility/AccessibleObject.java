@@ -4661,7 +4661,7 @@ class AccessibleObject {
 		if (widget == 0) return;
 		long /*int*/ topLevel = GTK.gtk_widget_get_toplevel (widget);
 		long /*int*/ window = GTK.gtk_widget_get_window (topLevel);
-		OS.gdk_window_get_origin (window, x, y);
+		GDK.gdk_window_get_origin (window, x, y);
 	}
 
 	static int nextIndexOfChar (String string, String searchChars, int startIndex) {

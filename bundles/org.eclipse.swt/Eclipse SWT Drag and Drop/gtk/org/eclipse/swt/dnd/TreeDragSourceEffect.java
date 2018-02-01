@@ -126,7 +126,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 						break;
 					}
 				} else {
-					OS.gdk_pixmap_get_size(icons[i], w, h);
+					GDK.gdk_pixmap_get_size(icons[i], w, h);
 				}
 				width = Math.max(width, w[0]);
 				height = rect.y + h[0] - yy[0];
@@ -142,9 +142,9 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				cairo = Cairo.cairo_create(surface);
 			} else {
-				surface = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
+				surface = GDK.gdk_pixmap_new(GDK.gdk_get_default_root_window(), width, height, -1);
 				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				cairo = OS.gdk_cairo_create(surface);
+				cairo = GDK.gdk_cairo_create(surface);
 			}
 			if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
@@ -152,7 +152,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				if (GTK.GTK3) {
 					Cairo.cairo_set_source_surface (cairo, icons[i], 2, yy[i] - yy[0] + 2);
 				} else {
-					OS.gdk_cairo_set_source_pixmap(cairo, icons[i], 0, yy[i] - yy[0]);
+					GDK.gdk_cairo_set_source_pixmap(cairo, icons[i], 0, yy[i] - yy[0]);
 				}
 				Cairo.cairo_rectangle(cairo, 0, yy[i] - yy[0], width, hh[i]);
 				Cairo.cairo_fill(cairo);
@@ -164,10 +164,10 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			if (GTK.GTK3) {
 				dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
 			} else {
-				long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+				long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
 				if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				long /*int*/ colormap = OS.gdk_colormap_get_system();
-				OS.gdk_pixbuf_get_from_drawable(pixbuf, surface, colormap, 0, 0, 0, 0, width, height);
+				long /*int*/ colormap = GDK.gdk_colormap_get_system();
+				GDK.gdk_pixbuf_get_from_drawable(pixbuf, surface, colormap, 0, 0, 0, 0, width, height);
 				dragSourceImage = Image.gtk_new_from_pixbuf(display, SWT.ICON, pixbuf);
 			}
 		}

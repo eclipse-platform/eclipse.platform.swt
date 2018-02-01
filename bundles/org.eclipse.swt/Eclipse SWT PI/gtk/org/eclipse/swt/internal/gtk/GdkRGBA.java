@@ -20,7 +20,7 @@ public class GdkRGBA {
 	public double green;
 	public double blue;
 	public double alpha;
-	public static final int sizeof = OS.GdkRGBA_sizeof();
+	public static final int sizeof = GDK.GdkRGBA_sizeof();
 
 	/**
 	 * Returns a string containing a concise, human-readable

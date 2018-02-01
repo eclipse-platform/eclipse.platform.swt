@@ -348,9 +348,9 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-		OS.gdk_event_free (eventPtr);
+		GDK.gdk_event_free (eventPtr);
 		switch (gdkEvent.type) {
-			case OS.GDK_BUTTON_RELEASE: {
+			case GDK.GDK_BUTTON_RELEASE: {
 				int clickTime = display.getDoubleClickTime ();
 				int eventTime = gdkEvent.time, eventButton = gdkEvent.button;
 				if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
@@ -371,7 +371,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
-		case OS.GDK_BUTTON_PRESS: {
+		case GDK.GDK_BUTTON_PRESS: {
 			GdkEventButton gdkEventButton = new GdkEventButton ();
 			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
 			if (gdkEventButton.button == 3) {
@@ -739,15 +739,15 @@ void setWidthInPixels (int width) {
 		if (buttonHandle != 0) {
 			long /*int*/ window = GTK.gtk_widget_get_parent_window (buttonHandle);
 			if (window != 0) {
-				long /*int*/ windowList = OS.gdk_window_get_children (window);
+				long /*int*/ windowList = GDK.gdk_window_get_children (window);
 				if (windowList != 0) {
 					long /*int*/ windows = windowList;
 					long /*int*/ [] userData = new long /*int*/ [1];
 					while (windows != 0) {
 						long /*int*/ child = OS.g_list_data (windows);
-						OS.gdk_window_get_user_data (child, userData);
+						GDK.gdk_window_get_user_data (child, userData);
 						if (userData[0] == buttonHandle) {
-							OS.gdk_window_lower (child);
+							GDK.gdk_window_lower (child);
 							break;
 						}
 						windows = OS.g_list_next (windows);

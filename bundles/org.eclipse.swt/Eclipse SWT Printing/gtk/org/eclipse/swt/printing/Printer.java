@@ -99,7 +99,7 @@ public static PrinterData[] getPrinterList() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return printerList;
 }
@@ -147,7 +147,7 @@ public static PrinterData getDefaultPrinterData() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return findData;
 }
@@ -174,7 +174,7 @@ static long /*int*/ gtkPrinterFromPrinterData(PrinterData data) {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	OS.gdk_threads_leave();
+	GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return findPrinter;
 }

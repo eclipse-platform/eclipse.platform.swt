@@ -282,10 +282,10 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			if (ptr [0] != 0) {
 				if (GTK.GTK3) {
 					OS.g_object_set (cell, OS.cell_background_rgba, ptr[0], 0);
-					OS.gdk_rgba_free(ptr [0]);
+					GDK.gdk_rgba_free(ptr [0]);
 				} else {
 					OS.g_object_set (cell, OS.cell_background_gdk, ptr[0], 0);
-					OS.gdk_color_free (ptr [0]);
+					GDK.gdk_color_free (ptr [0]);
 				}
 			}
 		}
@@ -295,10 +295,10 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			if (ptr [0] != 0) {
 				if (GTK.GTK3) {
 					OS.g_object_set (cell, OS.foreground_rgba, ptr [0], 0);
-					OS.gdk_rgba_free (ptr [0]);
+					GDK.gdk_rgba_free (ptr [0]);
 				} else {
 					OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
-					OS.gdk_color_free (ptr [0]);
+					GDK.gdk_color_free (ptr [0]);
 				}
 			}
 			ptr [0] = 0;
@@ -614,17 +614,17 @@ void copyModel (long /*int*/ oldModel, int oldStart, long /*int*/ newModel, int 
 						GTK.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
 						if (ptr [0] != 0) {
 							if (GTK.GTK3) {
-								if (types[j] == OS.GDK_TYPE_RGBA()) {
-									OS.gdk_rgba_free(ptr[0]);
+								if (types[j] == GDK.GDK_TYPE_RGBA()) {
+									GDK.gdk_rgba_free(ptr[0]);
 								}
 							} else {
-								if (types[j] == OS.GDK_TYPE_COLOR()) {
-									OS.gdk_color_free(ptr[0]);
+								if (types[j] == GDK.GDK_TYPE_COLOR()) {
+									GDK.gdk_color_free(ptr[0]);
 								}
 							}
 							if (types [j] == OS.G_TYPE_STRING ()) {
 								OS.g_free ((ptr [0]));
-							} else if (types[j] == OS.GDK_TYPE_PIXBUF()) {
+							} else if (types[j] == GDK.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref(ptr[0]);
 							} else if (types[j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
 								OS.pango_font_description_free(ptr[0]);
@@ -637,17 +637,17 @@ void copyModel (long /*int*/ oldModel, int oldStart, long /*int*/ newModel, int 
 						GTK.gtk_tree_store_set (newModel, newItem, newIndex, ptr [0], -1);
 						if (ptr[0] != 0) {
 							if (GTK.GTK3) {
-								if (types[newIndex] == OS.GDK_TYPE_RGBA()) {
-									OS.gdk_rgba_free(ptr[0]);
+								if (types[newIndex] == GDK.GDK_TYPE_RGBA()) {
+									GDK.gdk_rgba_free(ptr[0]);
 								}
 							} else {
-								if (types[newIndex] == OS.GDK_TYPE_COLOR()) {
-									OS.gdk_color_free(ptr[0]);
+								if (types[newIndex] == GDK.GDK_TYPE_COLOR()) {
+									GDK.gdk_color_free(ptr[0]);
 								}
 							}
 							if (types [newIndex] == OS.G_TYPE_STRING ()) {
 								OS.g_free ((ptr [0]));
-							} else if (types[newIndex] == OS.GDK_TYPE_PIXBUF()) {
+							} else if (types[newIndex] == GDK.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref(ptr[0]);
 							} else if (types[newIndex] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
 								OS.pango_font_description_free(ptr[0]);
@@ -1235,9 +1235,9 @@ Rectangle getClientAreaInPixels () {
 	long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
 	long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
 	int [] binX = new int [1], binY = new int [1];
-	OS.gdk_window_get_origin (binWindow, binX, binY);
+	GDK.gdk_window_get_origin (binWindow, binX, binY);
 	int [] fixedX = new int [1], fixedY = new int [1];
-	OS.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
+	GDK.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
 	long /*int*/ clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (clientHandle, allocation);
@@ -1372,15 +1372,15 @@ long /*int*/[] getColumnTypes (int columnCount) {
 	types [ID_COLUMN] = OS.G_TYPE_INT ();
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
-	types [FOREGROUND_COLUMN] = GTK.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
-	types [BACKGROUND_COLUMN] = GTK.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
+	types [FOREGROUND_COLUMN] = GTK.GTK3? GDK.GDK_TYPE_RGBA() : GDK.GDK_TYPE_COLOR ();
+	types [BACKGROUND_COLUMN] = GTK.GTK3? GDK.GDK_TYPE_RGBA() : GDK.GDK_TYPE_COLOR ();
 	types [FONT_COLUMN] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
 	// per cell data
 	for (int i=FIRST_COLUMN; i<types.length; i+=CELL_TYPES) {
-		types [i + CELL_PIXBUF] = OS.GDK_TYPE_PIXBUF ();
+		types [i + CELL_PIXBUF] = GDK.GDK_TYPE_PIXBUF ();
 		types [i + CELL_TEXT] = OS.G_TYPE_STRING ();
-		types [i + CELL_FOREGROUND] = GTK.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
-		types [i + CELL_BACKGROUND] = GTK.GTK3? OS.GDK_TYPE_RGBA() : OS.GDK_TYPE_COLOR ();
+		types [i + CELL_FOREGROUND] = GTK.GTK3? GDK.GDK_TYPE_RGBA() : GDK.GDK_TYPE_COLOR ();
+		types [i + CELL_BACKGROUND] = GTK.GTK3? GDK.GDK_TYPE_RGBA() : GDK.GDK_TYPE_COLOR ();
 		types [i + CELL_FONT] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
 	}
 	return types;
@@ -1559,9 +1559,9 @@ int getHeaderHeightInPixels () {
 	long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
 	long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
 	int [] binY = new int [1];
-	OS.gdk_window_get_origin (binWindow, null, binY);
+	GDK.gdk_window_get_origin (binWindow, null, binY);
 	int [] fixedY = new int [1];
-	OS.gdk_window_get_origin (fixedWindow, null, fixedY);
+	GDK.gdk_window_get_origin (fixedWindow, null, fixedY);
 	return binY [0] - fixedY [0];
 }
 
@@ -2084,9 +2084,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
 	 */
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			!OS.isX11() && gdkEvent.type == OS.GDK_BUTTON_PRESS) { // Wayland
+			!OS.isX11() && gdkEvent.type == GDK.GDK_BUTTON_PRESS) { // Wayland
 	// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long /*int*/ nextEvent = OS.gdk_event_peek ();
+		long /*int*/ nextEvent = GDK.gdk_event_peek ();
 		if (nextEvent == 0) {
 			long /*int*/ [] path = new long /*int*/ [1];
 			long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
@@ -2095,8 +2095,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				//  selection count is used in the case of clicking an already selected item while holding Control
 				selectionCountOnPress = getSelectionCount();
 				if (GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
-					if (((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) ||
-							((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0)) {
+					if (((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) ||
+							((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0)) {
 						/**
 						 * Disable selection on a mouse click if there are multiple items already selected. Also,
 						 * if control is currently being held down, we will designate the selection logic over to release
@@ -2110,7 +2110,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				}
 			}
 		} else {
-			OS.gdk_event_free (nextEvent);
+			GDK.gdk_event_free (nextEvent);
 		}
 	}
 	/*
@@ -2122,7 +2122,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	* run the default handler when the item is already part of the current selection.
 	*/
 	int button = gdkEvent.button;
-	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+	if (button == 3 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
 		long /*int*/ [] path = new long /*int*/ [1];
 		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
@@ -2154,7 +2154,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	}
 
 	//If Mouse double-click pressed, manually send a DefaultSelection.  See Bug 312568.
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
 		sendTreeDefaultSelection ();
 	}
 
@@ -2177,10 +2177,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	int keymask = gdk_event_get_state (event);
 	switch (key) {
-		case OS.GDK_Return:
+		case GDK.GDK_Return:
 			// Send DefaultSelectionEvent when: Enter, Shift+Enter, Ctrl+Enter, Alt+Enter are pressed.
 			// Not when (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk. Does not trigger on Win32 either.
-			if ((keymask & (OS.GDK_SUPER_MASK | OS.GDK_META_MASK | OS.GDK_HYPER_MASK)) == 0) {
+			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;
@@ -2225,12 +2225,12 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
 				path[0] != 0 && GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
 			selectionCountOnRelease = getSelectionCount();
-			if ((gdkEvent.state & (OS.GDK_CONTROL_MASK|OS.GDK_SHIFT_MASK)) == 0) {
+			if ((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
 			 // Check to see if there has been a new tree item selected when holding Control in Path.
 			 // If not, deselect the item.
-			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
+			if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
 		}
@@ -2251,8 +2251,8 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
-		case OS.GDK_EXPOSE: {
+	switch (GDK.GDK_EVENT_TYPE (gdkEvent)) {
+		case GDK.GDK_EXPOSE: {
 			/*
 			* Bug in GTK. SWT connects the expose-event 'after' the default
 			* handler of the signal. If the tree has no children, then GTK
@@ -2329,7 +2329,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 
 @Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ window = OS.GDK_EVENT_WINDOW (event);
+	long /*int*/ window = GDK.GDK_EVENT_WINDOW (event);
 	if (window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
 	return super.gtk_motion_notify_event (widget, event);
 }
@@ -2982,9 +2982,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			if (ptr [0] != 0) {
 				drawState |= SWT.BACKGROUND;
 				if (GTK.GTK3) {
-					OS.gdk_rgba_free (ptr [0]);
+					GDK.gdk_rgba_free (ptr [0]);
 				} else {
-					OS.gdk_color_free (ptr [0]);
+					GDK.gdk_color_free (ptr [0]);
 				}
 			}
 			if ((flags & GTK.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
@@ -2999,7 +2999,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
 			if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 				GdkRectangle r2 = new GdkRectangle ();
-				OS.gdk_cairo_get_clip_rectangle (cr, r2);
+				GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 				rect.x = r2.x;
 				rect.width = r2.width;
 			}
@@ -3059,7 +3059,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 
 				if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
 					GdkRectangle r = new GdkRectangle();
-					OS.gdk_cairo_get_clip_rectangle(cr, r);
+					GDK.gdk_cairo_get_clip_rectangle(cr, r);
 					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height));
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
@@ -3143,7 +3143,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
 				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					GdkRectangle r2 = new GdkRectangle ();
-					OS.gdk_cairo_get_clip_rectangle (cr, r2);
+					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 					rect.x = r2.x;
 					rect.width = r2.width;
 				}

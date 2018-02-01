@@ -154,11 +154,11 @@ public ImageData getImageData() {
 		if (gicon_info != 0) {
 			long /*int*/ pixbuf = GTK.gtk_icon_info_load_icon(gicon_info, null);
 			if (pixbuf != 0) {
-				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-				long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-				int height = OS.gdk_pixbuf_get_height(pixbuf);
-				int width = OS.gdk_pixbuf_get_width(pixbuf);
-				boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
+				int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
+				long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+				int height = GDK.gdk_pixbuf_get_height(pixbuf);
+				int width = GDK.gdk_pixbuf_get_width(pixbuf);
+				boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
 				byte[] srcData = new byte[stride * height];
 				C.memmove(srcData, pixels, srcData.length);
 				OS.g_object_unref(pixbuf);

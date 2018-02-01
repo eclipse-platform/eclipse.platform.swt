@@ -423,7 +423,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	int[] n_families = new int[1];
 	long /*int*/[] faces = new long /*int*/[1];
 	int[] n_faces = new int[1];
-	long /*int*/ context = OS.gdk_pango_context_get();
+	long /*int*/ context = GDK.gdk_pango_context_get();
 	OS.pango_context_list_families(context, families, n_families);
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
@@ -466,8 +466,8 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 }
 
 Point getScreenDPI () {
-	int widthMM = OS.gdk_screen_width_mm ();
-	int width = OS.gdk_screen_width ();
+	int widthMM = GDK.gdk_screen_width_mm ();
+	int width = GDK.gdk_screen_width ();
 	int dpi = Compatibility.round (254 * width, widthMM * 10);
 	return new Point (dpi, dpi);
 }
@@ -674,7 +674,7 @@ protected void init () {
 
 	/* Load certain CSS globally to save native GTK calls */
 	if (GTK.GTK3) {
-		long /*int*/ screen = OS.gdk_screen_get_default();
+		long /*int*/ screen = GDK.gdk_screen_get_default();
 		long /*int*/ provider = GTK.gtk_css_provider_new();
 		String resourcePath = "";
 		if (screen != 0 && provider != 0) {
@@ -863,12 +863,12 @@ protected void release () {
 
 	if (gdkColors != null) {
 		if (!GTK.GTK3) {
-			long /*int*/ colormap = OS.gdk_colormap_get_system();
+			long /*int*/ colormap = GDK.gdk_colormap_get_system();
 			for (int i = 0; i < gdkColors.length; i++) {
 				GdkColor color = gdkColors [i];
 				if (color != null) {
 					while (colorRefCount [i] > 0) {
-						OS.gdk_colormap_free_colors(colormap, color, 1);
+						GDK.gdk_colormap_free_colors(colormap, color, 1);
 						--colorRefCount [i];
 					}
 				}
@@ -1014,12 +1014,12 @@ int _getDPIx () {
  * @since 3.105
  */
 protected int getDeviceZoom() {
-	long /*int*/ screen = OS.gdk_screen_get_default();
-	int dpi = (int) OS.gdk_screen_get_resolution (screen);
+	long /*int*/ screen = GDK.gdk_screen_get_default();
+	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
 	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
 	if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		int monitor_num = OS.gdk_screen_get_monitor_at_point (screen, 0, 0);
-		int scale = OS.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
+		int monitor_num = GDK.gdk_screen_get_monitor_at_point (screen, 0, 0);
+		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
 		dpi = dpi * scale;
 	}
 	return DPIUtil.mapDPIToZoom (dpi);

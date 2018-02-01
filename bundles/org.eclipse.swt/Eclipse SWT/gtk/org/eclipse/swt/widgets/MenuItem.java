@@ -1132,16 +1132,16 @@ void updateAccelerator (long /*int*/ accelGroup, boolean add) {
 	if (accelerator == 0 || !getEnabled ()) return;
 	if ((accelerator & SWT.COMMAND) != 0) return;
 	int mask = 0;
-	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
-	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.GDK_SHIFT_MASK;
-	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
+	if ((accelerator & SWT.ALT) != 0) mask |= GDK.GDK_MOD1_MASK;
+	if ((accelerator & SWT.SHIFT) != 0) mask |= GDK.GDK_SHIFT_MASK;
+	if ((accelerator & SWT.CONTROL) != 0) mask |= GDK.GDK_CONTROL_MASK;
 	int keysym = accelerator & SWT.KEY_MASK;
 	int newKey = Display.untranslateKey (keysym);
 	if (newKey != 0) {
 		keysym = newKey;
 	} else {
 		switch (keysym) {
-			case '\r': keysym = OS.GDK_Return; break;
+			case '\r': keysym = GDK.GDK_Return; break;
 			default: keysym = Converter.wcsToMbcs ((char) keysym);
 		}
 	}
@@ -1169,14 +1169,14 @@ private MaskKeysym getMaskKeysym() {
 	int plusIndex = text.indexOf('+', start);
 	while (plusIndex != -1) {
 		String maskStr = text.substring(start, plusIndex);
-		if (maskStr.equals("Ctrl")) maskKeysym.mask |= OS.GDK_CONTROL_MASK;
-		if (maskStr.equals("Shift")) maskKeysym.mask |= OS.GDK_SHIFT_MASK;
-		if (maskStr.equals("Alt")) maskKeysym.mask |= OS.GDK_MOD1_MASK;
+		if (maskStr.equals("Ctrl")) maskKeysym.mask |= GDK.GDK_CONTROL_MASK;
+		if (maskStr.equals("Shift")) maskKeysym.mask |= GDK.GDK_SHIFT_MASK;
+		if (maskStr.equals("Alt")) maskKeysym.mask |= GDK.GDK_MOD1_MASK;
 		start = plusIndex + 1;
 		plusIndex = text.indexOf('+', start);
 	}
 	if ("Enter".equals(text.substring(start))) {
-		maskKeysym.keysym = OS.GDK_ISO_Enter;
+		maskKeysym.keysym = GDK.GDK_ISO_Enter;
 	}
 	switch (text.length() - start) {
 		case 1:
@@ -1186,27 +1186,27 @@ private MaskKeysym getMaskKeysym() {
 		case 2:
 			if (text.charAt(start) == 'F') {
 				switch (text.charAt(start + 1)) {
-					case '1': maskKeysym.keysym = OS.GDK_F1; break;
-					case '2': maskKeysym.keysym = OS.GDK_F2; break;
-					case '3': maskKeysym.keysym = OS.GDK_F3; break;
-					case '4': maskKeysym.keysym = OS.GDK_F4; break;
-					case '5': maskKeysym.keysym = OS.GDK_F5; break;
-					case '6': maskKeysym.keysym = OS.GDK_F6; break;
-					case '7': maskKeysym.keysym = OS.GDK_F7; break;
-					case '8': maskKeysym.keysym = OS.GDK_F8; break;
-					case '9': maskKeysym.keysym = OS.GDK_F9; break;
+					case '1': maskKeysym.keysym = GDK.GDK_F1; break;
+					case '2': maskKeysym.keysym = GDK.GDK_F2; break;
+					case '3': maskKeysym.keysym = GDK.GDK_F3; break;
+					case '4': maskKeysym.keysym = GDK.GDK_F4; break;
+					case '5': maskKeysym.keysym = GDK.GDK_F5; break;
+					case '6': maskKeysym.keysym = GDK.GDK_F6; break;
+					case '7': maskKeysym.keysym = GDK.GDK_F7; break;
+					case '8': maskKeysym.keysym = GDK.GDK_F8; break;
+					case '9': maskKeysym.keysym = GDK.GDK_F9; break;
 				}
 			}
 			break;
 		case 3:
 			if (text.charAt(start) == 'F' && text.charAt(start + 1) == '1') {
 				switch (text.charAt(start + 2)) {
-					case '0': maskKeysym.keysym = OS.GDK_F10; break;
-					case '1': maskKeysym.keysym = OS.GDK_F11; break;
-					case '2': maskKeysym.keysym = OS.GDK_F12; break;
-					case '3': maskKeysym.keysym = OS.GDK_F13; break;
-					case '4': maskKeysym.keysym = OS.GDK_F14; break;
-					case '5': maskKeysym.keysym = OS.GDK_F15; break;
+					case '0': maskKeysym.keysym = GDK.GDK_F10; break;
+					case '1': maskKeysym.keysym = GDK.GDK_F11; break;
+					case '2': maskKeysym.keysym = GDK.GDK_F12; break;
+					case '3': maskKeysym.keysym = GDK.GDK_F13; break;
+					case '4': maskKeysym.keysym = GDK.GDK_F14; break;
+					case '5': maskKeysym.keysym = GDK.GDK_F15; break;
 				}
 			}
 			break;

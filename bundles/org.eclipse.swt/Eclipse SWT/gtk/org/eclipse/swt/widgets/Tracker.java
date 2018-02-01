@@ -307,7 +307,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects) {
-	long /*int*/ window = OS.gdk_get_default_root_window();
+	long /*int*/ window = GDK.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
@@ -315,7 +315,7 @@ void drawRectangles (Rectangle [] rects) {
 	if (GTK.GTK3) {
 		if (overlay == 0) return;
 		GTK.gtk_widget_shape_combine_region (overlay, 0);
-		long /*int*/ region = OS.gdk_region_new ();
+		long /*int*/ region = GDK.gdk_region_new ();
 		GdkRectangle rect = new GdkRectangle();
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
@@ -323,38 +323,38 @@ void drawRectangles (Rectangle [] rects) {
 			rect.y = r.y;
 			rect.width = r.width + 1;
 			rect.height = 1;
-			OS.gdk_region_union_with_rect(region, rect);
+			GDK.gdk_region_union_with_rect(region, rect);
 			rect.width = 1;
 			rect.height = r.height + 1;
-			OS.gdk_region_union_with_rect(region, rect);
+			GDK.gdk_region_union_with_rect(region, rect);
 			rect.x = r.x + r.width;
-			OS.gdk_region_union_with_rect(region, rect);
+			GDK.gdk_region_union_with_rect(region, rect);
 			rect.x = r.x;
 			rect.y = r.y + r.height;
 			rect.width = r.width + 1;
 			rect.height = 1;
-			OS.gdk_region_union_with_rect(region, rect);
+			GDK.gdk_region_union_with_rect(region, rect);
 		}
 		GTK.gtk_widget_shape_combine_region (overlay, region);
-		OS.gdk_region_destroy (region);
+		GDK.gdk_region_destroy (region);
 		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
-		OS.gdk_window_hide (overlayWindow);
-		OS.gdk_window_show (overlayWindow);
+		GDK.gdk_window_hide (overlayWindow);
+		GDK.gdk_window_show (overlayWindow);
 		return;
 	}
-	long /*int*/ gc = OS.gdk_gc_new (window);
+	long /*int*/ gc = GDK.gdk_gc_new (window);
 	if (gc == 0) return;
-	long /*int*/ colormap = OS.gdk_colormap_get_system ();
+	long /*int*/ colormap = GDK.gdk_colormap_get_system ();
 	GdkColor color = new GdkColor ();
-	OS.gdk_color_white (colormap, color);
-	OS.gdk_gc_set_foreground (gc, color);
-	OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
-	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
+	GDK.gdk_color_white (colormap, color);
+	GDK.gdk_gc_set_foreground (gc, color);
+	GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
+	GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
 		int x = rect.x;
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
-		OS.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
+		GDK.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
 	}
 	OS.g_object_unref (gc);
 }
@@ -408,13 +408,13 @@ public boolean getStippled () {
 
 boolean grab () {
 	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
-	int result = gdk_pointer_grab (window, OS.GDK_OWNERSHIP_NONE, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, 0, cursor, OS.GDK_CURRENT_TIME);
-	return result == OS.GDK_GRAB_SUCCESS;
+	int result = gdk_pointer_grab (window, GDK.GDK_OWNERSHIP_NONE, false, GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK, 0, cursor, GDK.GDK_CURRENT_TIME);
+	return result == GDK.GDK_GRAB_SUCCESS;
 }
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
-	return gtk_mouse (OS.GDK_BUTTON_RELEASE, widget, event);
+	return gtk_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
 @Override
@@ -423,25 +423,25 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if (result != 0) return result;
 	GdkEventKey keyEvent = new GdkEventKey ();
 	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-	int stepSize = ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+	int stepSize = ((keyEvent.state & GDK.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
 	switch (keyEvent.keyval) {
-		case OS.GDK_Escape:
+		case GDK.GDK_Escape:
 			cancelled = true;
 			// fallthrough
-		case OS.GDK_Return:
+		case GDK.GDK_Return:
 			tracking = false;
 			break;
-		case OS.GDK_Left:
+		case GDK.GDK_Left:
 			xChange = -stepSize;
 			break;
-		case OS.GDK_Right:
+		case GDK.GDK_Right:
 			xChange = stepSize;
 			break;
-		case OS.GDK_Up:
+		case GDK.GDK_Up:
 			yChange = -stepSize;
 			break;
-		case OS.GDK_Down:
+		case GDK.GDK_Down:
 			yChange = stepSize;
 			break;
 	}
@@ -563,7 +563,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 		grabbed = grab ();
 		lastCursor = cursor;
 	}
-	return gtk_mouse (OS.GDK_MOTION_NOTIFY, widget, eventPtr);
+	return gtk_mouse (GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
 long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
@@ -678,7 +678,7 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 		oldX = newX [0];
 		oldY = newY [0];
 	}
-	tracking = eventType != OS.GDK_BUTTON_RELEASE;
+	tracking = eventType != GDK.GDK_BUTTON_RELEASE;
 	return 0;
 }
 
@@ -711,7 +711,7 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget();
-	window = OS.gdk_get_default_root_window();
+	window = GDK.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
@@ -738,7 +738,7 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK;
+	int mask = GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK;
 	boolean mouseDown = (state [0] & mask) != 0;
 	if (!mouseDown) {
 		Point cursorPos = null;
@@ -764,7 +764,7 @@ public boolean open () {
 		GTK.gtk_window_set_title (overlay, new byte [1]);
 		GTK.gtk_widget_realize (overlay);
 		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
-		OS.gdk_window_set_override_redirect (overlayWindow, true);
+		GDK.gdk_window_set_override_redirect (overlayWindow, true);
 		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			GTK.gtk_widget_override_background_color (overlay, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 		} else {
@@ -779,10 +779,10 @@ public boolean open () {
 			}
 			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 		}
-		long /*int*/ region = OS.gdk_region_new ();
+		long /*int*/ region = GDK.gdk_region_new ();
 		GTK.gtk_widget_shape_combine_region (overlay, region);
 		GTK.gtk_widget_input_shape_combine_region (overlay, region);
-		OS.gdk_region_destroy (region);
+		GDK.gdk_region_destroy (region);
 		Rectangle bounds = display.getBoundsInPixels();
 		GTK.gtk_window_move (overlay, bounds.x, bounds.y);
 		GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
@@ -805,7 +805,7 @@ public boolean open () {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock before calling the function below.
 			*/
-			OS.gdk_threads_leave();
+			GDK.gdk_threads_leave();
 			OS.g_main_context_iteration (0, true);
 			display.sendPostExternalEventDispatchEvent ();
 			display.runAsyncMessages (false);
@@ -833,18 +833,18 @@ boolean processEvent (long /*int*/ eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
 	long /*int*/ widget = GTK.gtk_get_event_widget (eventPtr);
 	switch (gdkEvent.type) {
-		case OS.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
-		case OS.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
-		case OS.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
-		case OS.GDK_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
-		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_2BUTTON_PRESS:
-		case OS.GDK_3BUTTON_PRESS:
-		case OS.GDK_ENTER_NOTIFY:
-		case OS.GDK_LEAVE_NOTIFY:
+		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
+		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
+		case GDK.GDK_BUTTON_PRESS:
+		case GDK.GDK_2BUTTON_PRESS:
+		case GDK.GDK_3BUTTON_PRESS:
+		case GDK.GDK_ENTER_NOTIFY:
+		case GDK.GDK_LEAVE_NOTIFY:
 			/* Do not dispatch these */
 			break;
-		case OS.GDK_EXPOSE:
+		case GDK.GDK_EXPOSE:
 			update ();
 			if (!GTK.GTK3) drawRectangles (rectangles);
 			GTK.gtk_main_do_event (eventPtr);
@@ -1096,7 +1096,7 @@ public void setStippled (boolean stippled) {
 }
 
 void ungrab () {
-	if (grabbed) gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
+	if (grabbed) gdk_pointer_ungrab (window, GDK.GDK_CURRENT_TIME);
 }
 
 void update () {

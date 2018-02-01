@@ -34,5 +34,5 @@ public class GdkDragContext {
 	public int action;
    /** @field cast=(guint32) */
 	public int start_time;
-   public static final int sizeof = OS.GdkDragContext_sizeof();
+   public static final int sizeof = GDK.GdkDragContext_sizeof();
 }

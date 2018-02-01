@@ -134,12 +134,12 @@ Color _getBackground () {
 	if (GTK.GTK3) {
 		GdkRGBA gdkRGBA = new GdkRGBA ();
 		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
-		OS.gdk_rgba_free (ptr [0]);
+		GDK.gdk_rgba_free (ptr [0]);
 		return Color.gtk_new(display, gdkRGBA);
 	} else {
 		GdkColor gdkColor = new GdkColor ();
 		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-		OS.gdk_color_free (ptr [0]);
+		GDK.gdk_color_free (ptr [0]);
 		return Color.gtk_new (display, gdkColor);
 	}
 }
@@ -154,12 +154,12 @@ Color _getBackground (int index) {
 	if (GTK.GTK3) {
 		GdkRGBA gdkRGBA = new GdkRGBA ();
 		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
-		OS.gdk_rgba_free (ptr [0]);
+		GDK.gdk_rgba_free (ptr [0]);
 		return Color.gtk_new(display, gdkRGBA);
 	} else {
 		GdkColor gdkColor = new GdkColor ();
 		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-		OS.gdk_color_free (ptr [0]);
+		GDK.gdk_color_free (ptr [0]);
 		return Color.gtk_new (display, gdkColor);
 	}
 }
@@ -177,12 +177,12 @@ Color _getForeground () {
 	if (GTK.GTK3) {
 		GdkRGBA gdkRGBA = new GdkRGBA ();
 		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
-		OS.gdk_rgba_free (ptr [0]);
+		GDK.gdk_rgba_free (ptr [0]);
 		return Color.gtk_new(display, gdkRGBA);
 	} else {
 		GdkColor gdkColor = new GdkColor ();
 		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-		OS.gdk_color_free (ptr [0]);
+		GDK.gdk_color_free (ptr [0]);
 		return Color.gtk_new (display, gdkColor);
 	}
 }
@@ -197,12 +197,12 @@ Color _getForeground (int index) {
 	if (GTK.GTK3) {
 		GdkRGBA gdkRGBA = new GdkRGBA ();
 		OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
-		OS.gdk_rgba_free (ptr [0]);
+		GDK.gdk_rgba_free (ptr [0]);
 		return Color.gtk_new(display, gdkRGBA);
 	} else {
 		GdkColor gdkColor = new GdkColor ();
 		OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-		OS.gdk_color_free (ptr [0]);
+		GDK.gdk_color_free (ptr [0]);
 		return Color.gtk_new (display, gdkColor);
 	}
 }

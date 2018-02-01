@@ -957,7 +957,7 @@ void hookEvents () {
 	if (isCalendar ()) {
 		hookEventsForCalendar ();
 	} else {
-		int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+		int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
 		GTK.gtk_widget_add_events (textEntryHandle, eventMask);
 
 
@@ -1851,7 +1851,7 @@ boolean onNumberKeyInput (int key) {
 
 private String keyToString (int key) {
 	//If numberpad keys were pressed.
-	if (key >= OS.GDK_KP_0 && key <= OS.GDK_KP_9) {
+	if (key >= GDK.GDK_KP_0 && key <= GDK.GDK_KP_9) {
 		 //convert numberpad button to regular key;
 		key -= 65408;
 	}
@@ -1948,35 +1948,35 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 		int key = keyEvent.keyval;
 		switch (key) {
-			case OS.GDK_Up:
-			case OS.GDK_KP_Up:
+			case GDK.GDK_Up:
+			case GDK.GDK_KP_Up:
 					incrementField (+1);
 					commitCurrentField ();
 				break;
-			case OS.GDK_Down:
-			case OS.GDK_KP_Down:
+			case GDK.GDK_Down:
+			case GDK.GDK_KP_Down:
 					incrementField (-1);
 					commitCurrentField ();
 				break;
-			case OS.GDK_Right:
-			case OS.GDK_KP_Right:
+			case GDK.GDK_Right:
+			case GDK.GDK_KP_Right:
 				selectField ((currentField + 1) % fieldCount);
 				sendEvent (SWT.Traverse);
 				break;
-			case OS.GDK_Left:
-			case OS.GDK_KP_Left:
+			case GDK.GDK_Left:
+			case GDK.GDK_KP_Left:
 				int index = currentField - 1;
 				selectField (index < 0 ? fieldCount - 1 : index);
 				sendEvent (SWT.Traverse);
 				break;
-			case OS.GDK_Home:
-			case OS.GDK_KP_Home:
+			case GDK.GDK_Home:
+			case GDK.GDK_KP_Home:
 				/* Set the value of the current field to its minimum */
 				fieldName = fieldNames[currentField];
 				setTextField (fieldName, calendar.getActualMinimum (fieldName), true, true);
 				break;
-			case OS.GDK_End:
-			case OS.GDK_KP_End:
+			case GDK.GDK_End:
+			case GDK.GDK_KP_End:
 				/* Set the value of the current field to its maximum */
 				fieldName = fieldNames[currentField];
 				setTextField (fieldName, calendar.getActualMaximum (fieldName), true, true);
