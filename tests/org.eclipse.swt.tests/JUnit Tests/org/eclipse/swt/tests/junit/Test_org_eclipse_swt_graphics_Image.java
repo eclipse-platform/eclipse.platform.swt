@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -706,6 +706,7 @@ public void test_getBounds() {
 	assertEquals(":c:", bounds, bounds1);
 }
 
+@SuppressWarnings("deprecation")
 @Test
 public void test_getBoundsInPixels() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
@@ -746,6 +747,7 @@ public void test_getBoundsInPixels() {
 	assertEquals(":d: Image.getBoundsInPixels method doesn't return bounds in Pixel values.", boundsInPixels, DPIUtil.autoScaleUp(bounds));
 }
 
+@SuppressWarnings("deprecation")
 @Test
 public void test_getImageDataCurrentZoom() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
