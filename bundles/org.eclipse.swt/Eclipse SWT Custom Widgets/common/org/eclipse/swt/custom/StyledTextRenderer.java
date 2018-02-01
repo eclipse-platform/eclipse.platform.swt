@@ -40,8 +40,7 @@ class StyledTextRenderer {
 	int topIndex = -1;
 	TextLayout[] layouts;
 	int lineCount;
-	int[] lineWidth;
-	int[] lineHeight;
+	LineSizeInfo[] lineSizes;
 	LineInfo[] lines;
 	int maxWidth;
 	int maxWidthLineIndex;
@@ -76,6 +75,71 @@ class StyledTextRenderer {
 	final static int TABSTOPS = 1 << 6;
 	final static int WRAP_INDENT = 1 << 7;
 	final static int SEGMENT_CHARS = 1 << 8;
+
+	static class LineSizeInfo {
+
+		private static final int RESETED_SIZE = -1;
+
+		/* Line size */
+		int height;
+		int width;
+
+		public LineSizeInfo() {
+			resetSize();
+		}
+
+		/**
+		 * Reset the line size.
+		 */
+		void resetSize() {
+			height = RESETED_SIZE;
+			width = RESETED_SIZE;
+		}
+
+		/**
+		 * Returns true if the TextLayout get from the layout pool can be directly used
+		 * or must be refreshed with styles.
+		 *
+		 * @return true if the TextLayout get from the layout pool can be directly used
+		 *         or must be refreshed with styles.
+		 */
+		boolean canLayout() {
+			return !needsRecalculateWidth();
+		}
+
+		/**
+		 * Returns true if it needs to recalculate the line size and false
+		 * otherwise.
+		 *
+		 * @return true if it needs to recalculate the line size and false
+		 *         otherwise.
+		 */
+		boolean needsRecalculateSize() {
+			return needsRecalculateWidth() || needsRecalculateHeight();
+		}
+
+		/**
+		 * Returns true if it needs to recalculate the line width and false
+		 * otherwise.
+		 *
+		 * @return true if it needs to recalculate the line width and false
+		 *         otherwise.
+		 */
+		boolean needsRecalculateWidth() {
+			return width == RESETED_SIZE;
+		}
+
+		/**
+		 * Returns true if it needs to recalculate the line height and false
+		 * otherwise.
+		 *
+		 * @return true if it needs to recalculate the line height and false
+		 *         otherwise.
+		 */
+		boolean needsRecalculateHeight() {
+			return height == RESETED_SIZE;
+		}
+	}
 
 	static class LineInfo {
 		int flags;
@@ -212,23 +276,30 @@ int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modi
 }
 void calculate(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
-	if (startLine < 0 || endLine > lineWidth.length) {
+	if (startLine < 0 || endLine > lineSizes.length) {
 		return;
 	}
 	int hTrim = styledText.leftMargin + styledText.rightMargin + styledText.getCaretWidth();
 	for (int i = startLine; i < endLine; i++) {
-		if (lineWidth[i] == -1 || lineHeight[i] == -1) {
+		LineSizeInfo line = getLineSize(i);
+		if (line.needsRecalculateSize()) {
 			TextLayout layout = getTextLayout(i);
 			Rectangle rect = layout.getBounds();
-			lineWidth[i] = rect.width + hTrim;
-			lineHeight[i] = rect.height;
+			line.width = rect.width + hTrim;
+			line.height = rect.height;
 			disposeTextLayout(layout);
 		}
-		if (lineWidth[i] > maxWidth) {
-			maxWidth = lineWidth[i];
+		if (line.width > maxWidth) {
+			maxWidth = line.width;
 			maxWidthLineIndex = i;
 		}
 	}
+}
+LineSizeInfo getLineSize(int i) {
+	if (lineSizes[i] == null) {
+		lineSizes[i] = new LineSizeInfo();
+	}
+	return lineSizes[i];
 }
 void calculateClientArea () {
 	int index = Math.max (0, styledText.getTopIndex());
@@ -240,9 +311,9 @@ void calculateClientArea () {
 	 * below code, exact scenario not known. To avoid this exception added
 	 * check for 'index' value, refer Bug 471192.
 	 */
-	while (height > y && lineCount > index && lineHeight.length > index) {
+	while (height > y && lineCount > index && lineSizes.length > index) {
 		calculate(index, 1);
-		y += lineHeight[index++];
+		y += lineSizes[index++].height;
 	}
 }
 void calculateIdle () {
@@ -254,7 +325,8 @@ void calculateIdle () {
 			int i;
 			long start = System.currentTimeMillis();
 			for (i = 0; i < lineCount; i++) {
-				if (lineHeight[i] == -1 || lineWidth[i] == -1) {
+				LineSizeInfo line = getLineSize(i);
+				if (line.needsRecalculateSize()) {
 					calculate(i, 1);
 					if (System.currentTimeMillis() - start > IDLE_TIME) break;
 				}
@@ -487,8 +559,9 @@ int getHeight () {
 	int totalHeight = 0;
 	int width = styledText.getWrapWidth();
 	for (int i = 0; i < lineCount; i++) {
-		int height = lineHeight[i];
-		if (height == -1) {
+		LineSizeInfo line = getLineSize(i);
+		int height = line.height;
+		if (line.needsRecalculateHeight()) {
 			if (width > 0) {
 				int length = content.getLine(i).length();
 				height = ((length * averageCharWidth / width) + 1) * defaultLineHeight;
@@ -569,10 +642,11 @@ int getLineHeight() {
 	return ascent + descent;
 }
 int getLineHeight(int lineIndex) {
-	if (lineHeight[lineIndex] == -1) {
+	LineSizeInfo line = getLineSize(lineIndex);
+	if (line.needsRecalculateHeight()) {
 		calculate(lineIndex, 1);
 	}
-	return lineHeight[lineIndex];
+	return line.height;
 }
 int getLineIndent(int index, int defaultIndent) {
 	if (lines == null) return defaultIndent;
@@ -816,8 +890,8 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			if (0 <= layoutIndex && layoutIndex < layouts.length) {
 				layout = layouts[layoutIndex];
 				if (layout != null) {
-					// Bug 520374: lineIndex can be >= lineWidth.length
-					if(lineIndex < lineWidth.length && lineWidth[lineIndex] != -1) {
+					// Bug 520374: lineIndex can be >= linesSize.length
+					if(lineIndex < lineSizes.length && getLineSize(lineIndex).canLayout()) {
 						return layout;
 					}
 				} else {
@@ -1101,8 +1175,7 @@ void reset() {
 	styles = null;
 	stylesSet = null;
 	lines = null;
-	lineWidth = null;
-	lineHeight = null;
+	lineSizes = null;
 	bullets = null;
 	bulletsIndices = null;
 	redrawLines = null;
@@ -1110,18 +1183,19 @@ void reset() {
 }
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
-	if (startLine < 0 || endLine > lineWidth.length) return;
+	if (startLine < 0 || endLine > lineSizes.length) return;
 	for (int i = startLine; i < endLine; i++) {
-		lineWidth[i] = -1;
-		lineHeight[i] = -1;
+		LineSizeInfo line = getLineSize(i);
+		line.resetSize();
 	}
 	if (startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
 		if (lineCount != this.lineCount) {
 			for (int i = 0; i < this.lineCount; i++) {
-				if (lineWidth[i] > maxWidth) {
-					maxWidth = lineWidth[i];
+				LineSizeInfo lineSize = getLineSize(i);
+				if (lineSize.width > maxWidth) {
+					maxWidth = lineSize.width;
 					maxWidthLineIndex = i;
 				}
 			}
@@ -1132,8 +1206,7 @@ void setContent(StyledTextContent content) {
 	reset();
 	this.content = content;
 	lineCount = content.getLineCount();
-	lineWidth = new int[lineCount];
-	lineHeight = new int[lineCount];
+	lineSizes = new LineSizeInfo[lineCount];
 	maxWidth = 0;
 	maxWidthLineIndex = -1;
 	reset(0, lineCount);
@@ -1454,18 +1527,14 @@ void textChanging(TextChangingEvent event) {
 	if (replaceCharCount == content.getCharCount()) lines = null;
 	if (replaceLineCount == lineCount) {
 		lineCount = newLineCount;
-		lineWidth = new int[lineCount];
-		lineHeight = new int[lineCount];
+		lineSizes = new LineSizeInfo[lineCount];
 		reset(0, lineCount);
 	} else {
 		int delta = newLineCount - replaceLineCount;
-		if (lineCount + delta > lineWidth.length) {
-			int[] newWidths = new int[lineCount + delta + GROW];
-			System.arraycopy(lineWidth, 0, newWidths, 0, lineCount);
-			lineWidth = newWidths;
-			int[] newHeights = new int[lineCount + delta + GROW];
-			System.arraycopy(lineHeight, 0, newHeights, 0, lineCount);
-			lineHeight = newHeights;
+		if (lineCount + delta > lineSizes.length) {
+			LineSizeInfo[] newLineSizes = new LineSizeInfo[lineCount + delta + GROW];
+			System.arraycopy(lineSizes, 0, newLineSizes, 0, lineCount);
+			lineSizes = newLineSizes;
 		}
 		if (lines != null) {
 			if (lineCount + delta > lines.length) {
@@ -1476,13 +1545,12 @@ void textChanging(TextChangingEvent event) {
 		}
 		int startIndex = startLine + replaceLineCount + 1;
 		int endIndex = startLine + newLineCount + 1;
-		System.arraycopy(lineWidth, startIndex, lineWidth, endIndex, lineCount - startIndex);
-		System.arraycopy(lineHeight, startIndex, lineHeight, endIndex, lineCount - startIndex);
+		System.arraycopy(lineSizes, startIndex, lineSizes, endIndex, lineCount - startIndex);
 		for (int i = startLine; i < endIndex; i++) {
-			lineWidth[i] = lineHeight[i] = -1;
+			lineSizes[i] = null;
 		}
 		for (int i = lineCount + delta; i < lineCount; i++) {
-			lineWidth[i] = lineHeight[i] = -1;
+			lineSizes[i] = null;
 		}
 		if (layouts != null) {
 			int layoutStartLine = startLine - topIndex;
@@ -1555,8 +1623,9 @@ void textChanging(TextChangingEvent event) {
 			maxWidth = 0;
 			maxWidthLineIndex = -1;
 			for (int i = 0; i < lineCount; i++) {
-				if (lineWidth[i] > maxWidth) {
-					maxWidth = lineWidth[i];
+				LineSizeInfo lineSize = getLineSize(i);
+				if (lineSize.width > maxWidth) {
+					maxWidth = lineSize.width;
 					maxWidthLineIndex = i;
 				}
 			}
