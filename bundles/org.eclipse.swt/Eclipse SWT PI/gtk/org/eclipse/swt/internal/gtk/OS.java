@@ -135,7 +135,6 @@ public class OS extends C {
 	}
 
 	/** Constants */
-	public static final long /*int*/ AnyPropertyType = 0;
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
 	public static final int G_SIGNAL_MATCH_FUNC = 1 << 3;
@@ -676,7 +675,6 @@ public static final native int GdkEventExpose_sizeof();
 public static final native int GdkEventFocus_sizeof();
 public static final native int GdkEventKey_sizeof();
 public static final native int GdkEventMotion_sizeof();
-public static final native int GdkEventProperty_sizeof();
 public static final native int GdkEventScroll_sizeof();
 public static final native int GdkEventWindowState_sizeof();
 public static final native int GdkGeometry_sizeof();
@@ -869,26 +867,6 @@ public static final void XFree(long /*int*/ address) {
 
 /**
  * @param display cast=(Display *)
- * @param window cast=(Window)
- * @param property cast=(Atom)
- * @param req_type cast=(Atom)
- * @param actual_type_return cast=(Atom*)
- * @param actual_format_return cast=(int *)
- * @param nitems_return cast=(unsigned long *)
- * @param bytes_after_return cast=(unsigned long *)
- * @param prop_return cast=(unsigned char **)
- */
-public static final native long /*int*/ _XGetWindowProperty(long /*int*/ display, long /*int*/ window, long /*int*/ property, int offset, int length, boolean delete, long /*int*/ req_type, long /*int*/ [] actual_type_return, int [] actual_format_return , int[] nitems_return, int[] bytes_after_return, long /*int*/ [] prop_return);
-public static final long /*int*/ XGetWindowProperty(long /*int*/ display, long /*int*/ window, long /*int*/ property, int offset, int length, boolean delete, long /*int*/ req_type, long /*int*/ [] actual_type_return, int [] actual_format_return, int[] nitems_return, int[] bytes_after_return, long /*int*/ [] prop_return) {
-	lock.lock();
-	try {
-		return _XGetWindowProperty(display, window, property, offset, length, delete, req_type, actual_type_return, actual_format_return , nitems_return, bytes_after_return, prop_return);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
  * @param w cast=(Window)
  * @param root_return cast=(Window *)
  * @param child_return cast=(Window *)
@@ -987,16 +965,6 @@ public static final void XTestFakeKeyEvent(long /*int*/ display, int keycode, bo
 	lock.lock();
 	try {
 		_XTestFakeKeyEvent(display, keycode, is_press, delay);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param atom cast=(GdkAtom) */
-public static final native long /*int*/ _gdk_x11_atom_to_xatom(long /*int*/ atom);
-public static final long /*int*/ gdk_x11_atom_to_xatom(long /*int*/ atom) {
-	lock.lock();
-	try {
-		return _gdk_x11_atom_to_xatom(atom);
 	} finally {
 		lock.unlock();
 	}
@@ -5516,11 +5484,6 @@ public static final native void memmove(GObjectClass  dest, long /*int*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GTypeQuery dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GdkEventProperty dest, long /*int*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

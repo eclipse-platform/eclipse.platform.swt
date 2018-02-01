@@ -5738,51 +5738,6 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 		case STYLE_SET:
 			settingsChanged = true;
 			break;
-		case PROPERTY_NOTIFY:
-
-			// Bug 528414 This whole mechanism is to be removed.
-			// Files passed by changing a window property. Uses X, which doesn't work on wayland.
-			GdkEventProperty gdkEvent = new GdkEventProperty ();
-			OS.memmove (gdkEvent, arg1);
-			if (gdkEvent.type == OS.GDK_PROPERTY_NOTIFY) {
-				byte[] name = Converter.wcsToMbcs ("org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
-				long /*int*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
-				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
-					long /*int*/ xWindow;
-					if (GTK.GTK3) {
-						xWindow = OS.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (shellHandle));
-					} else {
-						xWindow = OS.gdk_x11_drawable_get_xid (GTK.gtk_widget_get_window( shellHandle));
-					}
-					long /*int*/ [] type = new long /*int*/ [1];
-					int [] format = new int [1];
-					int [] nitems = new int [1];
-					int [] bytes_after = new int [1];
-					long /*int*/ [] data = new long /*int*/ [1];
-					OS.XGetWindowProperty (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), xWindow, atom, 0, -1, true, OS.AnyPropertyType,
-							type, format, nitems, bytes_after, data);
-
-					if (nitems [0] > 0) {
-						byte [] buffer = new byte [nitems [0]];
-						C.memmove(buffer, data [0], buffer.length);
-						OS.XFree (data [0]);
-						char[] chars = Converter.mbcsToWcs(buffer);
-						String string = new String (chars);
-
-						int lastIndex = 0;
-						int index = string.indexOf (':');
-						while (index != -1) {
-							String file = string.substring (lastIndex, index);
-							Event event = new Event ();
-							event.text = file;
-							sendEvent (SWT.OpenDocument, event);
-							lastIndex = index+1;
-							index = string.indexOf(':', lastIndex);
-						}
-					}
-				}
-			}
-			break;
 	}
 	return 0;
 }

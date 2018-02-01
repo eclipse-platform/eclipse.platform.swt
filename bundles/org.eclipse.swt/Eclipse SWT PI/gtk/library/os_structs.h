@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -184,18 +184,6 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 #define getGdkEventMotionFields(a,b,c) NULL
 #define setGdkEventMotionFields(a,b,c)
 #define GdkEventMotion_sizeof() 0
-#endif
-
-#ifndef NO_GdkEventProperty
-void cacheGdkEventPropertyFields(JNIEnv *env, jobject lpObject);
-GdkEventProperty *getGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct);
-void setGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct);
-#define GdkEventProperty_sizeof() sizeof(GdkEventProperty)
-#else
-#define cacheGdkEventPropertyFields(a,b)
-#define getGdkEventPropertyFields(a,b,c) NULL
-#define setGdkEventPropertyFields(a,b,c)
-#define GdkEventProperty_sizeof() 0
 #endif
 
 #ifndef NO_GdkEventScroll

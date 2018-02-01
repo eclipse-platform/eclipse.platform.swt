@@ -11418,18 +11418,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkEventMotion_1sizeof)
 }
 #endif
 
-#ifndef NO_GdkEventProperty_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GdkEventProperty_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GdkEventProperty_1sizeof_FUNC);
-	rc = (jint)GdkEventProperty_sizeof();
-	OS_NATIVE_EXIT(env, that, GdkEventProperty_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkEventScroll_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkEventScroll_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -12023,34 +12011,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFree)
 	OS_NATIVE_ENTER(env, that, _1XFree_FUNC);
 	XFree((void *)arg0);
 	OS_NATIVE_EXIT(env, that, _1XFree_FUNC);
-}
-#endif
-
-#ifndef NO__1XGetWindowProperty
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1XGetWindowProperty)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jboolean arg5, jintLong arg6, jintLongArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jintLongArray arg11)
-{
-	jintLong *lparg7=NULL;
-	jint *lparg8=NULL;
-	jint *lparg9=NULL;
-	jint *lparg10=NULL;
-	jintLong *lparg11=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XGetWindowProperty_FUNC);
-	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
-	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
-	if (arg10) if ((lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL)) == NULL) goto fail;
-	if (arg11) if ((lparg11 = (*env)->GetIntLongArrayElements(env, arg11, NULL)) == NULL) goto fail;
-	rc = (jintLong)XGetWindowProperty((Display *)arg0, (Window)arg1, (Atom)arg2, arg3, arg4, arg5, (Atom)arg6, (Atom*)lparg7, (int *)lparg8, (unsigned long *)lparg9, (unsigned long *)lparg10, (unsigned char **)lparg11);
-fail:
-	if (arg11 && lparg11) (*env)->ReleaseIntLongArrayElements(env, arg11, lparg11, 0);
-	if (arg10 && lparg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
-	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
-	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
-	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
-	OS_NATIVE_EXIT(env, that, _1XGetWindowProperty_FUNC);
-	return rc;
 }
 #endif
 
@@ -17698,18 +17658,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1show_1unraised)
 }
 #endif
 
-#ifndef NO__1gdk_1x11_1atom_1to_1xatom
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1atom_1to_1xatom)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1atom_1to_1xatom_FUNC);
-	rc = (jintLong)gdk_x11_atom_to_xatom((GdkAtom)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1atom_1to_1xatom_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1x11_1display_1get_1xdisplay
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1display_1get_1xdisplay)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -19933,27 +19881,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J_FUNC);
-#endif
-	if (arg0) setGdkEventPropertyFields(env, arg0, (GdkEventProperty *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J_FUNC);
 #endif
 }
 #endif
