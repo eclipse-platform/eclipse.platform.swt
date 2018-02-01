@@ -968,7 +968,7 @@ void createAlpha () {
 			long /*int*/ width = imageRep.pixelsWide();
 			int offset = 0, alphaOffset = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3;
 			for (int y = 0; y<height; y++) {
-				for (int x = 0; x<width; x++) {
+				for (int x = 0; x<width && alphaOffset<info.alphaData.length && offset<srcData.length; x++) {
 					srcData[offset] = info.alphaData[alphaOffset];
 					offset += 4;
 					alphaOffset += 1;
