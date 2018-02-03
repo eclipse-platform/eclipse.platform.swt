@@ -1614,7 +1614,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							RECT focusRect = new RECT ();
 							if (isRadioOrCheck()) {
 								if (text.length() > 0) {
-									OS.SetRect(focusRect, textRect.left-1, textRect.top, Math.min(nmcd.right, textRect.right+1), textRect.bottom+1);
+									OS.SetRect(focusRect, textRect.left-1, textRect.top, Math.min(nmcd.right, textRect.right+1), Math.min(nmcd.bottom, textRect.bottom+1));
 								} else {
 									/*
 									 * With custom foreground, draw focus rectangle for CheckBox
