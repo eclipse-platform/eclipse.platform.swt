@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 530764
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -17,32 +18,30 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet19 {
 
-public static void main (String [] args) {
-	Display display = new Display ();
-	Shell shell = new Shell (display);
-	Text text = new Text (shell, SWT.BORDER | SWT.V_SCROLL);
-	Rectangle clientArea = shell.getClientArea ();
-	text.setBounds ( clientArea.x + 10, clientArea.y + 10, 200, 200);
-	text.addListener (SWT.Verify, e -> {
-		String string = e.text;
-		char [] chars = new char [string.length ()];
-		string.getChars (0, chars.length, chars, 0);
-		for (int i=0; i<chars.length; i++) {
-			if (!('0' <= chars [i] && chars [i] <= '9')) {
-				e.doit = false;
-				return;
-			}
+	public static void main(String[] args) {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		Text text = new Text(shell, SWT.BORDER | SWT.V_SCROLL);
+		Rectangle clientArea = shell.getClientArea();
+		text.setBounds(clientArea.x + 10, clientArea.y + 10, 200, 200);
+		text.addVerifyListener(Snippet19::ensureTextContainsOnlyDigits);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
 		}
-	});
-	shell.open ();
-	while (!shell.isDisposed()) {
-		if (!display.readAndDispatch ()) display.sleep ();
+		display.dispose();
 	}
-	display.dispose ();
-}
+
+	private static void ensureTextContainsOnlyDigits(VerifyEvent e) {
+		String string = e.text;
+		e.doit = string.matches("\\d*");
+		return;
+	}
 }
