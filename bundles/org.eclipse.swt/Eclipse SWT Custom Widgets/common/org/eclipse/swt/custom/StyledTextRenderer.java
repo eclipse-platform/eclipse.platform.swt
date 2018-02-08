@@ -644,9 +644,69 @@ int getLineHeight() {
 int getLineHeight(int lineIndex) {
 	LineSizeInfo line = getLineSize(lineIndex);
 	if (line.needsRecalculateHeight()) {
-		calculate(lineIndex, 1);
+		// here we are in "variable line height", the call of calculate which uses TextLayout can be very slow
+		// check if line can use the default line height.
+		if (isVariableHeight(lineIndex)) {
+			calculate(lineIndex, 1);
+		} else {
+			line.height = getLineHeight() + getLineSpacing(lineIndex);
+		}
 	}
 	return line.height;
+}
+/**
+ * Returns true if the given line can use the default line height and false
+ * otherwise.
+ *
+ * @param lineIndex
+ *            line index
+ * @return true if the given line can use the default line height and false
+ *         otherwise.
+ */
+private boolean isVariableHeight(int lineIndex) {
+	if (styledText.wordWrap || styledText.visualWrap) {
+		// In word wrap mode, the line height must be recomputed with TextLayout
+		return false;
+	}
+	boolean variableHeight = false;
+	StyleRange[] styles = getStylesForLine(lineIndex);
+	if (styles != null) {
+		for (StyleRange style : styles)
+			variableHeight |= style.isVariableHeight();
+	}
+	return variableHeight;
+}
+/**
+ * returns true if the given line index defines custom line spacing and false
+ * otherwise.
+ *
+ * @param lineIndex
+ *            the line index.
+ * @return true if the given line index defines custom line spacing and false
+ *         otherwise.
+ */
+private int getLineSpacing(int lineIndex) {
+	if (styledText.lineSpacing > 0) {
+		return styledText.lineSpacing;
+	} else if (lineSpacingProvider != null) {
+		Integer lineSpacing = lineSpacingProvider.getLineSpacing(lineIndex);
+		if (lineSpacing != null) {
+			return lineSpacing;
+		}
+	}
+	return 0;
+}
+/**
+ * Returns styles range for the given line index and null otherwise.
+ *
+ * @param lineIndex
+ *            the line index.
+ * @return styles range for the given line index and null otherwise.
+ */
+private StyleRange[] getStylesForLine(int lineIndex) {
+	int start = styledText.getOffsetAtLine(lineIndex);
+	int length = styledText.getLine(lineIndex).length();
+	return getStyleRanges(start, length, false);
 }
 int getLineIndent(int index, int defaultIndent) {
 	if (lines == null) return defaultIndent;
