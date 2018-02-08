@@ -8,10 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat         - GtkSpinButton rewrite. 2014.10.09
+ *     Lablicate GmbH  - add locale support/improve editing support for date/time styles. 2017.02.08
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
 import java.text.*;
+import java.text.AttributedCharacterIterator.*;
+import java.text.DateFormat.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -68,14 +71,12 @@ public class DateTime extends Composite {
 
 	/* Emulated DATE and TIME fields */
 	Calendar calendar;
-	DateFormatSymbols formatSymbols;
 	Button down;
-	String format;
-	Point[] fieldIndices;
-	int[] fieldNames;
-	int fieldCount, currentField = 0, characterCount = 0;
-	String dateTimeString;
+	FieldPosition currentField;
+	StringBuilder typeBuffer = new StringBuilder();
+	int typeBufferPos = -1;
 	boolean firstTime = true;
+	private DateFormat dateFormat;
 	/* DROP_DOWN calendar fields for DATE */
 	Color fg, bg;
 	boolean hasFocus, monthChanged, calendarDisplayed;
@@ -84,7 +85,7 @@ public class DateTime extends Composite {
 	DateTime popupCalendar;
 	Listener popupListener, popupFilter;
 
-	Point prefferedSize = null;
+	Point prefferedSize;
 
 	/** Used when SWT.DROP_DOWN is set */
 	Listener mouseEventListener;
@@ -159,17 +160,37 @@ public DateTime (Composite parent, int style) {
 	}
 }
 
-void createText () {
-	calendar = Calendar.getInstance ();
-	formatSymbols = new DateFormatSymbols ();
-	if (isDate ()) {
-		setFormat ((style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT);
-	} else if (isTime ()){
-		setFormat ((style & SWT.SHORT) != 0 ? DEFAULT_SHORT_TIME_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_TIME_FORMAT : DEFAULT_MEDIUM_TIME_FORMAT);
+void createText() {
+	String property = System.getProperty("swt.datetime.locale");
+	Locale locale;
+	if (property == null || property.isEmpty()) {
+		locale = Locale.getDefault();
+	} else {
+		locale = Locale.forLanguageTag(property);
 	}
-	dateTimeString = getFormattedString (style);
-	if (dateTimeString != null) {
-		setText (dateTimeString);
+
+	dateFormat = getFormat(locale, style);
+	dateFormat.setLenient(false);
+	calendar = Calendar.getInstance(locale);
+	updateControl();
+	selectField(updateField(currentField));
+}
+
+DateFormat getFormat(Locale locale, int style) {
+	int dfStyle;
+	if ((style & SWT.LONG) != 0) {
+		dfStyle = DateFormat.LONG;
+	} else if ((style & SWT.SHORT) != 0) {
+		dfStyle = DateFormat.SHORT;
+	} else {
+		dfStyle = DateFormat.MEDIUM;
+	}
+	if (isDate()) {
+		return DateFormat.getDateInstance(dfStyle, locale);
+	} else if (isTime()) {
+		return DateFormat.getTimeInstance(dfStyle, locale);
+	} else {
+		throw new IllegalStateException("can only be called for date or time widgets!");
 	}
 }
 
@@ -519,7 +540,6 @@ void onDispose (Event event) {
 	popupShell = null;
 	popupCalendar = null;
 	down = null;
-	dateTimeString = null;
 }
 
 /**
@@ -634,22 +654,6 @@ private void hideDropDownCalendar () {
 	return;
 }
 
-String formattedStringValue (int fieldName, int value, boolean adjust) {
-	if (fieldName == Calendar.AM_PM) {
-		String[] ampm = formatSymbols.getAmPmStrings ();
-		return ampm[value];
-	}
-	if (adjust) {
-		if (fieldName == Calendar.HOUR && value == 0) {
-			return String.valueOf (12);
-		}
-		if (fieldName == Calendar.MONTH) {
-			return String.valueOf (value + 1);
-		}
-	}
-	return String.valueOf (value);
-}
-
 @Override
 GdkColor getBackgroundGdkColor () {
 	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
@@ -668,41 +672,8 @@ String getComputeSizeString (int style) {
 	return (style & SWT.SHORT) != 0 ? DEFAULT_SHORT_TIME_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_TIME_FORMAT : DEFAULT_MEDIUM_TIME_FORMAT;
 }
 
-int getFieldIndex (int fieldName) {
-	for (int i = 0; i < fieldCount; i++) {
-		if (fieldNames[i] == fieldName) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-String getFormattedString (int style) {
-	String formattedSting = null;
-	if (isTime ()) {
-		String[] ampm = formatSymbols.getAmPmStrings ();
-		int h = calendar.get (Calendar.HOUR); if (h == 0) h = 12;
-		int m = calendar.get (Calendar.MINUTE);
-		int s = calendar.get (Calendar.SECOND);
-		int a = calendar.get (Calendar.AM_PM);
-		formattedSting = "" + (h < 10 ? "0" : "") + h + ":";
-		if ((style & SWT.SHORT) != 0) {
-			formattedSting +=  (m < 10 ? "0" : "") + m + " " + ampm[a];
-		} else {
-			formattedSting +=  (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + ampm[a];
-		}
-	} else if (isDate ()) {
-		int y = calendar.get (Calendar.YEAR);
-		int m = calendar.get (Calendar.MONTH) + 1;
-		int d = calendar.get (Calendar.DAY_OF_MONTH);
-		formattedSting = "" + (m < 10 ? "0" : "") + m + "/";
-		if ((style & SWT.SHORT) != 0) {
-			formattedSting += y;
-		} else {
-			formattedSting += (d < 10 ? "0" : "") + d + "/" + y;
-		}
-	}
-	return formattedSting;
+String getFormattedString() {
+	return dateFormat.format(calendar.getTime());
 }
 
 void getDate () {
@@ -840,38 +811,17 @@ public int getSeconds () {
  * Returns a textual representation of the receiver,
  * intended for speaking the text aloud.
  */
-String getSpokenText () {
-	// TODO: needs more work for locale
-	StringBuilder result = new StringBuilder ();
-	if (isTime ()) {
-		int h = calendar.get (Calendar.HOUR); if (h == 0) h = 12;
-		result.append (h);
-		int m = calendar.get (Calendar.MINUTE);
-		result.append (":" + (m < 10 ? "0" : "") + m);
-		if ((style & SWT.SHORT) == 0) {
-			int s = calendar.get (Calendar.SECOND);
-			result.append (":" + (s < 10 ? "0" : "") + s);
-		}
-		result.append (" " + formatSymbols.getAmPmStrings ()[calendar.get (Calendar.AM_PM)]);
+String getSpokenText() {
+	if (isTime()) {
+		return DateFormat.getTimeInstance(DateFormat.FULL).format(calendar.getTime());
+	} else if (isDate()) {
+		return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
 	} else {
-		/* SWT.DATE or SWT.CALENDAR */
-		Calendar cal = calendar;
-	    if (isCalendar ()) {
-	        formatSymbols = new DateFormatSymbols ();
-	        cal = Calendar.getInstance ();
-	        getDate ();
-	        cal.set (year, month, day);
-	    }
-	    if ((style & SWT.SHORT) == 0) {
-	    	result.append (formatSymbols.getWeekdays ()[cal.get (Calendar.DAY_OF_WEEK)] + ", ");
-	    }
-	    result.append (formatSymbols.getMonths ()[cal.get (Calendar.MONTH)] + " ");
-	    if ((style & SWT.SHORT) == 0) {
-	        result.append (cal.get (Calendar.DAY_OF_MONTH) + ", ");
-	    }
-	    result.append (cal.get (Calendar.YEAR));
+		Calendar cal = Calendar.getInstance();
+		getDate();
+		cal.set(year, month, day);
+		return DateFormat.getDateInstance(DateFormat.FULL).format(cal.getTime());
 	}
-	return result.toString ();
 }
 
 /**
@@ -986,22 +936,37 @@ final private void hookEventsForMenu () {
 	OS.g_signal_connect_closure (down.handle, OS.selection_done, display.getClosure (SELECTION_DONE), true);
 }
 
-void incrementField (int amount) {
-	int fieldName = fieldNames[currentField];
-	int value = calendar.get (fieldName);
-	if (fieldName == Calendar.HOUR) {
-		int max = calendar.getMaximum (Calendar.HOUR);
-		int min = calendar.getMinimum (Calendar.HOUR);
-		if ((value == max && amount == 1) || (value == min && amount == -1)) {
-			int temp = currentField;
-			currentField = getFieldIndex (Calendar.AM_PM);
-			setTextField (Calendar.AM_PM, (calendar.get (Calendar.AM_PM) + 1) % 2, true, true);
-			currentField = temp;
+void incrementField(int amount) {
+	if (currentField != null) {
+		int field = getCalendarField(currentField);
+		if (field == Calendar.HOUR && hasAmPm()) {
+			int max = calendar.getMaximum(Calendar.HOUR);
+			int min = calendar.getMinimum(Calendar.HOUR);
+			int value = calendar.get(Calendar.HOUR);
+			if ((value == max && amount == 1) || (value == min && amount == -1)) {
+				calendar.roll(Calendar.AM_PM, amount);
+			}
+		}
+		if (field > -1) {
+			calendar.roll(field, amount);
+			updateControl();
+			selectField(updateField(currentField));
 		}
 	}
-	setTextField (fieldName, value + amount, true, true);
 }
 
+private boolean hasAmPm() {
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	while (iterator.current() != CharacterIterator.DONE) {
+		for (Attribute attribute : iterator.getAttributes().keySet()) {
+			if (Field.AM_PM.equals(attribute)) {
+				return true;
+			}
+		}
+		iterator.setIndex(iterator.getRunLimit());
+	}
+	return false;
+}
 
 boolean isDropped () {
 	return popupShell.getVisible ();
@@ -1289,23 +1254,55 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
-void selectField (int index) {
-	if (index != currentField) {
-		commitCurrentField ();
+/**
+ * selects the first occurrence of the given field
+ *
+ * @param field
+ */
+void selectField(Field field) {
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	while (iterator.current() != CharacterIterator.DONE) {
+		for (Attribute attribute : iterator.getAttributes().keySet()) {
+			if (attribute.equals(field)) {
+				selectField(getFieldPosition(field, iterator));
+				return;
+			}
+		}
+		iterator.setIndex(iterator.getRunLimit());
 	}
-	final int start = fieldIndices[index].x;
-	final int end = fieldIndices[index].y;
-	Point pt = getSelection ();
-	if (index == currentField && start == pt.x && end == pt.y) {
+}
+
+/**
+ * Selects the given field at the given start/end coordinates
+ *
+ * @param field
+ * @param start
+ * @param end
+ */
+void selectField(FieldPosition fieldPosition) {
+	boolean sameField = isSameField(fieldPosition, currentField);
+	if (sameField) {
+		if (typeBufferPos > -1) {
+			typeBufferPos = 0;
+		}
+	} else {
+		typeBufferPos = -1;
+		commitData();
+		fieldPosition = updateField(fieldPosition);
+	}
+	Point pt = getSelection();
+	int start = fieldPosition.getBeginIndex();
+	int end = fieldPosition.getEndIndex();
+	if (sameField && start == pt.x && end == pt.y) {
 		return;
 	}
-	currentField = index;
-	display.syncExec (() -> {
+	currentField = fieldPosition;
+	display.syncExec(() -> {
 		if (textEntryHandle != 0) {
-			String value = getText (getText (),start, end - 1);
-			int s = value.lastIndexOf (' ');
+			String value = getText(getText(), start, end - 1);
+			int s = value.lastIndexOf(' ');
 			s = (s == -1) ? start : start + s + 1;
-			setSelection (s, end);
+			setSelection(s, end);
 		}
 	});
 }
@@ -1424,54 +1421,22 @@ public void setForeground (Color color) {
 	if (popupCalendar != null) popupCalendar.setForeground (color);
 }
 
-void setFormat (String string) {
-	// TODO: this needs to be locale sensitive
-	fieldCount = (style & SWT.DATE) != 0 ? ((style & SWT.SHORT) != 0 ? 2 : 3) : ((style & SWT.SHORT) != 0 ? 3 : 4);
-	fieldIndices = new Point[fieldCount];
-	fieldNames = new int[fieldCount];
-	if ((style & SWT.DATE) != 0) {
-		fieldNames[0] = Calendar.MONTH;
-		fieldIndices[0] = new Point (0, 2);
-		if ((style & SWT.SHORT) != 0) {
-			fieldNames[1] = Calendar.YEAR;
-			fieldIndices[1] = new Point (3, 7);
-		} else {
-			fieldNames[1] = Calendar.DAY_OF_MONTH;
-			fieldIndices[1] = new Point (3, 5);
-			fieldNames[2] = Calendar.YEAR;
-			fieldIndices[2] = new Point (6, 10);
-		}
-	} else { /* SWT.TIME */
-		fieldNames[0] = Calendar.HOUR;
-		fieldIndices[0] = new Point (0, 2);
-		fieldNames[1] = Calendar.MINUTE;
-		fieldIndices[1] = new Point (3, 5);
-		if ((style & SWT.SHORT) != 0) {
-			fieldNames[2] = Calendar.AM_PM;
-			fieldIndices[2] = new Point (6, 8);
-		} else {
-			fieldNames[2] = Calendar.SECOND;
-			fieldIndices[2] = new Point (6, 8);
-			fieldNames[3] = Calendar.AM_PM;
-			fieldIndices[3] = new Point (9, 11);
-		}
+void setFieldOfInternalDataStructure(FieldPosition field, int value) {
+	int calendarField = getCalendarField(field);
+	if (calendar.get(calendarField) == value)
+		return;
+	if (calendarField == Calendar.AM_PM && hasAmPm()) {
+		calendar.roll(Calendar.HOUR_OF_DAY, 12);
 	}
-}
-
-void setFieldOfInternalDataStructure (int fieldName, int value) {
-	if (calendar.get (fieldName) == value) return;
-	if (fieldName == Calendar.AM_PM) {
-		calendar.roll (Calendar.HOUR_OF_DAY, 12); // TODO: needs more work for setFormat and locale
-	}
-	calendar.set (fieldName, value);
+	calendar.set(calendarField, value);
 
 	//When dealing with months with 31 days and have days set to 31, then if you change the month
 	//to one that has 30 (or less) days, then in calendar only the day is changed but the month stays.
 	//e.g 10.31.2014  -> decrement month, becomes:
 	//    10.01.2014.
 	//To get around this behaviour, we set the field again.
-	if (calendar.get (fieldName) != value) {
-		calendar.set (fieldName, value);
+	if (calendar.get(calendarField) != value) {
+		calendar.set(calendarField, value);
 	}
 	sendSelectionEvent (SWT.Selection);
 }
@@ -1784,101 +1749,87 @@ GtkBorder getGtkBorderPadding () {
 	}
 }
 
-boolean onNumberKeyInput (int key) {
-	int fieldName = fieldNames[currentField];
-	int start = fieldIndices[currentField].x;
-	int end = fieldIndices[currentField].y;
-	int length = end - start;
-	String newText = keyToString (key);
-	if (fieldName == Calendar.AM_PM) {
-		String[] ampm = formatSymbols.getAmPmStrings ();
-		if (newText.equalsIgnoreCase (ampm[Calendar.AM].substring (0, 1)) || newText.equalsIgnoreCase (ampm[Calendar.AM])) {
-			setTextField (fieldName, Calendar.AM, true, false);
-		} else if (newText.equalsIgnoreCase (ampm[Calendar.PM].substring (0, 1)) || newText.equalsIgnoreCase (ampm[Calendar.PM])) {
-			setTextField (fieldName, Calendar.PM, true, false);
-		}
+boolean onNumberKeyInput(int key) {
+	if (currentField == null) {
 		return false;
 	}
-	if (characterCount > 0) {
-		try {
-			Integer.parseInt (newText);
-		} catch (NumberFormatException ex) {
-			return false;
-		}
-		String value = getText (start, end - 1);
-		int s = value.lastIndexOf (' ');
-		if (s != -1) value = value.substring (s + 1);
-		newText = "" + value + newText;
-	}
-	int newTextLength = newText.length ();
-	boolean first = characterCount == 0;
-	characterCount = (newTextLength < length) ? newTextLength : 0;
-	int max = calendar.getActualMaximum (fieldName);
-	int min = calendar.getActualMinimum (fieldName);
-	int newValue = unformattedIntValue (fieldName, newText, characterCount == 0, max);
-	if (newValue == -1) {
-		characterCount = 0;
-		return false;
-	}
-	if (first && newValue == 0 && length > 1) {
-		setTextField (fieldName, newValue, false, false);
-	} else if (min <= newValue && newValue <= max) {
-		/*
-		 * Bug 270970: Calendar stores Months from 0-11, therefore an
-		 * adjustment is needed to the value if it is changing a Month.
-		 * This fix is needed in order to allow signal digit inputs to
-		 * be correctly set on Months.
-		 */
-		if (fieldName == Calendar.MONTH && first) {
-			setTextField (fieldName, newValue-1, characterCount == 0, characterCount == 0);
+	int fieldName = getCalendarField(currentField);
+	StringBuffer prefix = new StringBuffer();
+	StringBuffer current = new StringBuffer();
+	StringBuffer suffix = new StringBuffer();
+
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	char c = iterator.first();
+	do {
+		if (isSameField(currentField, getFieldPosition(iterator))) {
+			current.append(c);
+		} else if (current.length() == 0) {
+			prefix.append(c);
 		} else {
-			setTextField (fieldName, newValue, characterCount == 0, characterCount == 0);
+			suffix.append(c);
+		}
+	} while ((c = iterator.next()) != CharacterIterator.DONE);
+
+	if (typeBufferPos < 0) {
+		typeBuffer.setLength(0);
+		typeBuffer.append(current);
+		typeBufferPos = 0;
+	}
+	if (key == GDK.GDK_BackSpace) {
+		if (typeBufferPos > 0 && typeBufferPos <= typeBuffer.length()) {
+			typeBuffer.deleteCharAt(typeBufferPos - 1);
+			typeBufferPos--;
+		}
+	} else if (key == GDK.GDK_Delete) {
+		if (typeBufferPos >= 0 && typeBufferPos < typeBuffer.length()) {
+			typeBuffer.deleteCharAt(typeBufferPos);
 		}
 	} else {
-		if (newTextLength >= length) {
-			newText = newText.substring (newTextLength - length + 1);
-			newValue = unformattedIntValue (fieldName, newText, characterCount == 0, max);
-			if (newValue != -1) {
-				characterCount = length - 1;
-				if (min <= newValue && newValue <= max) {
-					setTextField (fieldName, newValue, characterCount == 0, true);
+		char newText = keyToString(key);
+		if (!Character.isAlphabetic(newText) && !Character.isDigit(newText)) {
+			return false;
+		}
+		if (fieldName == Calendar.AM_PM) {
+			if (dateFormat instanceof SimpleDateFormat) {
+				String[] amPmStrings = ((SimpleDateFormat) dateFormat).getDateFormatSymbols().getAmPmStrings();
+				if (amPmStrings[Calendar.AM].charAt(0) == newText) {
+					setTextField(currentField, Calendar.AM);
+					return false;
+				} else if (amPmStrings[Calendar.PM].charAt(0) == newText) {
+					setTextField(currentField, Calendar.PM);
+					return false;
 				}
 			}
 		}
+		if (typeBufferPos < typeBuffer.length()) {
+			typeBuffer.replace(typeBufferPos, typeBufferPos + 1, Character.toString(newText));
+		} else {
+			typeBuffer.append(newText);
+		}
+		typeBufferPos++;
 	}
+	StringBuffer newText = new StringBuffer(prefix);
+	newText.append(typeBuffer);
+	newText.append(suffix);
+	setText(newText.toString());
+	setSelection(prefix.length() + typeBufferPos, prefix.length() + typeBuffer.length());
+	currentField.setBeginIndex(prefix.length());
+	currentField.setEndIndex(prefix.length() + typeBuffer.length());
 	return false;
 }
 
-private String keyToString (int key) {
-	//If numberpad keys were pressed.
+private char keyToString(int key) {
+	// If numberpad keys were pressed.
 	if (key >= GDK.GDK_KP_0 && key <= GDK.GDK_KP_9) {
-		 //convert numberpad button to regular key;
+		// convert numberpad button to regular key;
 		key -= 65408;
 	}
-	char keyChar = (char) key;
-	return ""+ keyChar;
+	return (char) key;
 }
 
-int unformattedIntValue (int fieldName, String newText, boolean adjust, int max) {
-	int newValue;
-	try {
-		newValue = Integer.parseInt (newText);
-	} catch (NumberFormatException ex) {
-		return -1;
-	}
-	if (fieldName == Calendar.MONTH && adjust) {
-		newValue--;
-		if (newValue == -1) newValue = max;
-	}
-	if (fieldName == Calendar.HOUR && adjust) {
-		if (newValue == 12) newValue = 0; // TODO: needs more work for setFormat and locale
-	}
-	return newValue;
-}
-
-void updateControl () {
-	if ((isDate () || isTime ()) && textEntryHandle != 0) {
-		setText (getFormattedString (style));
+void updateControl() {
+	if ((isDate() || isTime()) && textEntryHandle != 0) {
+		setText(getFormattedString());
 	}
 	redraw ();
 }
@@ -1903,27 +1854,30 @@ void deregister () {
 	if (textEntryHandle != 0) display.removeWidget (textEntryHandle);
 }
 
-
-int getArrow (long /*int*/ widget) {
-	int adj_value = (int) GTK.gtk_adjustment_get_value (GTK.gtk_spin_button_get_adjustment (widget));
+int getArrow(long /*int*/ widget) {
+	int adj_value = (int) GTK.gtk_adjustment_get_value(GTK.gtk_spin_button_get_adjustment(widget));
 	int new_value = 0;
-		if (isDate ()) {
-			// getMonth () return 0 as first month and 11 as last one, whereas adjusment does not, so adding one makes them comaprable
-			new_value = getMonth ()+1;
-		} else if (isTime ()) {
-		// as getHours () has 24h format but spinner 12h format, new_value needs to be converted to 12h format
-			if (getHours () > 12 ){
-				new_value = getHours () - 12;
-			} else {
-				new_value = getHours ();
-				// This fix does not compares adj_value to new_value when getArrow is called on widget creation
+	if (isDate()) {
+		// getMonth () return 0 as first month and 11 as last one, whereas adjustment
+		// does not, so adding one makes them comparable
+		new_value = getMonth() + 1;
+	} else if (isTime()) {
+		new_value = getHours();
+		if (hasAmPm()) {
+			// as getHours () has 24h format but spinner 12h format, new_value needs to be
+			// converted to 12h format
+			if (getHours() > 12) {
+				new_value = getHours() - 12;
 			}
-			if (new_value == 0) new_value = 12;
+			if (new_value == 0)
+				new_value = 12;
 		}
-		if (adj_value == 0 && firstTime)
-			return 0;
-		firstTime = false;
-		if ( adj_value == new_value) return 0;
+	}
+	if (adj_value == 0 && firstTime)
+		return 0;
+	firstTime = false;
+	if (adj_value == new_value)
+		return 0;
 	return adj_value > new_value ? SWT.ARROW_UP : SWT.ARROW_DOWN;
 }
 
@@ -1942,65 +1896,63 @@ void setText (String dateTimeText) {
 
 @Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	int fieldName;
 	if (!isReadOnly () && (isTime () || isDate ())) {
 		GdkEventKey keyEvent = new GdkEventKey ();
 		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 		int key = keyEvent.keyval;
 		switch (key) {
-			case GDK.GDK_Up:
-			case GDK.GDK_KP_Up:
-					incrementField (+1);
-					commitCurrentField ();
-				break;
-			case GDK.GDK_Down:
-			case GDK.GDK_KP_Down:
-					incrementField (-1);
-					commitCurrentField ();
-				break;
-			case GDK.GDK_Right:
-			case GDK.GDK_KP_Right:
-				selectField ((currentField + 1) % fieldCount);
-				sendEvent (SWT.Traverse);
-				break;
-			case GDK.GDK_Left:
-			case GDK.GDK_KP_Left:
-				int index = currentField - 1;
-				selectField (index < 0 ? fieldCount - 1 : index);
-				sendEvent (SWT.Traverse);
-				break;
-			case GDK.GDK_Home:
-			case GDK.GDK_KP_Home:
-				/* Set the value of the current field to its minimum */
-				fieldName = fieldNames[currentField];
-				setTextField (fieldName, calendar.getActualMinimum (fieldName), true, true);
-				break;
-			case GDK.GDK_End:
-			case GDK.GDK_KP_End:
-				/* Set the value of the current field to its maximum */
-				fieldName = fieldNames[currentField];
-				setTextField (fieldName, calendar.getActualMaximum (fieldName), true, true);
-				break;
-			default:
-				onNumberKeyInput (key);
+		case GDK.GDK_Up:
+		case GDK.GDK_KP_Up:
+			incrementField(+1);
+			commitData();
+			break;
+		case GDK.GDK_Down:
+		case GDK.GDK_KP_Down:
+			incrementField(-1);
+			commitData();
+			break;
+		case GDK.GDK_Tab:
+		case GDK.GDK_Right:
+		case GDK.GDK_KP_Right:
+			selectField(getNextField(currentField));
+			sendEvent(SWT.Traverse);
+			break;
+		case GDK.GDK_Left:
+		case GDK.GDK_KP_Left:
+			selectField(getPreviousField(currentField));
+			sendEvent(SWT.Traverse);
+			break;
+		case GDK.GDK_Home:
+		case GDK.GDK_KP_Home:
+			/* Set the value of the current field to its minimum */
+			if (currentField != null) {
+				setTextField(currentField, calendar.getActualMinimum(getCalendarField(currentField)));
+			}
+			break;
+		case GDK.GDK_End:
+		case GDK.GDK_KP_End:
+			/* Set the value of the current field to its maximum */
+			if (currentField != null) {
+				setTextField(currentField, calendar.getActualMaximum(getCalendarField(currentField)));
+			}
+			break;
+		default:
+			onNumberKeyInput(key);
 		}
 	}
 	return 1;
 }
 
-void commitCurrentField () {
-	if (characterCount > 0) {
-		characterCount = 0;
-		int fieldName = fieldNames[currentField];
-		int start = fieldIndices[currentField].x;
-		int end = fieldIndices[currentField].y;
-		String value = getText (getText (),start, end - 1);
-		int s = value.lastIndexOf (' ');
-		if (s != -1) value = value.substring (s + 1);
-		int newValue = unformattedIntValue (fieldName, value, characterCount == 0, calendar.getActualMaximum (fieldName));
-		if (newValue != -1) setTextField (fieldName, newValue, true, true);
+void commitData() {
+	try {
+		Date date = dateFormat.parse(getText());
+		calendar.setTime(date);
+	} catch (ParseException e) {
+		// invalid value, input will reset...
 	}
+	updateControl();
 }
+
 /** returns selected text **/
 Point getSelection () {
 	checkWidget ();
@@ -2069,35 +2021,21 @@ void setSelection (int start, int end) {
 	GTK.gtk_editable_select_region (textEntryHandle, start, end);
 }
 
-void setTextField (int fieldName, int value, boolean commitInternalDataStructure, boolean adjustDisplayedFormatting) {
-	int start = fieldIndices[currentField].x;
-	int end = fieldIndices[currentField].y;
-	setSelection (start, end);
-	if (commitInternalDataStructure) {
-		int validValue = validateValueBounds (fieldName, value);
-		setFieldOfInternalDataStructure (fieldName, validValue);
-	} else {
-		String newValue = formattedStringValue (fieldName, value, adjustDisplayedFormatting);
-		newValue = padWithZeros (start, end, newValue);
-		replaceCurrentlySelectedTextRegion (newValue);
-		setFieldOfInternalDataStructure (fieldName, value);
+void setTextField(FieldPosition field, int value) {
+	int validValue = validateValueBounds(field, value);
+	setFieldOfInternalDataStructure(field, validValue);
+	setFieldOfInternalDataStructure(field, value);
+	updateControl();
+	if (currentField != null) {
+		selectField(currentField);
 	}
-	updateControl ();
-	selectField (currentField);
 }
 
-private String padWithZeros (int start, int end, String newValue) {
-	int prependCount = end - start - newValue.length ();
-	for (int i = 0; i < prependCount; i++) {
-		newValue = "0" + newValue;
-	}
-	return newValue;
-}
-
-private int validateValueBounds (int fieldName, int value) {
-	int max = calendar.getActualMaximum (fieldName);
-	int min = calendar.getActualMinimum (fieldName);
-	if (fieldName == Calendar.YEAR) {
+private int validateValueBounds(FieldPosition field, int value) {
+	int calendarField = getCalendarField(field);
+	int max = calendar.getActualMaximum (calendarField);
+	int min = calendar.getActualMinimum (calendarField);
+	if (calendarField == Calendar.YEAR) {
 		max = MAX_YEAR;
 		min = MIN_YEAR;
 		/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
@@ -2110,19 +2048,6 @@ private int validateValueBounds (int fieldName, int value) {
 	if (value < min) value = max; // wrap
 	return value;
 }
-
-@Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	if (isDate () || isTime ()){
-		GdkEventButton gdkEvent = getEventInfoFromOS (event);
-		if (gdkEvent.button == 1) {
-			onTextMouseClick (gdkEvent);
-			return gtk_button_press_event (widget, event, false);
-		}
-	}
-	return super.gtk_button_press_event (widget, event);
-}
-
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
@@ -2154,16 +2079,16 @@ long /*int*/ gtk_output (long /*int*/ widget) {
 	if (calendar == null) {
 		return 0; //Guard: Object not fully initialized yet.
 	}
-	int arrowType = getArrow (widget);
-		switch (arrowType) {
-			case SWT.ARROW_UP: //Gtk2 arrow up. Gtk3 "+" button.
-				commitCurrentField ();
-				incrementField (+1);
-				break;
-			case SWT.ARROW_DOWN: //Gtk2 arrow down. Gtk3 "-" button.
-				commitCurrentField ();
-				incrementField (-1);
-				break;
+	int arrowType = getArrow(widget);
+	switch (arrowType) {
+	case SWT.ARROW_UP: // Gtk2 arrow up. Gtk3 "+" button.
+		commitData();
+		incrementField(+1);
+		break;
+	case SWT.ARROW_DOWN: // Gtk2 arrow down. Gtk3 "-" button.
+		commitData();
+		incrementField(-1);
+		break;
 	}
 	return 1;
 }
@@ -2179,15 +2104,35 @@ void replaceCurrentlySelectedTextRegion (String string) {
 	GTK.gtk_editable_set_position (textEntryHandle, start [0]);
 }
 
-void onTextMouseClick (GdkEventButton event) {
-	Point sel = getSelection ();
-	for (int i = 0; i < fieldCount; i++) {
-		if (sel.x >= fieldIndices[i].x && sel.x <= fieldIndices[i].y) {
-			currentField = i;
+void onTextMouseClick(GdkEventButton event) {
+	if (calendar == null) {
+		return; // Guard: Object not fully initialized yet.
+	}
+	int clickPosition = getSelection().x;
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	iterator.first();
+	int pos = 0;
+	do {
+		FieldPosition position = getFieldPosition(iterator);
+		iterator.setIndex(iterator.getRunLimit());
+		if (isSameField(position, currentField)) {
+			// use the current field instead then!
+			position = currentField;
+		}
+		int fieldWidth = position.getEndIndex() - position.getBeginIndex();
+		pos += fieldWidth;
+		if (position.getFieldAttribute() == null) {
+			continue;
+		}
+		if (pos >= clickPosition) {
+			FieldPosition selectField = new FieldPosition(position.getFieldAttribute());
+			selectField.setBeginIndex(pos - fieldWidth);
+			selectField.setEndIndex(pos);
+			selectField(selectField);
 			break;
 		}
-	}
-	selectField (currentField);
+	} while (iterator.current() != CharacterIterator.DONE);
+
 }
 
 String getText (int start, int end) {
@@ -2225,4 +2170,169 @@ void releaseWidget () {
 	if (fixedHandle != 0)
 		hideDateTime ();
 }
+
+/**
+ * Returns a field with updated positionla data
+ *
+ * @param field
+ * @return
+ */
+private FieldPosition updateField(FieldPosition field) {
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	while (iterator.current() != CharacterIterator.DONE) {
+		FieldPosition current = getFieldPosition(iterator);
+		iterator.setIndex(iterator.getRunLimit());
+		if (field == null || isSameField(current, field)) {
+			return current;
+		}
+	}
+	return field;
+}
+
+/**
+ * Given a {@link FieldPosition} searches the next field in the format string
+ *
+ * @param field
+ *            the Field to start from
+ * @return the next {@link FieldPosition}
+ */
+private FieldPosition getNextField(FieldPosition field) {
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	FieldPosition first = null;
+	boolean found = false;
+	while (iterator.current() != CharacterIterator.DONE) {
+		FieldPosition current = getFieldPosition(iterator);
+		iterator.setIndex(iterator.getRunLimit());
+		if (current.getFieldAttribute() == null) {
+			continue;
+		}
+		if (found) {
+			return current;
+		}
+		if (first == null) {
+			first = current;
+		}
+		if (isSameField(current, field)) {
+			found = true;
+		}
+	}
+	return first;
+}
+
+/**
+ *
+ * @param field
+ * @return the next field of the given one
+ */
+private FieldPosition getPreviousField(FieldPosition field) {
+	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
+	FieldPosition last = null;
+	do {
+		FieldPosition current = getFieldPosition(iterator);
+		if (isSameField(current, field)) {
+			if (last != null) {
+				return last;
+			}
+		}
+		if (current.getFieldAttribute() != null) {
+			last = current;
+		}
+		iterator.setIndex(iterator.getRunLimit());
+	} while (iterator.current() != CharacterIterator.DONE);
+	return last;
+}
+
+/**
+ * Searches the current postion of the iterator for a {@link Field} and
+ * constructs a {@link FieldPosition} from it
+ *
+ * @param iterator
+ *            the iterator to use
+ * @return a new {@link FieldPosition}
+ */
+private static FieldPosition getFieldPosition(AttributedCharacterIterator iterator) {
+	Set<Attribute> keySet = iterator.getAttributes().keySet();
+	for (Attribute attribute : keySet) {
+		if (attribute instanceof Field) {
+			return getFieldPosition((Field) attribute, iterator);
+		}
+	}
+	return getFieldPosition((Field) null, iterator);
+}
+
+/**
+ * creates a {@link FieldPosition} out of a {@link Field} and and a
+ * {@link AttributedCharacterIterator}s current position
+ *
+ * @param field
+ *            the field to use
+ * @param iterator
+ *            the iterator to extract the data from
+ * @return a {@link FieldPosition} init to this Field and begin/end index
+ */
+private static FieldPosition getFieldPosition(Field field, AttributedCharacterIterator iterator) {
+	FieldPosition position = new FieldPosition(field);
+	position.setBeginIndex(iterator.getRunStart());
+	position.setEndIndex(iterator.getRunLimit());
+	return position;
+}
+
+/**
+ * Check if the given {@link FieldPosition} are considdered "the same", this is
+ * when both are not <code>null</code> and reference the same
+ * {@link java.text.Format.Field} attribute, or both of them have no
+ * fieldattribute and have the same position
+ *
+ * @param p1
+ *            first position to compare
+ * @param p2
+ *            second position to compare
+ * @return <code>true</code> if considered the same, <code>false</code>
+ *         otherwise
+ */
+private static boolean isSameField(FieldPosition p1, FieldPosition p2) {
+	if (p1 == p2) {
+		return true;
+	}
+	if (p1 == null || p2 == null) {
+		return false;
+	}
+	if (p1.getFieldAttribute() == null && p2.getFieldAttribute() == null) {
+		return p1.equals(p2);
+	}
+	if (p1.getFieldAttribute() == null) {
+		return false;
+	}
+	return p1.getFieldAttribute().equals(p2.getFieldAttribute());
+}
+
+/**
+ * Extracts the calendarfield for the given fieldposition
+ *
+ * @param fieldPosition
+ * @return the {@link Calendar} field or -1 if this is not a valid Fieldposition
+ */
+private static int getCalendarField(FieldPosition fieldPosition) {
+	if ((fieldPosition.getFieldAttribute() instanceof Field)) {
+		return getCalendarField((Field) fieldPosition.getFieldAttribute());
+	} else {
+		return -1;
+	}
+}
+
+/**
+ * Extracts the calendarfield transforming HOUR1 types to HOUR0
+ *
+ * @param field
+ * @return the calendarfield coresponding to the {@link Field}
+ */
+private static int getCalendarField(Field field) {
+	if (Field.HOUR1.equals(field)) {
+		field = Field.HOUR0;
+	} else if (Field.HOUR_OF_DAY1.equals(field)) {
+		field = Field.HOUR_OF_DAY0;
+	}
+	return field.getCalendarField();
+}
+
 }
