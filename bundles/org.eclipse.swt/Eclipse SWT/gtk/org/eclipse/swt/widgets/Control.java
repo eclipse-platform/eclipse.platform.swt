@@ -480,6 +480,19 @@ public boolean print (GC gc) {
 	long /*int*/ topHandle = topHandle ();
 	GTK.gtk_widget_realize (topHandle);
 	if (GTK.GTK3) {
+		/*
+		 * Feature in GTK: gtk_widget_draw() will only draw if the
+		 * widget's priv->alloc_needed field is set to TRUE. Since
+		 * this field is private and inaccessible, get and set the
+		 * allocation to trigger it to be TRUE. See bug 530969.
+		 */
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(topHandle, allocation);
+		// Prevent allocation warnings
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			GTK.gtk_widget_get_preferred_size(topHandle, null, null);
+		}
+		GTK.gtk_widget_size_allocate(topHandle, allocation);
 		GTK.gtk_widget_draw(topHandle, gc.handle);
 		return true;
 	}
