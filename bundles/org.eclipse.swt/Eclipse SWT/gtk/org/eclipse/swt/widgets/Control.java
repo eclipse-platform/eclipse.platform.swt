@@ -3284,7 +3284,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		 */
 		if (OS.isX11()) { // Wayland
 			if (dragging) {
-				sendDragEvent (gdkEvent.button, gdkEvent.state, (int) gdkEvent.x, (int) gdkEvent.y, false);
+				Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)gdkEvent.x, (int) gdkEvent.y));
+				sendDragEvent (gdkEvent.button, gdkEvent.state, scaledEvent.x, scaledEvent.y, false);
 				if (isDisposed ()) return 1;
 			}
 		}
@@ -3622,7 +3623,8 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 			GdkEventButton gdkEvent1 = new GdkEventButton ();
 			OS.memmove (gdkEvent1, event, GdkEventButton.sizeof);
 			if (gdkEvent1.type == OS.GDK_3BUTTON_PRESS) return 0;
-			if (sendDragEvent (gdkEvent1.button, gdkEvent1.state, (int) gdkEvent1.x, (int) gdkEvent1.y, false)){
+			Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)gdkEvent1.x, (int) gdkEvent1.y));
+			if (sendDragEvent (gdkEvent1.button, gdkEvent1.state, scaledEvent.x, scaledEvent.y, false)){
 				return 1;
 		}
 	}
