@@ -2649,7 +2649,7 @@ void doLineDown(boolean select) {
 	int lineCount = content.getLineCount();
 	int y = 0;
 	boolean lastLine = false;
-	if (wordWrap || visualWrap) {
+	if (isWordWrap()) {
 		int lineOffset = content.getOffsetAtLine(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(caretLine);
@@ -2693,7 +2693,7 @@ void doLineEnd() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	int lineEndOffset;
-	if (wordWrap || visualWrap) {
+	if (isWordWrap()) {
 		TextLayout layout = renderer.getTextLayout(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		int lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -2713,7 +2713,7 @@ void doLineEnd() {
 void doLineStart() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
-	if (wordWrap || visualWrap) {
+	if (isWordWrap()) {
 		TextLayout layout = renderer.getTextLayout(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		int lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -2733,7 +2733,7 @@ void doLineStart() {
 void doLineUp(boolean select) {
 	int caretLine = getCaretLine(), y = 0;
 	boolean firstLine = false;
-	if (wordWrap || visualWrap) {
+	if (isWordWrap()) {
 		int lineOffset = content.getOffsetAtLine(caretLine);
 		int offsetInLine = caretOffset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(caretLine);
@@ -3000,7 +3000,7 @@ void doPageDown(boolean select, int height) {
 			if (topY + lineHeight <= clientAreaHeight) {
 				height += lineHeight;
 			} else {
-				if (wordWrap || visualWrap) {
+				if (isWordWrap()) {
 					TextLayout layout = renderer.getTextLayout(lineIndex);
 					int y = clientAreaHeight - topY;
 					for (int i = 0; i < layout.getLineCount(); i++) {
@@ -3016,7 +3016,7 @@ void doPageDown(boolean select, int height) {
 		} else {
 			lineIndex = getLineIndex(height);
 			int topLineY = getLinePixel(lineIndex);
-			if (wordWrap || visualWrap) {
+			if (isWordWrap()) {
 				TextLayout layout = renderer.getTextLayout(lineIndex);
 				int y = height - topLineY;
 				for (int i = 0; i < layout.getLineCount(); i++) {
@@ -3032,7 +3032,7 @@ void doPageDown(boolean select, int height) {
 			}
 		}
 		int caretHeight = height;
-		if (wordWrap || visualWrap) {
+		if (isWordWrap()) {
 			TextLayout layout = renderer.getTextLayout(caretLine);
 			int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
 			lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -3066,7 +3066,7 @@ void doPageEnd() {
 		doLineEnd();
 	} else {
 		int bottomOffset;
-		if (wordWrap || visualWrap) {
+		if (isWordWrap()) {
 			int lineIndex = getPartialBottomIndex();
 			TextLayout layout = renderer.getTextLayout(lineIndex);
 			int y = (clientAreaHeight - bottomMargin) - getLinePixel(lineIndex);
@@ -3097,7 +3097,7 @@ void doPageEnd() {
  */
 void doPageStart() {
 	int topOffset;
-	if (wordWrap || visualWrap) {
+	if (isWordWrap()) {
 		int y, lineIndex;
 		if (topIndexY > 0) {
 			lineIndex = topIndex - 1;
@@ -3178,7 +3178,7 @@ void doPageUp(boolean select, int height) {
 					height = clientAreaHeight - (lineHeight + topIndexY);
 					y = -topIndexY;
 				}
-				if (wordWrap || visualWrap) {
+				if (isWordWrap()) {
 					TextLayout layout = renderer.getTextLayout(lineIndex);
 					for (int i = 0; i < layout.getLineCount(); i++) {
 						Rectangle bounds = layout.getLineBounds(i);
@@ -3193,7 +3193,7 @@ void doPageUp(boolean select, int height) {
 		} else {
 			lineIndex = getLineIndex(clientAreaHeight - height);
 			int topLineY = getLinePixel(lineIndex);
-			if (wordWrap || visualWrap) {
+			if (isWordWrap()) {
 				TextLayout layout = renderer.getTextLayout(lineIndex);
 				int y = topLineY;
 				for (int i = 0; i < layout.getLineCount(); i++) {
@@ -3209,7 +3209,7 @@ void doPageUp(boolean select, int height) {
 			}
 		}
 		int caretHeight = height;
-		if (wordWrap || visualWrap) {
+		if (isWordWrap()) {
 			TextLayout layout = renderer.getTextLayout(caretLine);
 			int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
 			lineIndex = getVisualLineIndex(layout, offsetInLine);
@@ -3708,7 +3708,7 @@ Rectangle getBoundsAtOffset(int offset) {
 	} else {
 		bounds = new Rectangle (0, 0, 0, renderer.getLineHeight());
 	}
-	if (offset == caretOffset && !(wordWrap || visualWrap)) {
+	if (offset == caretOffset && !isWordWrap()) {
 		int lineEnd = lineOffset + line.length();
 		if (offset == lineEnd) {
 			bounds.width += getCaretWidth();
@@ -5834,7 +5834,7 @@ void internalRedrawRange(int start, int length) {
 	int startIndex = layout.getLineIndex(Math.min(start, layout.getText().length()));
 
 	/* Redraw end of line before start line if wrapped and start offset is first char */
-	if ((wordWrap || visualWrap) && startIndex > 0 && offsets[startIndex] == start) {
+	if (isWordWrap() && startIndex > 0 && offsets[startIndex] == start) {
 		Rectangle rect = layout.getLineBounds(startIndex - 1);
 		rect.x = rect.width;
 		rect.width = clientAreaWidth - rightMargin - rect.x;
@@ -9235,6 +9235,14 @@ void setVariableLineHeight () {
 	renderer.calculateIdle();
 }
 /**
+ * Returns true if StyledText is in word wrap mode and false otherwise.
+ *
+ * @return true if StyledText is in word wrap mode and false otherwise.
+ */
+boolean isWordWrap() {
+	return wordWrap || visualWrap;
+}
+/**
  * Sets the indent of the specified lines.
  * <p>
  * Should not be called if a LineStyleListener has been set since the listener
@@ -10519,7 +10527,7 @@ void updateCaretVisibility() {
 void updateSelection(int startOffset, int replacedLength, int newLength) {
 	if (selection.y <= startOffset) {
 		// selection ends before text change
-		if (wordWrap || visualWrap) setCaretLocation();
+		if (isWordWrap()) setCaretLocation();
 		return;
 	}
 	if (selection.x < startOffset) {

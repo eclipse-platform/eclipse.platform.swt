@@ -130,7 +130,7 @@ public int hashCode() {
 	return super.hashCode() ^ fontStyle;
 }
 boolean isVariableHeight() {
-	return font != null || metrics != null || rise != 0;
+	return font != null || (metrics != null && (metrics.ascent != 0 || metrics.descent != 0)) || rise != 0;
 }
 /**
  * Returns whether or not the receiver is unstyled (i.e., does not have any
