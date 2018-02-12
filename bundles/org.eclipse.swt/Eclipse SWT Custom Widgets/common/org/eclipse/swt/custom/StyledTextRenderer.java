@@ -666,7 +666,7 @@ int getLineHeight(int lineIndex) {
 private boolean isVariableHeight(int lineIndex) {
 	if (styledText.wordWrap || styledText.visualWrap) {
 		// In word wrap mode, the line height must be recomputed with TextLayout
-		return false;
+		return true;
 	}
 	boolean variableHeight = false;
 	StyleRange[] styles = getStylesForLine(lineIndex);
