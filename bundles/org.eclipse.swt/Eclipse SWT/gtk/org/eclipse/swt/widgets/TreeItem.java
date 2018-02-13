@@ -483,9 +483,6 @@ Rectangle getBoundsInPixels (int index) {
 	}
 	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
-	if (parent.getHeaderVisible() && GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		r.y += parent.getHeaderHeightInPixels();
-	}
 	return r;
 }
 

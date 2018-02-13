@@ -1258,9 +1258,6 @@ Rectangle getClientAreaInPixels () {
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 	Rectangle rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
-	if (getHeaderVisible() && GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		rect.y += getHeaderHeightInPixels();
-	}
 	return rect;
 }
 
@@ -1653,9 +1650,6 @@ TableItem getItemInPixels (Point point) {
 	long /*int*/ [] path = new long /*int*/ [1];
 	GTK.gtk_widget_realize (handle);
 	int y = point.y;
-	if (getHeaderVisible() && GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		y -= getHeaderHeightInPixels();
-	}
 	if (!GTK.gtk_tree_view_get_path_at_pos (handle, point.x, y, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	long /*int*/ indices = GTK.gtk_tree_path_get_indices (path [0]);
@@ -2505,10 +2499,6 @@ boolean mnemonicMatch (char key) {
 @Override
 long /*int*/ paintWindow () {
 	GTK.gtk_widget_realize (handle);
-	if (fixedHandle != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		GTK.gtk_widget_realize (fixedHandle);
-		return GTK.gtk_widget_get_window(fixedHandle);
-	}
 	return GTK.gtk_tree_view_get_bin_window (handle);
 }
 
@@ -3734,9 +3724,23 @@ void setParentBackground () {
 }
 
 @Override
-void setParentWindow (long /*int*/ widget) {
+void setParentWindow (Control child) {
 	long /*int*/ window = eventWindow ();
-	GTK.gtk_widget_set_parent_window (widget, window);
+	GTK.gtk_widget_set_parent_window (child.topHandle(), window);
+	/*
+	 * Feature in GTK3: all children of Table have their GdkWindows
+	 * re-parented so they are siblings of the parent Table
+	 * (i.e. on the same level in the z-order).
+	 *
+	 * To fix table editing in GTK3: raise/lower the
+	 * GdkWindow of these child widgets to make them visible when
+	 * setVisible() is called on them. This ensures they are properly
+	 * drawn when setVisible(true) is called, and properly hidden
+	 * when setVisible(false) is called. See bug 511133.
+	 */
+	if (child != null && GTK.GTK3) {
+		child.reparentOnVisibility = true;
+	}
 }
 
 @Override

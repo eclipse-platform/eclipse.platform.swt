@@ -64,6 +64,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 	Control labelRelation;
 	String cssBackground, cssForeground = " ";
+	boolean reparentOnVisibility;
 
 	LinkedList <Event> dragDetectionQueue;
 
@@ -5360,7 +5361,7 @@ void setParentBackground () {
 	}
 }
 
-void setParentWindow (long /*int*/ widget) {
+void setParentWindow (Control child) {
 }
 
 boolean setRadioSelection (boolean value) {
@@ -5565,6 +5566,13 @@ public void setVisible (boolean visible) {
 		state &= ~HIDDEN;
 		if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 			if (enableWindow != 0) GDK.gdk_window_show_unraised (enableWindow);
+			/*
+			 * Raise this widget's GdkWindow if the reparentOnVisibility
+			 * flag has been set and visible is true. See bug 511133.
+			 */
+			if (reparentOnVisibility && GTK.GTK3) {
+				GDK.gdk_window_raise(gtk_widget_get_window(topHandle));
+			}
 			GTK.gtk_widget_show (topHandle);
 		}
 	} else {
@@ -5601,6 +5609,13 @@ public void setVisible (boolean visible) {
 		GTK.gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;
 		if (enableWindow != 0) GDK.gdk_window_hide (enableWindow);
+		/*
+		 * Lower this widget's GdkWindow if the reparentOnVisibility
+		 * flag has been set and visible is false. See bug 511133.
+		 */
+		if (reparentOnVisibility && GTK.GTK3) {
+			GDK.gdk_window_lower(gtk_widget_get_window(topHandle));
+		}
 		sendEvent (SWT.Hide);
 	}
 }
@@ -5762,7 +5777,7 @@ void showWidget () {
 	state |= ZERO_WIDTH | ZERO_HEIGHT;
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ parentHandle = parent.parentingHandle ();
-	parent.setParentWindow (topHandle);
+	parent.setParentWindow (this);
 	GTK.gtk_container_add (parentHandle, topHandle);
 	if (handle != 0 && handle != topHandle) GTK.gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
