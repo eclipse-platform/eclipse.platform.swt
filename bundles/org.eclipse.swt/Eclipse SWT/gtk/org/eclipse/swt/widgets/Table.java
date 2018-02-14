@@ -2150,9 +2150,11 @@ void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	int keymask = gdk_event_get_state (event);
 	switch (key) {
 		case GDK.GDK_Return:
-			// Send DefaultSelectionEvent when: Enter, Shift+Enter, Ctrl+Enter, Alt+Enter are pressed.
-			// Not when (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk. Does not trigger on Win32 either.
-			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK)) == 0) {
+			// Send DefaultSelectionEvent when:
+			// when    : Enter, Shift+Enter, Ctrl+Enter are pressed.
+			// Not when: Alt+Enter, (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk.
+			// Note: alt+Enter creates a selection on GTK, but we filter it out to be a bit more consitent Win32 (521387)
+			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 				sendTreeDefaultSelection ();
 			}
 			break;

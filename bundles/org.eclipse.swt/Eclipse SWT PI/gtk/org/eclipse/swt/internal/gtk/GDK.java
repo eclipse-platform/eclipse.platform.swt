@@ -156,10 +156,23 @@ public class GDK extends OS {
 	public static final int GDK_Meta_L = 0xFFE7;
 	public static final int GDK_Meta_R = 0xFFE8;
 	public static final int GDK_MAP = 14;
-	public static final int GDK_MOD1_MASK = 0x8;        //usually 'alt' modifier.
-	public static final int GDK_SUPER_MASK = 0x4000000;
-	public static final int GDK_HYPER_MASK = 0x8000000;
-	public static final int GDK_META_MASK = 0x10000000;
+
+	/**
+	 * <p>
+	 * GDK_MOD1_MASK = usually 'alt' button   			<br>
+	 * GDK_SUPER_MASK = usually win/cmd button			<br>
+	 * GDK_HYPER_MASK = usually ctrl button				<br>
+	 * By 'usually' I mean you should test. In my experience keyboard behaviour can vary.
+	 * </p>
+	 *
+	 * See also:
+	 * <a href="https://askubuntu.com/questions/19558/what-are-the-meta-super-and-hyper-keys">Stack Overflow post</a>
+	 */
+	public static final int GDK_MOD1_MASK = 0x8,
+							GDK_SUPER_MASK = 0x4000000,
+							GDK_HYPER_MASK = 0x8000000,
+							GDK_META_MASK = 0x10000000;
+
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
