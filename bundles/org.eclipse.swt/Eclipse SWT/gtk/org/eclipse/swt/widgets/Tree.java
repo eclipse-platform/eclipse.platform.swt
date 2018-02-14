@@ -3717,9 +3717,9 @@ void setParentBackground () {
 }
 
 @Override
-void setParentWindow (Control child) {
-	long /*int*/ window = eventWindow ();
-	GTK.gtk_widget_set_parent_window (child.topHandle(), window);
+void setParentGdkWindow (Control child) {
+	long /*int*/ parentGdkWindow = eventWindow ();
+	GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
 	/*
 	 * Feature in GTK3: all children of Tree have their GdkWindows
 	 * re-parented so they are siblings of the parent Tree

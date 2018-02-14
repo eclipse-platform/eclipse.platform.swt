@@ -293,8 +293,8 @@ public void setControl (Control control) {
 	}
 
 	if (control != null && GTK.GTK3) {
-		// See implementation note about bug 454936 at the start of TabFolder.
-		GTK.gtk_widget_reparent (control.topHandle (), pageHandle);
+		// To understand why we reparent, see implementation note about bug 454936 at the start of TabFolder.
+		Control.gtk_widget_reparent (control, pageHandle);
 	}
 
 	Control oldControl = this.control, newControl = control;

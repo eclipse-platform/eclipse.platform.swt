@@ -13853,7 +13853,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1reparent)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1reparent_FUNC);
+/*
 	gtk_widget_reparent((GtkWidget *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_reparent)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkWidget *))fp)((GtkWidget *)arg0, (GtkWidget *)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1reparent_FUNC);
 }
 #endif

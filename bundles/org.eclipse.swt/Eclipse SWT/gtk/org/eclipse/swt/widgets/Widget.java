@@ -951,21 +951,6 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	return 0;
 }
 
-/**
- * Reparent on gtk side.
- * Note: Composites with a setControl() function should probably use this function
- * to correct hierarchy on gtk side.
- * @param widget  the handle to the widget. (usually topHandle())
- * @param newParent  handle to the new widget.
- */
-void gtk_widget_reparent (long /*int*/ widget, long /*int*/ newParent) {
-	//Note, we do not actually call  * 'gtk_widget_reparent(...) as it's deprecated as of gtk 3.14
-	OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
-	GTK.gtk_container_remove (GTK.gtk_widget_get_parent (widget), widget);
-	GTK.gtk_container_add (newParent, widget);
-	OS.g_object_unref (widget);
-}
-
 long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }

@@ -2655,6 +2655,51 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
+/**
+ * In some situations, a control has a non-standard parent GdkWindow (Note gDk, not gTk).
+ * E.g, an TreeEditor who's parent is a Tree should have the Tree Viewer's inner bin as parent window.
+ *
+ * Note, composites should treat this differently and take child controls into consideration.
+ */
+void fixParentGdkWindow() {
+	assert GTK.GTK3;
+	// Changes to this method should be verified via
+	// org.eclipse.swt.tests.gtk/*/Bug510803_TabFolder_TreeEditor_Regression.java (part one)
+	parent.setParentGdkWindow(this);
+}
+
+/**
+ * Native gtkwidget re-parenting in SWT on Gtk3 needs to be handled in a special way because
+ * some controls have non-standard GdkWindow as parents. (E.g ControlEditors), and other controls
+ * like TabItem and ExpandBar use reparenting to preserve proper hierarchy for correct event traversal (like dnd).
+ *
+ * Note, GdkWindows != GtkWindows.
+ *
+ * You should never call gtk_widget_reparent() directly or reparent widgets outside this method,
+ * otherwise you can break TabItem/TreeEditors.
+ *
+ * @param control that should be reparented.
+ * @param newParentHandle pointer/handle to the new GtkWidget parent.
+ */
+static void gtk_widget_reparent (Control control, long /*int*/ newParentHandle) {
+	if (GTK.GTK3) {
+		// Changes to this method should be verified via both parts in:
+		// org.eclipse.swt.tests.gtk/*/Bug510803_TabFolder_TreeEditor_Regression.java
+		long /*int*/ widget = control.topHandle();
+		long /*int*/ parentContainer = GTK.gtk_widget_get_parent (widget);
+		assert parentContainer != 0 : "Improper use of Control.gtk_widget_reparent. Widget currently has no parent.";
+		if (parentContainer != 0) {
+			OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
+			GTK.gtk_container_remove (parentContainer, widget);
+			GTK.gtk_container_add (newParentHandle, widget);
+			OS.g_object_unref (widget);
+			control.fixParentGdkWindow();
+		}
+	} else { // Gtk2.
+		GTK.gtk_widget_reparent(control.topHandle(), newParentHandle);
+	}
+}
+
 @Override
 long /*int*/ fixedMapProc (long /*int*/ widget) {
 	GTK.gtk_widget_set_mapped (widget, true);
@@ -5323,7 +5368,7 @@ public boolean setParent (Composite parent) {
 		oldDecorations.fixAccelGroup ();
 	}
 	long /*int*/ newParent = parent.parentingHandle();
-	GTK.gtk_widget_reparent(topHandle, newParent);
+	gtk_widget_reparent(this, newParent);
 	if (GTK.GTK3) {
 		OS.swt_fixed_move (newParent, topHandle, x, y);
 	} else {
@@ -5361,7 +5406,7 @@ void setParentBackground () {
 	}
 }
 
-void setParentWindow (Control child) {
+void setParentGdkWindow (Control child) {
 }
 
 boolean setRadioSelection (boolean value) {
@@ -5777,7 +5822,7 @@ void showWidget () {
 	state |= ZERO_WIDTH | ZERO_HEIGHT;
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ parentHandle = parent.parentingHandle ();
-	parent.setParentWindow (this);
+	parent.setParentGdkWindow (this);
 	GTK.gtk_container_add (parentHandle, topHandle);
 	if (handle != 0 && handle != topHandle) GTK.gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {

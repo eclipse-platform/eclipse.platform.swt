@@ -532,7 +532,7 @@ public void setControl (Control control) {
 			//As ExpandItem's child can be created before the ExpandItem, our only
 			//option is to reparent the child upon the setControl(..) call.
 			//This is simmilar to TabFolder.
-			gtk_widget_reparent (control.topHandle (), clientHandle ());
+			Control.gtk_widget_reparent (control, clientHandle ());
 		}
 	}
 	parent.layoutItems (0, true);
