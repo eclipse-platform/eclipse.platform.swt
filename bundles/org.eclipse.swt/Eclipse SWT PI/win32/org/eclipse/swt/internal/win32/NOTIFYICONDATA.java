@@ -19,13 +19,9 @@ public abstract class NOTIFYICONDATA {
 	public int uCallbackMessage;
 	/** @field cast=(HICON) */
 	public long /*int*/ hIcon;
-	/** @field flags=no_wince */
 	public int dwState;
-	/** @field flags=no_wince */
 	public int dwStateMask;
-	/** @field flags=no_wince */
 	public int uVersion;
-	/** @field flags=no_wince */
 	public int dwInfoFlags;
 	public static final int sizeof = OS.NOTIFYICONDATA_V2_SIZE;
 }

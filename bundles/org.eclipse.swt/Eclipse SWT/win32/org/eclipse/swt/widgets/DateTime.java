@@ -126,15 +126,6 @@ public class DateTime extends Composite {
 		OS.RegisterClass (lpWndClass);
 		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
-	static final int MARGIN = 4;
-	static final int MAX_DIGIT = 9;
-	static final int MAX_DAY = 31;
-	static final int MAX_12HOUR = 12;
-	static final int MAX_24HOUR = 24;
-	static final int MAX_MINUTE = 60;
-	static final int MONTH_DAY_YEAR = 0;
-	static final int DAY_MONTH_YEAR = 1;
-	static final int YEAR_MONTH_DAY = 2;
 	static final char SINGLE_QUOTE = '\''; //$NON-NLS-1$ short date format may include quoted text
 	static final char DAY_FORMAT_CONSTANT = 'd'; //$NON-NLS-1$ 1-4 lowercase 'd's represent day
 	static final char MONTH_FORMAT_CONSTANT = 'M'; //$NON-NLS-1$ 1-4 uppercase 'M's represent month
@@ -143,7 +134,6 @@ public class DateTime extends Composite {
 	static final char MINUTES_FORMAT_CONSTANT = 'm'; //$NON-NLS-1$ 1-2 lowercase 'm's represent minutes
 	static final char SECONDS_FORMAT_CONSTANT = 's'; //$NON-NLS-1$ 1-2 lowercase 's's represent seconds
 	static final char AMPM_FORMAT_CONSTANT = 't'; //$NON-NLS-1$ 1-2 lowercase 't's represent am/pm
-	static final int[] MONTH_NAMES = new int[] {OS.LOCALE_SMONTHNAME1, OS.LOCALE_SMONTHNAME2, OS.LOCALE_SMONTHNAME3, OS.LOCALE_SMONTHNAME4, OS.LOCALE_SMONTHNAME5, OS.LOCALE_SMONTHNAME6, OS.LOCALE_SMONTHNAME7, OS.LOCALE_SMONTHNAME8, OS.LOCALE_SMONTHNAME9, OS.LOCALE_SMONTHNAME10, OS.LOCALE_SMONTHNAME11, OS.LOCALE_SMONTHNAME12};
 
 
 /**
@@ -257,58 +247,12 @@ protected void checkSubclass () {
 			width = rect.right;
 			height = rect.bottom;
 		} else {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				/* Vista and later: use DTM_GETIDEALSIZE. */
-				SIZE size = new SIZE ();
-				OS.SendMessage(handle, OS.DTM_GETIDEALSIZE, 0, size);
-				width = size.cx;
-				height = size.cy;
-			} else {
-				long /*int*/ newFont, oldFont = 0;
-				long /*int*/ hDC = OS.GetDC (handle);
-				newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-				RECT rect = new RECT ();
-				if ((style & SWT.DATE) != 0) {
-					int dwFlags = 0;
-					TCHAR lpFormat = null;
-					if ((style & SWT.SHORT) != 0) {
-						lpFormat = new TCHAR (0, getCustomShortDateFormat(), true);
-					} else {
-						dwFlags = (style & SWT.MEDIUM) != 0 ? OS.DATE_SHORTDATE : OS.DATE_LONGDATE;
-					}
-					int size = OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, null, 0);
-					if (size > 0) {
-						TCHAR buffer = new TCHAR (getCodePage (), size);
-						OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, buffer, buffer.length ());
-						OS.DrawText (hDC, buffer, size, rect, OS.DT_CALCRECT | OS.DT_EDITCONTROL);
-					}
-				} else if ((style & SWT.TIME) != 0) {
-					int dwFlags = 0;
-					TCHAR lpFormat = null;
-					if ((style & SWT.SHORT) != 0) {
-						dwFlags = OS.TIME_NOSECONDS;
-						lpFormat = new TCHAR (0, getCustomShortTimeFormat(), true);
-					}
-					int size = OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, null, 0);
-					if (size > 0) {
-						TCHAR buffer = new TCHAR (getCodePage (), size);
-						OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, buffer, buffer.length ());
-						OS.DrawText (hDC, buffer, size, rect, OS.DT_CALCRECT | OS.DT_EDITCONTROL);
-					}
-				}
-				width = rect.right - rect.left;
-				height = rect.bottom - rect.top;
-				if (newFont != 0) OS.SelectObject (hDC, oldFont);
-				OS.ReleaseDC (handle, hDC);
-				int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-				width += upDownWidth + MARGIN;
-			}
-			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				// TODO: Can maybe use DTM_GETDATETIMEPICKERINFO for this
-				upDownHeight += 7;
-			}
+			SIZE size = new SIZE ();
+			OS.SendMessage(handle, OS.DTM_GETIDEALSIZE, 0, size);
+			width = size.cx;
+			height = size.cy;
+			// TODO: Can maybe use DTM_GETDATETIMEPICKERINFO for this
+			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 7;
 			height = Math.max (height, upDownHeight);
 		}
 	}

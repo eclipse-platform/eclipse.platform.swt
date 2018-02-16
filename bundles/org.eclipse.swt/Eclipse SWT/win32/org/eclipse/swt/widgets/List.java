@@ -1566,13 +1566,8 @@ void updateMenuLocation (Event event) {
 @Override
 boolean updateTextDirection (int textDirection) {
 	if (textDirection == AUTO_TEXT_DIRECTION) {
-		/*
-		 * To apply auto direction we use UCC that are not available in ANSI CP
-		 * and - most important - will not be supported by TCHAR - even though
-		 * they could be supported natively through "wide" (Unicode) versions of
-		 * win32 API. Also, if auto is already in effect, there's nothing to do.
-		 */
-		if (!OS.IsUnicode || (state & HAS_AUTO_DIRECTION) != 0) return false;
+		/* If auto is already in effect, there's nothing to do. */
+		if ((state & HAS_AUTO_DIRECTION) != 0) return false;
 		state |= HAS_AUTO_DIRECTION;
 	} else {
 		state &= ~HAS_AUTO_DIRECTION;
@@ -1631,7 +1626,7 @@ long /*int*/ windowProc () {
 @Override
 long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	/* Below code is to support auto text direction. */
-	if (OS.IsUnicode && handle != 0 && lParam != 0 && (state & HAS_AUTO_DIRECTION) != 0) {
+	if (handle != 0 && lParam != 0 && (state & HAS_AUTO_DIRECTION) != 0) {
 		switch (msg) {
 			case OS.LB_ADDSTRING:
 			case OS.LB_INSERTSTRING:

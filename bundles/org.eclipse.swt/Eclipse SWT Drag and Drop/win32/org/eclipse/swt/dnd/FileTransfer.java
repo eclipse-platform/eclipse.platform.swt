@@ -79,7 +79,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	dropfiles.pFiles = DROPFILES.sizeof;
 	dropfiles.pt_x = dropfiles.pt_y = 0;
 	dropfiles.fNC = 0;
-	dropfiles.fWide = OS.IsUnicode ? 1 : 0;
+	dropfiles.fWide = 1;
 	// Allocate the memory because the caller (DropTarget) has not handed it in
 	// The caller of this method must release the data when it is done with it.
 	int byteCount = buffer.length() * TCHAR.sizeof;

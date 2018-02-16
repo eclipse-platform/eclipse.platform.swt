@@ -71,7 +71,7 @@ public class Spinner extends Composite {
 	 * to stop the compiler from inlining.
 	 */
 	static {
-		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
+		LIMIT = 0x7FFFFFFF;
 	}
 
 /**
@@ -148,9 +148,7 @@ void createHandle () {
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL | OS.WS_CLIPSIBLINGS;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
-	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
-	}
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
 	hwndText = OS.CreateWindowEx (
         textExStyle,
         EditClass,
@@ -184,7 +182,7 @@ void createHandle () {
         null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-	SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);
 	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_ID, hwndUpDown);
 	if (OS.IsDBLocale) {
 		long /*int*/ hIMC = OS.ImmGetContext (handle);
@@ -193,7 +191,7 @@ void createHandle () {
 		OS.ImmReleaseContext (handle, hIMC);
 	}
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
-	OS.SendMessage (hwndUpDown, OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
+	OS.SendMessage (hwndUpDown, OS.UDM_SETPOS32, 0, 0);
 	pageIncrement = 10;
 	digits = 0;
 	TCHAR buffer = new TCHAR (getCodePage (), "0", true);
@@ -329,9 +327,7 @@ long /*int*/ borderHandle () {
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	if (hHint == SWT.DEFAULT) {
 		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 2 * getBorderWidthInPixels ();
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			upDownHeight += (style & SWT.BORDER) != 0 ? 1 : 3;
-		}
+		upDownHeight += (style & SWT.BORDER) != 0 ? 1 : 3;
 		trim.height = Math.max (trim.height, upDownHeight);
 	}
 	return new Point (trim.width, trim.height);
@@ -531,11 +527,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	if (OS.IsWinCE) {
-		return OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-	} else {
-		return (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
+	return (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 }
 
 int getSelectionText (boolean [] parseFail) {
@@ -624,17 +616,6 @@ public String getText () {
 public int getTextLimit () {
 	checkWidget ();
 	return (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
-}
-
-int mbcsToWcsPos (int mbcsPos) {
-	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
-	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
-	if (mbcsSize == 0) return 0;
-	if (mbcsPos >= mbcsSize) return mbcsSize;
-	byte [] buffer = new byte [mbcsSize + 1];
-	OS.GetWindowTextA (hwndText, buffer, mbcsSize + 1);
-	return OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, buffer, mbcsPos, null, 0);
 }
 
 /**
@@ -786,12 +767,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 			if (start [0] == end [0]) {
 				if (start [0] == 0) return true;
 				start [0] = start [0] - 1;
-				if (!OS.IsUnicode && OS.IsDBLocale) {
-					int [] newStart = new int [1], newEnd = new int [1];
-					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
-					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
-					if (start [0] != newStart [0]) start [0] = start [0] - 1;
-				}
 				start [0] = Math.max (start [0], 0);
 			}
 			break;
@@ -800,12 +775,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 				int length = OS.GetWindowTextLength (hwndText);
 				if (start [0] == length) return true;
 				end [0] = end [0] + 1;
-				if (!OS.IsUnicode && OS.IsDBLocale) {
-					int [] newStart = new int [1], newEnd = new int [1];
-					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
-					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
-					if (end [0] != newEnd [0]) end [0] = end [0] + 1;
-				}
 				end [0] = Math.min (end [0], length);
 			}
 			break;
@@ -862,12 +831,7 @@ public void setDigits (int value) {
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (value == this.digits) return;
 	this.digits = value;
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-	} else {
-		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
+	int pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	setSelection (pos, false, true, false);
 }
 
@@ -927,12 +891,7 @@ public void setMaximum (int value) {
 	int [] min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
 	if (value < min [0]) return;
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-	} else {
-		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
+	int pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);
 	if (pos > value) setSelection (value, true, true, false);
 }
@@ -955,12 +914,7 @@ public void setMinimum (int value) {
 	int [] max = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 	if (value > max [0]) return;
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-	} else {
-		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
+	int pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
 	if (pos < value) setSelection (value, true, true, false);
 }
@@ -1006,7 +960,7 @@ public void setSelection (int value) {
 
 void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 	if (setPos) {
-		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
+		OS.SendMessage (hwndUpDown, OS.UDM_SETPOS32, 0, value);
 	}
 	if (setText) {
 		String string;
@@ -1038,9 +992,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (hwndText, buffer);
 		OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
-		if (!OS.IsWinCE) {
-			OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hwndText, OS.OBJID_CLIENT, 0);
-		}
+		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hwndText, OS.OBJID_CLIENT, 0);
 	}
 	if (notify) sendSelectionEvent (SWT.Selection);
 }
@@ -1182,10 +1134,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		index++;
 	}
 	event.doit = index == string.length ();
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		event.start = mbcsToWcsPos (start);
-		event.end = mbcsToWcsPos (end);
-	}
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
@@ -1293,8 +1241,8 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	int textWidth = width - upDownWidth;
 	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-	SetWindowPos (hwndText, 0, 0, 0, textWidth + border, height, flags);
-	SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);
+	OS.SetWindowPos (hwndText, 0, 0, 0, textWidth + border, height, flags);
+	OS.SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);
 	return result;
 }
 
@@ -1430,12 +1378,7 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 			boolean [] parseFail = new boolean [1];
 			int value = getSelectionText (parseFail);
 			if (!parseFail [0]) {
-				int pos;
-				if (OS.IsWinCE) {
-					pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-				} else {
-					pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-				}
+				int pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 				if (pos != value) setSelection (value, true, false, true);
 			}
 			sendEvent (SWT.Modify);
@@ -1465,11 +1408,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		boolean [] parseFail = new boolean [1];
 		int value = getSelectionText (parseFail);
 		if (parseFail [0]) {
-			if (OS.IsWinCE) {
-				value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-			} else {
-				value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-			}
+			value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 		}
 		int newValue = value + delta;
 		int [] max = new int [1], min = new int [1];
@@ -1496,11 +1435,7 @@ LRESULT wmKillFocus (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
 	if (parseFail [0]) {
-		if (OS.IsWinCE) {
-			value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
-		} else {
-			value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-		}
+		value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 		setSelection (value, false, true, false);
 	}
 	return super.wmKillFocus (hwnd, wParam, lParam);

@@ -54,9 +54,7 @@ public class FileDialog extends Dialog {
 		*  is to only use OFN_ENABLEHOOK when the buffer has
 		*  overrun.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			USE_HOOK = false;
-		}
+		USE_HOOK = false;
 	}
 
 /**
@@ -250,25 +248,23 @@ public String open () {
 	* parent for the dialog to inherit.
 	*/
 	boolean enabled = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		if (dialogOrientation != parentOrientation) {
-			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
-			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
-			hwndOwner = OS.CreateWindowEx (
-				exStyle,
-				Shell.DialogClass,
-				null,
-				0,
-				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-				hwndParent,
-				0,
-				OS.GetModuleHandle (null),
-				null);
-			enabled = OS.IsWindowEnabled (hwndParent);
-			if (enabled) OS.EnableWindow (hwndParent, false);
-		}
+	int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	if (dialogOrientation != parentOrientation) {
+		int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+		if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+		hwndOwner = OS.CreateWindowEx (
+			exStyle,
+			Shell.DialogClass,
+			null,
+			0,
+			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+			hwndParent,
+			0,
+			OS.GetModuleHandle (null),
+			null);
+		enabled = OS.IsWindowEnabled (hwndParent);
+		if (enabled) OS.EnableWindow (hwndParent, false);
 	}
 
 	/* Convert the title and copy it into lpstrTitle */
@@ -334,7 +330,7 @@ public String open () {
 	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER | OS.OFN_ENABLESIZING;
-		if (!OS.IsWinCE && USE_HOOK) {
+		if (USE_HOOK) {
 			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
 			long /*int*/ lpfnHook = callback.getAddress ();
 			if (lpfnHook == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -375,15 +371,9 @@ public String open () {
 	* does not run for GetSaveFileName() or GetOpenFileName().  The
 	* fix is to allow async messages to run in the WH_FOREGROUNDIDLE
 	* hook instead.
-	*
-	* Bug in Windows 98.  For some reason, when certain operating
-	* system calls such as Shell_NotifyIcon(), GetOpenFileName()
-	* and GetSaveFileName() are made during the WH_FOREGROUNDIDLE
-	* hook, Windows hangs.  The fix is to disallow async messages
-	* during WH_FOREGROUNDIDLE.
 	*/
 	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
-	display.runMessagesInIdle = !OS.IsWin95;
+	display.runMessagesInIdle = true;
 	display.sendPreExternalEventDispatchEvent ();
 	/*
 	* Open the dialog.  If the open fails due to an invalid
@@ -422,26 +412,7 @@ public String open () {
 		TCHAR buffer = new TCHAR (0, struct.nMaxFile);
 		int byteCount1 = buffer.length () * TCHAR.sizeof;
 		OS.MoveMemory (buffer, lpstrFile, byteCount1);
-
-		/*
-		* Bug in WinCE.  For some reason, nFileOffset and nFileExtension
-		* are always zero on WinCE HPC. nFileOffset is always zero on
-		* WinCE PPC when using GetSaveFileName().  nFileOffset is correctly
-		* set on WinCE PPC when using OpenFileName().  The fix is to parse
-		* lpstrFile to calculate nFileOffset.
-		*
-		* Note: WinCE does not support multi-select file dialogs.
-		*/
 		int nFileOffset = struct.nFileOffset;
-		if (OS.IsWinCE && nFileOffset == 0) {
-			int index = 0;
-			while (index < buffer.length ()) {
-				int ch = buffer.tcharAt (index);
-				if (ch == 0) break;
-				if (ch == '\\') nFileOffset = index + 1;
-				index++;
-			}
-		}
 		if (nFileOffset > 0) {
 
 			/* Use the character encoding for the default locale */

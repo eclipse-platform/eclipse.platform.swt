@@ -232,12 +232,10 @@ Rectangle getBoundsInPixels () {
 	long /*int*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	if (OS.COMCTL32_MAJOR >= 6) {
-		MARGINS margins = new MARGINS ();
-		OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
-		rect.left -= margins.cxLeftWidth;
-		rect.right += margins.cxRightWidth;
-	}
+	MARGINS margins = new MARGINS ();
+	OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+	rect.left -= margins.cxLeftWidth;
+	rect.right += margins.cxRightWidth;
 	if (!parent.isLastItemOfRow (index)) {
 		rect.right += (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
 	}
@@ -367,7 +365,7 @@ public void setControl (Control control) {
 	if (showOld) oldControl.setVisible (true);
 	if (hwndAbove != 0 && hwndAbove != hwndChild) {
 		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-		SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
+		OS.SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
 	}
 }
 
@@ -493,12 +491,10 @@ Point getSizeInPixels() {
 	long /*int*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	if (OS.COMCTL32_MAJOR >= 6) {
-		MARGINS margins = new MARGINS ();
-		OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
-		rect.left -= margins.cxLeftWidth;
-		rect.right += margins.cxRightWidth;
-	}
+	MARGINS margins = new MARGINS ();
+	OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+	rect.left -= margins.cxLeftWidth;
+	rect.right += margins.cxRightWidth;
 	if (!parent.isLastItemOfRow (index)) {
 		rect.right += (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
 	}
@@ -563,11 +559,9 @@ void setSizeInPixels (int width, int height) {
 	* Do not set the size for the last item on the row.
 	*/
 	if (!parent.isLastItemOfRow (index)) {
-		if (OS.COMCTL32_MAJOR >= 6) {
-			MARGINS margins = new MARGINS ();
-			OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
-			cx -= margins.cxLeftWidth + margins.cxRightWidth;
-		}
+		MARGINS margins = new MARGINS ();
+		OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
+		cx -= margins.cxLeftWidth + margins.cxRightWidth;
 		int separator = (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
 		rbBand.cx = cx - separator;
 		rbBand.fMask |= OS.RBBIM_SIZE;

@@ -93,7 +93,7 @@ public class Text extends Scrollable {
 	* to stop the compiler from inlining.
 	*/
 	static {
-		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
+		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\r\n";
 	}
 
@@ -180,10 +180,8 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		case OS.WM_PAINT: {
 			boolean doubleBuffer = findImageControl () != null;
 			boolean drawMessage = false;
-			if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
-				if ((!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) || (style & SWT.READ_ONLY) != 0) {
-					drawMessage = hwnd != OS.GetFocus () && OS.GetWindowTextLength (handle) == 0;
-				}
+			if ((style & SWT.SINGLE) != 0 && (style & SWT.READ_ONLY) != 0 && message.length () > 0 ) {
+				drawMessage = hwnd != OS.GetFocus () && OS.GetWindowTextLength (handle) == 0;
 			}
 			if (doubleBuffer || drawMessage) {
 				long /*int*/ paintDC = 0;
@@ -209,10 +207,8 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 
 					OS.CallWindowProc (EditProc, hwnd, OS.WM_PAINT, hDC, lParam);
 					/*
-					* Bug in XP. Windows does not draw the cue message on XP when
-					* East Asian language pack is installed. The fix is to draw
-					* the cue messages ourselves.
-					* Note:  This bug is fixed on Vista.
+					* Bug in Windows.  Windows does not draw the cue message when the Edit
+					* control is read-only. The fix is to draw the cue messages ourselves.
 					*/
 					if (drawMessage) {
 						RECT rect = new RECT();
@@ -537,10 +533,6 @@ void applySegments () {
 	/* Get the current selection */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start [0]);
-		end [0] = mbcsToWcsPos (end [0]);
-	}
 	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify, oldIgnoreVerify = ignoreVerify;
 	ignoreCharacter = ignoreModify = ignoreVerify = true;
 	/*
@@ -555,10 +547,6 @@ void applySegments () {
 	/* Restore selection */
 	start [0] = translateOffset (start [0]);
 	end [0] = translateOffset (end [0]);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = wcsToMbcsPos (start [0]);
-		end [0] = wcsToMbcsPos (end [0]);
-	}
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	ignoreCharacter = oldIgnoreCharacter;
 	ignoreModify = oldIgnoreModify;
@@ -613,10 +601,6 @@ void clearSegments (boolean applyText) {
 	/* Get the current selection */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start[0]);
-		end [0]= mbcsToWcsPos (end [0]);
-	}
 	start [0] = untranslateOffset (start [0]);
 	end [0] = untranslateOffset (end[0]);
 	segments = null;
@@ -627,11 +611,6 @@ void clearSegments (boolean applyText) {
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
 	long /*int*/ undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
-	/* Restore selection */
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = wcsToMbcsPos (start [0]);
-		end [0] = wcsToMbcsPos (end [0]);
-	}
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	ignoreCharacter = oldIgnoreCharacter;
 	ignoreModify = oldIgnoreModify;
@@ -648,20 +627,7 @@ void clearSegments (boolean applyText) {
  */
 public void clearSelection () {
 	checkWidget ();
-	if (OS.IsWinCE) {
-		/*
-		* Bug in WinCE.  Calling EM_SETSEL with -1 and 0 is equivalent
-		* to calling EM_SETSEL with 0 and -1.  It causes the entire
-		* text to be selected instead of clearing the selection.  The
-		* fix is to set the start of the selection to the  end of the
-		* current selection.
-		*/
-		int [] end = new int [1];
-		OS.SendMessage (handle, OS.EM_GETSEL, (int []) null, end);
-		OS.SendMessage (handle, OS.EM_SETSEL, end [0], end [0]);
-	} else {
-		OS.SendMessage (handle, OS.EM_SETSEL, -1, 0);
-	}
+	OS.SendMessage (handle, OS.EM_SETSEL, -1, 0);
 }
 
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -788,13 +754,8 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	int length = text.length ();
 	char [] chars;
 	if (start < 0) start = 0;
-	if (OS.IsUnicode) {
-		chars = text.chars;
-		if (text.chars [length - 1] == 0) length--;
-	} else {
-		chars = new char [length];
-		length = OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, text.bytes, length, chars, length);
-	}
+	chars = text.chars;
+	if (text.chars [length - 1] == 0) length--;
 	if (end == -1) end = length;
 	if (segments != null && end > segments [0]) {
 		int nSegments = segments.length;
@@ -860,14 +821,6 @@ void fixAlignment () {
 	int bits1 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	int bits2 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
-		/*
-		* Bug in Windows 98. When the edit control is created
-		* with the style ES_RIGHT it automatically sets the
-		* WS_EX_LEFTSCROLLBAR bit.  The fix is to clear the
-		* bit when the orientation of the control is left
-		* to right.
-		*/
-		bits1 &= ~OS.WS_EX_LEFTSCROLLBAR;
 		if ((style & SWT.RIGHT) != 0) {
 			bits1 |= OS.WS_EX_RIGHT;
 			bits2 |= OS.ES_RIGHT;
@@ -1018,23 +971,21 @@ public int getCaretPosition () {
 		int startLine = (int)/*64*/OS.SendMessage (handle, OS.EM_LINEFROMCHAR, start [0], 0);
 		int endLine = (int)/*64*/OS.SendMessage (handle, OS.EM_LINEFROMCHAR, end [0], 0);
 		if (startLine == endLine) {
-			if (!OS.IsWinCE) {
-				int idThread = OS.GetWindowThreadProcessId (handle, null);
-				GUITHREADINFO lpgui = new GUITHREADINFO ();
-				lpgui.cbSize = GUITHREADINFO.sizeof;
-				if (OS.GetGUIThreadInfo (idThread, lpgui)) {
-					if (lpgui.hwndCaret == handle || lpgui.hwndCaret == 0) {
-						POINT ptCurrentPos = new POINT ();
-						if (OS.GetCaretPos (ptCurrentPos)) {
-							long /*int*/ endPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, end [0], 0);
-							if (endPos == -1) {
-								long /*int*/ startPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
-								int startX = OS.GET_X_LPARAM (startPos);
-								if (ptCurrentPos.x > startX) caret = end [0];
-							} else {
-								int endX = OS.GET_X_LPARAM (endPos);
-								if (ptCurrentPos.x >= endX) caret = end [0];
-							}
+			int idThread = OS.GetWindowThreadProcessId (handle, null);
+			GUITHREADINFO lpgui = new GUITHREADINFO ();
+			lpgui.cbSize = GUITHREADINFO.sizeof;
+			if (OS.GetGUIThreadInfo (idThread, lpgui)) {
+				if (lpgui.hwndCaret == handle || lpgui.hwndCaret == 0) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						long /*int*/ endPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, end [0], 0);
+						if (endPos == -1) {
+							long /*int*/ startPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
+							int startX = OS.GET_X_LPARAM (startPos);
+							if (ptCurrentPos.x > startX) caret = end [0];
+						} else {
+							int endX = OS.GET_X_LPARAM (endPos);
+							if (ptCurrentPos.x >= endX) caret = end [0];
 						}
 					}
 				}
@@ -1045,7 +996,6 @@ public int getCaretPosition () {
 			if (caretLine == endLine) caret = end [0];
 		}
 	}
-	if (!OS.IsUnicode && OS.IsDBLocale) caret = mbcsToWcsPos (caret);
 	return untranslateOffset (caret);
 }
 
@@ -1062,7 +1012,6 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
-	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
 	return untranslateOffset (length);
 }
 
@@ -1105,9 +1054,7 @@ public boolean getDoubleClickEnabled () {
  */
 public char getEchoChar () {
 	checkWidget ();
-	char echo = (char) OS.SendMessage (handle, OS.EM_GETPASSWORDCHAR, 0, 0);
-	if (echo != 0 && (echo = Display.mbcsToWcs (echo, getCodePage ())) == 0) echo = '*';
-	return echo;
+	return (char) OS.SendMessage (handle, OS.EM_GETPASSWORDCHAR, 0, 0);
 }
 
 /**
@@ -1247,7 +1194,6 @@ public String getMessage () {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	long /*int*/ lParam = OS.MAKELPARAM (point.x, point.y);
 	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
-	if (!OS.IsUnicode && OS.IsDBLocale) position = mbcsToWcsPos (position);
 	return untranslateOffset (position);
 }
 
@@ -1273,10 +1219,6 @@ public Point getSelection () {
 	checkWidget ();
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start [0]);
-		end [0] = mbcsToWcsPos (end [0]);
-	}
 	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
@@ -1443,7 +1385,6 @@ public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
-	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
 	end = Math.min (end, untranslateOffset (length) - 1);
 	if (start > end) return "";
 	start = Math.max (0, start);
@@ -1581,46 +1522,6 @@ public void insert (String string) {
 		super.updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
 	applySegments ();
-}
-
-int mbcsToWcsPos (int mbcsPos) {
-	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
-	int cp = getCodePage ();
-	int wcsTotal = 0, mbcsTotal = 0;
-	byte [] buffer = new byte [128];
-	String delimiter = getLineDelimiter();
-	int delimiterSize = delimiter.length ();
-	int count = (int)/*64*/OS.SendMessageA (handle, OS.EM_GETLINECOUNT, 0, 0);
-	for (int line=0; line<count; line++) {
-		int wcsSize = 0;
-		int linePos = (int)/*64*/OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);
-		int mbcsSize = (int)/*64*/OS.SendMessageA (handle, OS.EM_LINELENGTH, linePos, 0);
-		if (mbcsSize != 0) {
-			if (mbcsSize + delimiterSize > buffer.length) {
-				buffer = new byte [mbcsSize + delimiterSize];
-			}
-			//ENDIAN
-			buffer [0] = (byte) (mbcsSize & 0xFF);
-			buffer [1] = (byte) (mbcsSize >> 8);
-			mbcsSize = (int)/*64*/OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);
-			wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, mbcsSize, null, 0);
-		}
-		if (line - 1 != count) {
-			for (int i=0; i<delimiterSize; i++) {
-				buffer [mbcsSize++] = (byte) delimiter.charAt (i);
-			}
-			wcsSize += delimiterSize;
-		}
-		if ((mbcsTotal + mbcsSize) >= mbcsPos) {
-			int bufferSize = mbcsPos - mbcsTotal;
-			wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, bufferSize, null, 0);
-			return wcsTotal + wcsSize;
-		}
-		wcsTotal += wcsSize;
-		mbcsTotal += mbcsSize;
-	}
-	return wcsTotal;
 }
 
 /**
@@ -1837,12 +1738,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 					start [0] = start [0] - DELIMITER.length ();
 				} else {
 					start [0] = start [0] - 1;
-					if (!OS.IsUnicode && OS.IsDBLocale) {
-						int [] newStart = new int [1], newEnd = new int [1];
-						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
-						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-						if (start [0] != newStart [0]) start [0] = start [0] - 1;
-					}
 				}
 				start [0] = Math.max (start [0], 0);
 			}
@@ -1857,12 +1752,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 					end [0] = end [0] + DELIMITER.length ();
 				} else {
 					end [0] = end [0] + 1;
-					if (!OS.IsUnicode && OS.IsDBLocale) {
-						int [] newStart = new int [1], newEnd = new int [1];
-						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
-						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-						if (end [0] != newEnd [0]) end [0] = end [0] + 1;
-					}
 				}
 				end [0] = Math.min (end [0], length);
 			}
@@ -1925,7 +1814,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 			if (start [0] != 0 || end [0] != 0) {
-				SetWindowPos (handle, 0, x, y, width, height, flags);
+				OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 				OS.SendMessage (handle, OS.EM_SETSEL, 0, 0);
 				OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 				return;
@@ -2018,9 +1907,6 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return;
-	if (echo != 0) {
-		if ((echo = (char) Display.wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
-	}
 	allowPasswordChar = true;
 	OS.SendMessage (handle, OS.EM_SETPASSWORDCHAR, echo, 0);
 	allowPasswordChar = false;
@@ -2065,9 +1951,7 @@ void setMargins () {
 	* fix is to set the margins to zero.
 	*/
 	if ((style & SWT.SEARCH) != 0) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
-		}
+		OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
 	}
 }
 
@@ -2094,18 +1978,12 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if (!OS.IsWinCE) {
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.ES_MULTILINE) == 0) {
-				int length = message.length ();
-				char [] chars = new char [length + 1];
-				message.getChars(0, length, chars, 0);
-				OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
-			}
-		} else {
-			OS.InvalidateRect (handle, null, true);
-		}
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.ES_MULTILINE) == 0) {
+		int length = message.length ();
+		char [] chars = new char [length + 1];
+		message.getChars(0, length, chars, 0);
+		OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
 	}
 }
 
@@ -2157,7 +2035,6 @@ public void setOrientation (int orientation) {
 public void setSelection (int start) {
 	checkWidget ();
 	start = translateOffset (start);
-	if (!OS.IsUnicode && OS.IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -2191,10 +2068,6 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	start = translateOffset (start);
 	end = translateOffset (end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start = wcsToMbcsPos (start);
-		end = wcsToMbcsPos (end);
-	}
 	OS.SendMessage (handle, OS.EM_SETSEL, start, end);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -2532,10 +2405,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		event.start = mbcsToWcsPos (start);
-		event.end = mbcsToWcsPos (end);
-	}
 	event.start = untranslateOffset (event.start);
 	event.end = untranslateOffset (event.end);
 
@@ -2548,53 +2417,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
-}
-
-int wcsToMbcsPos (int wcsPos) {
-	if (wcsPos <= 0) return 0;
-	if (OS.IsUnicode) return wcsPos;
-	int cp = getCodePage ();
-	int wcsTotal = 0, mbcsTotal = 0;
-	byte [] buffer = new byte [128];
-	String delimiter = getLineDelimiter ();
-	int delimiterSize = delimiter.length ();
-	int count = (int)/*64*/OS.SendMessageA (handle, OS.EM_GETLINECOUNT, 0, 0);
-	for (int line=0; line<count; line++) {
-		int wcsSize = 0;
-		int linePos = (int)/*64*/OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);
-		int mbcsSize = (int)/*64*/OS.SendMessageA (handle, OS.EM_LINELENGTH, linePos, 0);
-		if (mbcsSize != 0) {
-			if (mbcsSize + delimiterSize > buffer.length) {
-				buffer = new byte [mbcsSize + delimiterSize];
-			}
-			//ENDIAN
-			buffer [0] = (byte) (mbcsSize & 0xFF);
-			buffer [1] = (byte) (mbcsSize >> 8);
-			mbcsSize = (int)/*64*/OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);
-			wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, mbcsSize, null, 0);
-		}
-		if (line - 1 != count) {
-			for (int i=0; i<delimiterSize; i++) {
-				buffer [mbcsSize++] = (byte) delimiter.charAt (i);
-			}
-			wcsSize += delimiterSize;
-		}
-		if ((wcsTotal + wcsSize) >= wcsPos) {
-			wcsSize = 0;
-			int index = 0;
-			while (index < mbcsSize) {
-				if ((wcsTotal + wcsSize) == wcsPos) {
-					return mbcsTotal + index;
-				}
-				if (OS.IsDBCSLeadByte (buffer [index++])) index++;
-				wcsSize++;
-			}
-			return mbcsTotal + mbcsSize;
-		}
-		wcsTotal += wcsSize;
-		mbcsTotal += mbcsSize;
-	}
-	return mbcsTotal;
 }
 
 @Override
@@ -2618,7 +2440,7 @@ int widgetStyle () {
 		*/
 		if ((style & SWT.READ_ONLY) != 0) {
 			if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.PASSWORD)) == 0) {
-				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				if (OS.IsAppThemed ()) {
 					bits |= OS.ES_MULTILINE;
 				}
 			}
@@ -2732,12 +2554,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case SWT.DEL:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-				/*
-				 * 'Ctrl + BackSpace' functionality uses 'EM_REPLACESEL' native
-				 * API which is supported from Windows Vista. Adding OS version
-				 * check to avoid crash on WinXP, see more details on bug 496939
-				 */
-				if (OS.WIN32_VERSION < OS.VERSION (6, 0) || (style & SWT.READ_ONLY) != 0 || (style & SWT.PASSWORD) != 0) return LRESULT.ZERO;
+				if ((style & SWT.READ_ONLY) != 0 || (style & SWT.PASSWORD) != 0) return LRESULT.ZERO;
 				Point selection = getSelection ();
 				int x = selection.x;
 				int y = selection.y;
@@ -2804,7 +2621,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null && background == -1) {
 					if ((state & THEME_BACKGROUND) != 0) {
-						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+						if (OS.IsAppThemed ()) {
 							control = findThemeControl ();
 							if (control != null) {
 								RECT rect = new RECT ();
@@ -2825,18 +2642,6 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
-
-	/*
-	* Bug in WinCE PPC.  For some reason, sending WM_GETDLGCODE
-	* to a multi-line edit control causes it to ignore return and
-	* tab keys.  The fix is to return the value which is normally
-	* returned by the text window proc on other versions of Windows.
-	*/
-	if (OS.IsPPC) {
-		if ((style & SWT.MULTI) != 0 && (style & SWT.READ_ONLY) == 0 && lParam == 0) {
-			return new LRESULT (OS.DLGC_HASSETSEL | OS.DLGC_WANTALLKEYS | OS.DLGC_WANTCHARS);
-		}
-	}
 
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -2943,51 +2748,6 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.IsPPC) {
-		LRESULT result = null;
-		Display display = this.display;
-		display.captureChanged = false;
-		boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-		/*
-		* Note: On WinCE PPC, only attempt to recognize the gesture for
-		* a context menu when the control contains a valid menu or there
-		* are listeners for the MenuDetect event.
-		*
-		* Note: On WinCE PPC, the gesture that brings up a popup menu
-		* on the text widget must keep the current text selection.  As a
-		* result, the window proc is only called if the menu is not shown.
-		*/
-		boolean hasMenu = menu != null && !menu.isDisposed ();
-		if (hasMenu || hooks (SWT.MenuDetect)) {
-			int x = OS.GET_X_LPARAM (lParam);
-			int y = OS.GET_Y_LPARAM (lParam);
-			SHRGINFO shrg = new SHRGINFO ();
-			shrg.cbSize = SHRGINFO.sizeof;
-			shrg.hwndClient = handle;
-			shrg.ptDown_x = x;
-			shrg.ptDown_y = y;
-			shrg.dwFlags = OS.SHRG_RETURNCMD;
-			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) {
-				showMenu (x, y);
-				return LRESULT.ONE;
-			}
-		}
-		if (dispatch) {
-			result = new LRESULT (callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam));
-		} else {
-			result = LRESULT.ZERO;
-		}
-		if (!display.captureChanged && !isDisposed ()) {
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
-		}
-		return result;
-	}
-	 return super.WM_LBUTTONDOWN (wParam, lParam);
-}
-
-@Override
 LRESULT WM_PASTE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
@@ -3086,7 +2846,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null && background == -1) {
 					if ((state & THEME_BACKGROUND) != 0) {
-						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+						if (OS.IsAppThemed ()) {
 							control = findThemeControl ();
 							if (control != null) {
 								OS.SetTextColor (wParam, getForegroundPixel ());

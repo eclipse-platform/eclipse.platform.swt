@@ -684,7 +684,6 @@ public class StyledText extends Canvas {
 		static final int DEFAULT_BACKGROUND = 1;
 		List<Color> colorTable;
 		List<Font> fontTable;
-		boolean WriteUnicode;
 
 	/**
 	 * Creates a RTF writer that writes content starting at offset "start"
@@ -702,7 +701,6 @@ public class StyledText extends Canvas {
 		colorTable.add(getForeground());
 		colorTable.add(getBackground());
 		fontTable.add(getFont());
-		setUnicode();
 	}
 	/**
 	 * Closes the RTF writer. Once closed no more content can be written.
@@ -751,36 +749,6 @@ public class StyledText extends Canvas {
 		return index;
 	}
 	/**
-	 * Determines if Unicode RTF should be written.
-	 * Don't write Unicode RTF on Windows 95/98/ME or NT.
-	 */
-	void setUnicode() {
-		final String Win95 = "windows 95";
-		final String Win98 = "windows 98";
-		final String WinME = "windows me";
-		final String WinNT = "windows nt";
-		String osName = System.getProperty("os.name").toLowerCase();
-		String osVersion = System.getProperty("os.version");
-		int majorVersion = 0;
-
-		if (osName.startsWith(WinNT) && osVersion != null) {
-			int majorIndex = osVersion.indexOf('.');
-			if (majorIndex != -1) {
-				osVersion = osVersion.substring(0, majorIndex);
-				try {
-					majorVersion = Integer.parseInt(osVersion);
-				} catch (NumberFormatException exception) {
-					// ignore exception. version number remains unknown.
-					// will write without Unicode
-				}
-			}
-		}
-		WriteUnicode =	!osName.startsWith(Win95) &&
-						!osName.startsWith(Win98) &&
-						!osName.startsWith(WinME) &&
-						(!osName.startsWith(WinNT) || majorVersion > 4);
-	}
-	/**
 	 * Appends the specified segment of "string" to the RTF data.
 	 * Copy from <code>start</code> up to, but excluding, <code>end</code>.
 	 *
@@ -792,7 +760,7 @@ public class StyledText extends Canvas {
 	void write(String string, int start, int end) {
 		for (int index = start; index < end; index++) {
 			char ch = string.charAt(index);
-			if (ch > 0x7F && WriteUnicode) {
+			if (ch > 0x7F) {
 				// write the sub string from the last escaped character
 				// to the current one. Fixes bug 21698.
 				if (index > start) {

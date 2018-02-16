@@ -169,13 +169,6 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 }
 
 static int checkStyle (int style) {
-	/*
-	* When the SWT.TOP style has not been set, force the
-	* tabs to be on the bottom for tab folders on PPC.
-	*/
-	if (OS.IsPPC) {
-		if ((style & SWT.TOP) == 0) style |= SWT.BOTTOM;
-	}
 	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
 
 	/*
@@ -259,11 +252,6 @@ void createItem (TabItem item, int index) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-
-	/* Enable the flat look for tab folders on PPC */
-	if (OS.IsPPC) {
-		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
-	}
 
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -964,15 +952,13 @@ LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	* current tooltip and add it again every time
 	* the mouse leaves the control.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
-		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-				OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
-				OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
-			}
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+		if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+			OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
+			OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
 		}
 	}
 	return result;
@@ -1034,10 +1020,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	* and WS_EX_NOINHERITLAYOUT are specified for the tab folder, the buddy control
 	* will not be oriented correctly.  The fix is to explicitly set the orientation
 	* for the buddy control.
-	*
-	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return result;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int code = OS.LOWORD (wParam);
 		switch (code) {
@@ -1088,7 +1071,7 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 		return result;
 	}
 	// TEMPORARY CODE
-//	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+//	if (OS.IsAppThemed ()) {
 //		OS.InvalidateRect (handle, null, true);
 //		return result;
 //	}

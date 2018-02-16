@@ -223,21 +223,19 @@ protected void create(DeviceData deviceData) {
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
 		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
 	} else {
-		if (!OS.IsWinCE) {
-			long /*int*/ [] hPrinter = new long /*int*/ [1];
-			OS.OpenPrinter(device, hPrinter, 0);
-			if (hPrinter[0] != 0) {
-				int dwNeeded = OS.DocumentProperties(0, hPrinter[0], device, 0, 0, 0);
-				if (dwNeeded >= 0) {
-					lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, dwNeeded);
-					int rc = OS.DocumentProperties(0, hPrinter[0], device, lpInitData, 0, OS.DM_OUT_BUFFER);
-					if (rc != OS.IDOK) {
-						OS.HeapFree(hHeap, 0, lpInitData);
-						lpInitData = 0;
-					}
+		long /*int*/ [] hPrinter = new long /*int*/ [1];
+		OS.OpenPrinter(device, hPrinter, 0);
+		if (hPrinter[0] != 0) {
+			int dwNeeded = OS.DocumentProperties(0, hPrinter[0], device, 0, 0, 0);
+			if (dwNeeded >= 0) {
+				lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, dwNeeded);
+				int rc = OS.DocumentProperties(0, hPrinter[0], device, lpInitData, 0, OS.DM_OUT_BUFFER);
+				if (rc != OS.IDOK) {
+					OS.HeapFree(hHeap, 0, lpInitData);
+					lpInitData = 0;
 				}
-				OS.ClosePrinter(hPrinter[0]);
 			}
+			OS.ClosePrinter(hPrinter[0]);
 		}
 	}
 

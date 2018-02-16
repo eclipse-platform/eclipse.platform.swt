@@ -533,7 +533,7 @@ public void setToolTipText (String string) {
 	/*
 	* Note that the size of the szTip field is different in version 5.0 of shell32.dll.
 	*/
-	int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
+	int length = 128;
 	if (OS.IsUnicode) {
 		char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
 		length = Math.min (length - 1, buffer.length ());
@@ -578,22 +578,10 @@ public void setVisible (boolean visible) {
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
-	if (OS.SHELL32_MAJOR < 5) {
-		if (visible) {
-			iconData.uFlags = OS.NIF_MESSAGE;
-			iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-			OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-			setImage (image);
-			setToolTipText (toolTipText);
-		} else {
-			OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-		}
-	} else {
-		iconData.uFlags = OS.NIF_STATE;
-		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-		iconData.dwStateMask = OS.NIS_HIDDEN;
-		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-	}
+	iconData.uFlags = OS.NIF_STATE;
+	iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+	iconData.dwStateMask = OS.NIS_HIDDEN;
+	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 	if (!visible) sendEvent (SWT.Hide);
 }
 

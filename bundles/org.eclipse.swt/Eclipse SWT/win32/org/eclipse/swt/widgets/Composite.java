@@ -164,7 +164,7 @@ public void changed (Control[] changed) {
 
 @Override
 void checkBuffered () {
-	if (OS.IsWinCE || (state & CANVAS) == 0) {
+	if ((state & CANVAS) == 0) {
 		super.checkBuffered ();
 	}
 }
@@ -997,10 +997,10 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
 //			}
 			if (defer) {
-				hdwp = DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+				hdwp = OS.DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 				if (hdwp == 0) return false;
 			} else {
-				SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+				OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 			}
 		}
 	}
@@ -1015,13 +1015,11 @@ void resizeEmbeddedHandle(long /*int*/ embeddedHandle, int width, int height) {
 	if (threadId != OS.GetCurrentThreadId ()) {
 		if (processID [0] == OS.GetCurrentProcessId ()) {
 			if (display.msgHook == 0) {
-				if (!OS.IsWinCE) {
-					display.getMsgCallback = new Callback (display, "getMsgProc", 3);
-					display.getMsgProc = display.getMsgCallback.getAddress ();
-					if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-					display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
-					OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
-				}
+				display.getMsgCallback = new Callback (display, "getMsgProc", 3);
+				display.getMsgProc = display.getMsgCallback.getAddress ();
+				if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+				display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
+				OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 			}
 		}
 		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_ASYNCWINDOWPOS;
@@ -1253,10 +1251,8 @@ String toolTipText (NMTTDISPINFO hdr) {
 			* Bug in Windows.  On Windows 7, tool tips hang when displaying large
 			* unwrapped strings. The fix is to wrap the string ourselves.
 			*/
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if (string.length () > TOOLTIP_LIMIT / 4) {
-					string = display.wrapText (string, handle, toolTip.getWidth ());
-				}
+			if (string.length () > TOOLTIP_LIMIT / 4) {
+				string = display.wrapText (string, handle, toolTip.getWidth ());
 			}
 		}
 		return string;
@@ -1390,7 +1386,7 @@ void updateOrientation () {
 		RECT rect = rects [i];
 		control.setOrientation (orientation);
 		int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		SetWindowPos (control.topHandle (), 0, rect.left, rect.top, 0, 0, flags);
+		OS.SetWindowPos (control.topHandle (), 0, rect.left, rect.top, 0, 0, flags);
 	}
 }
 
@@ -1476,7 +1472,7 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	* and the point is not in the client area, and redraw
 	* the trim, which somehow fixes the next WM_NCHITTEST.
 	*/
-	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		if ((state & CANVAS)!= 0) {
 			long /*int*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 			if (code == OS.HTCLIENT) {
@@ -1517,12 +1513,9 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 
 	/* Set the clipping bits */
-	int oldBits = 0, newBits = 0;
-	if (!OS.IsWinCE) {
-		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;
-		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	}
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;
+	if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 
 	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -1531,10 +1524,8 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 		/* Use the buffered paint when possible */
 		boolean bufferedPaint = false;
 		if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if ((style & (SWT.NO_MERGE_PAINTS | SWT.RIGHT_TO_LEFT)) == 0) {
-					if ((style & SWT.TRANSPARENT) == 0) bufferedPaint = true;
-				}
+			if ((style & (SWT.NO_MERGE_PAINTS | SWT.RIGHT_TO_LEFT | SWT.TRANSPARENT)) == 0) {
+				bufferedPaint = true;
 			}
 		}
 		if (bufferedPaint) {
@@ -1586,21 +1577,17 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0 || (style & SWT.NO_MERGE_PAINTS) != 0) {
 				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
-					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-						if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
-							int nBytes = OS.GetRegionData (sysRgn, 0, null);
-							int [] lpRgnData = new int [nBytes / 4];
-							OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-							long /*int*/ newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
-							OS.DeleteObject (sysRgn);
-							sysRgn = newSysRgn;
-						}
+					if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
+						int nBytes = OS.GetRegionData (sysRgn, 0, null);
+						int [] lpRgnData = new int [nBytes / 4];
+						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+						long /*int*/ newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+						OS.DeleteObject (sysRgn);
+						sysRgn = newSysRgn;
 					}
-					if (OS.IsWinNT) {
-						POINT pt = new POINT();
-						OS.MapWindowPoints (0, handle, pt, 1);
-						OS.OffsetRgn (sysRgn, pt.x, pt.y);
-					}
+					POINT pt = new POINT();
+					OS.MapWindowPoints (0, handle, pt, 1);
+					OS.OffsetRgn (sysRgn, pt.x, pt.y);
 				}
 			}
 
@@ -1694,7 +1681,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 
 	/* Restore the clipping bits */
-	if (!OS.IsWinCE && !isDisposed ()) {
+	if (!isDisposed ()) {
 		if (newBits != oldBits) {
 			/*
 			* It is possible (but unlikely), that application
@@ -1787,7 +1774,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 			}
 		}
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			if (findThemeControl () != null) redrawChildren ();
 		}
 	}
@@ -1831,23 +1818,22 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	* does not redraw properly.  The fix is to detect this case and
 	* redraw the non-client area.
 	*/
-	if (!OS.IsWinCE) {
-		int cmd = (int)/*64*/wParam & 0xFFF0;
-		switch (cmd) {
-			case OS.SC_HSCROLL:
-			case OS.SC_VSCROLL:
-				boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
-				boolean showVBar = verticalBar != null && verticalBar.getVisible ();
-				long /*int*/ code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
-				if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
-					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
-						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
-						OS.RedrawWindow (handle, null, 0, flags);
-					}
-				if (code == 0) return LRESULT.ZERO;
-				return new LRESULT (code);
-		}
+	int cmd = (int)/*64*/wParam & 0xFFF0;
+	switch (cmd) {
+		case OS.SC_HSCROLL:
+		case OS.SC_VSCROLL:
+			boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
+			boolean showVBar = verticalBar != null && verticalBar.getVisible ();
+			long /*int*/ code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
+			if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
+				(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
+					int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
+			if (code == 0) return LRESULT.ZERO;
+			return new LRESULT (code);
 	}
+
 	/* Return the result */
 	return result;
 }
@@ -1868,7 +1854,7 @@ LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	if (result != null) return result;
 	long /*int*/ borderHandle = borderHandle ();
 	if ((state & CANVAS) != 0 || (hwnd == borderHandle && handle != borderHandle)) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
 				long /*int*/ code = 0;
@@ -1895,137 +1881,121 @@ LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 
 @Override
 LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
-	if (!OS.IsWinCE) {
-		switch (hdr.code) {
+	switch (hdr.code) {
+		/*
+		* Feature in Windows.  When the tool tip control is
+		* created, the parent of the tool tip is the shell.
+		* If SetParent () is used to reparent the tool bar
+		* into a new shell, the tool tip is not reparented
+		* and pops up underneath the new shell.  The fix is
+		* to make sure the tool tip is a topmost window.
+		*/
+		case OS.TTN_SHOW:
+		case OS.TTN_POP: {
 			/*
-			* Feature in Windows.  When the tool tip control is
-			* created, the parent of the tool tip is the shell.
-			* If SetParent () is used to reparent the tool bar
-			* into a new shell, the tool tip is not reparented
-			* and pops up underneath the new shell.  The fix is
-			* to make sure the tool tip is a topmost window.
-			*/
-			case OS.TTN_SHOW:
-			case OS.TTN_POP: {
-				/*
-				* Bug in Windows 98 and NT.  Setting the tool tip to be the
-				* top most window using HWND_TOPMOST can result in a parent
-				* dialog shell being moved behind its parent if the dialog
-				* has a sibling that is currently on top.  The fix is to
-				* lock the z-order of the active window.
-				*
-				* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
-				* to clear the topmost state of a window whose parent is already
-				* topmost clears the topmost state of the parent.  The fix is to
-				* check if the parent is already on top and neither set or clear
-				* the topmost status of the tool tip.
-				*/
-				long /*int*/ hwndParent = hdr.hwndFrom;
-				do {
-					hwndParent = OS.GetParent (hwndParent);
-					if (hwndParent == 0) break;
-					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-					if ((bits & OS.WS_EX_TOPMOST) != 0) break;
-				} while (true);
-				if (hwndParent != 0) break;
-				/*
-				 * Bug in Windows.  TTN_SHOW is sent for inactive shells.  When
-				 * SetWindowPos is called as a reaction, inactive shells can
-				 * wrongly end up on top.  The fix is to swallow such requests.
-				 *
-				 * A visible effect is that spurious tool tips can show up and
-				 * disappear in a split second.  This is a mostly harmless
-				 * feature that can also be observed in the Windows Explorer.
-				 * See bug 491627 for more details.
-				 */
-				if (display.getActiveShell () == null) return LRESULT.ONE;
-
-				display.lockActiveWindow = true;
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				long /*int*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
-				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
-				display.lockActiveWindow = false;
-				break;
-			}
-			/*
-			* Bug in Windows 98.  For some reason, the tool bar control
-			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
-			* the tool tip text and the tab folder control sends only
-			* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
-			* even though it should never be sent on Windows 98.
+			* Bug in Windows 98 and NT.  Setting the tool tip to be the
+			* top most window using HWND_TOPMOST can result in a parent
+			* dialog shell being moved behind its parent if the dialog
+			* has a sibling that is currently on top.  The fix is to
+			* lock the z-order of the active window.
 			*
-			* NOTE:  Because the size of NMTTDISPINFO differs between
-			* Windows 98 and NT, guard against the case where the wrong
-			* kind of message occurs by inlining the memory moves and
-			* the UNICODE conversion code.
+			* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
+			* to clear the topmost state of a window whose parent is already
+			* topmost clears the topmost state of the parent.  The fix is to
+			* check if the parent is already on top and neither set or clear
+			* the topmost status of the tool tip.
 			*/
-			case OS.TTN_GETDISPINFOA:
-			case OS.TTN_GETDISPINFOW: {
-				NMTTDISPINFO lpnmtdi;
-				if (hdr.code == OS.TTN_GETDISPINFOA) {
-					lpnmtdi = new NMTTDISPINFOA ();
-					OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
-				} else {
-					lpnmtdi = new NMTTDISPINFOW ();
-					OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
-				}
-				String string = toolTipText (lpnmtdi);
-				if (string != null) {
-					Shell shell = getShell ();
-					string = Display.withCrLf (string);
-					/*
-					* Bug in Windows.  On Windows 7, tool tips hang when displaying large
-					* strings. The fix is to limit the tool tip string to 4Kb.
-					*/
-					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-						if (string.length() > TOOLTIP_LIMIT) {
-							string = string.substring(0, TOOLTIP_LIMIT);
-						}
-					}
-					/*
-					 * Bug 475858: In Japanese like languages where mnemonics are not taken from the
-					 * source label text but appended in parentheses like "(&M)" at end. In order to
-					 * allow the reuse of such label text as a tool-tip text as well, "(&M)" like
-					 * character sequence has to be removed from the end of CJK-style mnemonics.
-					 */
-					char [] chars = fixMnemonic (string, false, true);
+			long /*int*/ hwndParent = hdr.hwndFrom;
+			do {
+				hwndParent = OS.GetParent (hwndParent);
+				if (hwndParent == 0) break;
+				int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+				if ((bits & OS.WS_EX_TOPMOST) != 0) break;
+			} while (true);
+			if (hwndParent != 0) break;
+			/*
+			 * Bug in Windows.  TTN_SHOW is sent for inactive shells.  When
+			 * SetWindowPos is called as a reaction, inactive shells can
+			 * wrongly end up on top.  The fix is to swallow such requests.
+			 *
+			 * A visible effect is that spurious tool tips can show up and
+			 * disappear in a split second.  This is a mostly harmless
+			 * feature that can also be observed in the Windows Explorer.
+			 * See bug 491627 for more details.
+			 */
+			if (display.getActiveShell () == null) return LRESULT.ONE;
 
-					/*
-					* Ensure that the orientation of the tool tip matches
-					* the orientation of the control.
-					*/
-					Widget widget = null;
-					long /*int*/ hwnd = hdr.idFrom;
-					if ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0) {
-						widget = display.getControl (hwnd);
-					} else {
-						if (hdr.hwndFrom == shell.toolTipHandle || hdr.hwndFrom == shell.balloonTipHandle) {
-							widget = shell.findToolTip ((int)/*64*/hdr.idFrom);
-						}
-					}
-					if (widget != null) {
-						int style = widget.getStyle();
-						int flags = SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION;
-						if ((style & flags) != 0 && (style & flags) != flags) {
-							lpnmtdi.uFlags |= OS.TTF_RTLREADING;
-						} else {
-							lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
-						}
-					}
-
-					if (hdr.code == OS.TTN_GETDISPINFOA) {
-						byte [] bytes = new byte [chars.length * 2];
-						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
-						shell.setToolTipText (lpnmtdi, bytes);
-						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
-					} else {
-						shell.setToolTipText (lpnmtdi, chars);
-						OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
-					}
-					return LRESULT.ZERO;
-				}
-				break;
+			display.lockActiveWindow = true;
+			int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
+			long /*int*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+			OS.SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
+			display.lockActiveWindow = false;
+			break;
+		}
+		case OS.TTN_GETDISPINFOA:
+		case OS.TTN_GETDISPINFOW: {
+			NMTTDISPINFO lpnmtdi;
+			if (hdr.code == OS.TTN_GETDISPINFOA) {
+				lpnmtdi = new NMTTDISPINFOA ();
+				OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
+			} else {
+				lpnmtdi = new NMTTDISPINFOW ();
+				OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
 			}
+			String string = toolTipText (lpnmtdi);
+			if (string != null) {
+				Shell shell = getShell ();
+				string = Display.withCrLf (string);
+				/*
+				* Bug in Windows.  On Windows 7, tool tips hang when displaying large
+				* strings. The fix is to limit the tool tip string to 4Kb.
+				*/
+				if (string.length() > TOOLTIP_LIMIT) {
+					string = string.substring(0, TOOLTIP_LIMIT);
+				}
+				/*
+				 * Bug 475858: In Japanese like languages where mnemonics are not taken from the
+				 * source label text but appended in parentheses like "(&M)" at end. In order to
+				 * allow the reuse of such label text as a tool-tip text as well, "(&M)" like
+				 * character sequence has to be removed from the end of CJK-style mnemonics.
+				 */
+				char [] chars = fixMnemonic (string, false, true);
+
+				/*
+				* Ensure that the orientation of the tool tip matches
+				* the orientation of the control.
+				*/
+				Widget widget = null;
+				long /*int*/ hwnd = hdr.idFrom;
+				if ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0) {
+					widget = display.getControl (hwnd);
+				} else {
+					if (hdr.hwndFrom == shell.toolTipHandle || hdr.hwndFrom == shell.balloonTipHandle) {
+						widget = shell.findToolTip ((int)/*64*/hdr.idFrom);
+					}
+				}
+				if (widget != null) {
+					int style = widget.getStyle();
+					int flags = SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION;
+					if ((style & flags) != 0 && (style & flags) != flags) {
+						lpnmtdi.uFlags |= OS.TTF_RTLREADING;
+					} else {
+						lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
+					}
+				}
+
+				if (hdr.code == OS.TTN_GETDISPINFOA) {
+					byte [] bytes = new byte [chars.length * 2];
+					OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
+					shell.setToolTipText (lpnmtdi, bytes);
+					OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
+				} else {
+					shell.setToolTipText (lpnmtdi, chars);
+					OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
+				}
+				return LRESULT.ZERO;
+			}
+			break;
 		}
 	}
 	return super.wmNotify (hdr, wParam, lParam);

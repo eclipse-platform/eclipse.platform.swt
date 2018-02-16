@@ -382,7 +382,7 @@ void checkGC(int mask) {
 		* is to use ExtCreatePen() instead.
 		*/
 		long /*int*/ newPen;
-		if (OS.IsWinCE || (width == 0 && lineStyle != OS.PS_USERSTYLE) || style == 0) {
+		if ((width == 0 && lineStyle != OS.PS_USERSTYLE) || style == 0) {
 			newPen = OS.CreatePen(style & OS.PS_STYLE_MASK, width, color);
 		} else {
 			LOGBRUSH logBrush = new LOGBRUSH();
@@ -513,10 +513,6 @@ public void copyArea (int srcX, int srcY, int width, int height, int destX, int 
 
 void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/*
-	* Feature in WinCE.  The function WindowFromDC is not part of the
-	* WinCE SDK.  The fix is to remember the HWND.
-	*/
 	long /*int*/ hwnd = data.hwnd;
 	if (hwnd == 0) {
 		OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
@@ -531,36 +527,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		RECT lprcScroll = new RECT();
 		OS.SetRect(lprcScroll, srcX, srcY, srcX + width, srcY + height);
 		int flags = paint ? OS.SW_INVALIDATE | OS.SW_ERASE : 0;
-		int res = OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, flags);
-
-		/*
-		* Feature in WinCE.  ScrollWindowEx does not accept combined
-		* vertical and horizontal scrolling.  The fix is to do a
-		* BitBlt and invalidate the appropriate source area.
-		*/
-		if (res == 0 && OS.IsWinCE) {
-			OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
-			if (paint) {
-				int deltaX = destX - srcX, deltaY = destY - srcY;
-				boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
-				if (disjoint) {
-					OS.InvalidateRect(hwnd, lprcScroll, true);
-				} else {
-					if (deltaX != 0) {
-						int newX = destX - deltaX;
-						if (deltaX < 0) newX = destX + width;
-						OS.SetRect(lprcScroll, newX, srcY, newX + Math.abs(deltaX), srcY + height);
-						OS.InvalidateRect(hwnd, lprcScroll, true);
-					}
-					if (deltaY != 0) {
-						int newY = destY - deltaY;
-						if (deltaY < 0) newY = destY + height;
-						OS.SetRect(lprcScroll, srcX, newY, srcX + width, newY + Math.abs(deltaY));
-						OS.InvalidateRect(hwnd, lprcScroll, true);
-					}
-				}
-			}
-		}
+		OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, flags);
 	}
 }
 static long /*int*/ createGdipFont(long /*int*/ hDC, long /*int*/ hFont, long /*int*/ graphics, long /*int*/ fontCollection, long /*int*/ [] outFamily, long /*int*/[] outFont) {
@@ -784,51 +751,28 @@ void drawArcInPixels (int x, int y, int width, int height, int startAngle, int a
 	if ((data.style & SWT.MIRRORED) != 0) {
 		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) x--;
 	}
-	/*
-	* Feature in WinCE.  The function Arc is not present in the
-	* WinCE SDK.  The fix is to emulate arc drawing by using
-	* Polyline.
-	*/
-	if (OS.IsWinCE) {
-		/* compute arc with a simple linear interpolation */
-		if (arcAngle < 0) {
-			startAngle += arcAngle;
-			arcAngle = -arcAngle;
-		}
-		if (arcAngle > 360) arcAngle = 360;
-		int[] points = new int[(arcAngle + 1) * 2];
-		int cteX = 2 * x + width;
-		int cteY = 2 * y + height;
-		int index = 0;
-		for (int i = 0; i <= arcAngle; i++) {
-			points[index++] = (cos(startAngle + i, width) + cteX) >> 1;
-			points[index++] = (cteY - sin(startAngle + i, height)) >> 1;
-		}
-		OS.Polyline(handle, points, points.length / 2);
+	int x1, y1, x2, y2,tmp;
+	boolean isNegative;
+	if (arcAngle >= 360 || arcAngle <= -360) {
+		x1 = x2 = x + width;
+		y1 = y2 = y + height / 2;
 	} else {
-		int x1, y1, x2, y2,tmp;
-		boolean isNegative;
-		if (arcAngle >= 360 || arcAngle <= -360) {
-			x1 = x2 = x + width;
-			y1 = y2 = y + height / 2;
-		} else {
-			isNegative = arcAngle < 0;
+		isNegative = arcAngle < 0;
 
-			arcAngle = arcAngle + startAngle;
-			if (isNegative) {
-				// swap angles
-			   	tmp = startAngle;
-				startAngle = arcAngle;
-				arcAngle = tmp;
-			}
-			x1 = cos(startAngle, width) + x + width/2;
-			y1 = -1 * sin(startAngle, height) + y + height/2;
-
-			x2 = cos(arcAngle, width) + x + width/2;
-			y2 = -1 * sin(arcAngle, height) + y + height/2;
+		arcAngle = arcAngle + startAngle;
+		if (isNegative) {
+			// swap angles
+			tmp = startAngle;
+			startAngle = arcAngle;
+			arcAngle = tmp;
 		}
-		OS.Arc(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
+		x1 = cos(startAngle, width) + x + width/2;
+		y1 = -1 * sin(startAngle, height) + y + height/2;
+
+		x2 = cos(arcAngle, width) + x + width/2;
+		y2 = -1 * sin(arcAngle, height) + y + height/2;
 	}
+	OS.Arc(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
 }
 
 /**
@@ -1079,24 +1023,19 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 	boolean drawIcon = true;
 	int flags = OS.DI_NORMAL;
 	int offsetX = 0, offsetY = 0;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
-		if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
-			flags |= OS.DI_NOMIRROR;
-			/*
-			* Bug in Windows.  For some reason, DrawIconEx() does not take
-			* into account the window origin when the DI_NOMIRROR and
-			* LAYOUT_RTL are set.  The fix is to set the window origin to
-			* (0, 0) and offset the drawing ourselves.
-			*/
-			POINT pt = new POINT();
-			OS.GetWindowOrgEx(handle, pt);
-			offsetX = pt.x;
-			offsetY = pt.y;
-		}
-	} else {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-			drawIcon = (OS.GetLayout(handle) & OS.LAYOUT_RTL) == 0;
-		}
+
+	if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
+		flags |= OS.DI_NOMIRROR;
+		/*
+		* Bug in Windows.  For some reason, DrawIconEx() does not take
+		* into account the window origin when the DI_NOMIRROR and
+		* LAYOUT_RTL are set.  The fix is to set the window origin to
+		* (0, 0) and offset the drawing ourselves.
+		*/
+		POINT pt = new POINT();
+		OS.GetWindowOrgEx(handle, pt);
+		offsetX = pt.x;
+		offsetY = pt.y;
 	}
 
 	/* Simple case: no stretching, entire icon */
@@ -1109,11 +1048,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	/* Get the icon info */
 	ICONINFO srcIconInfo = new ICONINFO();
-	if (OS.IsWinCE) {
-		Image.GetIconInfo(srcImage, srcIconInfo);
-	} else {
-		OS.GetIconInfo(srcImage.handle, srcIconInfo);
-	}
+	OS.GetIconInfo(srcImage.handle, srcIconInfo);
 
 	/* Get the icon width and height */
 	long /*int*/ hBitmap = srcIconInfo.hbmColor;
@@ -1161,7 +1096,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			long /*int*/ oldDestBitmap = OS.SelectObject(dstHdc, newIconInfo.hbmColor);
 			boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
 			if (stretch) {
-				if (!OS.IsWinCE) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
+				OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
 				OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
 			} else {
 				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCCOPY);
@@ -1260,9 +1195,9 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		return;
 	}
 
-	boolean alphaBlendSupport = OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10);
+	boolean alphaBlendSupport = true;
 	boolean isPrinter = OS.GetDeviceCaps(handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER;
-	if (alphaBlendSupport && isPrinter) {
+	if (isPrinter) {
 		int caps = OS.GetDeviceCaps(handle, OS.SHADEBLENDCAPS);
 		if (caps != 0) {
 			if (srcImage.alpha != -1) {
@@ -1388,21 +1323,17 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	/* Scale the foreground pixels with alpha */
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	/*
-	* Bug in WinCE and Win98.  StretchBlt does not correctly stretch when
+	* When drawing to a printer, StretchBlt does not correctly stretch if
 	* the source and destination HDCs are the same.  The workaround is to
 	* stretch to a temporary HDC and blit back into the original HDC.
-	* Note that on WinCE StretchBlt correctly compresses the image when the
-	* source and destination HDCs are the same.
-	*
-	* Note that this also fails when drawing to a printer.
 	*/
-	if ((OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE) || isPrinter) {
+	if (isPrinter) {
 		long /*int*/ tempHdc = OS.CreateCompatibleDC(handle);
 		long /*int*/ tempDib = Image.createDIB(destWidth, destHeight, 32);
 		if (tempDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		long /*int*/ oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
 		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-			if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+			OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
 		} else {
 			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
@@ -1413,7 +1344,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		OS.DeleteDC(tempHdc);
 	} else {
 		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-			if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+			OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 			OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
 		} else {
 			OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
@@ -1474,19 +1405,11 @@ void drawBitmapTransparentByClipping(long /*int*/ srcHdc, long /*int*/ maskHdc, 
 	int result = OS.GetClipRgn(handle, clip);
 	if (result == 1) OS.CombineRgn(rgn, rgn, clip, OS.RGN_AND);
 	OS.SelectClipRgn(handle, rgn);
-	int rop2 = 0;
-	if (!OS.IsWinCE) {
-		rop2 = OS.GetROP2(handle);
-	} else {
-		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
-		OS.SetROP2 (handle, rop2);
-	}
-	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
+	int dwRop = OS.GetROP2(handle) == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
 	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-		int mode = 0;
-		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
-		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+		OS.SetStretchBltMode(handle, mode);
 	} else {
 		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop);
 	}
@@ -1519,14 +1442,13 @@ void drawBitmapMask(Image srcImage, long /*int*/ srcColor, long /*int*/ srcMask,
 		oldTextColor = OS.SetTextColor(handle, 0);
 	}
 	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-		int mode = 0;
-		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
 		OS.SelectObject(srcHdc, srcMask);
 		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
 		OS.SelectObject(srcHdc, srcColor);
 		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
-		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+		OS.SetStretchBltMode(handle, mode);
 	} else {
 		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
 		OS.SetTextColor(destHdc, 0);
@@ -1562,46 +1484,30 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		boolean fixPalette = false;
 		if (bm.bmBitsPixel <= 8) {
 			if (isDib) {
-				/* Palette-based DIBSECTION */
-				if (OS.IsWinCE) {
-					byte[] pBits = new byte[1];
-					OS.MoveMemory(pBits, bm.bmBits, 1);
-					byte oldValue = pBits[0];
-					int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
-					pBits[0] = (byte)((srcImage.transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
-					OS.MoveMemory(bm.bmBits, pBits, 1);
-					int color = OS.GetPixel(srcHdc, 0, 0);
-	          		pBits[0] = oldValue;
-	           		OS.MoveMemory(bm.bmBits, pBits, 1);
-					transBlue = (color & 0xFF0000) >> 16;
-					transGreen = (color & 0xFF00) >> 8;
-					transRed = color & 0xFF;
-				} else {
-					int maxColors = 1 << bm.bmBitsPixel;
-					byte[] oldColors = new byte[maxColors * 4];
-					OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
-					int offset = srcImage.transparentPixel * 4;
-					for (int i = 0; i < oldColors.length; i += 4) {
-						if (i != offset) {
-							if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
-								fixPalette = true;
-								break;
-							}
+				int maxColors = 1 << bm.bmBitsPixel;
+				byte[] oldColors = new byte[maxColors * 4];
+				OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
+				int offset = srcImage.transparentPixel * 4;
+				for (int i = 0; i < oldColors.length; i += 4) {
+					if (i != offset) {
+						if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
+							fixPalette = true;
+							break;
 						}
 					}
-					if (fixPalette) {
-						byte[] newColors = new byte[oldColors.length];
-						transRed = transGreen = transBlue = 0xff;
-						newColors[offset] = (byte)transBlue;
-						newColors[offset+1] = (byte)transGreen;
-						newColors[offset+2] = (byte)transRed;
-						OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
-						originalColors = oldColors;
-					} else {
-						transBlue = oldColors[offset] & 0xFF;
-						transGreen = oldColors[offset+1] & 0xFF;
-						transRed = oldColors[offset+2] & 0xFF;
-					}
+				}
+				if (fixPalette) {
+					byte[] newColors = new byte[oldColors.length];
+					transRed = transGreen = transBlue = 0xff;
+					newColors[offset] = (byte)transBlue;
+					newColors[offset+1] = (byte)transGreen;
+					newColors[offset+2] = (byte)transRed;
+					OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
+					originalColors = oldColors;
+				} else {
+					transBlue = oldColors[offset] & 0xFF;
+					transGreen = oldColors[offset+1] & 0xFF;
+					transRed = oldColors[offset+2] & 0xFF;
 				}
 			} else {
 				/* Palette-based bitmap */
@@ -1613,7 +1519,6 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 				bmiHeader.biBitCount = bm.bmBitsPixel;
 				byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
 				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(srcHdc, srcImage.handle, 0, 0, null, bmi, OS.DIB_RGB_COLORS);
 				int offset = BITMAPINFOHEADER.sizeof + 4 * srcImage.transparentPixel;
 				transRed = bmi[offset + 2] & 0xFF;
@@ -1645,14 +1550,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		if (!fixPalette) srcImage.transparentColor = transparentColor;
 	}
 
-	if (OS.IsWinCE) {
-		/*
-		* Note in WinCE. TransparentImage uses the first entry of a palette
-		* based image when there are multiple entries that have the same
-		* transparent color.
-		*/
-		OS.TransparentImage(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
-	} else if (originalColors == null && OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+	if (originalColors == null) {
 		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 		OS.TransparentBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
 		OS.SetStretchBltMode(handle, mode);
@@ -1675,7 +1573,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			long /*int*/ oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
 			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
 			if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-				if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+				OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
 				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
 				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
 				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
@@ -1701,19 +1599,11 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 	long /*int*/ srcHdc = OS.CreateCompatibleDC(handle);
 	long /*int*/ oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-	int rop2 = 0;
-	if (!OS.IsWinCE) {
-		rop2 = OS.GetROP2(handle);
-	} else {
-		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
-		OS.SetROP2 (handle, rop2);
-	}
-	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
+	int dwRop = OS.GetROP2(handle) == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
 	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-		int mode = 0;
-		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
-		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+		OS.SetStretchBltMode(handle, mode);
 	} else {
 		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop);
 	}
@@ -1758,13 +1648,8 @@ void drawLineInPixels (int x1, int y1, int x2, int y2) {
 			x2--;
 		}
 	}
-	if (OS.IsWinCE) {
-		int [] points = new int [] {x1, y1, x2, y2};
-		OS.Polyline (handle, points, points.length / 2);
-	} else {
-		OS.MoveToEx (handle, x1, y1, 0);
-		OS.LineTo (handle, x2, y2);
-	}
+	OS.MoveToEx (handle, x1, y1, 0);
+	OS.LineTo (handle, x2, y2);
 	if (data.lineWidth <= 1) {
 		OS.SetPixel (handle, x2, y2, data.foreground);
 	}
@@ -2107,47 +1992,7 @@ void drawRoundRectangleInPixels (int x, int y, int width, int height, int arcWid
 	if ((data.style & SWT.MIRRORED) != 0) {
 		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) x--;
 	}
-	if (OS.IsWinCE) {
-		/*
-		* Bug in WinCE PPC.  On certain devices, RoundRect does not draw
-		* all the pixels.  The workaround is to draw a round rectangle
-		* using lines and arcs.
-		*/
-		if (width == 0 || height == 0) return;
-		if (arcWidth == 0 || arcHeight == 0) {
-			drawRectangleInPixels(x, y, width, height);
-			return;
-		}
-		if (width < 0) {
-			x += width;
-			width = -width;
-		}
-		if (height < 0) {
-			y += height;
-			height = -height;
-		}
-		if (arcWidth < 0) arcWidth = -arcWidth;
-		if (arcHeight < 0) arcHeight = -arcHeight;
-		if (arcWidth > width) arcWidth = width;
-		if (arcHeight > height) arcHeight = height;
-
-		if (arcWidth < width) {
-			drawLineInPixels(x+arcWidth/2, y, x+width-arcWidth/2, y);
-			drawLineInPixels(x+arcWidth/2, y+height, x+width-arcWidth/2, y+height);
-		}
-		if (arcHeight < height) {
-			drawLineInPixels(x, y+arcHeight/2, x, y+height-arcHeight/2);
-			drawLineInPixels(x+width, y+arcHeight/2, x+width, y+height-arcHeight/2);
-		}
-		if (arcWidth != 0 && arcHeight != 0) {
-			drawArcInPixels(x, y, arcWidth, arcHeight, 90, 90);
-			drawArcInPixels(x+width-arcWidth, y, arcWidth, arcHeight, 0, 90);
-			drawArcInPixels(x+width-arcWidth, y+height-arcHeight, arcWidth, arcHeight, 0, -90);
-			drawArcInPixels(x, y+height-arcHeight, arcWidth, arcHeight, 180, 90);
-		}
-	} else {
-		OS.RoundRect(handle, x,y,x+width+1,y+height+1, arcWidth, arcHeight);
-	}
+	OS.RoundRect(handle, x,y,x+width+1,y+height+1, arcWidth, arcHeight);
 }
 
 void drawRoundRectangleGdip (long /*int*/ gdipGraphics, long /*int*/ pen, int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -2266,13 +2111,6 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		drawText(gdipGraphics, string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0, null);
 		return;
 	}
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-		OS.SetROP2(handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
 	checkGC(FONT | FOREGROUND_TEXT | BACKGROUND_TEXT);
 	int oldBkMode = OS.SetBkMode(handle, isTransparent ? OS.TRANSPARENT : OS.OPAQUE);
 	RECT rect = null;
@@ -2291,7 +2129,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		}
 		x--;
 	}
-	if (rop2 != OS.R2_XORPEN) {
+	if (OS.GetROP2(handle) != OS.R2_XORPEN) {
 		OS.ExtTextOutW(handle, x, y, flags, rect, buffer, length, null);
 	} else {
 		int foreground = OS.GetTextColor(handle);
@@ -2438,18 +2276,7 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 	int length = buffer.length();
 	if (length == 0) return;
 	RECT rect = new RECT();
-	/*
-	* Feature in Windows.  For some reason DrawText(), the maximum
-    * value for the bottom and right coordinates for the RECT that
-    * is used to position the text is different on between Windows
-    * versions.  If this value is larger than the maximum, nothing
-	* is drawn.  On Windows 98, the limit is 0x7FFF.  On Windows CE,
-	* NT, and 2000 it is 0x6FFFFFF. And on XP, it is 0x7FFFFFFF.
-	* The fix is to use the the smaller limit for Windows 98 and the
-	* larger limit on the other Windows platforms.
-	*/
-	int limit = OS.IsWin95 ? 0x7FFF : 0x6FFFFFF;
-	OS.SetRect(rect, x, y, limit, limit);
+	OS.SetRect(rect, x, y, 0x6FFFFFF, 0x6FFFFFF);
 	int uFormat = OS.DT_LEFT;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
@@ -2457,16 +2284,9 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (data.uiState & OS.UISF_HIDEACCEL) != 0) {
 		uFormat |= OS.DT_HIDEPREFIX;
 	}
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-		OS.SetROP2(handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
 	checkGC(FONT | FOREGROUND_TEXT | BACKGROUND_TEXT);
 	int oldBkMode = OS.SetBkMode(handle, (flags & SWT.DRAW_TRANSPARENT) != 0 ? OS.TRANSPARENT : OS.OPAQUE);
-	if (rop2 != OS.R2_XORPEN) {
+	if (OS.GetROP2(handle) != OS.R2_XORPEN) {
 		OS.DrawText(handle, buffer, length, rect, uFormat);
 	} else {
 		int foreground = OS.GetTextColor(handle);
@@ -2499,7 +2319,6 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 }
 
 boolean useGDIP (long /*int*/ hdc, char[] buffer) {
-	if (OS.IsWinCE || !OS.IsUnicode) return false;
 	short[] glyphs = new short[buffer.length];
 	OS.GetGlyphIndicesW(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
 	for (int i = 0; i < glyphs.length; i++) {
@@ -2854,58 +2673,28 @@ void fillArcInPixels (int x, int y, int width, int height, int startAngle, int a
 	}
 
 	if ((data.style & SWT.MIRRORED) != 0) x--;
-	/*
-	* Feature in WinCE.  The function Pie is not present in the
-	* WinCE SDK.  The fix is to emulate it by using Polygon.
-	*/
-	if (OS.IsWinCE) {
-		/* compute arc with a simple linear interpolation */
-		if (arcAngle < 0) {
-			startAngle += arcAngle;
-			arcAngle = -arcAngle;
-		}
-		boolean drawSegments = true;
-		if (arcAngle >= 360) {
-			arcAngle = 360;
-			drawSegments = false;
-		}
-		int[] points = new int[(arcAngle + 1) * 2 + (drawSegments ? 4 : 0)];
-		int cteX = 2 * x + width;
-		int cteY = 2 * y + height;
-		int index = (drawSegments ? 2 : 0);
-		for (int i = 0; i <= arcAngle; i++) {
-			points[index++] = (cos(startAngle + i, width) + cteX) >> 1;
-			points[index++] = (cteY - sin(startAngle + i, height)) >> 1;
-		}
-		if (drawSegments) {
-			points[0] = points[points.length - 2] = cteX >> 1;
-			points[1] = points[points.length - 1] = cteY >> 1;
-		}
-		OS.Polygon(handle, points, points.length / 2);
+	int x1, y1, x2, y2,tmp;
+	boolean isNegative;
+	if (arcAngle >= 360 || arcAngle <= -360) {
+		x1 = x2 = x + width;
+		y1 = y2 = y + height / 2;
 	} else {
-	 	int x1, y1, x2, y2,tmp;
-		boolean isNegative;
-		if (arcAngle >= 360 || arcAngle <= -360) {
-			x1 = x2 = x + width;
-			y1 = y2 = y + height / 2;
-		} else {
-			isNegative = arcAngle < 0;
+		isNegative = arcAngle < 0;
 
-			arcAngle = arcAngle + startAngle;
-			if (isNegative) {
-				// swap angles
-			   	tmp = startAngle;
-				startAngle = arcAngle;
-				arcAngle = tmp;
-			}
-			x1 = cos(startAngle, width) + x + width/2;
-			y1 = -1 * sin(startAngle, height) + y + height/2;
-
-			x2 = cos(arcAngle, width) + x + width/2;
-			y2 = -1 * sin(arcAngle, height) + y + height/2;
+		arcAngle = arcAngle + startAngle;
+		if (isNegative) {
+			// swap angles
+			tmp = startAngle;
+			startAngle = arcAngle;
+			arcAngle = tmp;
 		}
-		OS.Pie(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
+		x1 = cos(startAngle, width) + x + width/2;
+		y1 = -1 * sin(startAngle, height) + y + height/2;
+
+		x2 = cos(arcAngle, width) + x + width/2;
+		y2 = -1 * sin(arcAngle, height) + y + height/2;
 	}
+	OS.Pie(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
 }
 
 /**
@@ -2990,23 +2779,13 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 		Gdip.Color_delete(toGpColor);
 		return;
 	}
-	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. */
 	/*
 	* Bug in Windows: On Windows 2000 when the device is a printer,
 	* GradientFill swaps red and blue color components, causing the
-	* gradient to be printed in the wrong color. On Windows 98 when
-	* the device is a printer, GradientFill does not fill completely
-	* to the right edge of the rectangle. The fix is not to use
+	* gradient to be printed in the wrong color. The fix is not to use
 	* GradientFill for printer devices.
 	*/
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-		OS.SetROP2(handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
-	if (OS.IsWinNT && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
+	if (OS.GetROP2(handle) != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final long /*int*/ hHeap = OS.GetProcessHeap();
 		final long /*int*/ pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
 		if (pMesh == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -3198,14 +2977,7 @@ void fillRectangleInPixels (int x, int y, int width, int height) {
 		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
 		return;
 	}
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-		OS.SetROP2(handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
-	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
+	int dwRop = OS.GetROP2(handle) == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
 	OS.PatBlt(handle, x, y, width, height, dwRop);
 }
 
@@ -3349,18 +3121,8 @@ void flush () {
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
-	if (OS.IsWinCE) {
-		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
-		return size.cx;
-	}
-	int tch = ch;
-	if (ch > 0x7F) {
-		TCHAR buffer = new TCHAR(getCodePage(), ch, false);
-		tch = buffer.tcharAt(0);
-	}
 	int[] width = new int[1];
-	OS.GetCharWidth(handle, tch, tch, width);
+	OS.GetCharWidth(handle, ch, ch, width);
 	return width[0];
 }
 
@@ -3496,16 +3258,9 @@ public int getCharWidth(char ch) {
 	checkGC(FONT);
 
 	/* GetCharABCWidths only succeeds on truetype fonts */
-	if (!OS.IsWinCE) {
-		int tch = ch;
-		if (ch > 0x7F) {
-			TCHAR buffer = new TCHAR(getCodePage(), ch, false);
-			tch = buffer.tcharAt (0);
-		}
-		int[] width = new int[3];
-		if (OS.GetCharABCWidths(handle, tch, tch, width)) {
-			return width[1];
-		}
+	int[] width = new int[3];
+	if (OS.GetCharABCWidths(handle, ch, ch, width)) {
+		return width[1];
 	}
 
 	/* It wasn't a truetype font */
@@ -3584,11 +3339,9 @@ public void getClipping (Region region) {
 			Gdip.Graphics_SetTransform(gdipGraphics, matrix);
 			Gdip.Matrix_delete(identity);
 			Gdip.Matrix_delete(matrix);
-			if (!OS.IsWinCE) {
-				POINT pt = new POINT ();
-				OS.GetWindowOrgEx (handle, pt);
-				OS.OffsetRgn (hRgn, pt.x, pt.y);
-			}
+			POINT pt = new POINT ();
+			OS.GetWindowOrgEx (handle, pt);
+			OS.OffsetRgn (hRgn, pt.x, pt.y);
 			OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
 			OS.DeleteObject(hRgn);
 		}
@@ -3596,7 +3349,7 @@ public void getClipping (Region region) {
 		return;
 	}
 	POINT pt = new POINT ();
-	if (!OS.IsWinCE) OS.GetWindowOrgEx (handle, pt);
+	OS.GetWindowOrgEx (handle, pt);
 	int result = OS.GetClipRgn (handle, region.handle);
 	if (result != 1) {
 		RECT rect = new RECT();
@@ -3605,44 +3358,34 @@ public void getClipping (Region region) {
 	} else {
 		OS.OffsetRgn (region.handle, pt.x, pt.y);
 	}
-	if (!OS.IsWinCE) {
-		long /*int*/ metaRgn = OS.CreateRectRgn (0, 0, 0, 0);
-		if (OS.GetMetaRgn (handle, metaRgn) != 0) {
-			OS.OffsetRgn (metaRgn, pt.x, pt.y);
-			OS.CombineRgn (region.handle, metaRgn, region.handle, OS.RGN_AND);
-		}
-		OS.DeleteObject(metaRgn);
-		long /*int*/ hwnd = data.hwnd;
-		if (hwnd != 0 && data.ps != null) {
-			long /*int*/ sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
-			if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
-				if (OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-					if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
-						int nBytes = OS.GetRegionData (sysRgn, 0, null);
-						int [] lpRgnData = new int [nBytes / 4];
-						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-						long /*int*/ newSysRgn = OS.ExtCreateRegion(new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
-						OS.DeleteObject(sysRgn);
-						sysRgn = newSysRgn;
-					}
-				}
-				if (OS.IsWinNT) {
-					OS.MapWindowPoints(0, hwnd, pt, 1);
-					OS.OffsetRgn(sysRgn, pt.x, pt.y);
-				}
-				OS.CombineRgn (region.handle, sysRgn, region.handle, OS.RGN_AND);
+	long /*int*/ metaRgn = OS.CreateRectRgn (0, 0, 0, 0);
+	if (OS.GetMetaRgn (handle, metaRgn) != 0) {
+		OS.OffsetRgn (metaRgn, pt.x, pt.y);
+		OS.CombineRgn (region.handle, metaRgn, region.handle, OS.RGN_AND);
+	}
+	OS.DeleteObject(metaRgn);
+	long /*int*/ hwnd = data.hwnd;
+	if (hwnd != 0 && data.ps != null) {
+		long /*int*/ sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
+		if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
+			if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
+				int nBytes = OS.GetRegionData (sysRgn, 0, null);
+				int [] lpRgnData = new int [nBytes / 4];
+				OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+				long /*int*/ newSysRgn = OS.ExtCreateRegion(new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+				OS.DeleteObject(sysRgn);
+				sysRgn = newSysRgn;
 			}
-			OS.DeleteObject(sysRgn);
+			OS.MapWindowPoints (0, hwnd, pt, 1);
+			OS.OffsetRgn (sysRgn, pt.x, pt.y);
+			OS.CombineRgn (region.handle, sysRgn, region.handle, OS.RGN_AND);
 		}
+		OS.DeleteObject(sysRgn);
 	}
 }
 
 int getCodePage () {
-	if (OS.IsUnicode) return OS.CP_ACP;
-	int[] lpCs = new int[8];
-	int cs = OS.GetTextCharset(handle);
-	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
-	return lpCs[1];
+	return OS.CP_ACP;
 }
 
 long /*int*/ getFgBrush() {
@@ -3663,7 +3406,6 @@ long /*int*/ getFgBrush() {
  */
 public int getFillRule() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) return SWT.FILL_EVEN_ODD;
 	return OS.GetPolyFillMode(handle) == OS.WINDING ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
 }
 
@@ -4018,14 +3760,7 @@ public void getTransform(Transform transform) {
  */
 public boolean getXORMode() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
-		OS.SetROP2 (handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
-	return rop2 == OS.R2_XORPEN;
+	return OS.GetROP2(handle) == OS.R2_XORPEN;
 }
 
 void initGdip() {
@@ -4041,11 +3776,9 @@ void initGdip() {
 	*/
 	long /*int*/ hRgn = OS.CreateRectRgn(0, 0, 0, 0);
 	int result = OS.GetClipRgn(handle, hRgn);
-	if (!OS.IsWinCE) {
-		POINT pt = new POINT ();
-		OS.GetWindowOrgEx (handle, pt);
-		OS.OffsetRgn (hRgn, pt.x, pt.y);
-	}
+	POINT pt = new POINT ();
+	OS.GetWindowOrgEx (handle, pt);
+	OS.OffsetRgn (hRgn, pt.x, pt.y);
 	OS.SelectClipRgn(handle, 0);
 
 	/*
@@ -4096,7 +3829,7 @@ long /*int*/ identity() {
 				OS.GetObject(image.handle, BITMAP.sizeof, bm);
 				width = bm.bmWidth;
 			} else {
-				long /*int*/ hwnd = OS.IsWinCE ? data.hwnd : OS.WindowFromDC(handle);
+				long /*int*/ hwnd = OS.WindowFromDC(handle);
 				if (hwnd != 0) {
 					RECT rect = new RECT();
 					OS.GetClientRect(hwnd, rect);
@@ -4110,7 +3843,7 @@ long /*int*/ identity() {
 			}
 		}
 		POINT pt = new POINT ();
-		if (!OS.IsWinCE) OS.GetWindowOrgEx (handle, pt);
+		OS.GetWindowOrgEx (handle, pt);
 		return Gdip.Matrix_new(-1, 0, 0, 1, width + 2 * pt.x, 0);
 	}
 	return Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
@@ -4148,14 +3881,12 @@ void init(Drawable drawable, GCData data, long /*int*/ hDC) {
 	}
 	int layout = data.layout;
 	if (layout != -1) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-			int flags = OS.GetLayout(hDC);
-			if ((flags & OS.LAYOUT_RTL) != (layout & OS.LAYOUT_RTL)) {
-				flags &= ~OS.LAYOUT_RTL;
-				OS.SetLayout(hDC, flags | layout);
-			}
-			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) data.style |= SWT.MIRRORED;
+		int flags = OS.GetLayout(hDC);
+		if ((flags & OS.LAYOUT_RTL) != (layout & OS.LAYOUT_RTL)) {
+			flags &= ~OS.LAYOUT_RTL;
+			OS.SetLayout(hDC, flags | layout);
 		}
+		if ((data.style & SWT.RIGHT_TO_LEFT) != 0) data.style |= SWT.MIRRORED;
 	}
 	this.drawable = drawable;
 	this.data = data;
@@ -4443,13 +4174,13 @@ void setClipping(long /*int*/ clipRgn) {
 		}
 	} else {
 		POINT pt = null;
-		if (hRgn != 0 && !OS.IsWinCE) {
+		if (hRgn != 0) {
 			pt = new POINT();
 			OS.GetWindowOrgEx(handle, pt);
 			OS.OffsetRgn(hRgn, -pt.x, -pt.y);
 		}
 		OS.SelectClipRgn(handle, hRgn);
-		if (hRgn != 0 && !OS.IsWinCE) {
+		if (hRgn != 0) {
 			OS.OffsetRgn(hRgn, pt.x, pt.y);
 		}
 	}
@@ -4586,7 +4317,6 @@ public void setClipping (Region region) {
  */
 public void setFillRule(int rule) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) return;
 	int mode = OS.ALTERNATE;
 	switch (rule) {
 		case SWT.FILL_WINDING: mode = OS.WINDING; break;
@@ -5320,11 +5050,9 @@ public static GC win32_new(long /*int*/ hDC, GCData data) {
 	GC gc = new GC();
 	gc.device = data.device;
 	data.style |= SWT.LEFT_TO_RIGHT;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-		int flags = OS.GetLayout (hDC);
-		if ((flags & OS.LAYOUT_RTL) != 0) {
-			data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
-		}
+	int flags = OS.GetLayout (hDC);
+	if ((flags & OS.LAYOUT_RTL) != 0) {
+		data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
 	}
 	gc.init(null, data, hDC);
 	return gc;

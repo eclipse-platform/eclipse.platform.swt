@@ -220,30 +220,16 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	RECT clientRect = new RECT ();
 	OS.GetClientRect (handle, clientRect);
 	if (OS.IntersectRect (clientRect, sourceRect, clientRect)) {
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (handle);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (handle, null, 0, flags);
-		}
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
 	}
 	int deltaX = destX - x, deltaY = destY - y;
 	if (findImageControl () != null) {
-		if (OS.IsWinCE) {
-			OS.InvalidateRect (handle, sourceRect, true);
-		} else {
-			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-			if (all) flags |= OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (handle, sourceRect, 0, flags);
-		}
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		if (all) flags |= OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, sourceRect, 0, flags);
 		OS.OffsetRect (sourceRect, deltaX, deltaY);
-		if (OS.IsWinCE) {
-			OS.InvalidateRect (handle, sourceRect, true);
-		} else {
-			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-			if (all) flags |= OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (handle, sourceRect, 0, flags);
-		}
+		OS.RedrawWindow (handle, sourceRect, 0, flags);
 	} else {
 		int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 		/*
@@ -387,35 +373,6 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
 		if (result != null) return result;
-	}
-
-	/*
-	* Bug in Windows.  On Korean Windows XP, the IME window
-	* for the Korean Input System (MS-IME 2002) always opens
-	* in the top left corner of the screen, despite the fact
-	* that ImmSetCompositionWindow() was called to position
-	* the IME when focus is gained.  The fix is to position
-	* the IME on every WM_IME_COMPOSITION message.
-	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
-		if (OS.IsDBLocale) {
-			short langID = OS.GetSystemDefaultUILanguage ();
-			short primaryLang = OS.PRIMARYLANGID (langID);
-			if (primaryLang == OS.LANG_KOREAN) {
-				if (caret != null && caret.isFocusCaret ()) {
-					POINT ptCurrentPos = new POINT ();
-					if (OS.GetCaretPos (ptCurrentPos)) {
-						COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
-						lpCompForm.dwStyle = OS.CFS_POINT;
-						lpCompForm.x = ptCurrentPos.x;
-						lpCompForm.y = ptCurrentPos.y;
-						long /*int*/ hIMC = OS.ImmGetContext (handle);
-						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
-						OS.ImmReleaseContext (handle, hIMC);
-					}
-				}
-			}
-		}
 	}
 	return super.WM_IME_COMPOSITION (wParam, lParam);
 }

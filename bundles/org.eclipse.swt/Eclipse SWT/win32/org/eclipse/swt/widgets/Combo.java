@@ -81,7 +81,7 @@ public class Combo extends Composite {
 	 * to stop the compiler from inlining.
 	 */
 	static {
-		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
+		LIMIT = 0x7FFFFFFF;
 	}
 
 	/*
@@ -385,10 +385,6 @@ void applyEditSegments () {
 	/* Get the current selection */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start [0]);
-		end [0] = mbcsToWcsPos (end [0]);
-	}
 	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify;
 	ignoreCharacter = ignoreModify = true;
 	/*
@@ -403,10 +399,6 @@ void applyEditSegments () {
 	/* Restore selection */
 	start [0] = translateOffset (start [0]);
 	end [0] = translateOffset (end [0]);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = wcsToMbcsPos (start [0]);
-		end [0] = wcsToMbcsPos (end [0]);
-	}
 	if (segmentsChars != null && segmentsChars.length > 0) {
 		/*
 		 * In addition to enforcing the required direction by prepending a UCC (LRE
@@ -575,10 +567,6 @@ void clearSegments (boolean applyText) {
 	/* Get the current selection */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start[0]);
-		end [0]= mbcsToWcsPos (end [0]);
-	}
 	start [0] = untranslateOffset (start [0]);
 	end [0] = untranslateOffset (end[0]);
 
@@ -590,11 +578,6 @@ void clearSegments (boolean applyText) {
 	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
 	long /*int*/ undo = OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0);
 	OS.SendMessage (hwndText, OS.EM_REPLACESEL, undo, buffer);
-	/* Restore selection */
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = wcsToMbcsPos (start [0]);
-		end [0] = wcsToMbcsPos (end [0]);
-	}
 	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 	ignoreCharacter = oldIgnoreCharacter;
 	ignoreModify = oldIgnoreModify;
@@ -681,7 +664,7 @@ public void clearSelection () {
 	}
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
-	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
+	if (((style & SWT.SIMPLE) == 0) && OS.GetComboBoxInfo (handle, pcbi)) {
 		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
 		height = (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2;
 	} else {
@@ -730,7 +713,7 @@ void createHandle () {
 	* the combo box gets focus.  The fix is use the CBT hook to clear
 	* the ES_NOHIDESEL style bit when the text control is created.
 	*/
-	if (OS.IsWinCE || (style & (SWT.READ_ONLY | SWT.SIMPLE)) != 0) {
+	if ((style & (SWT.READ_ONLY | SWT.SIMPLE)) != 0) {
 		super.createHandle ();
 	} else {
 		int threadId = OS.GetCurrentThreadId ();
@@ -763,8 +746,8 @@ void createHandle () {
 	*/
 	if ((style & SWT.SIMPLE) != 0) {
 		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-		SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
-		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 	}
 }
 
@@ -776,17 +759,11 @@ void createWidget() {
 		int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 		if (itemHeight != OS.CB_ERR && itemHeight != 0) {
 			int maxHeight = 0;
-			if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-				RECT rect = new RECT ();
-				OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-				maxHeight = (rect.bottom - rect.top) / 3;
-			} else {
-				long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
-				MONITORINFO lpmi = new MONITORINFO ();
-				lpmi.cbSize = MONITORINFO.sizeof;
-				OS.GetMonitorInfo (hmonitor, lpmi);
-				maxHeight = (lpmi.rcWork_bottom - lpmi.rcWork_top) / 3;
-			}
+			long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+			MONITORINFO lpmi = new MONITORINFO ();
+			lpmi.cbSize = MONITORINFO.sizeof;
+			OS.GetMonitorInfo (hmonitor, lpmi);
+			maxHeight = (lpmi.rcWork_bottom - lpmi.rcWork_top) / 3;
 			visibleCount = Math.max(visibleCount, maxHeight / itemHeight);
 		}
 	}
@@ -825,13 +802,8 @@ TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	if (nSegments == 0) return text;
 	char [] chars;
 	if (start < 0) start = 0;
-	if (OS.IsUnicode) {
-		chars = text.chars;
-		if (text.chars [length - 1] == 0) length--;
-	} else {
-		chars = new char [length];
-		length = OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, text.bytes, length, chars, length);
-	}
+	chars = text.chars;
+	if (text.chars [length - 1] == 0) length--;
 	if (end == -1) end = length;
 	if (end > segments [0] && start <= segments [nSegments - 1]) {
 		int nLeadSegments = 0;
@@ -1032,30 +1004,25 @@ public int getCaretPosition () {
 	*/
 	int caret = start [0];
 	if (start [0] != end [0]) {
-		if (!OS.IsWinCE) {
-			int idThread = OS.GetWindowThreadProcessId (hwndText, null);
-			GUITHREADINFO lpgui = new GUITHREADINFO ();
-			lpgui.cbSize = GUITHREADINFO.sizeof;
-			if (OS.GetGUIThreadInfo (idThread, lpgui)) {
-				if (lpgui.hwndCaret == hwndText || lpgui.hwndCaret == 0) {
-					POINT ptCurrentPos = new POINT ();
-					if (OS.GetCaretPos (ptCurrentPos)) {
-						long /*int*/ endPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, end [0], 0);
-						if (endPos == -1) {
-							long /*int*/ startPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, start [0], 0);
-							int startX = OS.GET_X_LPARAM (startPos);
-							if (ptCurrentPos.x > startX) caret = end [0];
-						} else {
-							int endX = OS.GET_X_LPARAM (endPos);
-							if (ptCurrentPos.x >= endX) caret = end [0];
-						}
+		int idThread = OS.GetWindowThreadProcessId (hwndText, null);
+		GUITHREADINFO lpgui = new GUITHREADINFO ();
+		lpgui.cbSize = GUITHREADINFO.sizeof;
+		if (OS.GetGUIThreadInfo (idThread, lpgui)) {
+			if (lpgui.hwndCaret == hwndText || lpgui.hwndCaret == 0) {
+				POINT ptCurrentPos = new POINT ();
+				if (OS.GetCaretPos (ptCurrentPos)) {
+					long /*int*/ endPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, end [0], 0);
+					if (endPos == -1) {
+						long /*int*/ startPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, start [0], 0);
+						int startX = OS.GET_X_LPARAM (startPos);
+						if (ptCurrentPos.x > startX) caret = end [0];
+					} else {
+						int endX = OS.GET_X_LPARAM (endPos);
+						if (ptCurrentPos.x >= endX) caret = end [0];
 					}
 				}
 			}
 		}
-	}
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		caret = mbcsToWcsPos (caret);
 	}
 	return untranslateOffset (caret);
 }
@@ -1329,10 +1296,6 @@ public Point getSelection () {
 	}
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start [0] = mbcsToWcsPos (start [0]);
-		end [0] = mbcsToWcsPos (end [0]);
-	}
 	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
@@ -1397,7 +1360,7 @@ public int getTextHeight () {
 int getTextHeightInPixels () {
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
-	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
+	if (((style & SWT.SIMPLE) == 0) && OS.GetComboBoxInfo (handle, pcbi)) {
 		return (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2;
 	}
 	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
@@ -1531,19 +1494,6 @@ public int indexOf (String string, int start) {
 		if (index == OS.CB_ERR || index <= last) return -1;
 	} while (!string.equals (getItem (index)));
 	return index;
-}
-
-int mbcsToWcsPos (int mbcsPos) {
-	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
-	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	if (hwndText == 0) return mbcsPos;
-	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
-	if (mbcsSize == 0) return 0;
-	if (mbcsPos >= mbcsSize) return mbcsSize;
-	byte [] buffer = new byte [mbcsSize + 1];
-	OS.GetWindowTextA (hwndText, buffer, mbcsSize + 1);
-	return OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, buffer, mbcsPos, null, 0);
 }
 
 /**
@@ -1906,12 +1856,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 			if (start [0] == end [0]) {
 				if (start [0] == 0) return true;
 				start [0] = start [0] - 1;
-				if (!OS.IsUnicode && OS.IsDBLocale) {
-					int [] newStart = new int [1], newEnd = new int [1];
-					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
-					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
-					if (start [0] != newStart [0]) start [0] = start [0] - 1;
-				}
 				start [0] = Math.max (start [0], 0);
 			}
 			break;
@@ -1920,12 +1864,6 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 				int length = OS.GetWindowTextLength (hwndText);
 				if (start [0] == length) return true;
 				end [0] = end [0] + 1;
-				if (!OS.IsUnicode && OS.IsDBLocale) {
-					int [] newStart = new int [1], newEnd = new int [1];
-					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
-					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
-					if (end [0] != newEnd [0]) end [0] = end [0] + 1;
-				}
 				end [0] = Math.min (end [0], length);
 			}
 			break;
@@ -1963,7 +1901,7 @@ public void select (int index) {
 	if (0 <= index && index < count) {
 		int selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 		//corner case for single elements combo boxes for Bug 222752
-		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0 && count==1 && selection == OS.CB_ERR) {
+		if (OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0 && count==1 && selection == OS.CB_ERR) {
 			OS.SendMessage (handle, OS.WM_KEYDOWN, OS.VK_DOWN, 0);
 			sendEvent (SWT.Modify);
 			return;
@@ -1971,7 +1909,7 @@ public void select (int index) {
 		int code = (int)/*64*/OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
 		if (code != OS.CB_ERR && code != selection) {
 			//Workaround for Bug 222752
-			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0) {
+			if (OS.WIN32_VERSION < OS.VERSION (6, 2) && getListVisible() && (style & SWT.READ_ONLY) != 0) {
 				int firstKey = OS.VK_UP;
 				int secondKey = OS.VK_DOWN;
 				if (index == 0) {
@@ -2048,7 +1986,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
 			}
 		}
-		SetWindowPos (handle, 0, x, y, width, height, flags);
+		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 	} else {
 		super.setBoundsInPixels (x, y, width, height, flags);
 	}
@@ -2216,18 +2154,11 @@ void setScrollWidth (int scrollWidth) {
 	boolean scroll = false;
 	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (count > 3) {
-		int maxWidth = 0;
-		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			maxWidth = (rect.right - rect.left) / 4;
-		} else {
-			long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
-			MONITORINFO lpmi = new MONITORINFO ();
-			lpmi.cbSize = MONITORINFO.sizeof;
-			OS.GetMonitorInfo (hmonitor, lpmi);
-			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
-		}
+		long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+		MONITORINFO lpmi = new MONITORINFO ();
+		lpmi.cbSize = MONITORINFO.sizeof;
+		OS.GetMonitorInfo (hmonitor, lpmi);
+		int maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
 		scroll = scrollWidth > maxWidth;
 	}
 	/*
@@ -2295,10 +2226,6 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int start = translateOffset (selection.x), end = translateOffset (selection.y);
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		start = wcsToMbcsPos (start);
-		end = wcsToMbcsPos (end);
-	}
 	long /*int*/ bits = OS.MAKELPARAM (start, end);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
@@ -2517,7 +2444,7 @@ void updateDropDownHeight () {
 			forceResize ();
 			OS.GetWindowRect (handle, rect);
 			int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, height, flags);
+			OS.SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, height, flags);
 		}
 	}
 }
@@ -2525,13 +2452,6 @@ void updateDropDownHeight () {
 @Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
-		if (textDirection == AUTO_TEXT_DIRECTION) {
-			/* To support auto direction we use UCC that are not available in ANSI CP */
-			if (!OS.IsUnicode) {
-				state &= ~HAS_AUTO_DIRECTION;
-				return false;
-			}
-		}
 		clearSegments (true);
 		applyEditSegments ();
 		applyListSegments ();
@@ -2582,10 +2502,10 @@ void updateOrientation () {
 		OS.GetWindowRect (handle, rect);
 		int widthCombo = rect.right - rect.left, heightCombo = rect.bottom - rect.top;
 		int uFlags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
-		SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
-		SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
-		SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
+		OS.SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
+		OS.SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
+		OS.SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
+		OS.SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
 		OS.InvalidateRect (handle, null, true);
 	}
 	if (hwndList != 0) {
@@ -2609,10 +2529,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		event.start = mbcsToWcsPos (start);
-		event.end = mbcsToWcsPos (end);
-	}
 	event.start = untranslateOffset (event.start);
 	event.end = untranslateOffset (event.end);
 	/*
@@ -2624,24 +2540,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
-}
-
-int wcsToMbcsPos (int wcsPos) {
-	if (wcsPos <= 0) return 0;
-	if (OS.IsUnicode) return wcsPos;
-	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	if (hwndText == 0) return wcsPos;
-	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
-	if (mbcsSize == 0) return 0;
-	byte [] buffer = new byte [mbcsSize + 1];
-	OS.GetWindowTextA (hwndText, buffer, mbcsSize + 1);
-	int mbcsPos = 0, wcsCount = 0;
-	while (mbcsPos < mbcsSize) {
-		if (wcsPos == wcsCount) break;
-		if (OS.IsDBCSLeadByte (buffer [mbcsPos++])) mbcsPos++;
-		wcsCount++;
-	}
-	return mbcsPos;
 }
 
 @Override
@@ -2806,7 +2704,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.CB_FINDSTRINGEXACT:
 			if (lParam != 0 && (hooks (SWT.Segments) || filters (SWT.Segments) || ((state & HAS_AUTO_DIRECTION) != 0))) {
 				long /*int*/ code = OS.CB_ERR;
-				int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
+				int length = OS.wcslen (lParam);
 				TCHAR buffer = new TCHAR (getCodePage (), length);
 				OS.MoveMemory (buffer, lParam, buffer.length () * TCHAR.sizeof);
 				String string = buffer.toString (0, length);
@@ -2954,15 +2852,8 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.SIMPLE) != 0) {
 		LRESULT result = super.WM_SIZE (wParam, lParam);
 		if (OS.IsWindowVisible (handle)) {
-			if (OS.IsWinCE) {
-				long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-				if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
-				long /*int*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
-				if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
-			} else {
-				int uFlags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-				OS.RedrawWindow (handle, null, 0, uFlags);
-			}
+			int uFlags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, null, 0, uFlags);
 		}
 		return result;
 	}
@@ -3012,7 +2903,6 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	* text field and the area in the parent where the
 	* combo box used to be.
 	*/
-	if (OS.IsWinCE) return result;
 	if (!getDrawing ()) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
 	if (ignoreResize) {
@@ -3095,12 +2985,7 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 		*/
 		case SWT.DEL:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-				/*
-				 * 'Ctrl + BackSpace' functionality uses 'EM_REPLACESEL' native
-				 * API which is supported from Windows Vista. Adding OS version
-				 * check to avoid crash on WinXP, see more details on bug 496939
-				 */
-				if (OS.WIN32_VERSION < OS.VERSION (6, 0) || (style & SWT.READ_ONLY) != 0) return LRESULT.ZERO;
+				if ((style & SWT.READ_ONLY) != 0) return LRESULT.ZERO;
 				Point selection = getSelection ();
 				long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 				int x = selection.x;
@@ -3169,7 +3054,7 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 		case OS.WM_SETTEXT:
 			if (lockText) return null;
 			end [0] = OS.GetWindowTextLength (hwndText);
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
+			int length = OS.wcslen (lParam);
 			TCHAR buffer = new TCHAR (getCodePage (), length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);

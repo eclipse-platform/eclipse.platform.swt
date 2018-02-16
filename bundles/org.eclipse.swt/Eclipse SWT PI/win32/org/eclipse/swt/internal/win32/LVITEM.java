@@ -22,11 +22,9 @@ public class LVITEM {
 	public int iImage;
 	public long /*int*/ lParam;
 	public int iIndent;
-	/** @field flags=no_wince */
 	public int iGroupId;
-	/** @field flags=no_wince */
 	public int cColumns;
-	/** @field cast=(PUINT),flags=no_wince */
+	/** @field cast=(PUINT) */
 	public long /*int*/ puColumns;
-	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.LVITEM_sizeof () : 40;
+	public static final int sizeof = OS.LVITEM_sizeof ();
 }

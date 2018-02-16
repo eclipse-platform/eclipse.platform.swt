@@ -223,10 +223,8 @@ int defaultForeground () {
 @Override
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	if (!OS.IsWinCE) {
-		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
-		OS.EnableScrollBar (handle, OS.SB_CTL, flags);
-	}
+	int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
+	OS.EnableScrollBar (handle, OS.SB_CTL, flags);
 	if (enabled) {
 		state &= ~DISABLED;
 	} else {
@@ -493,9 +491,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
 	if ((state & DISABLED) != 0) {
 		OS.EnableWindow (handle, false);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
-		}
+		OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 	}
 
 	/*
@@ -692,11 +688,9 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 	* is consumed.  The fix is to send a fake mouse up and
 	* release the automatic capture.
 	*/
-	if (!OS.IsWinCE) {
-		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
-		if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
-			return LRESULT.ZERO;
-		}
+	if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+		return LRESULT.ZERO;
 	}
 	return result;
 }
@@ -726,11 +720,9 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	* is consumed.  The fix is to send a fake mouse up and
 	* release the automatic capture.
 	*/
-	if (!OS.IsWinCE) {
-		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
-		if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
-			return LRESULT.ONE;
-		}
+	if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+		return LRESULT.ONE;
 	}
 	return result;
 }

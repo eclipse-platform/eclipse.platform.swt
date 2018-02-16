@@ -120,7 +120,7 @@ void _setText (int index, String string) {
 	* The image overlaps the label.  The fix is to remove
 	* all '&' characters from the string.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
+	if (image != null) {
 		if (string.indexOf ('&') != -1) {
 			int length = string.length ();
 			char[] text = new char [length];
@@ -310,9 +310,7 @@ public void setImage (Image image) {
 	* all '&' characters from the string and set the text
 	* whenever the image or text is changed.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (text.indexOf ('&') != -1) _setText (index, text);
-	}
+	if (text.indexOf ('&') != -1) _setText (index, text);
 	long /*int*/ hwnd = parent.handle;
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_IMAGE;
@@ -366,7 +364,7 @@ public void setText (String string) {
 @Override
 boolean updateTextDirection(int textDirection) {
 	/* AUTO is handled by super */
-	if (super.updateTextDirection(textDirection) && OS.IsUnicode) {
+	if (super.updateTextDirection(textDirection)) {
 		int index = parent.indexOf (this);
 		if (index != -1) {
 			if ((textDirection & SWT.RIGHT_TO_LEFT) != 0) {

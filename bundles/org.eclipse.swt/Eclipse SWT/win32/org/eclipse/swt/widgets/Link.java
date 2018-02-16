@@ -55,41 +55,37 @@ public class Link extends Control {
 	static final long /*int*/ LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
-		if (isCommonControlAvailable()) {
-			WNDCLASS lpWndClass = new WNDCLASS ();
-			OS.GetClassInfo (0, LinkClass, lpWndClass);
-			LinkProc = lpWndClass.lpfnWndProc;
-			/*
-			* Feature in Windows.  The SysLink window class
-			* does not include CS_DBLCLKS.  This means that these
-			* controls will not get double click messages such as
-			* WM_LBUTTONDBLCLK.  The fix is to register a new
-			* window class with CS_DBLCLKS.
-			*
-			* NOTE:  Screen readers look for the exact class name
-			* of the control in order to provide the correct kind
-			* of assistance.  Therefore, it is critical that the
-			* new window class have the same name.  It is possible
-			* to register a local window class with the same name
-			* as a global class.  Since bits that affect the class
-			* are being changed, it is possible that other native
-			* code, other than SWT, could create a control with
-			* this class name, and fail unexpectedly.
-			*/
-			long /*int*/ hInstance = OS.GetModuleHandle (null);
-			long /*int*/ hHeap = OS.GetProcessHeap ();
-			lpWndClass.hInstance = hInstance;
-			lpWndClass.style &= ~OS.CS_GLOBALCLASS;
-			lpWndClass.style |= OS.CS_DBLCLKS;
-			int byteCount = LinkClass.length () * TCHAR.sizeof;
-			long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (lpszClassName, LinkClass, byteCount);
-			lpWndClass.lpszClassName = lpszClassName;
-			OS.RegisterClass (lpWndClass);
-			OS.HeapFree (hHeap, 0, lpszClassName);
-		} else {
-			LinkProc = 0;
-		}
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, LinkClass, lpWndClass);
+		LinkProc = lpWndClass.lpfnWndProc;
+		/*
+		* Feature in Windows.  The SysLink window class
+		* does not include CS_DBLCLKS.  This means that these
+		* controls will not get double click messages such as
+		* WM_LBUTTONDBLCLK.  The fix is to register a new
+		* window class with CS_DBLCLKS.
+		*
+		* NOTE:  Screen readers look for the exact class name
+		* of the control in order to provide the correct kind
+		* of assistance.  Therefore, it is critical that the
+		* new window class have the same name.  It is possible
+		* to register a local window class with the same name
+		* as a global class.  Since bits that affect the class
+		* are being changed, it is possible that other native
+		* code, other than SWT, could create a control with
+		* this class name, and fail unexpectedly.
+		*/
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
+		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
+		lpWndClass.style |= OS.CS_DBLCLKS;
+		int byteCount = LinkClass.length () * TCHAR.sizeof;
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, LinkClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
+		OS.RegisterClass (lpWndClass);
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**
@@ -158,24 +154,21 @@ public void addSelectionListener (SelectionListener listener) {
 @Override
 long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
-	if (LinkProc != 0) {
-		/*
-		* Feature in Windows.  By convention, native Windows controls
-		* check for a non-NULL wParam, assume that it is an HDC and
-		* paint using that device.  The SysLink control does not.
-		* The fix is to check for an HDC and use WM_PRINTCLIENT.
-		*/
-		switch (msg) {
-			case OS.WM_PAINT:
-				if (wParam != 0) {
-					OS.SendMessage (hwnd, OS.WM_PRINTCLIENT, wParam, 0);
-					return 0;
-				}
-				break;
-		}
-		return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
+	/*
+	* Feature in Windows.  By convention, native Windows controls
+	* check for a non-NULL wParam, assume that it is an HDC and
+	* paint using that device.  The SysLink control does not.
+	* The fix is to check for an HDC and use WM_PRINTCLIENT.
+	*/
+	switch (msg) {
+		case OS.WM_PAINT:
+			if (wParam != 0) {
+				OS.SendMessage (hwnd, OS.WM_PRINTCLIENT, wParam, 0);
+				return 0;
+			}
+			break;
 	}
-	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
 }
 
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -381,13 +374,7 @@ Color internalGetLinkForeground() {
 	if (linkForeground != -1) {
 		return Color.win32_new (display, linkForeground);
 	}
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-		return Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
-	}
-	// Create and cache the linkForeground Color native handle for re-use.
-	Color color = new Color (display, LAST_FALLBACK_LINK_FOREGROUND);
-	linkForeground = color.handle;
-	return color;
+	return Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
 }
 
 @Override
@@ -763,17 +750,15 @@ public void setText (String string) {
 
 	boolean enabled = OS.IsWindowEnabled (handle);
 	String parsedText = parse (text);
-	if (isCommonControlAvailable()) {
-		/*
-		* Bug in Windows.  For some reason, when SetWindowText()
-		* is used to set the text of a link control to the empty
-		* string, the old text remains.  The fix is to set the
-		* text to a space instead.
-		*/
-		if (string.length () == 0) string = " ";  //$NON-NLS-1$
-		TCHAR buffer = new TCHAR (getCodePage (), string, true);
-		OS.SetWindowText (handle, buffer);
-	}
+	/*
+	* Bug in Windows.  For some reason, when SetWindowText()
+	* is used to set the text of a link control to the empty
+	* string, the old text remains.  The fix is to set the
+	* text to a space instead.
+	*/
+	if (string.length () == 0) string = " ";  //$NON-NLS-1$
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	OS.SetWindowText (handle, buffer);
 
 	layout.setText (parsedText);
 	focusIndex = offsets.length > 0 ? 0 : -1;
@@ -835,11 +820,7 @@ boolean useCommonControl() {
 }
 
 boolean useCommonControl(boolean enabled) {
-	return linkForeground == -1 && !enabled && isCommonControlAvailable();
-}
-
-static boolean isCommonControlAvailable() {
-	return OS.COMCTL32_MAJOR >= 6;
+	return linkForeground == -1 && !enabled;
 }
 
 @Override
@@ -850,12 +831,12 @@ int widgetStyle () {
 
 @Override
 TCHAR windowClass () {
-	return isCommonControlAvailable() ? LinkClass : display.windowClass;
+	return LinkClass;
 }
 
 @Override
 long /*int*/ windowProc () {
-	return LinkProc != 0 ? LinkProc : display.windowProc;
+	return LinkProc;
 }
 
 @Override

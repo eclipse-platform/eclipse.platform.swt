@@ -26,14 +26,7 @@ public class MENUITEMINFO {
 	/** @field cast=(LPTSTR) */
 	public long /*int*/ dwTypeData;
 	public int cch;
-	/** @field cast=(HBITMAP),flags=no_wince */
+	/** @field cast=(HBITMAP) */
 	public long /*int*/ hbmpItem;
-	/*
-	* Feature in Windows.  The hbmpItem field requires Windows 4.10
-	* or greater.  On Windows NT 4.0, passing in a larger struct size
-	* in the cbSize field does nothing.  On Windows 95, the MENUITEMINFO
-	* calls fail when the struct size is too large.  The fix is to ensure
-	* that the correct struct size is used for the Windows platform.
-	*/
-	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 0) ? OS.MENUITEMINFO_sizeof () : 44;
+	public static final int sizeof = OS.MENUITEMINFO_sizeof ();
 }

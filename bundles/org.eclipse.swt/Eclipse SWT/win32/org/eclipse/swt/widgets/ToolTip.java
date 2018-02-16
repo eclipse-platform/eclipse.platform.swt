@@ -214,7 +214,6 @@ public String getText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	if (OS.IsWinCE) return false;
 	if (item != null) return visible;
 	long /*int*/ hwndToolTip = hwndToolTip ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
@@ -229,19 +228,12 @@ public boolean getVisible () {
 
 int getWidth () {
 	long /*int*/ hwnd = parent.handle;
-	int maxWidth = 0;
-	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-		RECT rect = new RECT ();
-		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-		maxWidth = rect.right - rect.left;
-	} else {
-		long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
-		MONITORINFO lpmi = new MONITORINFO ();
-		lpmi.cbSize = MONITORINFO.sizeof;
-		OS.GetMonitorInfo (hmonitor, lpmi);
-		maxWidth = lpmi.rcWork_right - lpmi.rcWork_left;
-	}
-	return maxWidth /= 4;
+	long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+	MONITORINFO lpmi = new MONITORINFO ();
+	lpmi.cbSize = MONITORINFO.sizeof;
+	OS.GetMonitorInfo (hmonitor, lpmi);
+	int maxWidth = lpmi.rcWork_right - lpmi.rcWork_left;
+	return maxWidth / 4;
 }
 
 long /*int*/ hwndToolTip () {
@@ -497,7 +489,6 @@ void updateMessage () {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
 	if (visible == getVisible ()) return;
 	if (item == null) {
 		long /*int*/ hwnd = parent.handle;
@@ -562,7 +553,7 @@ public void setVisible (boolean visible) {
 		}
 		return;
 	}
-	if (item != null && OS.SHELL32_MAJOR >= 5) {
+	if (item != null) {
 		if (visible) {
 			NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 			TCHAR buffer1 = new TCHAR (0, text, true);

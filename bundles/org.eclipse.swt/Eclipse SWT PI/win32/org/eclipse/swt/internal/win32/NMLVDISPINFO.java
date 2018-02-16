@@ -32,11 +32,11 @@ public class NMLVDISPINFO extends NMHDR {
 	public long /*int*/ lParam;
 	/** @field accessor=item.iIndent */
 	public int iIndent;
-	/** @field accessor=item.iGroupId,flags=no_wince */
+	/** @field accessor=item.iGroupId */
 	public int iGroupId;
-	/** @field accessor=item.cColumns,flags=no_wince */
+	/** @field accessor=item.cColumns */
 	public int cColumns;
-	/** @field accessor=item.puColumns,cast=(PUINT),flags=no_wince */
+	/** @field accessor=item.puColumns,cast=(PUINT) */
 	public long /*int*/ puColumns;
-	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVDISPINFO_sizeof () : 52;
+	public static final int sizeof = OS.NMLVDISPINFO_sizeof ();
 }

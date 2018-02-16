@@ -55,26 +55,14 @@ public class Menu extends Widget {
 	public long /*int*/ handle;
 
 	int x, y;
-	long /*int*/ hBrush, hwndCB;
+	long /*int*/ hBrush;
 	int id0, id1;
 	int foreground = -1, background = -1;
 	Image backgroundImage;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
-	ImageList imageList;
 	MenuItem selectedMenuItem;
-
-	/* Resource ID for SHMENUBARINFO */
-	static final int ID_PPC = 100;
-
-	/* SmartPhone SoftKeyBar resource ids */
-	static final int ID_SPMM = 102;
-	static final int ID_SPBM = 103;
-	static final int ID_SPMB = 104;
-	static final int ID_SPBB = 105;
-	static final int ID_SPSOFTKEY0 = 106;
-	static final int ID_SPSOFTKEY1 = 107;
 
 	/* Timer ID for MenuItem ToolTip */
 	static final int ID_TOOLTIP_TIMER = 110;
@@ -262,7 +250,7 @@ void _setVisible (boolean visible) {
 		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
 		// widget could be disposed at this point
 		display.sendPostExternalEventDispatchEvent ();
-		if (!success && GetMenuItemCount (handle) == 0) {
+		if (!success && OS.GetMenuItemCount (handle) == 0) {
 			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, OS.MAKEWPARAM (0, 0xFFFF), 0);
 		}
 	} else {
@@ -354,180 +342,41 @@ static int checkStyle (int style) {
 void createHandle () {
 	if (handle != 0) return;
 	if ((style & SWT.BAR) != 0) {
-		if (OS.IsPPC) {
-			long /*int*/ hwndShell = parent.handle;
-			SHMENUBARINFO mbi = new SHMENUBARINFO ();
-			mbi.cbSize = SHMENUBARINFO.sizeof;
-			mbi.hwndParent = hwndShell;
-			mbi.dwFlags = OS.SHCMBF_HIDDEN;
-			mbi.nToolBarId = ID_PPC;
-			mbi.hInstRes = OS.GetLibraryHandle ();
-			boolean success = OS.SHCreateMenuBar (mbi);
-			hwndCB = mbi.hwndMB;
-			if (!success) error (SWT.ERROR_NO_HANDLES);
-			/* Remove the item from the resource file */
-			OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, 0, 0);
-			return;
-		}
-		/*
-		* Note in WinCE SmartPhone.  The SoftBar contains only 2 items.
-		* An item can either be a menu or a button.
-		* SWT.BAR: creates a SoftBar with 2 menus
-		* SWT.BAR | SWT.BUTTON1: creates a SoftBar with 1 button
-		*    for button1, and a menu for button2
-		* SWT.BAR | SWT.BUTTON1 | SWT.BUTTON2: creates a SoftBar with
-		*    2 buttons
-		*/
-		if (OS.IsSP) {
-			/* Determine type of menubar */
-			int nToolBarId;
-			if ((style & SWT.BUTTON1) != 0) {
-				nToolBarId = ((style & SWT.BUTTON2) != 0) ? ID_SPBB : ID_SPBM;
-			} else {
-				nToolBarId = ((style & SWT.BUTTON2) != 0) ? ID_SPMB : ID_SPMM;
-			}
-
-			/* Create SHMENUBAR */
-			SHMENUBARINFO mbi = new SHMENUBARINFO ();
-			mbi.cbSize = SHMENUBARINFO.sizeof;
-			mbi.hwndParent = parent.handle;
-			mbi.dwFlags = OS.SHCMBF_HIDDEN;
-			mbi.nToolBarId = nToolBarId; /* as defined in .rc file */
-			mbi.hInstRes = OS.GetLibraryHandle ();
-			if (!OS.SHCreateMenuBar (mbi)) error (SWT.ERROR_NO_HANDLES);
-			hwndCB = mbi.hwndMB;
-
-			/*
-			* Feature on WinCE SmartPhone.  The SHCMBF_HIDDEN flag causes the
-			* SHMENUBAR to not be drawn. However the keyboard events still go
-			* through it.  The workaround is to also hide the SHMENUBAR with
-			* ShowWindow ().
-			*/
-			OS.ShowWindow (hwndCB, OS.SW_HIDE);
-
-			TBBUTTONINFO info = new TBBUTTONINFO ();
-			info.cbSize = TBBUTTONINFO.sizeof;
-			info.dwMask = OS.TBIF_COMMAND;
-			MenuItem item;
-
-			/* Set first item */
-			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPMB) {
-				long /*int*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
-				/* Remove the item from the resource file */
-				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
-				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
-				item = new MenuItem (this, menu, SWT.CASCADE, 0);
-			} else {
-				item = new MenuItem (this, null, SWT.PUSH, 0);
-			}
-			info.idCommand = id0 = item.id;
-			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY0, info);
-
-			/* Set second item */
-			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPBM) {
-				long /*int*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
-				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
-				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
-				item = new MenuItem (this, menu, SWT.CASCADE, 1);
-			} else {
-				item = new MenuItem (this, null, SWT.PUSH, 1);
-			}
-			info.idCommand = id1 = item.id;
-			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY1, info);
-
-			/*
-			* Override the Back key.  For some reason, the owner of the menubar
-			* must be a Dialog or it won't receive the WM_HOTKEY message.  As
-			* a result, Shell on WinCE SP must use the class Dialog.
-			*/
-			int dwMask = OS.SHMBOF_NODEFAULT | OS.SHMBOF_NOTIFY;
-			long /*int*/ lParam = OS.MAKELPARAM (dwMask, dwMask);
-			OS.SendMessage (hwndCB, OS.SHCMBM_OVERRIDEKEY, OS.VK_ESCAPE, lParam);
-			return;
-		}
 		handle = OS.CreateMenu ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (OS.IsHPC) {
-			long /*int*/ hwndShell = parent.handle;
-			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), hwndShell, 1);
-			if (hwndCB == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.CommandBar_Show (hwndCB, false);
-			OS.CommandBar_InsertMenubarEx (hwndCB, 0, handle, 0);
-			/*
-			* The command bar hosts the 'close' button when the window does not
-			* have a caption.
-			*/
-			if ((parent.style & SWT.CLOSE) != 0 && (parent.style & SWT.TITLE) == 0) {
-				OS.CommandBar_AddAdornments (hwndCB, 0, 0);
-			}
-		}
 	} else {
 		handle = OS.CreatePopupMenu ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
 void createItem (MenuItem item, int index) {
-	int count = GetMenuItemCount (handle);
+	int count = OS.GetMenuItemCount (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	display.addMenuItem (item);
-	boolean success = false;
-	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-		if (OS.IsSP) return;
-		TBBUTTON lpButton = new TBBUTTON ();
-		lpButton.idCommand = item.id;
-		lpButton.fsStyle = (byte) OS.TBSTYLE_AUTOSIZE;
-		if ((item.style & SWT.CASCADE) != 0) lpButton.fsStyle |= OS.TBSTYLE_DROPDOWN | 0x80;
-		if ((item.style & SWT.SEPARATOR) != 0) lpButton.fsStyle = (byte) OS.BTNS_SEP;
-		lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
-		lpButton.iBitmap = OS.I_IMAGENONE;
-		success = OS.SendMessage (hwndCB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
-	} else {
-		if (OS.IsWinCE) {
-			int uFlags = OS.MF_BYPOSITION;
-			TCHAR lpNewItem = null;
-			if ((item.style & SWT.SEPARATOR) != 0) {
-				uFlags |= OS.MF_SEPARATOR;
-			} else {
-				lpNewItem = new TCHAR (0, " ", true);
-			}
-			success = OS.InsertMenu (handle, index, uFlags, item.id, lpNewItem);
-			if (success) {
-				MENUITEMINFO info = new MENUITEMINFO ();
-				info.cbSize = MENUITEMINFO.sizeof;
-				info.fMask = OS.MIIM_DATA;
-				info.dwItemData = item.id;
-				success = OS.SetMenuItemInfo (handle, index, true, info);
-			}
-		} else {
-			/*
-			* Bug in Windows.  For some reason, when InsertMenuItem()
-			* is used to insert an item without text, it is not possible
-			* to use SetMenuItemInfo() to set the text at a later time.
-			* The fix is to insert the item with some text.
-			*
-			* Feature in Windows.  When an empty string is used instead
-			* of a space and InsertMenuItem() is used to set a submenu
-			* before setting text to a non-empty string, the menu item
-			* becomes unexpectedly disabled.  The fix is to insert a
-			* space.
-			*/
-			long /*int*/ hHeap = OS.GetProcessHeap ();
-			TCHAR buffer = new TCHAR (0, " ", true);
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (pszText, buffer, byteCount);
-			MENUITEMINFO info = new MENUITEMINFO ();
-			info.cbSize = MENUITEMINFO.sizeof;
-			info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
-			info.wID = item.id;
-			info.dwItemData = item.id;
-			info.fType = item.widgetStyle ();
-			info.dwTypeData = pszText;
-			success = OS.InsertMenuItem (handle, index, true, info);
-			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-		}
-	}
+	/*
+	* Bug in Windows.  For some reason, when InsertMenuItem()
+	* is used to insert an item without text, it is not possible
+	* to use SetMenuItemInfo() to set the text at a later time.
+	* The fix is to insert the item with some text.
+	*
+	* Feature in Windows.  When an empty string is used instead
+	* of a space and InsertMenuItem() is used to set a submenu
+	* before setting text to a non-empty string, the menu item
+	* becomes unexpectedly disabled.  The fix is to insert a
+	* space.
+	*/
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 4);
+	OS.MoveMemory (pszText, new char [] {' ', '\0'}, 4);
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
+	info.wID = item.id;
+	info.dwItemData = item.id;
+	info.fType = item.widgetStyle ();
+	info.dwTypeData = pszText;
+	boolean success = OS.InsertMenuItem (handle, index, true, info);
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) {
 		display.removeMenuItem (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -568,44 +417,8 @@ void destroyAccelerators () {
 }
 
 void destroyItem (MenuItem item) {
-	if (OS.IsWinCE) {
-		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-			if (OS.IsSP) {
-				redraw();
-				return;
-			}
-			int index = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
-			if (OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, index, 0) == 0) {
-				error (SWT.ERROR_ITEM_NOT_REMOVED);
-			}
-			int count = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
-			if (count == 0) {
-				if (imageList != null) {
-					OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-					display.releaseImageList (imageList);
-					imageList = null;
-				}
-			}
-		} else {
-			int index = 0;
-			MENUITEMINFO info = new MENUITEMINFO ();
-			info.cbSize = MENUITEMINFO.sizeof;
-			info.fMask = OS.MIIM_DATA;
-			while (OS.GetMenuItemInfo (handle, index, true, info)) {
-				if (info.dwItemData == item.id) break;
-				index++;
-			}
-			if (info.dwItemData != item.id) {
-				error (SWT.ERROR_ITEM_NOT_REMOVED);
-			}
-			if (!OS.DeleteMenu (handle, index, OS.MF_BYPOSITION)) {
-				error (SWT.ERROR_ITEM_NOT_REMOVED);
-			}
-		}
-	} else {
-		if (!OS.DeleteMenu (handle, item.id, OS.MF_BYCOMMAND)) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		}
+	if (!OS.DeleteMenu (handle, item.id, OS.MF_BYCOMMAND)) {
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	redraw ();
 }
@@ -613,16 +426,12 @@ void destroyItem (MenuItem item) {
 @Override
 void destroyWidget () {
 	MenuItem cascade = this.cascade;
-	long /*int*/ hMenu = handle, hCB = hwndCB;
+	long /*int*/ hMenu = handle;
 	releaseHandle ();
-	if (OS.IsWinCE && hCB != 0) {
-		OS.CommandBar_Destroy (hCB);
+	if (cascade != null) {
+		cascade.setMenu (null, true);
 	} else {
-		if (cascade != null) {
-			if (!OS.IsSP) cascade.setMenu (null, true);
-		} else {
-			if (hMenu != 0) OS.DestroyMenu (hMenu);
-		}
+		if (hMenu != 0) OS.DestroyMenu (hMenu);
 	}
 }
 
@@ -695,7 +504,6 @@ void fixMenus (Decorations newParent) {
  */
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
-	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
 	if ((style & SWT.BAR) != 0) {
 		if (parent.menuBar != this) {
 			return new Rectangle (0, 0, 0, 0);
@@ -709,7 +517,7 @@ void fixMenus (Decorations newParent) {
 			return new Rectangle (info.left, info.top, width, height);
 		}
 	} else {
-		int count = GetMenuItemCount (handle);
+		int count = OS.GetMenuItemCount (handle);
 		if (count != 0) {
 			RECT rect1 = new RECT ();
 			if (OS.GetMenuItemRect (0, handle, 0, rect1)) {
@@ -740,7 +548,6 @@ void fixMenus (Decorations newParent) {
  */
 public MenuItem getDefaultItem () {
 	checkWidget ();
-	if (OS.IsWinCE) return null;
 	int id = OS.GetMenuDefaultItem (handle, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 	if (id == -1) return null;
 	MENUITEMINFO info = new MENUITEMINFO ();
@@ -805,26 +612,13 @@ public boolean getEnabled () {
 public MenuItem getItem (int index) {
 	checkWidget ();
 	int id = 0;
-	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-		if (OS.IsPPC) {
-			TBBUTTON lpButton = new TBBUTTON ();
-			long /*int*/ result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
-			if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-			id = lpButton.idCommand;
-		}
-		if (OS.IsSP) {
-			if (!(0 <= index && index <= 1)) error (SWT.ERROR_CANNOT_GET_ITEM);
-			id = index == 0 ? id0 : id1;
-		}
-	} else {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_DATA;
-		if (!OS.GetMenuItemInfo (handle, index, true, info)) {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-		id = (int)/*64*/info.dwItemData;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_DATA;
+	if (!OS.GetMenuItemInfo (handle, index, true, info)) {
+		error (SWT.ERROR_INVALID_RANGE);
 	}
+	id = (int)/*64*/info.dwItemData;
 	return display.getMenuItem (id);
 }
 
@@ -840,7 +634,7 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return GetMenuItemCount (handle);
+	return OS.GetMenuItemCount (handle);
 }
 
 /**
@@ -861,24 +655,8 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-		if (OS.IsSP) {
-			MenuItem [] result = new MenuItem [2];
-			result[0] = display.getMenuItem (id0);
-			result[1] = display.getMenuItem (id1);
-			return result;
-		}
-		int count = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
-		TBBUTTON lpButton = new TBBUTTON ();
-		MenuItem [] result = new MenuItem [count];
-		for (int i=0; i<count; i++) {
-			OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, lpButton);
-			result [i] = display.getMenuItem (lpButton.idCommand);
-		}
-		return result;
-	}
 	int index = 0, count = 0;
-	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
+	int length = OS.GetMenuItemCount (handle);
 	if (length < 0) {
 		int error = OS.GetLastError();
 		SWT.error(SWT.ERROR_CANNOT_GET_COUNT, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
@@ -901,20 +679,6 @@ public MenuItem [] getItems () {
 	MenuItem [] result = new MenuItem [count];
 	System.arraycopy (items, 0, result, 0, count);
 	return result;
-}
-
-int GetMenuItemCount (long /*int*/ handle) {
-	if (OS.IsWinCE) {
-		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-			return OS.IsSP ? 2 : (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
-		}
-		int count = 0;
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		while (OS.GetMenuItemInfo (handle, count, true, info)) count++;
-		return count;
-	}
-	return OS.GetMenuItemCount (handle);
 }
 
 @Override
@@ -1063,25 +827,6 @@ void hideCurrentToolTip () {
 	}
 }
 
-int imageIndex (Image image) {
-	if (hwndCB == 0 || image == null) return OS.I_IMAGENONE;
-	if (imageList == null) {
-		Rectangle bounds = image.getBoundsInPixels ();
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
-		int index = imageList.add (image);
-		long /*int*/ hImageList = imageList.getHandle ();
-		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
-		return index;
-	}
-	int index = imageList.indexOf (image);
-	if (index == -1) {
-		index = imageList.add (image);
-	} else {
-		imageList.put (index, image);
-	}
-	return index;
-}
-
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the
@@ -1104,16 +849,6 @@ public int indexOf (MenuItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return -1;
-	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-		if (OS.IsPPC) {
-			return (int)/*64*/OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
-		}
-		if (OS.IsSP) {
-			if (item.id == id0) return 0;
-			if (item.id == id1) return 1;
-			return -1;
-		}
-	}
 	int index = 0;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -1180,7 +915,7 @@ void redraw () {
 @Override
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = hwndCB = 0;
+	handle = 0;
 	cascade = null;
 }
 
@@ -1190,11 +925,7 @@ void releaseChildren (boolean destroy) {
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			if (OS.IsPPC && hwndCB != 0) {
-				item.dispose ();
-			} else {
-				item.release (false);
-			}
+			item.release (false);
 		}
 	}
 	super.releaseChildren (destroy);
@@ -1221,13 +952,6 @@ void releaseWidget () {
 	backgroundImage = null;
 	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
-	if (OS.IsPPC && hwndCB != 0) {
-		if (imageList != null) {
-			OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, 0);
-			display.releaseToolImageList (imageList);
-			imageList = null;
-		}
-	}
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
 }
@@ -1401,7 +1125,6 @@ public void setDefaultItem (MenuItem item) {
 		if (item.parent != this) return;
 		newID = item.id;
 	}
-	if (OS.IsWinCE) return;
 	int oldID = OS.GetMenuDefaultItem (handle, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 	if (newID == oldID) return;
 	OS.SetMenuDefaultItem (handle, newID, OS.MF_BYCOMMAND);
@@ -1513,8 +1236,6 @@ public void setOrientation (int orientation) {
 }
 
 void _setOrientation (int orientation) {
-   if (OS.IsWinCE) return;
-   if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
    int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
    if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
    style &= ~flags;
@@ -1554,32 +1275,8 @@ public void setVisible (boolean visible) {
 }
 
 void update () {
-	if (OS.IsPPC || OS.IsSP) return;
-	if (OS.IsHPC) {
-		/*
-		* Each time a menu has been modified, the command menu bar
-		* must be redrawn or it won't update properly.  For example,
-		* a submenu will not drop down.
-		*/
-		Menu menuBar = parent.menuBar;
-		if (menuBar != null) {
-			Menu menu = this;
-			while (menu != null && menu != menuBar) {
-				menu = menu.getParentMenu ();
-			}
-			if (menu == menuBar) {
-				OS.CommandBar_DrawMenuBar (menuBar.hwndCB, 0);
-				OS.CommandBar_Show (menuBar.hwndCB, true);
-			}
-		}
-		return;
-	}
-	if (OS.IsWinCE) return;
 	if ((style & SWT.BAR) != 0) {
 		if (this == parent.menuBar) OS.DrawMenuBar (parent.handle);
-		return;
-	}
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return;
 	}
 	boolean hasCheck = false, hasImage = false;
@@ -1591,42 +1288,6 @@ void update () {
 		}
 		if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if ((hasCheck = true) && hasImage) break;
-		}
-	}
-
-	/*
-	* Bug in Windows.  If a menu contains items that have
-	* images and can be checked, Windows does not include
-	* the width of the image and the width of the check when
-	* computing the width of the menu.  When the longest item
-	* does not have an image, the label and the accelerator
-	* text can overlap.  The fix is to use SetMenuItemInfo()
-	* to indicate that all items have a bitmap and then include
-	* the width of the widest bitmap in WM_MEASURECHILD.
-	*
-	* NOTE:  This work around causes problems on Windows 98.
-	* Under certain circumstances that have yet to be isolated,
-	* some menus can become huge and blank.  For now, do not
-	* run the code on Windows 98.
-	*
-	* NOTE:  This work around doesn't run on Vista because
-	* WM_MEASURECHILD and WM_DRAWITEM cause Vista to lose
-	* the menu theme.
-	*/
-	if (!OS.IsWin95) {
-		if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-			MENUITEMINFO info = new MENUITEMINFO ();
-			info.cbSize = MENUITEMINFO.sizeof;
-			info.fMask = OS.MIIM_BITMAP;
-			for (int i=0; i<items.length; i++) {
-				MenuItem item = items [i];
-				if ((style & SWT.SEPARATOR) == 0) {
-					if (item.image == null || foreground != -1) {
-						info.hbmpItem = hasImage || foreground != -1 ? OS.HBMMENU_CALLBACK : 0;
-						OS.SetMenuItemInfo (handle, item.id, false, info);
-					}
-				}
-			}
 		}
 	}
 
@@ -1659,7 +1320,6 @@ void updateBackground () {
 }
 
 void updateForeground () {
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	int index = 0;

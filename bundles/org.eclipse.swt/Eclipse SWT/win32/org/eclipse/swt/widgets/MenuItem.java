@@ -41,16 +41,9 @@ public class MenuItem extends Item {
 	long /*int*/ hBitmap;
 	int id, accelerator, userId, index;
 	ToolTip itemToolTip;
-	/*
-	* Feature in Windows.  On Windows 98, it is necessary
-	* to add 4 pixels to the width of the image or the image
-	* and text are too close.  On other Windows platforms,
-	* this causes the text of the longest item to touch the
-	* accelerator text.  The fix is to use smaller margins
-	* everywhere but on Windows 98.
-	*/
-	final static int MARGIN_WIDTH = OS.IsWin95 ? 2 : 1;
-	final static int MARGIN_HEIGHT = OS.IsWin95 ? 2 : 1;
+	/* Image margin. */
+	final static int MARGIN_WIDTH = 1;
+	final static int MARGIN_HEIGHT = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -268,19 +261,14 @@ boolean fillAccel (ACCEL accel) {
 			case 27: key = OS.VK_ESCAPE; break;
 			case 127: key = OS.VK_DELETE; break;
 			default: {
-				key = Display.wcsToMbcs ((char) key);
 				if (key == 0) return false;
-				if (OS.IsWinCE) {
-					key = (int)/*64*/OS.CharUpper ((short) key);
-				} else {
-					vKey = OS.VkKeyScan ((short) key);
-					if (vKey == -1) {
-						if (key != (int)/*64*/OS.CharUpper ((short) key)) {
-							fVirt = 0;
-						}
-					} else {
-						key = vKey & 0xFF;
+				vKey = OS.VkKeyScan ((short) key);
+				if (vKey == -1) {
+					if (key != (int)/*64*/OS.CharUpper ((short) key)) {
+						fVirt = 0;
 					}
+				} else {
+					key = vKey & 0xFF;
 				}
 			}
 		}
@@ -333,7 +321,6 @@ public int getAccelerator () {
  */
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
-	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
 	int index = parent.indexOf (this);
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
 	if ((parent.style & SWT.BAR) != 0) {
@@ -392,14 +379,6 @@ public int getAccelerator () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		long /*int*/ hwndCB = parent.hwndCB;
-		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = TBBUTTONINFO.sizeof;
-		info.dwMask = OS.TBIF_STATE;
-		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
-		return (info.fsState & OS.TBSTATE_ENABLED) != 0;
-	}
 	/*
 	* Feature in Windows.  For some reason, when the menu item
 	* is a separator, GetMenuItemInfo() always indicates that
@@ -413,14 +392,7 @@ public boolean getEnabled () {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_STATE;
-	boolean success;
-	if (OS.IsWinCE) {
-		int index = parent.indexOf (this);
-		if (index == -1) error (SWT.ERROR_CANNOT_GET_ENABLED);
-		success = OS.GetMenuItemInfo (hMenu, index, true, info);
-	} else {
-		success = OS.GetMenuItemInfo (hMenu, id, false, info);
-	}
+	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
 	if (!success) error (SWT.ERROR_CANNOT_GET_ENABLED);
 	return (info.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) == 0;
 }
@@ -500,7 +472,6 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return false;
 	long /*int*/ hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -715,70 +686,50 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		long /*int*/ hwndCB = parent.hwndCB;
-		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = TBBUTTONINFO.sizeof;
-		info.dwMask = OS.TBIF_STATE;
-		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
-		info.fsState &= ~OS.TBSTATE_ENABLED;
-		if (enabled) info.fsState |= OS.TBSTATE_ENABLED;
-		OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info);
-	} else {
-		/*
-		* Feature in Windows.  For some reason, when the menu item
-		* is a separator, GetMenuItemInfo() always indicates that
-		* the item is not enabled.  The fix is to track the enabled
-		* state for separators.
-		*/
-		if ((style & SWT.SEPARATOR) != 0) {
-			if (enabled) {
-				state &= ~DISABLED;
-			} else {
-				state |= DISABLED;
-			}
-		}
-		long /*int*/ hMenu = parent.handle;
-		if (OS.IsWinCE) {
-			int index = parent.indexOf (this);
-			if (index == -1) return;
-			int uEnable = OS.MF_BYPOSITION | (enabled ? OS.MF_ENABLED : OS.MF_GRAYED);
-			OS.EnableMenuItem (hMenu, index, uEnable);
+	/*
+	* Feature in Windows.  For some reason, when the menu item
+	* is a separator, GetMenuItemInfo() always indicates that
+	* the item is not enabled.  The fix is to track the enabled
+	* state for separators.
+	*/
+	if ((style & SWT.SEPARATOR) != 0) {
+		if (enabled) {
+			state &= ~DISABLED;
 		} else {
-			MENUITEMINFO info = new MENUITEMINFO ();
-			info.cbSize = MENUITEMINFO.sizeof;
-			info.fMask = OS.MIIM_STATE;
-			boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
-			if (!success) {
-				int error = OS.GetLastError();
-				SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
-			}
-			int bits = OS.MFS_DISABLED | OS.MFS_GRAYED;
-			if (enabled) {
-				if ((info.fState & bits) == 0) return;
-				info.fState &= ~bits;
-			} else {
-				if ((info.fState & bits) == bits) return;
-				info.fState |= bits;
-			}
-			success = OS.SetMenuItemInfo (hMenu, id, false, info);
-			if (!success) {
-				/*
-				* Bug in Windows.  For some reason SetMenuItemInfo(),
-				* returns a fail code when setting the enabled or
-				* selected state of a default item, but sets the
-				* state anyway.  The fix is to ignore the error.
-				*
-				* NOTE:  This only happens on Vista.
-				*/
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
-				}
-				if (!success) {
-					int error = OS.GetLastError();
-					SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
-				}
-			}
+			state |= DISABLED;
+		}
+	}
+	long /*int*/ hMenu = parent.handle;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_STATE;
+	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
+	if (!success) {
+		int error = OS.GetLastError();
+		SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+	}
+	int bits = OS.MFS_DISABLED | OS.MFS_GRAYED;
+	if (enabled) {
+		if ((info.fState & bits) == 0) return;
+		info.fState &= ~bits;
+	} else {
+		if ((info.fState & bits) == bits) return;
+		info.fState |= bits;
+	}
+	success = OS.SetMenuItemInfo (hMenu, id, false, info);
+	if (!success) {
+		/*
+		* Bug in Windows.  For some reason SetMenuItemInfo(),
+		* returns a fail code when setting the enabled or
+		* selected state of a default item, but sets the
+		* state anyway.  The fix is to ignore the error.
+		*
+		* NOTE:  This only happens on Vista.
+		*/
+		success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
+		if (!success) {
+			int error = OS.GetLastError();
+			SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
 		}
 	}
 	parent.destroyAccelerators ();
@@ -828,25 +779,13 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if (OS.IsWinCE) {
-		if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-			long /*int*/ hwndCB = parent.hwndCB;
-			TBBUTTONINFO info = new TBBUTTONINFO ();
-			info.cbSize = TBBUTTONINFO.sizeof;
-			info.dwMask = OS.TBIF_IMAGE;
-			info.iImage = parent.imageIndex (image);
-			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info);
-		}
-		return;
-	}
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
 	if (parent.foreground != -1) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
 			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image) : 0;
 		} else {
@@ -910,98 +849,55 @@ void setMenu (Menu menu, boolean dispose) {
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
 
-	/* Assign the new menu in the OS */
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		if (OS.IsPPC) {
-			long /*int*/ hwndCB = parent.hwndCB;
-			long /*int*/ hMenu = menu == null ? 0 : menu.handle;
-			OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, hMenu);
-		}
-		if (OS.IsSP) error (SWT.ERROR_CANNOT_SET_MENU);
+	long /*int*/ hMenu = parent.handle;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_DATA;
+	int index = 0;
+	while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
+		if (info.dwItemData == id) break;
+		index++;
+	}
+	if (info.dwItemData != id) return;
+	int cch = 128;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	int byteCount = cch * 2;
+	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_DATA;
+	/*
+	* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
+	* for an item that has a bitmap set using MIIM_BITMAP, the text is
+	* not returned.  This means that when SetMenuItemInfo() is used to
+	* set the submenu and the current menu state, the text is lost.
+	* The fix is use MIIM_BITMAP and MIIM_STRING.
+	*/
+	info.fMask |= OS.MIIM_BITMAP | OS.MIIM_STRING;
+	info.dwTypeData = pszText;
+	info.cch = cch;
+	boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
+	if (menu != null) {
+		menu.cascade = this;
+		info.fMask |= OS.MIIM_SUBMENU;
+		info.hSubMenu = menu.handle;
+	}
+	if (dispose || oldMenu == null) {
+		success = OS.SetMenuItemInfo (hMenu, index, true, info);
 	} else {
-		long /*int*/ hMenu = parent.handle;
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_DATA;
-		int index = 0;
-		while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
-			if (info.dwItemData == id) break;
-			index++;
-		}
-		if (info.dwItemData != id) return;
-		int cch = 128;
-		long /*int*/ hHeap = OS.GetProcessHeap ();
-		int byteCount = cch * TCHAR.sizeof;
-		long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_DATA;
 		/*
-		* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
-		* for an item that has a bitmap set using MIIM_BITMAP, the text is
-		* not returned.  This means that when SetMenuItemInfo() is used to
-		* set the submenu and the current menu state, the text is lost.
-		* The fix is use MIIM_BITMAP and MIIM_STRING.
+		* Feature in Windows.  When SetMenuItemInfo () is used to
+		* set a submenu and the menu item already has a submenu,
+		* Windows destroys the previous menu.  This is undocumented
+		* and unexpected but not necessarily wrong.  The fix is to
+		* remove the item with RemoveMenu () which does not destroy
+		* the submenu and then insert the item with InsertMenuItem ().
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			info.fMask |= OS.MIIM_BITMAP | OS.MIIM_STRING;
-		} else {
-			info.fMask |= OS.MIIM_TYPE;
-		}
-		info.dwTypeData = pszText;
-		info.cch = cch;
-		boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
-		if (menu != null) {
-			menu.cascade = this;
-			info.fMask |= OS.MIIM_SUBMENU;
-			info.hSubMenu = menu.handle;
-		}
-		if (OS.IsWinCE) {
-			OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-			/*
-			* On WinCE, InsertMenuItem() is not available.  The fix is to
-			* use SetMenuItemInfo() but this call does not set the menu item
-			* state and submenu.  The fix is to use InsertMenu() to insert
-			* the item, SetMenuItemInfo() to set the string and EnableMenuItem()
-			* and CheckMenuItem() to set the state.
-			*/
-			long /*int*/ uIDNewItem = id;
-			int uFlags = OS.MF_BYPOSITION;
-			if (menu != null) {
-				uFlags |= OS.MF_POPUP;
-				uIDNewItem = menu.handle;
-			}
-			TCHAR lpNewItem = new TCHAR (0, " ", true);
-			success = OS.InsertMenu (hMenu, index, uFlags, uIDNewItem, lpNewItem);
-			if (success) {
-				info.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
-				success = OS.SetMenuItemInfo (hMenu, index, true, info);
-				if ((info.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
-					OS.EnableMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
-				}
-				if ((info.fState & OS.MFS_CHECKED) != 0) {
-					OS.CheckMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
-				}
-			}
-		} else {
-			if (dispose || oldMenu == null) {
-				success = OS.SetMenuItemInfo (hMenu, index, true, info);
-			} else {
-				/*
-				* Feature in Windows.  When SetMenuItemInfo () is used to
-				* set a submenu and the menu item already has a submenu,
-				* Windows destroys the previous menu.  This is undocumented
-				* and unexpected but not necessarily wrong.  The fix is to
-				* remove the item with RemoveMenu () which does not destroy
-				* the submenu and then insert the item with InsertMenuItem ().
-				*/
-				OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-				success = OS.InsertMenuItem (hMenu, index, true, info);
-			}
-		}
-		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-		if (!success) {
-			int error = OS.GetLastError();
-			SWT.error (SWT.ERROR_CANNOT_SET_MENU, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
-		}
+		OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
+		success = OS.InsertMenuItem (hMenu, index, true, info);
+	}
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	if (!success) {
+		int error = OS.GetLastError();
+		SWT.error (SWT.ERROR_CANNOT_SET_MENU, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
 	}
 	parent.destroyAccelerators ();
 }
@@ -1041,38 +937,28 @@ void setOrientation (int orientation) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return;
 	long /*int*/ hMenu = parent.handle;
-	if (OS.IsWinCE) {
-		int index = parent.indexOf (this);
-		if (index == -1) return;
-		int uCheck = OS.MF_BYPOSITION | (selected ? OS.MF_CHECKED : OS.MF_UNCHECKED);
-		OS.CheckMenuItem (hMenu, index, uCheck);
-	} else {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_STATE;
-		boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
-		if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
-		info.fState &= ~OS.MFS_CHECKED;
-		if (selected) info.fState |= OS.MFS_CHECKED;
-		success = OS.SetMenuItemInfo (hMenu, id, false, info);
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_STATE;
+	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
+	if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+	info.fState &= ~OS.MFS_CHECKED;
+	if (selected) info.fState |= OS.MFS_CHECKED;
+	success = OS.SetMenuItemInfo (hMenu, id, false, info);
+	if (!success) {
+		/*
+		* Bug in Windows.  For some reason SetMenuItemInfo(),
+		* returns a fail code when setting the enabled or
+		* selected state of a default item, but sets the
+		* state anyway.  The fix is to ignore the error.
+		*
+		* NOTE:  This only happens on Vista.
+		*/
+		success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 		if (!success) {
-			/*
-			* Bug in Windows.  For some reason SetMenuItemInfo(),
-			* returns a fail code when setting the enabled or
-			* selected state of a default item, but sets the
-			* state anyway.  The fix is to ignore the error.
-			*
-			* NOTE:  This only happens on Vista.
-			*/
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
-			}
-			if (!success) {
-				int error = OS.GetLastError();
-				SWT.error (SWT.ERROR_CANNOT_SET_SELECTION, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
-			}
+			int error = OS.GetLastError();
+			SWT.error (SWT.ERROR_CANNOT_SET_SELECTION, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
 		}
 	}
 	parent.redraw ();
@@ -1123,59 +1009,23 @@ public void setText (String string) {
 	super.setText (string);
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 	long /*int*/ pszText = 0;
-	boolean success = false;
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		/*
-		* Bug in WinCE PPC.  Tool items on the menubar don't resize
-		* correctly when the character '&' is used (even when it
-		* is a sequence '&&').  The fix is to remove all '&' from
-		* the string.
-		*/
-		if (string.indexOf ('&') != -1) {
-			int length = string.length ();
-			char[] text = new char [length];
-			string.getChars( 0, length, text, 0);
-			int i = 0, j = 0;
-			for (i=0; i<length; i++) {
-				if (text[i] != '&') text [j++] = text [i];
-			}
-			if (j < i) string = new String (text, 0, j);
-		}
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (pszText, buffer, byteCount);
-		long /*int*/ hwndCB = parent.hwndCB;
-		TBBUTTONINFO info2 = new TBBUTTONINFO ();
-		info2.cbSize = TBBUTTONINFO.sizeof;
-		info2.dwMask = OS.TBIF_TEXT;
-		info2.pszText = pszText;
-		success = OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info2) != 0;
-	} else {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		long /*int*/ hMenu = parent.handle;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	long /*int*/ hMenu = parent.handle;
 
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (pszText, buffer, byteCount);
-		/*
-		* Bug in Windows 2000.  For some reason, when MIIM_TYPE is set
-		* on a menu item that also has MIIM_BITMAP, the MIIM_TYPE clears
-		* the MIIM_BITMAP style.  The fix is to use MIIM_STRING.
-		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			info.fMask = OS.MIIM_STRING;
-		} else {
-			info.fMask = OS.MIIM_TYPE;
-			info.fType = widgetStyle ();
-		}
-		info.dwTypeData = pszText;
-		success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	}
+	/* Use the character encoding for the default locale */
+	TCHAR buffer = new TCHAR (0, string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount);
+	/*
+	* Bug in Windows 2000.  For some reason, when MIIM_TYPE is set
+	* on a menu item that also has MIIM_BITMAP, the MIIM_TYPE clears
+	* the MIIM_BITMAP style.  The fix is to use MIIM_STRING.
+	*/
+	info.fMask = OS.MIIM_STRING;
+	info.dwTypeData = pszText;
+	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) {
 		int error = OS.GetLastError();

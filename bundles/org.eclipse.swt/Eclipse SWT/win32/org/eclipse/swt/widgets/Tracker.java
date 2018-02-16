@@ -53,8 +53,6 @@ public class Tracker extends Widget {
 	long /*int*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
 
-	static boolean IsVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
-
 	/*
 	* The following values mirror step sizes on Windows
 	*/
@@ -495,7 +493,7 @@ public boolean open () {
 	* Note that one window (almost opaque) is used for catching all events and a
 	* second window is used for drawing the rectangles.
 	*/
-	if (IsVista && parent == null) {
+	if (parent == null) {
 		Rectangle bounds = display.getBoundsInPixels();
 		hwndTransparent = OS.CreateWindowEx (
 			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,

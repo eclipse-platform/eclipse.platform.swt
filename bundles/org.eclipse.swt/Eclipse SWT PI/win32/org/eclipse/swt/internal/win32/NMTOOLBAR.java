@@ -29,14 +29,13 @@ public class NMTOOLBAR extends NMHDR {
 	/** @field cast=(LPTSTR) */
 	public long /*int*/ pszText;
 //	RECT rcButton;
-	/** @field accessor=rcButton.left,flags=no_wince */
+	/** @field accessor=rcButton.left */
 	public int left;
-	/** @field accessor=rcButton.top,flags=no_wince */
+	/** @field accessor=rcButton.top */
 	public int top;
-	/** @field accessor=rcButton.right,flags=no_wince */
+	/** @field accessor=rcButton.right */
 	public int right;
-	/** @field accessor=rcButton.bottom,flags=no_wince */
+	/** @field accessor=rcButton.bottom */
 	public int bottom;
-	/* Note in WinCE.  The field rcButton is not defined. */
 	public static final int sizeof = OS.NMTOOLBAR_sizeof ();
 }

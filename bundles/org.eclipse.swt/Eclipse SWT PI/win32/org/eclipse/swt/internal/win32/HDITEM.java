@@ -22,9 +22,8 @@ public class HDITEM {
 	public long /*int*/ lParam;
 	public int iImage;
 	public int iOrder;
-	/** @field flags=no_wince */
 	public int type;
-	/** @field cast=(void *),flags=no_wince */
+	/** @field cast=(void *) */
 	public long /*int*/ pvFilter;
 	public static int sizeof = OS.HDITEM_sizeof ();
 }

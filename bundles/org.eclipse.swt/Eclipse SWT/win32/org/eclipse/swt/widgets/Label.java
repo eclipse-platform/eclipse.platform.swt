@@ -111,7 +111,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 	* clipboard.  This is unwanted. The fix is to avoid
 	* calling the label window proc.
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
+	if (OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
 		switch (msg) {
 			case OS.WM_LBUTTONDBLCLK: return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 		}
@@ -187,13 +187,6 @@ static int checkStyle (int style) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	width += border * 2;
 	height += border * 2;
-	/*
-	* Feature in WinCE PPC.  Text labels have a trim
-	* of one pixel wide on the right and left side.
-	* The fix is to increase the width to include
-	* this trim.
-	*/
-	if (OS.IsWinCE && !drawImage) width += 2;
 	return new Point (width, height);
 }
 
@@ -430,17 +423,6 @@ public void setText (String string) {
 	if ((state & HAS_AUTO_DIRECTION) != 0) {
 		updateTextDirection (AUTO_TEXT_DIRECTION);
 	}
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the label uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
-	}
 }
 
 @Override
@@ -454,9 +436,7 @@ int widgetExtStyle () {
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.SS_NOTIFY;
 	if ((style & SWT.SEPARATOR) != 0) return bits | OS.SS_OWNERDRAW;
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
-		if ((style & SWT.WRAP) != 0) bits |= OS.SS_EDITCONTROL;
-	}
+	if ((style & SWT.WRAP) != 0) bits |= OS.SS_EDITCONTROL;
 	if ((style & SWT.CENTER) != 0) return bits | OS.SS_CENTER;
 	if ((style & SWT.RIGHT) != 0) return bits | OS.SS_RIGHT;
 	if ((style & SWT.WRAP) != 0) return bits | OS.SS_LEFT;
@@ -480,20 +460,6 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
 		return LRESULT.ONE;
-	}
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the label uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (findImageControl () != null) {
-			drawBackground (wParam);
-			return LRESULT.ONE;
-		}
 	}
 	return result;
 }
@@ -540,7 +506,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	boolean redraw = findImageControl () != null;
 	if (!redraw) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				redraw = findThemeControl () != null;
 			}
 		}
@@ -551,93 +517,6 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 		return new LRESULT (code);
 	}
 	return result;
-}
-
-@Override
-LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the label uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
-			if (findImageControl () != null) {
-				OS.SetBkMode (wParam, OS.TRANSPARENT);
-				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-			}
-		}
-	}
-	return result;
-}
-
-@Override
-LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
-	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
-
-	if (OS.IsWinCE) {
-		boolean drawImage = image != null;
-		boolean drawSeparator = (style & SWT.SEPARATOR) != 0 && (style & SWT.SHADOW_NONE) == 0;
-		if (drawImage || drawSeparator) {
-			LRESULT result = null;
-			PAINTSTRUCT ps = new PAINTSTRUCT ();
-			GCData data = new GCData ();
-			data.ps = ps;
-			data.hwnd = handle;
-			GC gc = new_GC (data);
-			if (gc != null) {
-				drawBackground (gc.handle);
-				RECT clientRect = new RECT();
-				OS.GetClientRect (handle, clientRect);
-				if (drawSeparator) {
-					RECT rect = new RECT ();
-					int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
-					int flags = (style & SWT.SHADOW_IN) != 0 ? OS.EDGE_SUNKEN : OS.EDGE_ETCHED;
-					if ((style & SWT.HORIZONTAL) != 0) {
-						int bottom = clientRect.top + Math.max (lineWidth * 2, (clientRect.bottom - clientRect.top) / 2);
-						OS.SetRect (rect, clientRect.left, clientRect.top, clientRect.right, bottom);
-						OS.DrawEdge (gc.handle, rect, flags, OS.BF_BOTTOM);
-					} else {
-						int right = clientRect.left + Math.max (lineWidth * 2, (clientRect.right - clientRect.left) / 2);
-						OS.SetRect (rect, clientRect.left, clientRect.top, right, clientRect.bottom);
-						OS.DrawEdge (gc.handle, rect, flags, OS.BF_RIGHT);
-					}
-					result = LRESULT.ONE;
-				}
-				if (drawImage) {
-					Rectangle imageBounds = image.getBoundsInPixels ();
-					int x = 0;
-					if ((style & SWT.CENTER) != 0) {
-						x = Math.max (0, (clientRect.right - imageBounds.width) / 2);
-					} else {
-						if ((style & SWT.RIGHT) != 0) {
-							x = Math.max (0, (clientRect.right - imageBounds.width));
-						}
-					}
-					gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(Math.max (0, (clientRect.bottom - imageBounds.height) / 2)));
-					result = LRESULT.ONE;
-				}
-				int width = ps.right - ps.left;
-				int height = ps.bottom - ps.top;
-				if (width != 0 && height != 0) {
-					Event event = new Event ();
-					event.gc = gc;
-					event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
-					sendEvent (SWT.Paint, event);
-					// widget could be disposed at this point
-					event.gc = null;
-				}
-				gc.dispose ();
-			}
-			return result;
-		}
-	}
-	return super.WM_PAINT(wParam, lParam);
 }
 
 @Override

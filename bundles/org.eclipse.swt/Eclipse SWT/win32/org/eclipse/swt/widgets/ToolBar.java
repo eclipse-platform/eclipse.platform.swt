@@ -130,7 +130,7 @@ public ToolBar (Composite parent, int style) {
 		* not lay out properly.  The work around does not run
 		* in this case.
 		*/
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.CCS_VERT);
@@ -180,7 +180,7 @@ static int checkStyle (int style) {
 @Override
 void checkBuffered () {
 	super.checkBuffered ();
-	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
+	style |= SWT.DOUBLE_BUFFERED;
 }
 
 @Override
@@ -220,7 +220,7 @@ protected void checkSubclass () {
 		ignoreResize = true;
 		if (redraw) OS.UpdateWindow (handle);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-		SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		if (count != 0) {
 			RECT rect = new RECT ();
@@ -228,7 +228,7 @@ protected void checkSubclass () {
 			width = Math.max (width, rect.right);
 			height = Math.max (height, rect.bottom);
 		}
-		SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		if (redraw) OS.ValidateRect (handle, null);
 		ignoreResize = false;
 	}
@@ -315,7 +315,7 @@ void createHandle () {
 	* with the XP theme.
 	*/
 	if ((style & SWT.FLAT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			bits &= ~OS.TBSTYLE_TRANSPARENT;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
@@ -358,8 +358,7 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 
 	/* Set the extended style bits */
-	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS | OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS;
-	if (OS.COMCTL32_MAJOR >= 6) bits |= OS.TBSTYLE_EX_DOUBLEBUFFER;
+	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS | OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS | OS.TBSTYLE_EX_DOUBLEBUFFER;
 	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
 }
 
@@ -410,12 +409,6 @@ void createWidget () {
 @Override
 int applyThemeBackground () {
 	return -1; /* No Change */
-}
-
-@Override
-int defaultBackground () {
-	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_BTNFACE);
-	return super.defaultBackground ();
 }
 
 void destroyItem (ToolItem item) {
@@ -683,7 +676,7 @@ void layoutItems () {
 	* not lay out properly.  The work around does not run
 	* in this case.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		if ((style & SWT.RIGHT) != 0 && (style & SWT.VERTICAL) == 0) {
 			boolean hasText = false, hasImage = false;
 			for (int i=0; i<items.length; i++) {
@@ -795,9 +788,8 @@ void layoutItems () {
 
 @Override
 boolean mnemonicHit (char ch) {
-	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
-	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, ch, id) == 0) {
 		return false;
 	}
 	if ((style & SWT.FLAT) != 0 && !setTabGroupFocus ()) return false;
@@ -810,9 +802,8 @@ boolean mnemonicHit (char ch) {
 
 @Override
 boolean mnemonicMatch (char ch) {
-	int key = Display.wcsToMbcs (ch);
 	int [] id = new int [1];
-	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, ch, id) == 0) {
 		return false;
 	}
 	/*
@@ -905,7 +896,7 @@ void setBackgroundTransparent (boolean transparent) {
 	* platform.
 	*/
 	if ((style & SWT.FLAT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if (!transparent && findBackgroundControl () == null) {
 				bits &= ~OS.TBSTYLE_TRANSPARENT;
@@ -956,7 +947,7 @@ void setDropDownItems (boolean set) {
 	* NOTE:  This work around only runs when the tool bar contains
 	* only images.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		boolean hasText = false, hasImage = false;
 		for (int i=0; i<items.length; i++) {
 			ToolItem item = items [i];
@@ -1102,7 +1093,7 @@ void setRowCount (int count) {
 		count += 2;
 		OS.SendMessage (handle, OS.TB_SETROWS, OS.MAKEWPARAM (count, 1), 0);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
-		SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 		ignoreResize = false;
 	}
 }
@@ -1244,7 +1235,7 @@ void updateOrientation () {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
+	if (OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
 	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
@@ -1261,7 +1252,7 @@ int widgetStyle () {
 	* not lay out properly.  The work around does not run
 	* in this case.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!OS.IsAppThemed ()) {
 		if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
 	}
 	return bits;
@@ -1344,24 +1335,6 @@ LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	/*
-	* Bug in Windows.  For some reason, NM_CUSTOMDRAW with
-	* CDDS_PREERASE and CDDS_POSTERASE is never sent for
-	* versions of Windows earlier than XP.  The fix is to
-	* draw the background in WM_ERASEBKGND;
-	*/
-	if (findBackgroundControl () != null) {
-		if (OS.COMCTL32_MAJOR < 6) {
-			drawBackground (wParam);
-			return LRESULT.ONE;
-		}
-	}
-	return result;
-}
-
-@Override
 LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
@@ -1425,15 +1398,13 @@ LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	* current tooltip and add it again every time
 	* the mouse leaves the control.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
-		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-				OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
-				OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
-			}
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
+	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+		if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+			OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
+			OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
 		}
 	}
 	return result;
@@ -1595,7 +1566,6 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:
-			if (OS.COMCTL32_MAJOR < 6) break;
 			/*
 			* Bug in Windows.  For some reason, under the XP Silver
 			* theme, tool bars continue to draw using the gray color
@@ -1605,7 +1575,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			NMTBCUSTOMDRAW nmcd = new NMTBCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTBCUSTOMDRAW.sizeof);
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
-//				if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
+//				if (OS.WindowFromDC (nmcd.hdc) == handle) break;
 //			}
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREERASE: {
@@ -1639,41 +1609,39 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		case OS.TBN_HOTITEMCHANGE:
-			if (!OS.IsWinCE) {
-				NMTBHOTITEM lpnmhi = new NMTBHOTITEM ();
-				OS.MoveMemory (lpnmhi, lParam, NMTBHOTITEM.sizeof);
-				switch (lpnmhi.dwFlags) {
-					case OS.HICF_MOUSE: {
-						/*
-						* Bug in Windows.  When the tool bar has focus, a mouse is
-						* in an item and hover help for that item is displayed and
-						* then the arrow keys are used to change the hot item,
-						* for some reason, Windows snaps the hot item back to the
-						* one that is under the mouse.  The fix is to disallow
-						* hot item changes when the user is traversing using the
-						* arrow keys.
-						*/
-						if (lastArrowId != -1) return LRESULT.ONE;
-						break;
-					}
-					case OS.HICF_ARROWKEYS:	{
-			        	RECT client = new RECT ();
-			        	OS.GetClientRect (handle, client);
-			        	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
-			        	RECT rect = new RECT ();
-			        	OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-						if (rect.right > client.right || rect.bottom > client.bottom) {
-							return LRESULT.ONE;
-						}
-						lastArrowId = lpnmhi.idNew;
-						break;
-					}
-					default:
-						lastArrowId = -1;
+			NMTBHOTITEM lpnmhi = new NMTBHOTITEM ();
+			OS.MoveMemory (lpnmhi, lParam, NMTBHOTITEM.sizeof);
+			switch (lpnmhi.dwFlags) {
+				case OS.HICF_MOUSE: {
+					/*
+					* Bug in Windows.  When the tool bar has focus, a mouse is
+					* in an item and hover help for that item is displayed and
+					* then the arrow keys are used to change the hot item,
+					* for some reason, Windows snaps the hot item back to the
+					* one that is under the mouse.  The fix is to disallow
+					* hot item changes when the user is traversing using the
+					* arrow keys.
+					*/
+					if (lastArrowId != -1) return LRESULT.ONE;
+					break;
 				}
-				if ((lpnmhi.dwFlags & OS.HICF_LEAVING) == 0) {
-					lastHotId = lpnmhi.idNew;
+				case OS.HICF_ARROWKEYS:	{
+					RECT client = new RECT ();
+					OS.GetClientRect (handle, client);
+					int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
+					RECT rect = new RECT ();
+					OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
+					if (rect.right > client.right || rect.bottom > client.bottom) {
+						return LRESULT.ONE;
+					}
+					lastArrowId = lpnmhi.idNew;
+					break;
 				}
+				default:
+					lastArrowId = -1;
+			}
+			if ((lpnmhi.dwFlags & OS.HICF_LEAVING) == 0) {
+				lastHotId = lpnmhi.idNew;
 			}
 			break;
 	}

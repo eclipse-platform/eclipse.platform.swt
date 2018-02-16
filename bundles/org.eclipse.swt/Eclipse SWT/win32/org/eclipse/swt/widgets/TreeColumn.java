@@ -378,15 +378,11 @@ public void pack () {
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
+	if (OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
 	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			if (OS.COMCTL32_MAJOR < 6) {
-				headerImage = display.getSortImage (parent.sortDirection);
-			} else {
-				headerWidth += Tree.SORT_WIDTH;
-			}
+			headerWidth += Tree.SORT_WIDTH;
 		} else {
 			headerImage = image;
 		}
@@ -395,7 +391,7 @@ public void pack () {
 			headerWidth += bounds.width;
 		}
 		int margin = 0;
-		if (hwndHeader != 0 && OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
+		if (hwndHeader != 0) {
 			margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {
 			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
@@ -601,57 +597,45 @@ public void setResizable (boolean resizable) {
 }
 
 void setSortDirection (int direction) {
-	if (OS.COMCTL32_MAJOR >= 6) {
-		long /*int*/ hwndHeader = parent.hwndHeader;
-		if (hwndHeader != 0) {
-			int index = parent.indexOf (this);
-			if (index == -1) return;
-			HDITEM hdItem = new HDITEM ();
-			hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-			switch (direction) {
-				case SWT.UP:
-					hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
-					hdItem.fmt |= OS.HDF_SORTUP;
-					if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
-					break;
-				case SWT.DOWN:
-					hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
-					hdItem.fmt |= OS.HDF_SORTDOWN;
-					if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
-					break;
-				case SWT.NONE:
-					hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
-					if (image != null) {
-						hdItem.fmt |= OS.HDF_IMAGE;
-						hdItem.iImage = parent.imageIndexHeader (image);
-					} else {
-						hdItem.fmt &= ~OS.HDF_IMAGE;
-						hdItem.mask &= ~OS.HDI_IMAGE;
-					}
-					break;
-			}
-			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-				long /*int*/ hwnd = parent.handle;
-				parent.forceResize ();
-				RECT rect = new RECT (), headerRect = new RECT ();
-				OS.GetClientRect (hwnd, rect);
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-				rect.left = headerRect.left;
-				rect.right = headerRect.right;
-				OS.InvalidateRect (hwnd, rect, true);
-			}
-		}
-	} else {
+	long /*int*/ hwndHeader = parent.hwndHeader;
+	if (hwndHeader != 0) {
+		int index = parent.indexOf (this);
+		if (index == -1) return;
+		HDITEM hdItem = new HDITEM ();
+		hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 		switch (direction) {
 			case SWT.UP:
+				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
+				hdItem.fmt |= OS.HDF_SORTUP;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
+				break;
 			case SWT.DOWN:
-				setImage (display.getSortImage (direction), true, true);
+				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
+				hdItem.fmt |= OS.HDF_SORTDOWN;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
 				break;
 			case SWT.NONE:
-				setImage (image, false, false);
+				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
+				if (image != null) {
+					hdItem.fmt |= OS.HDF_IMAGE;
+					hdItem.iImage = parent.imageIndexHeader (image);
+				} else {
+					hdItem.fmt &= ~OS.HDF_IMAGE;
+					hdItem.mask &= ~OS.HDI_IMAGE;
+				}
 				break;
+		}
+		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+		if (OS.IsAppThemed ()) {
+			long /*int*/ hwnd = parent.handle;
+			parent.forceResize ();
+			RECT rect = new RECT (), headerRect = new RECT ();
+			OS.GetClientRect (hwnd, rect);
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+			rect.left = headerRect.left;
+			rect.right = headerRect.right;
+			OS.InvalidateRect (hwnd, rect, true);
 		}
 	}
 }
@@ -669,12 +653,10 @@ public void setText (String string) {
 	* mnemonic character, Windows does not measure the
 	* text properly.  This causes '...' to always appear
 	* at the end of the text.  The fix is to remove
-	* mnemonic characters and replace doubled mnemonics
-	* with spaces.
+	* mnemonic characters.
 	*/
-	boolean replace = !OS.IsWinCE && OS.WIN32_VERSION <= OS.VERSION (4, 10);
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, replace), true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

@@ -22,19 +22,9 @@ public class OS extends C {
 	/*
 	* SWT Windows flags
 	*/
-	public static final boolean IsWin32s;
-	public static final boolean IsWin95;
-	public static final boolean IsWinNT;
-	public static final boolean IsWinCE;
-	public static final boolean IsWinVista;
-	public static final boolean IsPPC;
-	public static final boolean IsHPC;
-	public static final boolean IsSP;
 	public static final boolean IsDBLocale;
-	public static final boolean IsUnicode;
+	public static final boolean IsUnicode = true;
 	public static final int WIN32_MAJOR, WIN32_MINOR, WIN32_VERSION;
-	public static final int COMCTL32_MAJOR, COMCTL32_MINOR, COMCTL32_VERSION;
-	public static final int SHELL32_MAJOR, SHELL32_MINOR, SHELL32_VERSION;
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
@@ -45,16 +35,12 @@ public class OS extends C {
 	public static final int VER_PLATFORM_WIN32_WINDOWS = 1;
 	public static final int VER_PLATFORM_WIN32_NT = 2;
 	public static final int VER_PLATFORM_WIN32_CE = 3;
-
 	/* Forward references */
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
 	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
 	public static final int MANIFEST_RESOURCE_ID = 2;
-	public static final int SM_DBCSENABLED = 0x2A;
 	public static final int SM_IMMENABLED = 0x52;
-	public static final int LANG_KOREAN = 0x12;
-	public static final int LANG_JAPANESE = 0x11;
 	public static final int MAX_PATH = 260;
 
 	/* Get the Windows version and the flags */
@@ -81,128 +67,42 @@ public class OS extends C {
 		}
 		OSVERSIONINFO.sizeof = info.dwOSVersionInfoSize;
 
-		IsWin32s = info.dwPlatformId == VER_PLATFORM_WIN32s;
-		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
-		IsWinNT = info.dwPlatformId == VER_PLATFORM_WIN32_NT;
-		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;
-		IsSP = IsSP();
-		IsPPC = IsPPC();
-		IsHPC = IsWinCE && !IsPPC && !IsSP;
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
 		WIN32_VERSION = VERSION (WIN32_MAJOR, WIN32_MINOR);
-		IsUnicode = !IsWin32s && !IsWin95;
-		IsWinVista = OS.WIN32_VERSION >= OS.VERSION (6, 0);
-
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-				TCHAR buffer = new TCHAR (0, MAX_PATH);
-				long /*int*/ hModule = OS.GetLibraryHandle ();
-				while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
-					buffer = new TCHAR (0, buffer.length () + MAX_PATH);
-				}
-				long /*int*/ hHeap = OS.GetProcessHeap ();
-				int byteCount = buffer.length () * (OS.IsUnicode ? 2 : 1);
-				long /*int*/ pszText = OS.HeapAlloc (hHeap, HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (pszText, buffer, byteCount);
-				ACTCTX pActCtx = new ACTCTX ();
-				pActCtx.cbSize = ACTCTX.sizeof;
-				pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
-				pActCtx.lpSource = pszText;
-				pActCtx.lpResourceName = MANIFEST_RESOURCE_ID;
-				long /*int*/ hActCtx = OS.CreateActCtx (pActCtx);
-				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-				long /*int*/ [] lpCookie = new long /*int*/ [1];
-				OS.ActivateActCtx (hActCtx, lpCookie);
-				/*
-				* NOTE:  A single activation context is created and activated
-				* for the entire lifetime of the program.  It is deactivated
-				* and released by Windows when the program exits.
-				*/
+			TCHAR buffer = new TCHAR (0, MAX_PATH);
+			long /*int*/ hModule = OS.GetLibraryHandle ();
+			while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
+				buffer = new TCHAR (0, buffer.length () + MAX_PATH);
 			}
+			long /*int*/ hHeap = OS.GetProcessHeap ();
+			int byteCount = buffer.length () * 2;
+			long /*int*/ pszText = OS.HeapAlloc (hHeap, HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (pszText, buffer, byteCount);
+			ACTCTX pActCtx = new ACTCTX ();
+			pActCtx.cbSize = ACTCTX.sizeof;
+			pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
+			pActCtx.lpSource = pszText;
+			pActCtx.lpResourceName = MANIFEST_RESOURCE_ID;
+			long /*int*/ hActCtx = OS.CreateActCtx (pActCtx);
+			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+			long /*int*/ [] lpCookie = new long /*int*/ [1];
+			OS.ActivateActCtx (hActCtx, lpCookie);
+			/*
+			* NOTE:  A single activation context is created and activated
+			* for the entire lifetime of the program.  It is deactivated
+			* and released by Windows when the program exits.
+			*/
 		}
 
 		/* Make the process DPI aware for Windows Vista */
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) OS.SetProcessDPIAware ();
+		OS.SetProcessDPIAware ();
 
 		/* Get the DBCS flag */
-		boolean dbcsEnabled = OS.GetSystemMetrics (SM_DBCSENABLED) != 0;
-		boolean immEnabled = OS.GetSystemMetrics (SM_IMMENABLED) != 0;
-		IsDBLocale = dbcsEnabled || immEnabled;
-
-		/*
-		* Bug in Windows.  On Korean Windows XP when the Text
-		* Services Framework support for legacy applications
-		* is enabled, certain legacy calls segment fault.
-		* For example, when ImmSetCompositionWindow() is used
-		* to move the composition window outside of the client
-		* area, Windows crashes.  The fix is to disable legacy
-		* support.
-		*
-		* Note: The bug is fixed in Service Pack 2.
-		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
-			short langID = OS.GetSystemDefaultUILanguage ();
-			short primaryLang = OS.PRIMARYLANGID (langID);
-			if (primaryLang == LANG_KOREAN) {
-				OSVERSIONINFOEX infoex = IsUnicode ? (OSVERSIONINFOEX)new OSVERSIONINFOEXW () : (OSVERSIONINFOEX)new OSVERSIONINFOEXA ();
-				infoex.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
-				GetVersionEx (infoex);
-				if (infoex.wServicePackMajor < 2) {
-					OS.ImmDisableTextFrameService (0);
-				}
-			}
-		}
+		IsDBLocale = OS.GetSystemMetrics (SM_IMMENABLED) != 0;
 	}
-
-	/* Get the COMCTL32.DLL version */
-	static {
-		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
-		dvi.cbSize = DLLVERSIONINFO.sizeof;
-		dvi.dwMajorVersion = 4;
-		dvi.dwMinorVersion = 0;
-		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true); //$NON-NLS-1$
-		long /*int*/ hModule = OS.LoadLibrary (lpLibFileName);
-		if (hModule != 0) {
-			String name = "DllGetVersion\0"; //$NON-NLS-1$
-			byte [] lpProcName = new byte [name.length ()];
-			for (int i=0; i<lpProcName.length; i++) {
-				lpProcName [i] = (byte) name.charAt (i);
-			}
-			long /*int*/ DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
-			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
-			OS.FreeLibrary (hModule);
-		}
-		COMCTL32_MAJOR = dvi.dwMajorVersion;
-		COMCTL32_MINOR = dvi.dwMinorVersion;
-		COMCTL32_VERSION = VERSION (COMCTL32_MAJOR, COMCTL32_MINOR);
-	}
-
-	/* Get the Shell32.DLL version */
-	static {
-		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
-		dvi.cbSize = DLLVERSIONINFO.sizeof;
-		dvi.dwMajorVersion = 4;
-		TCHAR lpLibFileName = new TCHAR (0, "Shell32.dll", true); //$NON-NLS-1$
-		long /*int*/ hModule = OS.LoadLibrary (lpLibFileName);
-		if (hModule != 0) {
-			String name = "DllGetVersion\0"; //$NON-NLS-1$
-			byte [] lpProcName = new byte [name.length ()];
-			for (int i=0; i<lpProcName.length; i++) {
-				lpProcName [i] = (byte) name.charAt (i);
-			}
-			long /*int*/ DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
-			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
-			OS.FreeLibrary (hModule);
-		}
-		SHELL32_MAJOR = dvi.dwMajorVersion;
-		SHELL32_MINOR = dvi.dwMinorVersion;
-		SHELL32_VERSION = VERSION (SHELL32_MAJOR, SHELL32_MINOR);
-	}
-
-	/* Flag used on WinCE */
-	static final int SYS_COLOR_INDEX_FLAG = OS.IsWinCE ? 0x40000000 : 0x0;
 
 	/*
 	* NOTE:  There is a bug in JVM 1.2 where loading
@@ -275,7 +175,7 @@ public class OS extends C {
 	public static final int BDR_RAISED = 0x0005;
 	public static final int BDR_SUNKEN = 0x000a;
 	public static final int BFFM_INITIALIZED = 0x1;
-	public static final int BFFM_SETSELECTION = IsUnicode ? 0x467 : 0x466;
+	public static final int BFFM_SETSELECTION = 0x467;
 	public static final int BFFM_VALIDATEFAILED = IsUnicode ? 0x4 : 0x3;
 	public static final int BFFM_VALIDATEFAILEDW = 0x4;
 	public static final int BFFM_VALIDATEFAILEDA = 0x3;
@@ -474,34 +374,34 @@ public class OS extends C {
 	public static final int CSIDL_APPDATA = 0x1a;
 	public static final int CSIDL_LOCAL_APPDATA = 0x1c;
 	public static final int COLORONCOLOR = 0x3;
-	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_3DFACE = 0xf | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_3DHIGHLIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_3DHILIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_3DLIGHT = 0x16 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_3DSHADOW = 0x10 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_ACTIVECAPTION = 0x2 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_BTNFACE = 0xf | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_BTNHIGHLIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_BTNSHADOW = 0x10 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_BTNTEXT = 0x12 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_CAPTIONTEXT = 0x9 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_GRADIENTACTIVECAPTION = 0x1b | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_GRADIENTINACTIVECAPTION = 0x1c | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_GRAYTEXT = 0x11 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_HIGHLIGHT = 0xd | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_HIGHLIGHTTEXT = 0xe | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_HOTLIGHT = 26 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_INACTIVECAPTION = 0x3 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_INACTIVECAPTIONTEXT = 0x13 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_INFOBK = 0x18 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_INFOTEXT = 0x17 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_MENU = 0x4 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_MENUTEXT = 0x7 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_SCROLLBAR = 0x0 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_WINDOW = 0x5 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_WINDOWFRAME = 0x6 | SYS_COLOR_INDEX_FLAG;
-	public static final int COLOR_WINDOWTEXT = 0x8 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DDKSHADOW = 0x15;
+	public static final int COLOR_3DFACE = 0xf;
+	public static final int COLOR_3DHIGHLIGHT = 0x14;
+	public static final int COLOR_3DHILIGHT = 0x14;
+	public static final int COLOR_3DLIGHT = 0x16;
+	public static final int COLOR_3DSHADOW = 0x10;
+	public static final int COLOR_ACTIVECAPTION = 0x2;
+	public static final int COLOR_BTNFACE = 0xf;
+	public static final int COLOR_BTNHIGHLIGHT = 0x14;
+	public static final int COLOR_BTNSHADOW = 0x10;
+	public static final int COLOR_BTNTEXT = 0x12;
+	public static final int COLOR_CAPTIONTEXT = 0x9;
+	public static final int COLOR_GRADIENTACTIVECAPTION = 0x1b;
+	public static final int COLOR_GRADIENTINACTIVECAPTION = 0x1c;
+	public static final int COLOR_GRAYTEXT = 0x11;
+	public static final int COLOR_HIGHLIGHT = 0xd;
+	public static final int COLOR_HIGHLIGHTTEXT = 0xe;
+	public static final int COLOR_HOTLIGHT = 26;
+	public static final int COLOR_INACTIVECAPTION = 0x3;
+	public static final int COLOR_INACTIVECAPTIONTEXT = 0x13;
+	public static final int COLOR_INFOBK = 0x18;
+	public static final int COLOR_INFOTEXT = 0x17;
+	public static final int COLOR_MENU = 0x4;
+	public static final int COLOR_MENUTEXT = 0x7;
+	public static final int COLOR_SCROLLBAR = 0x0;
+	public static final int COLOR_WINDOW = 0x5;
+	public static final int COLOR_WINDOWFRAME = 0x6;
+	public static final int COLOR_WINDOWTEXT = 0x8;
 	public static final int COMPLEXREGION = 0x3;
 	public static final int CP_ACP = 0x0;
 	public static final int CP_UTF8 = 65001;
@@ -585,7 +485,7 @@ public class OS extends C {
 	public static final int DTM_FIRST = 0x1000;
 	public static final int DTM_GETSYSTEMTIME = DTM_FIRST + 1;
 	public static final int DTM_GETIDEALSIZE = DTM_FIRST + 15;
-	public static final int DTM_SETFORMAT = IsUnicode ? DTM_FIRST + 50 : DTM_FIRST + 5;
+	public static final int DTM_SETFORMAT = DTM_FIRST + 50;
 	public static final int DTM_SETSYSTEMTIME = DTM_FIRST + 2;
 	public static final int DTN_FIRST = 0xFFFFFD08;
 	public static final int DTN_DATETIMECHANGE = DTN_FIRST + 1;
@@ -932,7 +832,8 @@ public class OS extends C {
 	public static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int L_MAX_URL_LENGTH = 2084;
-//	public static final int LANG_KOREAN = 0x12;
+	public static final int LANG_JAPANESE = 0x11;
+	public static final int LANG_KOREAN = 0x12;
 	public static final int LANG_NEUTRAL = 0x0;
 	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
@@ -1060,7 +961,7 @@ public class OS extends C {
 	public static final int LVM_DELETEITEM = 0x1008;
 	public static final int LVM_ENSUREVISIBLE = 0x1013;
 	public static final int LVM_GETBKCOLOR = 0x1000;
-	public static final int LVM_GETCOLUMN = IsUnicode ? 0x105f : 0x1019;
+	public static final int LVM_GETCOLUMN = 0x105f;
 	public static final int LVM_GETCOLUMNORDERARRAY = LVM_FIRST + 59;
 	public static final int LVM_GETCOLUMNWIDTH = 0x101d;
 	public static final int LVM_GETCOUNTPERPAGE = 0x1028;
@@ -1076,25 +977,25 @@ public class OS extends C {
 	public static final int LVM_GETNEXTITEM = 0x100c;
 	public static final int LVM_GETSELECTEDCOLUMN = LVM_FIRST + 174;
 	public static final int LVM_GETSELECTEDCOUNT = 0x1032;
-	public static final int LVM_GETSTRINGWIDTH = IsUnicode ? 0x1057 : 0x1011;
+	public static final int LVM_GETSTRINGWIDTH = 0x1057;
 	public static final int LVM_GETSUBITEMRECT = 0x1038;
 	public static final int LVM_GETTEXTCOLOR = 0x1023;
 	public static final int LVM_GETTOOLTIPS = 0x104e;
 	public static final int LVM_GETTOPINDEX = 0x1027;
 	public static final int LVM_HITTEST = 0x1012;
-	public static final int LVM_INSERTCOLUMN = IsUnicode ? 0x1061 : 0x101b;
-	public static final int LVM_INSERTITEM = IsUnicode ? 0x104d : 0x1007;
+	public static final int LVM_INSERTCOLUMN = 0x1061;
+	public static final int LVM_INSERTITEM = 0x104d;
 	public static final int LVM_REDRAWITEMS = LVM_FIRST + 21;
 	public static final int LVM_SCROLL = 0x1014;
 	public static final int LVM_SETBKCOLOR = 0x1001;
 	public static final int LVM_SETCALLBACKMASK = LVM_FIRST + 11;
-	public static final int LVM_SETCOLUMN = IsUnicode ? 0x1060 : 0x101a;
+	public static final int LVM_SETCOLUMN = 0x1060;
 	public static final int LVM_SETCOLUMNORDERARRAY = LVM_FIRST + 58;
 	public static final int LVM_SETCOLUMNWIDTH = 0x101e;
 	public static final int LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1036;
 	public static final int LVM_SETIMAGELIST = 0x1003;
 	public static final int LVM_SETINSERTMARK = LVM_FIRST + 166;
-	public static final int LVM_SETITEM = IsUnicode ? 0x104c : 0x1006;
+	public static final int LVM_SETITEM = 0x104c;
 	public static final int LVM_SETITEMCOUNT = LVM_FIRST + 47;
 	public static final int LVM_SETITEMSTATE = 0x102b;
 	public static final int LVM_SETSELECTIONMARK = LVM_FIRST + 67;
@@ -1443,16 +1344,16 @@ public class OS extends C {
 	public static final int RB_DELETEBAND = 0x402;
 	public static final int RB_GETBANDBORDERS = 0x422;
 	public static final int RB_GETBANDCOUNT = 0x40c;
-	public static final int RB_GETBANDINFO = IsUnicode ? 0x41c : 0x41d;
+	public static final int RB_GETBANDINFO = 0x41c;
 	public static final int RB_GETBANDMARGINS = 0x428;
 	public static final int RB_GETBARHEIGHT = 0x41b;
 	public static final int RB_GETBKCOLOR = 0x414;
 	public static final int RB_GETRECT = 0x409;
 	public static final int RB_GETTEXTCOLOR = 0x416;
 	public static final int RB_IDTOINDEX = 0x410;
-	public static final int RB_INSERTBAND = IsUnicode ? 0x40a : 0x401;
+	public static final int RB_INSERTBAND = 0x40a;
 	public static final int RB_MOVEBAND = 0x427;
-	public static final int RB_SETBANDINFO = IsUnicode ? 0x40b : 0x406;
+	public static final int RB_SETBANDINFO = 0x40b;
 	public static final int RB_SETBKCOLOR = 0x413;
 	public static final int RB_SETTEXTCOLOR = 0x415;
 	public static final int RC_BITBLT = 0x1;
@@ -1634,10 +1535,10 @@ public class OS extends C {
 	public static final int SW_INVALIDATE = 0x2;
 	public static final int SW_MINIMIZE = 0x6;
 	public static final int SW_PARENTOPENING = 0x3;
-	public static final int SW_RESTORE = IsWinCE ? 0xd : 0x9;
+	public static final int SW_RESTORE = 0x9;
 	public static final int SW_SCROLLCHILDREN = 0x1;
 	public static final int SW_SHOW = 0x5;
-	public static final int SW_SHOWMAXIMIZED = IsWinCE ? 0xb : 0x3;
+	public static final int SW_SHOWMAXIMIZED = 0x3;
 	public static final int SW_SHOWMINIMIZED = 0x2;
 	public static final int SW_SHOWMINNOACTIVE = 0x7;
 	public static final int SW_SHOWNA = 0x8;
@@ -1707,7 +1608,7 @@ public class OS extends C {
 	public static final int TBS_DOWNISLEFT = 0x0400;
 	public static final int TBS_HORZ = 0x0;
 	public static final int TBS_VERT = 0x2;
-	public static final int TB_ADDSTRING = IsUnicode ? 0x44d : 0x41c;
+	public static final int TB_ADDSTRING = 0x44d;
 	public static final int TB_AUTOSIZE = 0x421;
 	public static final int TB_BUTTONCOUNT = 0x418;
 	public static final int TB_BUTTONSTRUCTSIZE = 0x41e;
@@ -1715,9 +1616,9 @@ public class OS extends C {
 	public static final int TB_DELETEBUTTON = 0x416;
 	public static final int TB_ENDTRACK = 0x8;
 	public static final int TB_GETBUTTON = 0x417;
-	public static final int TB_GETBUTTONINFO = IsUnicode ? 0x43f : 0x441;
+	public static final int TB_GETBUTTONINFO = 0x43f;
 	public static final int TB_GETBUTTONSIZE = 0x43a;
-	public static final int TB_GETBUTTONTEXT = IsUnicode ? 0x44b : 0x42d;
+	public static final int TB_GETBUTTONTEXT = 0x44b;
 	public static final int TB_GETDISABLEDIMAGELIST = 0x437;
 	public static final int TB_GETHOTIMAGELIST = 0x435;
 	public static final int TB_GETHOTITEM = 0x0400 + 71;
@@ -1727,11 +1628,11 @@ public class OS extends C {
 	public static final int TB_GETROWS = 0x428;
 	public static final int TB_GETSTATE = 0x412;
 	public static final int TB_GETTOOLTIPS = 0x423;
-	public static final int TB_INSERTBUTTON = IsUnicode ? 0x443 : 0x415;
+	public static final int TB_INSERTBUTTON = 0x443;
 	public static final int TB_LOADIMAGES = 0x432;
-	public static final int TB_MAPACCELERATOR = 0x0400 + (IsUnicode ? 90 : 78);
+	public static final int TB_MAPACCELERATOR = 0x0400 + 90;
 	public static final int TB_SETBITMAPSIZE = 0x420;
-	public static final int TB_SETBUTTONINFO = IsUnicode ? 0x440 : 0x442;
+	public static final int TB_SETBUTTONINFO = 0x440;
 	public static final int TB_SETBUTTONSIZE = 0x41f;
 	public static final int TB_SETDISABLEDIMAGELIST = 0x436;
 	public static final int TB_SETEXTENDEDSTYLE = 0x454;
@@ -1758,10 +1659,10 @@ public class OS extends C {
 	public static final int TCM_GETITEMRECT = 0x130a;
 	public static final int TCM_GETTOOLTIPS = 0x132d;
 	public static final int TCM_HITTEST = 0x130d;
-	public static final int TCM_INSERTITEM = IsUnicode ? 0x133e : 0x1307;
+	public static final int TCM_INSERTITEM = 0x133e;
 	public static final int TCM_SETCURSEL = 0x130c;
 	public static final int TCM_SETIMAGELIST = 0x1303;
-	public static final int TCM_SETITEM = IsUnicode ? 0x133d : 0x1306;
+	public static final int TCM_SETITEM = 0x133d;
 	public static final int TCN_SELCHANGE = 0xfffffdd9;
 	public static final int TCN_SELCHANGING = 0xfffffdd8;
 	public static final int TCS_BOTTOM = 0x0002;
@@ -1856,16 +1757,16 @@ public class OS extends C {
 	public static final int TTI_WARNING = 2;
 	public static final int TTI_ERROR= 3;
 	public static final int TTM_ACTIVATE = 0x400 + 1;
-	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
+	public static final int TTM_ADDTOOL = 0x432;
 	public static final int TTM_ADJUSTRECT = 0x400 + 31;
 	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
 	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
 	public static final int TTM_GETCURRENTTOOL = 0x400 + (IsUnicode ? 59 : 15);
 	public static final int TTM_GETDELAYTIME = 0x400 + 21;
-	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
-	public static final int TTM_GETTOOLINFO = 0x400 + (IsUnicode ? 53 : 8);
+	public static final int TTM_DELTOOL = 0x433;
+	public static final int TTM_GETTOOLINFO = 0x400 + 53;
 	public static final int TTM_GETTOOLCOUNT = 0x40D;
-	public static final int TTM_NEWTOOLRECT = 0x400 + (IsUnicode ? 52 : 6);
+	public static final int TTM_NEWTOOLRECT = 0x400 + 52;
 	public static final int TTM_POP = 0x400 + 28;
 	public static final int TTM_SETDELAYTIME = 0x400 + 3;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
@@ -1875,7 +1776,7 @@ public class OS extends C {
 	public static final int TTM_TRACKPOSITION = 1042;
 	public static final int TTM_TRACKACTIVATE = 1041;
 	public static final int TTM_UPDATE = 0x41D;
-	public static final int TTM_UPDATETIPTEXT = 0x400 + (IsUnicode ? 57 : 12);
+	public static final int TTM_UPDATETIPTEXT = 0x400 + 57;
 	public static final int TTN_FIRST = 0xfffffdf8;
 	public static final int TTN_GETDISPINFO = IsUnicode ? 0xfffffdee : 0xfffffdf8;
 	public static final int TTN_GETDISPINFOW = 0xfffffdee;
@@ -1932,7 +1833,7 @@ public class OS extends C {
 	public static final int TVM_GETCOUNT = 0x1105;
 	public static final int TVM_GETEXTENDEDSTYLE = TV_FIRST + 45;
 	public static final int TVM_GETIMAGELIST = 0x1108;
-	public static final int TVM_GETITEM = IsUnicode ? 0x113e : 0x110c;
+	public static final int TVM_GETITEM = 0x113e;
 	public static final int TVM_GETITEMHEIGHT = 0x111c;
 	public static final int TVM_GETITEMRECT = 0x1104;
 	public static final int TVM_GETITEMSTATE = TV_FIRST + 39;
@@ -1941,7 +1842,7 @@ public class OS extends C {
 	public static final int TVM_GETTOOLTIPS = TV_FIRST + 25;
 	public static final int TVM_GETVISIBLECOUNT = TV_FIRST + 16;
 	public static final int TVM_HITTEST = 0x1111;
-	public static final int TVM_INSERTITEM = IsUnicode ? 0x1132 : 0x1100;
+	public static final int TVM_INSERTITEM = 0x1132;
 	public static final int TVM_MAPACCIDTOHTREEITEM = TV_FIRST + 42;
 	public static final int TVM_MAPHTREEITEMTOACCID = TV_FIRST + 43;
 	public static final int TVM_SELECTITEM = 0x110b;
@@ -1949,7 +1850,7 @@ public class OS extends C {
 	public static final int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
 	public static final int TVM_SETIMAGELIST = 0x1109;
 	public static final int TVM_SETINSERTMARK = 0x111a;
-	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
+	public static final int TVM_SETITEM = 0x113f;
 	public static final int TVM_SETITEMHEIGHT = TV_FIRST + 27;
 	public static final int TVM_SETSCROLLTIME = TV_FIRST + 33;
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
@@ -2255,9 +2156,9 @@ public class OS extends C {
 	public static final int WS_EX_TOPMOST = 0x8;
 	public static final int WS_EX_TRANSPARENT = 0x20;
 	public static final int WS_HSCROLL = 0x100000;
-	public static final int WS_MAXIMIZEBOX = IsWinCE ? 0x20000 : 0x10000;
-	public static final int WS_MINIMIZEBOX = IsWinCE ? 0x10000 : 0x20000;
-	public static final int WS_OVERLAPPED = IsWinCE ? WS_BORDER | WS_CAPTION : 0x0;
+	public static final int WS_MAXIMIZEBOX = 0x10000;
+	public static final int WS_MINIMIZEBOX = 0x20000;
+	public static final int WS_OVERLAPPED = 0x0;
 	public static final int WS_OVERLAPPEDWINDOW = 0xcf0000;
 	public static final int WS_POPUP = 0x80000000;
 	public static final int WS_SYSMENU = 0x80000;

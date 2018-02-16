@@ -62,8 +62,8 @@ public class Button extends Control {
 	static {
 		long /*int*/ hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
-			CHECK_WIDTH = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
-			CHECK_HEIGHT = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
+			CHECK_WIDTH = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+			CHECK_HEIGHT = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 		} else {
 			BITMAP bitmap = new BITMAP ();
 			OS.GetObject (hBitmap, BITMAP.sizeof, bitmap);
@@ -120,170 +120,72 @@ public Button (Composite parent, int style) {
 
 void _setImage (Image image) {
 	if ((style & SWT.COMMAND) != 0) return;
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) imageList.dispose ();
-		imageList = null;
-		if (image != null) {
-			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			if (OS.IsWindowEnabled (handle)) {
-				imageList.add (image);
-			} else {
-				if (disabledImage != null) disabledImage.dispose ();
-				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-				imageList.add (disabledImage);
-			}
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			buttonImageList.himl = imageList.getHandle ();
-			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-			newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-			if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
-			if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
-			if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-			if (text.length () == 0) {
-				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-			} else {
-				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				buttonImageList.margin_left = computeLeftMargin ();
-				buttonImageList.margin_right = MARGIN;
-				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-				newBits |= OS.BS_LEFT;
-			}
-			if (newBits != oldBits) {
-				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-				OS.InvalidateRect (handle, null, true);
-			}
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
+	if (image != null) {
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+		if (OS.IsWindowEnabled (handle)) {
+			imageList.add (image);
 		} else {
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+			if (disabledImage != null) disabledImage.dispose ();
+			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
+			imageList.add (disabledImage);
 		}
-		/*
-		* Bug in Windows.  Under certain cirumstances yet to be
-		* isolated, BCM_SETIMAGELIST does not redraw the control
-		* when a new image is set.  The fix is to force a redraw.
-		*/
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		if (image2 != null) image2.dispose ();
-		image2 = null;
-		long /*int*/ hImage = 0;
-		int imageBits = 0, fImageType = 0;
-		if (image != null) {
-			switch (image.type) {
-				case SWT.BITMAP: {
-					Rectangle rect = image.getBounds ();
-					ImageData data = image.getImageData ();
-					switch (data.getTransparencyType ()) {
-						case SWT.TRANSPARENCY_PIXEL:
-							if (rect.width <= ICON_WIDTH && rect.height <= ICON_HEIGHT) {
-								image2 = new Image (display, data, data.getTransparencyMask ());
-								hImage = image2.handle;
-								imageBits = OS.BS_ICON;
-								fImageType = OS.IMAGE_ICON;
-								break;
-							}
-							//$FALL-THROUGH$
-						case SWT.TRANSPARENCY_ALPHA:
-							image2 = new Image (display, rect.width, rect.height);
-							GC gc = new GC (image2);
-							gc.setBackground (getBackground ());
-							gc.fillRectangle (rect);
-							gc.drawImage (image, 0, 0);
-							gc.dispose ();
-							hImage = image2.handle;
-							imageBits = OS.BS_BITMAP;
-							fImageType = OS.IMAGE_BITMAP;
-							break;
-						case SWT.TRANSPARENCY_NONE:
-							hImage = image.handle;
-							imageBits = OS.BS_BITMAP;
-							fImageType = OS.IMAGE_BITMAP;
-							break;
-					}
-					break;
-				}
-				case SWT.ICON: {
-					hImage = image.handle;
-					imageBits = OS.BS_ICON;
-					fImageType = OS.IMAGE_ICON;
-					break;
-				}
-			}
-			/*
-			* Feature in Windows.  The button control mirrors its image when the
-			* flag WS_EX_LAYOUTRTL is set. This behaviour is not desirable in SWT.
-			* The fix is to set a mirrored version of real image in the button.
-			*/
-			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-					Rectangle rect = image.getBoundsInPixels ();
-					long /*int*/ hDC = OS.GetDC (handle);
-					long /*int*/ dstHdc = OS.CreateCompatibleDC (hDC);
-					long /*int*/ hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
-					long /*int*/ oldBitmap = OS.SelectObject (dstHdc, hBitmap);
-					OS.SetLayout (dstHdc, OS.LAYOUT_RTL);
-					if (fImageType == OS.IMAGE_BITMAP) {
-						long /*int*/ srcHdc = OS.CreateCompatibleDC (hDC);
-						long /*int*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
-						OS.SetLayout (dstHdc, 0);
-						OS.BitBlt (dstHdc, 0, 0, rect.width, rect.height, srcHdc, 0, 0, OS.SRCCOPY);
-						OS.SelectObject (srcHdc, oldSrcBitmap);
-						OS.DeleteDC (srcHdc);
-					} else {
-						Control control = findBackgroundControl ();
-						if (control == null) control = this;
-						long /*int*/ newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
-						long /*int*/ oldBrush = OS.SelectObject (dstHdc, newBrush);
-						OS.PatBlt (dstHdc, 0, 0, rect.width, rect.height, OS.PATCOPY);
-						OS.DrawIconEx (dstHdc, 0, 0, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
-						OS.SelectObject (dstHdc, oldBrush);
-						OS.DeleteObject (newBrush);
-					}
-					OS.SelectObject (dstHdc, oldBitmap);
-					OS.DeleteDC (dstHdc);
-					OS.ReleaseDC (handle, hDC);
-					if (image2 != null) image2.dispose ();
-					image2 = Image.win32_new (display, SWT.BITMAP, hBitmap);
-					imageBits = OS.BS_BITMAP;
-					fImageType = OS.IMAGE_BITMAP;
-					hImage = hBitmap;
-				}
-			}
-		}
-		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE), oldBits = newBits;
-		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
-		newBits |= imageBits;
-		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
-	}
-}
-
-void _setText (String text) {
-	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-	if (OS.COMCTL32_MAJOR >= 6) {
+		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+		buttonImageList.himl = imageList.getHandle ();
+		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
 		if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
 		if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
 		if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-		if (imageList != null) {
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			buttonImageList.himl = imageList.getHandle ();
-			if (text.length () == 0) {
-				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-			} else {
-				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				buttonImageList.margin_left = computeLeftMargin ();
-				buttonImageList.margin_right = MARGIN;
-				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-				newBits |= OS.BS_LEFT;
-			}
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		if (text.length () == 0) {
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+		} else {
+			buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			buttonImageList.margin_left = computeLeftMargin ();
+			buttonImageList.margin_right = MARGIN;
+			newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+			newBits |= OS.BS_LEFT;
 		}
+		if (newBits != oldBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+			OS.InvalidateRect (handle, null, true);
+		}
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 	} else {
-		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+	}
+	/*
+	* Bug in Windows.  Under certain cirumstances yet to be
+	* isolated, BCM_SETIMAGELIST does not redraw the control
+	* when a new image is set.  The fix is to force a redraw.
+	*/
+	OS.InvalidateRect (handle, null, true);
+}
+
+void _setText (String text) {
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+	newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
+	if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
+	if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
+	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
+	if (imageList != null) {
+		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+		buttonImageList.himl = imageList.getHandle ();
+		if (text.length () == 0) {
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+		} else {
+			buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			buttonImageList.margin_left = computeLeftMargin ();
+			buttonImageList.margin_right = MARGIN;
+			newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+			newBits |= OS.BS_LEFT;
+		}
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 	}
 	if (newBits != oldBits) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
@@ -295,7 +197,7 @@ void _setText (String text) {
 	* is to append a space to the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!OS.IsAppThemed ()) {
 			text = OS.IsWindowEnabled (handle) ? text : text + " ";
 		}
 	}
@@ -379,7 +281,6 @@ void click () {
 
 // TODO: this method ignores the style LEFT, CENTER or RIGHT
 int computeLeftMargin () {
-	if (OS.COMCTL32_MAJOR < 6) return MARGIN;
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
@@ -435,13 +336,6 @@ int computeLeftMargin () {
 		} else {
 			int extra = 0;
 			boolean hasImage = image != null, hasText = true;
-			if (OS.COMCTL32_MAJOR < 6) {
-				if ((style & SWT.PUSH) == 0) {
-					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-					hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
-					if (hasImage) hasText = false;
-				}
-			}
 			if (hasImage) {
 				if (image != null) {
 					Rectangle rect = image.getBoundsInPixels ();
@@ -476,7 +370,7 @@ int computeLeftMargin () {
 						} else {
 							rect.right -= 6;
 						}
-						if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+						if (!OS.IsAppThemed ()) {
 							rect.right -= 2;
 							if (isRadioOrCheck()) {
 								rect.right -= 2;
@@ -521,53 +415,32 @@ void createHandle () {
 	super.createHandle ();
 	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
 
-	/* Set the theme background */
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		/*
+	if (OS.IsAppThemed ()) {
+		/* Set the theme background.
+		*
 		* NOTE: On Vista this causes problems when the tab
 		* key is pressed for push buttons so disable the
 		* theme background drawing for these widgets for
 		* now.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
 			state |= THEME_BACKGROUND;
-		} else {
-			if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
-				state |= THEME_BACKGROUND;
-			}
 		}
-	}
 
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the button uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_CTRLCOLOR.
-	*
-	* NOTE: For comctl32.dll 6.0 with themes disabled,
-	* drawing in WM_ERASEBKGND will draw on top of the
-	* text of the control.
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
-	}
-
-	/*
-	* Feature in Windows.  Push buttons draw border around
-	* the button using the default background color instead
-	* of using the color provided by WM_CTRLCOLOR.  The fix
-	* is to draw the background in WM_CTRLCOLOR.
-	*
-	* NOTE: On Vista this causes problems when the tab key
-	* is pressed for push buttons so disable the fix for now.
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-				state |= DRAW_BACKGROUND;
-			}
+		/*
+		* Bug in Windows.  For some reason, the HBRUSH that
+		* is returned from WM_CTRLCOLOR is misaligned when
+		* the button uses it to draw.  If the brush is a solid
+		* color, this does not matter.  However, if the brush
+		* contains an image, the image is misaligned.  The
+		* fix is to draw the background in WM_CTRLCOLOR.
+		*
+		* NOTE: For comctl32.dll 6.0 with themes disabled,
+		* drawing in WM_ERASEBKGND will draw on top of the
+		* text of the control.
+		*/
+		if ((style & SWT.RADIO) != 0) {
+			state |= DRAW_BACKGROUND;
 		}
 	}
 }
@@ -606,7 +479,7 @@ void enableWidget (boolean enabled) {
 	* is to append a space to the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
 			if (!hasImage) {
@@ -914,23 +787,21 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
 	if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) {
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			buttonImageList.himl = imageList.getHandle ();
-			if (text.length () == 0) {
-				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-			} else {
-				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				buttonImageList.margin_left = computeLeftMargin ();
-				buttonImageList.margin_right = MARGIN;
-				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
-				newBits |= OS.BS_LEFT;
-			}
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+	if (imageList != null) {
+		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+		buttonImageList.himl = imageList.getHandle ();
+		if (text.length () == 0) {
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+		} else {
+			buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			buttonImageList.margin_left = computeLeftMargin ();
+			buttonImageList.margin_right = MARGIN;
+			newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+			newBits |= OS.BS_LEFT;
 		}
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 	}
 	if (newBits != oldBits) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
@@ -1089,13 +960,11 @@ public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if (OS.COMCTL32_VERSION >= OS.VERSION (6, 1)) {
-		if ((style & SWT.COMMAND) != 0) {
-			int length = message.length ();
-			char [] chars = new char [length + 1];
-			message.getChars(0, length, chars, 0);
-			OS.SendMessage (handle, OS.BCM_SETNOTE, 0, chars);
-		}
+	if ((style & SWT.COMMAND) != 0) {
+		int length = message.length ();
+		char [] chars = new char [length + 1];
+		message.getChars(0, length, chars, 0);
+		OS.SendMessage (handle, OS.BCM_SETNOTE, 0, chars);
 	}
 }
 
@@ -1220,28 +1089,26 @@ boolean updateTextDirection(int textDirection) {
 }
 
 void updateImageList () {
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) {
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-			if (imageList != null) imageList.dispose ();
-			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			if (OS.IsWindowEnabled (handle)) {
-				imageList.add (image);
-			} else {
-				if (disabledImage != null) disabledImage.dispose ();
-				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-				imageList.add (disabledImage);
-			}
-			buttonImageList.himl = imageList.getHandle ();
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-			/*
-			* Bug in Windows.  Under certain cirumstances yet to be
-			* isolated, BCM_SETIMAGELIST does not redraw the control
-			* when an image is set.  The fix is to force a redraw.
-			*/
-			OS.InvalidateRect (handle, null, true);
+	if (imageList != null) {
+		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+		if (imageList != null) imageList.dispose ();
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+		if (OS.IsWindowEnabled (handle)) {
+			imageList.add (image);
+		} else {
+			if (disabledImage != null) disabledImage.dispose ();
+			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
+			imageList.add (disabledImage);
 		}
+		buttonImageList.himl = imageList.getHandle ();
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		/*
+		* Bug in Windows.  Under certain cirumstances yet to be
+		* isolated, BCM_SETIMAGELIST does not redraw the control
+		* when an image is set.  The fix is to force a redraw.
+		*/
+		OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -1305,30 +1172,6 @@ TCHAR windowClass () {
 @Override
 long /*int*/ windowProc () {
 	return ButtonProc;
-}
-
-
-@Override
-LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the button uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (isRadioOrCheck()) {
-			if (findImageControl () != null) {
-				drawBackground (wParam);
-				return LRESULT.ONE;
-			}
-		}
-	}
-	return result;
 }
 
 @Override
@@ -1401,16 +1244,14 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-			if (imageList != null && text.length () != 0) {
-				BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-				OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-				buttonImageList.margin_left = computeLeftMargin ();
-				buttonImageList.margin_right = MARGIN;
-				OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-			}
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+		if (imageList != null && text.length () != 0) {
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+			buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			buttonImageList.margin_left = computeLeftMargin ();
+			buttonImageList.margin_right = MARGIN;
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		}
 	}
 	return result;
@@ -1439,22 +1280,20 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	* NOTE:  This only happens for radio, check and toggle
 	* buttons.
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
-			boolean redraw = findImageControl () != null;
-			if (!redraw) {
-				if ((state & THEME_BACKGROUND) != 0) {
-					if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-						redraw = findThemeControl () != null;
-					}
+	if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
+		boolean redraw = findImageControl () != null;
+		if (!redraw) {
+			if ((state & THEME_BACKGROUND) != 0) {
+				if (OS.IsAppThemed ()) {
+					redraw = findThemeControl () != null;
 				}
-				if (!redraw) redraw = findBackgroundControl () != null;
 			}
-			if (redraw) {
-				OS.InvalidateRect (handle, null, false);
-				long /*int*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
-				return new LRESULT (code);
-			}
+			if (!redraw) redraw = findBackgroundControl () != null;
+		}
+		if (redraw) {
+			OS.InvalidateRect (handle, null, false);
+			long /*int*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+			return new LRESULT (code);
 		}
 	}
 	/*
@@ -1495,34 +1334,10 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the button uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (isRadioOrCheck()) {
-			if (findImageControl () != null) {
-				OS.SetBkMode (wParam, OS.TRANSPARENT);
-				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-			}
-		}
-	}
-	return result;
-}
-
-@Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.NM_CUSTOMDRAW:
 			// this message will not appear for owner-draw buttons (currently the ARROW button).
-
-			if (OS.COMCTL32_MAJOR < 6) break;
 
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
@@ -1645,7 +1460,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		int iStateId = OS.ABS_LEFTNORMAL;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
 			case SWT.UP: iStateId = OS.ABS_UPNORMAL; break;
@@ -1654,15 +1469,12 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 			case SWT.RIGHT: iStateId = OS.ABS_RIGHTNORMAL; break;
 		}
 		/*
-		* Feature in Windows.  On Vista only, DrawThemeBackground()
-		* does not mirror the drawing. The fix is switch left to right
-		* and right to left.
+		* Feature in Windows.  DrawThemeBackground() does not mirror the drawing.
+		* The fix is switch left to right and right to left.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			if ((style & SWT.MIRRORED) != 0) {
-				if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
-					iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL;
-				}
+		if ((style & SWT.MIRRORED) != 0) {
+			if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
+				iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL;
 			}
 		}
 		/*

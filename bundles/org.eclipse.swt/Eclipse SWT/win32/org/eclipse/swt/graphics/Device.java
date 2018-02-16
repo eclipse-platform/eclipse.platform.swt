@@ -186,8 +186,7 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
-    int oldErrorMode = 0;
-    if (!OS.IsWinCE) oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
+	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
 		long /*int*/ [] token = new long /*int*/ [1];
 		GdiplusStartupInput input = new GdiplusStartupInput ();
@@ -211,7 +210,7 @@ void checkGDIP() {
 	} catch (Throwable t) {
 		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
 	} finally {
-		if (!OS.IsWinCE) OS.SetErrorMode (oldErrorMode);
+		OS.SetErrorMode (oldErrorMode);
     }
 }
 
@@ -535,11 +534,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		offset = nFonts;
 		for (int i=0; i<offset; i++) {
 			LOGFONT lf = logFonts [i];
-			/**
-			 * Bug in Windows 98. When EnumFontFamiliesEx is called with a specified face name, it
-			 * should enumerate for each available style of that font. Instead, it only enumerates
-			 * once. The fix is to call EnumFontFamilies, which works as expected.
-			 */
 			if (OS.IsUnicode) {
 				OS.EnumFontFamiliesW (hDC, ((LOGFONTW)lf).lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 			} else {
@@ -549,11 +543,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	} else {
 		/* Use the character encoding for the default locale */
 		TCHAR lpFaceName = new TCHAR (0, faceName, true);
-		/**
-		 * Bug in Windows 98. When EnumFontFamiliesEx is called with a specified face name, it
-		 * should enumerate for each available style of that font. Instead, it only enumerates
-		 * once. The fix is to call EnumFontFamilies, which works as expected.
-		 */
 		OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 	}
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
@@ -703,20 +692,18 @@ public boolean getWarnings () {
  */
 protected void init () {
 	if (debug) {
-		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
+		OS.GdiSetBatchLimit(1);
 	}
 
 	/* Initialize the system font slot */
 	systemFont = getSystemFont();
 
 	/* Initialize scripts list */
-	if (!OS.IsWinCE) {
-		long /*int*/ [] ppSp = new long /*int*/ [1];
-		int [] piNumScripts = new int [1];
-		OS.ScriptGetProperties (ppSp, piNumScripts);
-		scripts = new long /*int*/ [piNumScripts [0]];
-		OS.MoveMemory (scripts, ppSp [0], scripts.length * C.PTR_SIZEOF);
-	}
+	long /*int*/ [] ppSp = new long /*int*/ [1];
+	int [] piNumScripts = new int [1];
+	OS.ScriptGetProperties (ppSp, piNumScripts);
+	scripts = new long /*int*/ [piNumScripts [0]];
+	OS.MoveMemory (scripts, ppSp [0], scripts.length * C.PTR_SIZEOF);
 
 	/*
 	 * If we're not on a device which supports palettes,
@@ -735,17 +722,6 @@ protected void init () {
 
 	int numReserved = OS.GetDeviceCaps (hDC, OS.NUMRESERVED);
 	int numEntries = OS.GetDeviceCaps (hDC, OS.SIZEPALETTE);
-
-	if (OS.IsWinCE) {
-		/*
-		* Feature on WinCE.  For some reason, certain 8 bit WinCE
-		* devices return 0 for the number of reserved entries in
-		* the system palette.  Their system palette correctly contains
-		* the usual 20 system colors.  The workaround is to assume
-		* there are 20 reserved system colors instead of 0.
-		*/
-		if (numReserved == 0 && numEntries >= 20) numReserved = 20;
-	}
 
 	/* Create the palette and reference counter */
 	colorRefCount = new int [numEntries];
@@ -852,26 +828,23 @@ public boolean isDisposed () {
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-		TCHAR lpszFilename = new TCHAR (0, path, true);
-		boolean loaded = OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
-		if (loaded) {
-			if (gdipToken != null) {
-				if (fontCollection == 0) {
-					fontCollection = Gdip.PrivateFontCollection_new();
-					if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				}
-				int length = path.length();
-				char [] buffer = new char [length + 1];
-				path.getChars(0, length, buffer, 0);
-				Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
-			} else {
-				addFont(path);
+	TCHAR lpszFilename = new TCHAR (0, path, true);
+	boolean loaded = OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
+	if (loaded) {
+		if (gdipToken != null) {
+			if (fontCollection == 0) {
+				fontCollection = Gdip.PrivateFontCollection_new();
+				if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			}
+			int length = path.length();
+			char [] buffer = new char [length + 1];
+			path.getChars(0, length, buffer, 0);
+			Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
+		} else {
+			addFont(path);
 		}
-		return loaded;
 	}
-	return false;
+	return loaded;
 }
 
 void new_Object (Object object) {

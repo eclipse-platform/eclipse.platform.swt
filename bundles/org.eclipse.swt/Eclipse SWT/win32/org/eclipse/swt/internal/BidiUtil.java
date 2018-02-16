@@ -141,13 +141,10 @@ static long /*int*/ EnumSystemLanguageGroupsProc(long /*int*/ lpLangGrpId, long 
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	int length = renderDx.length;
-
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		if (OS.GetLayout (gc.handle) != 0) {
-			reverse(renderDx);
-			renderDx[length-1]--;               //fixes bug 40006
-			reverse(renderBuffer);
-		}
+	if (OS.GetLayout (gc.handle) != 0) {
+		reverse(renderDx);
+		renderDx[length-1]--;               //fixes bug 40006
+		reverse(renderBuffer);
 	}
 	// render transparently to avoid overlapping segments. fixes bug 40006
 	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
@@ -176,12 +173,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
-	int cs = OS.GetTextCharset(gc.handle);
-	boolean isRightOriented = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		isRightOriented = OS.GetLayout(gc.handle) != 0;
-	}
-	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
+	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
 	boolean linkBefore = (flags & LINKBEFORE) == LINKBEFORE;
@@ -309,14 +301,9 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	long /*int*/ hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
-	int cs = OS.GetTextCharset(gc.handle);
-	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
-	boolean isRightOriented = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		isRightOriented = OS.GetLayout(gc.handle) != 0;
-	}
+	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
 
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
@@ -439,7 +426,6 @@ static boolean isBidiLang(long /*int*/ lang) {
  * 	false on Windows CE.
  */
 public static boolean isBidiPlatform() {
-	if (OS.IsWinCE) return false;
 	if (isBidiPlatform != -1) return isBidiPlatform == 1; // already set
 
 	isBidiPlatform = 0;
@@ -593,8 +579,6 @@ public static void setKeyboardLanguage(int language) {
  * 	could not be changed
  */
 public static boolean setOrientation (long /*int*/ hwnd, int orientation) {
-	if (OS.IsWinCE) return false;
-	if (OS.WIN32_VERSION < OS.VERSION(4, 10)) return false;
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		bits |= OS.WS_EX_LAYOUTRTL;

@@ -44,7 +44,7 @@ public class Group extends Composite {
 	String text = "";
 	static final int CLIENT_INSET = 3;
 	static final long /*int*/ GroupProc;
-	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
+	static final TCHAR GroupClass = new TCHAR (0, "SWT_GROUP", true);
 	static {
 		/*
 		* Feature in Windows.  The group box window class
@@ -53,32 +53,22 @@ public class Group extends Composite {
 		* when resized.  This causes flashing.  The fix is to
 		* register a new window class without these bits and
 		* implement special code that damages only the control.
-		*
-		* Feature in WinCE.  On certain devices, defining
-		* a new window class which looks like BUTTON causes
-		* CreateWindowEx() to crash.  The workaround is to use
-		* the class Button directly.
 		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
-		if (OS.IsWinCE) {
-			OS.GetClassInfo (0, GroupClass, lpWndClass);
-			GroupProc = lpWndClass.lpfnWndProc;
-		} else {
-			TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
-			OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
-			GroupProc = lpWndClass.lpfnWndProc;
-			long /*int*/ hInstance = OS.GetModuleHandle (null);
-			if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
-				long /*int*/ hHeap = OS.GetProcessHeap ();
-				lpWndClass.hInstance = hInstance;
-				lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-				int byteCount = GroupClass.length () * TCHAR.sizeof;
-				long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (lpszClassName, GroupClass, byteCount);
-				lpWndClass.lpszClassName = lpszClassName;
-				OS.RegisterClass (lpWndClass);
-				OS.HeapFree (hHeap, 0, lpszClassName);
-			}
+		TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
+		OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
+		GroupProc = lpWndClass.lpfnWndProc;
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
+			long /*int*/ hHeap = OS.GetProcessHeap ();
+			lpWndClass.hInstance = hInstance;
+			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
+			int byteCount = GroupClass.length () * TCHAR.sizeof;
+			long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, GroupClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
+			OS.RegisterClass (lpWndClass);
+			OS.HeapFree (hHeap, 0, lpszClassName);
 		}
 	}
 
@@ -172,7 +162,7 @@ protected void checkSubclass () {
 		OS.DrawText (hDC, buffer, -1, rect, flags);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
+		int offsetY = OS.IsAppThemed () ? 0 : 1;
 		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6 + offsetY);
 	}
 	return size;
@@ -189,7 +179,7 @@ protected void checkSubclass () {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
+	int offsetY = OS.IsAppThemed () ? 0 : 1;
 	trim.x -= CLIENT_INSET;
 	trim.y -= tm.tmHeight + offsetY;
 	trim.width += CLIENT_INSET * 2;
@@ -242,11 +232,11 @@ String fixText (boolean enabled) {
 	if (text.length() == 0) return null;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		String string = null;
-		if (!enabled && (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ())) {
+		if (!enabled && !OS.IsAppThemed ()) {
 			string = " " + text + " ";
 		}
-		return !OS.IsUnicode || (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
-	} else if (OS.IsUnicode && (style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		return (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
+	} else if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 		return RLE + text;
 	}
 	return null;
@@ -265,7 +255,7 @@ String fixText (boolean enabled) {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
+	int offsetY = OS.IsAppThemed () ? 0 : 1;
 	int x = CLIENT_INSET, y = tm.tmHeight + offsetY;
 	int width = Math.max (0, rect.right - CLIENT_INSET * 2);
 	int height = Math.max (0, rect.bottom - y - CLIENT_INSET);
@@ -557,7 +547,7 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	* BS_GROUP, there is no problem.  The fix is to save
 	* and restore the current font.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		int nSavedDC = OS.SaveDC (wParam);
 		long /*int*/ code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
 		OS.RestoreDC (wParam, nSavedDC);
@@ -581,7 +571,7 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	boolean redraw = findImageControl () != null;
 	if (!redraw) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				redraw = findThemeControl () != null;
 			}
 		}
@@ -605,7 +595,6 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	* group from inside WM_SIZE causes pixel corruption for
 	* radio button children.
 	*/
-	if (OS.IsWinCE) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
 	WINDOWPOS lpwp = new WINDOWPOS ();
 	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);

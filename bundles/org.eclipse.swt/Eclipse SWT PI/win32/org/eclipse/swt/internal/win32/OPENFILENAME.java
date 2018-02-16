@@ -42,11 +42,9 @@ public class OPENFILENAME {
 	public long /*int*/ lpfnHook;
 	/** @field cast=(LPCTSTR) */
 	public long /*int*/ lpTemplateName;
-	/** @field cast=(void *),flags=no_wince */
+	/** @field cast=(void *) */
 	public long /*int*/ pvReserved;
-	/** @field flags=no_wince */
 	public int dwReserved;
-	/** @field flags=no_wince */
 	public int FlagsEx;
-	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 0) ? OS.OPENFILENAME_sizeof () : 76;
+	public static final int sizeof = OS.OPENFILENAME_sizeof ();
 }

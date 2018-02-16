@@ -339,31 +339,18 @@ public void pack () {
 	int oldWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
+	if (OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;
-		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-			if (OS.COMCTL32_MAJOR < 6) {
-				headerImage = display.getSortImage (parent.sortDirection);
-			} else {
-				headerWidth += Table.SORT_WIDTH;
-			}
-		} else {
-			headerImage = image;
-		}
-		if (headerImage != null) {
-			Rectangle bounds = headerImage.getBoundsInPixels ();
+			headerWidth += Table.SORT_WIDTH;
+		} else if (image != null) {
+			Rectangle bounds = image.getBoundsInPixels ();
 			headerWidth += bounds.width;
 		}
-		int margin = 0;
-		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-			long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-			margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
-		} else {
-			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
-		}
+		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		headerWidth += margin * 4;
 	}
 	parent.ignoreColumnResize = true;
@@ -405,25 +392,6 @@ public void pack () {
 			*/
 			if (parent.imageList == null) columnWidth += 2;
 			/*
-			* Bug in Windows.  When the first column of a table does not
-			* have an image and the user double clicks on the divider,
-			* Windows packs the column but does not take into account
-			* the empty space left for the image.  The fix is to increase
-			* the column width by the width of the image list.
-			*
-			* NOTE:  This bug does not happen on Vista.
-			*/
-			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-				if (!parent.firstColumnImage) {
-					long /*int*/ hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-					if (hImageList != 0) {
-						int [] cx = new int [1], cy = new int [1];
-						OS.ImageList_GetIconSize (hImageList, cx, cy);
-						columnWidth += cx [0];
-					}
-				}
-			}
-			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
 			* for a table with a state image list, the column is width does not
 			* include space for the state icon.  The fix is to increase the column
@@ -455,12 +423,12 @@ public void pack () {
 				OS.GetWindowRect (hwnd, rect);
 				OS.UpdateWindow (hwnd);
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-				SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
+				OS.SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
 			}
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
 			if (fixWidth) {
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
-				SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+				OS.SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 			}
 		} else {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
@@ -622,43 +590,18 @@ void setImage (Image image, boolean sort, boolean right) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	long /*int*/ hwnd = parent.handle;
-	if (OS.COMCTL32_MAJOR < 6) {
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-		HDITEM hdItem = new HDITEM ();
-		hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-		hdItem.fmt &= ~OS.HDF_BITMAP_ON_RIGHT;
-		if (image != null) {
-			if (sort) {
-				hdItem.mask &= ~OS.HDI_IMAGE;
-				hdItem.fmt &= ~OS.HDF_IMAGE;
-				hdItem.fmt |= OS.HDF_BITMAP;
-				hdItem.hbm = image.handle;
-			} else {
-				hdItem.mask &= ~OS.HDI_BITMAP;
-				hdItem.fmt &= ~OS.HDF_BITMAP;
-				hdItem.fmt |= OS.HDF_IMAGE;
-				hdItem.iImage = parent.imageIndexHeader (image);
-			}
-			if (right) hdItem.fmt |= OS.HDF_BITMAP_ON_RIGHT;
-		} else {
-			hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
-		}
-		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+	LVCOLUMN lvColumn = new LVCOLUMN ();
+	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
+	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
+	if (image != null) {
+		lvColumn.fmt |= OS.LVCFMT_IMAGE;
+		lvColumn.iImage = parent.imageIndexHeader (image);
+		if (right) lvColumn.fmt |= OS.LVCFMT_BITMAP_ON_RIGHT;
 	} else {
-		LVCOLUMN lvColumn = new LVCOLUMN ();
-		lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
-		OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
-		if (image != null) {
-			lvColumn.fmt |= OS.LVCFMT_IMAGE;
-			lvColumn.iImage = parent.imageIndexHeader (image);
-			if (right) lvColumn.fmt |= OS.LVCFMT_BITMAP_ON_RIGHT;
-		} else {
-			lvColumn.mask &= ~OS.LVCF_IMAGE;
-			lvColumn.fmt &= ~(OS.LVCFMT_IMAGE | OS.LVCFMT_BITMAP_ON_RIGHT);
-		}
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+		lvColumn.mask &= ~OS.LVCF_IMAGE;
+		lvColumn.fmt &= ~(OS.LVCFMT_IMAGE | OS.LVCFMT_BITMAP_ON_RIGHT);
 	}
+	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
 }
 
 /**
@@ -708,84 +651,72 @@ public void setResizable (boolean resizable) {
 }
 
 void setSortDirection (int direction) {
-	if (OS.COMCTL32_MAJOR >= 6) {
-		int index = parent.indexOf (this);
-		if (index == -1) return;
-		long /*int*/ hwnd = parent.handle;
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-		HDITEM hdItem = new HDITEM ();
-		hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-		switch (direction) {
-			case SWT.UP:
-				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
-				hdItem.fmt |= OS.HDF_SORTUP;
-				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
-				break;
-			case SWT.DOWN:
-				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
-				hdItem.fmt |= OS.HDF_SORTDOWN;
-				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
-				break;
-			case SWT.NONE:
-				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
-				if (image != null) {
-					hdItem.fmt |= OS.HDF_IMAGE;
-					hdItem.iImage = parent.imageIndexHeader (image);
-				} else {
-					hdItem.fmt &= ~OS.HDF_IMAGE;
-					hdItem.mask &= ~OS.HDI_IMAGE;
-				}
-				break;
-		}
-		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-		/*
-		* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
-		* specify a selected column, Windows does not redraw either
-		* the new or the previous selected column.  The fix is to
-		* force a redraw of both.
-		*
-		* Feature in Windows.  When LVM_SETBKCOLOR is used with
-		* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
-		* a column, Windows fills the column with the selection
-		* color, drawing on top of the background image and any
-		* other custom drawing.  The fix is to avoid setting the
-		* selected column.
-		*/
-		parent.forceResize ();
-		RECT rect = new RECT ();
-		OS.GetClientRect (hwnd, rect);
-		if ((int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-			int oldColumn = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
-			int newColumn = direction == SWT.NONE ? -1 : index;
-			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
-			RECT headerRect = new RECT ();
-			if (oldColumn != -1) {
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-					rect.left = headerRect.left;
-					rect.right = headerRect.right;
-					OS.InvalidateRect (hwnd, rect, true);
-				}
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	long /*int*/ hwnd = parent.handle;
+	long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+	HDITEM hdItem = new HDITEM ();
+	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+	switch (direction) {
+		case SWT.UP:
+			hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
+			hdItem.fmt |= OS.HDF_SORTUP;
+			if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
+			break;
+		case SWT.DOWN:
+			hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
+			hdItem.fmt |= OS.HDF_SORTDOWN;
+			if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
+			break;
+		case SWT.NONE:
+			hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
+			if (image != null) {
+				hdItem.fmt |= OS.HDF_IMAGE;
+				hdItem.iImage = parent.imageIndexHeader (image);
+			} else {
+				hdItem.fmt &= ~OS.HDF_IMAGE;
+				hdItem.mask &= ~OS.HDI_IMAGE;
+			}
+			break;
+	}
+	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+	/*
+	* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
+	* specify a selected column, Windows does not redraw either
+	* the new or the previous selected column.  The fix is to
+	* force a redraw of both.
+	*
+	* Feature in Windows.  When LVM_SETBKCOLOR is used with
+	* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
+	* a column, Windows fills the column with the selection
+	* color, drawing on top of the background image and any
+	* other custom drawing.  The fix is to avoid setting the
+	* selected column.
+	*/
+	parent.forceResize ();
+	RECT rect = new RECT ();
+	OS.GetClientRect (hwnd, rect);
+	if ((int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+		int oldColumn = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+		int newColumn = direction == SWT.NONE ? -1 : index;
+		OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+		RECT headerRect = new RECT ();
+		if (oldColumn != -1) {
+			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
+				OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+				rect.left = headerRect.left;
+				rect.right = headerRect.right;
+				OS.InvalidateRect (hwnd, rect, true);
 			}
 		}
-		RECT headerRect = new RECT ();
-		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
-			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-			rect.left = headerRect.left;
-			rect.right = headerRect.right;
-			OS.InvalidateRect (hwnd, rect, true);
-		}
-	} else {
-		switch (direction) {
-			case SWT.UP:
-			case SWT.DOWN:
-				setImage (display.getSortImage (direction), true, true);
-				break;
-			case SWT.NONE:
-				setImage (image, false, false);
-				break;
-		}
+	}
+	RECT headerRect = new RECT ();
+	if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
+		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+		rect.left = headerRect.left;
+		rect.right = headerRect.right;
+		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
 
@@ -815,12 +746,10 @@ public void setText (String string) {
 	* mnemonic character, Windows does not measure the
 	* text properly.  This causes '...' to always appear
 	* at the end of the text.  The fix is to remove
-	* mnemonic characters and replace doubled mnemonics
-	* with spaces.
+	* mnemonic characters.
 	*/
-	boolean replace = !OS.IsWinCE && OS.WIN32_VERSION <= OS.VERSION (4, 10);
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, replace), true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

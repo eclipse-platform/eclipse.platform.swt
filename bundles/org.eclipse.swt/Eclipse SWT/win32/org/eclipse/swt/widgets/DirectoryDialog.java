@@ -40,14 +40,10 @@ public class DirectoryDialog extends Dialog {
 	static final byte[] IID_IFileOpenDialog = new byte[16];
 	static final byte[] IID_IShellItem = new byte[16];
 	static {
- 		if (OS.IsWinVista) {
-			//Common Item/File Dialog
-			OS.IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}\0".toCharArray(), CLSID_FileOpenDialog); //$NON-NLS-1$
-			OS.IIDFromString("{d57c7288-d4ad-4768-be02-9d969532d960}\0".toCharArray(), IID_IFileOpenDialog); //$NON-NLS-1$
-			OS.IIDFromString("{43826d1e-e718-42ee-bc55-a1e261c37bfe}\0".toCharArray(), IID_IShellItem); //$NON-NLS-1$
- 		}
+		OS.IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}\0".toCharArray(), CLSID_FileOpenDialog); //$NON-NLS-1$
+		OS.IIDFromString("{d57c7288-d4ad-4768-be02-9d969532d960}\0".toCharArray(), IID_IFileOpenDialog); //$NON-NLS-1$
+		OS.IIDFromString("{43826d1e-e718-42ee-bc55-a1e261c37bfe}\0".toCharArray(), IID_IShellItem); //$NON-NLS-1$
  	}
-
 
 	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
 	String directoryPath;
@@ -115,7 +111,7 @@ long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*in
 		case OS.BFFM_VALIDATEFAILEDA:
 		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : C.strlen (lParam);
+			int length = OS.wcslen (lParam);
 			TCHAR buffer = new TCHAR (0, length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);
@@ -161,15 +157,13 @@ public String getMessage () {
  * </ul>
  */
 public String open() {
-	if (OS.IsWinVista) {
+	if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		return openCommonItemDialog();
 	}
 	return openCommonFileDialog();
 }
 
 private String openCommonFileDialog () {
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-
 	long /*int*/ hHeap = OS.GetProcessHeap ();
 
 	/* Get the owner HWND for the dialog */
@@ -237,21 +231,7 @@ private String openCommonFileDialog () {
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 
 	display.sendPreExternalEventDispatchEvent ();
-	/*
-	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
-	* during the message loop for SHBrowseForFolder(), running code
-	* in the hook can cause a GP.  Specifically, SetWindowText()
-	* for static controls seemed to make the problem happen.
-	* The fix is to disable async messages while the directory
-	* dialog is open.
-	*
-	* NOTE:  This only happens in versions of the comctl32.dll
-	* earlier than 6.0.
-	*/
-	boolean oldRunMessages = display.runMessages;
-	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
 	long /*int*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
 	display.sendPostExternalEventDispatchEvent ();
 	OS.SetErrorMode (oldErrorMode);
 

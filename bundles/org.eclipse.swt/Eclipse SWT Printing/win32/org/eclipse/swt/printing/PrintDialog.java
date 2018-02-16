@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class PrintDialog extends Dialog {
-	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
+	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
 	PrinterData printerData = new PrinterData();
 
 /**
@@ -297,25 +297,23 @@ public PrinterData open() {
 	* parent for the dialog to inherit.
 	*/
 	boolean enabled = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		int parentOrientation = parent.getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		if (dialogOrientation != parentOrientation) {
-			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
-			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
-			hwndOwner = OS.CreateWindowEx (
-				exStyle,
-				DialogClass,
-				null,
-				0,
-				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-				hwndParent,
-				0,
-				OS.GetModuleHandle (null),
-				null);
-			enabled = OS.IsWindowEnabled (hwndParent);
-			if (enabled) OS.EnableWindow (hwndParent, false);
-		}
+	int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	int parentOrientation = parent.getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	if (dialogOrientation != parentOrientation) {
+		int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+		if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+		hwndOwner = OS.CreateWindowEx (
+			exStyle,
+			DialogClass,
+			null,
+			0,
+			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+			hwndParent,
+			0,
+			OS.GetModuleHandle (null),
+			null);
+		enabled = OS.IsWindowEnabled (hwndParent);
+		if (enabled) OS.EnableWindow (hwndParent, false);
 	}
 
 	PrinterData data = null;

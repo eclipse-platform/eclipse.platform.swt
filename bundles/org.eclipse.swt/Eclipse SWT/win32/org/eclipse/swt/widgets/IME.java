@@ -316,7 +316,6 @@ public boolean getWideCaret() {
 }
 
 boolean isInlineEnabled () {
-	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (5, 1)) return false;
 	return OS.IsDBLocale && hooks (SWT.ImeComposition);
 }
 

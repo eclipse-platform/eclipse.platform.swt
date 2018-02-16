@@ -106,15 +106,8 @@ public abstract class Widget {
 	/* Bidi flag and for auto text direction */
 	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 
-	/* Check and initialize the Common Controls DLL */
-	static final int MAJOR = 5, MINOR = 80;
+	/* Initialize the Common Controls DLL */
 	static {
-		if (!OS.IsWinCE) {
-			if (OS.COMCTL32_VERSION < OS.VERSION (MAJOR, MINOR)) {
-				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				System.out.println ("***WARNING: Detected: " + OS.COMCTL32_MAJOR + "." + OS.COMCTL32_MINOR); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
 		OS.InitCommonControls ();
 	}
 
@@ -397,33 +390,6 @@ protected void checkWidget () {
  */
 void destroyWidget () {
 	releaseHandle ();
-}
-
-long /*int*/ DeferWindowPos(long /*int*/ hWinPosInfo, long /*int*/ hWnd, long /*int*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags){
-	if (OS.IsWinCE) {
-		/*
-		* Feature in Windows.  On Windows CE, DeferWindowPos always causes
-		* a WM_SIZE message, even when the new size is the same as the old
-		* size.  The fix is to detect that the size has not changed and set
-		* SWP_NOSIZE.
-		*/
-		if ((uFlags & OS.SWP_NOSIZE) == 0) {
-			RECT lpRect = new RECT ();
-			OS.GetWindowRect (hWnd, lpRect);
-			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
-				/*
-				* Feature in Windows.  On Windows CE, DeferWindowPos when called
-				* with SWP_DRAWFRAME always causes a WM_SIZE message, even
-				* when SWP_NOSIZE is set and when the new size is the same as the
-				* old size.  The fix is to clear SWP_DRAWFRAME when the size is
-				* the same.
-				*/
-				uFlags &= ~OS.SWP_DRAWFRAME;
-				uFlags |= OS.SWP_NOSIZE;
-			}
-		}
-	}
-	return OS.DeferWindowPos (hWinPosInfo, hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 }
 
 /**
@@ -1404,7 +1370,7 @@ boolean setKeyState (Event event, int type, long /*int*/ wParam, long /*int*/ lP
 		event.keyCode = display.lastKey;
 	}
 	if (display.lastAscii != 0 || display.lastNull) {
-		event.character = Display.mbcsToWcs ((char) display.lastAscii);
+		event.character = (char) display.lastAscii;
 	}
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!display.lastNull) return false;
@@ -1462,33 +1428,6 @@ boolean setTabItemFocus () {
 	return false;
 }
 
-boolean SetWindowPos (long /*int*/ hWnd, long /*int*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
-	if (OS.IsWinCE) {
-		/*
-		* Feature in Windows.  On Windows CE, SetWindowPos() always causes
-		* a WM_SIZE message, even when the new size is the same as the old
-		* size.  The fix is to detect that the size has not changed and set
-		* SWP_NOSIZE.
-		*/
-		if ((uFlags & OS.SWP_NOSIZE) == 0) {
-			RECT lpRect = new RECT ();
-			OS.GetWindowRect (hWnd, lpRect);
-			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
-				/*
-				* Feature in Windows.  On Windows CE, SetWindowPos() when called
-				* with SWP_DRAWFRAME always causes a WM_SIZE message, even
-				* when SWP_NOSIZE is set and when the new size is the same as the
-				* old size.  The fix is to clear SWP_DRAWFRAME when the size is
-				* the same.
-				*/
-				uFlags &= ~OS.SWP_DRAWFRAME;
-				uFlags |= OS.SWP_NOSIZE;
-			}
-		}
-	}
-	return OS.SetWindowPos (hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
-}
-
 boolean showMenu (int x, int y) {
 	return showMenu (x, y, SWT.MENU_MOUSE);
 }
@@ -1542,13 +1481,6 @@ LRESULT wmCaptureChanged (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ l
 }
 
 LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
-	/*
-	* Do not report a lead byte as a key pressed.
-	*/
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		byte lead = (byte) (wParam & 0xFF);
-		if (OS.IsDBCSLeadByte (lead)) return null;
-	}
 	display.lastAscii = (int)/*64*/wParam;
 	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
@@ -1560,19 +1492,6 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 
 LRESULT wmContextMenu (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	if (wParam != hwnd) return null;
-
-	/*
-	* Feature in Windows.  SHRecognizeGesture() sends an undocumented
-	* WM_CONTEXTMENU notification when the flag SHRG_NOTIFY_PARENT is
-	* not set.  This causes the context menu to be displayed twice,
-	* once by the caller of SHRecognizeGesture() and once from this
-	* method.  The fix is to ignore WM_CONTEXTMENU notifications on
-	* all WinCE platforms.
-	*
-	* NOTE: This only happens on WM2003.  Previous WinCE versions did
-	* not support WM_CONTEXTMENU.
-	*/
-	if (OS.IsWinCE) return null;
 
 	/*
 	* Feature in Windows.  When the user presses  WM_NCRBUTTONUP,
@@ -1638,49 +1557,21 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
 
-	/*
-	* Do not report a lead byte as a key pressed.
-	*/
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		byte lead = (byte) (wParam & 0xFF);
-		if (OS.IsDBCSLeadByte (lead)) return null;
-	}
-
 	/* Map the virtual key */
+	int mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 	/*
-	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
-	* The fix is to rely on a key mappings table to determine
-	* whether the key event must be sent now or if a WM_CHAR
-	* event will follow.  The key mappings table maps virtual
-	* keys to SWT key codes and does not contain mappings for
-	* Windows virtual keys like VK_A.  Virtual keys that are
-	* both virtual and ASCII are a special case.
+	* Feature in Windows.  For Devanagari and Bengali numbers,
+	* MapVirtualKey() returns the localized number instead of
+	* the ASCII equivalent.  For example, MapVirtualKey()
+	* maps VK_1 on the numbers keyboard to \u0967, which is
+	* the Devanagari digit '1', but not ASCII.
+	* The fix is to test for Devanagari and Bengali digits and
+	* map these explicitly.
+	*
+	* NOTE: VK_0 to VK_9 are the same as ASCII.
 	*/
-	int mapKey = 0;
-	if (OS.IsWinCE) {
-		switch ((int)/*64*/wParam) {
-			case OS.VK_BACK: mapKey = SWT.BS; break;
-			case OS.VK_RETURN: mapKey = SWT.CR; break;
-			case OS.VK_DELETE: mapKey = SWT.DEL; break;
-			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
-			case OS.VK_TAB: mapKey = SWT.TAB; break;
-		}
-	} else {
-		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
-		/*
-		* Feature in Windows.  For Devanagari and Bengali numbers,
-		* MapVirtualKey() returns the localized number instead of
-		* the ASCII equivalent.  For example, MapVirtualKey()
-		* maps VK_1 on the numbers keyboard to \u0967, which is
-		* the Devanagari digit '1', but not ASCII.
-		* The fix is to test for Devanagari and Bengali digits and
-		* map these explicitly.
-		*
-		* NOTE: VK_0 to VK_9 are the same as ASCII.
-		*/
-		if (('\u09e6' <= mapKey && mapKey <= '\u09ef') || ('\u0966' <= mapKey && mapKey <= '\u096f')) {
-			mapKey = (int)/*64*/wParam;
-		}
+	if (('\u09e6' <= mapKey && mapKey <= '\u09ef') || ('\u0966' <= mapKey && mapKey <= '\u096f')) {
+		mapKey = (int)/*64*/wParam;
 	}
 
 	/*
@@ -1689,9 +1580,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	* key should be ignored and the next key that the user types is the
 	* accented key.  The fix is to detect the accent key stroke (called
 	* a dead key) by testing the high bit of the value returned by
-	* MapVirtualKey().  A further problem is that the high bit on
-	* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
-	* They should both be bit 32.
+	* MapVirtualKey().
 	*
 	* When the user types an accent key that does not correspond to a
 	* virtual key, MapVirtualKey() won't set the high bit to indicate
@@ -1700,11 +1589,8 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 	* returns the unshifted key.  The fix is to peek for a WM_DEADCHAR
 	* and avoid issuing the event.
 	*/
-	if (OS.IsWinNT) {
-		if ((mapKey & 0x80000000) != 0) return null;
-	} else {
-		if ((mapKey & 0x8000) != 0) return null;
-	}
+	if ((mapKey & 0x80000000) != 0) return null;
+
 	MSG msg = new MSG ();
 	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 	if (OS.PeekMessage (msg, hwnd, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
@@ -1863,21 +1749,6 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	Display display = this.display;
 
-	/* Check for hardware keys */
-	if (OS.IsWinCE) {
-		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
-			display.lastKey = display.lastAscii = 0;
-			display.lastVirtual = display.lastNull = display.lastDead = false;
-			Event event = new Event ();
-			event.detail = (int)/*64*/wParam - OS.VK_APP1 + 1;
-			/* Check the bit 30 to get the key state */
-			int type = (lParam & 0x40000000) != 0 ? SWT.HardKeyUp : SWT.HardKeyDown;
-			if (setInputState (event, type)) sendEvent (type, event);
-			// widget could be disposed at this point
-			return null;
-		}
-	}
-
 	/*
 	* If the key up is not hooked, reset last key
 	* and last ascii in case the key down is hooked.
@@ -1889,27 +1760,7 @@ LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	}
 
 	/* Map the virtual key. */
-	/*
-	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
-	* The fix is to rely on a key mappings table to determine
-	* whether the key event must be sent now or if a WM_CHAR
-	* event will follow.  The key mappings table maps virtual
-	* keys to SWT key codes and does not contain mappings for
-	* Windows virtual keys like VK_A.  Virtual keys that are
-	* both virtual and ASCII are a special case.
-	*/
-	int mapKey = 0;
-	if (OS.IsWinCE) {
-		switch ((int)/*64*/wParam) {
-			case OS.VK_BACK: mapKey = SWT.BS; break;
-			case OS.VK_RETURN: mapKey = SWT.CR; break;
-			case OS.VK_DELETE: mapKey = SWT.DEL; break;
-			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
-			case OS.VK_TAB: mapKey = SWT.TAB; break;
-		}
-	} else {
-		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
-	}
+	int mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -1917,15 +1768,10 @@ LRESULT wmKeyUp (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	* key should be ignored and the next key that the user types is the
 	* accented key. The fix is to detect the accent key stroke (called
 	* a dead key) by testing the high bit of the value returned by
-	* MapVirtualKey ().  A further problem is that the high bit on
-	* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
-	* They should both be bit 32.
+	* MapVirtualKey ().
 	*/
-	if (OS.IsWinNT) {
-		if ((mapKey & 0x80000000) != 0) return null;
-	} else {
-		if ((mapKey & 0x8000) != 0) return null;
-	}
+	if ((mapKey & 0x80000000) != 0) return null;
+
 	if (display.lastDead) return null;
 
 	/*
@@ -2018,21 +1864,19 @@ LRESULT wmLButtonDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 	boolean dragging = false, mouseDown = true;
 	int count = display.getClickCount (SWT.MouseDown, 1, hwnd, lParam);
 	if (count == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-		if (!OS.IsWinCE) {
-			/*
-			* Feature in Windows.  It's possible that the drag
-			* operation will not be started while the mouse is
-			* down, meaning that the mouse should be captured.
-			* This can happen when the user types the ESC key
-			* to cancel the drag.  The fix is to query the state
-			* of the mouse and capture the mouse accordingly.
-			*/
-			detect = new boolean [1];
-			consume = new boolean [1];
-			dragging = dragDetect (hwnd, x, y, true, detect, consume);
-			if (isDisposed ()) return LRESULT.ZERO;
-			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
-		}
+		/*
+		* Feature in Windows.  It's possible that the drag
+		* operation will not be started while the mouse is
+		* down, meaning that the mouse should be captured.
+		* This can happen when the user types the ESC key
+		* to cancel the drag.  The fix is to query the state
+		* of the mouse and capture the mouse accordingly.
+		*/
+		detect = new boolean [1];
+		consume = new boolean [1];
+		dragging = dragDetect (hwnd, x, y, true, detect, consume);
+		if (isDisposed ()) return LRESULT.ZERO;
+		mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 	}
 	display.captureChanged = false;
 	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -2040,25 +1884,6 @@ LRESULT wmLButtonDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPar
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
-	}
-	if (OS.IsPPC) {
-		/*
-		* Note: On WinCE PPC, only attempt to recognize the gesture for
-		* a context menu when the control contains a valid menu or there
-		* are listeners for the MenuDetect event.
-		*/
-		Menu menu = getMenu ();
-		boolean hasMenu = menu != null && !menu.isDisposed ();
-		if (hasMenu || hooks (SWT.MenuDetect)) {
-			SHRGINFO shrg = new SHRGINFO ();
-			shrg.cbSize = SHRGINFO.sizeof;
-			shrg.hwndClient = hwnd;
-			shrg.ptDown_x = x;
-			shrg.ptDown_y = y;
-			shrg.dwFlags = OS.SHRG_RETURNCMD;
-			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
-		}
 	}
 	if (mouseDown) {
 		if (!display.captureChanged && !isDisposed ()) {
@@ -2210,40 +2035,38 @@ LRESULT wmMouseMove (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam
 	Display display = this.display;
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse || display.captureChanged) {
-		if (!OS.IsWinCE) {
-			boolean trackMouse = (state & TRACK_MOUSE) != 0;
-			boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
-			boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
-			boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
-			if (trackMouse || mouseEnter || mouseExit || mouseHover) {
-				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
-				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
-				lpEventTrack.dwFlags = OS.TME_QUERY;
+		boolean trackMouse = (state & TRACK_MOUSE) != 0;
+		boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
+		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
+		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
+		if (trackMouse || mouseEnter || mouseExit || mouseHover) {
+			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
+			lpEventTrack.dwFlags = OS.TME_QUERY;
+			lpEventTrack.hwndTrack = hwnd;
+			OS.TrackMouseEvent (lpEventTrack);
+			if (lpEventTrack.dwFlags == 0) {
+				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
 				lpEventTrack.hwndTrack = hwnd;
 				OS.TrackMouseEvent (lpEventTrack);
-				if (lpEventTrack.dwFlags == 0) {
-					lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
-					lpEventTrack.hwndTrack = hwnd;
-					OS.TrackMouseEvent (lpEventTrack);
-					if (mouseEnter) {
-						/*
-						* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
-						* issuing a mouse enter.  This causes mouse exit events to be processed
-						* before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
-						* event queue by TrackMouseEvent().
-						*/
-						MSG msg = new MSG ();
-						int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
-							OS.TranslateMessage (msg);
-							OS.DispatchMessage (msg);
-						}
-						sendMouseEvent (SWT.MouseEnter, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
+				if (mouseEnter) {
+					/*
+					* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
+					* issuing a mouse enter.  This causes mouse exit events to be processed
+					* before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
+					* event queue by TrackMouseEvent().
+					*/
+					MSG msg = new MSG ();
+					int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+					while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
+						OS.TranslateMessage (msg);
+						OS.DispatchMessage (msg);
 					}
-				} else {
-					lpEventTrack.dwFlags = OS.TME_HOVER;
-					OS.TrackMouseEvent (lpEventTrack);
+					sendMouseEvent (SWT.MouseEnter, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
 				}
+			} else {
+				lpEventTrack.dwFlags = OS.TME_HOVER;
+				OS.TrackMouseEvent (lpEventTrack);
 			}
 		}
 		if (pos != display.lastMouse) {
@@ -2277,69 +2100,33 @@ LRESULT wmPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	}
 
 	/* Issue a paint event */
-	long /*int*/ result = 0;
-	if (OS.IsWinCE) {
-		RECT rect = new RECT ();
-		OS.GetUpdateRect (hwnd, rect, false);
-		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
-		/*
-		* Bug in Windows.  When InvalidateRgn(), InvalidateRect()
-		* or RedrawWindow() with RDW_INVALIDATE is called from
-		* within WM_PAINT to invalidate a region for a further
-		* BeginPaint(), the caret is not properly erased causing
-		* pixel corruption.  The fix is to hide and show the
-		* caret.
-		*/
+	long /*int*/ rgn = OS.CreateRectRgn (0, 0, 0, 0);
+	OS.GetUpdateRgn (hwnd, rgn, false);
+	long /*int*/ result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
+	GCData data = new GCData ();
+	data.hwnd = hwnd;
+	GC gc = new_GC (data);
+	if (gc != null) {
 		OS.HideCaret (hwnd);
-		OS.InvalidateRect (hwnd, rect, false);
+		RECT rect = new RECT();
+		OS.GetRgnBox (rgn, rect);
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		if (width != 0 && height != 0) {
+			long /*int*/ hDC = gc.handle;
+			OS.SelectClipRgn (hDC, rgn);
+			OS.SetMetaRgn (hDC);
+			Event event = new Event ();
+			event.gc = gc;
+			event.setBoundsInPixels(new Rectangle(rect.left, rect.top, width, height));
+			sendEvent (SWT.Paint, event);
+			// widget could be disposed at this point
+			event.gc = null;
+		}
+		gc.dispose ();
 		OS.ShowCaret (hwnd);
-		PAINTSTRUCT ps = new PAINTSTRUCT ();
-		GCData data = new GCData ();
-		data.ps = ps;
-		data.hwnd = hwnd;
-		GC gc = new_GC (data);
-		if (gc != null) {
-			int width = ps.right - ps.left;
-			int height = ps.bottom - ps.top;
-			if (width != 0 && height != 0) {
-				Event event = new Event ();
-				event.gc = gc;
-				event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
-				sendEvent (SWT.Paint, event);
-				// widget could be disposed at this point
-				event.gc = null;
-			}
-			gc.dispose ();
-		}
-	} else {
-		long /*int*/ rgn = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.GetUpdateRgn (hwnd, rgn, false);
-		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
-		GCData data = new GCData ();
-		data.hwnd = hwnd;
-		GC gc = new_GC (data);
-		if (gc != null) {
-			OS.HideCaret (hwnd);
-			RECT rect = new RECT();
-			OS.GetRgnBox (rgn, rect);
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;
-			if (width != 0 && height != 0) {
-				long /*int*/ hDC = gc.handle;
-				OS.SelectClipRgn (hDC, rgn);
-				OS.SetMetaRgn (hDC);
-				Event event = new Event ();
-				event.gc = gc;
-				event.setBoundsInPixels(new Rectangle(rect.left, rect.top, width, height));
-				sendEvent (SWT.Paint, event);
-				// widget could be disposed at this point
-				event.gc = null;
-			}
-			gc.dispose ();
-			OS.ShowCaret (hwnd);
-		}
-		OS.DeleteObject (rgn);
 	}
+	OS.DeleteObject (rgn);
 	if (result == 0) return LRESULT.ZERO;
 	return new LRESULT (result);
 }
@@ -2352,7 +2139,7 @@ LRESULT wmPrint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	* default window proc and then draw the theme border on top.
 	*/
 	if ((lParam & OS.PRF_NONCLIENT) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
 				long /*int*/ code = callWindowProc (hwnd, OS.WM_PRINT, wParam, lParam);
@@ -2523,27 +2310,8 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 	display.lastVirtual = display.lastNull = display.lastDead = false;
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
-	/*
-	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
-	* The fix is to rely on a key mappings table to determine
-	* whether the key event must be sent now or if a WM_CHAR
-	* event will follow.  The key mappings table maps virtual
-	* keys to SWT key codes and does not contain mappings for
-	* Windows virtual keys like VK_A.  Virtual keys that are
-	* both virtual and ASCII are a special case.
-	*/
-	int mapKey = 0;
-	if (OS.IsWinCE) {
-		switch ((int)/*64*/wParam) {
-			case OS.VK_BACK: mapKey = SWT.BS; break;
-			case OS.VK_RETURN: mapKey = SWT.CR; break;
-			case OS.VK_DELETE: mapKey = SWT.DEL; break;
-			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
-			case OS.VK_TAB: mapKey = SWT.TAB; break;
-		}
-	} else {
-		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
-	}
+	int mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
+
 	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)/*64*/wParam) != 0;
 	if (display.lastVirtual) {
 	 	display.lastKey = (int)/*64*/wParam;
@@ -2584,16 +2352,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 		* Shift was not pressed.
 		*/
 	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
-
-		/*
-		* Feature in Windows 98.  MapVirtualKey() indicates that
-		* a WM_SYSCHAR message will occur for Alt+Enter but
-		* this message never happens.  The fix is to issue the
-		* event from WM_SYSKEYDOWN and map VK_RETURN to '\r'.
-		*/
-		if (OS.IsWinNT) return null;
-		if (wParam != OS.VK_RETURN) return null;
-		display.lastAscii = '\r';
+		return null;
 	}
 
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {

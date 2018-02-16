@@ -13,9 +13,9 @@ package org.eclipse.swt.internal.win32;
 public class NOTIFYICONDATAW extends NOTIFYICONDATA {
 	/** @field cast=(TCHAR) */
 	public char szTip[] = new char [128];
-	/** @field cast=(TCHAR),flags=no_wince */
+	/** @field cast=(TCHAR) */
 	public char szInfo[] = new char [256];
-	/** @field cast=(TCHAR),flags=no_wince */
+	/** @field cast=(TCHAR) */
 	public char szInfoTitle[] = new char [64];
 	public static final int sizeof = OS.NOTIFYICONDATAW_V2_SIZE;
 }

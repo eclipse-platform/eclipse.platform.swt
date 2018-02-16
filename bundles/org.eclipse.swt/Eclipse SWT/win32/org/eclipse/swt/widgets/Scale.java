@@ -535,7 +535,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	*/
 	boolean fixPaint = findBackgroundControl () != null;
 	if (!fixPaint) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			Control control = findThemeControl ();
 			fixPaint = control != null;
 		}

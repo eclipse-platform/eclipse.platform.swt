@@ -185,17 +185,7 @@ void createWidget () {
 void destroyWidget () {
 	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
-	if (OS.IsWinCE) {
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
-		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-		info.nPage = 101;
-		info.nMax = 100;
-		info.nMin = 0;
-		OS.SetScrollInfo (hwnd, type, info, true);
-	} else {
-		OS.ShowScrollBar (hwnd, type, false);
-	}
+	OS.ShowScrollBar (hwnd, type, false);
 	parent.destroyScrollBar (style);
 	releaseHandle ();
 	//This code is intentionally commented
@@ -533,14 +523,11 @@ Rectangle getThumbTrackBoundsInPixels () {
  */
 public boolean getVisible () {
 	checkWidget();
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		SCROLLBARINFO psbi = new SCROLLBARINFO ();
-		psbi.cbSize = SCROLLBARINFO.sizeof;
-		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
-		OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
-		return (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
-	}
-	return (state & HIDDEN) == 0;
+	SCROLLBARINFO psbi = new SCROLLBARINFO ();
+	psbi.cbSize = SCROLLBARINFO.sizeof;
+	int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
+	OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
+	return (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
 }
 
 long /*int*/ hwndScrollBar () {
@@ -643,21 +630,14 @@ int scrollBarType () {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	/*
-	* This line is intentionally commented.  Currently
-	* always show scrollbar as being enabled and visible.
-	*/
-//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	if (!OS.IsWinCE) {
-		long /*int*/ hwnd = hwndScrollBar ();
-		int type = scrollBarType ();
-		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
-		OS.EnableScrollBar (hwnd, type, flags);
-		if (enabled) {
-			state &= ~DISABLED;
-		} else {
-			state |= DISABLED;
-		}
+	long /*int*/ hwnd = hwndScrollBar ();
+	int type = scrollBarType ();
+	int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
+	OS.EnableScrollBar (hwnd, type, flags);
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
 	}
 }
 
@@ -765,23 +745,16 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	boolean barVisible = false;
 	boolean visible = getVisible ();
 
-	/*
-	* This line is intentionally commented.  Currently
-	* always show scrollbar as being enabled and visible.
-	*/
-//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	ScrollBar bar = null;
-	if (!OS.IsWinCE) {
-		switch (flags) {
-			case OS.SB_HORZ:
-				bar = parent.getVerticalBar ();
-				break;
-			case OS.SB_VERT:
-				bar = parent.getHorizontalBar ();
-				break;
-		}
-		barVisible = bar != null && bar.getVisible ();
+	switch (flags) {
+		case OS.SB_HORZ:
+			bar = parent.getVerticalBar ();
+			break;
+		case OS.SB_VERT:
+			bar = parent.getHorizontalBar ();
+			break;
 	}
+	barVisible = bar != null && bar.getVisible ();
 	if (!visible || (state & DISABLED) != 0) fRedraw = false;
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
 
@@ -795,14 +768,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* to hide the scroll bar (again) when already hidden.
 	*/
 	if (!visible) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, !barVisible ? OS.SB_BOTH : flags, false);
-		}
+		OS.ShowScrollBar (hwnd, !barVisible ? OS.SB_BOTH : flags, false);
 	}
 
 	/*
@@ -816,10 +782,8 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	*
 	* NOTE: This problem only happens on Vista
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		if (visible && bar != null && !barVisible) {
-			OS.ShowScrollBar (hwnd, flags == OS.SB_HORZ ? OS.SB_VERT : OS.SB_HORZ, false);
-		}
+	if (visible && bar != null && !barVisible) {
+		OS.ShowScrollBar (hwnd, flags == OS.SB_HORZ ? OS.SB_VERT : OS.SB_HORZ, false);
 	}
 
 	/*
@@ -831,14 +795,7 @@ boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			OS.EnableScrollBar (hwnd, flags, OS.ESB_DISABLE_BOTH);
-		}
+		OS.EnableScrollBar (hwnd, flags, OS.ESB_DISABLE_BOTH);
 	}
 	return result;
 }
@@ -959,43 +916,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == getVisible ()) return;
-
-	/*
-	* On Windows CE, use SIF_DISABLENOSCROLL to show and
-	* hide the scroll bar when the page size is equal to
-	* the range.
-	*/
-	if (OS.IsWinCE) {
-		SCROLLINFO info = new SCROLLINFO ();
-		info.cbSize = SCROLLINFO.sizeof;
-		long /*int*/ hwnd = hwndScrollBar ();
-		int type = scrollBarType ();
-		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-		if (visible) info.fMask |= OS.SIF_DISABLENOSCROLL;
-		OS.GetScrollInfo (hwnd, type, info);
-		if (info.nPage == info.nMax - info.nMin + 1) {
-			/*
-			* Bug in Windows.  When the only changed flag to
-			* SetScrollInfo () is OS.SIF_DISABLENOSCROLL,
-			* Windows does not update the scroll bar state.
-			* The fix is to increase and then decrease the
-			* maximum, causing Windows to honour the flag.
-			*/
-			int max = info.nMax;
-			info.nMax++;
-			OS.SetScrollInfo (hwnd, type, info, false);
-			info.nMax = max;
-			OS.SetScrollInfo (hwnd, type, info, true);
-		} else {
-        	/*
-        	* This line is intentionally commented.  Currently
-        	* always show scrollbar as being enabled and visible.
-        	*/
-//			if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		}
-		return;
-	}
-
 	/*
 	* Set the state bits before calling ShowScrollBar ()
 	* because hiding and showing the scroll bar can cause
@@ -1014,7 +934,7 @@ public void setVisible (boolean visible) {
 	* bar and hide both.
 	*/
 	if (!visible) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			SCROLLBARINFO psbi = new SCROLLBARINFO ();
 			psbi.cbSize = SCROLLBARINFO.sizeof;
 			int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_HSCROLL : OS.OBJID_VSCROLL;

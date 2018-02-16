@@ -299,12 +299,8 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 		lastY = bounds.y;
 		menuShell ().bringToTop ();
 		if (isDisposed ()) return LRESULT.ZERO;
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (hwndTrack);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (hwndTrack, null, 0, flags);
-		}
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (hwndTrack, null, 0, flags);
 		drawBand (bounds.x, bounds.y, width, height);
 		if ((style & SWT.SMOOTH) != 0) {
 			setBoundsInPixels (bounds.x, bounds.y, width, height);
@@ -383,12 +379,8 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 		lastX = boundsInPixels.x;
 		lastY = boundsInPixels.y;
 	}
-	if (OS.IsWinCE) {
-		OS.UpdateWindow (hwndTrack);
-	} else {
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (hwndTrack, null, 0, flags);
-	}
+	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (hwndTrack, null, 0, flags);
 	drawBand (lastX, lastY, width, height);
 	if ((style & SWT.SMOOTH) != 0) {
 		setBoundsInPixels (lastX, lastY, width, height);

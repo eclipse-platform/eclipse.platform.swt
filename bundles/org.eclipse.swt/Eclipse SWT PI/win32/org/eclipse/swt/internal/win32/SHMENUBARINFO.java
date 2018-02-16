@@ -22,5 +22,5 @@ public class SHMENUBARINFO {
 	public int cBmpImages;
 	/** @field cast=(HWND) */
 	public long /*int*/ hwndMB;
-	public static final int sizeof = OS.IsSP ? 36 : OS.SHMENUBARINFO_sizeof ();
+	public static final int sizeof = OS.SHMENUBARINFO_sizeof ();
 }

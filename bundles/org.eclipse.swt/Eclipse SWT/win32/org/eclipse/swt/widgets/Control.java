@@ -729,7 +729,7 @@ void createHandle () {
 }
 
 void checkGesture () {
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
+	if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
 		int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
 		if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
 			/*
@@ -771,7 +771,6 @@ void createWidget () {
 }
 
 int defaultBackground () {
-	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
@@ -947,7 +946,7 @@ void drawBackground (long /*int*/ hDC, RECT rect, int pixel, int tx, int ty) {
 	}
 	if (pixel == -1) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				control = findThemeControl ();
 				if (control != null) {
 					fillThemeBackground (hDC, control, rect);
@@ -1134,7 +1133,7 @@ void forceResize () {
 //				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
 //			}
-			SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+			OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 			lpwp [i] = null;
 			return;
 		}
@@ -1272,22 +1271,13 @@ Rectangle getBoundsInPixels () {
 }
 
 int getCodePage () {
-	if (OS.IsUnicode) return OS.CP_ACP;
-	long /*int*/ hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
-	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
-	int cs = logFont.lfCharSet & 0xFF;
-	int [] lpCs = new int [8];
-	if (OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET)) {
-		return lpCs [1];
-	}
-	return OS.GetACP ();
+	return OS.CP_ACP;
 }
 
 String getClipboardText () {
 	String string = "";
 	if (OS.OpenClipboard (0)) {
-		long /*int*/ hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
+		long /*int*/ hMem = OS.GetClipboardData (OS.CF_UNICODETEXT);
 		if (hMem != 0) {
 			/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
 			int byteCount = OS.GlobalSize (hMem) / TCHAR.sizeof * TCHAR.sizeof;
@@ -1482,9 +1472,6 @@ public Menu getMenu () {
  */
 public Monitor getMonitor () {
 	checkWidget ();
-	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-		return display.getPrimaryMonitor ();
-	}
 	long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
 	MONITORINFO lpmi = new MONITORINFO ();
 	lpmi.cbSize = MONITORINFO.sizeof;
@@ -1818,20 +1805,16 @@ public long /*int*/ internal_new_GC (GCData data) {
 	}
 	if (hDC == 0) error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-			if ((data.style & mask) != 0) {
-				data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
-			} else {
-				int flags = OS.GetLayout (hDC);
-				if ((flags & OS.LAYOUT_RTL) != 0) {
-					data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
-				} else {
-					data.style |= SWT.LEFT_TO_RIGHT;
-				}
-			}
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) != 0) {
+			data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
 		} else {
-			data.style |= SWT.LEFT_TO_RIGHT;
+			int flags = OS.GetLayout (hDC);
+			if ((flags & OS.LAYOUT_RTL) != 0) {
+				data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+			} else {
+				data.style |= SWT.LEFT_TO_RIGHT;
+			}
 		}
 		data.device = display;
 		int foreground = getForegroundPixel ();
@@ -2118,7 +2101,7 @@ public void moveAbove (Control control) {
 		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-	SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 /**
@@ -2178,7 +2161,7 @@ public void moveBelow (Control control) {
 	}
 	if (hwndAbove == 0 || hwndAbove == topHandle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-	SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (topHandle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 Accessible new_Accessible (Control control) {
@@ -2258,56 +2241,49 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		long /*int*/ topHandle = topHandle ();
-		long /*int*/ hdc = gc.handle;
-		int state = 0;
-		long /*int*/ gdipGraphics = gc.getGCData().gdipGraphics;
-		if (gdipGraphics != 0) {
-			long /*int*/ clipRgn = 0;
-			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-			long /*int*/ rgn = Gdip.Region_new();
-			if (rgn == 0) error(SWT.ERROR_NO_HANDLES);
-			Gdip.Graphics_GetClip(gdipGraphics, rgn);
-			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
-				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
-			}
-			Gdip.Region_delete(rgn);
-			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
-			float[] lpXform = null;
-			long /*int*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-			if (matrix == 0) error(SWT.ERROR_NO_HANDLES);
-			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
-			if (!Gdip.Matrix_IsIdentity(matrix)) {
-				lpXform = new float[6];
-				Gdip.Matrix_GetElements(matrix, lpXform);
-			}
-			Gdip.Matrix_delete(matrix);
-			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
-			state = OS.SaveDC(hdc);
-			if (lpXform != null) {
-				OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
-				OS.SetWorldTransform(hdc, lpXform);
-			}
-			if (clipRgn != 0) {
-				OS.SelectClipRgn(hdc, clipRgn);
-				OS.DeleteObject(clipRgn);
-			}
+	long /*int*/ topHandle = topHandle ();
+	long /*int*/ hdc = gc.handle;
+	int state = 0;
+	long /*int*/ gdipGraphics = gc.getGCData().gdipGraphics;
+	if (gdipGraphics != 0) {
+		long /*int*/ clipRgn = 0;
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		long /*int*/ rgn = Gdip.Region_new();
+		if (rgn == 0) error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_GetClip(gdipGraphics, rgn);
+		if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+			clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
 		}
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (topHandle);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (topHandle, null, 0, flags);
+		Gdip.Region_delete(rgn);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		float[] lpXform = null;
+		long /*int*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		if (matrix == 0) error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+		if (!Gdip.Matrix_IsIdentity(matrix)) {
+			lpXform = new float[6];
+			Gdip.Matrix_GetElements(matrix, lpXform);
 		}
-		printWidget (topHandle, hdc, gc);
-		if (gdipGraphics != 0) {
-			OS.RestoreDC(hdc, state);
-			Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+		Gdip.Matrix_delete(matrix);
+		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		state = OS.SaveDC(hdc);
+		if (lpXform != null) {
+			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+			OS.SetWorldTransform(hdc, lpXform);
 		}
-		return true;
+		if (clipRgn != 0) {
+			OS.SelectClipRgn(hdc, clipRgn);
+			OS.DeleteObject(clipRgn);
+		}
 	}
-	return false;
+	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (topHandle, null, 0, flags);
+	printWidget (topHandle, hdc, gc);
+	if (gdipGraphics != 0) {
+		OS.RestoreDC(hdc, state);
+		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+	}
+	return true;
 }
 
 void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
@@ -2380,11 +2356,9 @@ void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 			}
-			SetWindowPos (hwnd, 0, x + width, y + height, 0, 0, flags);
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				OS.SetWindowLong (hwnd, OS.GWL_STYLE, (bits1 & ~OS.WS_CHILD) | OS.WS_POPUP);
-				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_TOOLWINDOW);
-			}
+			OS.SetWindowPos (hwnd, 0, x + width, y + height, 0, 0, flags);
+			OS.SetWindowLong (hwnd, OS.GWL_STYLE, (bits1 & ~OS.WS_CHILD) | OS.WS_POPUP);
+			OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_TOOLWINDOW);
 			Shell shell = getShell ();
 			Control savedFocus = shell.savedFocus;
 			OS.SetParent (hwnd, 0);
@@ -2404,14 +2378,12 @@ void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 			}
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits1);
-				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2);
-			}
+			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits1);
+			OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2);
 			OS.SetParent (hwnd, hwndParent);
 			OS.MapWindowPoints (0, hwndParent, rect1, 2);
 			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
-			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
+			OS.SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
 			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 			}
@@ -2484,13 +2456,9 @@ public void redraw () {
 void redraw (boolean all) {
 //	checkWidget ();
 	if (!OS.IsWindowVisible (handle)) return;
-	if (OS.IsWinCE) {
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-		if (all) flags |= OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+	if (all) flags |= OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -2543,13 +2511,9 @@ void redrawInPixels (int x, int y, int width, int height, boolean all) {
 	if (!OS.IsWindowVisible (handle)) return;
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	if (OS.IsWinCE) {
-		OS.InvalidateRect (handle, rect, true);
-	} else {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-		if (all) flags |= OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, rect, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+	if (all) flags |= OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, rect, 0, flags);
 }
 
 boolean redrawChildren () {
@@ -2557,7 +2521,7 @@ boolean redrawChildren () {
 	Control control = findBackgroundControl ();
 	if (control == null) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				OS.InvalidateRect (handle, null, true);
 				return true;
 			}
@@ -3224,21 +3188,13 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundImage (long /*int*/ hBitmap) {
-	if (OS.IsWinCE) {
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 void setBackgroundPixel (int pixel) {
-	if (OS.IsWinCE) {
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 /**
@@ -3292,7 +3248,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		if (backgroundImage == null) flags |= OS.SWP_NOCOPYBITS;
 	} else {
 		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				if (findThemeControl () != null) flags |= OS.SWP_NOCOPYBITS;
 			}
 		}
@@ -3323,7 +3279,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 			return;
 		}
 	}
-	SetWindowPos (topHandle, 0, x, y, width, height, flags);
+	OS.SetWindowPos (topHandle, 0, x, y, width, height, flags);
 }
 
 /**
@@ -3411,11 +3367,6 @@ public void setCursor (Cursor cursor) {
 	checkWidget ();
 	if (cursor != null && cursor.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	if (OS.IsWinCE) {
-		long /*int*/ hCursor = cursor != null ? cursor.handle : 0;
-		OS.SetCursor (hCursor);
-		return;
-	}
 	long /*int*/ hwndCursor = OS.GetCapture ();
 	if (hwndCursor == 0) {
 		POINT pt = new POINT ();
@@ -3612,14 +3563,7 @@ public void setLocation (int x, int y) {
 }
 
 void setLocationInPixels (int x, int y) {
-	int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-	/*
-	* Feature in WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
-	* causes a WM_SIZE message to be sent even when the SWP_NOSIZE
-	* flag is specified.  The fix is to set SWP_DRAWFRAME only when
-	* not running on WinCE.
-	*/
-	if (!OS.IsWinCE) flags |= OS.SWP_DRAWFRAME;
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
 	setBoundsInPixels (x, y, 0, 0, flags);
 }
 
@@ -3699,8 +3643,6 @@ public void setMenu (Menu menu) {
  */
 public void setOrientation (int orientation) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~SWT.MIRRORED;
@@ -3767,13 +3709,8 @@ public void setRedraw (boolean redraw) {
 				OS.ShowWindow (topHandle, OS.SW_HIDE);
 				if (handle != topHandle) OS.ShowWindow (handle, OS.SW_HIDE);
 			} else {
-				if (OS.IsWinCE) {
-					OS.InvalidateRect (topHandle, null, true);
-					if (handle != topHandle) OS.InvalidateRect (handle, null, true);
-				} else {
-					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (topHandle, null, 0, flags);
-				}
+				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+				OS.RedrawWindow (topHandle, null, 0, flags);
 			}
 		}
 	} else {
@@ -3916,8 +3853,6 @@ boolean setTabItemFocus () {
  */
 public void setTextDirection(int textDirection) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	textDirection &= (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT);
 	updateTextDirection (textDirection);
 	if (textDirection == AUTO_TEXT_DIRECTION) {
@@ -4288,14 +4223,6 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_LEFT:
 		case OS.VK_DOWN:
 		case OS.VK_RIGHT: {
-			/*
-			* On WinCE SP there is no tab key.  Focus is assigned
-			* using the VK_UP and VK_DOWN keys, not with VK_LEFT
-			* or VK_RIGHT.
-			*/
-			if (OS.IsSP) {
-				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) return false;
-			}
 			lastVirtual = true;
 			long /*int*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTARROWS /*| OS.DLGC_WANTALLKEYS*/)) != 0) doit = false;
@@ -4680,13 +4607,9 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget ();
-	if (OS.IsWinCE) {
-		OS.UpdateWindow (handle);
-	} else {
-		int flags = OS.RDW_UPDATENOW;
-		if (all) flags |= OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_UPDATENOW;
+	if (all) flags |= OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 void updateBackgroundColor () {
@@ -4711,10 +4634,6 @@ void updateBackgroundMode () {
 
 void updateFont (Font oldFont, Font newFont) {
 	if (getFont ().equals (oldFont)) setFont (newFont);
-}
-
-void updateImages () {
-	/* Do nothing */
 }
 
 void updateLayout (boolean resize, boolean all) {
@@ -4771,20 +4690,10 @@ CREATESTRUCT widgetCreateStruct () {
 
 int widgetExtStyle () {
 	int bits = 0;
-	if (!OS.IsPPC) {
-		if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
-	}
+	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
 //	if ((style & SWT.BORDER) != 0) {
 //		if ((style & SWT.FLAT) == 0) bits |= OS.WS_EX_CLIENTEDGE;
 //	}
-	/*
-	* Feature in Windows NT.  When CreateWindowEx() is called with
-	* WS_EX_LAYOUTRTL or WS_EX_NOINHERITLAYOUT, CreateWindowEx()
-	* fails to create the HWND. The fix is to not use these bits.
-	*/
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-		return bits;
-	}
 	bits |= OS.WS_EX_NOINHERITLAYOUT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) bits |= OS.WS_EX_RTLREADING;
@@ -4801,9 +4710,6 @@ int widgetStyle () {
 //	if ((style & SWT.BORDER) != 0) {
 //		if ((style & SWT.FLAT) != 0) bits |= OS.WS_BORDER;
 //	}
-	if (OS.IsPPC) {
-		if ((style & SWT.BORDER) != 0) bits |= OS.WS_BORDER;
-	}
 	return bits;
 
 	/*
@@ -4851,7 +4757,7 @@ public boolean setParent (Composite parent) {
 	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-	SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	reskin (SWT.ALL);
 	return true;
 }
@@ -5068,7 +4974,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 		if (findImageControl () != null) return LRESULT.ONE;
 	}
 	if ((state & THEME_BACKGROUND) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsAppThemed ()) {
 			if (findThemeControl () != null) return LRESULT.ONE;
 		}
 	}
@@ -5114,7 +5020,6 @@ LRESULT WM_HOTKEY (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_HELP (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.IsWinCE) return null;
 	HELPINFO lphi = new HELPINFO ();
 	OS.MoveMemory (lphi, lParam, HELPINFO.sizeof);
 	Decorations shell = menuShell ();
@@ -5388,7 +5293,7 @@ LRESULT WM_MOUSEHOVER (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.COMCTL32_MAJOR >= 6) getShell ().fixToolTip ();
+	getShell ().fixToolTip ();
 	return wmMouseLeave (handle, wParam, lParam);
 }
 
@@ -5410,7 +5315,7 @@ LRESULT WM_MOVE (long /*int*/ wParam, long /*int*/ lParam) {
 		if (this != getShell ()) redrawChildren ();
 	} else {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				if (OS.IsWindowVisible (handle)) {
 					if (findThemeControl () != null) redrawChildren ();
 				}
@@ -5615,7 +5520,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 						Decorations shell = menuShell ();
 						Menu menu = shell.getMenuBar ();
 						if (menu != null) {
-							char key = Display.mbcsToWcs ((int)/*64*/lParam);
+							char key = (char) lParam;
 							if (key != 0) {
 								key = Character.toUpperCase (key);
 								MenuItem [] items = menu.getItems ();
@@ -5794,17 +5699,13 @@ LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 				if (width != 0 && height != 0) {
 					long /*int*/ hwndParent = parent == null ? 0 : parent.handle;
 					OS.MapWindowPoints (0, hwndParent, rect, 2);
-					if (OS.IsWinCE) {
-						OS.InvalidateRect (hwndParent, rect, true);
-					} else {
-						long /*int*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
-						long /*int*/ rgn2 = OS.CreateRectRgn (lpwp.x, lpwp.y, lpwp.x + lpwp.cx, lpwp.y + lpwp.cy);
-						OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
-						int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-						OS.RedrawWindow (hwndParent, null, rgn1, flags);
-						OS.DeleteObject (rgn1);
-						OS.DeleteObject (rgn2);
-					}
+					long /*int*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+					long /*int*/ rgn2 = OS.CreateRectRgn (lpwp.x, lpwp.y, lpwp.x + lpwp.cx, lpwp.y + lpwp.cy);
+					OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (hwndParent, null, rgn1, flags);
+					OS.DeleteObject (rgn1);
+					OS.DeleteObject (rgn2);
 				}
 			}
 		}
@@ -5828,7 +5729,7 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	Control control = findBackgroundControl ();
 	if (control == null) {
 		if ((state & THEME_BACKGROUND) != 0) {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsAppThemed ()) {
 				control = findThemeControl ();
 				if (control != null) {
 					RECT rect = new RECT ();

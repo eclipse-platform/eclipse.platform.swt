@@ -48,7 +48,7 @@ static String assocQueryString (int assocStr, TCHAR key, boolean expand) {
 		result = OS.AssocQueryString (flags, assocStr, key, null, pszOut, pcchOut);
 	}
 	if (result == 0) {
-		if (!OS.IsWinCE && expand) {
+		if (expand) {
 			int length = OS.ExpandEnvironmentStrings (pszOut, null, 0);
 			if (length != 0) {
 				TCHAR lpDst = new TCHAR (0, length);
@@ -84,48 +84,19 @@ public static Program findProgram (String extension) {
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, extension, true);
 	Program program = null;
-	if (OS.IsWinCE) {
-		long /*int*/ [] phkResult = new long /*int*/ [1];
-		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-			return null;
-		}
-		int [] lpcbData = new int [1];
-		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
-		if (result == 0) {
-			int length = lpcbData [0] / TCHAR.sizeof;
-			/*
-			 * Crash is seen when the size of REG_SZ entry in HKEY_CLASSES_ROOT
-			 * is not multiple of a Unicode byte length. The REG_SZ entry in
-			 * Windows registry may not have been stored with the proper
-			 * terminating null characters: e.g. non null terminated string or a
-			 * single byte null terminated. Refer below MSDN article on this:
-			 * https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884
-			 * %28v=vs.85%29.aspx Hence solution is to adjust the buffer length
-			 * accordingly. Refer Bug 157010 for more details.
-			 */
-			if (lpcbData [0] % TCHAR.sizeof != 0) {
-				length++;
-			}
-			TCHAR lpData = new TCHAR (0, length);
-			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-			if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()), extension);
-		}
-		OS.RegCloseKey (phkResult [0]);
-	} else {
-		String command = assocQueryString (OS.ASSOCSTR_COMMAND, key, true);
-		if (command != null) {
-			String name = null;
-			if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYDOCNAME, key, false);
-			if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYAPPNAME, key, false);
-			if (name == null) name = "";
-			String iconName = assocQueryString (OS.ASSOCSTR_DEFAULTICON, key, true);
-			if (iconName == null) iconName = "";
-			program = new Program ();
-			program.name = name;
-			program.command = command;
-			program.iconName = iconName;
-			program.extension = extension;
-		}
+	String command = assocQueryString (OS.ASSOCSTR_COMMAND, key, true);
+	if (command != null) {
+		String name = null;
+		if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYDOCNAME, key, false);
+		if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYAPPNAME, key, false);
+		if (name == null) name = "";
+		String iconName = assocQueryString (OS.ASSOCSTR_DEFAULTICON, key, true);
+		if (iconName == null) iconName = "";
+		program = new Program ();
+		program.name = name;
+		program.command = command;
+		program.iconName = iconName;
+		program.extension = extension;
 	}
 	return program;
 }
@@ -194,7 +165,7 @@ static String getKeyValue (String string, boolean expand) {
 			/* Use the character encoding for the default locale */
 			TCHAR lpData = new TCHAR (0, length);
 			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-				if (!OS.IsWinCE && expand) {
+				if (expand) {
 					length = OS.ExpandEnvironmentStrings (lpData, null, 0);
 					if (length != 0) {
 						TCHAR lpDst = new TCHAR (0, length);

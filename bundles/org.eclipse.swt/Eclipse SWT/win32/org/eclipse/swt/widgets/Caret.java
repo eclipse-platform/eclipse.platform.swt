@@ -118,12 +118,11 @@ Rectangle getBoundsInPixels () {
 	if (image != null) {
 		Rectangle rect = image.getBoundsInPixels ();
 		return new Rectangle (x, y, rect.width, rect.height);
-	} else {
-		if (!OS.IsWinCE && width == 0) {
-			int [] buffer = new int [1];
-			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-				return new Rectangle (x, y, buffer [0], height);
-			}
+	}
+	if (width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			return new Rectangle (x, y, buffer [0], height);
 		}
 	}
 	return new Rectangle (x, y, width, height);
@@ -217,12 +216,11 @@ Point getSizeInPixels () {
 	if (image != null) {
 		Rectangle rect = image.getBoundsInPixels ();
 		return new Point (rect.width, rect.height);
-	} else {
-		if (!OS.IsWinCE && width == 0) {
-			int [] buffer = new int [1];
-			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-				return new Point (buffer [0], height);
-			}
+	}
+	if (width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			return new Point (buffer [0], height);
 		}
 	}
 	return new Point (width, height);
@@ -340,7 +338,7 @@ void resize () {
 	OS.DestroyCaret ();
 	long /*int*/ hBitmap = image != null ? image.handle : 0;
 	int width = this.width;
-	if (!OS.IsWinCE && image == null && width == 0) {
+	if (image == null && width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 			width = buffer [0];
@@ -427,7 +425,7 @@ void setFocus () {
 	long /*int*/ hBitmap = 0;
 	if (image != null) hBitmap = image.handle;
 	int width = this.width;
-	if (!OS.IsWinCE && image == null && width == 0) {
+	if (image == null && width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 			width = buffer [0];

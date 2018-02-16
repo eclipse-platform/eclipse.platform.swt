@@ -120,7 +120,6 @@ public void add (int[] pointArray) {
 }
 
 void addInPixels (int[] pointArray) {
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_OR);
 	OS.DeleteObject (polyRgn);
@@ -491,7 +490,6 @@ public void subtract (int[] pointArray) {
 }
 
 void subtractInPixels (int[] pointArray) {
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_DIFF);
 	OS.DeleteObject (polyRgn);

@@ -153,8 +153,6 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-
 	/* Get the owner HWND for the dialog */
 	long /*int*/ hwndOwner = parent.handle;
 	long /*int*/ hwndParent = parent.handle;
@@ -166,25 +164,23 @@ public FontData open () {
 	* parent for the dialog to inherit.
 	*/
 	boolean enabled = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-		if (dialogOrientation != parentOrientation) {
-			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
-			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
-			hwndOwner = OS.CreateWindowEx (
-				exStyle,
-				Shell.DialogClass,
-				null,
-				0,
-				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-				hwndParent,
-				0,
-				OS.GetModuleHandle (null),
-				null);
-			enabled = OS.IsWindowEnabled (hwndParent);
-			if (enabled) OS.EnableWindow (hwndParent, false);
-		}
+	int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	if (dialogOrientation != parentOrientation) {
+		int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+		if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+		hwndOwner = OS.CreateWindowEx (
+			exStyle,
+			Shell.DialogClass,
+			null,
+			0,
+			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+			hwndParent,
+			0,
+			OS.GetModuleHandle (null),
+			null);
+		enabled = OS.IsWindowEnabled (hwndParent);
+		if (enabled) OS.EnableWindow (hwndParent, false);
 	}
 
 	/* Open the dialog */

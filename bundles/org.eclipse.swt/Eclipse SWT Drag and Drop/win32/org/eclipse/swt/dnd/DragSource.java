@@ -352,12 +352,8 @@ private void drag(Event dragEvent) {
         * The fix is to force all paints to be delivered before
         * calling ImageList_DragEnter().
         */
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (topControl.handle);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (topControl.handle, null, 0, flags);
-		}
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (topControl.handle, null, 0, flags);
 		POINT pt = new POINT ();
 		pt.x = DPIUtil.autoScaleUp(dragEvent.x);// To Pixels
 		pt.y = DPIUtil.autoScaleUp(dragEvent.y);// To Pixels

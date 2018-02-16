@@ -151,28 +151,20 @@ protected void checkSubclass () {
 		ignoreResize = true;
 		boolean redraw = false;
 		if (OS.IsWindowVisible (handle)) {
-			if (OS.COMCTL32_MAJOR >= 6) {
-				redraw = true;
-				OS.UpdateWindow (handle);
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			} else {
-				redraw = getDrawing();
-				if (redraw) {
-					OS.UpdateWindow (handle);
-					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-				}
-			}
+			redraw = true;
+			OS.UpdateWindow (handle);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 		RECT oldRect = new RECT ();
 		OS.GetWindowRect (handle, oldRect);
 		int oldWidth = oldRect.right - oldRect.left;
 		int oldHeight = oldRect.bottom - oldRect.top;
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-		SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
 		height = Math.max (height, rect.bottom);
-		SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
 		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
@@ -187,11 +179,7 @@ protected void checkSubclass () {
 		}
 		width = Math.max(width, rowWidth);
 		if (redraw) {
-			if (OS.COMCTL32_MAJOR >= 6) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-			} else {
-				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			}
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		}
 		ignoreResize = false;
 	}
@@ -373,7 +361,7 @@ void destroyItem (CoolItem item) {
 
 @Override
 void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (OS.IsAppThemed ()) {
 		if (background == -1 && (style & SWT.FLAT) != 0) {
 			Control control = findBackgroundControl ();
 			if (control != null && control.backgroundImage != null) {
@@ -399,11 +387,9 @@ Control findThemeControl () {
 
 int getMargin (int index) {
 	int margin = 0;
-	if (OS.COMCTL32_MAJOR >= 6) {
-		MARGINS margins = new MARGINS ();
-		OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
-		margin += margins.cxLeftWidth + margins.cxRightWidth;
-	}
+	MARGINS margins = new MARGINS ();
+	OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
+	margin += margins.cxLeftWidth + margins.cxRightWidth;
 	RECT rect = new RECT ();
 	OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
 	if ((style & SWT.FLAT) != 0) {
@@ -581,11 +567,9 @@ Point [] getItemSizesInPixels () {
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if (OS.COMCTL32_MAJOR >= 6) {
-			OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
-			rect.left -= margins.cxLeftWidth;
-			rect.right += margins.cxRightWidth;
-		}
+		OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, margins);
+		rect.left -= margins.cxLeftWidth;
+		rect.right += margins.cxRightWidth;
 		if (!isLastItemOfRow(i)) rect.right += separator;
 		if ((style & SWT.VERTICAL) != 0) {
 			sizes [i] = new Point (rbBand.cyChild, rect.right - rect.left);
@@ -767,12 +751,8 @@ void setBackgroundPixel (int pixel) {
 	* to invalidate the coolbar area.
 	*/
 	if (!OS.IsWindowVisible (handle)) return;
-	if (OS.IsWinCE) {
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 @Override
@@ -1069,7 +1049,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	* the cool bar window proc after the background has
 	* been erased.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!OS.IsAppThemed ()) {
 		drawBackground (wParam);
 		return null;
 	}
@@ -1124,14 +1104,7 @@ LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	* not running the default window proc or the rebar window
 	* proc.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
-	Rectangle rect = getBoundsInPixels ();
-	long /*int*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
-	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
-	if (!rect.equals (getBoundsInPixels ())) {
-		parent.redrawInPixels (rect.x, rect.y, rect.width, rect.height, true);
-	}
-	return new LRESULT (code);
+	return LRESULT.ZERO;
 }
 
 @Override
@@ -1142,7 +1115,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 		return new LRESULT (code);
 	}
 	//TEMPORARY CODE
-//	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+//	if (OS.IsAppThemed ()) {
 //		if (background == -1 && (style & SWT.FLAT) == 0) {
 //			OS.InvalidateRect (handle, null, true);
 //		}
@@ -1215,13 +1188,6 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			break;
 		}
 		case OS.NM_CUSTOMDRAW: {
-			/*
-			* Bug in Windows.  On versions of Windows prior to XP,
-			* drawing the background color in NM_CUSTOMDRAW erases
-			* the separators.  The fix is to draw the background
-			* in WM_ERASEBKGND.
-			*/
-			if (OS.COMCTL32_MAJOR < 6) break;
 			if (findBackgroundControl () != null || (style & SWT.FLAT) != 0) {
 				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1636,12 +1636,8 @@ DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIIN
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags);
 	lpStruct->dwDoubleClick = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick);
-#ifndef _WIN32_WCE
-	lpStruct->pchHostCss = (OLECHAR*)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
-#endif
-#ifndef _WIN32_WCE
-	lpStruct->pchHostNS = (OLECHAR*)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
-#endif
+	lpStruct->pchHostCss = (OLECHAR *)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
+	lpStruct->pchHostNS = (OLECHAR *)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
 	return lpStruct;
 }
 
@@ -1651,12 +1647,8 @@ void setDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStru
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize, (jint)lpStruct->cbSize);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags, (jint)lpStruct->dwFlags);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick, (jint)lpStruct->dwDoubleClick);
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss, (jintLong)lpStruct->pchHostCss);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS, (jintLong)lpStruct->pchHostNS);
-#endif
 }
 #endif
 
@@ -2608,12 +2600,8 @@ HDITEM *getHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct)
 	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, HDITEMFc.lParam);
 	lpStruct->iImage = (*env)->GetIntField(env, lpObject, HDITEMFc.iImage);
 	lpStruct->iOrder = (*env)->GetIntField(env, lpObject, HDITEMFc.iOrder);
-#ifndef _WIN32_WCE
 	lpStruct->type = (*env)->GetIntField(env, lpObject, HDITEMFc.type);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->pvFilter = (void *)(*env)->GetIntLongField(env, lpObject, HDITEMFc.pvFilter);
-#endif
 	return lpStruct;
 }
 
@@ -2629,12 +2617,8 @@ void setHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, HDITEMFc.lParam, (jintLong)lpStruct->lParam);
 	(*env)->SetIntField(env, lpObject, HDITEMFc.iImage, (jint)lpStruct->iImage);
 	(*env)->SetIntField(env, lpObject, HDITEMFc.iOrder, (jint)lpStruct->iOrder);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, HDITEMFc.type, (jint)lpStruct->type);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, HDITEMFc.pvFilter, (jintLong)lpStruct->pvFilter);
-#endif
 }
 #endif
 
@@ -3416,15 +3400,9 @@ LVITEM *getLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct)
 	lpStruct->iImage = (*env)->GetIntField(env, lpObject, LVITEMFc.iImage);
 	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, LVITEMFc.lParam);
 	lpStruct->iIndent = (*env)->GetIntField(env, lpObject, LVITEMFc.iIndent);
-#ifndef _WIN32_WCE
 	lpStruct->iGroupId = (*env)->GetIntField(env, lpObject, LVITEMFc.iGroupId);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->cColumns = (*env)->GetIntField(env, lpObject, LVITEMFc.cColumns);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->puColumns = (PUINT)(*env)->GetIntLongField(env, lpObject, LVITEMFc.puColumns);
-#endif
 	return lpStruct;
 }
 
@@ -3441,15 +3419,9 @@ void setLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct)
 	(*env)->SetIntField(env, lpObject, LVITEMFc.iImage, (jint)lpStruct->iImage);
 	(*env)->SetIntLongField(env, lpObject, LVITEMFc.lParam, (jintLong)lpStruct->lParam);
 	(*env)->SetIntField(env, lpObject, LVITEMFc.iIndent, (jint)lpStruct->iIndent);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, LVITEMFc.iGroupId, (jint)lpStruct->iGroupId);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, LVITEMFc.cColumns, (jint)lpStruct->cColumns);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, LVITEMFc.puColumns, (jintLong)lpStruct->puColumns);
-#endif
 }
 #endif
 
@@ -3737,9 +3709,7 @@ MENUITEMINFO *getMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO 
 	lpStruct->dwItemData = (*env)->GetIntLongField(env, lpObject, MENUITEMINFOFc.dwItemData);
 	lpStruct->dwTypeData = (LPTSTR)(*env)->GetIntLongField(env, lpObject, MENUITEMINFOFc.dwTypeData);
 	lpStruct->cch = (*env)->GetIntField(env, lpObject, MENUITEMINFOFc.cch);
-#ifndef _WIN32_WCE
 	lpStruct->hbmpItem = (HBITMAP)(*env)->GetIntLongField(env, lpObject, MENUITEMINFOFc.hbmpItem);
-#endif
 	return lpStruct;
 }
 
@@ -3757,9 +3727,7 @@ void setMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpStruct
 	(*env)->SetIntLongField(env, lpObject, MENUITEMINFOFc.dwItemData, (jintLong)lpStruct->dwItemData);
 	(*env)->SetIntLongField(env, lpObject, MENUITEMINFOFc.dwTypeData, (jintLong)lpStruct->dwTypeData);
 	(*env)->SetIntField(env, lpObject, MENUITEMINFOFc.cch, (jint)lpStruct->cch);
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, MENUITEMINFOFc.hbmpItem, (jintLong)lpStruct->hbmpItem);
-#endif
 }
 #endif
 
@@ -4263,39 +4231,17 @@ NMLVCUSTOMDRAW *getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTO
 	lpStruct->clrText = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrText);
 	lpStruct->clrTextBk = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrTextBk);
 	lpStruct->iSubItem = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iSubItem);
-#ifndef _WIN32_WCE
 	lpStruct->dwItemType = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.dwItemType);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->clrFace = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrFace);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->iIconEffect = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconEffect);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->iIconPhase = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconPhase);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->iPartId = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iPartId);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->iStateId = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcText.left = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_left);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcText.top = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_top);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcText.right = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_right);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcText.bottom = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_bottom);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->uAlign = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign);
-#endif
 	return lpStruct;
 }
 
@@ -4306,39 +4252,17 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrText, (jint)lpStruct->clrText);
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrTextBk, (jint)lpStruct->clrTextBk);
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iSubItem, (jint)lpStruct->iSubItem);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.dwItemType, (jint)lpStruct->dwItemType);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrFace, (jint)lpStruct->clrFace);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconEffect, (jint)lpStruct->iIconEffect);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconPhase, (jint)lpStruct->iIconPhase);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iPartId, (jint)lpStruct->iPartId);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId, (jint)lpStruct->iStateId);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_left, (jint)lpStruct->rcText.left);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_top, (jint)lpStruct->rcText.top);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_right, (jint)lpStruct->rcText.right);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_bottom, (jint)lpStruct->rcText.bottom);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign, (jint)lpStruct->uAlign);
-#endif
 }
 #endif
 
@@ -4386,15 +4310,9 @@ NMLVDISPINFO *getNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO 
 	lpStruct->item.iImage = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iImage);
 	lpStruct->item.lParam = (*env)->GetIntLongField(env, lpObject, NMLVDISPINFOFc.lParam);
 	lpStruct->item.iIndent = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iIndent);
-#ifndef _WIN32_WCE
 	lpStruct->item.iGroupId = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iGroupId);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->item.cColumns = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.cColumns);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->item.puColumns = (PUINT)(*env)->GetIntLongField(env, lpObject, NMLVDISPINFOFc.puColumns);
-#endif
 	return lpStruct;
 }
 
@@ -4412,15 +4330,9 @@ void setNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iImage, (jint)lpStruct->item.iImage);
 	(*env)->SetIntLongField(env, lpObject, NMLVDISPINFOFc.lParam, (jintLong)lpStruct->item.lParam);
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iIndent, (jint)lpStruct->item.iIndent);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iGroupId, (jint)lpStruct->item.iGroupId);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.cColumns, (jint)lpStruct->item.cColumns);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, NMLVDISPINFOFc.puColumns, (jintLong)lpStruct->item.puColumns);
-#endif
 }
 #endif
 
@@ -4846,18 +4758,10 @@ NMTOOLBAR *getNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct
 	lpStruct->tbButton.iString = (*env)->GetIntLongField(env, lpObject, NMTOOLBARFc.iString);
 	lpStruct->cchText = (*env)->GetIntField(env, lpObject, NMTOOLBARFc.cchText);
 	lpStruct->pszText = (LPTSTR)(*env)->GetIntLongField(env, lpObject, NMTOOLBARFc.pszText);
-#ifndef _WIN32_WCE
 	lpStruct->rcButton.left = (*env)->GetIntField(env, lpObject, NMTOOLBARFc.left);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcButton.top = (*env)->GetIntField(env, lpObject, NMTOOLBARFc.top);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcButton.right = (*env)->GetIntField(env, lpObject, NMTOOLBARFc.right);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->rcButton.bottom = (*env)->GetIntField(env, lpObject, NMTOOLBARFc.bottom);
-#endif
 	return lpStruct;
 }
 
@@ -4874,18 +4778,10 @@ void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, NMTOOLBARFc.iString, (jintLong)lpStruct->tbButton.iString);
 	(*env)->SetIntField(env, lpObject, NMTOOLBARFc.cchText, (jint)lpStruct->cchText);
 	(*env)->SetIntLongField(env, lpObject, NMTOOLBARFc.pszText, (jintLong)lpStruct->pszText);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTOOLBARFc.left, (jint)lpStruct->rcButton.left);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTOOLBARFc.top, (jint)lpStruct->rcButton.top);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTOOLBARFc.right, (jint)lpStruct->rcButton.right);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTOOLBARFc.bottom, (jint)lpStruct->rcButton.bottom);
-#endif
 }
 #endif
 
@@ -5155,9 +5051,7 @@ NMTVCUSTOMDRAW *getNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTO
 	getNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
 	lpStruct->clrText = (*env)->GetIntField(env, lpObject, NMTVCUSTOMDRAWFc.clrText);
 	lpStruct->clrTextBk = (*env)->GetIntField(env, lpObject, NMTVCUSTOMDRAWFc.clrTextBk);
-#ifndef _WIN32_WCE
 	lpStruct->iLevel = (*env)->GetIntField(env, lpObject, NMTVCUSTOMDRAWFc.iLevel);
-#endif
 	return lpStruct;
 }
 
@@ -5167,9 +5061,7 @@ void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpSt
 	setNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
 	(*env)->SetIntField(env, lpObject, NMTVCUSTOMDRAWFc.clrText, (jint)lpStruct->clrText);
 	(*env)->SetIntField(env, lpObject, NMTVCUSTOMDRAWFc.clrTextBk, (jint)lpStruct->clrTextBk);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTVCUSTOMDRAWFc.iLevel, (jint)lpStruct->iLevel);
-#endif
 }
 #endif
 
@@ -5598,18 +5490,10 @@ NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICO
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
-#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
-#endif
 	return lpStruct;
 }
 
@@ -5622,18 +5506,10 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-#endif
 }
 #endif
 
@@ -5666,34 +5542,22 @@ NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
-#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
-#endif
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
 	}
-#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
 	}
-#endif
-#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
 	}
-#endif
 	return lpStruct;
 }
 
@@ -5706,34 +5570,22 @@ void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-#endif
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
 	}
-#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
 	}
-#endif
-#ifndef _WIN32_WCE
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
 	}
-#endif
 }
 #endif
 
@@ -5766,34 +5618,22 @@ NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYI
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
-#ifndef _WIN32_WCE
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
-#endif
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / sizeof(jchar), (jchar *)lpStruct->szTip);
 	}
-#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / sizeof(jchar), (jchar *)lpStruct->szInfo);
 	}
-#endif
-#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / sizeof(jchar), (jchar *)lpStruct->szInfoTitle);
 	}
-#endif
 	return lpStruct;
 }
 
@@ -5806,34 +5646,22 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-#endif
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / sizeof(jchar), (jchar *)lpStruct->szTip);
 	}
-#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / sizeof(jchar), (jchar *)lpStruct->szInfo);
 	}
-#endif
-#ifndef _WIN32_WCE
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / sizeof(jchar), (jchar *)lpStruct->szInfoTitle);
 	}
-#endif
 }
 #endif
 
@@ -5936,15 +5764,9 @@ OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME 
 	lpStruct->lCustData = (*env)->GetIntLongField(env, lpObject, OPENFILENAMEFc.lCustData);
 	lpStruct->lpfnHook = (LPOFNHOOKPROC)(*env)->GetIntLongField(env, lpObject, OPENFILENAMEFc.lpfnHook);
 	lpStruct->lpTemplateName = (LPCTSTR)(*env)->GetIntLongField(env, lpObject, OPENFILENAMEFc.lpTemplateName);
-#ifndef _WIN32_WCE
 	lpStruct->pvReserved = (void *)(*env)->GetIntLongField(env, lpObject, OPENFILENAMEFc.pvReserved);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->dwReserved = (*env)->GetIntField(env, lpObject, OPENFILENAMEFc.dwReserved);
-#endif
-#ifndef _WIN32_WCE
 	lpStruct->FlagsEx = (*env)->GetIntField(env, lpObject, OPENFILENAMEFc.FlagsEx);
-#endif
 	return lpStruct;
 }
 
@@ -5971,15 +5793,9 @@ void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct
 	(*env)->SetIntLongField(env, lpObject, OPENFILENAMEFc.lCustData, (jintLong)lpStruct->lCustData);
 	(*env)->SetIntLongField(env, lpObject, OPENFILENAMEFc.lpfnHook, (jintLong)lpStruct->lpfnHook);
 	(*env)->SetIntLongField(env, lpObject, OPENFILENAMEFc.lpTemplateName, (jintLong)lpStruct->lpTemplateName);
-#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, OPENFILENAMEFc.pvReserved, (jintLong)lpStruct->pvReserved);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.dwReserved, (jint)lpStruct->dwReserved);
-#endif
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.FlagsEx, (jint)lpStruct->FlagsEx);
-#endif
 }
 #endif
 
@@ -7118,9 +6934,7 @@ REBARBANDINFO *getREBARBANDINFOFields(JNIEnv *env, jobject lpObject, REBARBANDIN
 	lpStruct->cyIntegral = (*env)->GetIntField(env, lpObject, REBARBANDINFOFc.cyIntegral);
 	lpStruct->cxIdeal = (*env)->GetIntField(env, lpObject, REBARBANDINFOFc.cxIdeal);
 	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, REBARBANDINFOFc.lParam);
-#ifndef _WIN32_WCE
 	lpStruct->cxHeader = (*env)->GetIntField(env, lpObject, REBARBANDINFOFc.cxHeader);
-#endif
 	return lpStruct;
 }
 
@@ -7146,9 +6960,7 @@ void setREBARBANDINFOFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpStru
 	(*env)->SetIntField(env, lpObject, REBARBANDINFOFc.cyIntegral, (jint)lpStruct->cyIntegral);
 	(*env)->SetIntField(env, lpObject, REBARBANDINFOFc.cxIdeal, (jint)lpStruct->cxIdeal);
 	(*env)->SetIntLongField(env, lpObject, REBARBANDINFOFc.lParam, (jintLong)lpStruct->lParam);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, REBARBANDINFOFc.cxHeader, (jint)lpStruct->cxHeader);
-#endif
 }
 #endif
 
@@ -9253,9 +9065,7 @@ TVINSERTSTRUCT *getTVINSERTSTRUCTFields(JNIEnv *env, jobject lpObject, TVINSERTS
 	lpStruct->item.iSelectedImage = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.iSelectedImage);
 	lpStruct->item.cChildren = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.cChildren);
 	lpStruct->item.lParam = (*env)->GetIntLongField(env, lpObject, TVINSERTSTRUCTFc.lParam);
-#ifndef _WIN32_WCE
 	lpStruct->itemex.iIntegral = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.iIntegral);
-#endif
 	return lpStruct;
 }
 
@@ -9274,9 +9084,7 @@ void setTVINSERTSTRUCTFields(JNIEnv *env, jobject lpObject, TVINSERTSTRUCT *lpSt
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.iSelectedImage, (jint)lpStruct->item.iSelectedImage);
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.cChildren, (jint)lpStruct->item.cChildren);
 	(*env)->SetIntLongField(env, lpObject, TVINSERTSTRUCTFc.lParam, (jintLong)lpStruct->item.lParam);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.iIntegral, (jint)lpStruct->itemex.iIntegral);
-#endif
 }
 #endif
 

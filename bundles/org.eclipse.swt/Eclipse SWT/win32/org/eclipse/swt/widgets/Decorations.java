@@ -160,37 +160,13 @@ public Decorations (Composite parent, int style) {
 
 void _setMaximized (boolean maximized) {
 	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
-	if (OS.IsWinCE) {
-		/*
-		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
-		* workaround is to resize the window to fit the parent client area.
-		*/
-		if (maximized) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			int width = rect.right - rect.left, height = rect.bottom - rect.top;
-			if (OS.IsPPC) {
-				/* Leave space for the menu bar */
-				if (menuBar != null) {
-					long /*int*/ hwndCB = menuBar.hwndCB;
-					RECT rectCB = new RECT ();
-					OS.GetWindowRect (hwndCB, rectCB);
-					height -= rectCB.bottom - rectCB.top;
-				}
-			}
-			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);
-		}
-	} else {
-		if (!OS.IsWindowVisible (handle)) return;
-		if (maximized == OS.IsZoomed (handle)) return;
-		OS.ShowWindow (handle, swFlags);
-		OS.UpdateWindow (handle);
-	}
+	if (!OS.IsWindowVisible (handle)) return;
+	if (maximized == OS.IsZoomed (handle)) return;
+	OS.ShowWindow (handle, swFlags);
+	OS.UpdateWindow (handle);
 }
 
 void _setMinimized (boolean minimized) {
-	if (OS.IsWinCE) return;
 	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
 	if (!OS.IsWindowVisible (handle)) return;
 	if (minimized == OS.IsIconic (handle)) return;
@@ -239,17 +215,6 @@ static int checkStyle (int style) {
 		style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX | SWT.RESIZE | SWT.BORDER);
 	} else if ((style & SWT.NO_MOVE) != 0) {
 		style |= SWT.TITLE;
-	}
-	if (OS.IsWinCE) {
-		/*
-		* Feature in WinCE PPC.  WS_MINIMIZEBOX or WS_MAXIMIZEBOX
-		* are not supposed to be used.  If they are, the result
-		* is a button which does not repaint correctly.  The fix
-		* is to remove this style.
-		*/
-		if ((style & SWT.MIN) != 0) style &= ~SWT.MIN;
-		if ((style & SWT.MAX) != 0) style &= ~SWT.MAX;
-		return style;
 	}
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
 		style |= SWT.TITLE;
@@ -326,10 +291,8 @@ int compare (ImageData data1, ImageData data2, int width, int height, int depth)
 			if (data1.depth == data2.depth) return 0;
 			return data1.depth > data2.depth && data1.depth <= depth ? -1 : 1;
 		}
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-			if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
-			if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
-		}
+		if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
 		if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
 		if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
 		if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
@@ -357,7 +320,7 @@ Control computeTabRoot () {
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-	boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
+	boolean hasMenu = OS.GetMenu (handle) != 0;
 	OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
 
 	/* Get the size of the scroll bars */
@@ -381,46 +344,28 @@ Control computeTabRoot () {
 
 void createAccelerators () {
 	hAccel = nAccel = 0;
-	int maxAccel = 0;
 	MenuItem [] items = display.items;
 	if (menuBar == null || items == null) {
-		if (!OS.IsPPC) return;
-		maxAccel = 1;
-	} else {
-		maxAccel = OS.IsPPC ? items.length + 1 : items.length;
+		return;
 	}
 	ACCEL accel = new ACCEL ();
 	byte [] buffer1 = new byte [ACCEL.sizeof];
-	byte [] buffer2 = new byte [maxAccel * ACCEL.sizeof];
-	if (menuBar != null && items != null) {
-		for (int i=0; i<items.length; i++) {
-			MenuItem item = items [i];
-			if (item != null && item.accelerator != 0) {
-				Menu menu = item.parent;
-				if (menu.parent == this) {
-					while (menu != null && menu != menuBar) {
-						menu = menu.getParentMenu ();
-					}
-					if (menu == menuBar && item.fillAccel (accel)) {
-						OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
-						System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
-						nAccel++;
-					}
+	byte [] buffer2 = new byte [items.length * ACCEL.sizeof];
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null && item.accelerator != 0) {
+			Menu menu = item.parent;
+			if (menu.parent == this) {
+				while (menu != null && menu != menuBar) {
+					menu = menu.getParentMenu ();
+				}
+				if (menu == menuBar && item.fillAccel (accel)) {
+					OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
+					System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
+					nAccel++;
 				}
 			}
 		}
-	}
-	if (OS.IsPPC) {
-		/*
-		* Note on WinCE PPC.  Close the shell when user taps CTRL-Q.
-		* IDOK represents the "Done Button" which also closes the shell.
-		*/
-		accel.fVirt = (byte) (OS.FVIRTKEY | OS.FCONTROL);
-		accel.key = (short) 'Q';
-		accel.cmd = (short) OS.IDOK;
-		OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
-		System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
-		nAccel++;
 	}
 	if (nAccel != 0) hAccel = OS.CreateAcceleratorTable (buffer2, nAccel);
 }
@@ -437,7 +382,7 @@ void createHandle () {
 @Override
 void createWidget () {
 	super.createWidget ();
-	swFlags = OS.IsWinCE ? OS.SW_SHOWMAXIMIZED : OS.SW_SHOWNOACTIVATE;
+	swFlags = OS.SW_SHOWNOACTIVATE;
 	hAccel = -1;
 }
 
@@ -493,73 +438,54 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 
 @Override Rectangle getBoundsInPixels () {
 	checkWidget ();
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-				int width = maxRect.right - maxRect.left;
-				int height = maxRect.bottom - maxRect.top;
-				return new Rectangle (maxRect.left, maxRect.top, width, height);
-			}
-			int width = lpwndpl.right - lpwndpl.left;
-			int height = lpwndpl.bottom - lpwndpl.top;
-			return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
+	if (OS.IsIconic (handle)) {
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+			int width = maxRect.right - maxRect.left;
+			int height = maxRect.bottom - maxRect.top;
+			return new Rectangle (maxRect.left, maxRect.top, width, height);
 		}
+		int width = lpwndpl.right - lpwndpl.left;
+		int height = lpwndpl.bottom - lpwndpl.top;
+		return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
 	}
 	return super.getBoundsInPixels ();
 }
 
 @Override Rectangle getClientAreaInPixels () {
 	checkWidget ();
-	/*
-	* Note: The CommandBar is part of the client area,
-	* not the trim.  Applications don't expect this so
-	* subtract the height of the CommandBar.
-	*/
-	if (OS.IsHPC) {
-		Rectangle rect = super.getClientAreaInPixels ();
-		if (menuBar != null) {
-			long /*int*/ hwndCB = menuBar.hwndCB;
-			int height = OS.CommandBar_Height (hwndCB);
-			rect.y += height;
-			rect.height = Math.max (0, rect.height - height);
+	if (OS.IsIconic (handle)) {
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+			return new Rectangle (0, 0, oldWidth, oldHeight);
 		}
-		return rect;
-	}
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-				return new Rectangle (0, 0, oldWidth, oldHeight);
-			}
-			int width = lpwndpl.right - lpwndpl.left;
-			int height = lpwndpl.bottom - lpwndpl.top;
-			/*
-			* Feature in Windows.  For some reason WM_NCCALCSIZE does
-			* not compute the client area when the window is minimized.
-			* The fix is to compute it using AdjustWindowRectEx() and
-			* GetSystemMetrics().
-			*
-			* NOTE: This code fails to compute the correct client area
-			* for a minimized window where the menu bar would wrap were
-			* the window restored.  There is no fix for this problem at
-			* this time.
-			*/
-			if (horizontalBar != null) width -= OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-			if (verticalBar != null) height -= OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-			RECT rect = new RECT ();
-			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-			boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
-			OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
-			width = Math.max (0, width - (rect.right - rect.left));
-			height = Math.max (0, height - (rect.bottom - rect.top));
-			return new Rectangle (0, 0, width, height);
-		}
+		int width = lpwndpl.right - lpwndpl.left;
+		int height = lpwndpl.bottom - lpwndpl.top;
+		/*
+		* Feature in Windows.  For some reason WM_NCCALCSIZE does
+		* not compute the client area when the window is minimized.
+		* The fix is to compute it using AdjustWindowRectEx() and
+		* GetSystemMetrics().
+		*
+		* NOTE: This code fails to compute the correct client area
+		* for a minimized window where the menu bar would wrap were
+		* the window restored.  There is no fix for this problem at
+		* this time.
+		*/
+		if (horizontalBar != null) width -= OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		if (verticalBar != null) height -= OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+		RECT rect = new RECT ();
+		int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		boolean hasMenu = OS.GetMenu (handle) != 0;
+		OS.AdjustWindowRectEx (rect, bits1, hasMenu, bits2);
+		width = Math.max (0, width - (rect.right - rect.left));
+		height = Math.max (0, height - (rect.bottom - rect.top));
+		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientAreaInPixels ();
 }
@@ -646,16 +572,14 @@ public Image [] getImages () {
 
 @Override Point getLocationInPixels () {
 	checkWidget ();
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-				return new Point (maxRect.left, maxRect.top);
-			}
-			return new Point (lpwndpl.left, lpwndpl.top);
+	if (OS.IsIconic (handle)) {
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+			return new Point (maxRect.left, maxRect.top);
 		}
+		return new Point (lpwndpl.left, lpwndpl.top);
 	}
 	return super.getLocationInPixels ();
 }
@@ -676,7 +600,6 @@ public Image [] getImages () {
  */
 public boolean getMaximized () {
 	checkWidget ();
-	if (OS.IsWinCE) return swFlags == OS.SW_SHOWMAXIMIZED;
 	if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
 	return swFlags == OS.SW_SHOWMAXIMIZED;
 }
@@ -713,7 +636,6 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget ();
-	if (OS.IsWinCE) return false;
 	if (OS.IsWindowVisible (handle)) return OS.IsIconic (handle);
 	return swFlags == OS.SW_SHOWMINNOACTIVE;
 }
@@ -725,20 +647,18 @@ String getNameText () {
 
 @Override Point getSizeInPixels () {
 	checkWidget ();
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
-				int width = maxRect.right - maxRect.left;
-				int height = maxRect.bottom - maxRect.top;
-				return new Point (width, height);
-			}
-			int width = lpwndpl.right - lpwndpl.left;
-			int height = lpwndpl.bottom - lpwndpl.top;
+	if (OS.IsIconic (handle)) {
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+			int width = maxRect.right - maxRect.left;
+			int height = maxRect.bottom - maxRect.top;
 			return new Point (width, height);
 		}
+		int width = lpwndpl.right - lpwndpl.left;
+		int height = lpwndpl.bottom - lpwndpl.top;
+		return new Point (width, height);
 	}
 	return super.getSizeInPixels ();
 }
@@ -869,13 +789,9 @@ void saveFocus () {
 @Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	swFlags = OS.SW_SHOWNOACTIVATE;
-	if (OS.IsWinCE) {
-		swFlags = OS.SW_RESTORE;
-	} else {
-		if (OS.IsIconic (handle)) {
-			setPlacement (x, y, width, height, flags);
-			return;
-		}
+	if (OS.IsIconic (handle)) {
+		setPlacement (x, y, width, height, flags);
+		return;
 	}
 	forceResize ();
 	RECT rect = new RECT ();
@@ -890,13 +806,11 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 		sameExtent = rect.right - rect.left == width && rect.bottom - rect.top == height;
 		if (!sameExtent) resized = true;
 	}
-	if (!OS.IsWinCE) {
-		if (OS.IsZoomed (handle)) {
-			if (sameOrigin && sameExtent) return;
-			setPlacement (x, y, width, height, flags);
-			_setMaximized (false);
-			return;
-		}
+	if (OS.IsZoomed (handle)) {
+		if (sameOrigin && sameExtent) return;
+		setPlacement (x, y, width, height, flags);
+		_setMaximized (false);
+		return;
 	}
 	super.setBoundsInPixels (x, y, width, height, flags, defer);
 }
@@ -984,16 +898,6 @@ public void setImage (Image image) {
 }
 
 void setImages (Image image, Image [] images) {
-	/*
-	* Feature in WinCE.  WM_SETICON and WM_GETICON set the icon
-	* for the window class, not the window instance.  This means
-	* that it is possible to set an icon into a window and then
-	* later free the icon, thus freeing the icon for every window.
-	* The fix is to avoid the API.
-	*
-	* On WinCE PPC, icons in windows are not displayed.
-	*/
-	if (OS.IsWinCE) return;
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = null;
@@ -1054,11 +958,9 @@ void setImages (Image image, Image [] images) {
 	* trimmings do not redraw to hide the previous icon.
 	* The fix is to force a redraw.
 	*/
-	if (!OS.IsWinCE) {
-		if (hSmallIcon == 0 && hLargeIcon == 0 && (style & SWT.BORDER) != 0) {
-			int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
-			OS.RedrawWindow (handle, null, 0, flags);
-		}
+	if (hSmallIcon == 0 && hLargeIcon == 0 && (style & SWT.BORDER) != 0) {
+		int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (handle, null, 0, flags);
 	}
 }
 
@@ -1148,45 +1050,10 @@ public void setMenuBar (Menu menu) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
-	if (OS.IsWinCE) {
-		if (OS.IsHPC) {
-			boolean resize = menuBar != menu;
-			if (menuBar != null) OS.CommandBar_Show (menuBar.hwndCB, false);
-			menuBar = menu;
-			if (menuBar != null) OS.CommandBar_Show (menuBar.hwndCB, true);
-			if (resize) {
-				sendEvent (SWT.Resize);
-				if (isDisposed ()) return;
-				if (layout != null) {
-					markLayout (false, false);
-					updateLayout (true, false);
-				}
-			}
-		} else {
-			if (OS.IsPPC) {
-				/*
-				* Note in WinCE PPC.  The menu bar is a separate popup window.
-				* If the shell is full screen, resize its window to leave
-				* space for the menu bar.
-				*/
-				boolean resize = getMaximized () && menuBar != menu;
-				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
-				menuBar = menu;
-				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
-				if (resize) _setMaximized (true);
-			}
-			if (OS.IsSP) {
-				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
-				menuBar = menu;
-				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
-			}
-		}
-	} else {
-		if (menu != null) display.removeBar (menu);
-		menuBar = menu;
-		long /*int*/ hMenu = menuBar != null ? menuBar.handle: 0;
-		OS.SetMenu (handle, hMenu);
-	}
+	if (menu != null) display.removeBar (menu);
+	menuBar = menu;
+	long /*int*/ hMenu = menuBar != null ? menuBar.handle: 0;
+	OS.SetMenu (handle, hMenu);
 	destroyAccelerators ();
 }
 
@@ -1252,7 +1119,7 @@ void setParent () {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
 	OS.SetWindowLongPtr (handle, OS.GWLP_ID, 0);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
-	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
 }
 
@@ -1312,7 +1179,6 @@ void setSavedFocus (Control control) {
 }
 
 void setSystemMenu () {
-	if (OS.IsWinCE) return;
 	long /*int*/ hMenu = OS.GetSystemMenu (handle, false);
 	if (hMenu == 0) return;
 	int oldCount = OS.GetMenuItemCount (hMenu);
@@ -1406,28 +1272,18 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (OS.IsHPC) {
-			if (menuBar != null) {
-				long /*int*/ hwndCB = menuBar.hwndCB;
-				OS.CommandBar_DrawMenuBar (hwndCB, 0);
-			}
-		}
 		if (!getDrawing()) {
 			state &= ~HIDDEN;
 		} else {
-			if (OS.IsWinCE) {
-				OS.ShowWindow (handle, OS.SW_SHOW);
+			if (menuBar != null) {
+				display.removeBar (menuBar);
+				OS.DrawMenuBar (handle);
+			}
+			STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
+			if (lpStartUpInfo != null && (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) != 0) {
+				OS.ShowWindow (handle, lpStartUpInfo.wShowWindow);
 			} else {
-				if (menuBar != null) {
-					display.removeBar (menuBar);
-					OS.DrawMenuBar (handle);
-				}
-				STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
-				if (lpStartUpInfo != null && (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) != 0) {
-					OS.ShowWindow (handle, lpStartUpInfo.wShowWindow);
-				} else {
-					OS.ShowWindow (handle, swFlags);
-				}
+				OS.ShowWindow (handle, swFlags);
 			}
 			if (isDisposed ()) return;
 			opened = true;
@@ -1450,22 +1306,18 @@ public void setVisible (boolean visible) {
 			* This causes pixel corruption.  The fix is to avoid calling
 			* update on hung windows.
 			*/
-			boolean update = true;
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && !OS.IsAppThemed ()) {
-				update = !OS.IsHungAppWindow (handle);
+			if (OS.IsAppThemed () || !OS.IsHungAppWindow (handle)) {
+				OS.UpdateWindow (handle);
 			}
-			if (update) OS.UpdateWindow (handle);
 		}
 	} else {
-		if (!OS.IsWinCE) {
-			if (OS.IsIconic (handle)) {
-				swFlags = OS.SW_SHOWMINNOACTIVE;
+		if (OS.IsIconic (handle)) {
+			swFlags = OS.SW_SHOWMINNOACTIVE;
+		} else {
+			if (OS.IsZoomed (handle)) {
+				swFlags = OS.SW_SHOWMAXIMIZED;
 			} else {
-				if (OS.IsZoomed (handle)) {
-					swFlags = OS.SW_SHOWMAXIMIZED;
-				} else {
-					swFlags = OS.SW_SHOWNOACTIVATE;
-				}
+				swFlags = OS.SW_SHOWNOACTIVATE;
 			}
 		}
 		if (!getDrawing()) {
@@ -1589,9 +1441,6 @@ int widgetExtStyle () {
 	int bits = super.widgetExtStyle () | OS.WS_EX_MDICHILD;
 	bits &= ~OS.WS_EX_CLIENTEDGE;
 	if ((style & SWT.NO_TRIM) != 0) return bits;
-	if (OS.IsPPC) {
-		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
-	}
 	if ((style & SWT.RESIZE) != 0) return bits;
 	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_DLGMODALFRAME;
 	return bits;
@@ -1628,20 +1477,13 @@ int widgetStyle () {
 
 	/* Set the resize, dialog border or border bits */
 	if ((style & SWT.RESIZE) != 0) {
-		/*
-		* Note on WinCE PPC.  SWT.RESIZE is used to resize
-		* the Shell according to the state of the IME.
-		* It does not set the WS_THICKFRAME style.
-		*/
-		if (!OS.IsPPC) bits |= OS.WS_THICKFRAME;
-	} else {
-		if ((style & SWT.BORDER) == 0) bits |= OS.WS_BORDER;
+		bits |= OS.WS_THICKFRAME;
+	} else if ((style & SWT.BORDER) == 0) {
+		bits |= OS.WS_BORDER;
 	}
 
 	/* Set the system menu and close box bits */
-	if (!OS.IsPPC && !OS.IsSP) {
-		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_SYSMENU;
-	}
+	if ((style & SWT.CLOSE) != 0) bits |= OS.WS_SYSMENU;
 
 	return bits;
 }
@@ -1728,33 +1570,6 @@ LRESULT WM_CLOSE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (result != null) return result;
 	if (isEnabled () && isActive ()) closeWidget ();
 	return LRESULT.ZERO;
-}
-
-@Override
-LRESULT WM_HOTKEY (long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.WM_HOTKEY (wParam, lParam);
-	if (result != null) return result;
-	if (OS.IsSP) {
-		/*
-		* Feature on WinCE SP.  The Back key is either used to close
-		* the foreground Dialog or used as a regular Back key in an EDIT
-		* control. The article 'Back Key' in MSDN for Smartphone
-		* describes how an application should handle it.  The
-		* workaround is to override the Back key when creating
-		* the menubar and handle it based on the style of the Shell.
-		* If the Shell has the SWT.CLOSE style, close the Shell.
-		* Otherwise, send the Back key to the window with focus.
-		*/
-		if (OS.HIWORD (lParam) == OS.VK_ESCAPE) {
-			if ((style & SWT.CLOSE) != 0) {
-				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
-			} else {
-				OS.SHSendBackToFocusWindow (OS.WM_HOTKEY, wParam, lParam);
-			}
-			return LRESULT.ZERO;
-		}
-	}
-	return result;
 }
 
 @Override

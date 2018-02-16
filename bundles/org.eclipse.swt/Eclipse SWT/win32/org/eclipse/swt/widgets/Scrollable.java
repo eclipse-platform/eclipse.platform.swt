@@ -342,15 +342,7 @@ long /*int*/ windowProc () {
 LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
-
-	/*
-	* Bug on WinCE.  lParam should be NULL when the message is not sent
-	* by a scroll bar control, but it contains the handle to the window.
-	* When the message is sent by a scroll bar control, it correctly
-	* contains the handle to the scroll bar.  The fix is to check for
-	* both.
-	*/
-	if (horizontalBar != null && (lParam == 0 || lParam == handle)) {
+	if (horizontalBar != null && lParam == 0) {
 		return wmScroll (horizontalBar, (state & CANVAS) != 0, handle, OS.WM_HSCROLL, wParam, lParam);
 	}
 	return result;
@@ -374,84 +366,13 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
-	/*
-	* Bug on WinCE.  lParam should be NULL when the message is not sent
-	* by a scroll bar control, but it contains the handle to the window.
-	* When the message is sent by a scroll bar control, it correctly
-	* contains the handle to the scroll bar.  The fix is to check for
-	* both.
-	*/
-	if (verticalBar != null && (lParam == 0 || lParam == handle)) {
+	if (verticalBar != null && lParam == 0) {
 		return wmScroll (verticalBar, (state & CANVAS) != 0, handle, OS.WM_VSCROLL, wParam, lParam);
 	}
 	return result;
 }
 
-@Override
-LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Bug in Windows.  On XP only (not Vista), Windows sometimes
-	* does not redraw the bottom right corner of a window that
-	* has scroll bars, causing pixel corruption.  The fix is to
-	* always draw the corner.
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
-			if ((bits1 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
-				RECT windowRect = new RECT ();
-				OS.GetWindowRect (hwnd, windowRect);
-				RECT trimRect = new RECT ();
-				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
-				OS.AdjustWindowRectEx (trimRect, bits1, false, bits2);
-				boolean hVisible = false, vVisible = false;
-				SCROLLBARINFO psbi = new SCROLLBARINFO ();
-				psbi.cbSize = SCROLLBARINFO.sizeof;
-				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_HSCROLL, psbi)) {
-					hVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
-				}
-				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_VSCROLL, psbi)) {
-					vVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
-				}
-				RECT cornerRect = new RECT ();
-				cornerRect.bottom = windowRect.bottom - windowRect.top - trimRect.bottom;
-				cornerRect.top = cornerRect.bottom - (vVisible ? OS.GetSystemMetrics (OS.SM_CYHSCROLL) : 0);
-				if ((bits2 & OS.WS_EX_LEFTSCROLLBAR) != 0) {
-					cornerRect.left = trimRect.left;
-					cornerRect.right = cornerRect.left + (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
-				} else {
-					cornerRect.right = windowRect.right - windowRect.left - trimRect.right;
-					cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
-				}
-				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
-					long /*int*/ hDC = OS.GetWindowDC (hwnd);
-					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
-					Decorations shell = menuShell ();
-					if ((shell.style & SWT.RESIZE) != 0) {
-						long /*int*/ hwndScroll = shell.scrolledHandle ();
-						boolean drawGripper = hwnd == hwndScroll;
-						if (!drawGripper) {
-							RECT shellRect = new RECT ();
-							OS.GetClientRect (hwndScroll, shellRect);
-							OS.MapWindowPoints (hwndScroll, 0, shellRect, 2);
-							drawGripper = shellRect.right == windowRect.right && shellRect.bottom == windowRect.bottom;
-						}
-						if (drawGripper) {
-							OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
-						}
-					}
-					OS.ReleaseDC (hwnd, hDC);
-				}
-			}
-		}
-	}
-	return result;
-}
-
 LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam) {
-	int scrollRemainder = display.scrollRemainder;
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -467,32 +388,16 @@ LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam)
 		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
 		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-			ScrollBar bar = vertical ? verticalBar : horizontalBar;
-			SCROLLINFO info = new SCROLLINFO ();
-			info.cbSize = SCROLLINFO.sizeof;
-			info.fMask = OS.SIF_POS;
-			OS.GetScrollInfo (handle, bar.scrollBarType (), info);
-			if (vertical && !pageScroll) delta *= linesToScroll [0];
-			int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
-			info.nPos -=  increment * delta / OS.WHEEL_DELTA;
-			OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
-			OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
-		} else {
-			int code = 0;
-	  		if (pageScroll) {
-	   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-	  		} else {
-	  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-	  			if (msg == OS.WM_VSCROLL) delta *= linesToScroll [0];
-	  		}
-	  		/* Check if the delta and the remainder have the same direction (sign) */
-	  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
-			int count = Math.abs (delta) / OS.WHEEL_DELTA;
-			for (int i=0; i<count; i++) {
-				OS.SendMessage (handle, msg, code, 0);
-			}
-		}
+		ScrollBar bar = vertical ? verticalBar : horizontalBar;
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (handle, bar.scrollBarType (), info);
+		if (vertical && !pageScroll) delta *= linesToScroll [0];
+		int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
+		info.nPos -=  increment * delta / OS.WHEEL_DELTA;
+		OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+		OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
 		return LRESULT.ZERO;
 	}
 
@@ -543,12 +448,6 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long /*int*/ hwnd, int msg, lon
 			case OS.SB_ENDSCROLL:  return null;
 			case OS.SB_THUMBPOSITION:
 			case OS.SB_THUMBTRACK:
-				/*
-				* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
-				* Same for SB_THUMBPOSITION 'except' for the very first thumb track
-				* message which has the actual value of nMin. This is a problem when
-				* nMin is not zero.
-				*/
 				info.nPos = info.nTrackPos;
 				break;
 			case OS.SB_TOP:

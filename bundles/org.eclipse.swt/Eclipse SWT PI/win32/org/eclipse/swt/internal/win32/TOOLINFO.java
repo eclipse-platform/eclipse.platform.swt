@@ -32,5 +32,5 @@ public class TOOLINFO {
 	public long /*int*/ lParam;
 	/** @field cast=(void *) */
 	public long /*int*/ lpReserved;
-	public static int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.TOOLINFO_sizeof () : 44;
+	public static int sizeof = OS.TOOLINFO_sizeof ();
 }

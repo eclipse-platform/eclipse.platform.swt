@@ -119,12 +119,6 @@ public final class Image extends Resource implements Drawable {
 	int alpha = -1;
 
 	/**
-	 * the image data used to create this image if it is a
-	 * icon. Used only in WinCE
-	 */
-	ImageData data;
-
-	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
 	 */
 	private ImageFileNameProvider imageFileNameProvider;
@@ -285,12 +279,8 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 					break;
 				case SWT.ICON:
-					if (OS.IsWinCE) {
-						init(srcImage.data);
-					} else {
-						handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, rect.width, rect.height, 0);
-						if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					}
+					handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, rect.width, rect.height, 0);
+					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					break;
 				default:
 					SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -823,7 +813,7 @@ void initNative(String filename) {
 	* Windows 7 when the image has a position offset in the first frame.
 	* The fix is to not use GDI+ image loading in this case.
 	*/
-	if ((!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(6, 1)) && filename.toLowerCase().endsWith(".gif")) gdip = false;
+	if (OS.WIN32_VERSION >= OS.VERSION(6, 1) && filename.toLowerCase().endsWith(".gif")) gdip = false;
 	if (gdip) {
 		int length = filename.length();
 		char[] chars = new char[length+1];
@@ -977,119 +967,6 @@ void initNative(String filename) {
 	}
 }
 
-/**
- * Create a DIB from a DDB without using GetDIBits. Note that
- * the DDB should not be selected into a HDC.
- */
-long /*int*/ createDIBFromDDB(long /*int*/ hDC, long /*int*/ hBitmap, int width, int height) {
-
-	/* Determine the DDB depth */
-	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-	int depth = bits * planes;
-
-	/* Determine the DIB palette */
-	boolean isDirect = depth > 8;
-	RGB[] rgbs = null;
-	if (!isDirect) {
-		int numColors = 1 << depth;
-		byte[] logPalette = new byte[4 * numColors];
-		OS.GetPaletteEntries(device.hPalette, 0, numColors, logPalette);
-		rgbs = new RGB[numColors];
-		for (int i = 0; i < numColors; i++) {
-			rgbs[i] = new RGB(logPalette[i] & 0xFF, logPalette[i + 1] & 0xFF, logPalette[i + 2] & 0xFF);
-		}
-	}
-
-	boolean useBitfields = OS.IsWinCE && (depth == 16 || depth == 32);
-	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
-	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-	bmiHeader.biWidth = width;
-	bmiHeader.biHeight = -height;
-	bmiHeader.biPlanes = 1;
-	bmiHeader.biBitCount = (short)depth;
-	if (useBitfields) bmiHeader.biCompression = OS.BI_BITFIELDS;
-	else bmiHeader.biCompression = OS.BI_RGB;
-	byte[] bmi;
-	if (isDirect) bmi = new byte[BITMAPINFOHEADER.sizeof + (useBitfields ? 12 : 0)];
-	else  bmi = new byte[BITMAPINFOHEADER.sizeof + rgbs.length * 4];
-	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-
-	/* Set the rgb colors into the bitmap info */
-	int offset = BITMAPINFOHEADER.sizeof;
-	if (isDirect) {
-		if (useBitfields) {
-			int redMask = 0;
-			int greenMask = 0;
-			int blueMask = 0;
-			switch (depth) {
-				case 16:
-					redMask = 0x7C00;
-					greenMask = 0x3E0;
-					blueMask = 0x1F;
-					/* little endian */
-					bmi[offset] = (byte)((redMask & 0xFF) >> 0);
-					bmi[offset + 1] = (byte)((redMask & 0xFF00) >> 8);
-					bmi[offset + 2] = (byte)((redMask & 0xFF0000) >> 16);
-					bmi[offset + 3] = (byte)((redMask & 0xFF000000) >> 24);
-					bmi[offset + 4] = (byte)((greenMask & 0xFF) >> 0);
-					bmi[offset + 5] = (byte)((greenMask & 0xFF00) >> 8);
-					bmi[offset + 6] = (byte)((greenMask & 0xFF0000) >> 16);
-					bmi[offset + 7] = (byte)((greenMask & 0xFF000000) >> 24);
-					bmi[offset + 8] = (byte)((blueMask & 0xFF) >> 0);
-					bmi[offset + 9] = (byte)((blueMask & 0xFF00) >> 8);
-					bmi[offset + 10] = (byte)((blueMask & 0xFF0000) >> 16);
-					bmi[offset + 11] = (byte)((blueMask & 0xFF000000) >> 24);
-					break;
-				case 32:
-					redMask = 0xFF00;
-					greenMask = 0xFF0000;
-					blueMask = 0xFF000000;
-					/* big endian */
-					bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
-					bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
-					bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
-					bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
-					bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
-					bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
-					bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
-					bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
-					bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
-					bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
-					bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
-					bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
-					break;
-				default:
-					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-			}
-		}
-	} else {
-		for (int j = 0; j < rgbs.length; j++) {
-			bmi[offset] = (byte)rgbs[j].blue;
-			bmi[offset + 1] = (byte)rgbs[j].green;
-			bmi[offset + 2] = (byte)rgbs[j].red;
-			bmi[offset + 3] = 0;
-			offset += 4;
-		}
-	}
-	long /*int*/[] pBits = new long /*int*/[1];
-	long /*int*/ hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-
-	/* Bitblt DDB into DIB */
-	long /*int*/ hdcSource = OS.CreateCompatibleDC(hDC);
-	long /*int*/ hdcDest = OS.CreateCompatibleDC(hDC);
-	long /*int*/ hOldSrc = OS.SelectObject(hdcSource, hBitmap);
-	long /*int*/ hOldDest = OS.SelectObject(hdcDest, hDib);
-	OS.BitBlt(hdcDest, 0, 0, width, height, hdcSource, 0, 0, OS.SRCCOPY);
-	OS.SelectObject(hdcSource, hOldSrc);
-	OS.SelectObject(hdcDest, hOldDest);
-	OS.DeleteDC(hdcSource);
-	OS.DeleteDC(hdcDest);
-
-	return hDib;
-}
-
 long /*int*/ [] createGdipImage() {
 	switch (type) {
 		case SWT.BITMAP: {
@@ -1195,11 +1072,7 @@ long /*int*/ [] createGdipImage() {
 			* detect this and create a PixelFormat32bppARGB image instead.
 			*/
 			ICONINFO iconInfo = new ICONINFO();
-			if (OS.IsWinCE) {
-				GetIconInfo(this, iconInfo);
-			} else {
-				OS.GetIconInfo(handle, iconInfo);
-			}
+			OS.GetIconInfo(handle, iconInfo);
 			long /*int*/ hBitmap = iconInfo.hbmColor;
 			if (hBitmap == 0) hBitmap = iconInfo.hbmMask;
 			BITMAP bm = new BITMAP();
@@ -1267,7 +1140,6 @@ long /*int*/ [] createGdipImage() {
 void destroy () {
 	if (memGC != null) memGC.dispose();
 	if (type == SWT.ICON) {
-		if (OS.IsWinCE) data = null;
 		OS.DestroyIcon (handle);
 	} else {
 		OS.DeleteObject (handle);
@@ -1333,26 +1205,11 @@ public Color getBackground() {
 	long /*int*/ hOldObject = OS.SelectObject(hdcMem, handle);
 	int red = 0, green = 0, blue = 0;
 	if (bm.bmBitsPixel <= 8)  {
-		if (OS.IsWinCE) {
-			byte[] pBits = new byte[1];
-			OS.MoveMemory(pBits, bm.bmBits, 1);
-			byte oldValue = pBits[0];
-			int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
-			pBits[0] = (byte)((transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
-			OS.MoveMemory(bm.bmBits, pBits, 1);
-			int color = OS.GetPixel(hdcMem, 0, 0);
-       		pBits[0] = oldValue;
-       		OS.MoveMemory(bm.bmBits, pBits, 1);
-			blue = (color & 0xFF0000) >> 16;
-			green = (color & 0xFF00) >> 8;
-			red = color & 0xFF;
-		} else {
-			byte[] color = new byte[4];
-			OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
-			blue = color[0] & 0xFF;
-			green = color[1] & 0xFF;
-			red = color[2] & 0xFF;
-		}
+		byte[] color = new byte[4];
+		OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
+		blue = color[0] & 0xFF;
+		green = color[1] & 0xFF;
+		red = color[2] & 0xFF;
 	} else {
 		switch (bm.bmBitsPixel) {
 			case 16:
@@ -1434,20 +1291,16 @@ public Rectangle getBoundsInPixels() {
 			OS.GetObject(handle, BITMAP.sizeof, bm);
 			return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
 		case SWT.ICON:
-			if (OS.IsWinCE) {
-				return new Rectangle(0, 0, width = data.width, height = data.height);
-			} else {
-				ICONINFO info = new ICONINFO();
-				OS.GetIconInfo(handle, info);
-				long /*int*/ hBitmap = info.hbmColor;
-				if (hBitmap == 0) hBitmap = info.hbmMask;
-				bm = new BITMAP();
-				OS.GetObject(hBitmap, BITMAP.sizeof, bm);
-				if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
-				if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
-				if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
-				return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
-			}
+			ICONINFO info = new ICONINFO();
+			OS.GetIconInfo(handle, info);
+			long /*int*/ hBitmap = info.hbmColor;
+			if (hBitmap == 0) hBitmap = info.hbmMask;
+			bm = new BITMAP();
+			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
+			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
+			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
+			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
+			return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
 		default:
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 			return null;
@@ -1557,9 +1410,7 @@ public ImageData getImageDataAtCurrentZoom() {
 	int depth, width, height;
 	switch (type) {
 		case SWT.ICON: {
-			if (OS.IsWinCE) return data;
 			ICONINFO info = new ICONINFO();
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
 			/* Get the basic BITMAP information */
 			long /*int*/ hBitmap = info.hbmColor;
@@ -1601,13 +1452,11 @@ public ImageData getImageDataAtCurrentZoom() {
 			/* Find the size of the image and allocate data */
 			int imageSize;
 			/* Call with null lpBits to get the image size */
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 			OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 			imageSize = bmiHeader.biSizeImage;
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, data, bmi, OS.DIB_RGB_COLORS);
 			/* Calculate the palette */
 			PaletteData palette = null;
@@ -1634,7 +1483,6 @@ public ImageData getImageDataAtCurrentZoom() {
 			if (info.hbmColor == 0) {
 				/* Do the bottom half of the mask */
 				maskData = new byte[imageSize];
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, hBitmap, height, height, maskData, bmi, OS.DIB_RGB_COLORS);
 			} else {
 				/* Do the entire mask */
@@ -1655,12 +1503,10 @@ public ImageData getImageDataAtCurrentZoom() {
 				bmi[offset + 7] = 0;
 				OS.SelectObject(hBitmapDC, info.hbmMask);
 				/* Call with null lpBits to get the image size */
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 				imageSize = bmiHeader.biSizeImage;
 				maskData = new byte[imageSize];
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, maskData, bmi, OS.DIB_RGB_COLORS);
 				/* Loop to invert the mask */
 				for (int i = 0; i < maskData.length; i++) {
@@ -1705,33 +1551,6 @@ public ImageData getImageDataAtCurrentZoom() {
 			boolean isDib = (bm.bmBits != 0);
 			/* Get the HDC for the device */
 			long /*int*/ hDC = device.internal_new_GC(null);
-
-			/*
-			* Feature in WinCE.  GetDIBits is not available in WinCE.  The
-			* workaround is to create a temporary DIB from the DDB and use
-			* the bmBits field of DIBSECTION to retrieve the image data.
-			*/
-			long /*int*/ handle = this.handle;
-			if (OS.IsWinCE) {
-				if (!isDib) {
-					boolean mustRestore = false;
-					if (memGC != null && !memGC.isDisposed()) {
-						memGC.flush ();
-						mustRestore = true;
-						GCData data = memGC.data;
-						if (data.hNullBitmap != 0) {
-							OS.SelectObject(memGC.handle, data.hNullBitmap);
-							data.hNullBitmap = 0;
-						}
-					}
-					handle = createDIBFromDDB(hDC, this.handle, width, height);
-					if (mustRestore) {
-						long /*int*/ hOldBitmap = OS.SelectObject(memGC.handle, this.handle);
-						memGC.data.hNullBitmap = hOldBitmap;
-					}
-					isDib = true;
-				}
-			}
 			DIBSECTION dib = null;
 			if (isDib) {
 				dib = new DIBSECTION();
@@ -1779,7 +1598,6 @@ public ImageData getImageDataAtCurrentZoom() {
 				imageSize = dib.biSizeImage;
 			} else {
 				/* Call with null lpBits to get the image size */
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 				imageSize = bmiHeader.biSizeImage;
@@ -1787,14 +1605,8 @@ public ImageData getImageDataAtCurrentZoom() {
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
 			if (isDib) {
-				if (OS.IsWinCE && this.handle != handle) {
-					/* get image data from the temporary DIB */
-					OS.MoveMemory(data, dib.bmBits, imageSize);
-				} else {
-					OS.MoveMemory(data, bm.bmBits, imageSize);
-				}
+				OS.MoveMemory(data, bm.bmBits, imageSize);
 			} else {
-				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, data, bmi, OS.DIB_RGB_COLORS);
 			}
 			/* Calculate the palette */
@@ -1802,37 +1614,12 @@ public ImageData getImageDataAtCurrentZoom() {
 			if (depth <= 8) {
 				RGB[] rgbs = new RGB[numColors];
 				if (isDib) {
-					if (OS.IsWinCE) {
-						/*
-						* Feature on WinCE.  GetDIBColorTable is not supported.
-						* The workaround is to set a pixel to the desired
-						* palette index and use getPixel to get the corresponding
-						* RGB value.
-						*/
-						int red = 0, green = 0, blue = 0;
-						byte[] pBits = new byte[1];
-						OS.MoveMemory(pBits, bm.bmBits, 1);
-						byte oldValue = pBits[0];
-						int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
-						for (int i = 0; i < numColors; i++) {
-							pBits[0] = (byte)((i << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
-							OS.MoveMemory(bm.bmBits, pBits, 1);
-							int color = OS.GetPixel(hBitmapDC, 0, 0);
-							blue = (color & 0xFF0000) >> 16;
-							green = (color & 0xFF00) >> 8;
-							red = color & 0xFF;
-							rgbs[i] = new RGB(red, green, blue);
-						}
-		       			pBits[0] = oldValue;
-			       		OS.MoveMemory(bm.bmBits, pBits, 1);
-					} else {
-						byte[] colors = new byte[numColors * 4];
-						OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
-						int colorIndex = 0;
-						for (int i = 0; i < rgbs.length; i++) {
-							rgbs[i] = new RGB(colors[colorIndex + 2] & 0xFF, colors[colorIndex + 1] & 0xFF, colors[colorIndex] & 0xFF);
-							colorIndex += 4;
-						}
+					byte[] colors = new byte[numColors * 4];
+					OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
+					int colorIndex = 0;
+					for (int i = 0; i < rgbs.length; i++) {
+						rgbs[i] = new RGB(colors[colorIndex + 2] & 0xFF, colors[colorIndex + 1] & 0xFF, colors[colorIndex] & 0xFF);
+						colorIndex += 4;
 					}
 				} else {
 					int srcIndex = BITMAPINFOHEADER.sizeof;
@@ -1856,12 +1643,6 @@ public ImageData getImageDataAtCurrentZoom() {
 			if (oldPalette != 0) {
 				OS.SelectPalette(hBitmapDC, oldPalette, false);
 				OS.RealizePalette(hBitmapDC);
-			}
-			if (OS.IsWinCE) {
-				if (handle != this.handle) {
-					/* free temporary DIB */
-					OS.DeleteObject (handle);
-				}
 			}
 			OS.DeleteDC(hBitmapDC);
 
@@ -1944,62 +1725,16 @@ static long /*int*/ createDIB(int width, int height, int depth) {
 	bmiHeader.biHeight = -height;
 	bmiHeader.biPlanes = 1;
 	bmiHeader.biBitCount = (short)depth;
-	if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
-	else bmiHeader.biCompression = OS.BI_RGB;
-	byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
+	bmiHeader.biCompression = OS.BI_RGB;
+	byte[] bmi = new byte[BITMAPINFOHEADER.sizeof];
 	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-	/* Set the rgb colors into the bitmap info */
-	if (OS.IsWinCE) {
-		int redMask = 0xFF00;
-		int greenMask = 0xFF0000;
-		int blueMask = 0xFF000000;
-		/* big endian */
-		int offset = BITMAPINFOHEADER.sizeof;
-		bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
-		bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
-		bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
-		bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
-		bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
-		bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
-		bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
-		bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
-		bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
-		bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
-		bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
-		bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
-	}
-
 	long /*int*/[] pBits = new long /*int*/[1];
 	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
-/**
- * Feature in WinCE.  GetIconInfo is not available in WinCE.
- * The workaround is to cache the object ImageData for images
- * of type SWT.ICON. The bitmaps hbmMask and hbmColor can then
- * be reconstructed by using our version of getIconInfo.
- * This function takes an ICONINFO object and sets the fields
- * hbmMask and hbmColor with the corresponding bitmaps it has
- * created.
- * Note.  These bitmaps must be freed - as they would have to be
- * if the regular GetIconInfo had been used.
- */
-static void GetIconInfo(Image image, ICONINFO info) {
-	long /*int*/ [] result = init(image.device, null, image.data);
-	info.hbmColor = result[0];
-	info.hbmMask = result[1];
-}
-
 static long /*int*/ [] init(Device device, Image image, ImageData i) {
-	/*
-	 * BUG in Windows 98:
-	 * A monochrome DIBSection will display as solid black
-	 * on Windows 98 machines, even though it contains the
-	 * correct data. The fix is to convert 1-bit ImageData
-	 * into 4-bit ImageData before creating the image.
-	 */
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
-	if ((OS.IsWin95 && i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
+	if (i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC,
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
@@ -2020,14 +1755,6 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 	 * MSDN BITMAPINFOHEADER.  Make sure the image is
 	 * Windows-supported.
 	 */
-	/*
-	* Note on WinCE.  CreateDIBSection requires the biCompression
-	* field of the BITMAPINFOHEADER to be set to BI_BITFIELDS for
-	* 16 and 32 bit direct images (see MSDN for CreateDIBSection).
-	* In this case, the color mask can be set to any value.  For
-	* consistency, it is set to the same mask used by non WinCE
-	* platforms in BI_RGB mode.
-	*/
 	if (i.palette.isDirect) {
 		final PaletteData palette = i.palette;
 		final int redMask = palette.redMask;
@@ -2081,63 +1808,23 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 	}
 	/* Construct bitmap info header by hand */
 	RGB[] rgbs = i.palette.getRGBs();
-	boolean useBitfields = OS.IsWinCE && (i.depth == 16 || i.depth == 32);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 	bmiHeader.biWidth = i.width;
 	bmiHeader.biHeight = -i.height;
 	bmiHeader.biPlanes = 1;
 	bmiHeader.biBitCount = (short)i.depth;
-	if (useBitfields) bmiHeader.biCompression = OS.BI_BITFIELDS;
-	else bmiHeader.biCompression = OS.BI_RGB;
+	bmiHeader.biCompression = OS.BI_RGB;
 	bmiHeader.biClrUsed = rgbs == null ? 0 : rgbs.length;
 	byte[] bmi;
 	if (i.palette.isDirect)
-		bmi = new byte[BITMAPINFOHEADER.sizeof + (useBitfields ? 12 : 0)];
+		bmi = new byte[BITMAPINFOHEADER.sizeof];
 	else
 		bmi = new byte[BITMAPINFOHEADER.sizeof + rgbs.length * 4];
 	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 	/* Set the rgb colors into the bitmap info */
 	int offset = BITMAPINFOHEADER.sizeof;
-	if (i.palette.isDirect) {
-		if (useBitfields) {
-			PaletteData palette = i.palette;
-			int redMask = palette.redMask;
-			int greenMask = palette.greenMask;
-			int blueMask = palette.blueMask;
-			/*
-			 * The color masks must be written based on the
-			 * endianness of the ImageData.
-			 */
-			if (i.getByteOrder() == ImageData.LSB_FIRST) {
-				bmi[offset] = (byte)((redMask & 0xFF) >> 0);
-				bmi[offset + 1] = (byte)((redMask & 0xFF00) >> 8);
-				bmi[offset + 2] = (byte)((redMask & 0xFF0000) >> 16);
-				bmi[offset + 3] = (byte)((redMask & 0xFF000000) >> 24);
-				bmi[offset + 4] = (byte)((greenMask & 0xFF) >> 0);
-				bmi[offset + 5] = (byte)((greenMask & 0xFF00) >> 8);
-				bmi[offset + 6] = (byte)((greenMask & 0xFF0000) >> 16);
-				bmi[offset + 7] = (byte)((greenMask & 0xFF000000) >> 24);
-				bmi[offset + 8] = (byte)((blueMask & 0xFF) >> 0);
-				bmi[offset + 9] = (byte)((blueMask & 0xFF00) >> 8);
-				bmi[offset + 10] = (byte)((blueMask & 0xFF0000) >> 16);
-				bmi[offset + 11] = (byte)((blueMask & 0xFF000000) >> 24);
-			} else {
-				bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
-				bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
-				bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
-				bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
-				bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
-				bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
-				bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
-				bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
-				bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
-				bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
-				bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
-				bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
-			}
-		}
-	} else {
+	if (!i.palette.isDirect) {
 		for (int j = 0; j < rgbs.length; j++) {
 			bmi[offset] = (byte)rgbs[j].blue;
 			bmi[offset + 1] = (byte)rgbs[j].green;
@@ -2197,7 +1884,6 @@ static long /*int*/ [] init(Device device, Image image, ImageData i) {
 			OS.DeleteObject(hMask);
 			image.handle = hIcon;
 			image.type = SWT.ICON;
-			if (OS.IsWinCE) image.data = i;
 		}
 	} else {
 		if (image == null) {
@@ -2414,10 +2100,6 @@ public boolean isDisposed() {
  * </ul>
  */
 public void setBackground(Color color) {
-	/*
-	* Note.  Not implemented on WinCE.
-	*/
-	if (OS.IsWinCE) return;
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2434,13 +2116,11 @@ public void setBackground(Color color) {
 	OS.SelectObject(hdcMem, handle);
 	int maxColors = 1 << bm.bmBitsPixel;
 	byte[] colors = new byte[maxColors * 4];
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
 	int offset = transparentPixel * 4;
 	colors[offset] = (byte)color.getBlue();
 	colors[offset + 1] = (byte)color.getGreen();
 	colors[offset + 2] = (byte)color.getRed();
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
 	OS.DeleteDC(hdcMem);
 

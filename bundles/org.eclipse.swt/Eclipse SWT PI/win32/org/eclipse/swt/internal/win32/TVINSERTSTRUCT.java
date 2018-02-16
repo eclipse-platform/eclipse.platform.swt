@@ -36,7 +36,7 @@ public class TVINSERTSTRUCT {
 	public int cChildren;
 	/** @field accessor=item.lParam */
 	public long /*int*/ lParam;
-	/** @field accessor=itemex.iIntegral,flags=no_wince */
+	/** @field accessor=itemex.iIntegral */
 	public int iIntegral;
 	public static final int sizeof = OS.TVINSERTSTRUCT_sizeof ();
 }

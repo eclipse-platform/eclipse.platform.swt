@@ -147,12 +147,10 @@ class IE extends WebBrowser {
 
 	static {
 		NativeClearSessions = () -> {
-			if (OS.IsPPC) return;
 			OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
 		};
 
 		NativeGetCookie = () -> {
-			if (OS.IsPPC) return;
 			TCHAR url = new TCHAR (0, CookieUrl, true);
 			TCHAR cookieData = new TCHAR (0, 8192);
 			int[] size = new int[] {cookieData.length ()};
@@ -178,7 +176,6 @@ class IE extends WebBrowser {
 		};
 
 		NativeSetCookie = () -> {
-			if (OS.IsPPC) return;
 			TCHAR url = new TCHAR (0, CookieUrl, true);
 			TCHAR value = new TCHAR (0, CookieValue, true);
 			CookieResult = OS.InternetSetCookie (url, null, value);
@@ -500,7 +497,7 @@ public void create(Composite parent, int style) {
 						TCHAR filePath1 = new TCHAR(0, url1, true);
 						TCHAR urlResult1 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
 						int[] size1 = new int[] {urlResult1.length()};
-						if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath1, urlResult1, size1, 0) == COM.S_OK) {
+						if (OS.UrlCreateFromPath(filePath1, urlResult1, size1, 0) == COM.S_OK) {
 							url1 = urlResult1.toString(0, size1[0]);
 						} else {
 							url1 = PROTOCOL_FILE + url1.replace('\\', '/');
@@ -584,7 +581,7 @@ public void create(Composite parent, int style) {
 						TCHAR filePath2 = new TCHAR(0, url2, true);
 						TCHAR urlResult2 = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
 						int[] size2 = new int[] {urlResult2.length()};
-						if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath2, urlResult2, size2, 0) == COM.S_OK) {
+						if (OS.UrlCreateFromPath(filePath2, urlResult2, size2, 0) == COM.S_OK) {
 							url2 = urlResult2.toString(0, size2[0]);
 						} else {
 							url2 = PROTOCOL_FILE + url2.replace('\\', '/');
@@ -1339,13 +1336,13 @@ boolean navigate(String url, String postData, String headers[], boolean silent) 
 		rgdispidNamedArgs[index++] = rgdispid[3];
 	}
 	boolean oldValue = false;
-	if (silent && !OS.IsWinCE && IEVersion >= 7) {
+	if (silent && IEVersion >= 7) {
 		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (silent && !OS.IsWinCE && IEVersion >= 7) {
+	if (silent && IEVersion >= 7) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
 	for (int i = 0; i < count; i++) {
@@ -1497,13 +1494,13 @@ public boolean setText(final String html, boolean trusted) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	boolean oldValue = false;
-	if (!OS.IsWinCE && IEVersion >= 7) {
+	if (IEVersion >= 7) {
 		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (!OS.IsWinCE && IEVersion >= 7) {
+	if (IEVersion >= 7) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
 	rgvarg[0].dispose();

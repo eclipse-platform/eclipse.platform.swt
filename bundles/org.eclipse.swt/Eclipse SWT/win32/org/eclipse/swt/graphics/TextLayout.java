@@ -711,7 +711,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 			if (extents) {
 				int width;
 				if ((flags & SWT.FULL_SELECTION) != 0) {
-					width = OS.IsWin95 ? 0x7FFF : 0x6FFFFFF;
+					width = 0x6FFFFFF;
 				} else {
 					width = lineHeight / 3;
 				}
@@ -2697,9 +2697,7 @@ StyleItem[] itemize () {
 	*
 	* Note: This code is intentionally commented because it causes bug#377472.
 	*/
-//	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-//		scriptControl.fReserved = 0x1;
-//	}
+//	scriptControl.fReserved = 0x1;
 
 	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
 

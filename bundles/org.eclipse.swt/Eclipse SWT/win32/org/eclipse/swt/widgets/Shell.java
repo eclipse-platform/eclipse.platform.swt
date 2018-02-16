@@ -128,10 +128,9 @@ public class Shell extends Decorations {
 	long /*int*/ toolIcon, balloonIcon;
 	long /*int*/ windowProc;
 	Control lastActive;
-	SHACTIVATEINFO psai;
 	static /*final*/ long /*int*/ ToolTipProc;
 	static final long /*int*/ DialogProc;
-	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
+	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
 	final static int [] SYSTEM_COLORS = {
 		OS.COLOR_BTNFACE,
 		OS.COLOR_WINDOW,
@@ -223,7 +222,7 @@ public Shell (int style) {
  * </ul>
  */
 public Shell (Display display) {
-	this (display, OS.IsWinCE ? SWT.NONE : SWT.SHELL_TRIM);
+	this (display, SWT.SHELL_TRIM);
 }
 
 /**
@@ -323,7 +322,7 @@ Shell (Display display, Shell parent, int style, long /*int*/ handle, boolean em
  * </ul>
  */
 public Shell (Shell parent) {
-	this (parent, OS.IsWinCE ? SWT.NONE : SWT.DIALOG_TRIM);
+	this (parent, SWT.DIALOG_TRIM);
 }
 
 /**
@@ -607,7 +606,7 @@ void createHandle () {
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~(OS.WS_OVERLAPPED | OS.WS_CAPTION);
-		if (!OS.IsWinCE) bits |= OS.WS_POPUP;
+		bits |= OS.WS_POPUP;
 		if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
@@ -621,12 +620,7 @@ void createHandle () {
 		*/
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		int flags = OS.SWP_DRAWFRAME | OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
-		if (OS.IsWinCE) _setMaximized (true);
-		if (OS.IsPPC) {
-			psai = new SHACTIVATEINFO ();
-			psai.cbSize = SHACTIVATEINFO.sizeof;
-		}
+		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 	}
 	if (OS.IsDBLocale) {
 		hIMC = OS.ImmCreateContext ();
@@ -649,7 +643,6 @@ void createToolTip (ToolTip toolTip) {
 	}
 	toolTips [id] = toolTip;
 	toolTip.id = id + Display.ID_START;
-	if (OS.IsWinCE) return;
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.hwnd = handle;
@@ -702,7 +695,6 @@ void deregister () {
 void destroyToolTip (ToolTip toolTip) {
 	if (toolTips == null) return;
 	toolTips [toolTip.id - Display.ID_START] = null;
-	if (OS.IsWinCE) return;
 	if (balloonTipHandle != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
@@ -857,23 +849,21 @@ void fixToolTip () {
 	* current tooltip and add it again every time
 	* the mouse leaves the control.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (toolTipHandle == 0) return;
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		if (OS.SendMessage (toolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if ((lpti.uFlags & OS.TTF_IDISHWND) != 0) {
-				OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
-				OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
-			}
+	if (toolTipHandle == 0) return;
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	if (OS.SendMessage (toolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+		if ((lpti.uFlags & OS.TTF_IDISHWND) != 0) {
+			OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+			OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
 		}
-		TOOLINFO lptiMt = new TOOLINFO ();
-		lptiMt.cbSize = TOOLINFO.sizeof;
-		if (OS.SendMessage (menuItemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lptiMt) != 0) {
-			if ((lptiMt.uFlags & OS.TTF_IDISHWND) != 0) {
-				OS.SendMessage (menuItemToolTipHandle, OS.TTM_DELTOOL, 0, lptiMt);
-				OS.SendMessage (menuItemToolTipHandle, OS.TTM_ADDTOOL, 0, lptiMt);
-			}
+	}
+	TOOLINFO lptiMt = new TOOLINFO ();
+	lptiMt.cbSize = TOOLINFO.sizeof;
+	if (OS.SendMessage (menuItemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lptiMt) != 0) {
+		if ((lptiMt.uFlags & OS.TTF_IDISHWND) != 0) {
+			OS.SendMessage (menuItemToolTipHandle, OS.TTM_DELTOOL, 0, lptiMt);
+			OS.SendMessage (menuItemToolTipHandle, OS.TTM_ADDTOOL, 0, lptiMt);
 		}
 	}
 }
@@ -925,19 +915,15 @@ void forceResize () {
  */
 public int getAlpha () {
 	checkWidget ();
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		byte [] pbAlpha = new byte [1];
-		if (OS.GetLayeredWindowAttributes (handle, null, pbAlpha, null)) {
-			return pbAlpha [0] & 0xFF;
-		}
+	byte [] pbAlpha = new byte [1];
+	if (OS.GetLayeredWindowAttributes (handle, null, pbAlpha, null)) {
+		return pbAlpha [0] & 0xFF;
 	}
 	return 0xFF;
 }
 
 @Override Rectangle getBoundsInPixels () {
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) return super.getBoundsInPixels ();
-	}
+	if (OS.IsIconic (handle)) return super.getBoundsInPixels ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
@@ -1033,11 +1019,7 @@ public int getImeInputMode () {
 }
 
 @Override Point getLocationInPixels () {
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) {
-			return super.getLocationInPixels ();
-		}
-	}
+	if (OS.IsIconic (handle)) return super.getLocationInPixels ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	return new Point (rect.left, rect.top);
@@ -1135,9 +1117,7 @@ public Shell getShell () {
 }
 
 @Override Point getSizeInPixels () {
-	if (!OS.IsWinCE) {
-		if (OS.IsIconic (handle)) return super.getSizeInPixels ();
-	}
+	if (OS.IsIconic (handle)) return super.getSizeInPixels ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
@@ -1270,14 +1250,6 @@ public void open () {
 		bringToTop ();
 		if (isDisposed ()) return;
 	}
-	/*
-	* Feature on WinCE PPC.  A new application becomes
-	* the foreground application only if it has at least
-	* one visible window before the event loop is started.
-	* The workaround is to explicitly force the shell to
-	* be the foreground window.
-	*/
-	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 	setVisible (true);
 	if (isDisposed ()) return;
@@ -1563,17 +1535,15 @@ void setActiveControl (Control control, int type) {
  */
 public void setAlpha (int alpha) {
 	checkWidget ();
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		alpha &= 0xFF;
-		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-		if (alpha == 0xFF) {
-			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits & ~OS.WS_EX_LAYERED);
-			int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_FRAME | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (handle, null, 0, flags);
-		} else {
-			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits | OS.WS_EX_LAYERED);
-			OS.SetLayeredWindowAttributes (handle, 0, (byte)alpha, OS.LWA_ALPHA);
-		}
+	alpha &= 0xFF;
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if (alpha == 0xFF) {
+		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits & ~OS.WS_EX_LAYERED);
+		int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_FRAME | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	} else {
+		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits | OS.WS_EX_LAYERED);
+		OS.SetLayeredWindowAttributes (handle, 0, (byte)alpha, OS.LWA_ALPHA);
 	}
 }
 
@@ -1854,7 +1824,6 @@ public void setRegion (Region region) {
 }
 
 void setToolTipText (long /*int*/ hwnd, String text) {
-	if (OS.IsWinCE) return;
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.hwnd = handle;
@@ -2000,7 +1969,7 @@ public void setVisible (boolean visible) {
 	* to hide children before hiding the parent.
 	*/
 	if (showWithParent && !visible) {
-		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
+		OS.ShowOwnedPopups (handle, false);
 	}
 	if (!visible) fixActiveShell ();
 	if (visible && center && !moved) {
@@ -2012,7 +1981,7 @@ public void setVisible (boolean visible) {
 	if (showWithParent != visible) {
 		showWithParent = visible;
 		if (visible) {
-			if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
+			OS.ShowOwnedPopups (handle, true);
 		}
 	}
 
@@ -2118,42 +2087,21 @@ int widgetExtStyle () {
 	* even when it has no title.  The fix is to use WS_EX_TOOLWINDOW
 	* which does not cause the window to appear in the Task Bar.
 	*/
-	if (!OS.IsWinCE) {
-		if (parent == null) {
-			if ((style & SWT.ON_TOP) != 0) {
-				int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
-				if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
-					bits |= OS.WS_EX_TOOLWINDOW;
-				}
+	if (parent == null) {
+		if ((style & SWT.ON_TOP) != 0) {
+			int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+			if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
+				bits |= OS.WS_EX_TOOLWINDOW;
 			}
 		}
 	}
 
-	/*
-	* Bug in Windows 98 and NT.  Creating a window with the
-	* WS_EX_TOPMOST extended style can result in a dialog shell
-	* being moved behind its parent.  The exact case where this
-	* happens is a shell with two dialog shell children where
-	* each dialog child has another hidden dialog child with
-	* the WS_EX_TOPMOST extended style.  Clicking on either of
-	* the visible dialogs causes them to become active but move
-	* to the back, behind the parent shell.  The fix is to
-	* disallow the WS_EX_TOPMOST extended style on Windows 98
-	* and NT.
-	*/
-	if (parent != null) {
-		if (OS.IsWin95) return bits;
-		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-			return bits;
-		}
-	}
 	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
 	return bits;
 }
 
 @Override
 TCHAR windowClass () {
-	if (OS.IsSP) return DialogClass;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return display.windowShadowClass;
@@ -2164,7 +2112,6 @@ TCHAR windowClass () {
 @Override
 long /*int*/ windowProc () {
 	if (windowProc != 0) return windowProc;
-	if (OS.IsSP) return DialogProc;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return super.windowProc ();
@@ -2205,24 +2152,6 @@ int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if (handle != 0) return bits | OS.WS_CHILD;
 	bits &= ~OS.WS_CHILD;
-	/*
-	* Feature in WinCE.  Calling CreateWindowEx () with WS_OVERLAPPED
-	* and a parent window causes the new window to become a WS_CHILD of
-	* the parent instead of a dialog child.  The fix is to use WS_POPUP
-	* for a window with a parent.
-	*
-	* Feature in WinCE PPC.  A window without a parent with WS_POPUP
-	* always shows on top of the Pocket PC 'Today Screen'. The fix
-	* is to not set WS_POPUP for a window without a parent on WinCE
-	* devices.
-	*
-	* NOTE: WS_POPUP causes CreateWindowEx () to ignore CW_USEDEFAULT
-	* and causes the default window location and size to be zero.
-	*/
-	if (OS.IsWinCE) {
-		if (OS.IsSP) return bits | OS.WS_POPUP;
-		return parent == null ? bits : bits | OS.WS_POPUP;
-	}
 
 	/*
 	* Use WS_OVERLAPPED for all windows, either dialog or top level
@@ -2242,35 +2171,15 @@ int widgetStyle () {
 
 @Override
 LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.IsPPC) {
-		/*
-		* Note: this does not work when we get WM_ACTIVATE prior
-		* to adding a listener.
-		*/
-		if (hooks (SWT.HardKeyDown) || hooks (SWT.HardKeyUp)) {
-			int fActive = OS.LOWORD (wParam);
-			long /*int*/ hwnd = fActive != 0 ? handle : 0;
-			for (int bVk=OS.VK_APP1; bVk<=OS.VK_APP6; bVk++) {
-				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
-			}
-		}
-		/* Restore SIP state when window is activated */
-		if (OS.LOWORD (wParam) != 0) {
-			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
-		}
-	}
-
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
 	* IME composition window does not go away. This causes
 	* repaint issues.  The fix is to commit the composition
 	* string.
 	*/
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		if (OS.LOWORD (wParam) == 0 && OS.IsDBLocale && hIMC != 0) {
-			if (OS.ImmGetOpenStatus (hIMC)) {
-				OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
-			}
+	if (OS.LOWORD (wParam) == 0 && OS.IsDBLocale && hIMC != 0) {
+		if (OS.ImmGetOpenStatus (hIMC)) {
+			OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
 		}
 	}
 
@@ -2284,46 +2193,6 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 	}
 	return parent != null ? LRESULT.ZERO : result;
-}
-
-@Override
-LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
-	if (OS.IsPPC) {
-		/*
-		* Note in WinCE PPC:  Close the Shell when the "Done Button" has
-		* been pressed. lParam is either 0 (PocketPC 2002) or the handle
-		* to the Shell (PocketPC).
-		*/
-		int loWord = OS.LOWORD (wParam);
-		if (loWord == OS.IDOK && (lParam == 0 || lParam == handle)) {
-			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
-			return LRESULT.ZERO;
-		}
-	}
-	/*
-	* Feature in Windows.  On PPC, the menu is not actually an HMENU.
-	* By observation, it is a tool bar that is configured to look like
-	* a menu.  Therefore, when the PPC menu sends WM_COMMAND messages,
-	* lParam is not zero because the WM_COMMAND was not sent from a menu.
-	* Sub menu item events originate from the menu bar.  Top menu items
-	* events originate from a tool bar.  The fix is to detect the source
-	* of the WM_COMMAND and set lParam to zero to pretend that the message
-	* came from a real Windows menu, not a tool bar.
-	*/
-	if (OS.IsPPC || OS.IsSP) {
-		if (menuBar != null) {
-			long /*int*/ hwndCB = menuBar.hwndCB;
-			if (lParam != 0 && hwndCB != 0) {
-				if (lParam == hwndCB) {
-					return super.WM_COMMAND (wParam, 0);
-				} else {
-					long /*int*/ hwndChild = OS.GetWindow (hwndCB, OS.GW_CHILD);
-					if (lParam == hwndChild) return super.WM_COMMAND (wParam, 0);
-				}
-			}
-		}
-	}
-	return super.WM_COMMAND (wParam, lParam);
 }
 
 @Override
@@ -2355,7 +2224,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	*
 	* NOTE: This only happens on Vista.
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (6, 0)) {
+	if (OS.WIN32_VERSION == OS.VERSION (6, 0)) {
 		drawBackground (wParam);
 		return LRESULT.ONE;
 	}
@@ -2367,9 +2236,7 @@ LRESULT WM_ENTERIDLE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
 	Display display = this.display;
-	if (display.runMessages) {
-		if (display.runAsyncMessages (false)) display.wakeThread ();
-	}
+	if (display.runAsyncMessages (false)) display.wakeThread ();
 	return result;
 }
 
@@ -2415,9 +2282,6 @@ LRESULT WM_MOUSEACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 					if (hittest == OS.HTMENU || hittest == OS.HTSYSMENU) {
 						display.lastHittestControl = control;
 						return null;
-					}
-					if (OS.IsWin95 && hittest == OS.HTCAPTION) {
-						display.lastHittestControl = control;
 					}
 					return new LRESULT (OS.MA_NOACTIVATE);
 				}
@@ -2508,13 +2372,9 @@ LRESULT WM_NCLBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	*/
 	if (!display.ignoreRestoreFocus) return result;
 	Display display = this.display;
-	long /*int*/ hwndActive = 0;
-	boolean fixActive = OS.IsWin95 && display.lastHittest == OS.HTCAPTION;
-	if (fixActive) hwndActive = OS.SetActiveWindow (handle);
 	display.lockActiveWindow = true;
 	long /*int*/ code = callWindowProc (handle, OS.WM_NCLBUTTONDOWN, wParam, lParam);
 	display.lockActiveWindow = false;
-	if (fixActive) OS.SetActiveWindow (hwndActive);
 	Control focusControl = display.lastHittestControl;
 	if (focusControl != null && !focusControl.isDisposed ()) {
 		focusControl.setFocus ();
@@ -2562,13 +2422,11 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 			}
 		}
 		if (!OS.IsWindowEnabled (handle)) {
-			if (!OS.IsWinCE) {
-				long /*int*/ hwndPopup = OS.GetLastActivePopup (handle);
-				if (hwndPopup != 0 && hwndPopup != handle) {
-					if (display.getControl (hwndPopup) == null) {
-						if (OS.IsWindowEnabled (hwndPopup)) {
-							OS.SetActiveWindow (hwndPopup);
-						}
+			long /*int*/ hwndPopup = OS.GetLastActivePopup (handle);
+			if (hwndPopup != 0 && hwndPopup != handle) {
+				if (display.getControl (hwndPopup) == null) {
+					if (OS.IsWindowEnabled (hwndPopup)) {
+						OS.SetActiveWindow (hwndPopup);
 					}
 				}
 			}
@@ -2614,32 +2472,6 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SETTINGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.WM_SETTINGCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if (OS.IsPPC) {
-		if (wParam == OS.SPI_SETSIPINFO) {
-			/*
-			* The SIP is in a new state.  Cache its new value.
-			* Resize the Shell if it has the style SWT.RESIZE.
-			* Note that SHHandleWMSettingChange resizes the
-			* Shell and also updates the cached state.
-			*/
-			if ((style & SWT.RESIZE) != 0) {
-				OS.SHHandleWMSettingChange (handle, wParam, lParam, psai);
-				return LRESULT.ZERO;
-			} else {
-				SIPINFO pSipInfo = new SIPINFO ();
-				pSipInfo.cbSize = SIPINFO.sizeof;
-				OS.SipGetInfo (pSipInfo);
-				psai.fSipUp = pSipInfo.fdwFlags & OS.SIPF_ON;
-			}
-		}
-	}
-	return result;
-}
-
-@Override
 LRESULT WM_SHOWWINDOW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SHOWWINDOW (wParam, lParam);
 	if (result != null) return result;
@@ -2657,56 +2489,6 @@ LRESULT WM_SHOWWINDOW (long /*int*/ wParam, long /*int*/ lParam) {
 			Shell shell = control.getShell ();
 			if (!shell.showWithParent) return LRESULT.ZERO;
 			control = control.parent;
-		}
-	}
-	return result;
-}
-
-@Override
-LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
-	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  When the last visible window in
-	* a process is minimized, Windows swaps out the memory for
-	* the process.  The assumption is that the user can no
-	* longer interact with the window, so the memory can be
-	* released to other applications.  However, for programs
-	* that use a lot of memory, swapping the memory back in
-	* can take a long time, sometimes minutes.  The fix is
-	* to intercept WM_SYSCOMMAND looking for SC_MINIMIZE
-	* and use ShowWindow() with SW_SHOWMINIMIZED to minimize
-	* the window, rather than running the default window proc.
-	*
-	* NOTE:  The default window proc activates the next
-	* top-level window in the Z-order while ShowWindow()
-	* with SW_SHOWMINIMIZED does not.  There is no fix for
-	* this at this time.
-	*
-	* NOTE:  Second guessing the effectiveness of the
-	* operating system's memory manager and breaking UI
-	* convention if the JVM has reserved over 32MB
-	* of memory is not necessary on more recent Windows
-	* versions like Windows Vista.
-	*/
-	if (OS.IsWinNT && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-		int cmd = (int)/*64*/wParam & 0xFFF0;
-		switch (cmd) {
-			case OS.SC_MINIMIZE:
-				Shell [] shells = display.getShells ();
-				int count = 0;
-				for (int i = 0; i < shells.length; i++) {
-					Shell shell = shells [i];
-					if (shell != null && shell.getVisible () && !shell.getMinimized ()) {
-						count++;
-					}
-				}
-				if (count > 1) break;
-				long memory = Runtime.getRuntime ().totalMemory ();
-				if (memory >= 32 * 1024 * 1024) {
-					OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
-					return LRESULT.ZERO;
-				}
 		}
 	}
 	return result;

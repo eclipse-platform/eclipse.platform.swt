@@ -105,9 +105,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 
 static int checkStyle(Composite parent, int style) {
 	if (parent != null) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (true));
-		}
+		parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (true));
 	}
 	return style;
 }

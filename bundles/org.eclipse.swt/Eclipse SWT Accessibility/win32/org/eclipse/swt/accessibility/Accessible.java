@@ -2512,11 +2512,7 @@ public class Accessible {
 				int columnCount = tree.getColumnCount ();
 				if (columnCount > 1) {
 					long /*int*/ hwnd = control.handle, hItem = 0;
-					if (OS.COMCTL32_MAJOR >= 6) {
-						hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
-					} else {
-						hItem = v.lVal;
-					}
+					hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
 					Widget widget = tree.getDisplay ().findWidget (hwnd, hItem);
 					event.result = "";
 					if (widget != null && widget instanceof TreeItem) {
@@ -2874,11 +2870,7 @@ public class Accessible {
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-				if (OS.COMCTL32_MAJOR >= 6) {
-					tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
-				} else {
-					tvItem.hItem = v.lVal;
-				}
+				tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
 				long /*int*/ result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
@@ -5019,18 +5011,7 @@ public class Accessible {
 		/* ChildIDs are 1-based indices. */
 		int osChildID = childID + 1;
 		if (control instanceof Tree) {
-			/*
-			* Feature of Windows:
-			* Before Windows XP, tree item ids were 1-based indices.
-			* Windows XP and later use the tree item handle for the
-			* accessible child ID. For backward compatibility, we still
-			* take 1-based childIDs for tree items prior to Windows XP.
-			*/
-			if (OS.COMCTL32_MAJOR < 6) {
-				osChildID = childID;
-			} else {
-				osChildID = (int)/*64*/OS.SendMessage (control.handle, OS.TVM_MAPHTREEITEMTOACCID, childID, 0);
-			}
+			osChildID = (int)/*64*/OS.SendMessage (control.handle, OS.TVM_MAPHTREEITEMTOACCID, childID, 0);
 		}
 		checkUniqueID(osChildID);
 		return osChildID;
@@ -5047,7 +5028,6 @@ public class Accessible {
 		* All other childIDs are 1-based indices.
 		*/
 		if (!(control instanceof Tree)) return osChildID - 1;
-		if (OS.COMCTL32_MAJOR < 6) return osChildID;
 		return (int)/*64*/OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, osChildID, 0);
 	}
 

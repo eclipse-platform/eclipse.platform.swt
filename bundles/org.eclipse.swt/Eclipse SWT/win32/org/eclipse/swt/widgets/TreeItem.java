@@ -597,22 +597,13 @@ public boolean getChecked () {
 public boolean getExpanded () {
 	checkWidget ();
 	long /*int*/ hwnd = parent.handle;
-	int state = 0;
-	if (OS.IsWinCE) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.hItem = handle;
-		tvItem.mask = OS.TVIF_STATE;
-		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		state = tvItem.state;
-	} else {
-		/*
-		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
-		* to return only the bits specified by the stateMask, when called
-		* with TVIS_EXPANDED, the entire state is returned.  The fix is
-		* to explicitly check for the TVIS_EXPANDED bit.
-		*/
-		state = (int)/*64*/OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
-	}
+	/*
+	* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+	* to return only the bits specified by the stateMask, when called
+	* with TVIS_EXPANDED, the entire state is returned.  The fix is
+	* to explicitly check for the TVIS_EXPANDED bit.
+	*/
+	int state = (int)/*64*/OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
 	return (state & OS.TVIS_EXPANDED) != 0;
 }
 
@@ -1217,22 +1208,13 @@ public void setExpanded (boolean expanded) {
 	if (OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle) == 0) {
 		return;
 	}
-	int state = 0;
-	if (OS.IsWinCE) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.hItem = handle;
-		tvItem.mask = OS.TVIF_STATE;
-		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		state = tvItem.state;
-	} else {
-		/*
-		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
-		* to return only the bits specified by the stateMask, when called
-		* with TVIS_EXPANDED, the entire state is returned.  The fix is
-		* to explicitly check for the TVIS_EXPANDED bit.
-		*/
-		state = (int)/*64*/OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
-	}
+	/*
+	* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+	* to return only the bits specified by the stateMask, when called
+	* with TVIS_EXPANDED, the entire state is returned.  The fix is
+	* to explicitly check for the TVIS_EXPANDED bit.
+	*/
+	int state = (int)/*64*/OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
 	if (((state & OS.TVIS_EXPANDED) != 0) == expanded) return;
 
 	/*
@@ -1386,13 +1368,8 @@ public void setExpanded (boolean expanded) {
 					}
 				}
 			} else {
-				if (OS.IsWinCE) {
-					OS.InvalidateRect (topHandle, null, true);
-					if (hwnd != topHandle) OS.InvalidateRect (hwnd, null, true);
-				} else {
-					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (topHandle, null, 0, flags);
-				}
+				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+				OS.RedrawWindow (topHandle, null, 0, flags);
 			}
 		}
 	}

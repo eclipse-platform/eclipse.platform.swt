@@ -802,7 +802,7 @@ void _setText (String string) {
 	if (string.length () != 0) {
 		info.fsStyle |= OS.BTNS_SHOWTEXT;
 		TCHAR buffer;
-		if (OS.IsUnicode && (style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			int bits  = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
 				buffer = new TCHAR (parent.getCodePage (), LRE + string, true);

@@ -142,13 +142,11 @@ static int checkStyle (int style) {
 				if (hFont != 0) {
 					hCurrentFont = hFont;
 				} else {
-					if (!OS.IsWinCE) {
-						NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-						info.cbSize = NONCLIENTMETRICS.sizeof;
-						if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-							LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-							hCurrentFont = OS.CreateFontIndirect (logFont);
-						}
+					NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+					info.cbSize = NONCLIENTMETRICS.sizeof;
+					if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+						LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+						hCurrentFont = OS.CreateFontIndirect (logFont);
 					}
 				}
 				if (hCurrentFont != 0) {
@@ -272,13 +270,11 @@ void drawWidget (GC gc, RECT clipRect) {
 		if (hFont != 0) {
 			hCurrentFont = hFont;
 		} else {
-			if (!OS.IsWinCE) {
-				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-				info.cbSize = NONCLIENTMETRICS.sizeof;
-				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-					hCurrentFont = OS.CreateFontIndirect (logFont);
-				}
+			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+			info.cbSize = NONCLIENTMETRICS.sizeof;
+			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+				hCurrentFont = OS.CreateFontIndirect (logFont);
 			}
 		}
 		if (hCurrentFont != 0) {
@@ -431,7 +427,7 @@ boolean isAppThemed () {
 	if (background != -1) return false;
 	if (foreground != -1) return false;
 	if (hFont != 0) return false;
-	return OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ();
+	return OS.IsAppThemed ();
 }
 
 void layoutItems (int index, boolean setScrollbar) {
@@ -506,10 +502,8 @@ void reskinChildren (int flags) {
 @Override
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	if (!OS.IsWinCE) {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 @Override
@@ -522,10 +516,8 @@ public void setFont (Font font) {
 @Override
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
-	if (!OS.IsWinCE) {
-		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
-	}
+	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+	OS.RedrawWindow (handle, null, 0, flags);
 }
 
 void setScrollbar () {

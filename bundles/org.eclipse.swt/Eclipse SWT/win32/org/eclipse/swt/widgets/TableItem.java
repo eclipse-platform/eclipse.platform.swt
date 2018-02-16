@@ -409,7 +409,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	* move the top of the rectangle up by the grid width.
 	*/
 	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) rect.top -= gridWidth;
+	rect.top -= gridWidth;
 	if (column != 0) rect.left += gridWidth;
 	rect.right = Math.max (rect.right, rect.left);
 	rect.top += gridWidth;
