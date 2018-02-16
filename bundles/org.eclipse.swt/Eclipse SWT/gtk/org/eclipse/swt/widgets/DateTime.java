@@ -1718,7 +1718,7 @@ private void setDropDownButtonSize () {
 	int newHeight = dateEntryHeight;
 
 	//Move button a little closer to entry field, by amount of padding.
-	int newXpos = parentWidth - buttonSize.x;
+	int newXpos = parentWidth - buttonSize.x - getGtkBorderPadding().left - getGtkBorderPadding().right;
 
 	int newYPos = parentHeight/2 - dateEntryHeight/2;
 	down.setBoundsInPixels (newXpos, newYPos, buttonSize.x, newHeight);
