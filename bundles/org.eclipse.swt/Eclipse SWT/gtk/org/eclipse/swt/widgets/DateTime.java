@@ -1891,6 +1891,26 @@ void setText (String dateTimeText) {
 		//note, this is ignored if the control is in a fill-layout.
 		GTK.gtk_entry_set_width_chars (textEntryHandle, dateTimeText.length ());
 		GTK.gtk_entry_set_text (textEntryHandle, dateTimeConverted);
+		if (popupCalendar != null && calendar != null) {
+			Date parse;
+			try {
+				parse = dateFormat.parse(dateTimeText);
+			} catch(ParseException e) {
+				//not a valid date (yet), return for now
+				return;
+			}
+			Calendar clone = (Calendar) calendar.clone();
+			clone.setTime(parse);
+			try {
+				popupCalendar.setDate (clone.get(Calendar.YEAR), clone.get(Calendar.MONTH), clone.get(Calendar.DAY_OF_MONTH));
+			} catch(SWTException e) {
+				if (e.code == SWT.ERROR_WIDGET_DISPOSED) {
+					//the calendar popup was disposed in the meantime so nothing to update
+					return;
+				}
+				throw e;
+			}
+		}
 	}
 }
 
