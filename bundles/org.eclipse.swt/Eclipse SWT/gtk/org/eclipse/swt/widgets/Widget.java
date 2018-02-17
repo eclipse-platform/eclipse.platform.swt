@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1846,8 +1846,7 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 			window = GDK.gdk_get_default_root_window ();
 			display = GDK.gdk_window_get_display (window);
 		}
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (display);
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
 		return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
 	} else {
 		return GDK.gdk_pointer_grab (window, owner_events, event_mask, confine_to, cursor, time_);
@@ -1857,8 +1856,7 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 void gdk_pointer_ungrab (long /*int*/ window, int time_) {
 	if (GTK.GTK3) {
 		long /*int*/ display = GDK.gdk_window_get_display (window);
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (display);
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
 		GDK.gdk_device_ungrab (pointer, time_);
 	} else {
 		GDK.gdk_pointer_ungrab (time_);
@@ -2028,8 +2026,7 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 			window = GDK.gdk_get_default_root_window ();
 			display = GDK.gdk_window_get_display (window);
 		}
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (display);
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
 		return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 	} else {
 		return GDK.gdk_window_get_pointer (window, x, y, mask);

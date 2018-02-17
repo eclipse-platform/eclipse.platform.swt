@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -242,8 +242,7 @@ void _setVisible (boolean visible) {
 					GdkEventButton event = new GdkEventButton ();
 					event.type = GDK.GDK_BUTTON_PRESS;
 					event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
-					long /*int*/ device_manager = GDK.gdk_display_get_device_manager (GDK.gdk_display_get_default ());
-					event.device = GDK.gdk_device_manager_get_client_pointer (device_manager);
+					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);

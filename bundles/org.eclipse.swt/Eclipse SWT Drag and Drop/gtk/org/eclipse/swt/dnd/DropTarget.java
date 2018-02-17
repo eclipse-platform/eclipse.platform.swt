@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -566,8 +566,7 @@ int getOperationFromKeyState() {
 	int[] state = new int[1];
 	if (GTK.GTK3) {
 		long /*int*/ root = GDK.gdk_get_default_root_window ();
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (GDK.gdk_window_get_display (root));
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_window_get_display (root));
 		GDK.gdk_window_get_device_position(root, pointer, null, null, state);
 	} else {
 		GDK.gdk_window_get_pointer(0, null, null, state);
@@ -816,5 +815,4 @@ void updateDragOverHover(long delay, DNDEvent event) {
 	dragOverEvent.operations = event.operations;
 	dragOverEvent.time = event.time;
 }
-
 }

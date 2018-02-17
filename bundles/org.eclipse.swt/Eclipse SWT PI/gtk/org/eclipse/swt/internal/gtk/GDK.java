@@ -2738,7 +2738,14 @@ public class GDK extends OS {
 		}
 	}
 
-
-
+	public static long /*int*/ gdk_get_pointer (long /*int*/ display) {
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			long /*int*/ default_seat = GDK.gdk_display_get_default_seat(display);
+			return GDK.gdk_seat_get_pointer(default_seat);
+		} else {
+			long /*int*/ device_manager = GDK.gdk_display_get_device_manager(display);
+			return GDK.gdk_device_manager_get_client_pointer(device_manager);
+		}
+	}
 
 }

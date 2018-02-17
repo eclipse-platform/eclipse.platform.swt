@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -362,8 +362,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 */
 	if (GTK.GTK3) {
 		long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager(display);
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer(device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
 		long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
 		GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
 		GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);

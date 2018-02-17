@@ -4360,8 +4360,7 @@ public boolean post (Event event) {
 						return false;
 					}
 					if (GTK.GTK3) {
-						long /*int*/ gdkDeviceManager = GDK.gdk_display_get_device_manager(gdkDisplay);
-						long /*int*/ gdkPointer = GDK.gdk_device_manager_get_client_pointer(gdkDeviceManager);
+						long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
 						GDK.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
 					} else {
 						GDK.gdk_window_get_pointer(gdkWindow, x, y, new int[1]);
@@ -5057,8 +5056,7 @@ void setCursorLocationInPixels (Point location) {
 	if (!GTK.GTK3) {
 		GDK.gdk_display_warp_pointer(gdkDisplay, gdkScreen, location.x, location.y);
 	} else {
-		long /*int*/ gdkDeviceManager = GDK.gdk_display_get_device_manager(gdkDisplay);
-		long /*int*/ gdkPointer = GDK.gdk_device_manager_get_client_pointer(gdkDeviceManager);
+		long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
 		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
 	}
 }
@@ -5879,8 +5877,7 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 			window = GDK.gdk_get_default_root_window ();
 			display = GDK.gdk_window_get_display (window);
 		}
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (display);
-		long /*int*/ pointer = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ pointer = GDK.gdk_get_pointer (display);
 		return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 	} else {
 		return GDK.gdk_window_get_pointer (window, x, y, mask);
@@ -5890,8 +5887,7 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
 	if (GTK.GTK3) {
 		long /*int*/ display = GDK.gdk_display_get_default ();
-		long /*int*/ device_manager = GDK.gdk_display_get_device_manager (display);
-		long /*int*/ device = GDK.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ device = GDK.gdk_get_pointer(display);
 		return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
 	} else {
 		return GDK.gdk_window_at_pointer (win_x, win_y);
