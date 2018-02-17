@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,11 +38,9 @@ typedef enum {
 	AdjustWindowRectEx_FUNC,
 	AllowSetForegroundWindow_FUNC,
 	AlphaBlend_FUNC,
-	AnimateWindow_FUNC,
 	Arc_FUNC,
 	AssocQueryStringA_FUNC,
 	AssocQueryStringW_FUNC,
-	AttachThreadInput_FUNC,
 	BITMAPINFOHEADER_1sizeof_FUNC,
 	BITMAP_1sizeof_FUNC,
 	BLENDFUNCTION_1sizeof_FUNC,
@@ -56,7 +54,6 @@ typedef enum {
 	BitBlt_FUNC,
 	BringWindowToTop_FUNC,
 	BufferedPaintInit_FUNC,
-	BufferedPaintSetAlpha_FUNC,
 	BufferedPaintUnInit_FUNC,
 	CANDIDATEFORM_1sizeof_FUNC,
 	CERT_1CONTEXT_1sizeof_FUNC,
@@ -72,16 +69,6 @@ typedef enum {
 	CRYPT_1BIT_1BLOB_1sizeof_FUNC,
 	CRYPT_1INTEGER_1BLOB_1sizeof_FUNC,
 	CRYPT_1OBJID_1BLOB_1sizeof_FUNC,
-#ifndef JNI64
-	Call__I_FUNC,
-#else
-	Call__J_FUNC,
-#endif
-#ifndef JNI64
-	Call__ILorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2_FUNC,
-#else
-	Call__JLorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2_FUNC,
-#endif
 	CallNextHookEx_FUNC,
 	CallWindowProcA_FUNC,
 	CallWindowProcW_FUNC,
@@ -91,7 +78,6 @@ typedef enum {
 	CharLowerW_FUNC,
 	CharUpperA_FUNC,
 	CharUpperW_FUNC,
-	CheckMenuItem_FUNC,
 	ChooseColorA_FUNC,
 	ChooseColorW_FUNC,
 	ChooseFontA_FUNC,
@@ -111,13 +97,6 @@ typedef enum {
 	CoTaskMemFree_FUNC,
 	CombineRgn_FUNC,
 	CommDlgExtendedError_FUNC,
-	CommandBar_1AddAdornments_FUNC,
-	CommandBar_1Create_FUNC,
-	CommandBar_1Destroy_FUNC,
-	CommandBar_1DrawMenuBar_FUNC,
-	CommandBar_1Height_FUNC,
-	CommandBar_1InsertMenubarEx_FUNC,
-	CommandBar_1Show_FUNC,
 	CopyImage_FUNC,
 	CreateAcceleratorTableA_FUNC,
 	CreateAcceleratorTableW_FUNC,
@@ -171,14 +150,11 @@ typedef enum {
 	DEVMODEA_1sizeof_FUNC,
 	DEVMODEW_1sizeof_FUNC,
 	DIBSECTION_1sizeof_FUNC,
-	DLLVERSIONINFO_1sizeof_FUNC,
 	DOCHOSTUIINFO_1sizeof_FUNC,
 	DOCINFO_1sizeof_FUNC,
-	DPtoLP_FUNC,
 	DRAWITEMSTRUCT_1sizeof_FUNC,
 	DROPFILES_1sizeof_FUNC,
 	DTTOPTS_1sizeof_FUNC,
-	DWM_1BLURBEHIND_1sizeof_FUNC,
 	DefFrameProcA_FUNC,
 	DefFrameProcW_FUNC,
 	DefMDIChildProcA_FUNC,
@@ -204,30 +180,19 @@ typedef enum {
 	DragFinish_FUNC,
 	DragQueryFileA_FUNC,
 	DragQueryFileW_FUNC,
-	DrawAnimatedRects_FUNC,
 	DrawEdge_FUNC,
 	DrawFocusRect_FUNC,
 	DrawFrameControl_FUNC,
 	DrawIconEx_FUNC,
 	DrawMenuBar_FUNC,
-	DrawStateA_FUNC,
-	DrawStateW_FUNC,
 	DrawTextA_FUNC,
 	DrawTextW_FUNC,
 	DrawThemeBackground_FUNC,
-	DrawThemeEdge_FUNC,
-	DrawThemeIcon_FUNC,
-	DrawThemeParentBackground_FUNC,
 	DrawThemeText_FUNC,
-	DrawThemeTextEx_FUNC,
 	DuplicateHandle_FUNC,
-	DwmEnableBlurBehindWindow_FUNC,
-	DwmExtendFrameIntoClientArea_FUNC,
-	DwmIsCompositionEnabled_FUNC,
 	EMREXTCREATEFONTINDIRECTW_1sizeof_FUNC,
 	EMR_1sizeof_FUNC,
 	EXTLOGFONTW_1sizeof_FUNC,
-	EXTLOGPEN_1sizeof_FUNC,
 	Ellipse_FUNC,
 	EnableMenuItem_FUNC,
 	EnableScrollBar_FUNC,
@@ -237,19 +202,15 @@ typedef enum {
 	EndDoc_FUNC,
 	EndPage_FUNC,
 	EndPaint_FUNC,
-	EndPath_FUNC,
 	EnumDisplayMonitors_FUNC,
 	EnumEnhMetaFile_FUNC,
 	EnumFontFamiliesA_FUNC,
-	EnumFontFamiliesExA_FUNC,
-	EnumFontFamiliesExW_FUNC,
 	EnumFontFamiliesW_FUNC,
 	EnumSystemLanguageGroupsA_FUNC,
 	EnumSystemLanguageGroupsW_FUNC,
 	EnumSystemLocalesA_FUNC,
 	EnumSystemLocalesW_FUNC,
 	EqualRect_FUNC,
-	EqualRgn_FUNC,
 	ExcludeClipRect_FUNC,
 	ExpandEnvironmentStringsA_FUNC,
 	ExpandEnvironmentStringsW_FUNC,
@@ -263,13 +224,9 @@ typedef enum {
 	FLICK_1DATA_1sizeof_FUNC,
 	FLICK_1POINT_1sizeof_FUNC,
 	FileTimeToSystemTime_FUNC,
-	FillPath_FUNC,
 	FillRect_FUNC,
-	FindWindowA_FUNC,
-	FindWindowW_FUNC,
 	FormatMessageA_FUNC,
 	FormatMessageW_FUNC,
-	FreeLibrary_FUNC,
 	GCP_1RESULTS_1sizeof_FUNC,
 	GESTURECONFIG_1sizeof_FUNC,
 	GESTUREINFO_1sizeof_FUNC,
@@ -282,7 +239,6 @@ typedef enum {
 	GdiSetBatchLimit_FUNC,
 	GetACP_FUNC,
 	GetActiveWindow_FUNC,
-	GetAsyncKeyState_FUNC,
 	GetBkColor_FUNC,
 	GetCapture_FUNC,
 	GetCaretPos_FUNC,
@@ -314,8 +270,6 @@ typedef enum {
 	GetDCEx_FUNC,
 	GetDIBColorTable_FUNC,
 	GetDIBits_FUNC,
-	GetDateFormatA_FUNC,
-	GetDateFormatW_FUNC,
 	GetDesktopWindow_FUNC,
 	GetDeviceCaps_FUNC,
 	GetDialogBaseUnits_FUNC,
@@ -329,8 +283,6 @@ typedef enum {
 	GetGlyphIndicesW_FUNC,
 	GetGraphicsMode_FUNC,
 	GetIconInfo_FUNC,
-	GetKeyNameTextA_FUNC,
-	GetKeyNameTextW_FUNC,
 	GetKeyState_FUNC,
 	GetKeyboardLayout_FUNC,
 	GetKeyboardLayoutList_FUNC,
@@ -342,7 +294,6 @@ typedef enum {
 	GetLibraryHandle_FUNC,
 	GetLocaleInfoA_FUNC,
 	GetLocaleInfoW_FUNC,
-	GetMapMode_FUNC,
 	GetMenu_FUNC,
 	GetMenuBarInfo_FUNC,
 	GetMenuDefaultItem_FUNC,
@@ -379,11 +330,6 @@ typedef enum {
 	GetObjectA__JILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
 #endif
 #ifndef JNI64
-	GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
-#else
-	GetObjectA__JILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
-#endif
-#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
 #else
 	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
@@ -392,11 +338,6 @@ typedef enum {
 	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
 #else
 	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
-#endif
-#ifndef JNI64
-	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
-#else
-	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
 #endif
 #ifndef JNI64
 	GetObjectW__III_FUNC,
@@ -414,11 +355,6 @@ typedef enum {
 	GetObjectW__JILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
 #endif
 #ifndef JNI64
-	GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
-#else
-	GetObjectW__JILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
-#endif
-#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
 #else
 	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
@@ -428,23 +364,15 @@ typedef enum {
 #else
 	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
 #endif
-#ifndef JNI64
-	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
-#else
-	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
-#endif
 	GetOpenFileNameA_FUNC,
 	GetOpenFileNameW_FUNC,
 	GetOutlineTextMetricsA_FUNC,
 	GetOutlineTextMetricsW_FUNC,
 	GetPaletteEntries_FUNC,
 	GetParent_FUNC,
-	GetPath_FUNC,
 	GetPixel_FUNC,
 	GetPolyFillMode_FUNC,
-	GetProcAddress_FUNC,
 	GetProcessHeap_FUNC,
-	GetProcessHeaps_FUNC,
 	GetProfileStringA_FUNC,
 	GetProfileStringW_FUNC,
 	GetPropA_FUNC,
@@ -466,33 +394,16 @@ typedef enum {
 	GetSystemMenu_FUNC,
 	GetSystemMetrics_FUNC,
 	GetSystemPaletteEntries_FUNC,
-	GetTextCharset_FUNC,
 	GetTextColor_FUNC,
 	GetTextExtentPoint32A_FUNC,
 	GetTextExtentPoint32W_FUNC,
 	GetTextMetricsA_FUNC,
 	GetTextMetricsW_FUNC,
-	GetThemeBackgroundContentRect_FUNC,
-	GetThemeBackgroundExtent_FUNC,
-	GetThemeBitmap_FUNC,
-	GetThemeColor_FUNC,
-	GetThemeInt_FUNC,
-	GetThemeMargins_FUNC,
-	GetThemeMetric_FUNC,
-	GetThemePartSize_FUNC,
-	GetThemeRect_FUNC,
-	GetThemeSysSize_FUNC,
 	GetThemeTextExtent_FUNC,
-	GetTickCount_FUNC,
-	GetTimeFormatA_FUNC,
-	GetTimeFormatW_FUNC,
 	GetTouchInputInfo_FUNC,
 	GetUpdateRect_FUNC,
 	GetUpdateRgn_FUNC,
-	GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2_FUNC,
-	GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2_FUNC,
-	GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2_FUNC,
-	GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2_FUNC,
+	GetVersion_FUNC,
 	GetWindow_FUNC,
 	GetWindowDC_FUNC,
 	GetWindowLongA_FUNC,
@@ -507,9 +418,7 @@ typedef enum {
 	GetWindowTextLengthA_FUNC,
 	GetWindowTextLengthW_FUNC,
 	GetWindowTextW_FUNC,
-	GetWindowTheme_FUNC,
 	GetWindowThreadProcessId_FUNC,
-	GetWorldTransform_FUNC,
 	GlobalAddAtomA_FUNC,
 	GlobalAddAtomW_FUNC,
 	GlobalAlloc_FUNC,
@@ -526,9 +435,7 @@ typedef enum {
 	HIWORD_FUNC,
 	HeapAlloc_FUNC,
 	HeapFree_FUNC,
-	HeapValidate_FUNC,
 	HideCaret_FUNC,
-	HitTestThemeBackground_FUNC,
 	ICONINFO_1sizeof_FUNC,
 	IIDFromString_FUNC,
 	INITCOMMONCONTROLSEX_1sizeof_FUNC,
@@ -542,10 +449,7 @@ typedef enum {
 	ImageList_1DragLeave_FUNC,
 	ImageList_1DragMove_FUNC,
 	ImageList_1DragShowNolock_FUNC,
-	ImageList_1Draw_FUNC,
 	ImageList_1EndDrag_FUNC,
-	ImageList_1GetDragImage_FUNC,
-	ImageList_1GetIcon_FUNC,
 	ImageList_1GetIconSize_FUNC,
 	ImageList_1GetImageCount_FUNC,
 	ImageList_1Remove_FUNC,
@@ -555,7 +459,6 @@ typedef enum {
 	ImmAssociateContext_FUNC,
 	ImmCreateContext_FUNC,
 	ImmDestroyContext_FUNC,
-	ImmDisableTextFrameService_FUNC,
 	ImmEscapeA_FUNC,
 	ImmEscapeW_FUNC,
 	ImmGetCompositionFontA_FUNC,
@@ -597,13 +500,10 @@ typedef enum {
 	ImmSetCompositionWindow_FUNC,
 	ImmSetConversionStatus_FUNC,
 	ImmSetOpenStatus_FUNC,
-	InSendMessage_FUNC,
 	InitCommonControls_FUNC,
 	InitCommonControlsEx_FUNC,
-	InsertMenuA_FUNC,
 	InsertMenuItemA_FUNC,
 	InsertMenuItemW_FUNC,
-	InsertMenuW_FUNC,
 	InternetGetCookieA_FUNC,
 	InternetGetCookieW_FUNC,
 	InternetSetCookieA_FUNC,
@@ -614,13 +514,8 @@ typedef enum {
 	InvalidateRect_FUNC,
 	InvalidateRgn_FUNC,
 	IsAppThemed_FUNC,
-	IsBadReadPtr_FUNC,
-	IsBadWritePtr_FUNC,
-	IsDBCSLeadByte_FUNC,
 	IsHungAppWindow_FUNC,
 	IsIconic_FUNC,
-	IsPPC_FUNC,
-	IsSP_FUNC,
 	IsTouchWindow_FUNC,
 	IsWindowEnabled_FUNC,
 	IsWindowVisible_FUNC,
@@ -646,39 +541,15 @@ typedef enum {
 	LoadCursorW_FUNC,
 	LoadIconA_FUNC,
 	LoadIconW_FUNC,
-#ifndef JNI64
-	LoadImageA__IIIIII_FUNC,
-#else
-	LoadImageA__JJIIII_FUNC,
-#endif
-#ifndef JNI64
-	LoadImageA__I_3BIIII_FUNC,
-#else
-	LoadImageA__J_3BIIII_FUNC,
-#endif
-#ifndef JNI64
-	LoadImageW__IIIIII_FUNC,
-#else
-	LoadImageW__JJIIII_FUNC,
-#endif
-#ifndef JNI64
-	LoadImageW__I_3CIIII_FUNC,
-#else
-	LoadImageW__J_3CIIII_FUNC,
-#endif
-	LoadLibraryA_FUNC,
-	LoadLibraryW_FUNC,
-	LoadStringA_FUNC,
-	LoadStringW_FUNC,
+	LoadImageA_FUNC,
+	LoadImageW_FUNC,
 	LocalFree_FUNC,
-	LockWindowUpdate_FUNC,
 	MAKELPARAM_FUNC,
 	MAKELRESULT_FUNC,
 	MAKEWORD_FUNC,
 	MAKEWPARAM_FUNC,
 	MARGINS_1sizeof_FUNC,
 	MCHITTESTINFO_1sizeof_FUNC,
-	MCIWndRegisterClass_FUNC,
 	MEASUREITEMSTRUCT_1sizeof_FUNC,
 	MENUBARINFO_1sizeof_FUNC,
 	MENUINFO_1sizeof_FUNC,
@@ -789,11 +660,6 @@ typedef enum {
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC,
 #else
 	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I_FUNC,
-#endif
-#ifndef JNI64
-	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
-#else
-	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
 #endif
 #ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I_FUNC,
@@ -932,11 +798,6 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2JI_FUNC,
 #endif
 #ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2JI_FUNC,
-#endif
-#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI_FUNC,
@@ -1017,11 +878,6 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2JI_FUNC,
 #endif
 #ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2JI_FUNC,
-#endif
-#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2JI_FUNC,
@@ -1035,11 +891,6 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2JI_FUNC,
-#endif
-#ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2JI_FUNC,
 #endif
 #ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2II_FUNC,
@@ -1113,11 +964,6 @@ typedef enum {
 #endif
 	MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI_FUNC,
 #ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2_3II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2_3JI_FUNC,
-#endif
-#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI_FUNC,
@@ -1138,11 +984,6 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2JI_FUNC,
 #endif
 #ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2JI_FUNC,
-#endif
-#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2JI_FUNC,
@@ -1156,11 +997,6 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI_FUNC,
-#endif
-#ifndef JNI64
-	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC,
-#else
-	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2JI_FUNC,
 #endif
 #ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_UDACCEL_2II_FUNC,
@@ -1210,7 +1046,6 @@ typedef enum {
 	MoveMemory___3SJI_FUNC,
 #endif
 	MoveToEx_FUNC,
-	MsgWaitForMultipleObjectsEx_FUNC,
 #ifndef JNI64
 	MultiByteToWideChar__IIII_3CI_FUNC,
 #else
@@ -1228,7 +1063,6 @@ typedef enum {
 	NMLVODSTATECHANGE_1sizeof_FUNC,
 	NMREBARCHEVRON_1sizeof_FUNC,
 	NMREBARCHILDSIZE_1sizeof_FUNC,
-	NMRGINFO_1sizeof_FUNC,
 	NMTBCUSTOMDRAW_1sizeof_FUNC,
 	NMTBHOTITEM_1sizeof_FUNC,
 	NMTOOLBAR_1sizeof_FUNC,
@@ -1247,10 +1081,6 @@ typedef enum {
 	NotifyWinEvent_FUNC,
 	OFNOTIFY_1sizeof_FUNC,
 	OPENFILENAME_1sizeof_FUNC,
-	OSVERSIONINFOA_1sizeof_FUNC,
-	OSVERSIONINFOEXA_1sizeof_FUNC,
-	OSVERSIONINFOEXW_1sizeof_FUNC,
-	OSVERSIONINFOW_1sizeof_FUNC,
 	OUTLINETEXTMETRICA_1sizeof_FUNC,
 	OUTLINETEXTMETRICW_1sizeof_FUNC,
 	OffsetRect_FUNC,
@@ -1303,8 +1133,6 @@ typedef enum {
 	RegEnumKeyExW_FUNC,
 	RegOpenKeyExA_FUNC,
 	RegOpenKeyExW_FUNC,
-	RegQueryInfoKeyA_FUNC,
-	RegQueryInfoKeyW_FUNC,
 #ifndef JNI64
 	RegQueryValueExA__I_3BI_3I_3B_3I_FUNC,
 #else
@@ -1355,32 +1183,20 @@ typedef enum {
 	SCRIPT_1STRING_1ANALYSIS_1sizeof_FUNC,
 	SCROLLBARINFO_1sizeof_FUNC,
 	SCROLLINFO_1sizeof_FUNC,
-	SHACTIVATEINFO_1sizeof_FUNC,
 	SHBrowseForFolderA_FUNC,
 	SHBrowseForFolderW_FUNC,
 	SHCreateItemFromParsingName_FUNC,
 	SHCreateItemFromRelativeName_FUNC,
 	SHCreateItemInKnownFolder_FUNC,
-	SHCreateMenuBar_FUNC,
 	SHDRAGIMAGE_1sizeof_FUNC,
 	SHELLEXECUTEINFO_1sizeof_FUNC,
 	SHFILEINFOA_1sizeof_FUNC,
 	SHFILEINFOW_1sizeof_FUNC,
 	SHGetFileInfoA_FUNC,
 	SHGetFileInfoW_FUNC,
-	SHGetFolderPathA_FUNC,
-	SHGetFolderPathW_FUNC,
 	SHGetMalloc_FUNC,
 	SHGetPathFromIDListA_FUNC,
 	SHGetPathFromIDListW_FUNC,
-	SHHandleWMSettingChange_FUNC,
-	SHMENUBARINFO_1sizeof_FUNC,
-	SHRGINFO_1sizeof_FUNC,
-	SHRecognizeGesture_FUNC,
-	SHSendBackToFocusWindow_FUNC,
-	SHSetAppKeyWndAssoc_FUNC,
-	SHSipPreference_FUNC,
-	SIPINFO_1sizeof_FUNC,
 	SIZE_1sizeof_FUNC,
 	STARTUPINFO_1sizeof_FUNC,
 	SYSTEMTIME_1sizeof_FUNC,
@@ -1752,7 +1568,6 @@ typedef enum {
 	SetBrushOrgEx_FUNC,
 	SetCapture_FUNC,
 	SetCaretPos_FUNC,
-	SetClipboardData_FUNC,
 	SetCurrentProcessExplicitAppUserModelID_FUNC,
 	SetCursor_FUNC,
 	SetCursorPos_FUNC,
@@ -1766,8 +1581,6 @@ typedef enum {
 	SetGraphicsMode_FUNC,
 	SetLayeredWindowAttributes_FUNC,
 	SetLayout_FUNC,
-	SetMapMode_FUNC,
-	SetMapperFlags_FUNC,
 	SetMenu_FUNC,
 	SetMenuDefaultItem_FUNC,
 	SetMenuInfo_FUNC,
@@ -1786,12 +1599,8 @@ typedef enum {
 	SetRectRgn_FUNC,
 	SetScrollInfo_FUNC,
 	SetStretchBltMode_FUNC,
-	SetTextAlign_FUNC,
 	SetTextColor_FUNC,
 	SetTimer_FUNC,
-	SetViewportExtEx_FUNC,
-	SetViewportOrgEx_FUNC,
-	SetWindowExtEx_FUNC,
 	SetWindowLongA_FUNC,
 	SetWindowLongPtrA_FUNC,
 	SetWindowLongPtrW_FUNC,
@@ -1811,11 +1620,9 @@ typedef enum {
 	Shell_1NotifyIconA_FUNC,
 	Shell_1NotifyIconW_FUNC,
 	ShowCaret_FUNC,
-	ShowCursor_FUNC,
 	ShowOwnedPopups_FUNC,
 	ShowScrollBar_FUNC,
 	ShowWindow_FUNC,
-	SipGetInfo_FUNC,
 	StartDocA_FUNC,
 	StartDocW_FUNC,
 	StartPage_FUNC,
@@ -1857,7 +1664,6 @@ typedef enum {
 	TranslateMDISysAccel_FUNC,
 	TranslateMessage_FUNC,
 	TransparentBlt_FUNC,
-	TransparentImage_FUNC,
 	TreeView_1GetItemRect_FUNC,
 	UDACCEL_1sizeof_FUNC,
 	UnhookWindowsHookEx_FUNC,
@@ -1865,7 +1671,6 @@ typedef enum {
 	UnregisterClassA_FUNC,
 	UnregisterClassW_FUNC,
 	UnregisterTouchWindow_FUNC,
-	UpdateLayeredWindow_FUNC,
 	UpdateWindow_FUNC,
 	UrlCreateFromPathA_FUNC,
 	UrlCreateFromPathW_FUNC,

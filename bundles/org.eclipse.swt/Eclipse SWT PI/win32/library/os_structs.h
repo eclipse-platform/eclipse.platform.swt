@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -326,18 +326,6 @@ void setDIBSECTIONFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpStruct);
 #define DIBSECTION_sizeof() 0
 #endif
 
-#ifndef NO_DLLVERSIONINFO
-void cacheDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject);
-DLLVERSIONINFO *getDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpStruct);
-void setDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpStruct);
-#define DLLVERSIONINFO_sizeof() sizeof(DLLVERSIONINFO)
-#else
-#define cacheDLLVERSIONINFOFields(a,b)
-#define getDLLVERSIONINFOFields(a,b,c) NULL
-#define setDLLVERSIONINFOFields(a,b,c)
-#define DLLVERSIONINFO_sizeof() 0
-#endif
-
 #ifndef NO_DOCHOSTUIINFO
 void cacheDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject);
 DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStruct);
@@ -398,18 +386,6 @@ void setDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct);
 #define DTTOPTS_sizeof() 0
 #endif
 
-#ifndef NO_DWM_BLURBEHIND
-void cacheDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject);
-DWM_BLURBEHIND *getDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
-void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
-#define DWM_BLURBEHIND_sizeof() sizeof(DWM_BLURBEHIND)
-#else
-#define cacheDWM_BLURBEHINDFields(a,b)
-#define getDWM_BLURBEHINDFields(a,b,c) NULL
-#define setDWM_BLURBEHINDFields(a,b,c)
-#define DWM_BLURBEHIND_sizeof() 0
-#endif
-
 #ifndef NO_EMR
 void cacheEMRFields(JNIEnv *env, jobject lpObject);
 EMR *getEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
@@ -444,18 +420,6 @@ void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
 #define getEXTLOGFONTWFields(a,b,c) NULL
 #define setEXTLOGFONTWFields(a,b,c)
 #define EXTLOGFONTW_sizeof() 0
-#endif
-
-#ifndef NO_EXTLOGPEN
-void cacheEXTLOGPENFields(JNIEnv *env, jobject lpObject);
-EXTLOGPEN *getEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);
-void setEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);
-#define EXTLOGPEN_sizeof() sizeof(EXTLOGPEN)
-#else
-#define cacheEXTLOGPENFields(a,b)
-#define getEXTLOGPENFields(a,b,c) NULL
-#define setEXTLOGPENFields(a,b,c)
-#define EXTLOGPEN_sizeof() 0
 #endif
 
 #ifndef NO_FILETIME
@@ -1034,18 +998,6 @@ void setNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *
 #define NMREBARCHILDSIZE_sizeof() 0
 #endif
 
-#ifndef NO_NMRGINFO
-void cacheNMRGINFOFields(JNIEnv *env, jobject lpObject);
-NMRGINFO *getNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
-void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
-#define NMRGINFO_sizeof() sizeof(NMRGINFO)
-#else
-#define cacheNMRGINFOFields(a,b)
-#define getNMRGINFOFields(a,b,c) NULL
-#define setNMRGINFOFields(a,b,c)
-#define NMRGINFO_sizeof() 0
-#endif
-
 #ifndef NO_NMTBCUSTOMDRAW
 void cacheNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
 NMTBCUSTOMDRAW *getNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpStruct);
@@ -1284,78 +1236,6 @@ void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct
 #define getOPENFILENAMEFields(a,b,c) NULL
 #define setOPENFILENAMEFields(a,b,c)
 #define OPENFILENAME_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFO
-void cacheOSVERSIONINFOFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFO *getOSVERSIONINFOFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpStruct);
-void setOSVERSIONINFOFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpStruct);
-#define OSVERSIONINFO_sizeof() sizeof(OSVERSIONINFO)
-#else
-#define cacheOSVERSIONINFOFields(a,b)
-#define getOSVERSIONINFOFields(a,b,c) NULL
-#define setOSVERSIONINFOFields(a,b,c)
-#define OSVERSIONINFO_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFOA
-void cacheOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOA *getOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct);
-void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct);
-#define OSVERSIONINFOA_sizeof() sizeof(OSVERSIONINFOA)
-#else
-#define cacheOSVERSIONINFOAFields(a,b)
-#define getOSVERSIONINFOAFields(a,b,c) NULL
-#define setOSVERSIONINFOAFields(a,b,c)
-#define OSVERSIONINFOA_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFOEX
-void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
-void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
-#define OSVERSIONINFOEX_sizeof() sizeof(OSVERSIONINFOEX)
-#else
-#define cacheOSVERSIONINFOEXFields(a,b)
-#define getOSVERSIONINFOEXFields(a,b,c) NULL
-#define setOSVERSIONINFOEXFields(a,b,c)
-#define OSVERSIONINFOEX_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFOEXA
-void cacheOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOEXA *getOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
-void setOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
-#define OSVERSIONINFOEXA_sizeof() sizeof(OSVERSIONINFOEXA)
-#else
-#define cacheOSVERSIONINFOEXAFields(a,b)
-#define getOSVERSIONINFOEXAFields(a,b,c) NULL
-#define setOSVERSIONINFOEXAFields(a,b,c)
-#define OSVERSIONINFOEXA_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFOEXW
-void cacheOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOEXW *getOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
-void setOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
-#define OSVERSIONINFOEXW_sizeof() sizeof(OSVERSIONINFOEXW)
-#else
-#define cacheOSVERSIONINFOEXWFields(a,b)
-#define getOSVERSIONINFOEXWFields(a,b,c) NULL
-#define setOSVERSIONINFOEXWFields(a,b,c)
-#define OSVERSIONINFOEXW_sizeof() 0
-#endif
-
-#ifndef NO_OSVERSIONINFOW
-void cacheOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject);
-OSVERSIONINFOW *getOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct);
-void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct);
-#define OSVERSIONINFOW_sizeof() sizeof(OSVERSIONINFOW)
-#else
-#define cacheOSVERSIONINFOWFields(a,b)
-#define getOSVERSIONINFOWFields(a,b,c) NULL
-#define setOSVERSIONINFOWFields(a,b,c)
-#define OSVERSIONINFOW_sizeof() 0
 #endif
 
 #ifndef NO_OUTLINETEXTMETRIC
@@ -1634,18 +1514,6 @@ void setSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);
 #define SCROLLINFO_sizeof() 0
 #endif
 
-#ifndef NO_SHACTIVATEINFO
-void cacheSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject);
-SHACTIVATEINFO *getSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct);
-void setSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpStruct);
-#define SHACTIVATEINFO_sizeof() sizeof(SHACTIVATEINFO)
-#else
-#define cacheSHACTIVATEINFOFields(a,b)
-#define getSHACTIVATEINFOFields(a,b,c) NULL
-#define setSHACTIVATEINFOFields(a,b,c)
-#define SHACTIVATEINFO_sizeof() 0
-#endif
-
 #ifndef NO_SHDRAGIMAGE
 void cacheSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject);
 SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
@@ -1704,42 +1572,6 @@ void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
 #define getSHFILEINFOWFields(a,b,c) NULL
 #define setSHFILEINFOWFields(a,b,c)
 #define SHFILEINFOW_sizeof() 0
-#endif
-
-#ifndef NO_SHMENUBARINFO
-void cacheSHMENUBARINFOFields(JNIEnv *env, jobject lpObject);
-SHMENUBARINFO *getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct);
-void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct);
-#define SHMENUBARINFO_sizeof() sizeof(SHMENUBARINFO)
-#else
-#define cacheSHMENUBARINFOFields(a,b)
-#define getSHMENUBARINFOFields(a,b,c) NULL
-#define setSHMENUBARINFOFields(a,b,c)
-#define SHMENUBARINFO_sizeof() 0
-#endif
-
-#ifndef NO_SHRGINFO
-void cacheSHRGINFOFields(JNIEnv *env, jobject lpObject);
-SHRGINFO *getSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct);
-void setSHRGINFOFields(JNIEnv *env, jobject lpObject, SHRGINFO *lpStruct);
-#define SHRGINFO_sizeof() sizeof(SHRGINFO)
-#else
-#define cacheSHRGINFOFields(a,b)
-#define getSHRGINFOFields(a,b,c) NULL
-#define setSHRGINFOFields(a,b,c)
-#define SHRGINFO_sizeof() 0
-#endif
-
-#ifndef NO_SIPINFO
-void cacheSIPINFOFields(JNIEnv *env, jobject lpObject);
-SIPINFO *getSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct);
-void setSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct);
-#define SIPINFO_sizeof() sizeof(SIPINFO)
-#else
-#define cacheSIPINFOFields(a,b)
-#define getSIPINFOFields(a,b,c) NULL
-#define setSIPINFOFields(a,b,c)
-#define SIPINFO_sizeof() 0
 #endif
 
 #ifndef NO_SIZE
