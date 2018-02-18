@@ -64,17 +64,10 @@ public class Scale extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		long /*int*/ hInstance = OS.GetModuleHandle (null);
-		long /*int*/ hHeap = OS.GetProcessHeap ();
-		lpWndClass.hInstance = hInstance;
+		lpWndClass.hInstance = OS.GetModuleHandle (null);
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
-		int byteCount = TrackBarClass.length () * TCHAR.sizeof;
-		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
-		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**

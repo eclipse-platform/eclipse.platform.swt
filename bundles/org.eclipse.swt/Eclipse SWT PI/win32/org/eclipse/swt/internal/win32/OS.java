@@ -29,12 +29,11 @@ public class OS extends C {
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
 	/* Forward references */
-	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
 	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
+	public static final int ACTCTX_FLAG_HMODULE_VALID = 0x00000080;
 	public static final int MANIFEST_RESOURCE_ID = 2;
 	public static final int SM_IMMENABLED = 0x52;
-	public static final int MAX_PATH = 260;
 
 	static {
 		/* Get the Windows version */
@@ -43,22 +42,12 @@ public class OS extends C {
 
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
-			TCHAR buffer = new TCHAR (0, MAX_PATH);
-			long /*int*/ hModule = OS.GetLibraryHandle ();
-			while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
-				buffer = new TCHAR (0, buffer.length () + MAX_PATH);
-			}
-			long /*int*/ hHeap = OS.GetProcessHeap ();
-			int byteCount = buffer.length () * 2;
-			long /*int*/ pszText = OS.HeapAlloc (hHeap, HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (pszText, buffer, byteCount);
 			ACTCTX pActCtx = new ACTCTX ();
 			pActCtx.cbSize = ACTCTX.sizeof;
-			pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
-			pActCtx.lpSource = pszText;
+			pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
+			pActCtx.hModule = OS.GetLibraryHandle ();
 			pActCtx.lpResourceName = MANIFEST_RESOURCE_ID;
 			long /*int*/ hActCtx = OS.CreateActCtx (pActCtx);
-			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 			long /*int*/ [] lpCookie = new long /*int*/ [1];
 			OS.ActivateActCtx (hActCtx, lpCookie);
 			/*
@@ -667,7 +656,7 @@ public class OS extends C {
 	public static final int HDS_HOTTRACK = 0x4;
 	public static final int HDS_NOSIZING = 0x800;
 	public static final int HDS_OVERFLOW = 0x1000;
-//	public static final int HEAP_ZERO_MEMORY = 0x8;
+	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HHT_ONDIVIDER = 0x4;
 	public static final int HHT_ONDIVOPEN = 0x8;
@@ -938,6 +927,7 @@ public class OS extends C {
 	public static final int LWA_COLORKEY = 0x00000001;
 	public static final int LWA_ALPHA = 0x00000002;
 	public static final int MAX_LINKID_TEXT = 48;
+	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
 	public static final int MB_APPLMODAL = 0x0;
