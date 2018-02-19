@@ -2502,18 +2502,39 @@ long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEv
 	event.y = y;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	event.detail = nsEvent.buttonNumber() > 0 ? SWT.MENU_MOUSE : SWT.MENU_KEYBOARD;
-	sendEvent (SWT.MenuDetect, event);
+
+	int count = 0;
+	if (display.popups != null) {
+		while (count < display.popups.length && display.popups[count] != null) {
+			count++;
+		}
+	}
+
+	sendEvent(SWT.MenuDetect, event);
 	//widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	if (!event.doit) return 0;
 	Menu menu = getMenu ();
-	if (menu != null && !menu.isDisposed ()) {
+	if (event.doit && menu != null && !menu.isDisposed ()) {
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
 		}
-		menu.setVisible(true);
-		return 0;
+		return menu.nsMenu.id;
 	}
+
+	// There is either no popup menu set for the Control or event.doit = false.
+	// If a popup was triggered in the MenuDetect listener, return it.
+	int count2 = 0;
+	if (display.popups != null) {
+		while (count2 < display.popups.length && display.popups[count2] != null) {
+			count2++;
+		}
+	}
+	if (count2 != count && count2 > 0) {
+		Menu menu1 = display.popups[count2 - 1];
+		display.popups[count2 - 1] = null;
+		return menu1.nsMenu.id;
+	}
+	if (!event.doit) return 0;
 	return super.menuForEvent (id, sel, theEvent);
 }
 
