@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -459,8 +459,18 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		cellHandle = GTK.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		// Setting wrap width has the side effect of removing the whitespace on top in popup bug#438992
-		GTK.gtk_combo_box_set_wrap_width(handle, 1);
+		/*
+		 * For GTK 3.22.5 and above, we set -GtkComboBox-appears-as-list, see bug#528498.
+		 * We cannot use this in earlier versions: due to a GTK bug the resulting drop-down list is not scrollable.
+		 * The bug was fixed in GTK 3.22.5.
+		 */
+		if (GTK.GTK_VERSION < OS.VERSION(3, 22, 5)) {
+			// Setting wrap width has the side effect of removing the whitespace on top in popup bug#438992
+			GTK.gtk_combo_box_set_wrap_width(handle, 1);
+		} else {
+			long /*int*/ context = GTK.gtk_widget_get_style_context(handle);
+			gtk_css_provider_load_from_css(context, "* { -GtkComboBox-appears-as-list: true; }");
+		}
 	} else {
 		handle = GTK.gtk_combo_box_text_new_with_entry();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
