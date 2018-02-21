@@ -397,9 +397,6 @@ public class Display extends Device {
 	static int DI_GETDRAGIMAGE;
 	static int SWT_OPENDOC;
 
-	/* Workaround for Adobe Reader 7.0 */
-	int hitCount;
-
 	/* Skinning support */
 	Widget [] skinList = new Widget [GROW_SIZE];
 	int skinCount;
@@ -4772,26 +4769,6 @@ long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPara
 				}
 			}
 		}
-	}
-	/*
-	* Bug in Adobe Reader 7.0.  For some reason, when Adobe
-	* Reader 7.0 is deactivated from within Internet Explorer,
-	* it sends thousands of consecutive WM_NCHITTEST messages
-	* to the control that is under the cursor.  It seems that
-	* if the control takes some time to respond to the message,
-	* Adobe stops sending them.  The fix is to detect this case
-	* and sleep.
-	*
-	* NOTE: Under normal circumstances, Windows will never send
-	* consecutive WM_NCHITTEST messages to the same control without
-	* another message (normally WM_SETCURSOR) in between.
-	*/
-	if ((int)/*64*/msg == OS.WM_NCHITTEST) {
-		if (hitCount++ >= 1024) {
-			try {Thread.sleep (1);} catch (Throwable t) {}
-		}
-	} else {
-		hitCount = 0;
 	}
 	if (lastControl != null && lastHwnd == hwnd) {
 		return lastControl.windowProc (hwnd, (int)/*64*/msg, wParam, lParam);
