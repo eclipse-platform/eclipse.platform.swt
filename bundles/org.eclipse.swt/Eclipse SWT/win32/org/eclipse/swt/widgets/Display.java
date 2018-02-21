@@ -4771,18 +4771,6 @@ void wakeThread () {
 }
 
 long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
-	if ((int)/*64*/msg == TASKBARBUTTONCREATED) {
-		if (taskBar != null) {
-			TaskItem [] items = taskBar.items;
-			for (int i=0; i<items.length; i++) {
-				TaskItem item = items [i];
-				if (item != null && item.shell != null && item.shell.handle == hwnd) {
-					item.recreate ();
-					break;
-				}
-			}
-		}
-	}
 	if (lastControl != null && lastHwnd == hwnd) {
 		return lastControl.windowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 	}

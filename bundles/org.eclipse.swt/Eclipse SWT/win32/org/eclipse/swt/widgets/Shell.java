@@ -2144,6 +2144,18 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
+	if (hwnd == handle) {
+		if ((int)/*64*/msg == Display.TASKBARBUTTONCREATED) {
+			if (display.taskBar != null) {
+				for (TaskItem item : display.taskBar.items) {
+					if (item != null && item.shell == this) {
+						item.recreate ();
+						break;
+					}
+				}
+			}
+		}
+	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
