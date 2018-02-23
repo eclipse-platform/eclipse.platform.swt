@@ -138,16 +138,6 @@ class WebKit extends WebBrowser {
 	 */
 	static final int ASYNC_EXEC_TIMEOUT_MS = 3000; // Webkit2.
 
-
-	static final String reportErrMsg = "Please report this issue with steps to reproduce via:\n"
-			+ " https://bugs.eclipse.org/bugs/enter_bug.cgi?"
-			+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
-			+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
-			+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
-			+ "&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug"
-			+ "&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact="
-			+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=webkit2_BrowserProblem";
-
 	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
 
 	/** Part of workaround in Bug 527738. Prevent old request overring newer request */
@@ -417,6 +407,27 @@ class WebKit extends WebBrowser {
 		super.createFunction(function);
 	}
 
+	private static String getInternalErrorMsg () {
+		String reportErrMsg = "Please report this issue with steps to reproduce via:\n"
+				+ " https://bugs.eclipse.org/bugs/enter_bug.cgi?"
+				+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
+				+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
+				+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
+				+ "&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug"
+				+ "&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact="
+				+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=webkit2_BrowserProblem";
+
+		return reportErrMsg + "\nFor bug report, please atatch this stack trace:\n" + getStackTrace();
+	}
+
+
+	private static String getStackTrace() {
+		// Get a stacktrace. Note, this doesn't actually throw anything, we just get the stacktrace.
+		StringWriter sw = new StringWriter();
+		new Throwable("").printStackTrace(new PrintWriter(sw));
+		return sw.toString();
+	}
+
 	/**
 	 * This class deals with the Webkit2 extension.
 	 *
@@ -508,7 +519,7 @@ class WebKit extends WebBrowser {
 						+ "(swt version: " + swtVersion + ")" + WebKitGTK.swtWebkitGlueCodeVersion + WebKitGTK.swtWebkitGlueCodeVersionInfo);
 				int [] vers = internalGetWebkitVersion();
 				System.err.println(String.format("WebKit2Gtk version %s.%s.%s", vers[0], vers[1], vers[2]));
-				System.err.println(reportErrMsg);
+				System.err.println(getInternalErrorMsg());
 				loadFailed = true;
 				return;
 			}
@@ -1165,7 +1176,8 @@ public void create (Composite parent, int style) {
 				break;
 			}
 			case SWT.FocusIn: {
-				GTK.gtk_widget_grab_focus (webView);
+				if (WEBKIT2 && webView != 0)
+					GTK.gtk_widget_grab_focus (webView);
 				break;
 			}
 			case SWT.Resize: {
@@ -1707,12 +1719,6 @@ private static class Webkit2AsyncToSync {
 			if (retObj.callbackFinished)
 				break;
 			else if (Instant.now().isAfter(timeOut)) {
-
-				// Get a stacktrace. Note, this doesn't actually throw anything, we just get the stacktrace.
-				StringWriter sw = new StringWriter();
-				new Throwable("").printStackTrace(new PrintWriter(sw));
-				String stackTrace = sw.toString();
-
 				System.err.println("SWT call to Webkit timed out after " + ASYNC_EXEC_TIMEOUT_MS
 						+ "ms. No return value will be provided.\n"
 						+ "Possible reasons:\n"
@@ -1720,9 +1726,7 @@ private static class Webkit2AsyncToSync {
 						+ "   Solution: Don't run such javascript, it blocks UI. Instead register a BrowserFunction\n"
 						+ "             and call the BrowserFunction upon completion"
 						+ "2) Deadlock in swt/webkit2 logic. This is probably a bug in SWT.\n"
-						+ reportErrMsg + "\n"
-						+ "For bug report, please atatch this stack trace:\n"
-						+ stackTrace
+						+ getInternalErrorMsg()
 						+ "\n Additional information about the error is as following:\n"
 						+ additionalErrorInfo);
 				retObj.swtAsyncTimeout = true;
@@ -1753,6 +1757,11 @@ public Object evaluate (String script) throws SWTException {
 
 @Override
 public boolean forward () {
+	if (WEBKIT2 && webView == 0) {
+		assert false;
+		System.err.println("SWT Webkit: forward() called after widget disposed. Should not have happened.\n" + getInternalErrorMsg());
+		return false; // Disposed.
+	}
 	if (WebKitGTK.webkit_web_view_can_go_forward (webView) == 0) return false;
 	WebKitGTK.webkit_web_view_go_forward (webView);
 	return true;
@@ -1796,6 +1805,11 @@ public String getText () {
 
 @Override
 public String getUrl () {
+	if (webView == 0) {
+		assert false;
+		System.err.println("SWT Webkit: getUrl() called after widget disposed. Should not have happened.\n" + getInternalErrorMsg());
+		return null; // Disposed.
+	}
 	long /*int*/ uri = WebKitGTK.webkit_web_view_get_uri (webView);
 
 	/* WebKit auto-navigates to about:blank at startup */
@@ -2348,6 +2362,8 @@ long /*int*/ handleLoadFinished (long /*int*/ uri, boolean top) {
 
 @Override
 public boolean isBackEnabled () {
+	if (WEBKIT2 && webView == 0)
+		return false; //disposed.
 	return WebKitGTK.webkit_web_view_can_go_back (webView) != 0;
 }
 
@@ -2377,18 +2393,19 @@ void onDispose (Event e) {
 			eventFunction = null;
 		}
 		C.free (webViewData);
-	}
-
-	if (WEBKIT1) {
 		postData = null;
 		headers = null;
 		htmlBytes = null;
+	} else if (WEBKIT2) {
+		webView = 0; // Note, Webkit2 disposes it self on it's own.
 	}
 }
 
 void onResize (Event e) {
 	Rectangle rect = DPIUtil.autoScaleUp(browser.getClientArea ());
 	if (WEBKIT2){
+		if (webView == 0)
+			return;
 		GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);
 	} else {
 		GTK.gtk_widget_set_size_request (scrolledWindow, rect.width, rect.height);
@@ -2517,6 +2534,8 @@ void openDownloadWindow (final long /*int*/ webkitDownload, final String suggest
 
 @Override
 public void refresh () {
+	if (WEBKIT2 && webView == 0)
+		return; //disposed.
 	WebKitGTK.webkit_web_view_reload (webView);
 }
 
@@ -2563,6 +2582,10 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	if (WEBKIT2) {
 		w2_bug527738LastRequestCounter.incrementAndGet();
 	}
+
+	if (WEBKIT2 && webView == 0)
+		return false; // disposed.
+
 	/*
 	* WebKitGTK attempts to open the exact url string that is passed to it and
 	* will not infer a protocol if it's not specified.  Detect the case of an
@@ -3491,8 +3514,11 @@ long /*int*/ webkit_window_object_cleared (long /*int*/ web_view, long /*int*/ f
 }
 
 /** Webkit1 & Webkit2
- * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
+ * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true. -1= is error.*/
 private int webkit_settings_get(byte [] property) {
+	if (WEBKIT2 && webView == 0) { // already disposed.
+		return -1; // error.
+	}
 	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	return webkit_settings_get(settings, property);
 }
@@ -3507,6 +3533,9 @@ private int webkit_settings_get(long /*int*/ settings, byte[] property) {
 
 /** Webkit1 & Webkit2 */
 private void webkit_settings_set(byte [] property, int value) {
+	if (WEBKIT2 && webView == 0) { // already disposed.
+		return;
+	}
 	long /*int*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set(settings, property, value, 0);
 }

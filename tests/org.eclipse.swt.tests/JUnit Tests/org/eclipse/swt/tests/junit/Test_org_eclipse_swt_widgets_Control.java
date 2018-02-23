@@ -1110,7 +1110,7 @@ protected Point[] determineLocations(int paramA, int paramB,
 }
 
 @Test
-public void testExceptionsThrownInDisposeListenerDontPreventDisposal () {
+public void test_ExceptionsThrownInDisposeListenerDontPreventDisposal () {
 	disposedIntentionally = true;
 	Consumer<RuntimeException> oldHandler = Display.getCurrent ().getRuntimeExceptionHandler ();
 	try {
