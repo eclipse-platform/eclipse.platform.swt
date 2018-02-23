@@ -4493,7 +4493,6 @@ void setBackground () {
  * if the argument is null.
  * <p>
  * Note: This operation is a hint and may be overridden by the platform.
- * For example, on MAC the background of a Button cannot be changed.
  * </p>
  * @param color the new color (or null)
  *
