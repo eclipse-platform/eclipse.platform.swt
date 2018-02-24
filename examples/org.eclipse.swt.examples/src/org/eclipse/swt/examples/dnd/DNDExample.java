@@ -13,6 +13,7 @@ package org.eclipse.swt.examples.dnd;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -511,11 +512,10 @@ private void createDragTypes(Composite parent) {
 		String result = dialog.open();
 		if (result != null && result.length() > 0) {
 			fileList.removeAll();
-			String separator = System.getProperty("file.separator");
 			String path = dialog.getFilterPath();
 			String[] names = dialog.getFileNames();
 			for (String name : names) {
-				fileList.add(path + separator + name);
+				fileList.add(path + File.separatorChar + name);
 			}
 		}
 	}));

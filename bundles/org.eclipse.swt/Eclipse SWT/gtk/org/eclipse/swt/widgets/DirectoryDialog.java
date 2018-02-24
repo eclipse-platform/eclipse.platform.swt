@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -35,7 +37,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
-	static final String SEPARATOR = System.getProperty ("file.separator");
+	static final String SEPARATOR = File.separator;
 	private static final int PATH_MAX = 1024;
 
 /**

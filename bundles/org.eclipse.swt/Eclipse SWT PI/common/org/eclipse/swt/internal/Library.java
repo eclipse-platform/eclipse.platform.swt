@@ -55,7 +55,7 @@ public class Library {
 
 static {
 	DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
-	SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
+	SEPARATOR = File.separator;
 	USER_HOME = System.getProperty ("user.home");
 	SWT_LIB_DIR = ".swt" + SEPARATOR + "lib" + SEPARATOR + os() + SEPARATOR + arch(); //$NON-NLS-1$ $NON-NLS-2$
 	JAVA_VERSION = parseVersion(System.getProperty("java.version")); //$NON-NLS-1$

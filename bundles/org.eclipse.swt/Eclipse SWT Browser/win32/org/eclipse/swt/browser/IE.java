@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -112,7 +113,7 @@ class IE extends WebBrowser {
 	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
 	static final String HTML_DOCUMENT = "HTML Document";	//$NON-NLS-1$
 	static final int MAX_PDF = 20;
-	static final char SEPARATOR_OS = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
+	static final char SEPARATOR_OS = File.separatorChar;
 	static final String PROPERTY_IEVERSION = "org.eclipse.swt.browser.IEVersion"; //$NON-NLS-1$
 	static final String VALUE_DEFAULT = "default"; //$NON-NLS-1$
 

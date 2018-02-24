@@ -193,7 +193,7 @@ class WebKit extends WebBrowser {
 	static final int MAX_PROGRESS = 100;
 	static final int[] MIN_VERSION = {1, 2, 0};
 	static final int SENTINEL_KEYPRESS = -1;
-	static final char SEPARATOR_FILE = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
+	static final char SEPARATOR_FILE = File.separatorChar;
 	static final int STOP_PROPOGATE = 1;
 
 	static final String DOMEVENT_DRAGSTART = "dragstart"; //$NON-NLS-1$

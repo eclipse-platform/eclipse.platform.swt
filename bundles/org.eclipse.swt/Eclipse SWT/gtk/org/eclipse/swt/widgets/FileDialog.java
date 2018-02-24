@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -46,7 +48,7 @@ public class FileDialog extends Dialog {
 	boolean overwrite = false;
 	boolean uriMode;
 	long /*int*/ handle;
-	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
+	static final char SEPARATOR = File.separatorChar;
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
 	private static final int PATH_MAX = 1024;

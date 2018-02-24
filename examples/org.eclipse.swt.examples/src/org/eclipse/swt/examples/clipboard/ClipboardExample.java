@@ -12,6 +12,8 @@ package org.eclipse.swt.examples.clipboard;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -324,12 +326,11 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		String result = dialog.open();
 		if (result != null && result.length() > 0){
-			String separator = System.getProperty("file.separator");
 			String path = dialog.getFilterPath();
 			String[] names = dialog.getFileNames();
 			for (String name : names) {
 				TableItem item = new TableItem(copyFileTable, SWT.NONE);
-				item.setText(path+separator+name);
+				item.setText(path+File.separator+name);
 			}
 		}
 	}));
