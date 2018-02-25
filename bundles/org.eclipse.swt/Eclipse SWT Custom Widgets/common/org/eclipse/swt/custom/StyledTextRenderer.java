@@ -889,7 +889,7 @@ TextLayout getTextLayout(int lineIndex) {
 			 * resetCache, setCaretLocation, redraw methods only at the end of the compute of all lines spacing.
 			 */
 			lineSpacingComputing = true;
-			styledText.resetCache(lineIndex, styledText.getLineCount());
+			styledText.resetCache(lineIndex, 1);
 			styledText.setVariableLineHeight();
 			styledText.setCaretLocation();
 			styledText.redraw();

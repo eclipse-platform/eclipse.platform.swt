@@ -9381,8 +9381,32 @@ public void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProv
 					&& renderer.getLineSpacingProvider().equals(lineSpacingProvider)))
 		return;
 	renderer.setLineSpacingProvider(lineSpacingProvider);
-	setVariableLineHeight();
-	resetCache(0, content.getLineCount());
+	// reset lines cache if needed
+	if (lineSpacingProvider == null) {
+		if (!isFixedLineHeight()) {
+			resetCache(0, content.getLineCount());
+		}
+	} else {
+		if (isFixedLineHeight()) {
+			int firstLine = -1;
+			for (int i = 0; i < content.getLineCount(); i++) {
+				Integer lineSpacing = lineSpacingProvider.getLineSpacing(i);
+				if (lineSpacing != null && lineSpacing > 0) {
+					// there is a custom line spacing, set StyledText as variable line height mode
+					setVariableLineHeight();
+					// reset only the line size
+					renderer.reset(i, 1);
+					if (firstLine == -1) {
+						firstLine = i;
+					}
+				}
+			}
+			if (firstLine != -1) {
+				// call reset cache for the first line which have changed to recompute scrollbars
+				resetCache(firstLine, 0);
+			}
+		}
+	}
 	setCaretLocation();
 	super.redraw();
 }
