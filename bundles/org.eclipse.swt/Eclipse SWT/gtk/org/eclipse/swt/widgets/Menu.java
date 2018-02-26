@@ -245,7 +245,6 @@ void _setVisible (boolean visible) {
 					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
-					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
 				} else {
 					if (!OS.isX11()) {
 						/*
@@ -1144,20 +1143,11 @@ void setOrientation (boolean create) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	/*
-	 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
-	 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
-	 *  immediately and not as a post event in display.
-	 */
-	if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-		if (visible) {
-			display.addPopup (this);
-		} else {
-			display.removePopup (this);
-			_setVisible (false);
-		}
+	if (visible) {
+		display.addPopup (this);
 	} else {
-		_setVisible(visible);
+		display.removePopup (this);
+		_setVisible (false);
 	}
 }
 }
