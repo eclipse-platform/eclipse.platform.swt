@@ -1143,6 +1143,18 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
+	public static final native void _gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size);
+	public static final void gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size) {
+		lock.lock();
+		try {
+			_gtk_widget_get_preferred_height(widget, minimum_size, natural_size);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native void _gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size);
 	public static final void gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size) {
 		lock.lock();

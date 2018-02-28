@@ -45,6 +45,7 @@ public class Menu extends Widget {
 	Decorations parent;
 	long /*int*/ imItem, imSeparator, imHandle;
 	ImageList imageList;
+	int poppedUpCount;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -278,9 +279,11 @@ void _setVisible (boolean visible) {
 						}
 					}
 				}
+				verifyMenuPosition(getItemCount());
 				GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
 				GDK.gdk_event_free (eventPtr);
 			}
+			poppedUpCount = getItemCount();
 		} else {
 			sendEvent (SWT.Hide);
 		}
@@ -1122,6 +1125,49 @@ void setOrientation (boolean create) {
             items [i].setOrientation (create);
         }
     }
+}
+
+/**
+ * Feature in GTK3 on X11: context menus in SWT are populated
+ * dynamically, sometimes asynchronously outside of SWT
+ * (i.e. in Platform UI). This means that items are added and
+ * removed just before the menu is shown. This method of
+ * changing the menu content can sometimes cause sizing issues
+ * internally in GTK, specifically with the height of the
+ * toplevel GdkWindow. <p>
+ *
+ * The fix is to cache the number of items popped up previously,
+ * and if the number of items in the current menu (to be popped up)
+ * is different, then:<ul>
+ *     <li>get the preferred height of the menu</li>
+ *     <li>set the toplevel GdkWindow to that height</li></ul>
+ *
+ * @param itemCount the current number of items in the menu, just
+ * before it's about to be shown/popped-up
+ */
+void verifyMenuPosition (int itemCount) {
+	if (GTK.GTK3 && OS.isX11()) {
+		if (itemCount != poppedUpCount && poppedUpCount != 0) {
+			int [] naturalHeight = new int [1];
+			/*
+			 * We need to "show" the menu before fetching the preferred height.
+			 * Note, this does not actually pop-up the menu.
+			 */
+			GTK.gtk_widget_show(handle);
+			/*
+			 * Menus are height-for-width only: use gtk_widget_get_preferred_height()
+			 * instead of gtk_widget_get_preferred_size().
+			 */
+			GTK.gtk_widget_get_preferred_height(handle, null, naturalHeight);
+			if (naturalHeight[0] > 0) {
+				long /*int*/ topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
+				long /*int*/ topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
+				int width = GDK.gdk_window_get_width(topLevelWindow);
+				GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);
+			}
+		}
+	}
+	return;
 }
 
 /**
