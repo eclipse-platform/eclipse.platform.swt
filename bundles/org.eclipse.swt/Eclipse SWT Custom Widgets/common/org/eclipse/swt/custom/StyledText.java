@@ -131,6 +131,7 @@ public class StyledText extends Canvas {
 	boolean editable = true;
 	boolean wordWrap = false;			// text is wrapped automatically
 	boolean visualWrap = false;		// process line breaks inside logical lines (inserted by BidiSegmentEvent)
+	boolean hasStyleWithVariableHeight = false;
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
@@ -163,7 +164,6 @@ public class StyledText extends Canvas {
 	int caretWidth = 0;
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
-	boolean fixedLineHeight;
 	boolean dragDetect = true;
 	IME ime;
 	Cursor cursor;
@@ -1220,7 +1220,6 @@ public StyledText(Composite parent, int style) {
 	super.setForeground(getForeground());
 	super.setDragDetect(false);
 	Display display = getDisplay();
-	fixedLineHeight = true;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -4929,7 +4928,6 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 		for (int i= 0; i < segmentsChars.length; i++) {
 			if (segmentsChars[i] == '\n' || segmentsChars[i] == '\r') {
 				visualWrap = true;
-				setVariableLineHeight();
 				break;
 			}
 		}
@@ -7325,7 +7323,7 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 boolean isFixedLineHeight() {
-	return fixedLineHeight;
+	return !isWordWrap() && lineSpacing == 0 && renderer.lineSpacingProvider == null && !hasStyleWithVariableHeight;
 }
 /**
  * Returns whether the given offset is inside a multi byte line delimiter.
@@ -9375,11 +9373,6 @@ public void setLineBullet(int startLine, int lineCount, Bullet bullet) {
 		setCaretLocation();
 	}
 }
-void setVariableLineHeight () {
-	if (!fixedLineHeight) return;
-	fixedLineHeight = false;
-	renderer.calculateIdle();
-}
 /**
  * Returns true if StyledText is in word wrap mode and false otherwise.
  *
@@ -9481,7 +9474,6 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	if (verticalLineIndent == renderer.getLineVerticalIndent(lineIndex)) {
 			return;
 	}
-	setVariableLineHeight();
 	int oldBottom = getLinePixel(lineIndex + 1);
 	if (oldBottom <= getClientArea().height) {
 		verticalScrollOffset = -1;
@@ -9561,7 +9553,6 @@ public void setLineSpacing(int lineSpacing) {
 	checkWidget();
 	if (this.lineSpacing == lineSpacing || lineSpacing < 0) return;
 	this.lineSpacing = lineSpacing;
-	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	super.redraw();
@@ -9580,6 +9571,7 @@ public void setLineSpacing(int lineSpacing) {
  */
 public void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProvider) {
 	checkWidget();
+	boolean wasFixedLineHeight = isFixedLineHeight();
 	if (renderer.getLineSpacingProvider() == null && lineSpacingProvider == null
 			|| (renderer.getLineSpacingProvider() != null
 					&& renderer.getLineSpacingProvider().equals(lineSpacingProvider)))
@@ -9587,17 +9579,16 @@ public void setLineSpacingProvider(StyledTextLineSpacingProvider lineSpacingProv
 	renderer.setLineSpacingProvider(lineSpacingProvider);
 	// reset lines cache if needed
 	if (lineSpacingProvider == null) {
-		if (!isFixedLineHeight()) {
+		if (!wasFixedLineHeight) {
 			resetCache(0, content.getLineCount());
 		}
 	} else {
-		if (isFixedLineHeight()) {
+		if (wasFixedLineHeight) {
 			int firstLine = -1;
 			for (int i = 0; i < content.getLineCount(); i++) {
 				Integer lineSpacing = lineSpacingProvider.getLineSpacing(i);
 				if (lineSpacing != null && lineSpacing > 0) {
 					// there is a custom line spacing, set StyledText as variable line height mode
-					setVariableLineHeight();
 					// reset only the line size
 					renderer.reset(i, 1);
 					if (firstLine == -1) {
@@ -10238,6 +10229,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	int[] formerRanges = getRanges(start, length);
 	StyleRange[] formerStyles = getStyleRanges(start, length);
 	int end = start + length;
+	final boolean wasFixedLineHeight = isFixedLineHeight();
 	if (start > end || start < 0) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
@@ -10249,7 +10241,6 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			if (ranges.length != styles.length << 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		int lastOffset = 0;
-		boolean variableHeight = false;
 		for (int i = 0; i < styles.length; i ++) {
 			if (styles[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			int rangeStart, rangeLength;
@@ -10263,10 +10254,9 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			if (rangeLength < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			if (!(0 <= rangeStart && rangeStart + rangeLength <= charCount)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			if (lastOffset > rangeStart) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			variableHeight |= styles[i].isVariableHeight();
+			hasStyleWithVariableHeight |= styles[i].isVariableHeight();
 			lastOffset = rangeStart + rangeLength;
 		}
-		if (variableHeight) setVariableLineHeight();
 	}
 	int rangeStart = start, rangeEnd = end;
 	if (styles != null && styles.length > 0) {
@@ -10278,6 +10268,8 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			rangeEnd = styles[styles.length - 1].start + styles[styles.length - 1].length;
 		}
 	}
+
+	// This needs to happen before new styles are applied
 	int expectedBottom = 0;
 	if (!isFixedLineHeight() && !reset) {
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
@@ -10294,6 +10286,13 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	}
 	if (styles != null && styles.length > 0) {
 		renderer.setStyleRanges(ranges, styles);
+	}
+
+	// re-evaluate variable height with all styles (including new ones)
+	hasStyleWithVariableHeight = false;
+	for (StyleRange style : getStyleRanges(false)) {
+		hasStyleWithVariableHeight = style.isVariableHeight();
+		if (hasStyleWithVariableHeight) break;
 	}
 
 	SortedSet<Integer> modifiedLines = computeModifiedLines(formerRanges, formerStyles, ranges, styles);
@@ -10314,7 +10313,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			if (partialTopIndex <= lineEnd && lineEnd <= partialBottomIndex) {
 				bottom = getLinePixel(lineEnd + 1);
 			}
-			if (!isFixedLineHeight() && bottom != expectedBottom) {
+			if (!(wasFixedLineHeight && isFixedLineHeight()) && bottom != expectedBottom) {
 				bottom = clientAreaHeight;
 			}
 			super.redraw(0, top, clientAreaWidth, bottom - top, false);
@@ -10743,7 +10742,6 @@ public void setWordWrap(boolean wrap) {
 	if (wordWrap == wrap) return;
 	if (wordWrap && blockSelection) setBlockSelection(false);
 	wordWrap = wrap;
-	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	horizontalScrollOffset = 0;
 	ScrollBar horizontalBar = getHorizontalBar();

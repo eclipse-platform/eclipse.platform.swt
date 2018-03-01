@@ -64,15 +64,19 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.test.Screenshots;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestWatcher;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -92,6 +96,14 @@ final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator
 Map<RGB, Color> colors = new HashMap<>();
 private boolean listenerCalled;
 private boolean listener2Called;
+
+@Rule public TestWatcher screenshotRule = new TestWatcher() {
+	@Override
+	protected void failed(Throwable e, org.junit.runner.Description description) {
+		super.failed(e, description);
+		Screenshots.takeScreenshot(description.getTestClass(), description.getMethodName());
+	}
+};
 
 @Override
 @Before
@@ -5296,7 +5308,6 @@ public void test_insertInBlockSelection() {
 
 @Test
 public void test_setStyleRanges_render() throws InterruptedException {
-	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
 	shell.setVisible(true);
 	text.setText("abc");
 	text.setMargins(0, 0, 0, 0);
@@ -5428,6 +5439,38 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
  * @return <code>true</code> if the given color was found in current text widget
  *         bounds
  */
+@Test
+public void test_variableToFixedLineHeight() throws InterruptedException {
+	GridData layoutData = new GridData(SWT.FILL, SWT.FILL,true, true);
+	text.setLayoutData(layoutData);
+	shell.setVisible(true);
+	text.setText("\nabc\n\nd");
+	text.setMargins(0, 0, 0, 0);
+	text.setSize(100, 100);
+	processEvents(1000, () -> Boolean.FALSE);
+	StyleRange range = new StyleRange();
+	range.start = 1;
+	range.length = 1;
+	Color colorForVariableHeight = text.getDisplay().getSystemColor(SWT.COLOR_RED);
+	range.background = colorForVariableHeight;
+	range.metrics = new GlyphMetrics(40, 0, 10);
+	text.setStyleRange(range);
+	// move to variable height and paint with red to check later whether
+	// redraw was done properly
+	processEvents(100, null);
+	range = new StyleRange();
+	range.start = 1;
+	range.length = 1;
+	range.fontStyle = SWT.BOLD;
+	range.metrics = null;
+	text.replaceStyleRanges(0, text.getCharCount(), new StyleRange[] {range});
+	// changing to fixed line height here should redraw widget until
+	// the bottom and clear the area (no more red)
+	processEvents(3000, () -> !hasPixel(text, colorForVariableHeight));
+	assertFalse(hasPixel(text, colorForVariableHeight));
+}
+
+
 private boolean hasPixel(StyledText text, Color expectedColor) {
 	return hasPixel(text, expectedColor, null);
 }

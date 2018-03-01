@@ -912,7 +912,6 @@ TextLayout getTextLayout(int lineIndex) {
 			 */
 			lineSpacingComputing = true;
 			styledText.resetCache(lineIndex, 1);
-			styledText.setVariableLineHeight();
 			styledText.setCaretLocation();
 			styledText.redraw();
 		} finally {
@@ -1049,8 +1048,8 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			if (styledText.isFixedLineHeight()) {
 				for (int i = 0; i < styleCount; i++) {
 					if (styles[i].isVariableHeight()) {
+						styledText.hasStyleWithVariableHeight = true;
 						styledText.verticalScrollOffset = -1;
-						styledText.setVariableLineHeight();
 						styledText.redraw();
 						break;
 					}
