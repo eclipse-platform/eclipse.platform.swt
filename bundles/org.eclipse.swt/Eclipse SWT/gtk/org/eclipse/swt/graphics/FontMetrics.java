@@ -62,7 +62,20 @@ public int getAscent() {
  * of the font described by the receiver.
  *
  * @return the average character width of the font
+ * @since 3.107
  */
+public double getAverageCharacterWidth() {
+	return getAverageCharWidth();
+}
+
+/**
+ * Returns the average character width, measured in pixels,
+ * of the font described by the receiver.
+ *
+ * @return the average character width of the font
+ * @deprecated Use getAverageCharacterWidth() instead
+ */
+@Deprecated
 public int getAverageCharWidth() {
 	return averageCharWidthInPoints;
 }

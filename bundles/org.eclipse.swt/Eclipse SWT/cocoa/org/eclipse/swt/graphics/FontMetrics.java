@@ -22,12 +22,35 @@ package org.eclipse.swt.graphics;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
-	int ascent, descent, averageCharWidth, leading, height;
+	int ascent, descent, leading, height;
+	double averageCharWidth;
 
 FontMetrics() {
 }
 
-public static FontMetrics cocoa_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+public static FontMetrics cocoa_new (int ascent, int descent, int averageCharWidth, int leading, int height) {
+	FontMetrics fontMetrics = new FontMetrics();
+	fontMetrics.ascent = ascent;
+	fontMetrics.descent = descent;
+	fontMetrics.averageCharWidth = averageCharWidth;
+	fontMetrics.leading = leading;
+	fontMetrics.height = height;
+	return fontMetrics;
+}
+
+/**
+ * Invokes platform specific functionality to allocate a new FontMetrics.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>FontMetrics</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static FontMetrics cocoa_new (int ascent, int descent, double averageCharWidth, int leading, int height) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.ascent = ascent;
 	fontMetrics.descent = descent;
@@ -52,9 +75,8 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
 	FontMetrics metrics = (FontMetrics)object;
-	return ascent == metrics.ascent && descent == metrics.descent &&
-		averageCharWidth == metrics.averageCharWidth && leading == metrics.leading &&
-		height == metrics.height;
+	return ascent == metrics.ascent && descent == metrics.descent && leading == metrics.leading &&
+		height == metrics.height && (Double.compare (averageCharWidth, metrics.averageCharWidth) == 0);
 }
 
 /**
@@ -74,9 +96,22 @@ public int getAscent() {
  * of the font described by the receiver.
  *
  * @return the average character width of the font
+ * @since 3.107
  */
-public int getAverageCharWidth() {
+public double getAverageCharacterWidth () {
 	return averageCharWidth;
+}
+
+/**
+ * Returns the average character width, measured in pixels,
+ * of the font described by the receiver.
+ *
+ * @return the average character width of the font
+ * @deprecated Use getAverageCharacterWidth() instead
+ */
+@Deprecated
+public int getAverageCharWidth() {
+	return (int) averageCharWidth;
 }
 
 /**
@@ -129,7 +164,7 @@ public int getLeading() {
  */
 @Override
 public int hashCode() {
-	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
+	return ascent ^ descent ^ Double.hashCode (averageCharWidth) ^ leading ^ height;
 }
 
 String getName () {

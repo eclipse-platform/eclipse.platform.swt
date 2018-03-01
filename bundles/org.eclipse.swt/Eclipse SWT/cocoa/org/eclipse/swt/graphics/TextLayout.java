@@ -1044,11 +1044,11 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			int descent = (int)layoutManager.defaultLineHeightForFont(font.handle) - ascent;
 			ascent = Math.max(ascent, this.ascent);
 			descent = Math.max(descent, this.descent);
-			return FontMetrics.cocoa_new(ascent, descent, 0, 0, ascent + descent);
+			return FontMetrics.cocoa_new(ascent, descent, 0.0, 0, ascent + descent);
 		}
 		Rectangle rect = getLineBounds(lineIndex);
 		int baseline = (int)layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, getLineOffsets()[lineIndex]);
-		return FontMetrics.cocoa_new(rect.height - baseline, baseline, 0, 0, rect.height);
+		return FontMetrics.cocoa_new(rect.height - baseline, baseline, 0.0, 0, rect.height);
 	} finally {
 		if (pool != null) pool.release();
 	}

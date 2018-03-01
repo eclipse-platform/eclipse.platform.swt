@@ -2571,7 +2571,7 @@ public FontMetrics getFontMetrics() {
 			NSLayoutManager layoutManager = data.layoutManager;
 			layoutManager.glyphRangeForTextContainer(data.textContainer);
 			NSRect rect = layoutManager.usedRectForTextContainer(data.textContainer);
-			int avgWidth = (int) Math.ceil(rect.width) / s.length();
+			double avgWidth = Math.ceil(rect.width) / s.length();
 			int ascent = (int)layoutManager.defaultBaselineOffsetForFont(data.font.handle);
 			int height = (int)layoutManager.defaultLineHeightForFont(data.font.handle);
 			data.font.metrics = FontMetrics.cocoa_new(ascent, height - ascent, avgWidth, 0, height);
