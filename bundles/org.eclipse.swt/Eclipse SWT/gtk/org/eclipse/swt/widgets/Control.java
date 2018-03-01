@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3527,7 +3527,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	event.setBounds (eventBounds);
 	GCData data = new GCData ();
 //	data.damageRgn = gdkEvent.region;
-	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0)) {
+	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0) || GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		data.cairo = cairo;
 	}
 	GC gc = event.gc = GC.gtk_new (this, data);

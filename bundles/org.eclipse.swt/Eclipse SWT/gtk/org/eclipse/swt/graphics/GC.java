@@ -2009,6 +2009,23 @@ Rectangle getClippingInPixels() {
 		if (damageRgn != 0) {
 			GDK.gdk_region_intersect (rgn, damageRgn);
 		}
+		/*
+		 * Bug 421127 and 531667: CTabFolder doesn't paint tabs due to wrong clipping.
+		 *
+		 * With GTK 3.14 and above, the intersection between GC bounds and clipping region
+		 * is computed with clipping region in device space.
+		 *
+		 * So we transform the GC bounds to device space, before computing the intersection.
+		 */
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+			if (cairo != 0) {
+				double[] matrix = new double[6];
+				Cairo.cairo_get_matrix(cairo, matrix);
+				long /*int*/ newRgn = convertRgn(rgn, matrix);
+				GDK.gdk_region_destroy(rgn);
+				rgn = newRgn;
+			}
+		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
