@@ -4228,7 +4228,12 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 
 long /*int*/ mouseHoverProc (long /*int*/ handle) {
 	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
+	// null the GSource id as our implementation always returns 0 so the hover is
+	// hidden and this leads to the GSource to be destroyed
+	mouseHoverId = 0;
+	if (widget == null) {
+		return 0;
+	}
 	return widget.hoverProc (handle);
 }
 
