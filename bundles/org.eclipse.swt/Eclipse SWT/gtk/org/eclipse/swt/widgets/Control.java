@@ -1341,10 +1341,15 @@ void setSizeInPixels (Point size) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	long /*int*/ window = gtk_widget_get_window (topHandle ());
 	long /*int*/ shape_region = (region == null) ? 0 : region.handle;
-	GDK.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	this.region = region;
+	// Only call gdk_window_shape_combine_region on GTK3.8-
+	if (GTK.GTK_VERSION < OS.VERSION(3, 9, 0)) {
+		long /*int*/ window = gtk_widget_get_window (topHandle ());
+		GDK.gdk_window_shape_combine_region (window, shape_region, 0, 0);
+	} else {
+		GTK.gtk_widget_queue_draw(topHandle());
+	}
 }
 
 void setRelations () {
@@ -3524,9 +3529,37 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
-	if (!hooksPaint ()) return 0;
 	GdkRectangle rect = new GdkRectangle ();
 	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
+	/*
+	 * Modify the drawing of the widget with cairo_clip.
+	 * Doesn't modify input handling at this time.
+	 * See bug 529431.
+	 */
+	if (this.region != null && this.region.handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
+		long /*int*/ regionHandle = this.region.handle;
+		GdkRectangle regionRect = new GdkRectangle();
+		/*
+		 * These gdk_region_* functions actually map to the proper
+		 * cairo_* functions in os.h.
+		 */
+		GDK.gdk_region_get_clipbox(regionHandle, regionRect);
+		long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
+		GDK.gdk_region_subtract(actualRegion, regionHandle);
+		// Draw the Shell bg using cairo, only if it's a different color
+		Shell shell = getShell();
+		Color shellBg = shell.getBackground();
+		if (shellBg != this.getBackground()) {
+			GdkRGBA rgba = shellBg.handleRGBA;
+			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+		} else {
+			Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
+		}
+		GDK.gdk_cairo_region(cairo, actualRegion);
+		Cairo.cairo_clip(cairo);
+		Cairo.cairo_paint(cairo);
+	}
+	if (!hooksPaint ()) return 0;
 	Event event = new Event ();
 	event.count = 1;
 	Rectangle eventBounds = DPIUtil.autoScaleDown (new Rectangle (rect.x, rect.y, rect.width, rect.height));
