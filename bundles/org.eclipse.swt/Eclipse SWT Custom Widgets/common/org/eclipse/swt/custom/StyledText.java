@@ -8036,6 +8036,22 @@ void resetBidiData() {
 	createKeyBindings();
 	super.redraw();
 }
+void resetCache(SortedSet<Integer> lines) {
+	if (lines == null || lines.isEmpty()) return;
+	int maxLineIndex = renderer.maxWidthLineIndex;
+	renderer.reset(lines);
+	renderer.calculateClientArea();
+	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
+		renderer.calculate(maxLineIndex, 1);
+	}
+	setScrollBars(true);
+	if (!isFixedLineHeight()) {
+		if (topIndex > lines.iterator().next()) {
+			verticalScrollOffset = -1;
+		}
+		renderer.calculateIdle();
+	}
+}
 void resetCache(int firstLine, int count) {
 	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
@@ -10037,6 +10053,8 @@ public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	}
 }
 void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
+	int[] formerRanges = getRanges(start, length);
+	StyleRange[] formerStyles = getStyleRanges(start, length);
 	int charCount = content.getCharCount();
 	int end = start + length;
 	if (start > end || start < 0) {
@@ -10096,13 +10114,14 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	if (styles != null && styles.length > 0) {
 		renderer.setStyleRanges(ranges, styles);
 	}
+
+	SortedSet<Integer> modifiedLines = computeModifiedLines(formerRanges, formerStyles, ranges, styles);
+	resetCache(modifiedLines);
 	if (reset) {
-		resetCache(0, content.getLineCount());
 		super.redraw();
 	} else {
 		int lineStart = content.getLineAtOffset(Math.min(start, rangeStart));
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
-		resetCache(lineStart, lineEnd - lineStart + 1);
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
 		if (!(lineStart > partialBottomIndex || lineEnd < partialTopIndex)) {
@@ -10125,6 +10144,111 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 	columnX = oldColumnX;
 	doMouseLinkCursor();
 }
+
+/**
+ *
+ * @param referenceRanges former ranges, sorted by order and without overlapping, typically returned {@link #getRanges(int, int)}
+ * @param referenceStyles
+ * @param newRanges former ranges, sorted by order and without overlappingz
+ * @param newStyles
+ * @return
+ */
+private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRange[] referenceStyles, int[] newRanges, StyleRange[] newStyles) {
+	if (referenceStyles == null) {
+		referenceStyles = new StyleRange[0];
+	}
+	if (referenceRanges == null) {
+		referenceRanges = createRanges(referenceStyles);
+	}
+	if (newStyles == null) {
+		newStyles = new StyleRange[0];
+	}
+	if (newRanges == null) {
+		newRanges = createRanges(newStyles);
+	}
+	if (referenceRanges.length != 2 * referenceStyles.length) {
+		throw new IllegalArgumentException();
+	}
+	if (newRanges.length != 2 * newStyles.length) {
+		throw new IllegalArgumentException();
+	}
+	SortedSet<Integer> res = new TreeSet<>();
+	int referenceRangeIndex = 0;
+	int newRangeIndex = 0;
+	StyleRange defaultStyle = new StyleRange();
+	defaultStyle.foreground = this.foreground;
+	defaultStyle.background = this.background;
+	defaultStyle.font = getFont();
+	int currentOffset = referenceRanges.length > 0 ? referenceRanges[0] : Integer.MAX_VALUE;
+	if (newRanges.length > 0) {
+		currentOffset = Math.min(currentOffset, newRanges[0]);
+	}
+	while (currentOffset < content.getCharCount() && (referenceRangeIndex < referenceStyles.length || newRangeIndex < newRanges.length)) {
+		int nextMilestoneOffset = Integer.MAX_VALUE; // next new range start/end after current offset
+
+		while (referenceRangeIndex < referenceStyles.length && lastRangeOffset(referenceRanges, referenceRangeIndex) < currentOffset) {
+			referenceRangeIndex++;
+		}
+		StyleRange referenceStyleAtCurrentOffset = defaultStyle;
+		if (isInRange(referenceRanges, referenceRangeIndex, currentOffset)) { // has styling
+			referenceStyleAtCurrentOffset = referenceStyles[referenceRangeIndex];
+			nextMilestoneOffset =  Math.min(nextMilestoneOffset, lastRangeOffset(referenceRanges, referenceRangeIndex) + 1); //just after current range
+		} else if (referenceRangeIndex + 1 < referenceStyles.length) { // no range, default styling
+			nextMilestoneOffset = referenceRanges[2 * (referenceRangeIndex + 1)]; // beginning of next range
+		}
+
+		while (newRangeIndex < newStyles.length && lastRangeOffset(newRanges, newRangeIndex) < currentOffset) {
+			newRangeIndex++;
+		}
+		StyleRange newStyleAtCurrentOffset = defaultStyle;
+		if (isInRange(newRanges, newRangeIndex, currentOffset)) {
+			newStyleAtCurrentOffset = newStyles[newRangeIndex];
+			nextMilestoneOffset = Math.min(nextMilestoneOffset, lastRangeOffset(newRanges, newRangeIndex) + 1);
+		} else if (newRangeIndex + 1 < newStyles.length) {
+			nextMilestoneOffset = newRanges[2 * (newRangeIndex + 1)];
+		}
+
+		if (!referenceStyleAtCurrentOffset.similarTo(newStyleAtCurrentOffset)) {
+			int fromLine = getLineAtOffset(currentOffset);
+			int toLine = getLineAtOffset(nextMilestoneOffset - 1);
+			for (int line = fromLine; line <= toLine; line++) {
+				res.add(line);
+			}
+			currentOffset = toLine + 1 < getLineCount() ? getOffsetAtLine(toLine + 1) : content.getCharCount();
+		} else {
+			currentOffset = nextMilestoneOffset;
+		}
+	}
+	return res;
+}
+private int[] createRanges(StyleRange[] referenceStyles) {
+	int[] referenceRanges;
+	referenceRanges = new int[2 * referenceStyles.length];
+	for (int i = 0; i < referenceStyles.length; i++) {
+		referenceRanges[2 * i] = referenceStyles[i].start;
+		referenceRanges[2 * i + 1] = referenceStyles[i].length;
+	}
+	return referenceRanges;
+}
+
+private boolean isInRange(int[] ranges, int styleIndex, int offset) {
+	if (ranges == null || ranges.length == 0 || styleIndex < 0 || 2 * styleIndex + 1 > ranges.length) {
+		return false;
+	}
+	int start = ranges[2 * styleIndex];
+	int length = ranges[2 * styleIndex + 1];
+	return offset >= start && offset <= start + length;
+}
+
+private int lastRangeOffset(int[] ranges, int styleIndex) {
+	if (styleIndex < 0 || 2 * styleIndex > ranges.length) {
+		throw new IllegalArgumentException();
+	}
+	int start = ranges[2 * styleIndex];
+	int length = ranges[2 * styleIndex + 1];
+	return start + length;
+}
+
 /**
  * Sets styles to be used for rendering the widget content. All styles
  * in the widget will be replaced with the given set of styles.

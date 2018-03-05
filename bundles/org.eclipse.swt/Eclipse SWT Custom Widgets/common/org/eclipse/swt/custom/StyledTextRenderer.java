@@ -13,6 +13,8 @@
 package org.eclipse.swt.custom;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -1249,14 +1251,25 @@ void reset() {
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
 	if (startLine < 0 || endLine > lineSizes.length) return;
+	SortedSet<Integer> lines = new TreeSet<>();
 	for (int i = startLine; i < endLine; i++) {
-		LineSizeInfo line = getLineSize(i);
-		line.resetSize();
+		lines.add(Integer.valueOf(i));
 	}
-	if (startLine <= maxWidthLineIndex && maxWidthLineIndex < endLine) {
+	reset(lines);
+}
+void reset(Set<Integer> lines) {
+	if (lines == null || lines.isEmpty()) return;
+	int resetLineCount = 0;
+	for (Integer line : lines) {
+		if (line >= 0 || line < lineCount) {
+			resetLineCount++;
+			getLineSize(line.intValue()).resetSize();
+		}
+	}
+	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
 		maxWidth = 0;
 		maxWidthLineIndex = -1;
-		if (lineCount != this.lineCount) {
+		if (resetLineCount != this.lineCount) {
 			for (int i = 0; i < this.lineCount; i++) {
 				LineSizeInfo lineSize = getLineSize(i);
 				if (lineSize.width > maxWidth) {
