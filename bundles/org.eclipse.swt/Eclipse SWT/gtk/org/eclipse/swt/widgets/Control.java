@@ -1036,10 +1036,17 @@ Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
 	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
 	 */
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GtkRequisition requisition = new GtkRequisition();
-		GTK.gtk_widget_get_preferred_size(widget, requisition, null);
-		sizes.x = (width - (requisition.width - width)) < 0 ? requisition.width : width;
-		sizes.y = (height - (requisition.height - height)) < 0 ? requisition.height : height;
+		GtkRequisition minimumSize = new GtkRequisition();
+		GtkRequisition naturalSize = new GtkRequisition();
+		GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
+		/*
+		 * Use the smallest of the minimum/natural sizes to prevent oversized
+		 * widgets.
+		 */
+		int smallestWidth = Math.min(minimumSize.width, naturalSize.width);
+		int smallestHeight = Math.min(minimumSize.height, naturalSize.height);
+		sizes.x = (width - (smallestWidth - width)) < 0 ? smallestWidth : width;
+		sizes.y = (height - (smallestHeight - height)) < 0 ? smallestHeight : height;
 	}
 	return sizes;
 }
