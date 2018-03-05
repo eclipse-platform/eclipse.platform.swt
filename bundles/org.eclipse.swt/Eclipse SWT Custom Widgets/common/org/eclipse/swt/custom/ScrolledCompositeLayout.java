@@ -85,7 +85,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (hBar != null) {
 		hBar.setMaximum (contentRect.width);
 		hBar.setThumb (Math.min (contentRect.width, hostRect.width));
-		hBar.setIncrement (gc.getFontMetrics ().getAverageCharWidth ());
+		hBar.setIncrement ((int) gc.getFontMetrics ().getAverageCharacterWidth ());
 		hBar.setPageIncrement (hostRect.width);
 		int hPage = contentRect.width - hostRect.width;
 		int hSelection = hBar.getSelection ();

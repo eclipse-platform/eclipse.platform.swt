@@ -1312,7 +1312,7 @@ void setFont(Font font, int tabs) {
 	layout.dispose();
 	if (styledText != null) {
 		GC gc = new GC(styledText);
-		averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+		averageCharWidth = (int) gc.getFontMetrics().getAverageCharacterWidth();
 		fixedPitch = gc.stringExtent("l").x == gc.stringExtent("W").x; //$NON-NLS-1$ //$NON-NLS-2$
 		gc.dispose();
 	}
