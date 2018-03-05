@@ -57,6 +57,12 @@ public void test_getAscent() {
 }
 
 @Test
+public void test_getAverageCharacterWidth() {
+	FontMetrics fm = gc.getFontMetrics();
+	fm.getAverageCharacterWidth();
+}
+
+@Test
 public void test_getAverageCharWidth() {
 	FontMetrics fm = gc.getFontMetrics();
 	fm.getAverageCharWidth();
