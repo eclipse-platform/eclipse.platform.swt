@@ -1047,8 +1047,10 @@ public void setEnabled (boolean enabled) {
  * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
  * </p><p>
- * Note that the platform window manager ultimately has control
- * over the location of popup menus.
+ * Also note that the actual location of the menu is dependent
+ * on platform specific behavior. For example: on Linux with
+ * Wayland this operation is a hint due to lack of global
+ * coordinates.
  * </p>
  *
  * @param x the new x coordinate for the receiver
