@@ -242,43 +242,15 @@ void _setVisible (boolean visible) {
 					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
 					event.type = GDK.GDK_BUTTON_PRESS;
-					event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
+					// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
+					if (OS.isX11()) {
+						event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
+					}
 					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
-				} else {
-					if (!OS.isX11()) {
-						/*
-						 * Lack of absolute coordinates make Wayland event windows inaccurate.
-						 * If we are running on the Wayland the best way to pop-up a menu
-						 * is by using the location of the mouse pointer. See bug 530059.
-						 */
-						long /*int*/ seat = GDK.gdk_event_get_seat(eventPtr);
-						long /*int*/ pointer = GDK.gdk_seat_get_pointer(seat);
-						long /*int*/ deviceWindow = GDK.gdk_device_get_window_at_position(pointer, null, null);
-						OS.g_object_ref(deviceWindow);
-						/*
-						 * The event is most likely a button or key press. If it isn't
-						 * we don't want it -- fall back to the event found with
-						 * gtk_get_current_event().
-						 */
-						int eventType = GDK.gdk_event_get_event_type(eventPtr);
-						switch (eventType) {
-							case GDK.GDK_BUTTON_PRESS:
-								GdkEventButton eventButton = new GdkEventButton();
-								OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
-								eventButton.window = deviceWindow;
-								OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
-								break;
-							case GDK.GDK_KEY_PRESS:
-								GdkEventKey eventKey = new GdkEventKey();
-								OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
-								eventKey.window = deviceWindow;
-								OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
-								break;
-						}
-					}
 				}
+				adjustParentWindow(eventPtr);
 				verifyMenuPosition(getItemCount());
 				GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
 				GDK.gdk_event_free (eventPtr);
@@ -1127,6 +1099,38 @@ void setOrientation (boolean create) {
             items [i].setOrientation (create);
         }
     }
+}
+
+/**
+ * Lack of absolute coordinates make Wayland event windows inaccurate.
+ * Currently the best approach is to the use the GdkWindow of the mouse
+ * pointer. See bug 530059 and 532074.<p>
+ *
+ * @param eventPtr a pointer to the GdkEvent
+ */
+void adjustParentWindow (long /*int*/ eventPtr) {
+	if (!OS.isX11()) {
+		long /*int*/ display = GDK.gdk_display_get_default ();
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
+		long /*int*/ deviceWindow = GDK.gdk_device_get_window_at_position(pointer, null, null);
+		OS.g_object_ref(deviceWindow);
+		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		switch (eventType) {
+			case GDK.GDK_BUTTON_PRESS:
+				GdkEventButton eventButton = new GdkEventButton();
+				OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
+				eventButton.window = deviceWindow;
+				OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
+				break;
+			case GDK.GDK_KEY_PRESS:
+				GdkEventKey eventKey = new GdkEventKey();
+				OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
+				eventKey.window = deviceWindow;
+				OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
+				break;
+		}
+	}
+	return;
 }
 
 /**
