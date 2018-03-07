@@ -26,12 +26,13 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Text text = new Text (shell, SWT.BORDER);
+	text.setFont (new Font (display, "Courier", 13, SWT.NORMAL)); // Use a fixed size font
 	Rectangle clientArea = shell.getClientArea ();
 	text.setLocation (clientArea.x, clientArea.y);
 	int columns = 10;
 	GC gc = new GC (text);
 	FontMetrics fm = gc.getFontMetrics ();
-	int width = columns * fm.getAverageCharWidth ();
+	int width = (int) (columns * fm.getAverageCharacterWidth ());
 	int height = fm.getHeight ();
 	gc.dispose ();
 	text.setSize (text.computeSize (width, height));

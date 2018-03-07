@@ -18,8 +18,8 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet69 {
 
@@ -36,8 +36,8 @@ public static void main (String [] args) {
 
 	GC gc = new GC (text);
 	FontMetrics fm = gc.getFontMetrics ();
-	int charWidth = fm.getAverageCharWidth ();
-	int width = text.computeSize (charWidth * 8, SWT.DEFAULT).x;
+	double charWidth = fm.getAverageCharacterWidth ();
+	int width = text.computeSize ((int) (charWidth * 8), SWT.DEFAULT).x;
 	gc.dispose ();
 	FormData data = new FormData (width, SWT.DEFAULT);
 	text.setLayoutData (data);

@@ -44,7 +44,7 @@ public static void main(String [] args) {
     GC gc = new GC(liveLabel);
     Point pt = gc.textExtent(errorMessage);
     GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-    data.minimumWidth = pt.x + gc.getFontMetrics().getAverageCharWidth() * 2;
+    data.minimumWidth = (int) (pt.x + gc.getFontMetrics().getAverageCharacterWidth() * 2);
     gc.dispose();
     liveLabel.setLayoutData(data);
     liveLabel.setText("");

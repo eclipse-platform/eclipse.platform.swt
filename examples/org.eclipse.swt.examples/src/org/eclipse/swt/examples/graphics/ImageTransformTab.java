@@ -76,7 +76,7 @@ public void createControlPanel(Composite parent) {
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("Rotate")); //$NON-NLS-1$
 	rotateSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
 	GC gc = new GC(rotateSpinner);
-	int width = gc.getFontMetrics().getAverageCharWidth() * 5;
+	int width = (int) (gc.getFontMetrics().getAverageCharacterWidth() * 5);
 	gc.dispose();
 	rotateSpinner.setLayoutData(new GridData(width, SWT.DEFAULT));
 	rotateSpinner.setSelection(0);

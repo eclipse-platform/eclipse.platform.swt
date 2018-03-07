@@ -228,7 +228,7 @@ void computeDisplayText (GC gc) {
 	}
 
 	/* Make initial guess. */
-	int index = Math.min (availableWidth / gc.getFontMetrics ().getAverageCharWidth (), text.length ());
+	int index = (int) Math.min (availableWidth / gc.getFontMetrics ().getAverageCharacterWidth (), text.length ());
 	textWidth = gc.textExtent (text.substring (0, index), SWT.DRAW_MNEMONIC).x;
 
 	/* Initial guess is correct. */
