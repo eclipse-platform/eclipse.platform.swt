@@ -65,6 +65,20 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
+	/**
+	 * When this field is set, it indicates that a child widget of this Composite
+	 * needs to have its clip set to its allocation. This is because on GTK3.20+
+	 * some widgets (like Combo) have their clips merged with that of their parent.
+	 */
+	long /*int*/ fixClipHandle;
+	/**
+	 * If fixClipHandle is set, fixClipArray can contain additional child widgets
+	 * that also need to have their clips adjusted.
+	 *
+	 * <p>The array <b>must</b> be ordered by widget hierarchy, as this array will be
+	 * traversed in-order to adjust the clipping of each element. See bug 500703.</p>
+	 */
+	long /*int*/ [] fixClipHandleChildren = {};
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -334,6 +348,53 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 }
 
+/**
+ * Iterates though the array of child widgets that need to have their clips
+ * adjusted: if a child has a negative clip, adjust it. Also check if the child's
+ * allocation is negative and adjust it as necessary.
+ *
+ * <p>If the array is empty this method just returns. See bug 500703.</p>
+ */
+void fixChildClippings () {
+	if (fixClipHandleChildren == null) {
+		return;
+	} else {
+		GtkRequisition minimumSize = new GtkRequisition ();
+		GtkRequisition naturalSize = new GtkRequisition ();
+		GtkAllocation clip = new GtkAllocation ();
+		GtkAllocation allocation = new GtkAllocation ();
+		for (long /*int*/ widget : fixClipHandleChildren) {
+			GTK.gtk_widget_get_allocation(widget, allocation);
+			GTK.gtk_widget_get_clip(widget, clip);
+			/*
+			 * If the clip is negative, add the x coordinate to the width
+			 * and set the x coordinate to 0.
+			 */
+			if (clip.x < 0) {
+				clip.width = clip.width + clip.x;
+				clip.x = 0;
+				/*
+				 * Some "transient" widgets like menus get allocations of
+				 * {-1, -1, 1, 1}. Check to make sure this isn't the case
+				 * before proceeding.
+				 */
+				if (allocation.x < -1 && (allocation.width > 1 || allocation.height > 1)) {
+					// Adjust the allocation just like the clip, if it's negative
+					allocation.width = allocation.width + allocation.x;
+					allocation.x = 0;
+					// Call gtk_widget_get_preferred_size() to prevent warnings
+					GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
+					// Allocate and queue a resize event
+					GTK.gtk_widget_size_allocate(widget, allocation);
+					GTK.gtk_widget_queue_resize(widget);
+				}
+			}
+			// Adjust the clip
+			GTK.gtk_widget_set_clip(widget, allocation);
+		}
+	}
+}
+
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
@@ -345,6 +406,11 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		// We specify a 0 value for x & y as we want the whole widget to be
 		// colored, not some portion of it.
 		GTK.gtk_render_background(context, cairo, 0, 0, width, height);
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			// If fixClipHandle is set: iterate through the children of widget
+			// and set their clips to be that of their allocation
+			if (widget == fixClipHandle) fixChildClippings();
+		}
 	}
 	return super.gtk_draw(widget, cairo);
 }

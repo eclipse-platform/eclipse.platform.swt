@@ -43,8 +43,15 @@ public class Bug500703_ComboGarbledResize {
 		Combo text = new Combo(shell, SWT.READ_ONLY);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		text.add("This is a very long long long long long box");
+		text.add("short");
+
+		// Uncomment to test different selections
+//		text.select(0);
+//		text.select(1);
 
 		shell.pack();
+		// Uncomment for setBounds testing
+//		shell.setSize(400, 200);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())

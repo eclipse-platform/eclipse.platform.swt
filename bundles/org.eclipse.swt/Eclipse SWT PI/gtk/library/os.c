@@ -13340,6 +13340,28 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1child_1visible)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1clip
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1get_1clip)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GtkAllocation _arg1, *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1clip_FUNC);
+	if (arg1) if ((lparg1 = getGtkAllocationFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gtk_widget_get_clip((GtkWidget *)arg0, lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_get_clip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkAllocation *))fp)((GtkWidget *)arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGtkAllocationFields(env, arg1, lparg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1clip_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1default_1style
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1default_1style)
 	(JNIEnv *env, jclass that)
@@ -14107,6 +14129,28 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1can_1focus)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1can_1focus_FUNC);
 	gtk_widget_set_can_focus((GtkWidget *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1can_1focus_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1clip
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1clip)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GtkAllocation _arg1, *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1clip_FUNC);
+	if (arg1) if ((lparg1 = getGtkAllocationFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gtk_widget_set_clip((GtkWidget *)arg0, lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_set_clip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkAllocation *))fp)((GtkWidget *)arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGtkAllocationFields(env, arg1, lparg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1clip_FUNC);
 }
 #endif
 

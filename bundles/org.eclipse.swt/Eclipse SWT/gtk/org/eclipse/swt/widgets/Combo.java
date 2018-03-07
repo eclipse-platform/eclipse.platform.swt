@@ -58,13 +58,12 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
-	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle;
+	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle, buttonBoxHandle, cellBoxHandle;
 	int lastEventTime, visibleCount = 10;
 	long /*int*/ imContext;
 	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
-	boolean selectionAdded;
 	int indexSelected;
 	GdkRGBA background;
 	/**
@@ -502,6 +501,9 @@ void createHandle (int index) {
 	if (menuHandle != 0) OS.g_object_ref (menuHandle);
 	buttonHandle = findButtonHandle ();
 	if (buttonHandle != 0) OS.g_object_ref (buttonHandle);
+	if (buttonBoxHandle != 0) OS.g_object_ref (buttonBoxHandle);
+	if (cellHandle != 0) cellBoxHandle = GTK.gtk_widget_get_parent(cellHandle);
+	if (cellBoxHandle != 0) OS.g_object_ref(cellBoxHandle);
 	/*
 	* Feature in GTK. By default, read only combo boxes
 	* process the RETURN key rather than allowing the
@@ -628,6 +630,7 @@ long /*int*/ findButtonHandle() {
 			OS.g_list_free(display.allChildren);
 			display.allChildren = 0;
 		}
+		buttonBoxHandle = childHandle;
 	}
 
 	GTK.gtk_container_forall (childHandle, display.allChildrenProc, 0);
@@ -1354,6 +1357,34 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 }
 
 @Override
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	/*
+	 * Feature in GTK3.20+: READ_ONLY Combos have their clip unioned
+	 * with the parent container (Composite in this case). This causes
+	 * overdrawing into neighbouring widgets and breaks resizing.
+	 *
+	 * The fix is to adjust the clip and allocation of the Combo and its children
+	 * in the parent Composite's draw handler, as it ensures that the draw events
+	 * going to the Combo have the correct geometry specifications. This has to
+	 * happen in the parent Composite since neighouring widgets that share the
+	 * same parent are affected. See bug 500703.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && (style & SWT.READ_ONLY) != 0) {
+		if (parent != null && parent.fixClipHandle == 0) {
+			long /*int*/ parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
+			if (parentHandle != 0) {
+				parent.fixClipHandle = parentHandle;
+				GTK.gtk_widget_queue_draw(parentHandle);
+				long [] /*int*/ array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
+				parent.fixClipHandleChildren = new long /*int*/ [array.length];
+				System.arraycopy (array, 0, parent.fixClipHandleChildren, 0, array.length);
+			}
+		}
+	}
+	return super.gtk_draw(widget, cairo);
+}
+
+@Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents
@@ -1662,7 +1693,13 @@ void releaseHandle () {
 	if (buttonHandle != 0) {
 		OS.g_object_unref (buttonHandle);
 	}
-	menuHandle = buttonHandle = entryHandle = 0;
+	if (buttonBoxHandle != 0) {
+		OS.g_object_unref (buttonBoxHandle);
+	}
+	if (cellBoxHandle != 0) {
+		OS.g_object_unref (cellBoxHandle);
+	}
+	cellBoxHandle = buttonBoxHandle = menuHandle = buttonHandle = entryHandle = 0;
 }
 
 @Override
