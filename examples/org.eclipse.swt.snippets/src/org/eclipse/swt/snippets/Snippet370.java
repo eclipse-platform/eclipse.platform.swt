@@ -49,6 +49,7 @@ public class Snippet370 {
 		composite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		new Label(composite, SWT.NONE).setText(locale.toLanguageTag());
 		new DateTime(composite, SWT.DROP_DOWN);
+		new DateTime(composite, SWT.SHORT);
 		new DateTime(composite, SWT.TIME);
 	}
 }

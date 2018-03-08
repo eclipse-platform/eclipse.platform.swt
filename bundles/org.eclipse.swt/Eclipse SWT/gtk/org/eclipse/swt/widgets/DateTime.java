@@ -1858,9 +1858,8 @@ int getArrow(long /*int*/ widget) {
 	int adj_value = (int) GTK.gtk_adjustment_get_value(GTK.gtk_spin_button_get_adjustment(widget));
 	int new_value = 0;
 	if (isDate()) {
-		// getMonth () return 0 as first month and 11 as last one, whereas adjustment
-		// does not, so adding one makes them comparable
-		new_value = getMonth() + 1;
+		FieldPosition firstField = getNextField(null);
+		new_value = calendar.get(getCalendarField(firstField));
 	} else if (isTime()) {
 		new_value = getHours();
 		if (hasAmPm()) {
