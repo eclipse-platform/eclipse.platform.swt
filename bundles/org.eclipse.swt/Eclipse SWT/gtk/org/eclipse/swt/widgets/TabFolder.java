@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -378,7 +378,7 @@ Control[] _getChildren() {
 		int i = 0;
 		for (int j = 0; j < count; j++) {
 			TabItem tabItem = items[j];
-			if (tabItem != null) {
+			if (tabItem != null && !tabItem.isDisposed()) {
 				long /*int*/ parentHandle = tabItem.pageHandle;
 				long /*int*/ list = GTK.gtk_container_get_children (parentHandle);
 				if (list != 0) {
