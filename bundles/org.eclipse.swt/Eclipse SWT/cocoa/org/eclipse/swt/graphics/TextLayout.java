@@ -63,6 +63,7 @@ public final class TextLayout extends Resource {
 	static final int UNDERLINE_THICK = 1 << 16;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	int[] invalidOffsets;
+	private boolean ignoreSegments;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 
 	static class StyleItem {
@@ -133,7 +134,7 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 
 void computeRuns() {
 	if (lineBounds != null) return;
-	String segmentsText = getSegmentsText();
+	String segmentsText = ignoreSegments ? text : getSegmentsText();
 	char[] chars = new char[segmentsText.length()];
 	segmentsText.getChars(0, chars.length, chars, 0);
 	NSString str = (NSString) new NSString().alloc();
@@ -2325,7 +2326,9 @@ public void setDefaultTabWidth(int tabLength) {
 		tabBuffer.append(' ');
 	}
 	setText(tabBuffer.toString());
+	ignoreSegments = true;
 	this.defaultTabWidth = this.getTabWidth();
+	ignoreSegments = false;
 	setText (oldString);
 }
 
