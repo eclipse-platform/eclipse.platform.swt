@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -58,7 +58,6 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1setFrameSize_1",
 	"CALLBACK_1setFrame_1",
 	"CALLBACK_1setMarkedText_1selectedRange_1",
-	"CALLBACK_1setNeedsDisplayInRect_1",
 	"CALLBACK_1shouldChangeTextInRange_1replacementString_1",
 	"CALLBACK_1sizeOfLabel_1",
 	"CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1",

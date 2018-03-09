@@ -748,8 +748,6 @@ public static final native long /*int*/ CALLBACK_setFrameOrigin_(long /*int*/ fu
 public static final native long /*int*/ CALLBACK_setFrameSize_(long /*int*/ func);
 /** @method callback_types=void;id;SEL;id;NSRange;,callback_flags=none;none;none;none;struct; */
 public static final native long /*int*/ CALLBACK_setMarkedText_selectedRange_(long /*int*/ func);
-/** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
-public static final native long /*int*/ CALLBACK_setNeedsDisplayInRect_(long /*int*/ func);
 /** @method callback_types=BOOL;id;SEL;NSRange;NSString*;,callback_flags=none;none;none;struct;none; */
 public static final native long /*int*/ CALLBACK_shouldChangeTextInRange_replacementString_(long /*int*/ func);
 /** @method callback_types=NSSize;id;SEL;BOOL;,callback_flags=struct;none;none;none; */
