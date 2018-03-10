@@ -61,9 +61,11 @@ public class SwtTestUtil {
 	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "cocoa"};
 
 	public static final String testFontName;
+	// isWindows refers to windows platform, i.e. win32 windowing system; see also isWindowsOS
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
+	public final static boolean isWindowsOS = System.getProperty("os.name").startsWith("Windows");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");

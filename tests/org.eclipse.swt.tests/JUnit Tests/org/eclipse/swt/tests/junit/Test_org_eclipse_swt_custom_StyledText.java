@@ -753,7 +753,7 @@ public void test_copy() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.copy();
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
@@ -766,7 +766,7 @@ public void test_copy() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.copy();
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "Line1\r\nLine2";
 	}
 	else {
@@ -821,7 +821,7 @@ public void test_cut() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.cut();
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
@@ -834,7 +834,7 @@ public void test_cut() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.cut();
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "Line1\r\nLine2";
 	}
 	else {
@@ -2349,7 +2349,7 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"\rLine1\nLine2\r\nLine3\n\rLine4\n"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
@@ -2361,7 +2361,7 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\r\nLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "Line1\r\nLine2";
 	}
 	else {
@@ -2373,7 +2373,7 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\rLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "Line1\r\nLine2";
 	}
 	else {
@@ -2386,7 +2386,7 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\nLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtTestUtil.isWindows) {
+	if (SwtTestUtil.isWindowsOS) {
 		convertedText = "Line1\r\nLine2";
 	}
 	else {
