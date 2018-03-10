@@ -2625,6 +2625,9 @@ Dialog getModalDialog () {
  * windows.  See http://freedesktop.org/Standards/wm-spec.
  */
 Rectangle getWorkArea() {
+	if (OS.IsWin32) {
+		return null;
+	}
 	byte[] name = Converter.wcsToMbcs ("_NET_WORKAREA", true); //$NON-NLS-1$
 	long /*int*/ atom = GDK.gdk_atom_intern (name, true);
 	if (atom == GDK.GDK_NONE) return null;
