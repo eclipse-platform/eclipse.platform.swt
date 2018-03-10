@@ -70,29 +70,35 @@
 #define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
 #endif
 
+
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
 
 // Hard-link code generated from GTK.java to LIB_GTK
-#define GTK_LOAD_FUNCTION(var, name) \
-		static int initialized = 0; \
-		static void *var = NULL; \
-		if (!initialized) { \
-			void* handle = dlopen(LIB_GTK, LOAD_FLAGS); \
-			if (handle) var = dlsym(handle, #name); \
-			initialized = 1; \
-	                CHECK_DLERROR \
-		}
+#define GTK_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GTK, name)
+// Hard-link code generated from GTK.java to LIB_GDK
+#define GDK_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GDK, name)
 
-// Hard-link code generated from GTK.java to LIB_GTK
-#define GDK_LOAD_FUNCTION(var, name) \
+#ifdef _WIN32
+#define LOAD_FUNCTION_LIB(var, libname, name) \
+		static int initialized = 0; \
+		static FARPROC var = NULL; \
+		if (!initialized) { \
+			HMODULE hm = LoadLibrary(libname); \
+			if (hm) var = GetProcAddress(hm, #name); \
+			initialized = 1; \
+		}
+#else
+#define LOAD_FUNCTION_LIB(var, libname, name) \
 		static int initialized = 0; \
 		static void *var = NULL; \
 		if (!initialized) { \
-			void* handle = dlopen(LIB_GDK, LOAD_FLAGS); \
+			void* handle = dlopen(libname, LOAD_FLAGS); \
 			if (handle) var = dlsym(handle, #name); \
 			initialized = 1; \
 	                CHECK_DLERROR \
 		}
+#endif
+
 
 #ifdef GDK_WINDOWING_X11
 

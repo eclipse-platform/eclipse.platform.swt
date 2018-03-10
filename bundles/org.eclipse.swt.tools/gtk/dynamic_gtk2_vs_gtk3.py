@@ -20,7 +20,7 @@ API_GTK3_0_URL = "https://developer.gnome.org/gtk3/3.0/api-index-full.html"
 API_GTK3_STABLE_URL = "https://developer.gnome.org/gtk3/stable/api-index-full.html"
 API_GTK3_DEPRECATED_URL = "https://developer.gnome.org/gtk3/stable/api-index-deprecated.html"
 
-OS_CUSTOM_FILE = "./../org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.h"
+OS_FILE = "./../../org.eclipse.swt/Eclipse SWT PI/gtk/library/os.c"
 FUNCTION_LIST = []
 GTK2_FUNCTION_LIST = []
 GTK30_FUNCTION_LIST = []
@@ -58,20 +58,19 @@ def download_gtk3_deprecated_symbols():
 
 def populate_function_list():
     # Read os_custom.h from file
-    with open(OS_CUSTOM_FILE) as f:
+    with open(OS_FILE) as f:
         os_custom = f.read()
 
     return str(os_custom);
 
 def find_gtk_version_functions(custom_str, gtk2_str, gtk30_str, gtk3x_str, gtk3x_dpr_str):
-    regex = r"((\w)+(_)+(LIB)(\s)+(LIB_)+)+"
+    regex = r"((GTK|GDK)_LOAD_FUNCTION\(fp, (\w+))+"
     matchList = re.findall(regex, custom_str)
 
     # Search through list of regex matches, strip the "_LIB" and populate
     # the dynamic function list.
     for match in matchList:
-        location = match[0].find("_LIB")
-        function_name = match[0][:location]
+        function_name = match[2]
         FUNCTION_LIST.append(function_name)
 
     # Check each dynamic function and see if it's deprecated: if so, populate

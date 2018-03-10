@@ -11,8 +11,12 @@
 
 # Makefile for creating SWT libraries for Linux GTK
 
-# Uncomment to debug parts of SWT natives
-# SWT_WEBKIT_DEBUG = -DWEBKIT_DEBUG
+#SWT_LIB_DEBUG=1     # to debug glue code in /bundles/org.eclipse.swt/bin/library. E.g os_custom.c:swt_fixed_forall(..)
+# Can be set via environment like: export SWT_LIB_DEBUG=1
+ifdef SWT_LIB_DEBUG
+SWT_DEBUG = -O0 -g3 -ggdb3
+NO_STRIP=1
+endif
 
 include make_common.mak
 
@@ -77,6 +81,7 @@ ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
+		$(SWT_DEBUG) \
 		-DWIN32 -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/win32 \

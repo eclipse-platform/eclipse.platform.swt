@@ -45,6 +45,7 @@
 #define LIB_GDK "libgdk-win32-2.0-0.dll"
 #endif
 #define LIB_GTHREAD "libgthread-2.0-0.dll"
+#define LIB_GLIB "libglib-2.0-0.dll"
 #define LIB_ATK "libatk-1.0-0.dll"
 #define LIB_FONTCONFIG "libfontconfig-1.dll"
 #else
