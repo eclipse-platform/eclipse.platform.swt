@@ -4453,7 +4453,7 @@ NMTBCUSTOMDRAW *getNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTO
 	}
 	lpStruct->hbrMonoDither = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrMonoDither);
 	lpStruct->hbrLines = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrLines);
-	lpStruct->hpenLines = (HBRUSH)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines);
+	lpStruct->hpenLines = (HPEN)(*env)->GetIntLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines);
 	lpStruct->clrText = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrText);
 	lpStruct->clrMark = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrMark);
 	lpStruct->clrTextHighlight = (*env)->GetIntField(env, lpObject, NMTBCUSTOMDRAWFc.clrTextHighlight);

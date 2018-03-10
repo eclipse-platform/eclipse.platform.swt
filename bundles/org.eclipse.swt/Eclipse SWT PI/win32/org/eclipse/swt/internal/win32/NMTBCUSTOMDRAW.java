@@ -16,7 +16,7 @@ public class NMTBCUSTOMDRAW extends NMCUSTOMDRAW {
 	public long /*int*/ hbrMonoDither;
 	/** @field cast=(HBRUSH) */
 	public long /*int*/ hbrLines;
-	/** @field cast=(HBRUSH) */
+	/** @field cast=(HPEN) */
 	public long /*int*/ hpenLines;
 	public int clrText;
 	public int clrMark;
