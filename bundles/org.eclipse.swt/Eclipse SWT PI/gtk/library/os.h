@@ -40,7 +40,7 @@
 #include <gtk/gtkunixprint.h>
 #else
 #include <windows.h>
-#define NO_realpath // TODO [win32] use GetFullPathName instead; 
+//#define NO_realpath // TODO [win32] use GetFullPathName instead; 
 #define NO_RTLD_1GLOBAL
 #define NO_RTLD_1LAZY
 #define NO_RTLD_1NOW
@@ -65,6 +65,9 @@
 #define NO__1gtk_1print_1unix_1dialog_1set_1current_1page
 #define NO__1gtk_1print_1unix_1dialog_1set_1embed_1page_1setup
 #define NO__1gtk_1print_1unix_1dialog_1set_1manual_1capabilities
+
+// map realpath to a similar function in win32
+#define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
 #endif
 
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
