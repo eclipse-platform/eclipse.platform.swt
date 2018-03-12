@@ -79,7 +79,7 @@ public class DateTime extends Composite {
 	private DateFormat dateFormat;
 	/* DROP_DOWN calendar fields for DATE */
 	Color fg, bg;
-	boolean hasFocus, monthChanged, calendarDisplayed;
+	boolean hasFocus;
 	int savedYear, savedMonth, savedDay;
 	Shell popupShell;
 	DateTime popupCalendar;
@@ -100,6 +100,10 @@ public class DateTime extends Composite {
 	static final int MAX_YEAR = 9999;
 	static final int SPACE_FOR_CURSOR = 1;
 	static final int GTK2_MANUAL_BORDER_PADDING = 2;
+
+	private int mdYear;
+
+	private int mdMonth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -446,7 +450,6 @@ void createDropDownButton () {
 	down = new Button (this, SWT.ARROW  | SWT.DOWN);
 	GTK.gtk_widget_set_can_focus (down.handle, false);
 	down.addListener (SWT.Selection, event -> {
-		popupCalendar.calendarDisplayed = !isDropped ();
 		setFocus ();
 		dropDownCalendar (!isDropped ());
 	});
@@ -861,17 +864,6 @@ long /*int*/ gtk_day_selected_double_click (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_month_changed (long /*int*/ widget) {
-	/*
-	* Feature in GTK. "month-changed" signal is emitted when the
-	* calendar is displayed though the day/month is not changed.
-	* The popup has to remain when the month/year is changed
-	* through the arrow keys, and the popup has to be called-off
-	* only when the day is selected. The fix is to detect the
-	* difference between the user changing the month/year, or
-	* choosing the day.
-	*/
-	if (calendarDisplayed) calendarDisplayed = false;
-	else monthChanged = true;
 	sendSelectionEvent ();
 	return 0;
 }
@@ -1091,15 +1083,19 @@ void popupCalendarEvent (Event event) {
 			handleFocus (SWT.FocusIn);
 			break;
 		}
+		case SWT.MouseDown: {
+			if (event.button != 1) return;
+			mdYear = getYear();
+			mdMonth = getMonth();
+			break;
+		}
 		case SWT.MouseUp: {
 			if (event.button != 1) return;
 			/*
-			* The drop-down should stay visible when the year/month
-			* is changed.
+			* The drop-down should stay visible when
+			* either the year or month is changed.
 			*/
-			if (popupCalendar.monthChanged) {
-				popupCalendar.monthChanged = false;
-			} else {
+			if (mdYear == getYear() && mdMonth == getMonth()) {
 				dropDownCalendar (false);
 			}
 			break;
