@@ -3697,11 +3697,12 @@ Rectangle getBoundsAtOffset(int offset) {
 	if (line.length() != 0) {
 		TextLayout layout = renderer.getTextLayout(lineIndex);
 		int offsetInLine = Math.min (layout.getText().length(), Math.max (0, offset - lineOffset));
-		bounds = layout.getBounds(offsetInLine, offsetInLine);
-		if (getListeners(ST.LineGetSegments).length > 0 && caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
+		if (caretAlignment == PREVIOUS_OFFSET_TRAILING && offsetInLine != 0) {
 			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER);
 			Point point = layout.getLocation(offsetInLine, true);
-			bounds = new Rectangle (point.x, point.y, 0, bounds.height);
+			bounds = new Rectangle (point.x, point.y, 0, renderer.getLineHeight());
+		} else {
+			bounds = layout.getBounds(offsetInLine, offsetInLine);
 		}
 		renderer.disposeTextLayout(layout);
 	} else {
@@ -8631,53 +8632,18 @@ void setCaretLocation() {
 	Point newCaretPos = getPointAtOffset(caretOffset);
 	setCaretLocation(newCaretPos, getCaretDirection());
 }
-void setCaretLocation(final Point location, int direction) {
+void setCaretLocation(Point location, int direction) {
 	Caret caret = getCaret();
 	if (caret != null) {
-		final boolean isDefaultCaret = caret == defaultCaret;
-		final StyleRange styleAtOffset = content.getCharCount() > 0 ?
-			(caretOffset < content.getCharCount() ?
-				getStyleRangeAtOffset(caretOffset) :
-				getStyleRangeAtOffset(content.getCharCount() - 1)) : // caret after last char: use last char style
-			null;
-		final int caretLine = getCaretLine();
-
-		int graphicalLineHeight = getLineHeight();
-		final int lineStartOffset = getOffsetAtLine(caretLine);
-		int graphicalLineFirstOffset = lineStartOffset;
-		final int lineEndOffset = lineStartOffset + getLine(caretLine).length();
-		int graphicalLineLastOffset = lineEndOffset;
-		if (renderer.getLineHeight(caretLine) != getLineHeight()) { // word wrap, metrics, styles...
-			graphicalLineHeight = getLineHeight(caretOffset);
-			final Rectangle characterBounds = getBoundsAtOffset(caretOffset);
-			graphicalLineFirstOffset = getOffsetAtPoint(new Point(leftMargin, characterBounds.y));
-			graphicalLineLastOffset = getOffsetAtPoint(new Point(leftMargin, characterBounds.y + graphicalLineHeight)) - 1;
-			if (graphicalLineLastOffset < graphicalLineFirstOffset) {
-				graphicalLineLastOffset = getCharCount();
-			}
-		}
-
-		int caretHeight = getLineHeight();
-		boolean isTextAlignedAtBottom = true;
-		for (StyleRange style : getStyleRanges(graphicalLineFirstOffset, graphicalLineLastOffset - graphicalLineFirstOffset)) {
-			isTextAlignedAtBottom &= (
-				(style.font == null || Objects.equals(style.font, getFont())) &&
-				style.rise >= 0 &&
-				(style.metrics == null || style.metrics.descent <= 0)
-			);
-		}
-		if (!isTextAlignedAtBottom || (styleAtOffset != null && styleAtOffset.isVariableHeight())) {
-			if (isDefaultCaret) {
+		boolean isDefaultCaret = caret == defaultCaret;
+		int lineHeight = renderer.getLineHeight();
+		int caretHeight = lineHeight;
+		if (!isFixedLineHeight() && isDefaultCaret) {
+			caretHeight = getBoundsAtOffset(caretOffset).height;
+			if (caretHeight != lineHeight) {
 				direction = SWT.DEFAULT;
-				caretHeight = graphicalLineHeight;
-			} else {
-				caretHeight = caret.getSize().y;
 			}
 		}
-		if (isTextAlignedAtBottom && caretHeight < graphicalLineHeight) {
-			location.y += (graphicalLineHeight - caretHeight);
-		}
-
 		int imageDirection = direction;
 		if (isMirrored()) {
 			if (imageDirection == SWT.LEFT) {

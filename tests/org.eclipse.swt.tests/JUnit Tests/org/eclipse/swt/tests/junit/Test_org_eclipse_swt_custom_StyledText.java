@@ -48,7 +48,6 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -4885,44 +4884,6 @@ public void test_clickUpdatesCaretPosition() {
 	text.notifyListeners(SWT.MouseDown, event);
 
 	assertEquals(2, text.getCaretOffset());
-}
-
-@Test
-public void test_caretSizeAndPositionVariableGlyphMetrics() {
-	text.setText("abcd");
-	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
-	text.setLineSpacing(0);
-	StyleRange range = new StyleRange(2, 1, null, null);
-	range.metrics = new GlyphMetrics(100, 0, 10);
-	text.setStyleRange(range);
-	text.setCaretOffset(0);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	// +5: caret takes 5 more pixels
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(1);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(2);
-	assertEquals(text.getLineHeight(0), text.getCaret().getSize().y);
-	assertEquals(0, text.getCaret().getBounds().y);
-	text.setCaretOffset(3);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(4);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(3);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(2);
-	assertEquals(text.getLineHeight(0), text.getCaret().getSize().y);
-	assertEquals(0, text.getCaret().getBounds().y);
-	text.setCaretOffset(1);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
-	text.setCaretOffset(0);
-	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
-	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
 }
 
 @Test
