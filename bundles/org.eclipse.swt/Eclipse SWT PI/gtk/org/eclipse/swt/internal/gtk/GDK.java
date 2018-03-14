@@ -446,11 +446,14 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	public static final native void _gdk_beep();
-	public static final void gdk_beep() {
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native void _gdk_display_beep(long /*int*/ display);
+	public static final void gdk_display_beep(long /*int*/ display) {
 		lock.lock();
 		try {
-			_gdk_beep();
+			_gdk_display_beep(display);
 		} finally {
 			lock.unlock();
 		}

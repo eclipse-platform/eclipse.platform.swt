@@ -340,16 +340,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1atom_1name)
 }
 #endif
 
-#ifndef NO__1gdk_1beep
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1beep)
-	(JNIEnv *env, jclass that)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1beep_FUNC);
-	gdk_beep();
-	GDK_NATIVE_EXIT(env, that, _1gdk_1beep_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1bitmap_1create_1from_1data
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1bitmap_1create_1from_1data)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2, jint arg3)
@@ -917,6 +907,16 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1display_1beep
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1display_1beep)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1beep_FUNC);
+	gdk_display_beep((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1beep_FUNC);
 }
 #endif
 
