@@ -246,6 +246,8 @@ typedef enum {
 	_1gdk_1window_1shape_1combine_1region_FUNC,
 	_1gdk_1window_1show_FUNC,
 	_1gdk_1window_1show_1unraised_FUNC,
+	_1gdk_1x11_1display_1error_1trap_1pop_1ignored_FUNC,
+	_1gdk_1x11_1display_1error_1trap_1push_FUNC,
 	_1gdk_1x11_1display_1get_1xdisplay_FUNC,
 	_1gdk_1x11_1display_1utf8_1to_1compound_1text_FUNC,
 	_1gdk_1x11_1drawable_1get_1xid_FUNC,

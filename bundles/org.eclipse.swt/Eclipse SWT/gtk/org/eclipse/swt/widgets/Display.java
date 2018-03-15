@@ -1653,7 +1653,14 @@ public Control getCursorControl () {
 		* XQueryPointer to find the containing GDK window.
 		*/
 		if (!OS.isX11()) return null;
-		GDK.gdk_error_trap_push ();
+		long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
+		if (GTK.GTK3) {
+			if (OS.isX11()) {
+				GDK.gdk_x11_display_error_trap_push(gdkDisplay);
+			}
+		} else {
+			GDK.gdk_error_trap_push ();
+		}
 		int[] unusedInt = new int[1];
 		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
 		long /*int*/ xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
@@ -1664,14 +1671,20 @@ public Control getCursorControl () {
 			}
 			if ((xWindow = buffer [0]) != 0) {
 				xParent = xWindow;
-				long /*int*/ gdkWindow = GDK.gdk_x11_window_lookup_for_display(GDK.gdk_display_get_default(), xWindow);
+				long /*int*/ gdkWindow = GDK.gdk_x11_window_lookup_for_display(gdkDisplay, xWindow);
 				if (gdkWindow != 0)	{
 					GDK.gdk_window_get_user_data (gdkWindow, user_data);
 					if (user_data[0] != 0) handle = user_data[0];
 				}
 			}
 		} while (xWindow != 0);
-		GDK.gdk_error_trap_pop ();
+		if (GTK.GTK3) {
+			if (OS.isX11()) {
+				GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
+			}
+		} else {
+			GDK.gdk_error_trap_pop ();
+		}
 	}
 	if (handle == 0) return null;
 	do {

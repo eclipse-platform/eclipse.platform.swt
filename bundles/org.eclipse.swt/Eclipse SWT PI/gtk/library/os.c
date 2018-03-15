@@ -1246,7 +1246,15 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1error_1trap_1pop)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1error_1trap_1pop_FUNC);
+/*
 	rc = (jint)gdk_error_trap_pop();
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_error_trap_pop)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1error_1trap_1pop_FUNC);
 	return rc;
 }
@@ -1257,7 +1265,15 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1error_1trap_1push)
 	(JNIEnv *env, jclass that)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1error_1trap_1push_FUNC);
+/*
 	gdk_error_trap_push();
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_error_trap_push)
+		if (fp) {
+			((void (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1error_1trap_1push_FUNC);
 }
 #endif
@@ -3461,6 +3477,42 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1show_1unraised)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1show_1unraised_FUNC);
 	gdk_window_show_unraised((GdkWindow *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1show_1unraised_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1display_1error_1trap_1pop_1ignored
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1x11_1display_1error_1trap_1pop_1ignored)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1error_1trap_1pop_1ignored_FUNC);
+/*
+	gdk_x11_display_error_trap_pop_ignored((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_display_error_trap_pop_ignored)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1error_1trap_1pop_1ignored_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1display_1error_1trap_1push
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1x11_1display_1error_1trap_1push)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1error_1trap_1push_FUNC);
+/*
+	gdk_x11_display_error_trap_push((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_display_error_trap_push)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1error_1trap_1push_FUNC);
 }
 #endif
 

@@ -1188,6 +1188,22 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native void _gdk_x11_display_error_trap_push(long /*int*/ display);
+	public static final void gdk_x11_display_error_trap_push(long /*int*/ display) {
+		lock.lock();
+		try {
+			_gdk_x11_display_error_trap_push(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native void _gdk_error_trap_push();
 	public static final void gdk_error_trap_push() {
 		lock.lock();
@@ -1197,6 +1213,22 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native void _gdk_x11_display_error_trap_pop_ignored(long /*int*/ display);
+	public static final void gdk_x11_display_error_trap_pop_ignored(long /*int*/ display) {
+		lock.lock();
+		try {
+			_gdk_x11_display_error_trap_pop_ignored(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native int _gdk_error_trap_pop();
 	public static final int gdk_error_trap_pop() {
 		lock.lock();

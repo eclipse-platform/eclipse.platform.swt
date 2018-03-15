@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -86,7 +86,13 @@ static synchronized void initializeSwing() {
 	* that make SWT exit.  The fix is to hide all X
 	* errors when AWT is running.
 	*/
-	GDK.gdk_error_trap_push();
+	if (GTK.GTK3) {
+		if (OS.isX11()) {
+			GDK.gdk_x11_display_error_trap_push(GDK.gdk_display_get_default());
+		}
+	} else {
+		GDK.gdk_error_trap_push();
+	}
 	try {
 		/* Initialize the default focus traversal policy */
 		Class<?> clazz = Class.forName("javax.swing.UIManager");

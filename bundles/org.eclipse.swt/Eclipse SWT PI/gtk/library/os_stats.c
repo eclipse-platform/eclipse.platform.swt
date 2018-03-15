@@ -236,6 +236,8 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1window_1shape_1combine_1region",
 	"_1gdk_1window_1show",
 	"_1gdk_1window_1show_1unraised",
+	"_1gdk_1x11_1display_1error_1trap_1pop_1ignored",
+	"_1gdk_1x11_1display_1error_1trap_1push",
 	"_1gdk_1x11_1display_1get_1xdisplay",
 	"_1gdk_1x11_1display_1utf8_1to_1compound_1text",
 	"_1gdk_1x11_1drawable_1get_1xid",

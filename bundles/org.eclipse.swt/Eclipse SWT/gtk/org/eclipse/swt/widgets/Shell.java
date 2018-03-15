@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -573,17 +573,23 @@ void bringToTop (boolean force) {
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
-			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_window_get_display(window));
+			long /*int*/ gdkDisplay = GDK.gdk_window_get_display(window);
+			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
 			long /*int*/ xWindow;
 			if (GTK.GTK3) {
 				xWindow = GDK.gdk_x11_window_get_xid (window);
+				GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 			} else {
 				xWindow = GDK.gdk_x11_drawable_get_xid (window);
+				GDK.gdk_error_trap_push ();
 			}
-			GDK.gdk_error_trap_push ();
 			/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
-			GDK.gdk_error_trap_pop ();
+			if (GTK.GTK3) {
+				GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
+			} else {
+				GDK.gdk_error_trap_pop ();
+			}
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				if(GTK.gtk_widget_get_visible(shellHandle)) {
