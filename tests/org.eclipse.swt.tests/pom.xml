@@ -66,6 +66,9 @@
             <configuration>
               <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
               <argLine>@{tycho.testArgLine} -Dorg.eclipse.swt.internal.gtk.disablePrinting ${os-jvm-flags}</argLine>
+              <systemPropertyVariables>
+                <user.home>${project.build.directory}</user.home> <!-- used as cache directory for SWT native libraries -->
+              </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>
