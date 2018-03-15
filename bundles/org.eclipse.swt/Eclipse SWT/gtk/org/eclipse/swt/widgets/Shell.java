@@ -1991,12 +1991,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 void setCursor (long /*int*/ cursor) {
 	if (enableWindow != 0) {
 		GDK.gdk_window_set_cursor (enableWindow, cursor);
-		if (!OS.isX11()) {
-			GDK.gdk_flush ();
-		} else {
-			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-			OS.XFlush (xDisplay);
-		}
+		GDK.gdk_flush ();
 	}
 	super.setCursor (cursor);
 }
@@ -2040,12 +2035,7 @@ public void setEnabled (boolean enabled) {
 		if (enableWindow != 0) {
 			if (cursor != null) {
 				GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
-				if (!OS.isX11()) {
-					GDK.gdk_flush ();
-				} else {
-					long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-					OS.XFlush (xDisplay);
-				}
+				GDK.gdk_flush ();
 			}
 			/* 427776: we need to listen to all enter-notify-event signals to
 			 * see if this new GdkWindow has been added to a widget's internal

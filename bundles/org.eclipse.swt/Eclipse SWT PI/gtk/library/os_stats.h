@@ -1254,7 +1254,6 @@ typedef enum {
 	_1XCheckIfEvent_FUNC,
 	_1XDefaultRootWindow_FUNC,
 	_1XDefaultScreen_FUNC,
-	_1XFlush_FUNC,
 	_1XFree_FUNC,
 	_1XKeysymToKeycode_FUNC,
 	_1XQueryPointer_FUNC,

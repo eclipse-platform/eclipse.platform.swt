@@ -119,7 +119,6 @@
 #define NO__1XCheckIfEvent
 #define NO__1XDefaultScreen
 #define NO__1XDefaultRootWindow
-#define NO__1XFlush
 #define NO__1XFree
 #define NO__1XGetWindowProperty
 #define NO__1XQueryPointer

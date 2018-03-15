@@ -880,16 +880,6 @@ public static final long /*int*/ XDefaultRootWindow(long /*int*/ display) {
 		lock.unlock();
 	}
 }
-/** @param display cast=(Display *) */
-public static final native void _XFlush(long /*int*/ display);
-public static final void XFlush(long /*int*/ display) {
-	lock.lock();
-	try {
-		_XFlush(display);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param address cast=(void *) */
 public static final native void _XFree(long /*int*/ address);
 public static final void XFree(long /*int*/ address) {

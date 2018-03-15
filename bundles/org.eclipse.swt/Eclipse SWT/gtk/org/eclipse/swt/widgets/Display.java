@@ -856,12 +856,7 @@ public void asyncExec (Runnable runnable) {
 public void beep () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	GDK.gdk_display_beep(GDK.gdk_display_get_default());
-	if (!OS.isX11()) {
-		GDK.gdk_flush ();
-	} else {
-		long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-		OS.XFlush (xDisplay);
-	}
+	GDK.gdk_flush ();
 }
 
 long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*int*/ tree_model, long /*int*/ iter, long /*int*/ data) {

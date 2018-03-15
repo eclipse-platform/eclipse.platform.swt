@@ -1268,7 +1268,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1XCheckIfEvent",
 	"_1XDefaultRootWindow",
 	"_1XDefaultScreen",
-	"_1XFlush",
 	"_1XFree",
 	"_1XKeysymToKeycode",
 	"_1XQueryPointer",

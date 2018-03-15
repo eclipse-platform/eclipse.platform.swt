@@ -4837,12 +4837,7 @@ void setCursor (long /*int*/ cursor) {
 	long /*int*/ window = eventWindow ();
 	if (window != 0) {
 		GDK.gdk_window_set_cursor (window, cursor);
-		if (!OS.isX11()) { // Wayland
-			GDK.gdk_flush ();
-		} else {
-			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-			OS.XFlush (xDisplay);
-		}
+		GDK.gdk_flush ();
 	}
 }
 
