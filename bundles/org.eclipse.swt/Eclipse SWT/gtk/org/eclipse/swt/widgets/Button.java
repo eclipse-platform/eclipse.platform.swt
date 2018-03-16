@@ -910,10 +910,15 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 @Override
-void setFontDescription (long /*int*/ font) {
-	super.setFontDescription (font);
-	if (labelHandle != 0) setFontDescription (labelHandle, font);
-	if (imageHandle != 0) setFontDescription (imageHandle, font);
+void setFontDescription (long /*int*/ fontDesc) {
+	// Don't set the font if we have no text set
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && ((text != null && text.isEmpty()) || text == null)) {
+		return;
+	} else {
+		super.setFontDescription (fontDesc);
+		if (labelHandle != 0) setFontDescription (labelHandle, fontDesc);
+		if (imageHandle != 0) setFontDescription (imageHandle, fontDesc);
+	}
 }
 
 @Override
@@ -1167,6 +1172,11 @@ public void setText (String string) {
 	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	updateWidgetsVisibility();
 	_setAlignment (style);
+	// Now that text has been added, set the font. This ensures
+	// the Button's size is correctly calculated/updated.
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		setFontDescription(font == null ? defaultFont().handle : font.handle);
+	}
 }
 
 private void updateWidgetsVisibility() {
