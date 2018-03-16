@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Torbjörn Svensson (STMicroelectronics) - bug #461646 
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
@@ -2780,8 +2781,6 @@ int decompressRLE4Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y++;
 					x = 0;
 					dp = y * stride;
-					if (dp >= de)
-						return -1;
 					break;
 				case 1: /* end of bitmap */
 					return 1;
@@ -2846,8 +2845,6 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y++;
 					x = 0;
 					dp = y * stride;
-					if (dp >= de)
-						return -1;
 					break;
 				case 1: /* end of bitmap */
 					return 1;
