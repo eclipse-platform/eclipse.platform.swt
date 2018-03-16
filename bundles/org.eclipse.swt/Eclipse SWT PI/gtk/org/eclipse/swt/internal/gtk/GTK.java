@@ -7772,8 +7772,13 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+
 	/** @param column cast=(GtkTreeViewColumn *) */
 	public static final native boolean _gtk_tree_view_column_get_visible(long /*int*/ column);
+	/**
+	 * (!) SWT: This method should not be called directly.
+	 * Instead use Control.gtk_tree_view_column_get_visible (...)
+	 */
 	public static final boolean gtk_tree_view_column_get_visible(long /*int*/ column) {
 		lock.lock();
 		try {
@@ -7782,6 +7787,7 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+
 	/** @param column cast=(GtkTreeViewColumn *) */
 	public static final native int _gtk_tree_view_column_get_width(long /*int*/ column);
 	public static final int gtk_tree_view_column_get_width(long /*int*/ column) {
@@ -7959,8 +7965,13 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+
 	/** @param tree_column cast=(GtkTreeViewColumn *) */
 	public static final native void _gtk_tree_view_column_set_visible (long /*int*/ tree_column, boolean visible);
+	/**
+	 * (!) SWT: This method should not be called directly.
+	 * Instead use Control.gtk_tree_view_column_set_visible (...)
+	 */
 	public static final void gtk_tree_view_column_set_visible (long /*int*/ tree_column, boolean visible) {
 		lock.lock();
 		try {
@@ -7970,6 +7981,7 @@ public class GTK extends OS {
 		}
 	}
 	/**
+
 	 * @param tree_column cast=(GtkTreeViewColumn *)
 	 * @param widget cast=(GtkWidget *)
 	 */

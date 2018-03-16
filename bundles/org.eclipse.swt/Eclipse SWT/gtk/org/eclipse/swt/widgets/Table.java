@@ -623,12 +623,7 @@ void createColumn (TableColumn column, int index) {
 	GTK.gtk_tree_view_column_set_clickable (columnHandle, true);
 	GTK.gtk_tree_view_column_set_min_width (columnHandle, 0);
 	GTK.gtk_tree_view_insert_column (handle, columnHandle, index);
-	/*
-	* Bug in GTK3.  The column header has the wrong CSS styling if it is hidden
-	* when inserting to the tree widget.  The fix is to hide the column only
-	* after it is inserted.
-	*/
-	if (columnCount != 0) GTK.gtk_tree_view_column_set_visible (columnHandle, false);
+
 	if (column != null) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
@@ -685,10 +680,13 @@ void createHandle (int index) {
 
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+
+	// A GtkColumn that is not a (java)TableColumn is created when Table is created.
+	// - For the first TableColumn java object, we attach the first created GtkColumn to the (java)TableColumn object.
+	// - For every subsequent TableColumn java object, we create a new column.
 	if (columnCount == 0) {
 		column.handle = GTK.gtk_tree_view_get_column (handle, 0);
 		GTK.gtk_tree_view_column_set_sizing (column.handle, GTK.GTK_TREE_VIEW_COLUMN_FIXED);
-		GTK.gtk_tree_view_column_set_visible (column.handle, false);
 		column.modelIndex = FIRST_COLUMN;
 		createRenderers (column.handle, column.modelIndex, true, column.style);
 		column.customDraw = firstCustomDraw;
@@ -696,6 +694,13 @@ void createItem (TableColumn column, int index) {
 	} else {
 		createColumn (column, index);
 	}
+	/*
+	* Bug in GTK3.  The column header has the wrong CSS styling if it is hidden
+	* when inserting to the tree widget.  The fix is to hide the column only
+	* after it is inserted.
+	* Bug 393729
+	*/
+	gtk_tree_view_column_set_visible(column.handle, false);
 	long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 3);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	long /*int*/ labelHandle = GTK.gtk_label_new_with_mnemonic (null);
@@ -1106,7 +1111,7 @@ void destroyItem (TableColumn column) {
 		}
 		GTK.gtk_tree_view_set_model (handle, newModel);
 		setModel (newModel);
-		createColumn (null, 0);
+		createColumn (null, 0); // Reached when disposing last TableColumn java Object. Created so a column would exist without a TableColumn java object.
 	} else {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
@@ -2278,6 +2283,10 @@ void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if (GTK.GTK3 && !lazyInitializationOccured) {
+		lazyInitializationOccured = true;
+		delayedInitialization(handle);
+	}
 	if ((state & OBSCURED) != 0) return 0;
 	drawInheritedBackground (0, cairo);
 	return super.gtk_draw (widget, cairo);
@@ -2355,7 +2364,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	boolean fixVisible = columns != 0;
 	while (list != 0) {
 		long /*int*/ column = OS.g_list_data (list);
-		if (GTK.gtk_tree_view_column_get_visible (column)) {
+		if (gtk_tree_view_column_get_visible (column)) {
 			fixVisible = false;
 			break;
 		}
@@ -2364,18 +2373,18 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	long /*int*/ columnHandle = 0;
 	if (fixVisible) {
 		columnHandle = OS.g_list_data (columns);
-		GTK.gtk_tree_view_column_set_visible (columnHandle, true);
+		gtk_tree_view_column_set_visible (columnHandle, true);
 	}
 	super.gtk_widget_size_request (widget, requisition);
 	if (fixVisible) {
-		GTK.gtk_tree_view_column_set_visible (columnHandle, false);
+		gtk_tree_view_column_set_visible (columnHandle, false);
 	}
 	if (columns != 0) OS.g_list_free (columns);
 }
 
 void hideFirstColumn () {
 	long /*int*/ firstColumn = GTK.gtk_tree_view_get_column (handle, 0);
-	GTK.gtk_tree_view_column_set_visible (firstColumn, false);
+	gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 @Override
@@ -4072,10 +4081,10 @@ boolean showFirstColumn () {
 	int columnCount = Math.max (1, this.columnCount);
 	for (int i=0; i<columnCount; i++) {
 		long /*int*/ column = GTK.gtk_tree_view_get_column (handle, i);
-		if (GTK.gtk_tree_view_column_get_visible (column)) return false;
+		if (gtk_tree_view_column_get_visible (column)) return false;
 	}
 	long /*int*/ firstColumn = GTK.gtk_tree_view_get_column (handle, 0);
-	GTK.gtk_tree_view_column_set_visible (firstColumn, true);
+	gtk_tree_view_column_set_visible (firstColumn, true);
 	return true;
 }
 
