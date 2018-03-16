@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -33,7 +34,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -47,67 +47,58 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-@FixMethodOrder(MethodSorters.JVM)  // To make it easier for human to go through the tests. Same order makes tests easier to recognize.
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)  // To make it easier for human to go through the tests. Same order makes tests easier to recognize.
 public class MJ_Table extends MJ_root {
 
 	// Shared elements:
-	final Listener ownerDrawnListener = event -> {
-		final TableItem item = (TableItem)event.item;
-		Table table = item.getParent();
-		AtomicBoolean packpending = (AtomicBoolean) table.getData();
-		if (event.type == SWT.PaintItem) {
-			final String text1 = (String)item.getData();
-			if (event.index == 0) {
-				event.gc.drawText(text1, event.x, event.y, true);
+		final Listener ownerDrawnListener = event -> {
+			final TableItem item = (TableItem)event.item;
+			Table table = item.getParent();
+			AtomicBoolean packpending = (AtomicBoolean) table.getData();
+
+			if (event.type == SWT.EraseItem) {
 			}
-		}
-		if (event.type == SWT.MeasureItem) {
-			event.height = 50;
-			event.width =  100;
-		}
-		if (event.type == SWT.SetData) {
-			final int index = table.indexOf(item);
-			final String data = "Item " + index;
-			item.setData(data);
-			if (table.getColumnCount() > 1) {
-				for (int i = 1; i <= table.getColumnCount(); i++) {
-					item.setText(i, "Column: " + i + " " + data);
+
+			if (event.type == SWT.PaintItem) {
+				final String text1 = (String)item.getData() + " (gc)";
+				if (event.index == 0) {
+					event.gc.drawText(text1, event.x, event.y, true);
 				}
 			}
-
-			// BUG BREAKER.
-			if (packpending.get()) {
-				packpending.set(false);
-				display.asyncExec(() -> {
-					table.setRedraw(false);
-					for (TableColumn column : table.getColumns()) {
-						column.pack();
-					}
-					table.setRedraw(true);
-				});
+			if (event.type == SWT.MeasureItem) {
+				event.height = 50;
+				event.width =  100;
 			}
-		}
-	};
+			if (event.type == SWT.SetData) {
+				final int index = table.indexOf(item);
+				final String data = "Virtual item:" + index;
+				item.setData(data);
+				item.setText("VirtItem " + index);
+				if (table.getColumnCount() > 1) {
+					for (int i = 1; i <= table.getColumnCount(); i++) {
+						item.setText(i, " Col: " + i + "   " + data);
+					}
+				}
 
-	@Test
-	public void basicTable_Snippet35() {
-		Shell shell = mkShell("Basic Table with a few items, no column, no headers");
-		shell.setLayout(new FillLayout());
-		Table table = new Table (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		for (int i=0; i<12; i++) {
-			TableItem item = new TableItem (table, 0);
-			item.setText ("Item " + i);
-		}
-		shell.setSize (SWIDTH, SHEIGHT);
-		shell.open ();
-		mainLoop(shell);
-	}
+				if (packpending.get()) {
+					packpending.set(false);
+					display.asyncExec(() -> {
+						table.setRedraw(false);
+						for (TableColumn column : table.getColumns()) {
+							column.pack();
+						}
+						table.setRedraw(true);
+					});
+				}
+			}
+		};
 
 	/**
 	 *  <a href="https://bugs.eclipse.org/bugs/attachment.cgi?id=272647">Screenshot </a>
 	 */
 	@Test
-	public void ownerDrawn_cheese_single_column () {
+	public void ownerDrawn_cheese_single_col () {
+		knownToBeBrokenGtk3("Cheese on gtk3"); // z for warning
 		Shell shell = mkShell("Expected: There should be no cheese in the items. Move over shouldn't cheese out. See javadoc for screenshot");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 
@@ -116,33 +107,24 @@ public class MJ_Table extends MJ_root {
 		AtomicBoolean packpending = new AtomicBoolean(true);
 		table.setData(packpending);
 
-		table.addListener(SWT.EraseItem, ownerDrawnListener);
-		table.addListener(SWT.SetData, ownerDrawnListener);
-		table.addListener(SWT.MeasureItem, ownerDrawnListener);
-		table.addListener(SWT.PaintItem, ownerDrawnListener);
+		table.addListener(SWT.EraseItem, 	ownerDrawnListener); // Not relevant.
+		table.addListener(SWT.SetData, 		ownerDrawnListener);
+		table.addListener(SWT.MeasureItem,  ownerDrawnListener);
+		table.addListener(SWT.PaintItem, 	ownerDrawnListener);
 
 		final TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
 		tableColumn.setText("First Left Column");
 		tableColumn.setMoveable(true);
 
+		table.setItemCount(100);
 
-		for (int i = 0; i < 100; i++) {
-			TableItem item1 = new TableItem(table, SWT.NONE);
-			item1.setText("hello " + i);
-		}
-
-//		for (int i = 0; i < 2; i++) {
-//			table.getColumn(i).setWidth(1);							// Setting width seems to fix issue.
-//			table.getColumn(i).pack(); // table is empty on Gtk3.	// packing doesn't fix issue.
-//		}
-
-		shell.setSize(800, 600); // Shell size seems to have a litlte bit of an initial impact. (may show proper with some shell sizes, incorrectly for others).
+		shell.setSize(800, 600); // Shell size seems to have a little bit of an initial impact. (may show proper with some shell sizes, incorrectly for others).
 		shell.open();
 		mainLoop(shell);
 	}
 
 	@Test
-	public void ownerDrawn_cheese_multiple_columns() {
+	public void ownerDrawn_cheese_multiple_col() {
 		final Shell shell = mkShell("Expected: No cheese in multiple column, also mouse move over no cheese.");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 		final Table table = new Table(shell, SWT.VIRTUAL | SWT.BORDER |  SWT.H_SCROLL | SWT.V_SCROLL);
@@ -174,73 +156,278 @@ public class MJ_Table extends MJ_root {
 		mainLoop(shell);
 	}
 
+	/**
+		 * <a href="http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example4"> Screenshot </a>
+		 */
+		@Test
+		public void ownerDrawn_eraseItem_Snippet273() {
+			knownToBeBrokenGtk3("Test currently broken on Gtk3. See Comment#1 of Bug 531551");
+
+			final String[] MONTHS = {
+					"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+					"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+				};
+			final int[] HIGHS = {-7, -4, 1, 11, 18, 24, 26, 25, 20, 13, 5, -4};
+			final int[] LOWS = {-15, -13, -7, 1, 7, 13, 15, 14, 10, 4, -2, -11};
+			final int SCALE_MIN = -30; final int SCALE_MAX = 30;
+			final int SCALE_RANGE = Math.abs(SCALE_MIN - SCALE_MAX);
+
+			Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018)   Gtk2: Background is used as bar-chart of sort. See screenshot.");
+			final Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+			final Color white = display.getSystemColor(SWT.COLOR_WHITE);
+			final Color red = display.getSystemColor(SWT.COLOR_RED);
+	//			 final Image parliamentImage = new Image(display, "./parliament.jpg");
+			final Table table = new Table(shell, SWT.NONE);
+			table.setBounds(10,10,350,300);
+	//			 table.setBackgroundImage(parliamentImage);
+			for (int i = 0; i < 12; i++) {
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(MONTHS[i] + " (" + LOWS[i] + "C..." + HIGHS[i] + "C)");
+			}
+			final int clientWidth = table.getClientArea().width;
+
+			/*
+			 * NOTE: MeasureItem and EraseItem are called repeatedly. Therefore it is
+			 * critical for performance that these methods be as efficient as possible.
+			 */
+			table.addListener(SWT.MeasureItem, event -> {
+				int itemIndex = table.indexOf((TableItem)event.item);
+				int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+				event.width = rightX;
+			});
+			table.addListener(SWT.EraseItem, event -> {
+				int itemIndex = table.indexOf((TableItem)event.item);
+				int leftX = (LOWS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+				int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
+				GC gc = event.gc;
+				Rectangle clipping = gc.getClipping();
+				clipping.x = leftX;
+				clipping.width = rightX - leftX;
+				gc.setClipping(clipping);
+				Color oldForeground = gc.getForeground();
+				Color oldBackground = gc.getBackground();
+				gc.setForeground(blue);
+				gc.setBackground(white);
+				gc.fillGradientRectangle(event.x, event.y, event.width / 2, event.height, false);
+				gc.setForeground(white);
+				gc.setBackground(red);
+				gc.fillGradientRectangle(
+					event.x + event.width / 2, event.y, event.width / 2, event.height, false);
+				gc.setForeground(oldForeground);
+				gc.setBackground(oldBackground);
+				event.detail &= ~SWT.BACKGROUND;
+				event.detail &= ~SWT.HOT;
+			});
+			shell.setSize(SWIDTH, SHEIGHT);
+			shell.open();
+			mainLoop(shell);
+		}
 
 	/**
-	 * <a href="http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example4"> Screenshot </a>
-	 */
-	@Test
-	public void ownerDrawn_eraseItem_Snippet273() {
-		knownToBeBrokenGtk3("Test currently broken on Gtk3. See Comment#1 of Bug 531551");
-
-		final String[] MONTHS = {
-				"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-				"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-			};
-		final int[] HIGHS = {-7, -4, 1, 11, 18, 24, 26, 25, 20, 13, 5, -4};
-		final int[] LOWS = {-15, -13, -7, 1, 7, 13, 15, 14, 10, 4, -2, -11};
-		final int SCALE_MIN = -30; final int SCALE_MAX = 30;
-		final int SCALE_RANGE = Math.abs(SCALE_MIN - SCALE_MAX);
-
-		Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018)   Gtk2: Background is used as bar-chart of sort. See screenshot.");
-		final Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-		final Color white = display.getSystemColor(SWT.COLOR_WHITE);
-		final Color red = display.getSystemColor(SWT.COLOR_RED);
-//			 final Image parliamentImage = new Image(display, "./parliament.jpg");
-		final Table table = new Table(shell, SWT.NONE);
-		table.setBounds(10,10,350,300);
-//			 table.setBackgroundImage(parliamentImage);
-		for (int i = 0; i < 12; i++) {
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(MONTHS[i] + " (" + LOWS[i] + "C..." + HIGHS[i] + "C)");
-		}
-		final int clientWidth = table.getClientArea().width;
-
-		/*
-		 * NOTE: MeasureItem and EraseItem are called repeatedly. Therefore it is
-		 * critical for performance that these methods be as efficient as possible.
+		 * On Windows/Mac, if columnWidth is not set via setWidth or pack, then items are not visible.
 		 */
-		table.addListener(SWT.MeasureItem, event -> {
-			int itemIndex = table.indexOf((TableItem)event.item);
-			int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			event.width = rightX;
-		});
-		table.addListener(SWT.EraseItem, event -> {
-			int itemIndex = table.indexOf((TableItem)event.item);
-			int leftX = (LOWS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			int rightX = (HIGHS[itemIndex] - SCALE_MIN) * clientWidth / SCALE_RANGE;
-			GC gc = event.gc;
-			Rectangle clipping = gc.getClipping();
-			clipping.x = leftX;
-			clipping.width = rightX - leftX;
-			gc.setClipping(clipping);
-			Color oldForeground = gc.getForeground();
-			Color oldBackground = gc.getBackground();
-			gc.setForeground(blue);
-			gc.setBackground(white);
-			gc.fillGradientRectangle(event.x, event.y, event.width / 2, event.height, false);
-			gc.setForeground(white);
-			gc.setBackground(red);
-			gc.fillGradientRectangle(
-				event.x + event.width / 2, event.y, event.width / 2, event.height, false);
-			gc.setForeground(oldForeground);
-			gc.setBackground(oldBackground);
-			event.detail &= ~SWT.BACKGROUND;
-			event.detail &= ~SWT.HOT;
-		});
+		@Test
+		public void column_noWidth_bug399522 () {
+			Shell shell = mkShell("Expected : You shouldn't see the column/item as column width not set yet.");
+
+			final Table table = new Table(shell, SWT.BORDER);
+			table.setHeaderVisible(true);
+
+			new TableItem(table, SWT.NONE).setText("Item1");
+			TableColumn column1 = new TableColumn(table, SWT.NONE);
+	//		column1.setWidth(10);	// Setting column width (or packing) makes items visible.
+
+			table.setSize(200, 200);
+			System.out.println(column1.handle);
+
+			shell.setSize(SWIDTH, SHEIGHT);
+			shell.open();
+			mainLoop(shell);
+		}
+
+	@Test
+	public void ownerDrawn_multiColumn_gc_snippet239 () {
+		Shell shell = mkShell("Verify that text is correctly drawn across 2 columns. 4 columns in total.");
+		shell.setText("Text spans two columns in a TableItem");
+		shell.setLayout (new FillLayout());
+		final Table table = new Table(shell, SWT.MULTI | SWT.FULL_SELECTION);
+		table.setHeaderVisible(true);
+		int columnCount = 4;
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			System.out.println("Column " + i);
+			column.setText("Column " + i);
+		}
+		int itemCount = 8;
+		for (int i = 0; i < itemCount; i++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, "item "+i+" a");
+			item.setText(3, "item "+i+" d");
+		}
+		/*
+		 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
+		 * Therefore, it is critical for performance that these methods be
+		 * as efficient as possible.
+		 */
+		final String string = "text that spans two columns";
+		GC gc = new GC(table);
+		final Point extent = gc.stringExtent(string);
+		gc.dispose();
+		final Color red = display.getSystemColor(SWT.COLOR_RED);
+		Listener paintListener = event -> {
+			switch(event.type) {
+				case SWT.MeasureItem: {
+					if (event.index == 1 || event.index == 2) {
+						event.width = extent.x/2;
+						event.height = Math.max(event.height, extent.y + 2);
+					}
+					break;
+				}
+				case SWT.PaintItem: {
+					if (event.index == 1 || event.index == 2) {
+						int offset = 0;
+						if (event.index == 2) {
+							TableColumn column1 = table.getColumn(1);
+							offset = column1.getWidth();
+						}
+						event.gc.setForeground(red);
+						int y = event.y + (event.height - extent.y)/2;
+						event.gc.drawString(string, event.x - offset, y, true);
+					}
+					break;
+				}
+			}
+		};
+		table.addListener(SWT.MeasureItem, paintListener);
+		table.addListener(SWT.PaintItem, paintListener);
+		for (int i = 0; i < columnCount; i++) {
+			table.getColumn(i).pack();
+		}
 		shell.setSize(SWIDTH, SHEIGHT);
 		shell.open();
 		mainLoop(shell);
 	}
+
+	@Test
+	public void bug73812_tableColumn_getWidth_0 () {
+		Shell shell = mkShell("Verify that all columns are of same width. (100).");
+		shell.setSize(SWIDTH, SHEIGHT);
+		shell.setLayout(new FillLayout());
+
+	    final Table tt = new Table(shell, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
+	    tt.setLinesVisible(true);
+	    tt.setHeaderVisible(true);
+
+	    for (int i = 0; i < 10; i++) {
+	      TableColumn tc = new TableColumn(tt, SWT.NONE);
+	      tc.setWidth(100);
+	      System.out.println(tc.getWidth());
+	      tc.setWidth(tc.getWidth());
+	      tc.setText("Column " + i);
+	    }
+
+	    for (int i = 0; i < 100; i++) {
+	      new TableItem(tt, SWT.NONE);
+	    }
+
+	    shell.open();
+		mainLoop(shell);
+	}
+
+	/**
+	 * Last column should be big enough so that text inside it can be read.
+	 * Notion that getWidth() when called after setWidth() returns a different size.
+	 */
+	@Test
+	public void bug51079_setWidth_getWidth() {
+		Shell shell = mkShell("column SetGet Width : Make shell smaller and bigger. If you don't see COL_SIZE_ERROR in console, all is well.");
+		shell.setSize(SWIDTH, SHEIGHT);
+		shell.setLayout(new FillLayout());
+	      StringBuffer sbBuffer = new StringBuffer();
+
+	      final Composite comp = new Composite(shell, SWT.NONE);
+	      final Table table = new Table(comp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
+	      table.setHeaderVisible(true);
+	      table.setLinesVisible(true);
+	      final TableColumn column1 = new TableColumn(table, SWT.NONE);
+	      column1.setText("Column 1");
+	      column1.setResizable(false);
+	      final TableColumn column2 = new TableColumn(table, SWT.NONE);
+	      column2.setText("Column 2");
+	      column2.setResizable(false);
+	      for (int i = 0; i < 60; i++) {
+	         TableItem item = new TableItem(table, SWT.NONE);
+	         sbBuffer.append("M");
+	         item.setText(new String[] { "item 0 " + sbBuffer.toString() + " " + i, "item 1 " + i });
+	      }
+
+	      Consumer<Integer> setColumnWidths = (width) -> {
+	    	  int c1w = (int)(width * 0.9);
+	          column1.setWidth(c1w);
+	          int c1wPost = column1.getWidth();
+	          if (c1w != c1wPost)
+	       	   System.err.println("COL_SIZE_ERROR 1 Expected:" + c1w + " actual:" + c1wPost);
+
+	          int c2w = width - column1.getWidth();
+	          column2.setWidth(c2w);
+	          int c2wPost = column2.getWidth();
+	          if (c2w != c2wPost)
+	               System.err.println("COL_SIZE_ERROR 2 Expected:" + c2w + " actual:" + column2.getWidth());
+	      };
+
+	      comp.addControlListener(new ControlAdapter()
+	      {
+	         @Override
+			public void controlResized(ControlEvent e)
+	         {
+	            Rectangle area = table.getParent().getClientArea();
+	            Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	            int width = area.width - 2 * table.getBorderWidth();
+	            if (preferredSize.y > area.height)
+	            {
+	               // Subtract the scrollbar width from the total column width
+	               // if a vertical scrollbar will be required
+	               Point vBarSize = table.getVerticalBar().getSize();
+	               width -= vBarSize.x;
+	            }
+	            Point oldSize = table.getSize();
+	            if (oldSize.x > area.width)
+	            {
+	               // table is getting smaller so make the columns
+	               // smaller first and then resize the table to
+	               // match the client area width
+	               setColumnWidths.accept(width);
+	               table.setSize(area.width, area.height);
+	            }
+	            else
+	            {
+	               // table is getting bigger so make the table
+	               // bigger first and then make the columns wider
+	               // to match the client area width
+	               table.setSize(area.width, area.height);
+	               setColumnWidths.accept(width);
+	            }
+	         }
+	      });
+	      shell.open();
+	      mainLoop(shell);
+	}
+
+	@Test
+	public void basicTable_Snippet35() {
+		Shell shell = mkShell("Basic Table with a few items, no column, no headers");
+		shell.setLayout(new FillLayout());
+		Table table = new Table (shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		for (int i=0; i<12; i++) {
+			TableItem item = new TableItem (table, 0);
+			item.setText ("Item " + i);
+		}
+		shell.setSize (SWIDTH, SHEIGHT);
+		shell.open ();
+		mainLoop(shell);
+	}
+
+
 
 	@Test
 	public void ownerDrawn_icons_on_right_side_of_column_Snippet230() {
@@ -415,68 +602,6 @@ public class MJ_Table extends MJ_root {
 	}
 
 	@Test
-	public void ownerDrawn_multiColumn_gc_snippet239 () {
-		Shell shell = mkShell("Verify that text is correctly drawn across 2 columns");
-		shell.setText("Text spans two columns in a TableItem");
-		shell.setLayout (new FillLayout());
-		final Table table = new Table(shell, SWT.MULTI | SWT.FULL_SELECTION);
-		table.setHeaderVisible(true);
-		int columnCount = 4;
-		for (int i=0; i<columnCount; i++) {
-			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText("Column " + i);
-		}
-		int itemCount = 8;
-		for (int i = 0; i < itemCount; i++) {
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, "item "+i+" a");
-			item.setText(3, "item "+i+" d");
-		}
-		/*
-		 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
-		 * Therefore, it is critical for performance that these methods be
-		 * as efficient as possible.
-		 */
-		final String string = "text that spans two columns";
-		GC gc = new GC(table);
-		final Point extent = gc.stringExtent(string);
-		gc.dispose();
-		final Color red = display.getSystemColor(SWT.COLOR_RED);
-		Listener paintListener = event -> {
-			switch(event.type) {
-				case SWT.MeasureItem: {
-					if (event.index == 1 || event.index == 2) {
-						event.width = extent.x/2;
-						event.height = Math.max(event.height, extent.y + 2);
-					}
-					break;
-				}
-				case SWT.PaintItem: {
-					if (event.index == 1 || event.index == 2) {
-						int offset = 0;
-						if (event.index == 2) {
-							TableColumn column1 = table.getColumn(1);
-							offset = column1.getWidth();
-						}
-						event.gc.setForeground(red);
-						int y = event.y + (event.height - extent.y)/2;
-						event.gc.drawString(string, event.x - offset, y, true);
-					}
-					break;
-				}
-			}
-		};
-		table.addListener(SWT.MeasureItem, paintListener);
-		table.addListener(SWT.PaintItem, paintListener);
-		for (int i = 0; i < columnCount; i++) {
-			table.getColumn(i).pack();
-		}
-		shell.setSize(SWIDTH, SHEIGHT);
-		shell.open();
-		mainLoop(shell);
-	}
-
-	@Test
 	public void ownerDrawn_CustomItemHeight () {
 		Shell shell = mkShell("Ensure Item 3 (yellow) is bigger than the other items");
 		int bigItem = 3;
@@ -589,36 +714,8 @@ public class MJ_Table extends MJ_root {
 	}
 
 
-	// TODO - see how this behaves on windows.
-	@Test
-	public void column_noWidth_bug399522 () {
-		Shell shell = mkShell("Expected : (Not sure?) On Gtk/Cocoa no items are now shown till column width is actually specified or column is packed.");
-
-		final Table table = new Table(shell, SWT.BORDER);
-		table.setHeaderVisible(true);
-
-		new TableItem(table, SWT.NONE).setText("Item1");
-		TableColumn column1 = new TableColumn(table, SWT.NONE);
-//		column1.setWidth(10);	// Setting column width makes items visible.
-//		column1.pack();
-
-		table.setSize(200, 200);
-		System.out.println(column1.handle);
-
-		shell.addListener(SWT.MouseDown, event -> System.out.println(table.computeSize(-1, -1)));
-
-		TableColumn col2 = new TableColumn(table, SWT.NONE);
-		System.out.println(col2.handle);
-
-		shell.setSize(SWIDTH, SHEIGHT);
-		shell.open();
-		mainLoop(shell);
-	}
-
-
 	@Test
 	public void column_header_icons_Snippet297() {
-		Display display = new Display ();
 		Image images[] = new Image[] {
 			display.getSystemImage(SWT.ICON_INFORMATION),
 			display.getSystemImage(SWT.ICON_ERROR),
@@ -686,17 +783,22 @@ public class MJ_Table extends MJ_root {
 		Button button = new Button (shell, SWT.PUSH);
 		final int index = 1;
 		button.setText ("Insert Column " + index + "a");
+
+		AtomicBoolean columnAdded = new AtomicBoolean(false);
 		shell.addShellListener(new ShellAdapter() {
 			@Override
 			public void shellActivated(ShellEvent e) {
-				TableColumn column = new TableColumn (table, SWT.NONE, index);
-				column.setImage(display.getSystemImage(SWT.ICON_WARNING)); //added to make it easier to spot in a test.
-				column.setText ("Column " + index + " added after shellopen");
-				TableItem [] items = table.getItems ();
-				for (int i=0; i<items.length; i++) {
-					items [i].setText (index, "Item " + i + " added");
+				if (!columnAdded.get()) {
+					columnAdded.set(true);
+					TableColumn column = new TableColumn (table, SWT.NONE, index);
+					column.setImage(display.getSystemImage(SWT.ICON_WARNING)); //added to make it easier to spot in a test.
+					column.setText ("Column " + index + " added after shellopen");
+					TableItem [] items = table.getItems ();
+					for (int i=0; i<items.length; i++) {
+						items [i].setText (index, "Item " + i + " added");
+					}
+					column.pack ();
 				}
-				column.pack ();
 			}
 		});
 

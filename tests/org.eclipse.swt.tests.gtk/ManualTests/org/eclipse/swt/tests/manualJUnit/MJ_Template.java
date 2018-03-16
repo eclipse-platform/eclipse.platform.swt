@@ -9,7 +9,7 @@ import org.junit.runners.MethodSorters;
 
 /** Convienience class for easy copy & paste */
 @FixMethodOrder(MethodSorters.JVM)
-public class Template extends MJ_root {
+public class MJ_Template extends MJ_root {
 
 	@Test
 	public void test_template() {
