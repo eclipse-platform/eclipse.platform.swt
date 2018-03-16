@@ -295,7 +295,7 @@ boolean fillAccel (ACCEL accel) {
 }
 
 void fixMenus (Decorations newParent) {
-	if (menu != null) menu.fixMenus (newParent);
+	if (menu != null && !menu.isDisposed() && !newParent.isDisposed()) menu.fixMenus (newParent);
 }
 
 /**
