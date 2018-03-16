@@ -13949,7 +13949,15 @@ JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1widget_1send_1expose)
 {
 	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1send_1expose_FUNC);
+/*
 	rc = (jint)gtk_widget_send_expose((GtkWidget *)arg0, (GdkEvent *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_send_expose)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GtkWidget *, GdkEvent *))fp)((GtkWidget *)arg0, (GdkEvent *)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1send_1expose_FUNC);
 	return rc;
 }

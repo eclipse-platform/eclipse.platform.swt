@@ -9032,6 +9032,7 @@ public class GTK extends OS {
 	}
 
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param event cast=(GdkEvent *)
 	 */
