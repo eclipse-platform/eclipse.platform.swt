@@ -11,6 +11,8 @@
 package org.eclipse.swt.custom;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -57,26 +59,23 @@ public static void showWhile(Display display, Runnable runnable) {
 	Integer busyId = Integer.valueOf(nextBusyId);
 	nextBusyId++;
 	Cursor cursor = display.getSystemCursor(SWT.CURSOR_WAIT);
-	Shell[] shells = display.getShells();
-	for (int i = 0; i < shells.length; i++) {
-		Integer id = (Integer)shells[i].getData(BUSYID_NAME);
-		if (id == null) {
-			shells[i].setCursor(cursor);
-			shells[i].setData(BUSYID_NAME, busyId);
-		}
-	}
+
+	Arrays.stream(display.getShells())
+		.filter(shell -> !shell.isDisposed() && shell.getData(BUSYID_NAME) == null)
+		.forEach(shell -> {
+			shell.setCursor(cursor);
+			shell.setData(BUSYID_NAME, busyId);
+		});
 
 	try {
 		runnable.run();
 	} finally {
-		shells = display.getShells();
-		for (int i = 0; i < shells.length; i++) {
-			Integer id = (Integer)shells[i].getData(BUSYID_NAME);
-			if (id == busyId) {
-				shells[i].setCursor(null);
-				shells[i].setData(BUSYID_NAME, null);
-			}
-		}
+		Arrays.stream(display.getShells())
+			.filter(shell -> !shell.isDisposed() && shell.getData(BUSYID_NAME) == busyId)
+			.forEach(shell -> {
+				shell.setCursor(null);
+				shell.setData(BUSYID_NAME, null);
+			});
 	}
 }
 }
