@@ -212,7 +212,8 @@ public abstract class Widget {
 	static final int DIRECTION_CHANGED = 82;
 	static final int CREATE_MENU_PROXY = 83;
 	static final int ROW_HAS_CHILD_TOGGLED = 84;
-	static final int LAST_SIGNAL = 85;
+	static final int POPPED_UP = 85;
+	static final int LAST_SIGNAL = 86;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -798,6 +799,27 @@ long /*int*/ gtk_map (long /*int*/ widget) {
 }
 
 long /*int*/ gtk_map_event (long /*int*/ widget, long /*int*/ event) {
+	return 0;
+}
+
+/**
+ * <p>GTK3.22+ has API which allows clients of GTK to connect a menu to the "popped-up" signal.
+ * This callback is triggered after the menu is popped up/shown to the user, and provides
+ * information about the actual position and size of the menu, as shown to the user.</p>
+ *
+ * <p>SWT clients can enable this functionality by launching their application with the
+ * SWT_MENU_LOCATION_DEBUGGING environment variable set to 1. If enabled, the previously mentioned
+ * positioning and size information will be printed to the console. The information comes from GTK
+ * internals and is stored in the method parameters.</p>
+ *
+ * @param widget the memory address of the menu which was popped up
+ * @param flipped_rect a pointer to the GdkRectangle containing the flipped location and size of the menu
+ * @param final_rect a pointer to the GdkRectangle containing the final (after all internal adjustments)
+ * location and size of the menu
+ * @param flipped_x a boolean flag indicating whether the menu has been inverted along the X-axis
+ * @param flipped_y a boolean flag indicating whether the menu has been inverted along the Y-axis
+ */
+long /*int*/ gtk_menu_popped_up (long /*int*/ widget, long /*int*/ flipped_rect, long /*int*/ final_rect, long /*int*/ flipped_x, long /*int*/ flipped_y) {
 	return 0;
 }
 
@@ -2005,6 +2027,13 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
 		case TEXT_BUFFER_INSERT_TEXT: return gtk_text_buffer_insert_text (handle, arg0, arg1, arg2);
+		default: return 0;
+	}
+}
+
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ user_data) {
+	switch ((int)/*64*/user_data) {
+		case POPPED_UP: return gtk_menu_popped_up (handle, arg0, arg1, arg2, arg3);
 		default: return 0;
 	}
 }

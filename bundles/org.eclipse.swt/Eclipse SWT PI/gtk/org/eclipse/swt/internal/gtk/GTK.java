@@ -4137,6 +4137,18 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 *  @method flags=dynamic
+	 */
+	public static final native void _gtk_menu_popup_at_rect(long /*int*/ menu, long /*int*/ rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long /*int*/ trigger_event);
+	public static void gtk_menu_popup_at_rect(long /*int*/ menu, long /*int*/ rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long /*int*/ trigger_event) {
+		lock.lock();
+		try {
+			_gtk_menu_popup_at_rect(menu, rect_window, rect, rect_anchor, menu_anchor, trigger_event);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param menu_shell cast=(GtkMenuShell *) */
 	public static final native void _gtk_menu_shell_deactivate(long /*int*/ menu_shell);
 	public static final void gtk_menu_shell_deactivate(long /*int*/ menu_shell) {

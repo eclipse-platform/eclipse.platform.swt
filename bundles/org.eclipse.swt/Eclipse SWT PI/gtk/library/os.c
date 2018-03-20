@@ -940,6 +940,18 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1default)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1get_1default_1group
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1default_1group)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1default_1group_FUNC);
+	rc = (jintLong)gdk_display_get_default_group((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1default_1group_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1get_1default_1seat
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1default_1seat)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -8264,6 +8276,28 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1menu_1popup_1at_1pointer)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1menu_1popup_1at_1pointer_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1menu_1popup_1at_1rect
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1menu_1popup_1at_1rect)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jint arg3, jint arg4, jintLong arg5)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1menu_1popup_1at_1rect_FUNC);
+	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_menu_popup_at_rect(arg0, arg1, lparg2, arg3, arg4, arg5);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_menu_popup_at_rect)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, GdkRectangle *, jint, jint, jintLong))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1menu_1popup_1at_1rect_FUNC);
 }
 #endif
 

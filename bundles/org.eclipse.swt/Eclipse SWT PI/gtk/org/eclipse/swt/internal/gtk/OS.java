@@ -319,6 +319,7 @@ public class OS extends C {
 	public static final byte[] move_focus = ascii("move-focus");
 	public static final byte[] output = ascii("output");
 	public static final byte[] paste_clipboard = ascii("paste-clipboard");
+	public static final byte[] popped_up = ascii("popped-up");
 	public static final byte[] popup_menu = ascii("popup-menu");
 	public static final byte[] populate_popup = ascii("populate-popup");
 	public static final byte[] preedit_changed = ascii("preedit-changed");
@@ -683,6 +684,16 @@ public class OS extends C {
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
 	private static final boolean MIN_GLIB_2_32 = OS.GLIB_VERSION >= VERSION(2, 32, 0);
 
+	/*
+	 * New API in GTK3.22 introduced the "popped-up" signal, which provides
+	 * information about where a menu was actually positioned after it's been
+	 * popped up. Users can set the environment variable SWT_MENU_LOCATION_DEBUGGING
+	 * to 1 in order to help them debug menu positioning issues on GTK3.22+.
+	 *
+	 * For more information see bug 530204.
+	 */
+	public static final boolean SWT_MENU_LOCATION_DEBUGGING;
+
 	/* Feature in Gtk: with the switch to GtkMenuItems from GtkImageMenuItems
 	* in Gtk3 came a small Gtk shortfall: a small amount of padding on the left hand
 	* side of MenuItems was added. This padding is not accessible to the developer,
@@ -703,6 +714,14 @@ public class OS extends C {
 			usePadded = true;
 		}
 		SWT_PADDED_MENU_ITEMS = usePadded;
+
+		String menuLocationProperty = "SWT_MENU_LOCATION_DEBUGGING";
+		String menuLocationCheck = getEnvironmentalVariable(menuLocationProperty);
+		boolean menuLocationDebuggingEnabled = false;
+		if (menuLocationCheck != null && menuLocationCheck.equals("1")) {
+			menuLocationDebuggingEnabled = true;
+		}
+		SWT_MENU_LOCATION_DEBUGGING = menuLocationDebuggingEnabled;
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK.GTK_VERSION >>> 16) + "." + (GTK.GTK_VERSION >>> 8 & 0xFF) + "." + (GTK.GTK_VERSION & 0xFF));

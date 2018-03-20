@@ -116,8 +116,8 @@ public class Display extends Device {
 	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback, filterCallback;
-	long /*int*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
+	long /*int*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -3627,6 +3627,17 @@ void initializeCallbacks () {
 	signalIds [Widget.MAP_EVENT] = OS.g_signal_lookup (OS.map_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.MNEMONIC_ACTIVATE] = OS.g_signal_lookup (OS.mnemonic_activate, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.MOTION_NOTIFY_EVENT] = OS.g_signal_lookup (OS.motion_notify_event, GTK.GTK_TYPE_WIDGET ());
+	/*
+	 * Connect to the "popped-up" signal on GTK3.22+ if the user has specified the
+	 * SWT_MENU_LOCATION_DEBUGGING environment variable.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
+		long /*int*/ menuType = GTK.GTK_TYPE_MENU ();
+		OS.g_type_class_ref (menuType);
+		signalIds [Widget.POPPED_UP] = OS.g_signal_lookup (OS.popped_up, menuType);
+	} else {
+		signalIds [Widget.POPPED_UP] = 0;
+	}
 	signalIds [Widget.POPUP_MENU] = OS.g_signal_lookup (OS.popup_menu, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.REALIZE] = OS.g_signal_lookup (OS.realize, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.SCROLL_EVENT] = OS.g_signal_lookup (OS.scroll_event, GTK.GTK_TYPE_WIDGET ());
@@ -3741,6 +3752,13 @@ void initializeCallbacks () {
 	closuresProc [Widget.TEXT_BUFFER_INSERT_TEXT] = windowProc5;
 	closuresProc [Widget.MOVE_CURSOR] = windowProc5;
 	closuresProc [Widget.MOVE_CURSOR_INVERSE] = windowProc5;
+
+	if (signalIds [Widget.POPPED_UP] != 0) {
+		windowCallback6 = new Callback (this, "windowProc", 6); //$NON-NLS-1$
+		windowProc6 = windowCallback6.getAddress ();
+		if (windowProc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		closuresProc [Widget.POPPED_UP] = windowProc6;
+	}
 
 	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
 		if (closuresProc[i] != 0) {
@@ -4562,7 +4580,10 @@ void releaseDisplay () {
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
-	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
+	if (windowCallback6 != null) {
+		windowCallback6.dispose ();  windowCallback6 = null;
+	}
+	windowProc2 = windowProc3 = windowProc4 = windowProc5 = windowProc6 = 0;
 
 	/* Dispose xfilter callback */
 	if (filterProc != 0) {
@@ -5876,6 +5897,12 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, arg2, user_data);
+}
+
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ user_data) {
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.windowProc (handle, arg0, arg1, arg2, arg3, user_data);
 }
 
 long /*int*/ windowTimerProc (long /*int*/ handle) {

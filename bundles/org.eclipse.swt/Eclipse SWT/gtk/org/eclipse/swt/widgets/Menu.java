@@ -40,6 +40,10 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class Menu extends Widget {
 	int x, y;
+	/**
+	 * Only set to true on X11, as Wayland has no global
+	 * coordinates. See bug 530204.
+	 */
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
@@ -232,28 +236,61 @@ void _setVisible (boolean visible) {
 				GTK.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
 			}
 			else {
-				/*
-				 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
-				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
-				 *  immediately and not as a post event in display, requiring the current event.
-				 */
-				long /*int*/ eventPtr = GTK.gtk_get_current_event();
-				if (eventPtr == 0) {
+				long /*int*/ eventPtr = 0;
+				if (hasLocation) {
+					// Create the GdkEvent manually as we need to control
+					// certain fields like the event window
 					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
 					event.type = GDK.GDK_BUTTON_PRESS;
-					// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
-					if (OS.isX11()) {
-						event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
-					}
 					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
+					// Get and (add reference to) the global GdkWindow
+					event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+					OS.g_object_ref(event.window);
+					/*
+					 * Get the origin of the global GdkWindow to calculate the size of any offsets
+					 * such as client side decorations, or the system tray.
+					 */
+					int [] globalWindowOriginY = new int [1];
+					int [] globalWindowOriginX = new int [1];
+					GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+					// Set the time and save the event in memory
 					event.time = display.getLastEventTime ();
 					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+
+					// Create the rectangle relative to the parent (in this case, global) GdkWindow
+					GdkRectangle rect = new GdkRectangle();
+					rect.x = this.x - globalWindowOriginX[0];
+					rect.y = this.y - globalWindowOriginY[0];
+
+					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the global GdkWindow
+					GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
+							GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
+					GDK.gdk_event_free (eventPtr);
+				} else {
+					/*
+					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+					 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+					 *  immediately and not as a post event in display, requiring the current event.
+					 */
+					eventPtr = GTK.gtk_get_current_event();
+					if (eventPtr == 0) {
+						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+						GdkEventButton event = new GdkEventButton ();
+						event.type = GDK.GDK_BUTTON_PRESS;
+						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
+						if (OS.isX11()) {
+							event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
+						}
+						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
+						event.time = display.getLastEventTime ();
+						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+					}
+					adjustParentWindowWayland(eventPtr);
+					verifyMenuPosition(getItemCount());
+					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
+					GDK.gdk_event_free (eventPtr);
 				}
-				adjustParentWindow(eventPtr);
-				verifyMenuPosition(getItemCount());
-				GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
-				GDK.gdk_event_free (eventPtr);
 			}
 			poppedUpCount = getItemCount();
 		} else {
@@ -761,10 +798,40 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 }
 
 @Override
+long /*int*/ gtk_menu_popped_up (long /*int*/ widget, long /*int*/ flipped_rect, long /*int*/ final_rect, long /*int*/ flipped_x, long /*int*/ flipped_y) {
+	GdkRectangle finalRect = new GdkRectangle ();
+	OS.memmove (finalRect, final_rect, GDK.GdkRectangle_sizeof());
+	GdkRectangle flippedRect = new GdkRectangle ();
+	OS.memmove (flippedRect, flipped_rect, GDK.GdkRectangle_sizeof());
+	boolean flippedX = flipped_x == 1;
+	boolean flippedY = flipped_y == 1;
+	System.out.println("SWT_MENU_LOCATION_DEBUGGING enabled, printing positioning info for " + widget);
+	if (!OS.isX11()) System.out.println("Note: SWT is running on Wayland, coordinates will be parent-relative");
+	if (hasLocation) {
+		System.out.println("hasLocation is true and set coordinates are Point {" + this.x + ", " + this.y + "}");
+	} else {
+		System.out.println("hasLocation is not set, this is most likely a right click menu");
+	}
+	if (flippedX) System.out.println("Menu is inverted along the X-axis");
+	if (flippedY) System.out.println("Menu is inverted along the Y-axis");
+	System.out.println("Final menu position and size is Rectangle {" + finalRect.x + ", " + finalRect.y + ", " +
+			finalRect.width + ", " + finalRect.height + "}");
+	System.out.println("Flipped menu position and size is Rectangle {" + flippedRect.x + ", " + flippedRect.y + ", " +
+			flippedRect.width + ", " + flippedRect.height + "}");
+	System.out.println("");
+	return 0;
+}
+
+
+@Override
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.getClosure (SHOW), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.getClosure (HIDE), false);
+	// Hook into the "popped-up" signal on GTK3.22+ if SWT_MENU_LOCATION_DEBUGGING has been set
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [POPPED_UP], 0, display.getClosure (POPPED_UP), false);
+	}
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 }
 
@@ -1023,7 +1090,10 @@ void setLocationInPixels (int x, int y) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	this.x = x;
 	this.y = y;
-	hasLocation = true;
+	// Only set the hasLocation flag on X11.
+	if (OS.isX11()) {
+		hasLocation = true;
+	}
 }
 
 /**
@@ -1108,7 +1178,7 @@ void setOrientation (boolean create) {
  *
  * @param eventPtr a pointer to the GdkEvent
  */
-void adjustParentWindow (long /*int*/ eventPtr) {
+void adjustParentWindowWayland (long /*int*/ eventPtr) {
 	if (!OS.isX11()) {
 		long /*int*/ display = GDK.gdk_display_get_default ();
 		long /*int*/ pointer = GDK.gdk_get_pointer(display);

@@ -107,6 +107,16 @@ public class GDK extends OS {
 	public static final int GDK_FUNC_MAXIMIZE = 16;
 	public static final int GDK_FUNC_CLOSE = 32;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
+	public static final int GDK_GRAVITY_NORTH_WEST = 1;
+	public static final int GDK_GRAVITY_NORTH = 2;
+	public static final int GDK_GRAVITY_NORTH_EAST = 3;
+	public static final int GDK_GRAVITY_WEST = 4;
+	public static final int GDK_GRAVITY_CENTER = 5;
+	public static final int GDK_GRAVITY_EAST = 6;
+	public static final int GDK_GRAVITY_SOUTH_WEST = 7;
+	public static final int GDK_GRAVITY_SOUTH = 8;
+	public static final int GDK_GRAVITY_SOUTH_EAST = 9;
+	public static final int GDK_GRAVITY_STATIC = 10;
 	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
@@ -780,6 +790,18 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_display_get_default();
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 *  @param display cast=(GdkDisplay *)
+	 */
+	public static final native long /*int*/ _gdk_display_get_default_group(long /*int*/ display);
+	public static final long /*int*/ gdk_display_get_default_group(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_default_group(display);
 		} finally {
 			lock.unlock();
 		}
