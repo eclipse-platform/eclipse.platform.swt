@@ -74,6 +74,23 @@ public final class GC extends Resource {
 	Drawable drawable;
 	GCData data;
 
+	/**
+	 * The current Cairo matrix, which positions widgets in the shell.
+	 * Client transformations come on top of this matrix.
+	 */
+	private double[] cairoTransformationMatrix;
+
+	/**
+	 * Tracks the last transformation with which {@link #setTransform(Transform)} was called,
+	 * so that we can answer clients of {@link #getTransform(Transform)}.
+	 */
+	private double[] currentTransform;
+
+	/**
+	 * Original clipping set on this GC
+	 */
+	private Rectangle clipping;
+
 	final static int FOREGROUND = 1 << 0;
 	final static int BACKGROUND = 1 << 1;
 	final static int FONT = 1 << 2;
@@ -2482,10 +2499,23 @@ public void getTransform(Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
-		Cairo.cairo_get_matrix(cairo, transform.handle);
-		double[] identity = identity();
-		Cairo.cairo_matrix_invert(identity);
-		Cairo.cairo_matrix_multiply(transform.handle, transform.handle, identity);
+		/*
+		 * The client wants to know the relative transformation they set for their widgets.
+		 * They do not want to know about the global coordinates of their widget, which is contained in Cairo.cairo_get_matrix().
+		 * So we return whatever the client specified with setTransform.
+		 */
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+			if (currentTransform != null) {
+				transform.handle = currentTransform.clone();
+			} else {
+				transform.handle = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+			}
+		} else {
+			Cairo.cairo_get_matrix(cairo, transform.handle);
+			double[] identity = identity();
+			Cairo.cairo_matrix_invert(identity);
+			Cairo.cairo_matrix_multiply(transform.handle, transform.handle, identity);
+		}
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
@@ -2570,10 +2600,21 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
 	setClipping(data.clipRgn);
+	initCairo();
 	if ((data.style & SWT.MIRRORED) != 0) {
-	  initCairo();
-	  Cairo.cairo_set_matrix(data.cairo, identity());
+		// Don't overwrite the Cairo transformation matrix in GTK 3.14 and above; it contains a translation relative to the parent widget.
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+			int[] w = new int[1], h = new int[1];
+			getSize(w, h);
+			Cairo.cairo_translate(cairo, w[0], 0);
+			Cairo.cairo_scale(cairo, -1.0, 1.0);
+		} else {
+			Cairo.cairo_set_matrix(data.cairo, identity());
+		}
 	}
+	if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
+	Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
+	clipping = getClipping();
 }
 
 void initCairo() {
@@ -2681,7 +2722,7 @@ public void setAdvanced(boolean advanced) {
 		setAlpha(0xFF);
 		setAntialias(SWT.DEFAULT);
 		setBackgroundPattern(null);
-		setClipping(0);
+		resetClipping();
 		setForegroundPattern(null);
 		setInterpolation(SWT.DEFAULT);
 		setTextAntialias(SWT.DEFAULT);
@@ -2883,9 +2924,76 @@ void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 		Cairo.cairo_set_matrix(cairo, matrix);
 	}
 	if (clipRgn != 0) {
-		setCairoRegion(cairo, clipRgn);
+		long /*int*/ clipRgnCopy = GDK.gdk_region_new();
+		GDK.gdk_region_union(clipRgnCopy, clipRgn);
+
+		/*
+		 * Bug 531667: widgets paint over other widgets
+		 *
+		 * The Cairo handle is shared by all widgets, but GC.setClipping allows global clipping changes.
+		 * So we intersect whatever the client sets with the initial GC clipping.
+		 */
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+			limitClipping(clipRgnCopy);
+		}
+
+		setCairoRegion(cairo, clipRgnCopy);
 		Cairo.cairo_clip(cairo);
+		GDK.gdk_region_destroy(clipRgnCopy);
 	}
+}
+
+/**
+ * Intersects given clipping with original clipping of this context, so
+ * that resulting clip does not allow to paint outside of the GC bounds.
+ */
+private void limitClipping(long /*int*/ gcClipping) {
+	Region clippingRegion = new Region();
+	if (currentTransform != null) {
+		// we want to apply GC clipping stored in init() as is, so we invert user transformations that may distort it
+		double[] invertedCurrentTransform = currentTransform.clone();
+		Cairo.cairo_matrix_invert(invertedCurrentTransform);
+		int[] clippingWithoutUserTransform = transformRectangle(invertedCurrentTransform, clipping);
+		clippingRegion.add(clippingWithoutUserTransform);
+		GDK.gdk_region_intersect(gcClipping, clippingRegion.handle);
+	} else {
+		clippingRegion.add(clipping);
+	}
+	GDK.gdk_region_intersect(gcClipping, clippingRegion.handle);
+	clippingRegion.dispose();
+}
+
+/**
+ * Transforms rectangle with given matrix
+ *
+ * @return transformed rectangle corner coordinates, with x,y order of points.
+ */
+private static int[] transformRectangle(double[] affineTransformation, Rectangle rectangle) {
+	Point[] endPoints = {
+			new Point(rectangle.x                  , rectangle.y                   ),
+			new Point(rectangle.x + rectangle.width, rectangle.y                   ),
+			new Point(rectangle.x + rectangle.width, rectangle.y + rectangle.height),
+			new Point(rectangle.x                  , rectangle.y + rectangle.height),
+	};
+	return transformPoints(affineTransformation, endPoints);
+}
+
+/**
+ * Transforms x,y coordinate pairs with given matrix
+ *
+ * @return transformed x,y coordinates.
+ */
+private static int[] transformPoints(double[] transformation, Point[] points) {
+	int[] transformedPoints = new int[points.length * 2];
+	double[] px = new double[1], py = new double[1];
+	for (int i = 0; i < points.length; ++i) {
+		px[0] = points[i].x;
+		py[0] = points[i].y;
+		Cairo.cairo_matrix_transform_point(transformation, px, py);
+		transformedPoints[(i * 2) + 0] = (int) Math.round(px[0]);
+		transformedPoints[(i * 2) + 1] = (int) Math.round(py[0]);
+	}
+	return transformedPoints;
 }
 
 void setClipping(long /*int*/ clipRgn) {
@@ -2974,7 +3082,7 @@ void setClippingInPixels(int x, int y, int width, int height) {
 public void setClipping(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setClipping(0);
+	resetClipping();
 	if (path != null) {
 		initCairo();
 		long /*int*/ cairo = data.cairo;
@@ -3008,11 +3116,26 @@ void setClippingInPixels(Rectangle rect) {
 		return; //FIXME: This is an atrocious hack for bug 446075
 	}
 	if (rect == null) {
-		setClipping(0);
+		resetClipping();
 	} else {
 		setClippingInPixels(rect.x, rect.y, rect.width, rect.height);
 	}
 }
+
+private void resetClipping() {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		/*
+		 * Bug 531667: widgets paint over other widgets
+		 *
+		 * The Cairo handle is shared by all widgets, and GC.setClipping(0) allows painting outside the current GC area.
+		 * So if we reset any custom clipping we still want to restrict GC operations with the initial GC clipping.
+		 */
+		setClipping(clipping);
+	} else {
+		setClipping(0);
+	}
+}
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the region specified
@@ -3032,7 +3155,11 @@ void setClippingInPixels(Rectangle rect) {
 public void setClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(region != null ? region.handle : 0);
+	if (region != null) {
+		setClipping(region.handle);
+	} else {
+		resetClipping();
+	}
 }
 
 /**
@@ -3600,11 +3727,26 @@ public void setTransform(Transform transform) {
 	if (data.cairo == 0 && transform == null) return;
 	initCairo();
 	long /*int*/ cairo = data.cairo;
-	double[] identity = identity();
-	if (transform != null) {
-		Cairo.cairo_matrix_multiply(identity, transform.handle, identity);
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+		// Re-set the original Cairo transformation matrix: it contains a translation relative to the parent widget.
+		if (currentTransform != null) {
+			Cairo.cairo_set_matrix(cairo, cairoTransformationMatrix);
+			currentTransform = null;
+		}
+		// Apply user transform on top of the current transformation matrix (and remember it)
+		if (transform != null) {
+			currentTransform = transform.handle.clone();
+			double[] transformMatrix = identity();
+			Cairo.cairo_matrix_multiply(transformMatrix, transform.handle, transformMatrix);
+			Cairo.cairo_transform(cairo, transformMatrix);
+		}
+	} else {
+		double[] identity = identity();
+		if (transform != null) {
+			Cairo.cairo_matrix_multiply(identity, transform.handle, identity);
+		}
+		Cairo.cairo_set_matrix(cairo, identity);
 	}
-	Cairo.cairo_set_matrix(cairo, identity);
 	data.state &= ~DRAW_OFFSET;
 }
 
