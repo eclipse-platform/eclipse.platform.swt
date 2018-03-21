@@ -13,6 +13,8 @@ For this, rename one of the following files to `.classpath`:
 * .classpath_cocoa - Mac OS X
 * .classpath_gtk - Linux and all Unix variants
 
+Similar class paths renaming should be done for ./examples/org.eclipse.swt.snippets/
+
 To see these files, you may have to remove the filter for ".* resources":
 * In the Project Explorer: view menu > Customize View... > Filters
 * In the Package Explorer: view menu > Filters...
@@ -21,10 +23,14 @@ To see these files, you may have to remove the filter for ".* resources":
 Dependencies:
 -------------
 
-You also need to clone the <https://git.eclipse.org/r/#/admin/projects/platform/eclipse.platform.swt.binaries> Git repository 
-and ensure that the fragment matching your windowing_system.operating_system.cpu_architecture (e.g. org.eclipse.swt.gtk.linux.x86_64) is open in your workspace.
-The fragments provide the platform-specific native libraries.
-
+* **SWT Binaries**  
+  You also need to clone the binary Git repository:
+  https://git.eclipse.org/r/#/admin/projects/platform/eclipse.platform.swt.binaries  
+  and import the project for your platform into your workspace.  
+  
+  Ensure that the fragment matching your windowingSystem.operatingSystem.cpuArchitecture  
+  (e.g. org.eclipse.swt.gtk.linux.x86_64) is open in your workspace.  
+  The fragments provide the platform-specific native libraries.
 
 Using Assertions:
 ----------------
