@@ -1,6 +1,6 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2017 IBM Corporation and others.
+# Copyright (c) 2000, 2018 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -80,19 +80,6 @@ case $OS in
 	"AIX")
 		SWT_OS=aix
 		MAKEFILE=make_aix.mak
-		;;
-	"SunOS")
-		SWT_OS=solaris
-		PROC=`uname -i`
-		MAKEFILE=make_solaris.mak
-		if [ "${MODEL}" = "" ]; then
-			MODEL=`isainfo -k`
-			if [ "${MODEL}" = "amd64" ]; then
-				MODEL=x86_64
-				MAKEFILE=make_solaris_x86_64.mak
-				MAKE_TYPE=gmake
-			fi
-		fi
 		;;
 	"FreeBSD")
 		SWT_OS=freebsd
@@ -195,17 +182,6 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
 		fi
 		;;
-	"solaris.x86_64")
-		if [ "${CC}" = "" ]; then
-			export CC="cc"
-		fi
-		if [ "${CXX}" = "" ]; then
-			export CXX="CC"
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/build/JRE/Solaris_x64/jdk1.8.0_71"
-		fi
- 		;;
 	"linux.s390x")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -246,11 +222,6 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			SWT_LFLAGS=-m64
 			export SWT_LFLAGS
 		fi
-	fi
-	if [ ${OS} = 'SunOS' ]; then
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
-			SWT_LFLAGS=-m64
-			export SWT_LFLAGS
 	fi
 	export SWT_PTR_CFLAGS
 fi

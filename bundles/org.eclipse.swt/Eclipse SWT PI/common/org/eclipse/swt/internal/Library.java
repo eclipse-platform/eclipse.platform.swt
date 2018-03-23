@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -73,8 +73,6 @@ static String os() {
 	String osName = System.getProperty("os.name"); //$NON-NLS-1$
 	if (osName.equals ("Linux")) return "linux"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.equals ("AIX")) return "aix"; //$NON-NLS-1$ $NON-NLS-2$
-	if (osName.equals ("Solaris")) return "solaris"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
-	if (osName.equals ("HP-UX")) return "hpux"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.equals ("Mac OS X")) return "macosx"; //$NON-NLS-1$ $NON-NLS-2$
 	if (osName.startsWith ("Win")) return "win32"; //$NON-NLS-1$ $NON-NLS-2$
 	return osName;

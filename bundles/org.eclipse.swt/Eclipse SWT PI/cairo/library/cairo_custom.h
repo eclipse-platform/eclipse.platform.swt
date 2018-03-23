@@ -22,8 +22,6 @@
 /* Libraries for dynamic loaded functions */
 #ifdef AIX
 #define LIB_CAIRO "libcairo.a(libcairo.so.2)"
-#elif HPUX
-#define LIB_CAIRO "libcairo.so"
 #elif _WIN32
 #define LIB_CAIRO "libcairo-2.dll"
 #else
