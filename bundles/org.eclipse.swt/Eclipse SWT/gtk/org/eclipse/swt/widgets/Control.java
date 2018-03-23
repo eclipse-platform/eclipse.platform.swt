@@ -5662,13 +5662,6 @@ public void setVisible (boolean visible) {
 		state &= ~HIDDEN;
 		if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 			if (enableWindow != 0) GDK.gdk_window_show_unraised (enableWindow);
-			/*
-			 * Raise this widget's GdkWindow if the reparentOnVisibility
-			 * flag has been set and visible is true. See bug 511133.
-			 */
-			if (reparentOnVisibility && GTK.GTK3) {
-				GDK.gdk_window_raise(gtk_widget_get_window(topHandle));
-			}
 			GTK.gtk_widget_show (topHandle);
 		}
 	} else {
@@ -5705,13 +5698,6 @@ public void setVisible (boolean visible) {
 		GTK.gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;
 		if (enableWindow != 0) GDK.gdk_window_hide (enableWindow);
-		/*
-		 * Lower this widget's GdkWindow if the reparentOnVisibility
-		 * flag has been set and visible is false. See bug 511133.
-		 */
-		if (reparentOnVisibility && GTK.GTK3) {
-			GDK.gdk_window_lower(gtk_widget_get_window(topHandle));
-		}
 		sendEvent (SWT.Hide);
 	}
 }

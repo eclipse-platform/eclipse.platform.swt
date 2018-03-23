@@ -1374,6 +1374,50 @@ void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
 	newClip.dispose ();
 }
 
+/**
+ * Connects this widget's fixedHandle to the "draw" signal.<br>
+ * NOTE: only the "draw" (EXPOSE) signal is connected, not EXPOSE_EVENT_INVERSE.
+ */
+void connectFixedHandleDraw () {
+	long /*int*/ paintHandle = fixedHandle;
+	int paintMask = GDK.GDK_EXPOSURE_MASK;
+	GTK.gtk_widget_add_events (paintHandle, paintMask);
+
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+}
+
+/**
+ * <p>Propagates draw events from a parent container to its children using
+ * gtk_container_propagate_draw(). This method only works if the fixedHandle
+ * has been connected to the "draw" signal, and only propagates draw events
+ * to other siblings of handle (i.e. other children of fixedHandle, but not
+ * handle itself).</p>
+ *
+ * <p>It's useful to propagate draw events to other child widgets for things
+ * like Table/Tree editors, or other scenarios where a widget is a child of
+ * a non-standard container widget (i.e., not a direct child of a Composite).</p>
+ *
+ * @param container the parent container, i.e. fixedHandle
+ * @param cairo the cairo context provided by GTK
+ */
+void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
+	if (container == fixedHandle && GTK.GTK3) {
+		long /*int*/ list = GTK.gtk_container_get_children (container);
+		long /*int*/ temp = list;
+		while (temp != 0) {
+			long /*int*/ child = OS.g_list_data (temp);
+			if (child != 0) {
+				Widget widget = display.getWidget (child);
+				if (widget != this) {
+					GTK.gtk_container_propagate_draw(container, child, cairo);
+				}
+			}
+			temp = OS.g_list_next (temp);
+		}
+		OS.g_list_free (list);
+	}
+}
+
 @Override
 void redrawChildren () {
 	super.redrawChildren ();

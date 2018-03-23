@@ -5532,6 +5532,24 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1container_1get_1children)
 }
 #endif
 
+#ifndef NO__1gtk_1container_1propagate_1draw
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1container_1propagate_1draw)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1container_1propagate_1draw_FUNC);
+/*
+	gtk_container_propagate_draw((GtkContainer *)arg0, (GtkWidget *)arg1, (cairo_t *)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_container_propagate_draw)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkContainer *, GtkWidget *, cairo_t *))fp)((GtkContainer *)arg0, (GtkWidget *)arg1, (cairo_t *)arg2);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, _1gtk_1container_1propagate_1draw_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1container_1remove
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1container_1remove)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

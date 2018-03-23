@@ -415,6 +415,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1container_1forall",
 	"_1gtk_1container_1get_1border_1width",
 	"_1gtk_1container_1get_1children",
+	"_1gtk_1container_1propagate_1draw",
 	"_1gtk_1container_1remove",
 	"_1gtk_1container_1set_1border_1width",
 	"_1gtk_1css_1provider_1get_1named",

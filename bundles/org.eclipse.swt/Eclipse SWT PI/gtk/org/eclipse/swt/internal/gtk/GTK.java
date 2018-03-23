@@ -1676,6 +1676,21 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 * @param container cast=(GtkContainer *)
+	 * @param child cast=(GtkWidget *)
+	 * @param cairo cast=(cairo_t *)
+	 */
+	public static final native void _gtk_container_propagate_draw(long /*int*/ container, long /*int*/ child, long /*int*/ cairo);
+	public static final void gtk_container_propagate_draw(long /*int*/ container, long /*int*/ child, long /*int*/ cairo) {
+		lock.lock();
+		try {
+			_gtk_container_propagate_draw(container, child, cairo);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param container cast=(GtkContainer *) */
 	public static final native int _gtk_container_get_border_width(long /*int*/ container);
 	public static final int gtk_container_get_border_width(long /*int*/ container) {

@@ -85,7 +85,7 @@ public class Table extends Composite {
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	Color headerBackground, headerForeground;
 	String headerCSSBackground, headerCSSForeground;
-	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet;
+	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
 	int maxWidth = 0;
 	int topIndex;
 	double cachedAdjustment, currentAdjustment;
@@ -3739,18 +3739,18 @@ void setParentGdkWindow (Control child) {
 	long /*int*/ parentGdkWindow = eventWindow ();
 	GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
 	/*
-	 * Feature in GTK3: all children of Table have their GdkWindows
-	 * re-parented so they are siblings of the parent Table
-	 * (i.e. on the same level in the z-order).
+	 * Feature in GTK3: non-native GdkWindows are not drawn implicitly
+	 * as of GTK3.10+. It is the client's responsibility to propagate draw
+	 * events to these windows in the "draw" signal handler.
 	 *
-	 * To fix table editing in GTK3: raise/lower the
-	 * GdkWindow of these child widgets to make them visible when
-	 * setVisible() is called on them. This ensures they are properly
-	 * drawn when setVisible(true) is called, and properly hidden
-	 * when setVisible(false) is called. See bug 511133.
+	 * This change breaks table editing on GTK3.10+, as the table editor
+	 * widgets no longer receive draw signals. The fix is to connect the
+	 * Table's fixedHandle to the draw signal, and propagate the draw
+	 * signal using gtk_container_propagate_draw(). See bug 531928.
 	 */
-	if (child != null && GTK.GTK3) {
-		child.reparentOnVisibility = true;
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
+		hasChildren = true;
+		connectFixedHandleDraw();
 	}
 }
 
@@ -4166,6 +4166,16 @@ void updateScrollBarValue (ScrollBar bar) {
 @Override
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
+		case EXPOSE_EVENT: {
+			/*
+			 * If this Table has any child widgets, propagate the draw signal
+			 * to them using gtk_container_propagate_draw(). See bug 531928.
+			 */
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && hasChildren) {
+				propagateDraw(handle, arg0);
+			}
+			break;
+		}
 		case EXPOSE_EVENT_INVERSE: {
 			/*
 			 * Feature in GTK. When the GtkTreeView has no items it does not propagate
