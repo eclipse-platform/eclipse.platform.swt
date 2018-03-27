@@ -896,7 +896,6 @@ public void test_setUrl_remote_with_post() {
 	assumeTrue("Skipping test due to bad internet connection", checkInternet(url));
 	testLog.append("checkInternet() passed");
 
-	String expectedTitle = "Bug List";
 	Runnable browserSetFunc = () -> {
 		testLog.append("Setting Browser url to:" + url);
 		boolean opSuccess = browser.setUrl(
@@ -904,8 +903,19 @@ public void test_setUrl_remote_with_post() {
 				null);
 		assertTrue("Expecting setUrl() to return true", opSuccess);
 	};
-	validateTitleChanged(expectedTitle, browserSetFunc);
-	// Even a successfull empty query returns about 10000 chars of HTML
+
+	final AtomicReference<Boolean> completed = new AtomicReference<>(new Boolean(false));
+	browser.addProgressListener(completedAdapter(event -> {
+		testLog.append("ProgressListener fired");
+		completed.set(true);
+	}));
+	browserSetFunc.run();
+	shell.open();
+
+	boolean hasFinished = waitForPassCondition(() -> completed.get().booleanValue());
+	assertTrue("Test timed out. ProgressListener not fired " + testLog.toString(), hasFinished);
+
+	// Even a successful empty query returns about 10000 chars of HTML
 	int numChars = browser.getText().length();
 	assertTrue("Response data contained " + numChars + " chars.", numChars > 10000);
 }
