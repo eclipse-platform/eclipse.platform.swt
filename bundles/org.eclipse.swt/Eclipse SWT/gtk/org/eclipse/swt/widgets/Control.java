@@ -59,12 +59,19 @@ public abstract class Control extends Widget implements Drawable {
 	Image backgroundImage;
 	Font font;
 	Region region;
+	long /*int*/ eventRegion;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
 	Control labelRelation;
 	String cssBackground, cssForeground = " ";
 	boolean drawRegion;
+	/**
+	 * Point for storing the (x, y) coordinate of the last input (click/scroll/etc.).
+	 * This is useful for checking input event coordinates in methods that act on input,
+	 * but do not receive coordinates (like gtk_clicked, for example). See bug 529431.
+	 */
+	Point lastInput = new Point(0, 0);
 
 	LinkedList <Event> dragDetectionQueue;
 
@@ -429,6 +436,7 @@ boolean hooksPaint () {
 long /*int*/ hoverProc (long /*int*/ widget) {
 	int [] x = new int [1], y = new int [1], mask = new int [1];
 	gdk_window_get_device_position (0, x, y, mask);
+	if (containedInRegion(x[0], y[0])) return 0;
 	sendMouseEvent (SWT.MouseHover, 0, /*time*/0, x [0], y [0], false, mask [0]);
 	/* Always return zero in order to cancel the hover timer */
 	return 0;
@@ -711,6 +719,21 @@ void checkBorder () {
 
 void checkMirrored () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.MIRRORED;
+}
+
+/**
+ * Convenience method for checking whether an (x, y) coordinate is in the set
+ * region. Only relevant for GTK3.10+.
+ *
+ * @param x an x coordinate
+ * @param y a y coordinate
+ * @return true if the coordinate (x, y) is in the region, false otherwise
+ */
+boolean containedInRegion (int x, int y) {
+	if (drawRegion && eventRegion != 0) {
+		return Cairo.cairo_region_contains_point(eventRegion, x, y);
+	}
+	return false;
 }
 
 long /*int*/ childStyle () {
@@ -3335,6 +3358,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, boolean sendMouseDown) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
 
 	/*
@@ -3414,6 +3440,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	return sendMouseEvent (SWT.MouseUp, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 }
 
@@ -3448,6 +3477,10 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
 	/*
 	 * It is possible to send out too many enter/exit events if entering a
 	 * control through a subwindow. The fix is to return without sending any
@@ -3560,6 +3593,7 @@ void cairoClipRegion (long /*int*/ cairo) {
 	GDK.gdk_cairo_region(cairo, actualRegion);
 	Cairo.cairo_clip(cairo);
 	Cairo.cairo_paint(cairo);
+	eventRegion = actualRegion;
 }
 
 @Override
@@ -3702,11 +3736,14 @@ long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (display.currentControl != this) return 0;
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	display.removeMouseHoverTimeout (handle);
 	int result = 0;
 	if (sendLeaveNotify () || display.getCursorControl () == null) {
-		GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-		OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 		if (gdkEvent.mode != GDK.GDK_CROSSING_NORMAL && gdkEvent.mode != GDK.GDK_CROSSING_UNGRAB) return 0;
 		if ((gdkEvent.state & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
 		result = sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
@@ -3742,6 +3779,9 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	int result;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	/*
 	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
 	 * instead of mouse click event. See Bug 503431.
@@ -3827,6 +3867,9 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventScroll gdkEvent = new GdkEventScroll ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	switch (gdkEvent.direction) {
 		case GDK.GDK_SCROLL_UP:
 			return sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
@@ -4340,6 +4383,7 @@ void sendFocusEvent (int type) {
 }
 
  boolean sendGestureEvent (int stateMask, int detail, int x, int y, double delta) {
+	 if (containedInRegion(x, y)) return false;
 	switch (detail) {
 	case SWT.GESTURE_ROTATE: {
 		return sendGestureEvent(stateMask, detail, x, y, delta, 0, 0, 0);
@@ -4360,12 +4404,14 @@ void sendFocusEvent (int type) {
 }
 
 boolean sendGestureEvent (int stateMask, int detail, int x, int y, double xDirection, double yDirection) {
+	if (containedInRegion(x, y)) return false;
 	if (detail == SWT.GESTURE_SWIPE) {
 		return sendGestureEvent(stateMask, detail, x, y, 0, (int)xDirection, (int)yDirection, 0);
 	} else return false;
 }
 
 boolean sendGestureEvent (int stateMask, int detail, int x, int y, double rotation, int xDirection, int yDirection, double magnification) {
+	if (containedInRegion(x, y)) return false;
 	Event event = new Event ();
 	event.stateMask = stateMask;
 	event.detail = detail;
@@ -4412,6 +4458,7 @@ boolean sendLeaveNotify() {
 }
 
 boolean sendMouseEvent (int type, int button, int time, double x, double y, boolean is_hint, int state) {
+	if (containedInRegion((int) x, (int) y)) return true;
 	return sendMouseEvent (type, button, 0, 0, false, time, x, y, is_hint, state);
 }
 
@@ -4421,6 +4468,7 @@ boolean sendMouseEvent (int type, int button, int time, double x, double y, bool
  *  false - event sending canceled by user.
  */
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state) {
+	if (containedInRegion((int) x, (int) y)) return true;
 	if (!hooks (type) && !filters (type)) {
 		/*
 		 * On Wayland, MouseDown events are cached for DnD purposes, but

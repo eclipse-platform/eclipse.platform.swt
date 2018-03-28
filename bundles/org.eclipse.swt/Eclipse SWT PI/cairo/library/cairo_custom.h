@@ -31,6 +31,7 @@
 #define cairo_pdf_surface_set_size_LIB LIB_CAIRO
 #define cairo_ps_surface_set_size_LIB LIB_CAIRO
 #define cairo_region_num_rectangles_LIB LIB_CAIRO
+#define cairo_region_contains_point_LIB LIB_CAIRO
 #define cairo_region_get_rectangle_LIB LIB_CAIRO
 
 #ifdef CAIRO_HAS_XLIB_SURFACE

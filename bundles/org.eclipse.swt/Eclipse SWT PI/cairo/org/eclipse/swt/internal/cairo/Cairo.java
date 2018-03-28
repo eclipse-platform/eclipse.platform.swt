@@ -1248,6 +1248,16 @@ public static final int cairo_region_num_rectangles(long /*int*/ region) {
 	}
 }
 /** @method flags=dynamic */
+public static final native boolean _cairo_region_contains_point(long /*int*/ region, int x, int y);
+public static final boolean cairo_region_contains_point(long /*int*/ region, int x, int y) {
+	lock.lock();
+	try {
+		return _cairo_region_contains_point(region, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _cairo_region_get_rectangle(long /*int*/ region, int nth, long /*int*/ rectangle);
 public static final void cairo_region_get_rectangle(long /*int*/ region, int nth, long /*int*/ rectangle) {
 	lock.lock();

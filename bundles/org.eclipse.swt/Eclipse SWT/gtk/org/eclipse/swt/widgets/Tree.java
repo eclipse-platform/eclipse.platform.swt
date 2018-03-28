@@ -2205,6 +2205,10 @@ void sendTreeDefaultSelection() {
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	// Check region since super.gtk_button_release_event() isn't called
+	lastInput.x = (int) gdkEvent.x;
+	lastInput.y = (int) gdkEvent.y;
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	if (gdkEvent.window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.

@@ -96,6 +96,7 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1push_1group",
 	"_1cairo_1rectangle",
 	"_1cairo_1reference",
+	"_1cairo_1region_1contains_1point",
 	"_1cairo_1region_1get_1rectangle",
 	"_1cairo_1region_1num_1rectangles",
 	"_1cairo_1reset_1clip",

@@ -855,6 +855,26 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1reference)
 }
 #endif
 
+#ifndef NO__1cairo_1region_1contains_1point
+JNIEXPORT jboolean JNICALL Cairo_NATIVE(_1cairo_1region_1contains_1point)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1contains_1point_FUNC);
+/*
+	rc = (jboolean)cairo_region_contains_point(arg0, arg1, arg2);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_contains_point)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1contains_1point_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1cairo_1region_1get_1rectangle
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1region_1get_1rectangle)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)

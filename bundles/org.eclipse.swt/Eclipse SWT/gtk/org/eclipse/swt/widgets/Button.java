@@ -504,6 +504,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 
 @Override
 long /*int*/ gtk_clicked (long /*int*/ widget) {
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
 			setSelection (!selected);

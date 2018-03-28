@@ -86,8 +86,11 @@ public class Bug529431_SetRegionTesting {
 		// define the shape of the button using setRegion
 		widget.setRegion(region);
 
-		// Uncomment to test input handling
-//		b2.addListener(SWT.Selection, e -> shell.close());
+		// test input handling
+		widget.addListener(SWT.Selection, e -> System.out.println("SWT.Selection sent"));
+		widget.addListener(SWT.MouseDown, e -> System.out.println("SWT.MouseDown sent"));
+		widget.addListener(SWT.MouseExit, e -> System.out.println("SWT.MouseExit sent"));
+		widget.addListener(SWT.MouseEnter, e -> System.out.println("SWT.MouseEnter sent"));
 
 		shell.setSize(200,200);
 		shell.open();
