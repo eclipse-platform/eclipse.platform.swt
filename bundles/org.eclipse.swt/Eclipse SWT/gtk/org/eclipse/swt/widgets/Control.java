@@ -3531,6 +3531,37 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return 0;
 }
 
+/**
+ * Convenience method that applies a region to the Control using cairo_clip.
+ *
+ * @param cairo the cairo context to apply the region to
+ */
+void cairoClipRegion (long /*int*/ cairo) {
+	GdkRectangle rect = new GdkRectangle ();
+	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
+	long /*int*/ regionHandle = this.region.handle;
+	GdkRectangle regionRect = new GdkRectangle();
+	/*
+	 * These gdk_region_* functions actually map to the proper
+	 * cairo_* functions in os.h.
+	 */
+	GDK.gdk_region_get_clipbox(regionHandle, regionRect);
+	long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
+	GDK.gdk_region_subtract(actualRegion, regionHandle);
+	// Draw the Shell bg using cairo, only if it's a different color
+	Shell shell = getShell();
+	Color shellBg = shell.getBackground();
+	if (shellBg != this.getBackground()) {
+		GdkRGBA rgba = shellBg.handleRGBA;
+		Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+	} else {
+		Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
+	}
+	GDK.gdk_cairo_region(cairo, actualRegion);
+	Cairo.cairo_clip(cairo);
+	Cairo.cairo_paint(cairo);
+}
+
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
@@ -3542,27 +3573,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	 * See bug 529431.
 	 */
 	if (drawRegion) {
-		long /*int*/ regionHandle = this.region.handle;
-		GdkRectangle regionRect = new GdkRectangle();
-		/*
-		 * These gdk_region_* functions actually map to the proper
-		 * cairo_* functions in os.h.
-		 */
-		GDK.gdk_region_get_clipbox(regionHandle, regionRect);
-		long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
-		GDK.gdk_region_subtract(actualRegion, regionHandle);
-		// Draw the Shell bg using cairo, only if it's a different color
-		Shell shell = getShell();
-		Color shellBg = shell.getBackground();
-		if (shellBg != this.getBackground()) {
-			GdkRGBA rgba = shellBg.handleRGBA;
-			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-		} else {
-			Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
-		}
-		GDK.gdk_cairo_region(cairo, actualRegion);
-		Cairo.cairo_clip(cairo);
-		Cairo.cairo_paint(cairo);
+		cairoClipRegion(cairo);
 	}
 	if (!hooksPaint ()) return 0;
 	Event event = new Event ();
@@ -6351,6 +6362,11 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 				}
 			}
 			break;
+		}
+		case DRAW: {
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && paintHandle() == handle && drawRegion) {
+				return gtk_draw(handle, arg0);
+			}
 		}
 	}
 	return super.windowProc (handle, arg0, user_data);
