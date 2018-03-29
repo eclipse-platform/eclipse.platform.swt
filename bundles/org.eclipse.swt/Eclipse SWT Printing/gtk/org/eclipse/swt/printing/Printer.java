@@ -63,7 +63,7 @@ public final class Printer extends Device {
 	static final String GTK_LPR_BACKEND = "GtkPrintBackendLpr"; //$NON-NLS-1$
 	static final String GTK_FILE_BACKEND = "GtkPrintBackendFile"; //$NON-NLS-1$
 
-	static boolean disablePrinting = System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
+	static boolean disablePrinting = OS.IsWin32 || System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
 
 static void gtk_init() {
 	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {

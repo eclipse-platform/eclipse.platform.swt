@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.internal.gtk.*;
+
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
+	if (OS.IsWin32) return null;
 	boolean webkitInstalled = WebKit.IsInstalled ();
 	if (!webkitInstalled) return null;
 
