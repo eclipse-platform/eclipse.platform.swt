@@ -202,7 +202,6 @@ void createWidget (int index) {
 
 @Override
 void deregister() {
-	parent.gtk_tree_view_column_set_visible(this.handle, true); // Bug 399522. Stop Acessibiliity throwing a critical warning due to column being invisible.
 	super.deregister ();
 	display.removeWidget (handle);
 	if (buttonHandle != 0) display.removeWidget (buttonHandle);
@@ -327,7 +326,7 @@ public int getWidth () {
 
 int getWidthInPixels () {
 	checkWidget();
-	if (!parent.gtk_tree_view_column_get_visible (handle)) {
+	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
 	if (useFixedWidth) return GTK.gtk_tree_view_column_get_fixed_width (handle);
@@ -716,20 +715,18 @@ public void setWidth (int width) {
 void setWidthInPixels (int width) {
 	checkWidget();
 	if (width < 0) return;
-
+	if (width == lastWidth) return;
+	if (width > 0) {
+		useFixedWidth = true;
+		GTK.gtk_tree_view_column_set_fixed_width (handle, width);
+	}
 	/*
 	 * Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
 	 * when the parent is not realized fails to show the column. The fix is to
 	 * ensure that the table has been realized.
 	 */
 	if (width != 0) GTK.gtk_widget_realize (parent.handle);
-	parent.gtk_tree_view_column_set_visible(this.handle, width != 0);
-
-	if (width == lastWidth) return;
-	if (width > 0) {
-		useFixedWidth = true;
-		GTK.gtk_tree_view_column_set_fixed_width (handle, width);
-	}
+	GTK.gtk_tree_view_column_set_visible (handle, width != 0);
 	lastWidth = width;
 	/*
 	 * Bug in GTK. When the column is made visible the event window of column

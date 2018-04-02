@@ -93,23 +93,6 @@ public abstract class Control extends Widget implements Drawable {
 		if (gestureEnd.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
-	/**
-	 * (Gtk3-only) Delayed initialization after Gtk3 lazy initialization/caching occurred.
-	 *
-	 * 1) On Gtk3, GtkTree is heavily optimized and a lot of things are cached/initialized later (e.g after 5th/10th
-	 * g_main_context_iteration(), or during idle CPU time).
-	 *
-	 * 2) Further, Gtk3.6+ (ish) is optimized not to initialize 'invisible' components (e.g invisible table columns).
-	 *
-	 * Due to this lazy (1) & ignored code (2) combination, if a *custom* component is invisible during the lazy initialization,
-	 * it can lead to incorrect initialization of such custom components (e.g Custom-drawn Virtual trees/tables).
-	 * E.g 'TreeCheese' (see Screenshots in Bug 531048).
-	 *
-	 * The solution is to finalize some initialization *after* the lazy initialization is completed.
-	 */
-	boolean lazyInitializationOccured;
-	Hashtable<Long, Boolean> delayedVisibilityState = new Hashtable<>();
-
 Control () {
 }
 
@@ -6381,74 +6364,5 @@ Point getWindowOrigin () {
 	GDK.gdk_window_get_origin (window, x, y);
 
 	return new Point (x [0], y [0]);
-}
-
-/**
-* GtkTreeViewColumns must be visible during gtk3's lazy initialization/caching,
-* otherwise custom-drawing/renders aren't initialized properly and we
-* get tree-cheese. See 531048.
-*
-* The solution is to cache the 'desired' visibility state during initialization,
-* and only apply it after lazy initialization is complete.
-*
-* Note on TableColumn Visibility:
-* 1) When a (Java) Table is created, it creates a GtkTreeViewColumn which is visible. (Note, no Java TableColumn is created)
-* 2) When the first (Java) TableColum is created, the first GtkTreeViewColumn is attached to it and is made invisible.
-* 3) When the 2nd+ (Java) TableColumn is created, a new GtkTreeViewColumn is created for each one and is made invisible.
-*
-* TableColumn is invisible until pack() or setWidth() is called on it, this is so that there is consistent api across Win/Cocoa/Gtk.
-* See: org.eclipse.swt.tests.manualJUnit.MJ_Table: column_noWidth_bug399522()
-*/
-void gtk_tree_view_column_set_visible (long /*int*/ columnHandle, boolean visible) {
-	if (GTK.GTK3) {
-		if (lazyInitializationOccured) {
-			GTK.gtk_tree_view_column_set_visible (columnHandle, visible);
-		} else {
-			delayedVisibilityState.put(new Long(columnHandle), Boolean.valueOf(visible));
-		}
-	} else {
-		GTK.gtk_tree_view_column_set_visible (columnHandle, visible);
-	}
-}
-
-boolean gtk_tree_view_column_get_visible (long /*int*/ columnHandle) {
-	if (GTK.GTK3) {
-		if (lazyInitializationOccured) {
-			return GTK.gtk_tree_view_column_get_visible(columnHandle);
-		} else {
-			Boolean visibilityState = delayedVisibilityState.get(new Long(columnHandle));
-			if (visibilityState != null) {
-				return visibilityState;
-			} else {
-				return true; //GtkTreeColumn is initially visible until we hide it.
-			}
-		}
-	} else {
-		return GTK.gtk_tree_view_column_get_visible(columnHandle);
-	}
-}
-
-
-/**
- * From testing, I observed that generally the 'draw' signal is only sent once lazy
- * initialization/caching is complete, so we piggy back onto the draw signal for delayed initialization.
- * In contrast, mapping/realization events can sometimes be sent before such 'lazy' initialization is completed (or during),
- * so they are not suitable.
- * I.e mapping/realization events can be sent before the first g_main_context_iteration() is ran, but draw is only sent
- *   *just before* something is actually visually displayed to the user. (typically after 16+ g_main_context_iterations).
- *
- * See bug 531048.
- */
-void delayedInitialization(long /*int*/ widget) {
-	assert GTK.GTK3;
-	if (isDisposed()) return;
-
-	for (Long columnHandleObject : delayedVisibilityState.keySet()) {
-		long /*int*/ columnHandle = (long /*int*/) columnHandleObject.longValue();
-		Boolean visible  = delayedVisibilityState.get(columnHandleObject);
-		if (visible != null) {
-			GTK.gtk_tree_view_column_set_visible (columnHandle, visible);
-		}
-	}
 }
 }

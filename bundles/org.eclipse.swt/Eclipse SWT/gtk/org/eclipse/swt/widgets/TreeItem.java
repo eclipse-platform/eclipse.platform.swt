@@ -481,7 +481,7 @@ Rectangle getBoundsInPixels (int index) {
 		rect.x += x [0] + w [0];
 		rect.width -= x [0] + w [0];
 	}
-	int width = parent.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	return r;
 }
@@ -545,7 +545,7 @@ Rectangle getBoundsInPixels () {
 			rect.width = Math.max (0, right - rect.x);
 		}
 	}
-	int width = parent.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
 	return r;
 }
@@ -788,7 +788,7 @@ Rectangle getImageBoundsInPixels (int index) {
 		rect.x += x [0];
 	}
 	rect.width = w [0];
-	int width = parent.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
+	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
@@ -1030,7 +1030,7 @@ Rectangle getTextBoundsInPixels (int index) {
 			rect.width = Math.max (0, right - rect.x);
 		}
 	}
-	int width = parent.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
 	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
