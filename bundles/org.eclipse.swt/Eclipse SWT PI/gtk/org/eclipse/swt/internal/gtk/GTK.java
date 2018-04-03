@@ -478,6 +478,16 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @method flags=const */
+	public static final native long /*int*/ _GTK_TYPE_WINDOW();
+	public static final long /*int*/ GTK_TYPE_WINDOW() {
+		lock.lock();
+		try {
+			return _GTK_TYPE_WINDOW();
+		} finally {
+			lock.unlock();
+		}
+	}
 	public static final native void _GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag);
 	public static final void GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag) {
 		lock.lock();

@@ -4228,6 +4228,18 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1GTK_1TYPE_1WIDGET)
 }
 #endif
 
+#ifndef NO__1GTK_1TYPE_1WINDOW
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1GTK_1TYPE_1WINDOW)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1GTK_1TYPE_1WINDOW_FUNC);
+	rc = (jintLong)GTK_TYPE_WINDOW;
+	GTK_NATIVE_EXIT(env, that, _1GTK_1TYPE_1WINDOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1WIDGET_1SET_1FLAGS
 JNIEXPORT void JNICALL GTK_NATIVE(_1GTK_1WIDGET_1SET_1FLAGS)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)

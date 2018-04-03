@@ -64,7 +64,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 	Control labelRelation;
 	String cssBackground, cssForeground = " ";
-	boolean reparentOnVisibility;
+	boolean drawRegion;
 
 	LinkedList <Event> dragDetectionQueue;
 
@@ -1343,11 +1343,16 @@ public void setRegion (Region region) {
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long /*int*/ shape_region = (region == null) ? 0 : region.handle;
 	this.region = region;
-	// Only call gdk_window_shape_combine_region on GTK3.8-
-	if (GTK.GTK_VERSION < OS.VERSION(3, 9, 0)) {
-		long /*int*/ window = gtk_widget_get_window (topHandle ());
+	long /*int*/ topHandle = topHandle ();
+	/*
+	 * Only call gdk_window_shape_combine_region on GTK3.10-, or if the widget is
+	 * a GtkWindow.
+	 */
+	if (GTK.GTK_VERSION < OS.VERSION(3, 10, 0) || OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
+		long /*int*/ window = gtk_widget_get_window (topHandle);
 		GDK.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	} else {
+		drawRegion = (this.region != null && this.region.handle != 0);
 		GTK.gtk_widget_queue_draw(topHandle());
 	}
 }
@@ -3536,7 +3541,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	 * Doesn't modify input handling at this time.
 	 * See bug 529431.
 	 */
-	if (this.region != null && this.region.handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
+	if (drawRegion) {
 		long /*int*/ regionHandle = this.region.handle;
 		GdkRectangle regionRect = new GdkRectangle();
 		/*
