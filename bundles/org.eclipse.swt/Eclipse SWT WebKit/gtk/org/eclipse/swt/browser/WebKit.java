@@ -1057,6 +1057,8 @@ public void create (Composite parent, int style) {
 	//   As of Webkitgtk 2.18, webkitgtk2 crashes if the first instance of webview is not referenced when JVM shuts down.
 	//   There is a exit handler that tries to dereference the first instance [which if not referenced]
 	//   leads to a crash. This workaround would benefit from deeper investigation (find root cause etc...).
+	// [edit] Bug 530678. Note, it seems that as of Webkit2.18, webkit auto-disposes itself if parent get's disposed.
+	//        While not directly related, see onDispose() for how to deal with disposal of this.
 	if (WEBKIT2 && !bug522733FirstInstanceCreated && vers[0] == 2 && vers[1] >= 18) {
 		bug522733FirstInstanceCreated = true;
 		OS.g_object_ref(webView);
@@ -2396,8 +2398,25 @@ void onDispose (Event e) {
 		postData = null;
 		headers = null;
 		htmlBytes = null;
-	} else if (WEBKIT2) {
-		webView = 0; // Note, Webkit2 disposes it self on it's own.
+	}
+	if (WEBKIT2 && WebKitGTK.webkit_get_minor_version() >= 18) {
+		// Bug 530678.
+		// * As of Webkit 2.18, (it seems) webkitGtk auto-disposes itself when the parent is disposed.
+		// * This can cause a deadlock inside Webkit process if WebkitGTK widget's parent is disposed during a callback.
+		//   This is because webkit process is waiting for it's callback to finish which never completes
+		//   because parent's disposal also disposed webkitGTK widget. (Note Webkit process vs WebkitGtk widget).
+		// * To break the deadlock, we unparent webkitGtk temporarily and unref (dispose) it later after callback is done.
+		//
+		// If you change dispose logic, to check that you haven't introduced memory leaks, test via:
+		// org.eclipse.swt.tests.junit.memoryleak.Test_Memory_Leak.test_Browser()
+		OS.g_object_ref (webView);
+		GTK.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
+		long /*int*/ webViewTempRef = webView;
+		browser.getDisplay().asyncExec(() -> {
+			GTK._gtk_widget_destroy(webViewTempRef);
+			OS.g_object_unref (webViewTempRef);
+		});
+		webView = 0;
 	}
 }
 
