@@ -2013,6 +2013,18 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
+	 */
+	public static final native int _gdk_monitor_get_scale_factor(long /*int*/ window);
+	public static final int gdk_monitor_get_scale_factor(long /*int*/ window) {
+		lock.lock();
+		try {
+			return _gdk_monitor_get_scale_factor(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 * @param x cast=(gint)
 	 * @param y cast=(gint)
@@ -2036,6 +2048,18 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_screen_get_monitor_at_window(screen, window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_display_get_monitor(long /*int*/ display, int monitor_num);
+	public static final long /*int*/ gdk_display_get_monitor(long /*int*/ display, int monitor_num) {
+		lock.lock();
+		try {
+			return _gdk_display_get_monitor(display, monitor_num);
 		} finally {
 			lock.unlock();
 		}

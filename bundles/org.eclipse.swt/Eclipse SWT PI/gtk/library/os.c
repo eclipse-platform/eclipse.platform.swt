@@ -992,6 +992,26 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1device_1manager)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1get_1monitor
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1monitor)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1monitor_FUNC);
+/*
+	rc = (jintLong)gdk_display_get_monitor(arg0, arg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitor)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1monitor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1supports_1cursor_1color
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1686,6 +1706,26 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1keyval_1to_1unicode)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1keyval_1to_1unicode_FUNC);
 	rc = (jlong)gdk_keyval_to_unicode(arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1keyval_1to_1unicode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1monitor_1get_1scale_1factor
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1scale_1factor)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1monitor_1get_1scale_1factor_FUNC);
+/*
+	rc = (jint)gdk_monitor_get_scale_factor(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_monitor_get_scale_factor)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1monitor_1get_1scale_1factor_FUNC);
 	return rc;
 }
 #endif

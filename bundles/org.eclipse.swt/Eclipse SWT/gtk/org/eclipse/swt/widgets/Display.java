@@ -2674,6 +2674,13 @@ public Monitor [] getMonitors () {
 				monitor.y = DPIUtil.autoScaleDown (dest.y);
 				monitor.width = DPIUtil.autoScaleDown (dest.width);
 				monitor.height = DPIUtil.autoScaleDown (dest.height);
+				if (GTK.GTK_VERSION >= OS.VERSION (3, 22, 0) && !OS.isX11()) {
+					int scale_factor = (int) GDK.gdk_monitor_get_scale_factor (
+							GDK.gdk_display_get_monitor (GDK.gdk_display_get_default (),  (int) monitor.handle));
+					monitor.zoom = scale_factor * 100;
+				} else {
+					monitor.zoom = Display._getDeviceZoom(monitor.handle);
+				}
 
 				if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 					// workarea was defined in GTK 3.4. If present, it will return the best results
@@ -5955,11 +5962,22 @@ protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, l
 	return 0;
 }
 
-
+static int _getDeviceZoom (long /*int*/ monitor_num) {
+	long /*int*/ screen = GDK.gdk_screen_get_default ();
+	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
+	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
+	if (GTK.GTK_VERSION > OS.VERSION (3, 9, 0)) {
+		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, (int) monitor_num);
+		dpi = dpi * scale;
+	}
+	return DPIUtil.mapDPIToZoom (dpi);
 }
+}
+
 
 class MonitorUtil {
 	static int getZoom (Monitor monitor) {
 		return monitor.zoom;
 	}
 }
+
