@@ -74,7 +74,6 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	int     debug_show_browser_timeout_seconds = 2; // if above set to true, then how long should the browser be shown for.
 													// This is independent of whether test passes or fails.
 
-	boolean debug_print_test_names = true; // Useful to figure out which jUnit caused vm crash.
 	boolean debug_verbose_output = false;
 
 	int secondsToWaitTillFail; // configured in setUp() to allow individual tests to override this.
@@ -102,10 +101,11 @@ public void setUp() {
 	super.setUp();
 	secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 
-//	 Print test name if running on hudson. This makes it easier to tell in the logs which test case caused crash.
-	if (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK || debug_print_test_names) {
-		System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
-	}
+	// If webkit crashes, it's very hard to tell which jUnit caused the JVM crash.
+	// To get around this, we print each test's name and if there is a crash, it will be printed right after.
+	// This is kept for future use as sometimes crashes can appear out of the blue with no changes in SWT code.
+	// E.g an upgrade from WebkitGtk2.16 to WebkitGtk2.18 caused random crashes because dispose logic was changed.
+	System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
 
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
@@ -1516,9 +1516,8 @@ public void test_execute_and_closeListener () {
  */
 @Test
 public void test_evaluate_string() {
-	// Run locally, skip on hudson. see Bug 509411
 	// This test sometimes crashes on webkit1, but it's useful to test at least one 'evaluate' situation.
-	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1));
+	assumeFalse(webkit1SkipMsg(), (isWebkit1));
 
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(completedAdapter(event -> {
@@ -1538,8 +1537,7 @@ public void test_evaluate_string() {
 // Test where the script has the 'return' not in the beginning,
 @Test
 public void test_evaluate_returnMoved() {
-	// Run locally, skip on hudson's webkit1. see Bug 509411
-	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1));
+	assumeFalse(webkit1SkipMsg(), (isWebkit1));
 
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(completedAdapter(event -> {
@@ -1905,7 +1903,7 @@ public void test_BrowserFunction_callback_with_integer () {
 	// culprit seems to be the main_context_iteration() call in shell.setVisible().
 	// See Bug 509587.  Solution: Webkit2.
 	// It's useful to run at least one function test on webkit1 locally.
-	assumeFalse(webkit1SkipMsg(), (SwtTestUtil.isRunningOnEclipseOrgHudsonGTK && isWebkit1)); // run locally. Skip on hudson that runs webkit1.
+	assumeFalse(webkit1SkipMsg(), (isWebkit1));
 
 	AtomicInteger returnInt = new AtomicInteger(0);
 

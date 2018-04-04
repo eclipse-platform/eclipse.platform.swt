@@ -69,9 +69,9 @@ public class SwtTestUtil {
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 
-	public final static boolean isRunningOnEclipseOrgHudsonGTK = isGTK
-			&& ("hudsonbuild".equalsIgnoreCase(System.getProperty("user.name"))
-			|| "genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
+
+	/** Useful if you want some tests not to run on Jenkins */
+	public final static boolean isRunningOnEclipseOrgContinousIntegration = isGTK && ("genie.platform".equalsIgnoreCase(System.getProperty("user.name")));
 
 	public final static boolean isX11 = isGTK
 			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
