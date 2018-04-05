@@ -15,6 +15,7 @@ package org.eclipse.swt.examples.controlexample;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -112,31 +113,32 @@ class ColorTab extends Tab {
 		}
 		// fill in the Data. Put an empty line inbetween "Named" and "SWT" colors.
 		boolean emptyLineFlag=false;
-		for (Integer key : hmap.keySet()){
-			if (!emptyLineFlag){
-			TableItem item = new TableItem (colors, SWT.NONE);
-			item.setText(hmap.get(key));
-			item.setText(0,hmap.get(key));
-			item.setText(1,"Named");
-			item.setText(2,getRGBcolor(key));
-			// the spaces will help the color cell be large enough to see
-			item.setText(3,"            ");
-			item.setBackground(3,display.getSystemColor(key));
-				if(key == namedColorEnd){
+		for (Entry<Integer, String> entry : hmap.entrySet()) {
+			Integer key = entry.getKey();
+			String value = entry.getValue();
+			if (!emptyLineFlag) {
+				TableItem item = new TableItem(colors, SWT.NONE);
+				item.setText(value);
+				item.setText(0, value);
+				item.setText(1, "Named");
+				item.setText(2, getRGBcolor(key));
+				// the spaces will help the color cell be large enough to see
+				item.setText(3, "            ");
+				item.setBackground(3, display.getSystemColor(key));
+				if (key == namedColorEnd) {
 					TableItem emptyItem = new TableItem(colors, SWT.NONE);
 					emptyItem.setText("");
-					emptyLineFlag=true;
+					emptyLineFlag = true;
 				}
-			}
-			else{
-				TableItem item = new TableItem (colors, SWT.NONE);
-				item.setText(hmap.get(key));
-				item.setText(0,hmap.get(key)+" ");
-				item.setText(1,"System ");
-				item.setText(2,getRGBcolor(key)+" ");
+			} else {
+				TableItem item = new TableItem(colors, SWT.NONE);
+				item.setText(value);
+				item.setText(0, value + " ");
+				item.setText(1, "System ");
+				item.setText(2, getRGBcolor(key) + " ");
 				// the spaces will help the color cell be large enough to see
-				item.setText(3,"            ");
-				item.setBackground(3,display.getSystemColor(key));
+				item.setText(3, "            ");
+				item.setBackground(3, display.getSystemColor(key));
 			}
 		}
 		for (int i = 0; i < columnTitles.length; i++) {
