@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -672,41 +673,79 @@ protected void init () {
 	}
 	systemFont = Font.gtk_new (this, defaultFont);
 
-	/* Load certain CSS globally to save native GTK calls */
 	if (GTK.GTK3) {
-		long /*int*/ screen = GDK.gdk_screen_get_default();
-		long /*int*/ provider = GTK.gtk_css_provider_new();
-		String resourcePath = "";
-		if (screen != 0 && provider != 0) {
-			String userCSS = "";
-			String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
-				try (BufferedReader buffer = new BufferedReader(new FileReader(
-						new File(additionalCSSPath)))) {
-					userCSS = buffer.lines().collect(Collectors.joining("\n"));
-				} catch (IOException e) {
-					//Resource was not loaded thus no modifications to the gtk theme will be applied
-				}
-
-			}
-
-			if (GTK.GTK_VERSION < OS.VERSION(3, 20, 0)) {
-				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_pre320.css";
-			} else {
-				resourcePath = "/org/eclipse/swt/internal/gtk/swtgtk_320.css";
-			}
-			try (BufferedReader buffer = new BufferedReader(new InputStreamReader(
-					Device.class.getResourceAsStream(resourcePath)))) {
-				String css = buffer.lines().collect(Collectors.joining("\n"));
-				String fullCSS = css + userCSS;
-				GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (fullCSS, true), -1, null);
-			} catch (IOException e) {
-				//Resource was not loaded thus no modifications to the gtk theme will be applied
-			}
-
-		}
+		overrideThemeValues();
 	}
+}
+
+/**
+ * For functionality & improved looks, we override some CSS theme values with custom values.
+ *
+ * Note about theme load mechanism:
+ * - This method is reached early at start of SWT initialization.
+ *   Later, platform.ui will call OS.setDarkThemePreferred(true), which tells Gtk to use dark theme.
+ *   This has the implication that the system theme can be 'Adwaita' (light), but later be 'darkened'
+ *   by platform.ui. This means that there should not be any color-specific overrides in Adwaita theming
+ *   because 'Adwaita' is used for both light and dark theme.
+ *
+ * Note about light/dark system theme:
+ * - If the System theme is Adwaita (light), eclipse can be forced to be dark with setDarkThemePreferred(true).
+ *   But if the System theme is Adwaita-dark, eclipse cannot be made 'light'.
+ *
+ * Note that much of eclipse 'dark theme' is done by platform.ui's CSS engine, not by SWT.
+ */
+private void overrideThemeValues () {
+	assert GTK.GTK3;
+	long /*int*/ screen = GDK.gdk_screen_get_default();
+	long /*int*/ provider = GTK.gtk_css_provider_new();
+	if (screen == 0 || provider == 0) {
+		System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire screen or provider.");
+		return;
+	}
+
+	BiFunction <String, Boolean, String> load = (path, isResource) -> {
+		try  {
+			BufferedReader buffer;
+			if (isResource) {
+				buffer = new BufferedReader(new InputStreamReader(Device.class.getResourceAsStream(path)));
+			} else {
+				buffer = new BufferedReader(new FileReader(new File(path)));
+			}
+			return buffer.lines().collect(Collectors.joining("\n"));
+		} catch (IOException e) {
+			System.err.println("SWT Warning: Failed to load " + (isResource ? "resource: " : "file: ") + path);
+			return "";
+		}
+	};
+
+	StringBuilder combinedCSS = new StringBuilder();
+
+	// Load CSS that is common to all themes. Gtk Css allows 'functional'  changes, such as keyboard shortcuts.
+	combinedCSS.append(load.apply(
+		GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
+				"/org/eclipse/swt/internal/gtk/swt_common_gtk_pre320.css" :
+				"/org/eclipse/swt/internal/gtk/swt_common_gtk_320.css"
+			, true));
+
+	// Load CSS specific to Adwaita, to overcome things such as excessive padding that breaks SWT otherwise.
+	String OsThemeName = OS.getThemeName();
+	if ("Adwaita".equals(OsThemeName) || "Adwaita-dark".equals(OsThemeName)){
+		combinedCSS.append(load.apply(
+				GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
+						"/org/eclipse/swt/internal/gtk/swt_adwaita_gtk_pre320.css" :
+						"/org/eclipse/swt/internal/gtk/swt_adwaita_gtk_320.css"
+					, true));
+	}
+
+	// Load CSS from user-defined CSS file.
+	String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
+		// Warning: gtk css syntax changed in 3.20. If you load custom css, it could break things depending on gtk version on system.
+		combinedCSS.append(load.apply(additionalCSSPath, false));
+	}
+
+	GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1, null);
 }
 
 /**

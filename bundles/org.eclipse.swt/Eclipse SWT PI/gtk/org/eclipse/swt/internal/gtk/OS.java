@@ -4194,6 +4194,14 @@ public static final int access (byte [] path, int amode) {
  */
 public static final native int strcmp (long /*int*/ s1, byte [] s2);
 
+/**
+ * Theme name as given by OS.
+ * You can see the exact theme name via Tweak Tools -> Appearance -> Themes.
+ * E.g
+ * 		Adwaita
+ * 		Adwaita-Dark
+ * 		Ambiance 		(Ubuntu).
+ */
 public static final String getThemeName() {
 	byte[] themeNameBytes = getThemeNameBytes();
 	String themeName = "unknown";
