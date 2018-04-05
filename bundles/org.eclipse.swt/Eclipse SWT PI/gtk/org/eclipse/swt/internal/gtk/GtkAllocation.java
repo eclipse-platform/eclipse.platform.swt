@@ -21,4 +21,15 @@ public class GtkAllocation {
 	public int width;
 	public int height;
 	public static final int sizeof = GTK.GtkAllocation_sizeof();
+
+	/**
+	 * Returns a string containing a concise, human-readable
+	 * description of the receiver.
+	 *
+	 * @return a string representation of the <code>GtkAllocation</code>
+	 */
+	@Override
+	public String toString() {
+		return "GtkAllocation {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	}
 }

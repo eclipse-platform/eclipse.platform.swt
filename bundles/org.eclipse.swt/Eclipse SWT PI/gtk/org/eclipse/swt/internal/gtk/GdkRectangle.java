@@ -25,4 +25,15 @@ public class GdkRectangle {
 	/** @field cast=(gint) */
 	public int height;
 	public static final int sizeof = GDK.GdkRectangle_sizeof();
+
+	/**
+	 * Returns a string containing a concise, human-readable
+	 * description of the receiver.
+	 *
+	 * @return a string representation of the <code>GdkRectangle</code>
+	 */
+	@Override
+	public String toString() {
+		return "GdkRectangle {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	}
 }

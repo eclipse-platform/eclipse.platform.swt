@@ -19,4 +19,15 @@ public class GtkRequisition {
 	public int width;
 	public int height;
 	public static final int sizeof = GTK.GtkRequisition_sizeof();
+
+	/**
+	 * Returns a string containing a concise, human-readable
+	 * description of the receiver.
+	 *
+	 * @return a string representation of the <code>GtkRequisition</code>
+	 */
+	@Override
+	public String toString() {
+		return "GtkRequisition {" + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+	}
 }
