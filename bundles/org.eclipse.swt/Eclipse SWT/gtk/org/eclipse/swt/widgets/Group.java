@@ -477,7 +477,7 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 
 @Override
 long /*int*/ paintHandle() {
-	if (GTK.GTK3 && GTK.GTK_VERSION < OS.VERSION(3, 20, 0)) {
+	if (GTK.GTK3 && GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		return super.paintHandle();
 	}
 	else {
