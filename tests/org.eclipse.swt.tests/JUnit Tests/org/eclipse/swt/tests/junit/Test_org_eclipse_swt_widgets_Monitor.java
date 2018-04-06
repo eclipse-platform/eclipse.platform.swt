@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -69,6 +70,16 @@ public void test_getClientArea() {
 	for (int i = 0; i < monitors.length; i++) {
 		bounds = monitors[i].getClientArea();
 		assertNotNull(bounds);
+	}
+}
+
+@Test
+public void test_getZoom() {
+	int zoom = primary.getZoom();
+	assertNotEquals(0, zoom);
+	for (int i = 0; i < monitors.length; i++) {
+		zoom = monitors[i].getZoom();
+		assertNotEquals(0, zoom);
 	}
 }
 
