@@ -5957,3 +5957,9 @@ protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, l
 
 
 }
+
+class MonitorUtil {
+	static int getZoom (Monitor monitor) {
+		return monitor.zoom;
+	}
+}

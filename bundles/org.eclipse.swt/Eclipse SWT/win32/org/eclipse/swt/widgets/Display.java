@@ -4990,3 +4990,24 @@ static char [] withCrLf (char [] string) {
 }
 
 }
+
+class MonitorUtil {
+	static int getZoom (Monitor monitor) {
+		if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
+			int[] dpiX = new int[1];
+			int[] dpiY = new int[1];
+			int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
+			result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
+			return DPIUtil.getZoomForAutoscaleProperty (result);
+		}
+		int dpi = getSystemDPI ();
+		return DPIUtil.mapDPIToZoom (dpi);
+	}
+
+	static int getSystemDPI () {
+		long /*int*/ hDC = OS.GetDC (0);
+		int dpi = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
+		OS.ReleaseDC (0, hDC);
+		return dpi;
+	}
+}

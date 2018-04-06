@@ -652,6 +652,23 @@ JNIEXPORT jint JNICALL OS_NATIVE(CRYPT_1OBJID_1BLOB_1sizeof)
 }
 #endif
 
+#ifndef NO_Call
+JNIEXPORT void JNICALL OS_NATIVE(Call)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	OS_NATIVE_ENTER(env, that, Call_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	((void (*)())arg0)(arg1, arg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, Call_FUNC);
+}
+#endif
+
 #ifndef NO_CallNextHookEx
 JNIEXPORT jintLong JNICALL OS_NATIVE(CallNextHookEx)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jintLong arg3)
@@ -2850,6 +2867,18 @@ fail:
 }
 #endif
 
+#ifndef NO_FreeLibrary
+JNIEXPORT jboolean JNICALL OS_NATIVE(FreeLibrary)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, FreeLibrary_FUNC);
+	rc = (jboolean)FreeLibrary((HMODULE)arg0);
+	OS_NATIVE_EXIT(env, that, FreeLibrary_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GCP_1RESULTS_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GCP_1RESULTS_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -4520,6 +4549,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetPolyFillMode)
 	OS_NATIVE_ENTER(env, that, GetPolyFillMode_FUNC);
 	rc = (jint)GetPolyFillMode((HDC)arg0);
 	OS_NATIVE_EXIT(env, that, GetPolyFillMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetProcAddress
+JNIEXPORT jintLong JNICALL OS_NATIVE(GetProcAddress)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetProcAddress_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)GetProcAddress((HMODULE)arg0, (LPCTSTR)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetProcAddress_FUNC);
 	return rc;
 }
 #endif
@@ -6716,6 +6761,38 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(LoadImageW)
 	OS_NATIVE_ENTER(env, that, LoadImageW_FUNC);
 	rc = (jintLong)LoadImageW((HINSTANCE)arg0, (LPWSTR)arg1, arg2, arg3, arg4, arg5);
 	OS_NATIVE_EXIT(env, that, LoadImageW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LoadLibraryA
+JNIEXPORT jintLong JNICALL OS_NATIVE(LoadLibraryA)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, LoadLibraryA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)LoadLibraryA((LPSTR)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LoadLibraryA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LoadLibraryW
+JNIEXPORT jintLong JNICALL OS_NATIVE(LoadLibraryW)
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, LoadLibraryW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)LoadLibraryW((LPWSTR)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LoadLibraryW_FUNC);
 	return rc;
 }
 #endif
