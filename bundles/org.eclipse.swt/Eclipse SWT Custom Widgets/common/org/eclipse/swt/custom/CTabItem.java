@@ -398,6 +398,17 @@ public void setShowClose(boolean close) {
 	showClose = close;
 	parent.updateFolder(CTabFolder.REDRAW_TABS);
 }
+/**
+ * Sets the text to display on the tab.
+ * A carriage return '\n' allows to display multi line text.
+ *
+ * @param string the tab name
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 @Override
 public void setText (String string) {
 	checkWidget();
