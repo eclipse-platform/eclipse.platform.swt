@@ -413,7 +413,11 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	parent.update (true, (style & SWT.SMOOTH) == 0);
 	drawBand (lastX, lastY, width, height);
 	if ((style & SWT.SMOOTH) != 0) {
-		setBoundsInPixels (rect.x, lastY, width, height);
+		/*
+		 * Use lastX instead of rect.x, as lastX takes into account
+		 * the event.doit flag. See bug 522140.
+		 */
+		setBoundsInPixels (lastX, lastY, width, height);
 		// widget could be disposed at this point
 	}
 	return result;
