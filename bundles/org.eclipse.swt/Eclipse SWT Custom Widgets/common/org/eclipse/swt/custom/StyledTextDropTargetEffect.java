@@ -163,8 +163,8 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 						GC gc = new GC(text);
 						FontMetrics fm = gc.getFontMetrics();
 						gc.dispose();
-						int charWidth = (int) fm.getAverageCharacterWidth();
-						int scrollAmount = 10*charWidth;
+						double charWidth = fm.getAverageCharacterWidth();
+						int scrollAmount = (int) (10*charWidth);
 						if (pt.x < area.x + 3*charWidth) {
 							int leftPixel = text.getHorizontalPixel();
 							text.setHorizontalPixel(leftPixel - scrollAmount);
