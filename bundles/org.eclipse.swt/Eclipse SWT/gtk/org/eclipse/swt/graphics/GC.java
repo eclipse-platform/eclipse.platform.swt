@@ -2026,27 +2026,10 @@ Rectangle getClippingInPixels() {
 		if (damageRgn != 0) {
 			GDK.gdk_region_intersect (rgn, damageRgn);
 		}
-		/*
-		 * Bug 421127 and 531667: CTabFolder doesn't paint tabs due to wrong clipping.
-		 *
-		 * With GTK 3.14 and above, the intersection between GC bounds and clipping region
-		 * is computed with clipping region in device space.
-		 *
-		 * So we transform the GC bounds to device space, before computing the intersection.
-		 */
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-			if (cairo != 0) {
-				double[] matrix = new double[6];
-				Cairo.cairo_get_matrix(cairo, matrix);
-				long /*int*/ newRgn = convertRgn(rgn, matrix);
-				GDK.gdk_region_destroy(rgn);
-				rgn = newRgn;
-			}
-		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
-			if (data.clippingTransform != null) {
+			if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 				clipRgn = convertRgn(clipRgn, data.clippingTransform);
 				GDK.gdk_region_intersect(rgn, clipRgn);
 				GDK.gdk_region_destroy(clipRgn);
@@ -2055,7 +2038,7 @@ Rectangle getClippingInPixels() {
 			}
 		}
 		/* Convert to user space */
-		if (cairo != 0) {
+		if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			double[] matrix = new double[6];
 			Cairo.cairo_get_matrix(cairo, matrix);
 			Cairo.cairo_matrix_invert(matrix);
@@ -2104,7 +2087,7 @@ public void getClipping(Region region) {
 		GDK.gdk_region_union_with_rect(clipping, rect);
 	} else {
 		/* Convert clipping to device space if needed */
-		if (data.clippingTransform != null) {
+		if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			long /*int*/ rgn = convertRgn(clipRgn, data.clippingTransform);
 			GDK.gdk_region_union(clipping, rgn);
 			GDK.gdk_region_destroy(rgn);
@@ -2116,7 +2099,7 @@ public void getClipping(Region region) {
 		GDK.gdk_region_intersect(clipping, data.damageRgn);
 	}
 	/* Convert to user space */
-	if (cairo != 0) {
+	if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 		double[] matrix = new double[6];
 		Cairo.cairo_get_matrix(cairo, matrix);
 		Cairo.cairo_matrix_invert(matrix);
@@ -3009,8 +2992,10 @@ void setClipping(long /*int*/ clipRgn) {
 		if (data.clipRgn == 0) data.clipRgn = GDK.gdk_region_new();
 		GDK.gdk_region_subtract(data.clipRgn, data.clipRgn);
 		GDK.gdk_region_union(data.clipRgn, clipRgn);
-		if (data.clippingTransform == null) data.clippingTransform = new double[6];
-		Cairo.cairo_get_matrix(cairo, data.clippingTransform);
+		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+			if (data.clippingTransform == null) data.clippingTransform = new double[6];
+			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
+		}
 		setCairoClip(data.damageRgn, clipRgn);
 	}
 }
