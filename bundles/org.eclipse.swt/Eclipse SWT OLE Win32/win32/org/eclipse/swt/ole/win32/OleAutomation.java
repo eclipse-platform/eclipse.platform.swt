@@ -151,8 +151,7 @@ public OleAutomation(String progId) {
 			OS.OleUninitialize();
 			OLE.error(OLE.ERROR_INVALID_CLASSID);
 		}
-		int flags = COM.CLSCTX_INPROC_SERVER;
-		if (progId.startsWith("Excel")) flags |= COM.CLSCTX_LOCAL_SERVER; //$NON-NLS-1$
+		int flags = COM.CLSCTX_INPROC_SERVER | COM.CLSCTX_LOCAL_SERVER;
 		long /*int*/[] ppvObject = new long /*int*/[1];
 		int result = COM.CoCreateInstance(appClsid, 0, flags, COM.IIDIUnknown, ppvObject);
 		if (result != COM.S_OK) {
