@@ -127,8 +127,20 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.i386"
-			export AWT_LIB_PATH=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.151-1.b12.el7_4.i386/jre/lib/i386
+
+			# Dynamically find JAVA_HOME for 32bit java on a system that also has 64bit java installed.
+			#   We cannot use `readlink $(which java)` or related methods as they point to the 64 bit java.
+			#   So instead we find the path manually and assume java.i386 is installed in the default /ur/lib/jvm path.
+			# This matches folders such as:
+			#   java-1.8.0-openjdk-........i386
+			#   java-9-openjdk....i386
+			JAVA_FOLDER=$(ls /usr/lib/jvm | grep java | grep -i openjdk | grep i386 | sort | tail -n 1)
+			if [ "${JAVA_FOLDER}" == "" ]; then
+				func_echo_error "ERROR: Could not find JAVA_HOME/AWT_LIB_PATH on 32bit build system automatically. Expecting it to be in /usr/lib/jvm/ but none was found. See also Bug 533496"
+			fi
+
+			export JAVA_HOME=/usr/lib/jvm/${JAVA_FOLDER}
+			export AWT_LIB_PATH=$(JAVA_HOME)/jre/lib/i386
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"
