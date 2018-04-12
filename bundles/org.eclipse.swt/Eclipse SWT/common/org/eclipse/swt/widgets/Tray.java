@@ -39,11 +39,6 @@ public class Tray extends Widget {
 	TrayItem [] items = new TrayItem [4];
 
 Tray (Display display, int style) {
-	if (display == null) display = Display.getCurrent ();
-	if (display == null) display = Display.getDefault ();
-	if (!display.isValidThread ()) {
-		error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
 	this.display = display;
 	reskinWidget ();
 }

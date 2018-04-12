@@ -88,11 +88,6 @@ public class TaskBar extends Widget {
 	}
 
 TaskBar (Display display, int style) {
-	if (display == null) display = Display.getCurrent ();
-	if (display == null) display = Display.getDefault ();
-	if (!display.isValidThread ()) {
-		error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
 	this.display = display;
 	createHandle ();
 	reskinWidget ();
