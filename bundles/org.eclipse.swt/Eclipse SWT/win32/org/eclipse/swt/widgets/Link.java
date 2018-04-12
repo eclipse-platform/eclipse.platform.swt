@@ -1022,8 +1022,8 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/*
 	* Feature in Windows. For WM_NCHITTEST, the Syslink window proc
-	* returns HTTRANSPARENT when mouse is over plain text. The fix is
-	* to always return HTCLIENT.
+	* returns HTTRANSPARENT when mouse is over plain text. As a result,
+	* mouse events are not delivered. The fix is to always return HTCLIENT.
 	*/
 	return new LRESULT (OS.HTCLIENT);
 }
@@ -1103,6 +1103,16 @@ LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 		gc.dispose ();
 	}
 	return result;
+}
+
+@Override
+LRESULT WM_SETCURSOR(long /*int*/ wParam, long /*int*/ lParam) {
+	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
+	if (result != null) return result;
+	long /*int*/ fDone = callWindowProc (handle, OS.WM_SETCURSOR, wParam, lParam);
+	/* Take responsibility for cursor over plain text after overriding WM_NCHITTEST. */
+	if (fDone == 0) OS.DefWindowProc (handle, OS.WM_SETCURSOR, wParam, lParam);
+	return LRESULT.ONE;
 }
 
 @Override
