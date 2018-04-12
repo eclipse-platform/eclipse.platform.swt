@@ -4421,7 +4421,34 @@ boolean sendMouseEvent (int type, int button, int time, double x, double y, bool
  *  false - event sending canceled by user.
  */
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state) {
-	if (!hooks (type) && !filters (type)) return true;
+	if (!hooks (type) && !filters (type)) {
+		/*
+		 * On Wayland, MouseDown events are cached for DnD purposes, but
+		 * unfortunately this breaks simple cases with a single MouseDown
+		 * listener. The MouseDown event is cached but never sent, as MouseUp
+		 * isn't hooked and thus the logic to send cached events is never run.
+		 *
+		 * The solution is to check for MouseUp events even if MouseUp isn't
+		 * hooked. We can check the queue and flush it by sending the MouseDown
+		 * event, similar to the way the caching logic does it when receiving a
+		 * MouseMove event. See bug 529126.
+		 */
+		if (!OS.isX11() && dragDetectionQueue != null) {
+			/*
+			 * The first event in the queue will always be a MouseDown, as
+			 * the queue is only ever created if a MouseDown event is being cached.
+			 * Thus, if the queue only has one element, it is guaranteed to be a
+			 * MouseDown event. More than 1 element implies MouseMove: let the caching
+			 * logic handle this case.
+			 */
+			if (type == SWT.MouseUp && dragDetectionQueue.size() == 1) {
+				Event mouseDownEvent = dragDetectionQueue.getFirst();
+				dragDetectionQueue = null;
+				sendOrPost(SWT.MouseDown, mouseDownEvent);
+			}
+		}
+		return true;
+	}
 	Event event = new Event ();
 	event.time = time;
 	event.button = button;
@@ -4479,8 +4506,9 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 						mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
 						dragDetectionQueue = null;
 						sendOrPost(SWT.MouseDown, mouseDownEvent);
-					} else
+					} else {
 						dragDetectionQueue.add(event);
+					}
 					break;
 				case SWT.MouseUp:
 					// Case where mouse up was released before DnD threshold was hit.
