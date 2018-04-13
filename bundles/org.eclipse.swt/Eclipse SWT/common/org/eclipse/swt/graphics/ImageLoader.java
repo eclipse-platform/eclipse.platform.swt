@@ -37,7 +37,13 @@ import org.eclipse.swt.internal.image.*;
  * <li>load/save animated GIF images</li>
  * <li>load interlaced GIF/PNG images</li>
  * <li>load progressive JPEG images</li>
- * </ul>
+ * </ul></p>
+ *
+ * <p>
+ * NOTE: <code>ImageLoader</code> is implemented in Java, which has certain performance
+ * implications. Performance and memory sensitive applications may benefit from using
+ * one of the constructors provided by <code>Image</code>, as these are implemented
+ * natively.</p>
  *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
