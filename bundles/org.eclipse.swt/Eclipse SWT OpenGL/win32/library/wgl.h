@@ -13,16 +13,5 @@
 #define SWT_WGL_H_INCLUDED
 
 #include <windows.h>
-#include <winuser.h>
-#include <commctrl.h>
-#include <commdlg.h>
-#include <oaidl.h>
-#include <shlobj.h>
-#include <ole2.h>
-#include <olectl.h>
-#include <objbase.h>
-#include <shlwapi.h>
-#include <shellapi.h>
-#include <wingdi.h>
 
 #endif /* SWT_WGL_H_INCLUDED */
