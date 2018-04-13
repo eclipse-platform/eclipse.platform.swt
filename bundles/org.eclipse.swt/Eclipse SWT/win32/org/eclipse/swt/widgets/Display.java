@@ -275,11 +275,6 @@ public class Display extends Device {
 
 	/* Table */
 	char [] tableBuffer;
-	NMHDR hdr = new NMHDR ();
-	NMLVDISPINFO plvfi = new NMLVDISPINFO ();
-	long /*int*/ hwndParent;
-	int columnCount;
-	boolean [] columnVisible;
 
 	/* Resize and move recursion */
 	int resizeCount;
@@ -3730,12 +3725,9 @@ void releaseDisplay () {
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 	timerList = null;
 	tableBuffer = null;
-	columnVisible = null;
 	eventTable = filterTable = null;
 	items = null;
 	clickRect = null;
-	hdr = null;
-	plvfi = null;
 	monitors = null;
 	touchSources = null;
 
@@ -4769,27 +4761,6 @@ void wakeThread () {
 }
 
 long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
-	/*
-	* Feature in Windows.  On Vista only, it is faster to
-	* compute and answer the data for the visible columns
-	* of a table when scrolling, rather than just return
-	* the data for each column when asked.
-	*/
-	if (columnVisible != null) {
-		if (msg == OS.WM_NOTIFY && hwndParent == hwnd) {
-			OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-			switch (hdr.code) {
-				case OS.LVN_GETDISPINFOA:
-				case OS.LVN_GETDISPINFOW: {
-					OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-					if (0 <= plvfi.iSubItem && plvfi.iSubItem < columnCount) {
-						if (!columnVisible [plvfi.iSubItem]) return 0;
-					}
-					break;
-				}
-			}
-		}
-	}
 	if ((int)/*64*/msg == TASKBARBUTTONCREATED) {
 		if (taskBar != null) {
 			TaskItem [] items = taskBar.items;

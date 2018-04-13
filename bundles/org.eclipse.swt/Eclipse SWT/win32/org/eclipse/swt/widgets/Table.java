@@ -80,6 +80,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	RECT focusRect;
+	boolean [] columnVisible;
 	long /*int*/ headerToolTipHandle, hwndHeader;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
@@ -6346,11 +6347,10 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 			}
 			try {
-				display.hwndParent = OS.GetParent (handle);
-				display.columnVisible = visible;
+				columnVisible = visible;
 				OS.UpdateWindow (handle);
 			} finally {
-				display.columnVisible = null;
+				columnVisible = null;
 			}
 		}
 	}
@@ -6447,11 +6447,10 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 				}
 			}
 			try {
-				display.hwndParent = OS.GetParent (handle);
-				display.columnVisible = visible;
+				columnVisible = visible;
 				OS.UpdateWindow (handle);
 			} finally {
-				display.columnVisible = null;
+				columnVisible = null;
 			}
 		}
 	}
@@ -6558,8 +6557,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 
-			boolean [] visible = display.columnVisible;
-			if (visible != null && !visible [plvfi.iSubItem]) {
+			if (columnVisible != null && !columnVisible [plvfi.iSubItem]) {
 				break;
 			}
 
