@@ -2990,7 +2990,7 @@ boolean isCustomToolTip () {
 
 boolean isOptimizedRedraw () {
 	if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0) return false;
-	return !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	return !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint) && !customHeaderDrawing();
 }
 
 /**
