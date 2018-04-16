@@ -140,7 +140,7 @@ case $SWT_OS.$SWT_ARCH in
 			fi
 
 			export JAVA_HOME=/usr/lib/jvm/${JAVA_FOLDER}
-			export AWT_LIB_PATH=$(JAVA_HOME)/jre/lib/i386
+			export AWT_LIB_PATH=${JAVA_HOME}/jre/lib/i386
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"
