@@ -775,7 +775,7 @@ public class OS extends C {
 	public static final int LISS_HOT = 0x2;
 	public static final int LISS_SELECTED = 0x3;
 	public static final int LISS_SELECTEDNOTFOCUS = 0x5;
-	public static final int LM_GETIDEALHEIGHT = 0x701;
+	public static final int LM_GETIDEALSIZE = 0x701;
 	public static final int LM_SETITEM = 0x702;
 	public static final int LM_GETITEM = 0x703;
 	public static final int LCID_SUPPORTED = 0x2;
