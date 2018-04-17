@@ -2195,16 +2195,6 @@ void fixCheckboxImageList (boolean fixScroll) {
 	if (hImageList == 0) return;
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (hImageList, cx, cy);
-	/*
-	 * On Windows when OS level custom zoom is more than 150% then OS
-	 * doesn't support auto-scaling of the native check-box images and hence
-	 * the size of native check-box never goes more than 20px wide. So, to
-	 * handle this special case in Table/Tree, need to apply the same upper
-	 * cap to the size of custom drawn check-box images, so check-box images
-	 * look in proper ratio. For more details refer bug 489828.
-	 */
-	cx [0] = Math.min (20, cx [0]);
-	cy [0] = Math.min (20, cy [0]);
 	long /*int*/ hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	if (hStateList == 0) return;
 	int [] stateCx = new int [1], stateCy = new int [1];
@@ -4287,6 +4277,17 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
 	int itemHeight = Math.min (tm.tmHeight, height);
+	if (OS.IsAppThemed()) {
+		/*
+		 * Feature in Windows. DrawThemeBackground stretches the checkbox
+		 * bitmap to fill the provided rectangle. To avoid stretching
+		 * artifacts, limit the rectangle to actual checkbox bitmap size.
+		 */
+		SIZE size = new SIZE();
+		OS.GetThemePartSize(display.hButtonTheme(), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
+		itemWidth = Math.min (size.cx, itemWidth);
+		itemHeight = Math.min (size.cy, itemHeight);
+	}
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2;
 	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
 	if (OS.IsAppThemed ()) {

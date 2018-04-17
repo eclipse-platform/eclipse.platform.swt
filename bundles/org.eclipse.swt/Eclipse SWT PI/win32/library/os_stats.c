@@ -390,6 +390,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetTextExtentPoint32W",
 	"GetTextMetricsA",
 	"GetTextMetricsW",
+	"GetThemePartSize",
 	"GetThemeTextExtent",
 	"GetTouchInputInfo",
 	"GetUpdateRect",

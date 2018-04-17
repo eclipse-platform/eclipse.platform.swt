@@ -4963,6 +4963,32 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThemePartSize
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemePartSize)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6)
+{
+	RECT _arg4, *lparg4=NULL;
+	SIZE _arg6, *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemePartSize_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = &_arg6) == NULL) goto fail;
+/*
+	rc = (jint)GetThemePartSize(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetThemePartSize)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, jint, SIZE *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
+		}
+	}
+fail:
+	if (arg6 && lparg6) setSIZEFields(env, arg6, lparg6);
+	OS_NATIVE_EXIT(env, that, GetThemePartSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeTextExtent
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeTextExtent)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jobject arg7, jobject arg8)

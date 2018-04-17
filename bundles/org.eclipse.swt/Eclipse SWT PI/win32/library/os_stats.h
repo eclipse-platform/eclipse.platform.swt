@@ -400,6 +400,7 @@ typedef enum {
 	GetTextExtentPoint32W_FUNC,
 	GetTextMetricsA_FUNC,
 	GetTextMetricsW_FUNC,
+	GetThemePartSize_FUNC,
 	GetThemeTextExtent_FUNC,
 	GetTouchInputInfo_FUNC,
 	GetUpdateRect_FUNC,

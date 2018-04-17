@@ -1588,6 +1588,7 @@ public class OS extends C {
 	public static final int TREIS_NORMAL = 1;
 	public static final int TREIS_SELECTED = 3;
 	public static final int TREIS_SELECTEDNOTFOCUS = 5;
+	public static final int TS_TRUE = 1;
 	public static final int TTDT_AUTOMATIC = 0;
 	public static final int TTDT_RESHOW = 1;
 	public static final int TTDT_AUTOPOP = 2;
@@ -3944,6 +3945,12 @@ public static final native int GetMessageTime ();
  * @param hrgn cast=(HRGN)
  */
 public static final native int GetMetaRgn (long /*int*/ hdc, long /*int*/ hrgn);
+/**
+ * @method flags=dynamic
+ * @param prc flags=no_out
+ * @param psz flags=no_in
+ */
+public static final native int GetThemePartSize(long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, RECT prc, int eSize, SIZE psz);
 /** @method flags=dynamic */
 public static final native int GetThemeTextExtent (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 /**
