@@ -313,14 +313,14 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+		createNSCursor(hotspotX, hotspotY, data, source.width, source.height, true);
 		init();
 	} finally {
 		if (pool != null) pool.release();
 	}
 }
 
-void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
+void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int height, boolean hasAlpha) {
 	NSImage nsImage = (NSImage)new NSImage().alloc();
 	NSBitmapImageRep nsImageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 	handle = (NSCursor)new NSCursor().alloc();
@@ -329,7 +329,7 @@ void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int he
 	size.height =  height;
 	nsImage = nsImage.initWithSize(size);
 	nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height,
-			8, 4, true, false, OS.NSDeviceRGBColorSpace,
+			8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace,
 			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	C.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
 	nsImage.addRepresentation(nsImageRep);
@@ -404,6 +404,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	}
+	boolean hasAlpha = true;
 	if (source.maskData != null || source.transparentPixel != -1) {
 		ImageData mask = source.getTransparencyMask();
 		byte[] maskData = mask.data;
@@ -426,11 +427,13 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		for (int i=0; i<data.length; i+=4) {
 			data[i] = alphaData[i/4];
 		}
+	} else {
+		hasAlpha = false;
 	}
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+		createNSCursor(hotspotX, hotspotY, data, source.width, source.height, hasAlpha);
 		init();
 	} finally {
 		if (pool != null) pool.release();
