@@ -159,7 +159,7 @@ public void test_evalute_Cookies () {
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
 	browser.setUrl("http://www.eclipse.org/swt");
-	waitForPassCondition(() -> loaded.get());
+	waitForPassCondition(loaded::get);
 
 	// Set the cookies
 	// document.cookie behaves different from other global vars
@@ -184,7 +184,7 @@ public void test_ClearAllSessionCookies () {
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
 	browser.setUrl("http://www.eclipse.org/swt");
-	waitForPassCondition(() -> loaded.get());
+	waitForPassCondition(loaded::get);
 
 	// Set the cookies
 	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
@@ -250,7 +250,7 @@ public void test_get_set_Cookies() {
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
 	browser.setUrl("http://www.eclipse.org/swt");
-	waitForPassCondition(() -> loaded.get());
+	waitForPassCondition(loaded::get);
 
 	// Set the cookies
 	Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
@@ -312,7 +312,7 @@ public void test_CloseWindowListener_close () {
 	});
 	browser.setText("<script language='JavaScript'>window.close()</script>");
 	shell.open();
-	boolean passed = waitForPassCondition(() -> browserCloseListenerFired.get());
+	boolean passed = waitForPassCondition(browserCloseListenerFired::get);
 	assertTrue("Test timed out.", passed);
 }
 
@@ -356,7 +356,7 @@ public void test_LocationListener_changing() {
 	browser.addLocationListener(changingAdapter(e -> changingFired.set(true)));
 	shell.open();
 	browser.setText("Hello world");
-	boolean passed = waitForPassCondition(() -> changingFired.get());
+	boolean passed = waitForPassCondition(changingFired::get);
 	assertTrue("LocationListener.changing() event was never fixed", passed);
 }
 @Test
@@ -365,7 +365,7 @@ public void test_LocationListener_changed() {
 	browser.addLocationListener(changedAdapter(e ->	changedFired.set(true)));
 	shell.open();
 	browser.setText("Hello world");
-	boolean passed = waitForPassCondition(() -> changedFired.get());
+	boolean passed = waitForPassCondition(changedFired::get);
 	assertTrue("LocationListener.changing() event was never fixed", passed);
 }
 @Test
@@ -393,7 +393,7 @@ public void test_LocationListener_changingAndOnlyThenChanged() {
 	});
 	shell.open();
 	browser.setText("Hello world");
-	waitForPassCondition(() -> finished.get());
+	waitForPassCondition(finished::get);
 
 	if (finished.get() && changingFired.get() && changedFired.get() && !changedFiredTooEarly.get()) {
 		return; // pass
@@ -429,7 +429,7 @@ public void test_LocationListener_then_ProgressListener() {
 	shell.open();
 	browser.setText("Hello world");
 
-	waitForPassCondition(() -> progressChanged.get());
+	waitForPassCondition(progressChanged::get);
 	String errorMsg = "\nUnexpected listener states. Expecting true for all, but have:\n"
 			+ "Location changed: " + locationChanged.get() + "\n"
 			+ "ProgressChangedAfterLocationChanged: " + progressChangedAfterLocationChanged.get() + "\n"
@@ -514,7 +514,6 @@ public void test_LocationListener_ProgressListener_noExtraEvents() {
 	// On Gtk, Quad Core, pcie this takes 80 ms. ~1000ms for stability.
 	waitForMilliseconds(600);
 	boolean passed = changedCount.get() == 1 && completedCount.get() == 1;
-
 	String errorMsg = "\nIncorrect event sequences. Events missing or too many fired:"
 			+ "\nExpected one of each, but received:"
 			+ "\nChanged count: " + changedCount.get()
@@ -563,7 +562,7 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 	browser.setText("<html><script type='text/javascript'>window.open()</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
-	boolean passed = waitForPassCondition(() -> openFiredCorrectly.get());
+	boolean passed = waitForPassCondition(openFiredCorrectly::get);
 	assertTrue("Test timed out. OpenWindow event not fired.", passed);
 }
 
@@ -596,7 +595,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 			+ "</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
-	boolean passed = waitForPassCondition(() -> childCompleted.get());
+	boolean passed = waitForPassCondition(childCompleted::get);
 
 	String errMsg = "\nTest timed out.";
 	assertTrue(errMsg, passed);
@@ -780,7 +779,7 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 	});
 
 	shell.open();
-	boolean passed = waitForPassCondition(()->statusChanged.get());
+	boolean passed = waitForPassCondition(statusChanged::get);
 	String msg = "Mouse movent over text was suppose to trigger StatusTextListener. But it didn't";
 	assertTrue(msg, passed);
 }
@@ -818,7 +817,7 @@ public void test_TitleListener_event() {
 	browser.addTitleListener(event -> titleListenerFired.set(true));
 	browser.setText("<html><title>Hello world</title><body>Page with a title</body></html>");
 	shell.open();
-	boolean passed = waitForPassCondition(() -> titleListenerFired.get());
+	boolean passed = waitForPassCondition(titleListenerFired::get);
 	String errMsg = "Title listener never fired. Test timed out.";
 	assertTrue(errMsg, passed);
 }
@@ -1047,7 +1046,7 @@ public void test_VisibilityWindowListener_multiple_shells() {
 				+ "</script>\n" +
 				"<body>This test uses javascript to open a new window.</body></html>");
 
-		boolean passed = waitForPassCondition(() -> secondChildCompleted.get());
+		boolean passed = waitForPassCondition(secondChildCompleted::get);
 
 		String errMsg = "\nTest timed out.";
 		assertTrue(errMsg, passed);
@@ -1088,7 +1087,7 @@ public void test_VisibilityWindowListener_eventSize() {
 			+ "</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
-	boolean finishedWithoutTimeout = waitForPassCondition(() -> childCompleted.get());
+	boolean finishedWithoutTimeout = waitForPassCondition(childCompleted::get);
 	browserChild.dispose();
 
 	boolean passed = false;
@@ -1315,7 +1314,7 @@ public void test_OpenWindowListener_evaluateInCallback() {
 	});
 	shell.open();
 	browser.evaluate("window.open()");
-	boolean fired = waitForPassCondition(() -> eventFired.get());
+	boolean fired = waitForPassCondition(eventFired::get);
 	boolean evaluated = false;
 	try { evaluated = (Boolean) browser.evaluate("return SWTopenListener"); } catch (SWTException e) {}
 	boolean passed = fired && evaluated;
@@ -1459,7 +1458,7 @@ private void getText_helper(String testString, String expectedOutput) {
 		finished.set(true);
 	}));
 	shell.open();
-	waitForPassCondition(() -> finished.get());
+	waitForPassCondition(finished::get);
 	boolean passed = returnString.get().equals(expectedOutput);
 	String error_msg = finished.get() ?
 			"Test did not return correct string.\n"
@@ -1501,7 +1500,7 @@ public void test_execute_and_closeListener () {
 	browser.execute("window.close()");
 
 	shell.open();
-	boolean passed = waitForPassCondition(() -> hasClosed.get());
+	boolean passed = waitForPassCondition(hasClosed::get);
 	if (passed)
 		disposedIntentionally = true;
 	String message = "Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if "
@@ -1621,7 +1620,7 @@ public void test_evaluate_boolean() {
 
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
-	boolean passed = waitForPassCondition(() -> atomicBoolean.get());
+	boolean passed = waitForPassCondition(atomicBoolean::get);
 	assertTrue("Evaluation did not return a boolean. Or test timed out.", passed);
 }
 
@@ -1888,7 +1887,7 @@ public void test_BrowserFunction_callback () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	boolean passed = waitForPassCondition(() ->  javaCallbackExecuted.get());
+	boolean passed = waitForPassCondition(javaCallbackExecuted::get);
 	String message = "Java failed to get a callback from javascript. Test timed out";
 	assertTrue(message, passed);
 }
@@ -1987,7 +1986,7 @@ public void test_BrowserFunction_callback_with_boolean () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get());
+	boolean passed = waitForPassCondition(javaCallbackExecuted::get);
 	String message = "Javascript did not pass a boolean back to java";
 	assertTrue(message, passed);
 }
@@ -2224,7 +2223,7 @@ public void test_BrowserFunction_callback_afterPageReload() {
 	browser.addProgressListener(completedAdapter(e -> browser.execute("jsCallbackToJava()")));
 
 	shell.open();
-	boolean passed = waitForPassCondition(() -> javaCallbackExecuted.get());
+	boolean passed = waitForPassCondition(javaCallbackExecuted::get);
 	String message = "A javascript callback should work after a page has been reloaded. But something went wrong";
 	assertTrue(message, passed);
 }
