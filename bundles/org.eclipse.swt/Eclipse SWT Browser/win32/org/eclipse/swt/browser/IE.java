@@ -454,7 +454,6 @@ public void create(Composite parent, int style) {
 		if (auto != null) {
 			switch (event.type) {
 				case BeforeNavigate2: {
-					isRefresh = false; /* refreshes do not come through here */
 
 					/* don't send client events if the initial navigate to about:blank has not completed */
 					if (performingInitialNavigate) break;
