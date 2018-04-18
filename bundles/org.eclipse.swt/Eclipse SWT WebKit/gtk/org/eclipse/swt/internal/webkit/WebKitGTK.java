@@ -799,6 +799,7 @@ public static final void webkit_credential_free (long /*int*/ credential) {
 	}
 }
 
+
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_context_get_type ();
 public static final long /*int*/ webkit_web_context_get_type () {

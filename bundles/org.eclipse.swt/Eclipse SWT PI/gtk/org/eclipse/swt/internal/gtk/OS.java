@@ -1089,6 +1089,12 @@ public static final long /*int*/ G_OBJECT_TYPE_NAME (long /*int*/ object) {
 		lock.unlock();
 	}
 }
+
+/**
+ * This method is not a reliable way to test for a type.
+ *  Use G_OBJECT_TYPE type instead or use alternate means (e.g custom userdata).
+ *  TODO: remove usage of this call.
+ */
 public static final native boolean _G_TYPE_CHECK_INSTANCE_TYPE (long /*int*/ instance, long /*int*/ type);
 public static final boolean G_TYPE_CHECK_INSTANCE_TYPE (long /*int*/ instance, long /*int*/ type) {
 	lock.lock();

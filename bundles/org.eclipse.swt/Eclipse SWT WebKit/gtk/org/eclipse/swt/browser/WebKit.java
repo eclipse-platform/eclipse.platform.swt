@@ -111,10 +111,22 @@ import org.eclipse.swt.widgets.*;
  * - This is a good starting point for webkit2 extension reading:
  *   https://blogs.igalia.com/carlosgc/2013/09/10/webkit2gtk-web-process-extensions/
  *
+ *   [April 2018]
+ *   Note on WebKitContext:
+ *    We only use a single webcontext, so WebKitGTK.webkit_web_context_get_default() works well for getting this when
+ *    needed.
+ *
+ *
+ *
  * ~May the force be with you.
  */
 class WebKit extends WebBrowser {
-	long /*int*/ webView, scrolledWindow;
+	/**
+	 * WebKitWebView
+	 * Note, as of time at compleating webkit2, (18th April 2018, we )
+	 */
+	long /*int*/ webView;
+	long /*int*/ scrolledWindow;
 
 	/** Webkit1 only. Used by the externalObject for javascript callback to java. */
 	long /*int*/ webViewData;
@@ -208,7 +220,7 @@ class WebKit extends WebBrowser {
 	static final int WEB_VIEW_READY = 8;
 	static final int NOTIFY_LOAD_STATUS = 9;
 	static final int RESOURCE_REQUEST_STARTING = 10;
-	static final int DOWNLOAD_REQUESTED = 11;
+	static final int DOWNLOAD_REQUESTED = 11; // Webkit1
 	static final int MIME_TYPE_POLICY_DECISION_REQUESTED = 12;
 	static final int CLOSE_WEB_VIEW = 13;
 	static final int WINDOW_OBJECT_CLEARED = 14;
@@ -221,6 +233,7 @@ class WebKit extends WebBrowser {
 	static final int DECIDE_DESTINATION = 21; // webkit2 only.
 	static final int FAILED = 22; // webkit2 only.
 	static final int FINISHED = 23; // webkit2 only.
+	static final int DOWNLOAD_STARTED = 24;   // Webkit2 (webkit1 equivalent is DOWNLOAD_REQUESTED)
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -776,8 +789,10 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ user_data) {
 	long /*int*/ webView  = handle;
 
-	if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_download_get_type ())) {
-		webView = WebKitGTK.webkit_download_get_web_view(handle);
+	if (WEBKIT2 && user_data == FINISHED) {
+		// Special case, callback from WebKitDownload instead of webview.
+		long /*int*/ webKitDownload = handle;
+		return webkit_download_finished(webKitDownload);
 	}
 
 	Browser browser = FindBrowser (webView);
@@ -787,42 +802,55 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ user_data) {
 }
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
-	long /*int*/ webView = 0;
-	boolean indirectWebView = false; // Behave as if handle were a WebKitWebView (Webkit2 only)
-	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_view_get_type ())) {
-        webView = handle;
-	} else if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
-		if (WEBKIT2) {
-			// TODO investigate webkit2 equivalent. (or if one is needed at all?)
-		} else {
-			webView = WebKitGTK.webkit_web_frame_get_web_view (handle); // webkit1 only.
+	// As a note, don't use instance checks like 'G_TYPE_CHECK_INSTANCE_TYPE '
+	// to determine difference between webview and webcontext as these
+	// don't seem to work reliably for all clients. For some clients they always return true.
+	// Instead use user_data.
+
+	{ // Deal with Special cases where callback comes not from webview. Handle is not a webview.
+		if (WEBKIT1 && user_data == NOTIFY_LOAD_STATUS) {
+			// Webkit1 vs 2 note:
+			// Notion of 'Webkit frame' is webkit1 port specific. In webkit2 port, web frames are a webextension and aren't used.
+			// Special case to handle webkit1 webview notify::load-status. Handle is a webframe not a webview.
+			if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
+				long /*int*/ webView = WebKitGTK.webkit_web_frame_get_web_view (handle); // webkit1 only.
+				Browser browser = FindBrowser (webView);
+				if (browser == null) return 0;
+				WebKit webkit = (WebKit)browser.webBrowser;
+				return webkit.webframe_notify_load_status(handle, arg0);
+			}
 		}
-	} else if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_context_get_type ())) {
-		/*
-		 *  There is no API to determine WebKitWebView from a WebKitWebContext in WEBKIT2.
-		 *  Therefore, we pass the WebKitWebView in user_data field only when the handle
-		 *  is a WebKitWebContext. We then restore user_data to DOWNLOAD_REQUESTED to
-		 *  ensure the corresponding function gets called.
-		 */
-		webView = user_data;
-		user_data = DOWNLOAD_REQUESTED;
-		indirectWebView = true;
-	} else if (WEBKIT2 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_download_get_type ())) {
-		webView = WebKitGTK.webkit_download_get_web_view(handle);
-		indirectWebView = true;
-	} else {
-		return 0;
+
+		if (WEBKIT2 && user_data == DOWNLOAD_STARTED) {
+			// This callback comes from WebKitWebContext as oppose to the WebView. So handle is WebContext not Webview.
+			// user_function (WebKitWebContext *context, WebKitDownload  *download,  gpointer  user_data)
+			long /*int*/ webKitDownload = arg0;
+			webkit_download_started(webKitDownload);
+			return 0;
+		}
+
+		 if (WEBKIT2 && user_data == DECIDE_DESTINATION) {
+			// This callback comes from WebKitDownload, so handle is WebKitDownload not webview.
+			// gboolean  user_function (WebKitDownload *download, gchar   *suggested_filename, gpointer  user_data)
+			long /*int*/ webKitDownload = handle;
+			long /*int*/ suggested_filename = arg0;
+			return webkit_download_decide_destination(webKitDownload,suggested_filename);
+		}
+
+		if (WEBKIT2 && user_data == FAILED) {
+			// void user_function (WebKitDownload *download, GError *error, gpointer user_data)
+			long /*int*/ webKitDownload = handle;
+			return webkit_download_failed(webKitDownload);
+		 }
 	}
 
-	assert webView != 0 : "Webview shouldn't be null here";
-
-	Browser browser = FindBrowser (webView);
-	if (browser == null) return 0;
-	WebKit webkit = (WebKit)browser.webBrowser;
-	if (webView == handle || indirectWebView) {
-		return webkit.webViewProc (handle, arg0, user_data);
-	} else {
-		return webkit.webFrameProc (handle, arg0, user_data);
+	{ // Callbacks connected with a WebView.
+		assert handle != 0 : "Webview shouldn't be null here";
+		long /*int*/ webView = handle;
+		Browser browser = FindBrowser (webView);
+		if (browser == null) return 0;
+		WebKit webkit = (WebKit)browser.webBrowser;
+		return webkit.webViewProc (webView, arg0, user_data);
 	}
 }
 
@@ -941,19 +969,10 @@ long /*int*/ webkit_authenticate (long /*int*/ web_view, long /*int*/ request){
 	return 0;
 }
 
-long /*int*/ webFrameProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
-	switch ((int)/*64*/user_data) {
-		case NOTIFY_LOAD_STATUS: return webframe_notify_load_status (handle, arg0); //webkit1
-		case LOAD_CHANGED: return webkit_load_changed (handle, (int) arg0, user_data);
-		default: return 0;
-	}
-}
-
 long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case CLOSE_WEB_VIEW: return webkit_close_web_view (handle);
 		case WEB_VIEW_READY: return webkit_web_view_ready (handle);
-		case FINISHED: return webkit_download_finished (handle);	// Webkit2 only.
 		default: return 0;
 	}
 }
@@ -961,16 +980,14 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ user_data) {
 long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case CREATE_WEB_VIEW: return webkit_create_web_view (handle, arg0);
-		case DOWNLOAD_REQUESTED: return webkit_download_requested (handle, arg0);
-		case DECIDE_DESTINATION: return webkit_download_decide_destination(handle, arg0);	//Webkit2 only.
+		case DOWNLOAD_REQUESTED: return webkit_download_requested (handle, arg0); // webkit1
 		case NOTIFY_LOAD_STATUS: return webkit_notify_load_status (handle, arg0); // Webkit1
 		case LOAD_CHANGED: return webkit_load_changed (handle, (int) arg0, user_data);
-		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);
+		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);		  // webkit1 & webkit2.
 		case NOTIFY_TITLE: return webkit_notify_title (handle, arg0);
 		case POPULATE_POPUP: return webkit_populate_popup (handle, arg0);
 		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0); // Webkit1 only.
 		case AUTHENTICATE: return webkit_authenticate (handle, arg0);		// Webkit2 only.
-		case FAILED: return webkit_download_failed (handle, arg0);			// Webkit2 only.
 		default: return 0;
 	}
 }
@@ -1069,43 +1086,84 @@ public void create (Composite parent, int style) {
 		C.memmove (webViewData, new long /*int*/[] {webView}, C.PTR_SIZEOF);
 	}
 
+	// Documentation for these signals/properties is usually found under signal/property of WebKitWebView.
+	// notify_* usually implies a property change. For these, the first arg is typically the webview handle.
 	if (WEBKIT1){
+		// Webkit1 signal documentation: https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--progress
 		GTK.gtk_container_add (scrolledWindow, webView);
 		GTK.gtk_container_add (browser.handle, scrolledWindow);
 		GTK.gtk_widget_show (scrolledWindow);
+		OS.g_signal_connect (webView, WebKitGTK.close_web_view, 			Proc2.getAddress (), CLOSE_WEB_VIEW);
+		OS.g_signal_connect (webView, WebKitGTK.web_view_ready, 			Proc2.getAddress (), WEB_VIEW_READY);
 
-		OS.g_signal_connect (webView, WebKitGTK.close_web_view, Proc2.getAddress (), CLOSE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.console_message, Proc5.getAddress (), CONSOLE_MESSAGE);
-		OS.g_signal_connect (webView, WebKitGTK.create_web_view, Proc3.getAddress (), CREATE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.notify_load_status, Proc3.getAddress (), NOTIFY_LOAD_STATUS);
-		OS.g_signal_connect (webView, WebKitGTK.web_view_ready, Proc2.getAddress (), WEB_VIEW_READY);
-		OS.g_signal_connect (webView, WebKitGTK.navigation_policy_decision_requested, Proc6.getAddress (), NAVIGATION_POLICY_DECISION_REQUESTED);
-		OS.g_signal_connect (webView, WebKitGTK.mime_type_policy_decision_requested, Proc6.getAddress (), MIME_TYPE_POLICY_DECISION_REQUESTED);
+		OS.g_signal_connect (webView, WebKitGTK.hovering_over_link, 		Proc4.getAddress (), HOVERING_OVER_LINK);
+
+		OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, 		Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
+		OS.g_signal_connect (webView, WebKitGTK.console_message, 			Proc5.getAddress (), CONSOLE_MESSAGE);
+
+		OS.g_signal_connect (webView, WebKitGTK.navigation_policy_decision_requested, 	Proc6.getAddress (), NAVIGATION_POLICY_DECISION_REQUESTED);
+		OS.g_signal_connect (webView, WebKitGTK.mime_type_policy_decision_requested, 	Proc6.getAddress (), MIME_TYPE_POLICY_DECISION_REQUESTED);
 		OS.g_signal_connect (webView, WebKitGTK.resource_request_starting, Proc6.getAddress (), RESOURCE_REQUEST_STARTING);
-		OS.g_signal_connect (webView, WebKitGTK.download_requested, Proc3.getAddress (), DOWNLOAD_REQUESTED);
-		OS.g_signal_connect (webView, WebKitGTK.hovering_over_link, Proc4.getAddress (), HOVERING_OVER_LINK);
-		OS.g_signal_connect (webView, WebKitGTK.populate_popup, Proc3.getAddress (), POPULATE_POPUP);
-		OS.g_signal_connect (webView, WebKitGTK.notify_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
-		OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
-		OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
+
 	} else {
+		// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
 		GTK.gtk_container_add (browser.handle, webView);
 		OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.create, Proc3.getAddress (), CREATE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.load_changed, Proc3.getAddress (), LOAD_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
 		OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
-		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), this.webView);
+
 		OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
+
+
+	}
+
+	// Proc3 is overloaded in that not only Webview connects to it,
+	// but also (webkit1) WebFrame and (webkit2) WebKitDownload hook into it as well.
+	// Pay extra attention to argument 1 (handle) to prevent wrong type of handle being passed to gtk and causing segfaults. (See 533545)
+	if (WEBKIT1) {
+		// WebKitWebView* user_function (WebKitWebView  *web_view, WebKitWebFrame *frame, gpointer user_data)
+		OS.g_signal_connect (webView, WebKitGTK.create_web_view, 		 Proc3.getAddress (), CREATE_WEB_VIEW);
+
+		// Property change: load-status  (webview is first arg)  https://webkitgtk.org/reference/webkitgtk/unstable/WebKitWebFrame.html#WebKitWebFrame--load-status
+		OS.g_signal_connect (webView, WebKitGTK.notify_load_status, 	 Proc3.getAddress (), NOTIFY_LOAD_STATUS);
+
+		// gboolean user_function (WebKitWebView  *web_view, WebKitDownload *download, gpointer        user_data)
+		OS.g_signal_connect (webView, WebKitGTK.download_requested, 	 Proc3.getAddress (), DOWNLOAD_REQUESTED);
+
+		// void user_function (WebKitWebView *web_view, GtkMenu *menu, gpointer user_data)
+		OS.g_signal_connect (webView, WebKitGTK.populate_popup, 		 Proc3.getAddress (), POPULATE_POPUP);
+
+		// Property change: progress.  (first arg is webview)
+		OS.g_signal_connect (webView, WebKitGTK.notify_progress, 		 Proc3.getAddress (), NOTIFY_PROGRESS);
+
+		// void user_function (WebKitWebView *webkitwebview, gchar  *arg1, gpointer user_data)
+		OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
+
+	}
+	if (WEBKIT2) { // Note: In Webkit2, webkit_download_started(...) also connects return signals to proc3.
+		// GtkWidget* user_function (WebKitWebView *web_view, WebKitNavigationAction *navigation_action,  gpointer  user_data)
+		OS.g_signal_connect (webView, WebKitGTK.create, 						Proc3.getAddress (), CREATE_WEB_VIEW);
+
+		//void user_function (WebKitWebView  *web_view,  WebKitLoadEvent load_event,  gpointer  user_data)
+		OS.g_signal_connect (webView, WebKitGTK.load_changed, 					Proc3.getAddress (), LOAD_CHANGED);
+
+		// Property change: of 'estimated-load-progress'   args: webview, pspec
 		OS.g_signal_connect (webView, WebKitGTK.notify_estimated_load_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
-		OS.g_signal_connect (webView, WebKitGTK.authenticate, Proc3.getAddress (), AUTHENTICATE);
+
+		// gboolean user_function (WebKitWebView *web_view,  WebKitAuthenticationRequest *request,  gpointer user_data)
+		OS.g_signal_connect (webView, WebKitGTK.authenticate, 					Proc3.getAddress (), AUTHENTICATE);
+
+		// (!) Note this one's a 'webContext' signal, not webview. See:
+		// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
+		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
 	}
 
 	GTK.gtk_widget_show (webView);
 	GTK.gtk_widget_show (browser.handle);
 
-	OS.g_signal_connect (webView, WebKitGTK.notify_title, Proc3.getAddress (), NOTIFY_TITLE);
+	// Webview 'title' property. Webkit1 & Webkit2.
+	OS.g_signal_connect (webView, WebKitGTK.notify_title, 						Proc3.getAddress (), NOTIFY_TITLE);
 
 	/* Callback to get events before WebKit receives and consumes them */
 	if (WEBKIT2) {
@@ -2883,53 +2941,57 @@ long /*int*/ webkit_create_web_view (long /*int*/ web_view, long /*int*/ frame) 
 }
 
 long /*int*/ webkit_download_requested (long /*int*/ web_view, long /*int*/ download) {
-	if (WEBKIT1) {
-		long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (download);
-		int length = C.strlen (name);
-		byte[] bytes = new byte[length];
-		C.memmove (bytes, name, length);
-		final String nameString = new String (Converter.mbcsToWcs (bytes));
-
-		final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
-		OS.g_object_ref (request);
-
-		/*
-		 * As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
-		 * a hang.  The workaround is to open it asynchronously with a new download.
-		 */
-		browser.getDisplay ().asyncExec (() -> {
-			if (!browser.isDisposed ()) {
-				FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
-				dialog.setFileName (nameString);
-				String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
-				dialog.setText (title);
-				String path = dialog.open ();
-				if (path != null) {
-					path = URI_FILEROOT + path;
-					long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
-					byte[] uriBytes = Converter.wcsToMbcs (path, true);
-					WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
-					openDownloadWindow (newDownload);
-					WebKitGTK.webkit_download_start (newDownload);
-					OS.g_object_unref (newDownload);
-				}
+	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
+	long /*int*/ name = WebKitGTK.webkit_download_get_suggested_filename (download);
+	int length = C.strlen (name);
+	byte[] bytes = new byte[length];
+	C.memmove (bytes, name, length);
+	final String nameString = new String (Converter.mbcsToWcs (bytes));
+	final long /*int*/ request = WebKitGTK.webkit_download_get_network_request (download);
+	OS.g_object_ref (request);
+	/*
+	 * As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
+	 * a hang.  The workaround is to open it asynchronously with a new download.
+	 */
+	browser.getDisplay ().asyncExec (() -> {
+		if (!browser.isDisposed ()) {
+			FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
+			dialog.setFileName (nameString);
+			String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
+			dialog.setText (title);
+			String path = dialog.open ();
+			if (path != null) {
+				path = URI_FILEROOT + path;
+				long /*int*/ newDownload = WebKitGTK.webkit_download_new (request);
+				byte[] uriBytes = Converter.wcsToMbcs (path, true);
+				WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
+				openDownloadWindow (newDownload);
+				WebKitGTK.webkit_download_start (newDownload);
+				OS.g_object_unref (newDownload);
 			}
-			OS.g_object_unref (request);
-		});
-	} else {
-		OS._g_signal_connect(download, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
-		OS._g_signal_connect(download, WebKitGTK.failed, Proc3.getAddress(), FAILED);
-		OS._g_signal_connect(download, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
-	}
-
+		}
+		OS.g_object_unref (request);
+	});
 	return 1;
 }
 
-long /*int*/ webkit_download_decide_destination(long /*int*/ download, long /*int*/ suggested_filename) {
+static long /*int*/ webkit_download_started(long /*int*/ webKitDownload) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	OS._g_signal_connect(webKitDownload, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
+	OS._g_signal_connect(webKitDownload, WebKitGTK.failed, Proc3.getAddress(), FAILED);
+	OS._g_signal_connect(webKitDownload, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
+	return 1;
+}
+
+
+static long /*int*/ webkit_download_decide_destination(long /*int*/ webKitDownload, long /*int*/ suggested_filename) {
 	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	final String fileName = getString(suggested_filename);
+	long /*int*/ webView = WebKitGTK.webkit_download_get_web_view(webKitDownload);
+	if (webView != 0) {
+		Browser browser = FindBrowser (webView);
+		if (browser == null || browser.isDisposed() || browser.isClosing) return 0;
 
-	if (!browser.isDisposed ()) {
 		FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
 		dialog.setFileName (fileName);
 		String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
@@ -2940,17 +3002,16 @@ long /*int*/ webkit_download_decide_destination(long /*int*/ download, long /*in
 			byte[] uriBytes = Converter.wcsToMbcs (path, true);
 
 			if (WebKitGTK.webkit_get_minor_version() >= 6) {
-				WebKitGTK.webkit_download_set_allow_overwrite (download, true);
+				WebKitGTK.webkit_download_set_allow_overwrite (webKitDownload, true);
 			}
-			WebKitGTK.webkit_download_set_destination (download, uriBytes);
-			openDownloadWindow (download, fileName);
+			WebKitGTK.webkit_download_set_destination (webKitDownload, uriBytes);
+			((WebKit)browser.webBrowser).openDownloadWindow(webKitDownload, fileName);
 		}
 	}
-
 	return 0;
 }
 
-long /*int*/ webkit_download_finished(long /*int*/ download) {
+static long /*int*/ webkit_download_finished(long /*int*/ download) {
 	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	// A failed signal may have been recorded prior. The finish signal is now being called.
 	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
@@ -2959,7 +3020,7 @@ long /*int*/ webkit_download_finished(long /*int*/ download) {
 	return 0;
 }
 
-long /*int*/ webkit_download_failed(long /*int*/ download, long /*int*/ error) {
+static long /*int*/ webkit_download_failed(long /*int*/ download) {
 	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	// A cancel may have been issued resulting in this signal call. Preserve the original cause.
 	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
@@ -3231,6 +3292,7 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
  *  No return value required. Thus safe to run asynchronously.
  */
 long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) {
+	assert WEBKIT1 || WEBKIT2;
 	ProgressEvent event = new ProgressEvent (browser);
 	event.display = browser.getDisplay ();
 	event.widget = browser;
@@ -3256,7 +3318,6 @@ long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) 
 }
 
 /**
- * Webkit1 & Webkit2
  * Triggerd by webkit's 'notify::title' signal and forwarded to this function.
  * The signal doesn't have documentation (2.15.4), but is mentioned here:
  * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-get-title
@@ -3264,6 +3325,7 @@ long /*int*/ webkit_notify_progress (long /*int*/ web_view, long /*int*/ pspec) 
  * It doesn't look it would require a return value, so running in asyncExec should be fine.
  */
 long /*int*/ webkit_notify_title (long /*int*/ web_view, long /*int*/ pspec) {
+	assert WEBKIT1 || WEBKIT2;
 	long /*int*/ title = WebKitGTK.webkit_web_view_get_title (webView);
 	String titleString;
 	if (title == 0) {
