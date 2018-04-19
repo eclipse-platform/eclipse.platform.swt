@@ -4196,4 +4196,27 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	return super.windowProc (handle, arg0, user_data);
 }
 
+@Override
+Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
+	Point sizes = super.resizeCalculationsGTK3(widget, width, height);
+	/*
+	 * Bug - Resizing Problems View can cause invalid rectangle errors on standard eror
+	 *
+	 * When resizing an SWT tree or table, its possible that the horizontal scrollbar overlaps with the column headers.
+	 * This is possible due to SWT native resizing on the scrolled window of the tree or table.
+	 * To avoid the error, we set a minimal size for the scrolled window.
+	 * This height is equal to the header and scrollbar heights if both are visible,
+	 * plus the total border height (bottom and top border height combined).
+	 * In the error case, the SWT fixed which contains the table still resizes as expected,
+	 * and the horizontal scrollbar is only partially visible so that it doesn't overlap with table headers.
+	 */
+	if (widget == scrolledHandle && GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && getHeaderVisible()) {
+		int hScrollBarHeight = hScrollBarHeight();
+		if (hScrollBarHeight > 0) {
+			sizes.y = Math.max(sizes.y, getHeaderHeight() + hScrollBarHeight + (getBorderWidth() * 2));
+		}
+	}
+	return sizes;
+}
+
 }

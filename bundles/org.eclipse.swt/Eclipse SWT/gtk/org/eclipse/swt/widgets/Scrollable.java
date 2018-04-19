@@ -363,24 +363,13 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 }
 
 int hScrollBarWidth() {
-	if (horizontalBar==null) return 0;
-	long /*int*/ hBarHandle = 0;
-	hBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
-	if (hBarHandle==0) return 0;
-	GtkRequisition requisition = new GtkRequisition();
-	/*
-	 * Feature in GTK3: sometimes the size reported lags on GTK3.20+.
-	 * Calling gtk_widget_queue_resize() before querying the size
-	 * fixes this issue.
-	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_widget_queue_resize (hBarHandle);
-	}
-	gtk_widget_get_preferred_size (hBarHandle, requisition);
-	int [] padding = new int [1];
-	GTK.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
-	int spacing = padding[0];
-	return requisition.height + spacing;
+	Point hScrollbarSize = hScrollbarSize();
+	return hScrollbarSize.x;
+}
+
+int hScrollBarHeight() {
+	Point hScrollbarSize = hScrollbarSize();
+	return hScrollbarSize.y;
 }
 
 @Override
@@ -515,15 +504,37 @@ void updateScrollBarValue (ScrollBar bar) {
 }
 
 int vScrollBarWidth() {
-	if (verticalBar == null) return 0;
-	long /*int*/ vBarHandle = 0;
-	vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
-	if (vBarHandle == 0) return 0;
+	Point vScrollBarSize = vScrollBarSize();
+	return vScrollBarSize.x;
+}
+
+private Point hScrollbarSize() {
+	if (horizontalBar == null) return new Point(0, 0);
+	long /*int*/ vBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+	return scrollBarSize(vBarHandle);
+}
+
+private Point vScrollBarSize() {
+	if (verticalBar == null) return new Point(0, 0);
+	long /*int*/ vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+	return scrollBarSize(vBarHandle);
+}
+
+private Point scrollBarSize(long /*int*/ scrollBarHandle) {
+	if (scrollBarHandle == 0) return new Point(0, 0);
 	GtkRequisition requisition = new GtkRequisition();
-	gtk_widget_get_preferred_size (vBarHandle, requisition);
+	/*
+	 * Feature in GTK3: sometimes the size reported lags on GTK3.20+.
+	 * Calling gtk_widget_queue_resize() before querying the size
+	 * fixes this issue.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		GTK.gtk_widget_queue_resize (scrollBarHandle);
+	}
+	gtk_widget_get_preferred_size (scrollBarHandle, requisition);
 	int [] padding = new int [1];
 	GTK.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
 	int spacing = padding[0];
-	return requisition.width + spacing;
+	return new Point(requisition.width + spacing, requisition.height + spacing);
 }
 }
