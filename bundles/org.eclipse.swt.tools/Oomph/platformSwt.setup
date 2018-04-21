@@ -38,6 +38,12 @@
         <value>remoteURI</value>
       </detail>
     </annotation>
+    <configSections
+        name="gerrit">
+      <properties
+          key="createchangeid"
+          value="true"/>
+    </configSections>
     <description>Platform SWT</description>
   </setupTask>
   <setupTask
@@ -45,8 +51,6 @@
       excludedTriggers="BOOTSTRAP"
       sourceURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}"
       targetURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
-  <setupTask
-      xsi:type="setup.targlets:TargletTask"/>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask"/>
   <setupTask
@@ -70,6 +74,12 @@
         <value>remoteURI</value>
       </detail>
     </annotation>
+    <configSections
+        name="gerrit">
+      <properties
+          key="createchangeid"
+          value="true"/>
+    </configSections>
     <description>Platform SWT</description>
   </setupTask>
   <setupTask
@@ -97,21 +107,36 @@
           rootFolder="${git.clone.platform.swt.location}"
           locateNestedProjects="true">
         <predicate
-            xsi:type="predicates:NotPredicate">
+            xsi:type="predicates:OrPredicate">
           <operand
-              xsi:type="predicates:OrPredicate">
+              xsi:type="predicates:NotPredicate">
             <operand
-                xsi:type="predicates:NamePredicate"
-                pattern="org\.eclipse\.swt\.opengl\.examples">
-              <annotation
-                  source="http://www.eclipse.org/oomph/base/Warning">
-                <detail
-                    key="diagnostic">
-                  <value>This bundle has dependencies that I don't know how to satisfy</value>
-                </detail>
-              </annotation>
+                xsi:type="predicates:OrPredicate">
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="org\.eclipse\.swt\.opengl\.examples">
+                <annotation
+                    source="http://www.eclipse.org/oomph/base/Warning">
+                  <detail
+                      key="diagnostic">
+                    <value>This bundle has dependencies that I don't know how to satisfy</value>
+                  </detail>
+                </annotation>
+              </operand>
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="org\.eclipse\.swt\.tests\.cocoa"/>
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="org\.eclipse\.swt\.tests\.win32"/>
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="org\.eclipse\.swt\.tests\.gtk"/>
             </operand>
           </operand>
+          <operand
+              xsi:type="predicates:NamePredicate"
+              pattern="org\.eclipse\.swt\.tests\.${osgi.ws}"/>
         </predicate>
       </sourceLocator>
     </targlet>
@@ -126,55 +151,6 @@
           name="org.eclipse.pde.feature.group"/>
       <requirement
           name="org.eclipse.equinox.executable.feature.group"/>
-      <repositoryList
-          name="Photon">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
-      </repositoryList>
-      <repositoryList
-          name="Oxygen">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
-      </repositoryList>
-      <repositoryList
-          name="Neon">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-R"/>
-      </repositoryList>
-      <repositoryList
-          name="Mars">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
-      </repositoryList>
-      <repositoryList
-          name="Luna">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
-      </repositoryList>
-      <repositoryList
-          name="Kepler">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
-      </repositoryList>
-      <repositoryList
-          name="Juno">
-        <repository
-            url="http://download.eclipse.org/cbi/updates/license"/>
-        <repository
-            url="http://download.eclipse.org/modeling/emf/cdo/orbit/latest-S"/>
-      </repositoryList>
     </targlet>
   </setupTask>
   <setupTask
@@ -224,7 +200,7 @@
             project="org.eclipse.swt"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets.2 //@setupTasks.8/@workingSets.1 //@setupTasks.8/@workingSets.0"/>
+            excludedWorkingSet="//@setupTasks.7/@workingSets.2 //@setupTasks.7/@workingSets.1 //@setupTasks.7/@workingSets.0"/>
       </predicate>
     </workingSet>
     <workingSet
