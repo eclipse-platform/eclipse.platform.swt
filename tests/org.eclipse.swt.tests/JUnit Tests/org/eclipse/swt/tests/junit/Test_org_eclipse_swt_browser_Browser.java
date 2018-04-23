@@ -705,6 +705,27 @@ public void test_ProgressListener_addAndRemove() {
 	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
+@Test
+public void test_ProgressListener_completed_Called() {
+	AtomicBoolean childCompleted = new AtomicBoolean(false);
+	ProgressListener l = new ProgressListener() {
+
+		@Override
+		public void completed(ProgressEvent event) {
+			childCompleted.set(true);
+		}
+
+		@Override
+		public void changed(ProgressEvent event) {
+
+		}
+	};
+	browser.addProgressListener(l);
+	browser.setText("<html><body>This test ensures that the completed listener is called.</body></html>");
+	boolean passed = waitForPassCondition(childCompleted::get);
+	assertTrue(passed);
+}
+
 @Test(expected = IllegalArgumentException.class)
 public void test_StatusTextListener_addWithNull() {
 	browser.addStatusTextListener(null);
