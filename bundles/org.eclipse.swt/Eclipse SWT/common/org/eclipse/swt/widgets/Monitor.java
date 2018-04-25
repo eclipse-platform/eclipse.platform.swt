@@ -80,7 +80,7 @@ public Rectangle getClientArea () {
  * @since 3.107
  */
 public int getZoom () {
-	return MonitorUtil.getZoom (this);
+	return zoom;
 }
 
 void setBounds (Rectangle rect) {
@@ -95,10 +95,6 @@ void setClientArea (Rectangle rect) {
 	clientY = rect.y;
 	clientWidth = rect.width;
 	clientHeight = rect.height;
-}
-
-void setZoom (int zoom) {
-	this.zoom = zoom;
 }
 
 /**

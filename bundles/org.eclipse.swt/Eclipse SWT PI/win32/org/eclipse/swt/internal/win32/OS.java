@@ -2167,26 +2167,6 @@ public static final native int WINDOWPLACEMENT_sizeof ();
 public static final native int WINDOWPOS_sizeof ();
 public static final native int WNDCLASS_sizeof ();
 
-public static final int GetDpiForMonitor (long /*int*/ hmonitor, int dpiType, int [] dpiX, int [] dpiY) {
-		TCHAR lpLibFileName = new TCHAR (0, "Shcore.dll", true); //$NON-NLS-1$
-		long /*int*/ hModule = OS.LoadLibrary (lpLibFileName);
-		if (hModule != 0) {
-			String name = "GetDpiForMonitor\0"; //$NON-NLS-1$
-			byte [] lpProcName = new byte [name.length ()];
-			for (int i=0; i<lpProcName.length; i++) {
-				lpProcName [i] = (byte) name.charAt (i);
-			}
-			long /*int*/ DllGetDpiForMonitor = OS.GetProcAddress (hModule, lpProcName);
-			if (DllGetDpiForMonitor != 0) {
-				dpiX [0] = dpiY [0] = -1;
-	 			OS.Call (DllGetDpiForMonitor, hmonitor, dpiType, dpiX, dpiY);
-			}
-			OS.FreeLibrary (hModule);
-			return dpiX [0] == -1 ? -1 : 0; // return result if API call succeeded
-		}
-		return -1;
-}
-
 /** Ansi/Unicode wrappers */
 
 public static final long /*int*/ AddFontResourceEx (TCHAR lpszFilename, int fl, long /*int*/ pdv) {
@@ -2698,15 +2678,6 @@ public static final long /*int*/ LoadIcon (long /*int*/ hInstance, long /*int*/ 
 public static final long /*int*/ LoadImage (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad) {
 	if (IsUnicode) return LoadImageW (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
 	return LoadImageA (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
-}
-
-public static final long /*int*/ LoadLibrary (TCHAR lpLibFileName) {
-	if (IsUnicode) {
-		char [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.chars;
-		return LoadLibraryW (lpLibFileName1);
-	}
-	byte [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.bytes;
-	return LoadLibraryA (lpLibFileName1);
 }
 
 public static final int MapVirtualKey (int uCode, int uMapType) {
@@ -3283,7 +3254,6 @@ public static final native boolean BringWindowToTop (long /*int*/ hWnd);
 public static final native int BufferedPaintInit ();
 /** @method flags=dynamic */
 public static final native int BufferedPaintUnInit ();
-public static native void Call (long /*int*/ address, long /*int*/ hmonitor, int dpiType, int[] dpiX, int[] dpiY);
 /**
  * @param hhk cast=(HHOOK)
  * @param wParam cast=(WPARAM)
@@ -3774,8 +3744,6 @@ public static final native int FormatMessageA (int dwFlags, long /*int*/ lpSourc
  * @param Arguments cast=(va_list*)
  */
 public static final native int FormatMessageW (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments);
-/** @param hLibModule cast=(HMODULE) */
-public static final native boolean FreeLibrary (long /*int*/ hLibModule);
 /** @param dwLimit cast=(DWORD) */
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GET_WHEEL_DELTA_WPARAM(long /*int*/ wParam);
@@ -3885,6 +3853,8 @@ public static final native int GetDIBits (long /*int*/ hdc, long /*int*/ hbmp, i
 /** @param hDlg cast=(HWND) */
 public static final native long /*int*/ GetDlgItem (long /*int*/ hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
+/** @method flags=dynamic */
+public static final native int GetDpiForMonitor (long /*int*/ hmonitor, int dpiType, int [] dpiX, int [] dpiY);
 public static final native long /*int*/ GetFocus ();
 /** @param hdc cast=(HDC) */
 public static final native int GetFontLanguageInfo (long /*int*/ hdc);
@@ -4087,11 +4057,6 @@ public static final native boolean OpenPrinterW (char[] pPrinterName, long /*int
  * @param pDefault cast=(LPPRINTER_DEFAULTS)
  */
 public static final native boolean OpenPrinterA (byte[] pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault);
-/**
- * @param hModule cast=(HMODULE)
- * @param lpProcName cast=(LPCTSTR)
- */
-public static final native long /*int*/ GetProcAddress (long /*int*/ hModule, byte [] lpProcName);
 public static final native long /*int*/ GetProcessHeap ();
 /**
  * @param lpAppName cast=(LPWSTR)
@@ -4532,10 +4497,6 @@ public static final native long /*int*/ LoadImageW (long /*int*/ hinst, long /*i
  * @param lpszName cast=(LPSTR)
  */
 public static final native long /*int*/ LoadImageA (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
-/** @param lpLibFileName cast=(LPWSTR) */
-public static final native long /*int*/ LoadLibraryW (char [] lpLibFileName);
-/** @param lpLibFileName cast=(LPSTR) */
-public static final native long /*int*/ LoadLibraryA (byte [] lpLibFileName);
 /** @param hMem cast=(HLOCAL) */
 public static final native long /*int*/ LocalFree (long /*int*/ hMem);
 public static final native int LODWORD (long l);

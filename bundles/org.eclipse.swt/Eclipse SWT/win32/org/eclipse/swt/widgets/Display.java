@@ -2025,6 +2025,28 @@ Dialog getModalDialog () {
 	return modalDialog;
 }
 
+Monitor getMonitor (long /*int*/ hmonitor) {
+	MONITORINFO lpmi = new MONITORINFO ();
+	lpmi.cbSize = MONITORINFO.sizeof;
+	OS.GetMonitorInfo (hmonitor, lpmi);
+	Monitor monitor = new Monitor ();
+	monitor.handle = hmonitor;
+	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
+	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
+	if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
+		int [] dpiX = new int[1];
+		int [] dpiY = new int[1];
+		int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
+		result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
+		monitor.zoom = DPIUtil.getZoomForAutoscaleProperty (result);
+	} else {
+		monitor.zoom = getDeviceZoom ();
+	}
+	return monitor;
+}
+
 /**
  * Returns an array of monitors attached to the device.
  *
@@ -3223,16 +3245,7 @@ long /*int*/ monitorEnumProc (long /*int*/ hmonitor, long /*int*/ hdc, long /*in
 		System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
 		monitors = newMonitors;
 	}
-	MONITORINFO lpmi = new MONITORINFO ();
-	lpmi.cbSize = MONITORINFO.sizeof;
-	OS.GetMonitorInfo (hmonitor, lpmi);
-	Monitor monitor = new Monitor ();
-	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
-	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
-	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
-	monitors [monitorCount++] = monitor;
+	monitors [monitorCount++] = getMonitor (hmonitor);
 	return 1;
 }
 
@@ -4937,25 +4950,4 @@ static char [] withCrLf (char [] string) {
 	return result;
 }
 
-}
-
-class MonitorUtil {
-	static int getZoom (Monitor monitor) {
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
-			int[] dpiX = new int[1];
-			int[] dpiY = new int[1];
-			int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
-			result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
-			return DPIUtil.getZoomForAutoscaleProperty (result);
-		}
-		int dpi = getSystemDPI ();
-		return DPIUtil.mapDPIToZoom (dpi);
-	}
-
-	static int getSystemDPI () {
-		long /*int*/ hDC = OS.GetDC (0);
-		int dpi = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
-		OS.ReleaseDC (0, hDC);
-		return dpi;
-	}
 }

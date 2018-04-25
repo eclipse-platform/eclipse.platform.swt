@@ -6544,9 +6544,3 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 }
 
 }
-
-class MonitorUtil {
-	static int getZoom (Monitor monitor) {
-		return monitor.zoom;
-	}
-}

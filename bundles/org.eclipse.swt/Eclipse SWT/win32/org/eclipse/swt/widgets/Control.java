@@ -1473,18 +1473,7 @@ public Menu getMenu () {
 public Monitor getMonitor () {
 	checkWidget ();
 	long /*int*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
-	MONITORINFO lpmi = new MONITORINFO ();
-	lpmi.cbSize = MONITORINFO.sizeof;
-	OS.GetMonitorInfo (hmonitor, lpmi);
-	Monitor monitor = new Monitor ();
-	monitor.handle = hmonitor;
-	Rectangle bounds = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left, lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	bounds = DPIUtil.autoScaleDown (bounds);
-	monitor.setBounds (bounds);
-	Rectangle clientArea = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
-	clientArea = DPIUtil.autoScaleDown (clientArea);
-	monitor.setClientArea (clientArea);
-	return monitor;
+	return display.getMonitor (hmonitor);
 }
 
 /**

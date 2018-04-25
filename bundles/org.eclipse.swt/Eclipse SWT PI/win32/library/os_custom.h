@@ -43,6 +43,7 @@
 #define DwmExtendFrameIntoClientArea_LIB "dwmapi.dll"
 #define DwmIsCompositionEnabled_LIB "dwmapi.dll"
 #define GetCurrentProcessExplicitAppUserModelID_LIB "shell32.dll"
+#define GetDpiForMonitor_LIB "shcore.dll"
 #define GetGestureInfo_LIB "user32.dll"
 #define GetThemeInt_LIB "uxtheme.dll"
 #define GetThemeMargins_LIB "uxtheme.dll"

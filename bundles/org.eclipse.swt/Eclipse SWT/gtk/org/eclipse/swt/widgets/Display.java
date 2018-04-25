@@ -5973,11 +5973,3 @@ static int _getDeviceZoom (long /*int*/ monitor_num) {
 	return DPIUtil.mapDPIToZoom (dpi);
 }
 }
-
-
-class MonitorUtil {
-	static int getZoom (Monitor monitor) {
-		return monitor.zoom;
-	}
-}
-
