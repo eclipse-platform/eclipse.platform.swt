@@ -999,8 +999,8 @@ public class OS extends C {
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
+	public static final int MONITOR_DEFAULTTOPRIMARY = 0x1;
 	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
-	public static final int MONITORINFOF_PRIMARY = 0x1;
 	public static final String MONTHCAL_CLASS = "SysMonthCal32"; //$NON-NLS-1$
 	public static final int MOUSEEVENTF_ABSOLUTE = 0x8000;
 	public static final int MOUSEEVENTF_LEFTDOWN = 0x0002;

@@ -2128,26 +2128,8 @@ long /*int*/ getMsgProc (long /*int*/ code, long /*int*/ wParam, long /*int*/ lP
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
-	monitors = new Monitor [4];
-	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
-	long /*int*/ lpfnEnum = callback.getAddress ();
-	if (lpfnEnum == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
-	callback.dispose ();
-	Monitor result = null;
-	MONITORINFO lpmi = new MONITORINFO ();
-	lpmi.cbSize = MONITORINFO.sizeof;
-	for (int i = 0; i < monitorCount; i++) {
-		Monitor monitor = monitors [i];
-		OS.GetMonitorInfo (monitors [i].handle, lpmi);
-		if ((lpmi.dwFlags & OS.MONITORINFOF_PRIMARY) != 0) {
-			result = monitor;
-			break;
-		}
-	}
-	monitors = null;
-	monitorCount = 0;
-	return result;
+	long /*int*/ hmonitor = OS.MonitorFromWindow (0, OS.MONITOR_DEFAULTTOPRIMARY);
+	return getMonitor (hmonitor);
 }
 
 /**
