@@ -4230,6 +4230,8 @@ public static final native int strcmp (long /*int*/ s1, byte [] s2);
  * 		Adwaita
  * 		Adwaita-Dark
  * 		Ambiance 		(Ubuntu).
+ *
+ * See also: Device.overrideThemeValues();
  */
 public static final String getThemeName() {
 	byte[] themeNameBytes = getThemeNameBytes();

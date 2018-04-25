@@ -720,27 +720,35 @@ private void overrideThemeValues () {
 
 	StringBuilder combinedCSS = new StringBuilder();
 
-	// Load CSS that is common to all themes. Gtk Css allows 'functional'  changes, such as keyboard shortcuts.
+	// Load functional CSS fixes. Such as keyboard functionality for some widgets.
 	combinedCSS.append(load.apply(
 		GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
-				"/org/eclipse/swt/internal/gtk/swt_common_gtk_pre320.css" :
-				"/org/eclipse/swt/internal/gtk/swt_common_gtk_320.css"
+				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_pre320.css" :
+				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_320.css"
 			, true));
 
-	// Load CSS specific to Adwaita, to overcome things such as excessive padding that breaks SWT otherwise.
-	String OsThemeName = OS.getThemeName();
-	if ("Adwaita".equals(OsThemeName) || "Adwaita-dark".equals(OsThemeName)){
+	// By default, load CSS theme fixes to overcome things such as excessive padding that breaks SWT otherwise.
+	// Initially designed for Adwaita light/dark theme, but after investigation other themes (like Ubuntu's Ambiance + dark) seem to benefit from this also.
+	// However, a few themes break with these fixes, so we allow them to be turned off by user and allow them to load their own fixes manually instead.
+	// To turn on this flag, add the following vm argument:  -Dorg.eclipse.swt.internal.gtk.noThemingFixes
+	// Note:
+	// - Display.create() may override the theme name. See Display.create() ... OS.getThemeName(..).
+	// - These fixes should not contain any color information, otherwise it might break a light/dark variant of the theme.
+	//   Color fixes should be put either into the theme itself or via swt user api.
+	if (System.getProperty("org.eclipse.swt.internal.gtk.noThemingFixes") == null) {
 		combinedCSS.append(load.apply(
 				GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
-						"/org/eclipse/swt/internal/gtk/swt_adwaita_gtk_pre320.css" :
-						"/org/eclipse/swt/internal/gtk/swt_adwaita_gtk_320.css"
+						"/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_pre320.css" :
+						"/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_320.css"
 					, true));
 	}
 
 	// Load CSS from user-defined CSS file.
 	String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
-		// Warning: gtk css syntax changed in 3.20. If you load custom css, it could break things depending on gtk version on system.
+		// Warning:
+		// - gtk css syntax changed in 3.20. If you load custom css, it could break things depending on gtk version on system.
+		// - Also, a lot of custom css/themes are buggy and may result in additional console warnings.
 		combinedCSS.append(load.apply(additionalCSSPath, false));
 	}
 

@@ -1,0 +1,15 @@
+/* These have an impact on visual aspects of SWT. Padding etc.. 
+   There should not be hard-coded color fixes because this can break dark variants of themes.
+   Instead either use OS.setDarkThemePreferred() if your theme has dark version or style manually via api */
+GtkToolbar {
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+GtkToolbar GtkButton {
+	padding: 2px 4px 2px 4px;
+}
+
+GtkToolbar GtkMenuButton {
+	padding: 1px 0px 1px 0px;
+}

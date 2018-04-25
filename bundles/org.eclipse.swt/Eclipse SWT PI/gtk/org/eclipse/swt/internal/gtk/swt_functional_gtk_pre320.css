@@ -1,3 +1,4 @@
+/* These CSS fixes have 'functinal' impact, no visual impact. E.g allow keyboard navigation in trees etc.. */
 .undershoot.top, .undershoot.right, .undershoot.bottom, .undershoot.lef	{
 	background-image: none;
 }
