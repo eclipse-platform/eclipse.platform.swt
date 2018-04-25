@@ -1090,12 +1090,14 @@ public static final long /*int*/ G_OBJECT_TYPE_NAME (long /*int*/ object) {
 	}
 }
 
-/**
- * This method is not a reliable way to test for a type.
- *  Use G_OBJECT_TYPE type instead or use alternate means (e.g custom userdata).
- *  TODO: remove usage of this call.
- */
 public static final native boolean _G_TYPE_CHECK_INSTANCE_TYPE (long /*int*/ instance, long /*int*/ type);
+/**
+ * Note: G_TYPE_CHECK_INSTANCE_TYPE is not a good way to check for instance type,
+ * The C-Macro doesn't seem to work reliably in the context of being invoked from Java
+ * via JNI on a dynamically loaded library.
+ * But webkit1 development has halted and it's not worth the effort to change this.
+ * I.e, kept for legacy reason but don't use this. Instead, to identify type, use user_data. (see Webkit proc3 as example).
+ */
 public static final boolean G_TYPE_CHECK_INSTANCE_TYPE (long /*int*/ instance, long /*int*/ type) {
 	lock.lock();
 	try {

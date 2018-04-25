@@ -234,6 +234,7 @@ class WebKit extends WebBrowser {
 	static final int FAILED = 22; // webkit2 only.
 	static final int FINISHED = 23; // webkit2 only.
 	static final int DOWNLOAD_STARTED = 24;   // Webkit2 (webkit1 equivalent is DOWNLOAD_REQUESTED)
+	static final int WIDGET_EVENT = 25;		// Webkit2. Used for events like keyboard/mouse input. See Bug 528549 and Bug 533833.
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -259,10 +260,6 @@ class WebKit extends WebBrowser {
 
 	/** Webkit1 & Webkit2, Process key/mouse events from javascript. */
 	static Callback JSDOMEventProc;
-
-	/** Webkit2: We propograte some events to gtk */
-	static long [] w2_passThroughSwtEvents = null;
-
 
 	static {
 			WebViewType = WebKitGTK.webkit_web_view_get_type ();
@@ -702,7 +699,7 @@ static long /*int*/ JSObjectHasPropertyProc (long /*int*/ ctx, long /*int*/ obje
 }
 
 static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long /*int*/ user_data) {
-	if (GTK.GTK_IS_SCROLLED_WINDOW (arg0)) {
+	if (WEBKIT1 && GTK.GTK_IS_SCROLLED_WINDOW (arg0)) {
 		/*
 		 * Stop the propagation of events that are not consumed by WebKit, before
 		 * they reach the parent embedder.  These events have already been received.
@@ -710,7 +707,10 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 		return user_data;
 	}
 
-	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (arg0, WebViewType)) {
+	// G_TYPE_CHECK_INSTANCE_TYPE is a bad way to check type. See OS.G_TYPE_CHECK_INSTANCE_TYPE.
+	// But kept for webkit1 legacy reason. Don't use G_TYPE_CHECK_INSTANCE_TYPE in new code.
+	if ((WEBKIT1 && OS.G_TYPE_CHECK_INSTANCE_TYPE (arg0, WebViewType))
+		|| (WEBKIT2 && user_data == WIDGET_EVENT)) {
 		/*
 		* Only consider using GDK events to create SWT events to send if JS is disabled
 		* in one or more WebKit instances (indicates that this instance may not be
@@ -720,7 +720,7 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 			final Browser browser = FindBrowser (arg0);
 			if (browser != null &&
 					(WEBKIT1 && !browser.webBrowser.jsEnabled)
-					|| (WEBKIT2 && Arrays.binarySearch(w2_passThroughSwtEvents, user_data) >= 0)){
+					|| (WEBKIT2 && user_data == WIDGET_EVENT)){
 				/* this instance does need to use the GDK event to create an SWT event to send */
 				switch (GDK.GDK_EVENT_TYPE (event)) {
 					case GDK.GDK_KEY_PRESS: {
@@ -779,6 +779,9 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 		Browser browser = FindBrowser (webViewHandle.value);
 		if (browser == null) return 0;
 		WebKit webkit = (WebKit)browser.webBrowser;
+		if (user_data == WIDGET_EVENT) {
+			user_data = 0; // legacy.
+		}
 		return webkit.handleDOMEvent (event, (int)user_data) ? 0 : STOP_PROPOGATE;
 	}
 
@@ -812,6 +815,8 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ u
 			// Webkit1 vs 2 note:
 			// Notion of 'Webkit frame' is webkit1 port specific. In webkit2 port, web frames are a webextension and aren't used.
 			// Special case to handle webkit1 webview notify::load-status. Handle is a webframe not a webview.
+			// Note, G_TYPE_CHECK_INSTANCE_TYPE is not a good way to test for type. See it's javadoc.
+			//   only kept for webkit1 legacy reason.
 			if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
 				long /*int*/ webView = WebKitGTK.webkit_web_frame_get_web_view (handle); // webkit1 only.
 				Browser browser = FindBrowser (webView);
@@ -863,6 +868,9 @@ static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 
 static long /*int*/ Proc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
 	long /*int*/ webView;
+
+	// Note: G_TYPE_CHECK_INSTANCE_TYPE is not a good way to check for instance type, see it's javadoc.
+	// Kept only for webkit1 legacy reasons. Do not use in new code.
 	if (WEBKIT1 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.soup_session_get_type ())) {
 		webView = user_data;
 	} else {
@@ -1167,24 +1175,20 @@ public void create (Composite parent, int style) {
 
 	/* Callback to get events before WebKit receives and consumes them */
 	if (WEBKIT2) {
-		if (w2_passThroughSwtEvents == null) {
-			w2_passThroughSwtEvents = new long [] {SWT.MouseDown, SWT.MouseUp, SWT.FocusIn, SWT.FocusOut};
-			Arrays.sort(w2_passThroughSwtEvents);
-		}
-		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), SWT.MouseDown);
-		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), SWT.MouseUp);
-		OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), SWT.FocusIn);
-		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), SWT.FocusOut);
+		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), 	WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
 		// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
 	}
 	if (WEBKIT1) {
 		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
 		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
 	}
-	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (), 0);
-	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (), 0);
-	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 0);
-	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (),  	WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (),	WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 		WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
 
 	/*
 	* Callbacks to get the events not consumed by WebKit, and to block
