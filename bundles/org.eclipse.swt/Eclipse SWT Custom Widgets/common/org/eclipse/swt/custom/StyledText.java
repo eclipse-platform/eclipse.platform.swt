@@ -8643,12 +8643,14 @@ void setCaretLocation(final Point location, int direction) {
 
 		int caretHeight = getLineHeight();
 		boolean isTextAlignedAtBottom = true;
-		for (StyleRange style : getStyleRanges(graphicalLineFirstOffset, graphicalLineLastOffset - graphicalLineFirstOffset)) {
-			isTextAlignedAtBottom &= (
-				(style.font == null || Objects.equals(style.font, getFont())) &&
-				style.rise >= 0 &&
-				(style.metrics == null || style.metrics.descent <= 0)
-			);
+		if (graphicalLineFirstOffset >= 0) {
+			for (StyleRange style : getStyleRanges(graphicalLineFirstOffset, graphicalLineLastOffset - graphicalLineFirstOffset)) {
+				isTextAlignedAtBottom &= (
+					(style.font == null || Objects.equals(style.font, getFont())) &&
+					style.rise >= 0 &&
+					(style.metrics == null || style.metrics.descent <= 0)
+				);
+			}
 		}
 		if (!isTextAlignedAtBottom || (styleAtOffset != null && styleAtOffset.isVariableHeight())) {
 			if (isDefaultCaret) {
