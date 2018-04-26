@@ -71,7 +71,7 @@ class StyledTextRenderer {
 
 	final static int GROW = 32;
 	final static int IDLE_TIME = 50;
-	final static int CACHE_SIZE = 128;
+	final static int CACHE_SIZE = 300;
 
 	final static int BACKGROUND = 1 << 0;
 	final static int ALIGNMENT = 1 << 1;
