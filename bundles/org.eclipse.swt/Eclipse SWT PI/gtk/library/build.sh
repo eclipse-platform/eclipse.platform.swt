@@ -111,7 +111,7 @@ case $MODEL in
 		SWT_ARCH=x86_64
 		AWT_ARCH=amd64
 		;;
-	i?86)
+	i?86 | "x86")
 		SWT_ARCH=x86
 		AWT_ARCH=i386
 		;;
