@@ -152,8 +152,7 @@ void generateAll() {
 	shell.setCursor(cursor);
 	shell.setEnabled(false);
 	Control[] children = actionsPanel.getChildren();
-	for (int i = 0; i < children.length; i++) {
-		Control child = children[i];
+	for (Control child : children) {
 		if (child instanceof Button) child.setEnabled(false);				
 	}
 	boolean showProgress = true;
@@ -201,8 +200,7 @@ void generateAll() {
 	while (!done[0]) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
-	for (int i = 0; i < children.length; i++) {
-		Control child = children[i];
+	for (Control child : children) {
 		if (child instanceof Button) child.setEnabled(true);				
 	}
 	if (showProgress) {
@@ -240,8 +238,7 @@ JNIMethod[] getSelectedMethods() {
 	TableItem[] selection = membersLt.getSelection();
 	JNIMethod[] methods = new JNIMethod[selection.length];
 	int count = 0;
-	for (int i = 0; i < selection.length; i++) {
-		TableItem item = selection [i];
+	for (TableItem item : selection) {
 		Object data = item.getData();
 		if (data instanceof JNIMethod) {
 			methods[count++] = (JNIMethod)data;
@@ -259,8 +256,7 @@ JNIField[] getSelectedFields() {
 	TableItem[] selection = membersLt.getSelection();
 	JNIField[] fields = new JNIField[selection.length];
 	int count = 0;
-	for (int i = 0; i < selection.length; i++) {
-		TableItem item = selection [i];
+	for (TableItem item : selection) {
 		Object data = item.getData();
 		if (data instanceof JNIField) {
 			fields[count++] = (JNIField)data;
@@ -915,8 +911,7 @@ String getClassString(JNIType type) {
 String getFlagsString(String[] flags) {
 	if (flags.length == 0) return "";
 	StringBuilder buffer = new StringBuilder();
-	for (int j = 0; j < flags.length; j++) {
-		String flag = flags[j];
+	for (String flag : flags) {
 		if (buffer.length() != 0) buffer.append(", ");
 		buffer.append(flag);
 	}
@@ -958,8 +953,7 @@ void updateClasses() {
 		item.setChecked(clazz.getGenerate());
 	}
 	TableColumn[] columns = classesLt.getColumns();
-	for (int i = 0; i < columns.length; i++) {
-		TableColumn column = columns[i];
+	for (TableColumn column : columns) {
 		column.pack();
 	}
 	classesLt.setSelection(mainIndex);
@@ -969,8 +963,7 @@ void updateMembers() {
 	membersLt.removeAll();
 	membersLt.setHeaderVisible(false);
 	TableColumn[] columns = membersLt.getColumns();
-	for (int i = 0; i < columns.length; i++) {
-		TableColumn column = columns[i];
+	for (TableColumn column : columns) {
 		column.dispose();
 	}
 	int[] indices = classesLt.getSelectionIndices();
@@ -979,8 +972,7 @@ void updateMembers() {
 	JNIClass clazz = (JNIClass)classItem.getData();
 	boolean hasNatives = false;
 	JNIMethod[] methods = clazz.getDeclaredMethods();
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
+	for (JNIMethod method : methods) {
 		int mods = method.getModifiers();
 		if (hasNatives =((mods & Modifier.NATIVE) != 0)) break;
 	}
@@ -998,8 +990,7 @@ void updateMembers() {
 		column.setText("Exclude");
 		*/
 		JNIGenerator.sort(methods);
-		for (int i = 0; i < methods.length; i++) {
-			JNIMethod method = methods[i];
+		for (JNIMethod method : methods) {
 			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 			TableItem item = new TableItem(membersLt, SWT.NONE);
 			item.setData(method);
@@ -1026,8 +1017,7 @@ void updateMembers() {
 		column.setText("Exclude");
 		*/
 		JNIField[] fields = clazz.getDeclaredFields();	
-		for (int i = 0; i < fields.length; i++) {
-			JNIField field = fields[i];
+		for (JNIField field : fields) {
 			int mods = field.getModifiers(); 
 			if (((mods & Modifier.PUBLIC) == 0) ||
 				((mods & Modifier.FINAL) != 0) ||
@@ -1045,8 +1035,7 @@ void updateMembers() {
 		}
 	}
 	columns = membersLt.getColumns();
-	for (int i = 0; i < columns.length; i++) {
-		TableColumn column = columns[i];
+	for (TableColumn column : columns) {
 		column.pack();
 	}
 	membersLt.setHeaderVisible(true);
@@ -1076,8 +1065,7 @@ void updateParameters() {
 		item.setText(PARAM_FLAGS_COLUMN, getFlagsString(param.getFlags()));
 	}
 	TableColumn[] columns = paramsLt.getColumns();
-	for (int i = 0; i < columns.length; i++) {
-		TableColumn column = columns[i];
+	for (TableColumn column : columns) {
 		column.pack();
 	}
 	paramsLt.setRedraw(true);

@@ -64,8 +64,7 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	paramTypes64 = new ASTType[parameters.size()];
 	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
-	for (Iterator<SingleVariableDeclaration> iterator = parameters.iterator(); iterator.hasNext(); i++) {
-		SingleVariableDeclaration param = iterator.next();
+	for (SingleVariableDeclaration param : parameters) {
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
 		paramTypes64[i] = paramTypes[i];
 		this.parameters[i] = new ASTParameter(this, i, param.getName().getIdentifier());
@@ -116,8 +115,7 @@ public boolean isNativeUnique() {
 	boolean result = true;
 	String name = getName();
 	JNIMethod[] methods = declaringClass.getDeclaredMethods();
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod mth = methods[i];
+	for (JNIMethod mth : methods) {
 		if ((mth.getModifiers() & Modifier.NATIVE) != 0 &&
 			this != mth && !this.equals(mth) &&
 			name.equals(mth.getName()))

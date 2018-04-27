@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,8 +80,7 @@ public String getSuffix() {
 
 void generateExcludes(JNIClass[] classes) {
 	HashSet<String> excludes = new HashSet<>();
-	for (int i = 0; i < classes.length; i++) {
-		JNIClass clazz = classes[i];
+	for (JNIClass clazz : classes) {
 		String exclude = clazz.getExclude();
 		if (exclude.length() != 0) {
 			excludes.add(exclude);
@@ -89,8 +88,7 @@ void generateExcludes(JNIClass[] classes) {
 	}
 	for (String exclude : excludes) {
 		outputln(exclude);
-		for (int i = 0; i < classes.length; i++) {
-			JNIClass clazz = classes[i];
+		for (JNIClass clazz : classes) {
 			String classExclude = clazz.getExclude();
 			if (exclude.equals(classExclude)) {
 				output("#define NO_");
@@ -201,8 +199,7 @@ void generateFIDsStructure(JNIClass clazz) {
 	output("\tjfieldID ");
 	JNIField[] fields = clazz.getDeclaredFields();
 	boolean first = true;
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if (ignoreField(field)) continue;
 		if (!first) output(", ");
 		output(field.getName());
@@ -248,8 +245,7 @@ void generateCacheFunction(JNIClass clazz) {
 	}
 	outputln();
 	JNIField[] fields = clazz.getDeclaredFields();
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if (ignoreField(field)) continue;
 		output("\t");
 		output(clazzName);
@@ -293,8 +289,7 @@ void generateGetFields(JNIClass clazz) {
 		}
 	}
 	JNIField[] fields = clazz.getDeclaredFields();
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if (ignoreField(field)) continue;
 		String exclude = field.getExclude();
 		if (exclude.length() != 0) {
@@ -447,8 +442,7 @@ void generateSetFields(JNIClass clazz) {
 		}
 	}
 	JNIField[] fields = clazz.getDeclaredFields();
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if (ignoreField(field)) continue;
 		String exclude = field.getExclude();
 		if (exclude.length() != 0) {

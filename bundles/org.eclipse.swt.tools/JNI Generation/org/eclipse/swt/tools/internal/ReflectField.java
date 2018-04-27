@@ -97,7 +97,7 @@ public String getAccessor() {
 @Override
 public String getCast() {
 	String cast = ((String)getParam("cast")).trim();
-	if (cast.length() > 0) {
+	if (!cast.isEmpty()) {
 		if (!cast.startsWith("(")) cast = "(" + cast;
 		if (!cast.endsWith(")")) cast = cast + ")";
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2017 IBM Corporation and others.
+ * Copyright (c) 2008, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,8 +50,7 @@ static void list(File path, ArrayList<String> list) {
 	if (path == null) return;
 	File[] frameworks = path.listFiles();
 	if (frameworks == null) return;
-	for (int i = 0; i < frameworks.length; i++) {
-		File file = frameworks[i];
+	for (File file : frameworks) {
 		String name = file.getName();
 		int index = name.lastIndexOf(".");
 		if (index != -1) {
@@ -674,8 +673,7 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		Object[] superclass = classes.get(getSuperclassName(node));
 		if (superclass != null) {
-			for (Iterator<Node> iterator2 = ((ArrayList<Node>)superclass[1]).iterator(); iterator2.hasNext();) {
-				Node method = iterator2.next();
+			for (Node method : ((ArrayList<Node>) superclass[1])) {
 				if (isStatic(method)) {
 					methods.add(method);
 				}

@@ -31,8 +31,7 @@ public String flatten() {
 	Set<String> set = params.keySet();
 	String[] keys = set.toArray(new String[set.size()]);
 	Arrays.sort(keys);
-	for (int j = 0; j < keys.length; j++) {
-		String key = keys[j];
+	for (String key : keys) {
 		Object value = params.get(key);
 		String valueStr = "";
 		if (value instanceof String) {
@@ -77,8 +76,8 @@ public String[] getFlags() {
 @Override
 public boolean getFlag(String flag) {
 	String[] flags = getFlags();
-	for (int i = 0; i < flags.length; i++) {
-		if (flags[i].equals(flag)) return true;
+	for (String flag2 : flags) {
+		if (flag2.equals(flag)) return true;
 	}
 	return false;
 }
