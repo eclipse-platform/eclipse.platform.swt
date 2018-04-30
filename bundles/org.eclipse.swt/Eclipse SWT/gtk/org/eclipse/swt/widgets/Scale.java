@@ -380,4 +380,24 @@ long /*int*/ gtk_scale_new (int orientation, long /*int*/ adjustment) {
 	}
 	return scale;
 }
+
+@Override
+Point resizeCalculationsGTK3(long /*int*/ widget, int width, int height) {
+	Point size = super.resizeCalculationsGTK3(widget, width, height);
+	/*
+	 * Bug 534204: (GTK 3.22) Scale with GridLayout height hint has no line
+	 *
+	 * Specifying a too low height hint for a scale, or shrinking the scale too much
+	 * can result in a missing line for the scale. We specify a minimum height to avoid this.
+	 * Due to the parent SwtFixed, the scale widget can still be resized below this minimum size.
+	 * Instead of shrinking to comply with the too-small size, parts of it are hidden.
+	 */
+	if (widget == handle && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		GtkRequisition naturalSize = new GtkRequisition();
+		GtkRequisition minimumSize = new GtkRequisition();
+		GTK.gtk_widget_get_preferred_size(handle, minimumSize, naturalSize);
+		size.y = Math.max(size.y, minimumSize.height);
+	}
+	return size;
+}
 }
