@@ -1942,6 +1942,7 @@ String gtk_css_default_theme_values (int swt) {
 	}
 	byte [] themeBuffer = new byte [length];
 	C.memmove (themeBuffer, str, length);
+	OS.g_free(str);
 	String cssOutput = new String (Converter.mbcsToWcs (themeBuffer));
 
 	// Parse the theme values based on the corresponding SWT value
@@ -2210,6 +2211,7 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, str, length);
+	OS.g_free(str);
 	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
@@ -2274,6 +2276,7 @@ GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, str, length);
+	OS.g_free(str);
 	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
