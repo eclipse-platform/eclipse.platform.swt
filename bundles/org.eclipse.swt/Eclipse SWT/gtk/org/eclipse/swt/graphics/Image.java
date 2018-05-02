@@ -292,6 +292,10 @@ public Image(Device device, Image srcImage, int flag) {
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (GTK.GTK3) {
+		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+	}
 	long /*int*/ cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
@@ -813,6 +817,10 @@ void createFromPixbuf(int type, long /*int*/ pixbuf) {
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (GTK.GTK3) {
+		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+	}
 	long /*int*/ data = Cairo.cairo_image_surface_get_data(surface);
 	int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;
@@ -1376,6 +1384,13 @@ void init(int width, int height) {
 	/* Create the pixmap */
 	surface = GDK.gdk_window_create_similar_surface(GDK.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	// When we create a blank image we need to set it to 100 in GTK3 as we don't scale here.
+	// Cairo will scale for us
+	if (!GTK.GTK3) {
+		currentDeviceZoom = DPIUtil.getDeviceZoom();
+	} else {
+		currentDeviceZoom = 100;
+	}
 	long /*int*/ cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
@@ -1398,6 +1413,10 @@ void init(ImageData image) {
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (GTK.GTK3) {
+		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+	}
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
 	long /*int*/ data = Cairo.cairo_image_surface_get_data(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;

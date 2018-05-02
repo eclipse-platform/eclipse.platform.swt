@@ -30,10 +30,14 @@ public static long /*int*/ convertSurface(Image image) {
 	long /*int*/ newSurface = image.surface;
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
-		Rectangle bounds = image.getBoundsInPixels();
+		Rectangle bounds = image.getBounds();
 		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (GTK.GTK3) {
+			double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+			Cairo.cairo_surface_set_device_scale(newSurface, scaleFactor, scaleFactor);
+		}
 		long /*int*/ cairo = Cairo.cairo_create(newSurface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);

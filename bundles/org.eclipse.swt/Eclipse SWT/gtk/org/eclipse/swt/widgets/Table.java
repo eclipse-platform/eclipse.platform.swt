@@ -2833,7 +2833,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
 			if (image != null) {
-				Rectangle bounds = image.getBoundsInPixels ();
+				Rectangle bounds = image.getBounds ();
 				imageWidth = bounds.width;
 			}
 			contentWidth [0] += imageWidth;
@@ -3113,7 +3113,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
 				if (image != null) {
-					Rectangle bounds = image.getBoundsInPixels ();
+					Rectangle bounds = image.getBounds ();
 					imageWidth = bounds.width;
 				}
 				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle

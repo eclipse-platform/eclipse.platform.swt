@@ -572,6 +572,7 @@ protected void init () {
 	this.dpi = getDPI();
 	this.scaleFactor = getDeviceZoom ();
 	DPIUtil.setDeviceZoom (scaleFactor);
+	DPIUtil.setIsGtk3(GTK.GTK3);
 
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;

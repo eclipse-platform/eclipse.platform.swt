@@ -850,6 +850,34 @@ public static final void cairo_scale(long /*int*/ cr, double sx, double sy) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param cr cast=(cairo_surface_t *)
+ */
+public static final native void _cairo_surface_set_device_scale(long /*int*/ cr, double sx, double sy);
+public static final void cairo_surface_set_device_scale(long /*int*/ cr, double sx, double sy) {
+	lock.lock();
+	try {
+		_cairo_surface_set_device_scale(cr, sx, sy);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cr cast=(cairo_surface_t *)
+ * @param sx cast=(double *)
+ * @param sy cast=(double *)
+ */
+public static final native void _cairo_surface_get_device_scale(long /*int*/ cr, double [] sx, double [] sy);
+public static final void cairo_surface_get_device_scale(long /*int*/ cr, double [] sx, double [] sy) {
+	lock.lock();
+	try {
+		_cairo_surface_get_device_scale(cr, sx, sy);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param cr cast=(cairo_t *)
  * @param family cast=(const char *)
  */

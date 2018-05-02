@@ -862,6 +862,12 @@ public void setImage (Image image) {
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		if (GTK.GTK3) {
+			Rectangle imgSize = image.getBounds();
+			long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
+			if (scaledPixbuf !=0) {
+				pixbuf = scaledPixbuf;
+			}
+
 			if (!GTK.GTK_IS_MENU_ITEM (handle)) return;
 			if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
 				GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
