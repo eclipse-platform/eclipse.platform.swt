@@ -1925,16 +1925,22 @@ String gtk_css_create_css_color_string (String background, String foreground, in
  * directly
  */
 String gtk_css_default_theme_values (int swt) {
-	// Find CSS theme name
+	/*
+	 * Find current GTK theme: either use the system theme,
+	 * or one provided using the GTK_THEME environment variable.
+	 * See bug 534007.
+	 */
 	int length;
 	long /*int*/ str;
-	byte [] buffer = OS.getThemeNameBytes();
+	byte [] buffer = OS.GTK_THEME_SET ? Converter.wcsToMbcs (OS.GTK_THEME_NAME, true) : OS.getThemeNameBytes();
+	// Load the dark variant if specified
+	byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
 	if (buffer == null || buffer.length == 0) {
 		return "";
 	}
 
 	// Fetch the actual theme in char/string format
-	long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, null);
+	long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
 	str = GTK.gtk_css_provider_to_string (themeProvider);
 	length = C.strlen (str);
 	if (length == 0) {

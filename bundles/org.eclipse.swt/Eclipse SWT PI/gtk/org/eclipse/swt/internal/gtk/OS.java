@@ -691,6 +691,28 @@ public class OS extends C {
 	 */
 	public static final boolean SWT_MENU_LOCATION_DEBUGGING;
 
+	/*
+	 * Check for the GTK_THEME environment variable. If set, parse
+	 * it to get the theme name and check if a dark variant is specified.
+	 * We can make use of this information when loading SWT system colors.
+	 * See bug 534007.
+	 */
+	/**
+	 * True if the GTK_THEME environment variable is specified
+	 * and is non-empty.
+	 */
+	public static final boolean GTK_THEME_SET;
+	/**
+	 * A string containing the theme name supplied via the GTK_THEME
+	 * environment variable. Otherwise this will contain an empty string.
+	 */
+	public static final String GTK_THEME_NAME;
+	/**
+	 * True if GTK_THEME_SET is true, and if the dark variant was
+	 * specified via the GTK_THEME environment variable.
+	 */
+	public static final boolean GTK_THEME_DARK;
+
 	/* Feature in Gtk: with the switch to GtkMenuItems from GtkImageMenuItems
 	* in Gtk3 came a small Gtk shortfall: a small amount of padding on the left hand
 	* side of MenuItems was added. This padding is not accessible to the developer,
@@ -719,6 +741,21 @@ public class OS extends C {
 			menuLocationDebuggingEnabled = true;
 		}
 		SWT_MENU_LOCATION_DEBUGGING = menuLocationDebuggingEnabled;
+
+		String gtkThemeProperty = "GTK_THEME";
+		String gtkThemeCheck = getEnvironmentalVariable(gtkThemeProperty);
+		boolean gtkThemeSet = false;
+		String gtkThemeName = "";
+		boolean gtkThemeDark = false;
+		if (gtkThemeCheck != null && !gtkThemeCheck.isEmpty()) {
+			gtkThemeSet = true;
+			gtkThemeDark = gtkThemeCheck.contains(":dark") ? true : false;
+			String [] themeNameSplit = gtkThemeCheck.split(":");
+			gtkThemeName = themeNameSplit[0];
+		}
+		GTK_THEME_SET = gtkThemeSet;
+		GTK_THEME_NAME = gtkThemeName;
+		GTK_THEME_DARK = gtkThemeDark;
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK.GTK_VERSION >>> 16) + "." + (GTK.GTK_VERSION >>> 8 & 0xFF) + "." + (GTK.GTK_VERSION & 0xFF));
