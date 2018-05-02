@@ -1696,6 +1696,7 @@ public class OS extends C {
 	public static final int TVM_SETBKCOLOR = 0x111d;
 	public static final int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
 	public static final int TVM_SETIMAGELIST = 0x1109;
+	public static final int TVM_SETINDENT = TV_FIRST + 7;
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = 0x113f;
 	public static final int TVM_SETITEMHEIGHT = TV_FIRST + 27;

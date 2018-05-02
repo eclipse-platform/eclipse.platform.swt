@@ -1893,6 +1893,15 @@ void createHandle () {
 	long /*int*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 
+	/*
+	 * Bug in Windows. When image list is not set, tree glyph
+	 * size is tied to tree indent. Indent doesn't automatically
+	 * scale with DPI resulting in distorted glyph image
+	 * at higher DPI settings.
+	 */
+	int indent = DPIUtil.autoScaleUpUsingNativeDPI(16);
+	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
+
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
