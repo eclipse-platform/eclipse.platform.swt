@@ -17,7 +17,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Scale;
@@ -30,28 +29,36 @@ import org.eclipse.swt.widgets.Shell;
  * Steps to reproduce:
  * <ol>
  * <li>Run the snippet.</li>
+ * <li>Reduce the height of the snippet to its minimum by resizing. </li>
+ * <li>Observe that the horizontal scales have no trough. </li>
+ * <li>Resize the snippet back to its original state. </li>
+ * <li>Reduce the width of the snippet to its minimum by resizing.</li>
+ * <li>Observe that the vertical scales have no trough. </li>
  * </ol>
- * Expected results: The shell contains a scale with a line and a trough.
- * Actual results: The shell contains a scale with a tough but without a line.
+ * Expected results: The shell contains scales, each with a slider and a trough.
+ * Actual results: After shrinking, the shell contains scales with no trough.
  */
-public class Bug534204_Scale_has_no_line {
+public class Bug534204_Scale_has_no_trough {
 
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setSize(300, 100);
-		shell.setText("Bug 534204 scale has only trough and no line");
+		shell.setSize(300, 300);
+		shell.setText("Bug 534204 scale has no trough");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 
-		Composite main = new Composite(shell, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(1, false);
-		main.setLayout(gridLayout);
+		Composite composite = new Composite(shell, SWT.NONE);
+		composite.setLayout(new FillLayout());
 
-		Scale scale = new Scale(main, SWT.NONE);
-		GridData gd = new GridData();
-		gd.widthHint = 200;
-		gd.heightHint = 18;
-		scale.setLayoutData(gd);
+		Composite horizontal = new Composite(composite, SWT.NONE);
+		horizontal.setLayout(new FillLayout(SWT.VERTICAL));
+		new Scale(horizontal, SWT.HORIZONTAL);
+		new Scale(horizontal, SWT.HORIZONTAL).setSelection(100);
+
+		Composite vertical = new Composite(composite, SWT.NONE);
+		vertical.setLayout(new FillLayout());
+		new Scale(vertical, SWT.VERTICAL);
+		new Scale(vertical, SWT.VERTICAL).setSelection(100);
 
 		shell.open();
 		while (!shell.isDisposed()) {

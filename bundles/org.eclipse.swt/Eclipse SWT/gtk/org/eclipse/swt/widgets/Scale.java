@@ -396,7 +396,12 @@ Point resizeCalculationsGTK3(long /*int*/ widget, int width, int height) {
 		GtkRequisition naturalSize = new GtkRequisition();
 		GtkRequisition minimumSize = new GtkRequisition();
 		GTK.gtk_widget_get_preferred_size(handle, minimumSize, naturalSize);
-		size.y = Math.max(size.y, minimumSize.height);
+		if ((style & SWT.VERTICAL) != 0) {
+			size.x = Math.max(size.x, minimumSize.width);
+		}
+		if ((style & SWT.HORIZONTAL) != 0) {
+			size.y = Math.max(size.y, minimumSize.height);
+		}
 	}
 	return size;
 }
