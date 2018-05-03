@@ -131,6 +131,8 @@ public class Shell extends Decorations {
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
 
+	static Callback gdkSeatGrabCallback; // Wayland only.
+
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -592,10 +594,9 @@ void bringToTop (boolean force) {
 			}
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				if(GTK.gtk_widget_get_visible(shellHandle)) {
-					GTK.gtk_widget_hide(shellHandle);
+				if (gdkSeatGrabCallback == null) {
+					gdkSeatGrabCallback = new Callback(Shell.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 				}
-				Callback gdkSeatGrabCallback = new Callback(this, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 				long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
 				if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 				GTK.gtk_grab_add(shellHandle);
@@ -2872,8 +2873,10 @@ Point getWindowOrigin () {
 	return super.getWindowOrigin( );
 }
 
-long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ seat, long /*int*/ window, long /*int*/ data) {
-	GTK.gtk_widget_show(data);
+static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkWindow, long /*int*/ userData_shellHandle) {
+	if (userData_shellHandle != 0) {
+		GTK.gtk_widget_show(userData_shellHandle);
+	}
 	return 0;
 }
 }
