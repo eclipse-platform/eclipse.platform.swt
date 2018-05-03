@@ -9085,7 +9085,6 @@ public class GTK extends OS {
 	public static final native void _gtk_widget_reparent(long /*int*/ widget, long /*int*/ new_parent);
 	/** deprecated as of 3.14 */
 	public static final void gtk_widget_reparent(long /*int*/ widget, long /*int*/ new_parent) {
-		assert !GTK3; // On Gtk3, use Control.gtk_widget_reparent(..);
 		lock.lock();
 		try {
 			_gtk_widget_reparent(widget, new_parent);

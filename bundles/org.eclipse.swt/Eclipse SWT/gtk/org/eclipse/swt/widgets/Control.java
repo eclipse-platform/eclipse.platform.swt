@@ -2729,10 +2729,25 @@ static void gtk_widget_reparent (Control control, long /*int*/ newParentHandle) 
 		long /*int*/ parentContainer = GTK.gtk_widget_get_parent (widget);
 		assert parentContainer != 0 : "Improper use of Control.gtk_widget_reparent. Widget currently has no parent.";
 		if (parentContainer != 0) {
-			OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
-			GTK.gtk_container_remove (parentContainer, widget);
-			GTK.gtk_container_add (newParentHandle, widget);
-			OS.g_object_unref (widget);
+
+			// gtk_widget_reparent (..) is deprecated as of Gtk 3.14 and removed in Gtk4.
+			// However, the current alternative of removing/adding widget from/to a container causes errors. (see note below).
+			// TODO - research a better way to reparent. See 534089.
+			GTK.gtk_widget_reparent(widget, newParentHandle);
+
+			// Removing/Adding containers doesn't seem to reparent sub-gdkWindows properly and throws errors.
+			// Steps to reproduce:
+			//  - From bug 534089, download the first attachment plugin: "Plug-in to reproduce the problem with"
+			//  - Import it into your eclipse. Launch a child eclipse with this plugin. Ensure child workspace is cleaned upon launch so that you see welcome screen.
+			//  - Upon closing the welcome screen, you will see an eclipse error message: "org.eclipse.swt.SWTError: No more handles"
+			//  - The following is printed into the console: 'gdk_window_new(): parent is destroyed'
+			// After some research, I found that gtk_widget_repartent(..) also reparents sub-windows, but moving widget between containers doesn't do this,
+			// This seems to leave some gdkWindows with incorrect parents.
+//			OS.g_object_ref (widget);
+//			GTK.gtk_container_remove (parentContainer, widget);
+//			GTK.gtk_container_add (newParentHandle, widget);
+//			OS.g_object_unref (widget);
+
 			control.fixParentGdkWindow();
 		}
 	} else { // Gtk2.
