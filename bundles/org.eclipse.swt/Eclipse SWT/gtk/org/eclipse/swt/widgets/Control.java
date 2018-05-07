@@ -3066,7 +3066,7 @@ long /*int*/ getFontDescription () {
 	long /*int*/ [] fontDesc = new long /*int*/ [1];
 	if (GTK.GTK3) {
 		long /*int*/ context = GTK.gtk_widget_get_style_context (fontHandle);
-		if (GTK.GTK_VERSION < OS.VERSION(3, 8, 0)) {
+		if ((GTK.GTK_VERSION < OS.VERSION(3, 8, 0) || ("ppc64le".equals(System.getProperty("os.arch"))))) {
 			return GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
 		} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 			GTK.gtk_style_context_save(context);
