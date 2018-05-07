@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4717,7 +4717,9 @@ public void setLineStyle(int lineStyle) {
  * Note that line width of zero is used as a hint to
  * indicate that the fastest possible line drawing
  * algorithms should be used. This means that the
- * output may be different from line width one.
+ * output may be different from line width one and
+ * specially at high DPI it's not recommended to mix
+ * line width zero with other line widths.
  * </p>
  *
  * @param lineWidth the width of a line
