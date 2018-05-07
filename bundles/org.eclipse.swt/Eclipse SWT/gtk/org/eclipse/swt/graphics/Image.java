@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -172,6 +172,13 @@ public final class Image extends Resource implements Drawable {
 	private ImageDataProvider imageDataProvider;
 
 	/**
+	 * Style flag used to differentiate normal, gray-scale and disabled images based
+	 * on image data providers. Without this, a normal and a disabled image of the
+	 * same image data provider would be considered equal.
+	 */
+	private int styleFlag = SWT.IMAGE_COPY;
+
+	/**
 	 * Attribute to cache current device zoom level
 	 */
 	private int currentDeviceZoom = 100;
@@ -276,6 +283,7 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 	this.imageDataProvider = srcImage.imageDataProvider;
 	this.imageFileNameProvider = srcImage.imageFileNameProvider;
+	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 
 	if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
@@ -1074,9 +1082,9 @@ public boolean equals (Object object) {
 	Image image = (Image)object;
 	if (device != image.device || transparentPixel != image.transparentPixel) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
-		return imageDataProvider.equals (image.imageDataProvider);
+		return (styleFlag == image.styleFlag) && imageDataProvider.equals (image.imageDataProvider);
 	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
-		return imageFileNameProvider.equals (image.imageFileNameProvider);
+		return (styleFlag == image.styleFlag) && imageFileNameProvider.equals (image.imageFileNameProvider);
 	} else {
 		return surface == image.surface;
 	}

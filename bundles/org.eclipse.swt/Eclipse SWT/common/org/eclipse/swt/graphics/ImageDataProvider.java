@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ public interface ImageDataProvider {
 	 * <p>
 	 * If no image is available for a particular zoom level, this method should
 	 * return <code>null</code>. For <code>zoom == 100</code>, returning
-	 * <code>null</code> in not allowed, and SWT will throw an exception.
+	 * <code>null</code> is not allowed, and SWT will throw an exception.
 	 *
 	 * @param zoom
 	 *            The zoom level in % of the standard resolution (which is 1
