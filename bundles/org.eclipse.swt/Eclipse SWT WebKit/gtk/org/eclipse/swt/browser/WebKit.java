@@ -148,7 +148,7 @@ class WebKit extends WebBrowser {
 	 * https://www.nczonline.net/blog/2009/01/05/what-determines-that-a-script-is-long-running/
 	 * https://stackoverflow.com/questions/3030024/maximum-execution-time-for-javascript
 	 */
-	static final int ASYNC_EXEC_TIMEOUT_MS = 3000; // Webkit2.
+	static final int ASYNC_EXEC_TIMEOUT_MS = 10000; // Webkit2.
 
 	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
 
@@ -418,7 +418,7 @@ class WebKit extends WebBrowser {
 	}
 
 	private static String getInternalErrorMsg () {
-		String reportErrMsg = "Please report this issue with steps to reproduce via:\n"
+		String reportErrMsg = "Please report this issue *with steps to reproduce* via:\n"
 				+ " https://bugs.eclipse.org/bugs/enter_bug.cgi?"
 				+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
 				+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
@@ -1557,7 +1557,7 @@ private static class Webkit2AsyncToSync {
 	/** Object used to return data from callback to original call */
 	private static class Webkit2AsyncReturnObj {
 		boolean callbackFinished = false;
-		Object returnValue;
+		Object returnValue = null; // As note, if browser is disposed during excution, null is returned.
 
 		/** 0=no error. >0 means error. **/
 		int errorNum = 0;
@@ -1687,6 +1687,7 @@ private static class Webkit2AsyncToSync {
 			} else if (retObj.errorNum != 0) {
 				throw new SWTException(retObj.errorNum, retObj.errorMsg +"\nScript that was evaluated:\n" + script);
 			} else {
+				// This is also the implicit case where browser was disposed while javascript was executing. It returns null.
 				return retObj.returnValue;
 			}
 		}
@@ -1775,10 +1776,9 @@ private static class Webkit2AsyncToSync {
 		Webkit2AsyncReturnObj retObj = new Webkit2AsyncReturnObj();
 		int callbackId = CallBackMap.putObject(retObj);
 		asyncFunc.accept(callbackId);
-		Shell shell = browser.getShell();
 		Display display = browser.getDisplay();
 		final Instant timeOut = Instant.now().plusMillis(ASYNC_EXEC_TIMEOUT_MS);
-		while (!shell.isDisposed()) {
+		while (!browser.isDisposed()) {
 			boolean eventsDispatched = OS.g_main_context_iteration (0, false);
 			if (retObj.callbackFinished)
 				break;
@@ -1787,9 +1787,11 @@ private static class Webkit2AsyncToSync {
 						+ "ms. No return value will be provided.\n"
 						+ "Possible reasons:\n"
 						+ "1) Problem: Your javascript needs more than " + ASYNC_EXEC_TIMEOUT_MS +"ms to execute.\n"
-						+ "   Solution: Don't run such javascript, it blocks UI. Instead register a BrowserFunction\n"
-						+ "             and call the BrowserFunction upon completion"
-						+ "2) Deadlock in swt/webkit2 logic. This is probably a bug in SWT.\n"
+						+ "   Solution: Don't run such javascript, it blocks Eclipse's UI. SWT currently allows such code to complete, but this error is thrown \n"
+						+ "     and the return value of execute()/evalute() will be false/null.\n\n"
+						+ "2) However, if you believe that your application should execute as expected (in under" + ASYNC_EXEC_TIMEOUT_MS + " ms),\n"
+						+ " then it might be a deadlock in SWT/Browser/webkit2 logic.\n"
+						+ " I.e, it might be a bug in SWT (e.g this does not occur on Windows/Cocoa, but occurs on Linux). If you believe it to be a bug in SWT, then\n"
 						+ getInternalErrorMsg()
 						+ "\n Additional information about the error is as following:\n"
 						+ additionalErrorInfo);
