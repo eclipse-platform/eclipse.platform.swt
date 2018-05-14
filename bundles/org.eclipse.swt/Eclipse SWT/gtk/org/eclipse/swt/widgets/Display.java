@@ -2386,6 +2386,7 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, str, length);
+	OS.g_free(str);
 	return new String (Converter.mbcsToWcs (buffer));
 }
 
