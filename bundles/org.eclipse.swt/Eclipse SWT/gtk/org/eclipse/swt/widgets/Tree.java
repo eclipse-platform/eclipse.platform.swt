@@ -4128,7 +4128,7 @@ Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
 	 * and the horizontal scrollbar is only partially visible so that it doesn't overlap with tree headers.
 	 */
 	if (widget == scrolledHandle && GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && getHeaderVisible()) {
-		int hScrollBarHeight = hScrollBarHeight();
+		int hScrollBarHeight = hScrollBarWidth(); // this actually returns height
 		if (hScrollBarHeight > 0) {
 			sizes.y = Math.max(sizes.y, getHeaderHeight() + hScrollBarHeight + (getBorderWidth() * 2));
 		}

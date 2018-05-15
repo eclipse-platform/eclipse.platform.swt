@@ -364,11 +364,6 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 
 int hScrollBarWidth() {
 	Point hScrollbarSize = hScrollbarSize();
-	return hScrollbarSize.x;
-}
-
-int hScrollBarHeight() {
-	Point hScrollbarSize = hScrollbarSize();
 	return hScrollbarSize.y;
 }
 
