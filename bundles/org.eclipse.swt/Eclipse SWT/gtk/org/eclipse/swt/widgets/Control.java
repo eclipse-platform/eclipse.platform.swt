@@ -3329,7 +3329,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	 */
 	byte [] buffer = null;
 	if (toolTipText != null && toolTipText.length() != 0) {
-		char [] chars = fixMnemonic (toolTipText, false);
+		char [] chars = fixMnemonic (toolTipText, false, true);
 		buffer = Converter.wcsToMbcs (chars, true);
 	}
 	long /*int*/ toolHandle = getShell().handle;

@@ -1004,6 +1004,10 @@ char [] fixMnemonic (String string) {
 }
 
 char [] fixMnemonic (String string, boolean replace) {
+	return fixMnemonic (string, replace, false);
+}
+
+char [] fixMnemonic (String string, boolean replace, boolean removeAppended) {
 	int length = string.length ();
 	char [] text = new char [length];
 	string.getChars (0, length, text, 0);
@@ -1019,6 +1023,18 @@ char [] fixMnemonic (String string, boolean replace) {
 				}
 				i++;
 				break;
+				/*
+				 * In Japanese like languages where mnemonics are not taken from the
+				 * source label text but appended in parentheses like "(&M)" at end. In order to
+				 * allow the reuse of such label text as a tool-tip text as well, "(&M)" like
+				 * character sequence has to be removed from the end of CJK-style mnemonics.
+				 */
+			case '(':
+				if (removeAppended && i + 4 == string.length () && text [i + 1] == '&' && text [i + 3] == ')') {
+					if (replace) result [j++] = ' ';
+					i += 4;
+					break; // break switch case only if we are removing the mnemonic otherwise fall through
+				}
 			case '_':
 				if (replace) result [j++] = '_';
 				//FALL THROUGH

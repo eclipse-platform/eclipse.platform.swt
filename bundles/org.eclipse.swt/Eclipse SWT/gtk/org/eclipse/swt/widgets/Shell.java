@@ -2923,7 +2923,7 @@ void setToolTipText (long /*int*/ tipWidget, String string) {
 void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String string) {
 	byte [] buffer = null;
 	if (string != null && string.length () > 0) {
-		char [] chars = fixMnemonic (string, false);
+		char [] chars = fixMnemonic (string, false, true);
 		buffer = Converter.wcsToMbcs (chars, true);
 	}
 	long /*int*/ oldTooltip = GTK.gtk_widget_get_tooltip_text (rootWidget);
