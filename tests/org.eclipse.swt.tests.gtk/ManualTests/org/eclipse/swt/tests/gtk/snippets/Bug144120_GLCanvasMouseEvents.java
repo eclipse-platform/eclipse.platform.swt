@@ -66,7 +66,7 @@ public class Bug144120_GLCanvasMouseEvents {
 		@Override
 		public void mouseDown(MouseEvent event) {
 			long time=System.currentTimeMillis();
-			System.out.println(new Long(time).toString() + " mouse move: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse move: " + event.x + " " + event.y);
 			try {
 				synchronized(this) {
 					wait(100);
