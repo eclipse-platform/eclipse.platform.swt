@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -226,9 +226,11 @@ public void generate(ProgressMonitor progress) {
 	this.progress = progress;
 	if (progress != null) {
 		int nativeCount = 0;
-		for (JNIClass clazz : natives) {
+		for (int i = 0; i < natives.length; i++) {
+			JNIClass clazz = natives[i];
 			JNIMethod[] methods = clazz.getDeclaredMethods();
-			for (JNIMethod method : methods) {
+			for (int j = 0; j < methods.length; j++) {
+				JNIMethod method = methods[j];
 				if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 				nativeCount++;
 			}
@@ -297,7 +299,8 @@ String[] getClassNames() {
 				if(entries == null) {
 					entries = new String[0];
 				}
-				for (String entry : entries) {
+				for (int i = 0; i < entries.length; i++) {
+					String entry = entries[i];
 					File f = new File(file, entry);
 					if (!f.isDirectory()) {
 						if (f.getAbsolutePath().endsWith(".class")) {
@@ -351,7 +354,8 @@ JNIClass[] getASTClasses() {
 	if (files == null) {
 		files = new File[0];
 	}
-	for (File file : files) {
+	for (int i = 0; i < files.length; i++) {
+		File file = files[i];
 		try {
 			String path = file.getAbsolutePath().replace('\\', '/');
 			if (path.endsWith(".java")) {
@@ -377,9 +381,11 @@ JNIClass[] getASTClasses() {
 public JNIClass[] getNativesClasses(JNIClass[] classes) {
 	if (mainClass == null) return new JNIClass[0];
 	List<JNIClass> result = new ArrayList<>();
-	for (JNIClass clazz : classes) {
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
 		JNIMethod[] methods = clazz.getDeclaredMethods();
-		for (JNIMethod method : methods) {
+		for (int j = 0; j < methods.length; j++) {
+			JNIMethod method = methods[j];
 			int mods = method.getModifiers();
 			if ((mods & Modifier.NATIVE) != 0) {
 				result.add(clazz);
@@ -404,7 +410,8 @@ public JNIClass[] getStructureClasses(JNIClass[] classes) {
 		}
 		JNIField[] fields = clazz.getDeclaredFields();
 		boolean hasPublicFields = false;
-		for (JNIField field : fields) {
+		for (int j = 0; j < fields.length; j++) {
+			JNIField field = fields[j];
 			int mods = field.getModifiers();
 			if ((mods & Modifier.PUBLIC) != 0 && (mods & Modifier.STATIC) == 0) {
 				hasPublicFields = true;

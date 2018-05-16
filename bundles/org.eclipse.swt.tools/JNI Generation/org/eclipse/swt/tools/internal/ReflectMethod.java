@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -128,7 +128,8 @@ public boolean isNativeUnique() {
 	boolean result = true;
 	String name = getName();
 	JNIMethod[] methods = declaringClass.getDeclaredMethods();
-	for (JNIMethod mth : methods) {
+	for (int i = 0; i < methods.length; i++) {
+		JNIMethod mth = methods[i];
 		if ((mth.getModifiers() & Modifier.NATIVE) != 0 &&
 			this != mth && !this.equals(mth) &&
 			name.equals(mth.getName()))

@@ -99,7 +99,8 @@ void loadDirectory(File file) {
 	if (entries == null) {
 		entries = new String[0];
 	}
-	for (String entry : entries) {
+	for (int i = 0; i < entries.length; i++) {
+		String entry = entries[i];
 		File f = new File(file, entry);
 		if (!f.isDirectory()) {
 			if (f.getAbsolutePath().endsWith(".java")) {

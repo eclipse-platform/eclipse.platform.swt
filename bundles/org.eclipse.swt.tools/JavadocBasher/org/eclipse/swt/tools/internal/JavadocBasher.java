@@ -450,7 +450,7 @@ public class JavadocBasher {
 			};
 			for (Entry<String, String> entry: comments.entrySet()) {
 				String name = entry.getKey();
-				if (!entry.getValue().isEmpty()){
+				if (entry.getValue().length() > 0){
 					int i = 0;
 					for (i = 0; i < filter.length; i++) {
 						if (name.equals(filter[i])) break;

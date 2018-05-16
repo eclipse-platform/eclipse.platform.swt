@@ -131,7 +131,8 @@ static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(function);
 		buffer.append("__");
-		for (JNIType paramType : paramTypes) {
+		for (int i = 0; i < paramTypes.length; i++) {
+			JNIType paramType = paramTypes[i];
 			buffer.append(toC(paramType.getTypeSignature(false)));
 		}
 		return buffer.toString();
@@ -216,7 +217,8 @@ public void generate() {
 	generateAutoGenNote();
 	generateIncludes();
 	sort(classes);
-	for (JNIClass clazz : classes) {
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
 		if (getGenerate(clazz)) generate(clazz);
 		if (progress != null) progress.step();
 	}
@@ -236,7 +238,8 @@ public JNIClass[] getClasses() {
 }
 
 public boolean getCPP() {
-	for (JNIClass clazz : classes) {
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
 		if (clazz.getFlag(FLAG_CPP)) {
 			return true;
 		}
@@ -269,7 +272,8 @@ public String getOutputName() {
 }
 
 public boolean getM() {
-	for (JNIClass clazz : classes) {
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
 		if (clazz.getFlag(FLAG_M)) {
 			return true;
 		}

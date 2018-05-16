@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 
 public class StatsGenerator extends JNIGenerator {
 
@@ -110,7 +110,8 @@ void generateSourceFile(JNIClass clazz) {
 	output(className);
 	outputln("_nativeFunctionNames[] = {");
 	sort(methods);
-	for (JNIMethod method : methods) {
+	for (int i = 0; i < methods.length; i++) {
+		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
 		if (!function.equals(function64)) {
@@ -192,7 +193,8 @@ void generateStatsNatives(String className) {
 void generateFunctionEnum(JNIMethod[] methods) {
 	if (methods.length == 0) return;
 	outputln("typedef enum {");
-	for (JNIMethod method : methods) {
+	for (int i = 0; i < methods.length; i++) {
+		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
 		if (!function.equals(function64)) {

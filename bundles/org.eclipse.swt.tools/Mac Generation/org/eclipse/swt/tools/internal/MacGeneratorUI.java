@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2018 IBM Corporation and others.
+ * Copyright (c) 2008, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,9 +41,9 @@ public class MacGeneratorUI {
 			parentItem = lastParent;
 		} else {
 			TreeItem[] items = superItem.getItems();
-			for (TreeItem item : items) {
-				if (name.equals(item.getData())) {
-					parentItem = item;
+			for (int i = 0; i < items.length; i++) {
+				if (name.equals(items[i].getData())) {
+					parentItem = items[i];
 					break;
 				}
 			}
@@ -122,15 +122,15 @@ public class MacGeneratorUI {
 			}
 			/* Figure out categories state */
 			TreeItem[] items = item.getItems();
-			for (TreeItem item2 : items) {
-				TreeItem[] children = item2.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TreeItem[] children = items[i].getItems();
 				int checkedCount = 0;
 				for (int j = 0; j < children.length; j++) {
 					if (children[j].getChecked()) checkedCount++;
 					if (children[j].getGrayed()) break;
 				}
-				item2.setChecked(checkedCount != 0);
-				item2.setGrayed(checkedCount != children.length);
+				items[i].setChecked(checkedCount != 0);
+				items[i].setGrayed(checkedCount != children.length);
 			}
 		}
 	}
@@ -275,27 +275,30 @@ public class MacGeneratorUI {
 //		editorTx.addListener(SWT.FocusOut, textListener);
 		editorTx.addListener(SWT.KeyDown, textListener);
 		editorTx.addListener(SWT.Traverse, textListener);
-		attribTable.addListener(SWT.MouseDown, e -> e.display.asyncExec (() -> {
-			if (attribTable.isDisposed ()) return;
-			if (e.button != 1) return;
-			Point pt = new Point(e.x, e.y);
-			TableItem item = attribTable.getItem(pt);
-			if (item == null) return;
-			int column = -1;
-			for (int i = 0; i < attribTable.getColumnCount(); i++) {
-				if (item.getBounds(i).contains(pt)) {
-					column = i;
-					break;
-				}				
+		attribTable.addListener(SWT.MouseDown, e -> e.display.asyncExec (new Runnable () {
+			@Override
+			public void run () {
+				if (attribTable.isDisposed ()) return;
+				if (e.button != 1) return;
+				Point pt = new Point(e.x, e.y);
+				TableItem item = attribTable.getItem(pt);
+				if (item == null) return;
+				int column = -1;
+				for (int i = 0; i < attribTable.getColumnCount(); i++) {
+					if (item.getBounds(i).contains(pt)) {
+						column = i;
+						break;
+					}				
+				}
+				if (column == -1) return;
+				if (!getEditable(item, column)) return;
+				editor.setColumn(column);
+				editor.setItem(item);
+				editorTx.setText(item.getText(column));
+				editorTx.selectAll();
+				editorTx.setVisible(true);
+				editorTx.setFocus();
 			}
-			if (column == -1) return;
-			if (!getEditable(item, column)) return;
-			editor.setColumn(column);
-			editor.setItem(item);
-			editorTx.setText(item.getText(column));
-			editorTx.selectAll();
-			editorTx.setVisible(true);
-			editorTx.setFocus();
 		}));
 		
 		return comp;
@@ -453,12 +456,13 @@ public class MacGeneratorUI {
 	}
 	
 	TreeItem findItem(TreeItem[] items, Node node) {
-		for (TreeItem item : items) {
+		for (int i = 0; i < items.length; i++) {
+			TreeItem item = items[i];
 			checkChildren(item);
 			if (item.getData() == node) return item;
 		}
-		for (TreeItem item : items) {
-			TreeItem child = findItem(item.getItems(), node);
+		for (int i = 0; i < items.length; i++) {
+			TreeItem child = findItem(items[i].getItems(), node);
 			if (child != null) return child;
 		}
 		return null;

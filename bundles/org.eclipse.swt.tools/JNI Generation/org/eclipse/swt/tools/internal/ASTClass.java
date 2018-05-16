@@ -37,8 +37,8 @@ public class ASTClass extends ASTItem implements JNIClass {
 			if (file.exists()) {
 				return file.getAbsolutePath();
 			}
-			for (String import1 : imports) {
-				file = new File(basePath + import1.replace('.', '/') + "/" + simpleName + ".java");
+			for (int i = 0; i < imports.length; i++) {
+				file = new File(basePath + imports[i].replace('.', '/') + "/" + simpleName + ".java");
 				if (file.exists()) {
 					return file.getAbsolutePath();				
 				}
@@ -53,10 +53,10 @@ public class ASTClass extends ASTItem implements JNIClass {
 			if (file.exists()) {
 				return packageName + "." + simpleName;				
 			}
-			for (String import1 : imports) {
-				file = new File(basePath + import1.replace('.', '/') + "/" + simpleName + ".java");
+			for (int i = 0; i < imports.length; i++) {
+				file = new File(basePath + imports[i].replace('.', '/') + "/" + simpleName + ".java");
 				if (file.exists()) {
-					return import1 + "." + simpleName;				
+					return imports[i] + "." + simpleName;				
 				}
 			}
 			return simpleName;
@@ -99,7 +99,8 @@ public ASTClass(String sourcePath, MetaData metaData) {
 
 	FieldDeclaration[] fields = type.getFields();
 	List<ASTField> fid = new ArrayList<>();
-	for (FieldDeclaration field : fields) {
+	for (int i = 0; i < fields.length; i++) {
+		FieldDeclaration field = fields[i];
 		List<VariableDeclarationFragment> fragments = field.fragments();
 		for (VariableDeclarationFragment fragment : fragments) {
 			fid.add(new ASTField(this, source, field, fragment));
@@ -108,9 +109,9 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	this.fields = fid.toArray(new ASTField[fid.size()]);
 	MethodDeclaration[] methods = type.getMethods();
 	List<ASTMethod> mid = new ArrayList<>();
-	for (MethodDeclaration method : methods) {
-		if (method.getReturnType2() == null) continue;
-		mid.add(new ASTMethod(this, source, method));
+	for (int i = 0; i < methods.length; i++) {
+		if (methods[i].getReturnType2() == null) continue;
+		mid.add(new ASTMethod(this, source, methods[i]));
 	}
 	this.methods = mid.toArray(new ASTMethod[mid.size()]);
 }
