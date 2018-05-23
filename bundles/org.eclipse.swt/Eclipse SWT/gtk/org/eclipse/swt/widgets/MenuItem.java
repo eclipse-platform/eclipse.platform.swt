@@ -1118,6 +1118,11 @@ private void setAccelLabel(long /*int*/ label, String accelString) {
  * NOTE: Tooltips are currently not shown for top-level menu items in the
  * {@link Shell#setMenuBar(Menu) shell menubar} on Windows, Mac, and Ubuntu Unity desktop.
  * </p>
+ * <p>
+ * NOTE: This operation is a hint and behavior is platform specific, on Windows
+ * for CJK-style mnemonics of the form " (&C)" at the end of the tooltip text
+ * are not shown in tooltip.
+ * </p>
  * @param toolTip the new tool tip text (or null)
  *
  * @exception SWTException <ul>

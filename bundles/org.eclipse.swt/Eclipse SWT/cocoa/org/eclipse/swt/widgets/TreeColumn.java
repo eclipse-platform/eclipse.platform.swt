@@ -735,6 +735,11 @@ public void setText (String string) {
  * To display a single '&amp;' in the tool tip, the character '&amp;' can be
  * escaped by doubling it in the string.
  * </p>
+ * <p>
+ * NOTE: This operation is a hint and behavior is platform specific, on Windows
+ * for CJK-style mnemonics of the form " (&C)" at the end of the tooltip text
+ * are not shown in tooltip.
+ * </p>
  *
  * @param string the new tool tip text (or null)
  *

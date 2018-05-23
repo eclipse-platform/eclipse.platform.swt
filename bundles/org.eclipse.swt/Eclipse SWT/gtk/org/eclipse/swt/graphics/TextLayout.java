@@ -2347,7 +2347,6 @@ int width () {
  * @noreference This method is not intended to be referenced by clients. 
  * 
  * DO NOT USE This might be removed in 4.8
- *
  * @since 3.107
  */
 public void setDefaultTabWidth(int tabLength) {
