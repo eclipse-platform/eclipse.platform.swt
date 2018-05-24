@@ -49,6 +49,12 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	int oldX, oldY;
+	long /*int*/ provider; // Gtk3.14
+
+	// Re-use/cache some items for performance reasons as draw-events must be efficient to prevent jitter.
+	Rectangle cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // Cached for performance reasons.
+	Rectangle cachedUnion = new Rectangle(0, 0, 0, 0);
+	Boolean cachedBackgroundIsOpaque; // Note purposely lazy init.
 
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
@@ -306,6 +312,14 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
+/**
+ * Developer note:
+ * - Rectangles can have absolute coords [Tracker(Display)] or relative to parent [Tracker(Composite)]
+ * - This method is called a lot, optimize your code.
+ * - Note, region != rectangle. A region can have a non-squared form, e.g an 'L' shape.
+ *
+ * @param rects
+ */
 void drawRectangles (Rectangle [] rects) {
 	long /*int*/ window = GDK.gdk_get_default_root_window();
 	if (parent != null) {
@@ -315,48 +329,93 @@ void drawRectangles (Rectangle [] rects) {
 	if (GTK.GTK3) {
 		if (overlay == 0) return;
 		GTK.gtk_widget_shape_combine_region (overlay, 0);
+
+		// Bug 498217.
+		// As of Gtk 3.9.1, Commit a60ccd3672467efb454b121993febc36f33cbc79, off-screen GDK windows are not processed.
+		// Because of this gtk doesn't send move events to SWT. Platform.UI uses an off-screen tracker to draw
+		// custom rectangles for it's part-drag-preview. Drawing/updates for these broke because tracker is off screen.
+		// Solution: If a tracker is to move off-screen, then instead draw it 1x1 and transparent.
+		boolean isOnScreen = true;
+		{ // Figure out if the combined rectangles are on or off screen.
+
+			// Produce a single rectangle big enough to contain all rects.
+			// Note, this is different from loop below that creates a Region. (See region != rectangle note in javadoc).
+			cachedUnion.x = rects[0].x;
+			cachedUnion.y = rects[0].y;
+			cachedUnion.width = rects[0].width;
+			cachedUnion.height = rects[0].height;
+			if (rects.length > 1) {
+				for (int i = 1; i < rects.length; i++) {
+					cachedUnion.add(rects[i]);
+				}
+			}
+
+			// Ensure we have absolute screen coordinates. (btw, there are no absolute coordinates on Wayland, so Tracker(Display) is probably broken).
+			if (parent != null) {  // if Tracker(Display) has absolute coords.  Tracker(Composite) has relative. For relative, we need to find absolute.
+				cachedUnion = display.mapInPixels(parent, null, cachedUnion) ;
+			}
+
+			if (!cachedCombinedDisplayResolution.intersects(cachedUnion)) {
+				isOnScreen = false;
+			}
+		}
+
 		long /*int*/ region = GDK.gdk_region_new ();
 		GdkRectangle rect = new GdkRectangle();
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
-			rect.x = r.x;
-			rect.y = r.y;
-			rect.width = r.width + 1;
+		if (isOnScreen) {
+			// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
+			for (int i = 0; i < rects.length; i++) {
+				// Turn filled rectangles into just the outer lines by drawing one line at a time.
+				Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
+				rect.x = r.x;
+				rect.y = r.y;
+				rect.width = r.width + 1;
+				rect.height = 1;
+				GDK.gdk_region_union_with_rect(region, rect); // Top line
+				rect.width = 1;
+				rect.height = r.height + 1;
+				GDK.gdk_region_union_with_rect(region, rect); // Left line.
+				rect.x = r.x + r.width;
+				GDK.gdk_region_union_with_rect(region, rect); // Right line.
+				rect.x = r.x;
+				rect.y = r.y + r.height;
+				rect.width = r.width + 1;
+				rect.height = 1;
+				GDK.gdk_region_union_with_rect(region, rect); // Bottom line
+			}
+			setTrackerBackground(true);
+		} else { // Offscreen
+			// part of Bug 498217 fix. Tracker must be at least 1x1 for move events to work.
+			rect.x = 0;
+			rect.y = 0;
 			rect.height = 1;
-			GDK.gdk_region_union_with_rect(region, rect);
 			rect.width = 1;
-			rect.height = r.height + 1;
 			GDK.gdk_region_union_with_rect(region, rect);
-			rect.x = r.x + r.width;
-			GDK.gdk_region_union_with_rect(region, rect);
-			rect.x = r.x;
-			rect.y = r.y + r.height;
-			rect.width = r.width + 1;
-			rect.height = 1;
-			GDK.gdk_region_union_with_rect(region, rect);
+			setTrackerBackground(false);
 		}
+
 		GTK.gtk_widget_shape_combine_region (overlay, region);
 		GDK.gdk_region_destroy (region);
 		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 		GDK.gdk_window_hide (overlayWindow);
 		GDK.gdk_window_show (overlayWindow);
-		return;
+	} else { // GTK2
+		long /*int*/ gc = GDK.gdk_gc_new (window);
+		if (gc == 0) return;
+		long /*int*/ colormap = GDK.gdk_colormap_get_system ();
+		GdkColor color = new GdkColor ();
+		GDK.gdk_color_white (colormap, color);
+		GDK.gdk_gc_set_foreground (gc, color);
+		GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
+		GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
+		for (int i=0; i<rects.length; i++) {
+			Rectangle rect = rects [i];
+			int x = rect.x;
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
+			GDK.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
+		}
+		OS.g_object_unref (gc);
 	}
-	long /*int*/ gc = GDK.gdk_gc_new (window);
-	if (gc == 0) return;
-	long /*int*/ colormap = GDK.gdk_colormap_get_system ();
-	GdkColor color = new GdkColor ();
-	GDK.gdk_color_white (colormap, color);
-	GDK.gdk_gc_set_foreground (gc, color);
-	GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
-	GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
-	for (int i=0; i<rects.length; i++) {
-		Rectangle rect = rects [i];
-		int x = rect.x;
-		if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
-		GDK.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
-	}
-	OS.g_object_unref (gc);
 }
 
 /**
@@ -759,30 +818,14 @@ public boolean open () {
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
 	if (GTK.GTK3) {
+		cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // In case resolution was changed during run time.
 		overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
 		GTK.gtk_window_set_title (overlay, new byte [1]);
 		GTK.gtk_widget_realize (overlay);
 		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 		GDK.gdk_window_set_override_redirect (overlayWindow, true);
-		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-			GTK.gtk_widget_override_background_color (overlay, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
-		} else {
-			String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
-			String css = name + " {background-color: rgb(0,0,0);}";
-			long /*int*/ provider = 0;
-			long /*int*/ context = GTK.gtk_widget_get_style_context (overlay);
-			if (provider == 0) {
-				provider = GTK.gtk_css_provider_new ();
-				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.g_object_unref (provider);
-			}
-			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
-		}
-		long /*int*/ region = GDK.gdk_region_new ();
-		GTK.gtk_widget_shape_combine_region (overlay, region);
-		GTK.gtk_widget_input_shape_combine_region (overlay, region);
-		GDK.gdk_region_destroy (region);
+		setTrackerBackground(true);
 		Rectangle bounds = display.getBoundsInPixels();
 		GTK.gtk_window_move (overlay, bounds.x, bounds.y);
 		GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
@@ -826,6 +869,43 @@ public boolean open () {
 	}
 	window = 0;
 	return !cancelled;
+}
+
+private void setTrackerBackground(boolean opaque) {
+	if (cachedBackgroundIsOpaque == null || cachedBackgroundIsOpaque.booleanValue() != opaque) {
+		cachedBackgroundIsOpaque = Boolean.valueOf(opaque);
+	} else if (opaque == cachedBackgroundIsOpaque.booleanValue()) {
+		return;
+	}
+	if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+		GTK.gtk_widget_override_background_color (overlay, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+	} else {
+		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
+		String css;
+		if (opaque) {
+			GTK.gtk_widget_set_opacity (overlay, 1.0);
+			css = name + " {background-color: rgb(0,0,0);}";
+		} else {
+			GTK.gtk_widget_set_opacity (overlay, 0.0);
+			css = name +  " {  "
+					+ "border-top-color: transparent;"
+					+ "border-left-color: transparent;"
+					+ "border-right-color: transparent;"
+					+ "border-bottom-color: transparent;}";
+		}
+		long /*int*/ context = GTK.gtk_widget_get_style_context (overlay);
+		if (provider == 0) {
+			provider = GTK.gtk_css_provider_new ();
+			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.g_object_unref (provider);
+		}
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+		GTK.gtk_style_context_invalidate (context);
+	}
+	long /*int*/ region = GDK.gdk_region_new ();
+	GTK.gtk_widget_shape_combine_region (overlay, region);
+	GTK.gtk_widget_input_shape_combine_region (overlay, region);
+	GDK.gdk_region_destroy (region);
 }
 
 boolean processEvent (long /*int*/ eventPtr) {
