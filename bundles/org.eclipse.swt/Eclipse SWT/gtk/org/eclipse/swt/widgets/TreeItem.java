@@ -39,7 +39,7 @@ public class TreeItem extends Item {
 	Font font;
 	Font[] cellFont;
 	String [] strings;
-	boolean cached, grayed, isExpanded;
+	boolean cached, grayed, isExpanded, updated;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -1216,7 +1216,7 @@ public void setBackground (int index, Color color) {
 		GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, gdkColor, -1);
 	}
 	cached = true;
-
+	updated = true;
 
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
@@ -1467,6 +1467,7 @@ public void setForeground (int index, Color color){
 		GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, gdkColor, -1);
 	}
 	cached = true;
+	updated = true;
 
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
@@ -1650,6 +1651,7 @@ public void setImage (int index, Image image) {
 		}
 	}
 	cached = true;
+	updated = true;
 }
 
 @Override
@@ -1738,6 +1740,7 @@ public void setText (int index, String string) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
 	cached = true;
+	updated = true;
 }
 
 @Override

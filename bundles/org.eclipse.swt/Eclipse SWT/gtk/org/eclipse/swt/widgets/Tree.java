@@ -253,10 +253,15 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	}
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
+	boolean updated = false;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
 			//lastIndexOf = index [0];
 			setData = checkData (item);
+		}
+		if (item.updated) {
+			updated = true;
+			item.updated = false;
 		}
 	}
 	long /*int*/ [] ptr = new long /*int*/ [1];
@@ -309,7 +314,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 			}
 		}
 	}
-	if (setData) {
+	if (setData || updated) {
 		ignoreCell = cell;
 		setScrollWidth (tree_column, item);
 		ignoreCell = 0;
