@@ -403,6 +403,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1color_1selection_1set_1has_1palette",
 	"_1gtk_1combo_1box_1get_1active",
 	"_1gtk_1combo_1box_1get_1model",
+	"_1gtk_1combo_1box_1get_1wrap_1width",
 	"_1gtk_1combo_1box_1popdown",
 	"_1gtk_1combo_1box_1popup",
 	"_1gtk_1combo_1box_1set_1active",

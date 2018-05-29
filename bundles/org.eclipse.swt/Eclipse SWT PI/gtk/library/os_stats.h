@@ -401,6 +401,7 @@ typedef enum {
 	_1gtk_1color_1selection_1set_1has_1palette_FUNC,
 	_1gtk_1combo_1box_1get_1active_FUNC,
 	_1gtk_1combo_1box_1get_1model_FUNC,
+	_1gtk_1combo_1box_1get_1wrap_1width_FUNC,
 	_1gtk_1combo_1box_1popdown_FUNC,
 	_1gtk_1combo_1box_1popup_FUNC,
 	_1gtk_1combo_1box_1set_1active_FUNC,

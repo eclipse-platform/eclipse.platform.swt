@@ -5391,6 +5391,18 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1combo_1box_1get_1model)
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1get_1wrap_1width
+JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1combo_1box_1get_1wrap_1width)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1get_1wrap_1width_FUNC);
+	rc = (jint)gtk_combo_box_get_wrap_width((GtkComboBox *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1get_1wrap_1width_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1box_1popdown
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1combo_1box_1popdown)
 	(JNIEnv *env, jclass that, jintLong arg0)

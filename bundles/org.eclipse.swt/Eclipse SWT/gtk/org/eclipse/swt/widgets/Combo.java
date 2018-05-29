@@ -81,6 +81,8 @@ public class Combo extends Composite {
 		LIMIT = 0xFFFF;
 	}
 
+	private boolean delayedEnableWrap = false; // Bug 489640. Gtk3.
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -176,14 +178,77 @@ public void add (String string, int index) {
 	newItems [index] = string;
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
-	byte [] buffer = Converter.wcsToMbcs (string, true);
-	if (GTK.GTK3) {
-		if (handle != 0) GTK.gtk_combo_box_text_insert (handle, index, null, buffer);
-	} else {
-		if (handle != 0) GTK.gtk_combo_box_text_insert_text (handle, index, buffer);
-	}
+	gtk_combo_box_insert(string, index);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+	}
+}
+
+private void gtk_combo_box_insert(String string, int index) {
+	byte [] buffer = Converter.wcsToMbcs (string, true);
+	if (handle != 0) {
+		if (GTK.GTK3) {
+			gtk_combo_box_toggle_wrap(false);
+			GTK.gtk_combo_box_text_insert (handle, index, null, buffer);
+			gtk_combo_box_toggle_wrap(true);
+		} else {
+			GTK.gtk_combo_box_text_insert_text (handle, index, buffer);
+		}
+	}
+}
+
+/**
+ * <p>Bug 489640, 438992. Drop-down appearance.</p>
+ *
+ * <p>In Gtk3, there is a lot of white space at the top of the combo drop-down.
+ *   It's meant to put the first item near the cursor (See screen shots in bug 438992), but makes eclipse look buggy.</p>
+ *
+ * <p>Solution (438992): gtk_combo_box_get_wrap_width(1) fixes this problem, but introduces a performance regression.
+ *    When multiple items are added in a loop, then if 'wrap' is enabled then after every insertion, gtk
+ *    traverses the entire list and greedily re-computes the drop-down list size.
+ *    This causes O(n^2) performance regression in that the longer the list, the longer the size computation takes.
+ *    E.g Adding 1000 items takes almost 30 seconds.</p>
+ *
+ * <p>Solution ^2 (489640): We enabled wrap in a delayed/lazy way, only when display event loop is ran.
+ *   This way the insertions occur at O(n) speed and we get the benefit of a neat drop-down list when the user launches the application.
+ *   Run-time insertions and combo.add(..) are also covered by this logic.</p>
+ *
+ * <p>Gtk4 port note:
+ *  - Note, Combo was re-written in Gtk3 and it will be re-written again in Gtk4. See:
+ *  https://mail.gnome.org/archives/gtk-list/2016-December/msg00036.html
+ *  https://raw.githubusercontent.com/gnome-design-team/gnome-mockups/master/theming/widgets/combobox-replacements.png     // mockup screen shot.
+ *  - So probably this workaround should be removed in Gtk4 port. Feel free to validate via Bug489640_SlowCombo and Bug489640_SlowComboSingleItem test snippets.</p>
+ *
+ * <p>CSS note: Do not use the CSS 'appears-as-list' style as done in:
+ *   https://git.eclipse.org/r/#/c/117681/6/bundles/org.eclipse.swt/Eclipse+SWT/gtk/org/eclipse/swt/widgets/Combo.java
+ *   It's a poorly working hack. If list has more than +-1000 entries, then we get visual cheese and jvm crashes. </p>
+ */
+private void gtk_combo_box_toggle_wrap (boolean wrap) {
+	if (handle == 0) return;
+	if (GTK.GTK3) {
+		if (!wrap) {
+			if (GTK.gtk_combo_box_get_wrap_width(handle) == 1) {
+				GTK.gtk_combo_box_set_wrap_width(handle, 0);
+			}
+		} else  {
+			if (delayedEnableWrap) {
+				return;
+			} else {
+				delayedEnableWrap = true;
+				display.asyncExec(() -> {
+					if (!isDisposed() && handle != 0) {
+						GTK.gtk_combo_box_set_wrap_width(handle, 1);
+						delayedEnableWrap = false;
+					}
+				});
+			}
+		}
+	} else { // GTK2
+		if (wrap) {
+			GTK.gtk_combo_box_set_wrap_width(handle, 1);
+		} else {
+			GTK.gtk_combo_box_set_wrap_width(handle, 0);
+		}
 	}
 }
 
@@ -458,8 +523,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		cellHandle = GTK.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		// Setting wrap width has the side effect of removing the whitespace on top in popup bug#438992
-		GTK.gtk_combo_box_set_wrap_width(handle, 1);
+		gtk_combo_box_toggle_wrap(true);
 	} else {
 		handle = GTK.gtk_combo_box_text_new_with_entry();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1766,9 +1830,12 @@ public void remove (int start, int end) {
 	items = newItems;
 	int index = GTK.gtk_combo_box_get_active (handle);
 	if (start <= index && index <= end) clearText();
+
+	if (GTK.GTK3) gtk_combo_box_toggle_wrap(false);
 	for (int i = end; i >= start; i--) {
 		if (handle != 0) GTK.gtk_combo_box_text_remove(handle, i);
 	}
+	if (GTK.GTK3) gtk_combo_box_toggle_wrap(true);
 }
 
 /**
@@ -1810,7 +1877,7 @@ public void removeAll () {
 	items = new String[0];
 	clearText ();
 	if (GTK.GTK3) {
-		if (handle != 0) GTK.gtk_combo_box_text_remove_all(handle);
+		gtk_combo_box_text_remove_all();
 	} else {
 		for (int i = count - 1; i >= 0; i--) {
 			if (handle != 0) GTK.gtk_combo_box_text_remove (handle, i);
@@ -2105,14 +2172,11 @@ public void setItem (int index, String string) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	items [index] = string;
-	byte [] buffer = Converter.wcsToMbcs (string, true);
-	if (GTK.GTK3) {
-		if (handle != 0) GTK.gtk_combo_box_text_remove (handle, index);
-		if (handle != 0) GTK.gtk_combo_box_text_insert (handle, index, null, buffer);
-	} else {
-		if (handle != 0) GTK.gtk_combo_box_text_remove (handle, index);
-		if (handle != 0) GTK.gtk_combo_box_text_insert_text (handle, index, buffer);
+	if (handle != 0) {
+		GTK.gtk_combo_box_text_remove (handle, index);
 	}
+	gtk_combo_box_insert(string, index);
+
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
@@ -2143,7 +2207,7 @@ public void setItems (String... items) {
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
 	if (GTK.GTK3) {
-		if (handle != 0) GTK.gtk_combo_box_text_remove_all(handle);
+		gtk_combo_box_text_remove_all();
 	} else {
 		for (int i = count - 1; i >= 0; i--) {
 			if (handle != 0) GTK.gtk_combo_box_text_remove (handle, i);
@@ -2151,16 +2215,17 @@ public void setItems (String... items) {
 	}
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (string, true);
-		if (GTK.GTK3) {
-			if (handle != 0) GTK.gtk_combo_box_text_insert (handle, i, null, buffer);
-		} else {
-			if (handle != 0) GTK.gtk_combo_box_text_insert_text (handle, i, buffer);
-		}
+		gtk_combo_box_insert(string, i);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 			GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 		}
 	}
+}
+
+private void gtk_combo_box_text_remove_all() {
+	gtk_combo_box_toggle_wrap(false);
+	if (handle != 0) GTK.gtk_combo_box_text_remove_all(handle);
+	gtk_combo_box_toggle_wrap(true);
 }
 
 /**

@@ -1540,6 +1540,7 @@ public class GTK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text);
+	/** Do not call directly, instead use Combo.gtk_combo_box_insert(..) */
 	public static final void gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text) {
 		lock.lock();
 		try {
@@ -1574,6 +1575,7 @@ public class GTK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_combo_box_text_remove_all(long /*int*/ combo_box);
+	/** Do not call directly. Call Combo.gtk_combo_box_text_remove_all(..) instead). */
 	public static final void gtk_combo_box_text_remove_all(long /*int*/ combo_box) {
 		lock.lock();
 		try {
@@ -1624,10 +1626,27 @@ public class GTK extends OS {
 	 * @param width cast=(gint)
 	 */
 	public static final native void _gtk_combo_box_set_wrap_width(long /*int*/ combo_box, int width);
+	/**
+	 * Do not use directly. Instead use Combo.gtk_combo_box_toggle_wrap(..)
+	 */
 	public static final void gtk_combo_box_set_wrap_width(long /*int*/ combo_box, int width) {
 		lock.lock();
 		try {
 			_gtk_combo_box_set_wrap_width(combo_box, width);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * @param combo_box cast=(GtkComboBox *)
+	 * @return cast=(gint)
+	 */
+	public static final native int _gtk_combo_box_get_wrap_width(long /*int*/ combo_box);
+	public static final int gtk_combo_box_get_wrap_width(long /*int*/ combo_box) {
+		lock.lock();
+		try {
+			return _gtk_combo_box_get_wrap_width(combo_box);
 		} finally {
 			lock.unlock();
 		}
