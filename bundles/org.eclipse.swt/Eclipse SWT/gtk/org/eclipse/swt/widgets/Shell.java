@@ -489,8 +489,11 @@ void adjustTrim () {
 	* Bug in GTK.  gdk_window_get_frame_extents() fails for various window
 	* managers, causing a large incorrect value to be returned as the trim.
 	* The fix is to ignore the returned trim values if they are too large.
+	*
+	* Additionally, ignore trim for Shells with SWT.RESIZE and SWT.ON_TOP set.
+	* See bug 319612.
 	*/
-	if (trimWidth > MAXIMUM_TRIM || trimHeight > MAXIMUM_TRIM) {
+	if (trimWidth > MAXIMUM_TRIM || trimHeight > MAXIMUM_TRIM || isCustomResize()) {
 		display.ignoreTrim = true;
 		return;
 	}
@@ -686,10 +689,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
-		border = GTK.gtk_container_get_border_width (shellHandle);
-	}
-	if (isCustomResize ()) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
 		border = GTK.gtk_container_get_border_width (shellHandle);
 	}
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
@@ -913,6 +913,12 @@ boolean isUndecorated () {
 		(style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
 }
 
+/**
+ * Determines whether a Shell has both SWT.RESIZE and SWT.ON_TOP set without SWT.NO_TRIM.
+ *
+ * @return true if this Shell has both SWT.RESIZE and SWT.ON_TOP set without
+ * SWT.NO_TRIM, false otherwise.
+ */
 boolean isCustomResize () {
 	return (style & SWT.NO_TRIM) == 0 && (style & (SWT.RESIZE | SWT.ON_TOP)) == (SWT.RESIZE | SWT.ON_TOP);
 }
@@ -1180,7 +1186,7 @@ Point getSizeInPixels () {
 	int width = allocation.width;
 	int height = allocation.height;
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
 		border = GTK.gtk_container_get_border_width (shellHandle);
 	}
 	return new Point (width + trimWidth () + 2*border, height + trimHeight () + 2*border);
@@ -2595,6 +2601,9 @@ boolean traverseEscape () {
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	if (fullScreen) return 0;
+	// Shells with both ON_TOP and RESIZE set only use border, not trim.
+	// See bug 319612.
+	if (isCustomResize()) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
@@ -2612,6 +2621,9 @@ int trimHeight () {
 int trimWidth () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	if (fullScreen) return 0;
+	// Shells with both ON_TOP and RESIZE set only use border, not trim.
+	// See bug 319612.
+	if (isCustomResize()) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
@@ -2780,7 +2792,7 @@ Rectangle getBoundsInPixels () {
 	int width = allocation.width;
 	int height = allocation.height;
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
 		border = GTK.gtk_container_get_border_width (shellHandle);
 	}
 	return new Rectangle (x [0], y [0], width + trimWidth () + 2*border, height + trimHeight () + 2*border);

@@ -718,6 +718,22 @@ public void test_setSizeII() {
 
 }
 
+@Test
+public void test_setSizeCustomResize() {
+	/*
+	 * Bug 319612: test the case where Shells with SWT.RESIZE and SWT.ON_TOP
+	 * were shrinking in size. Only applicable to GTK (both GTK2 and GTK3).
+	 */
+	if (SwtTestUtil.isGTK) {
+		Shell testShell = new Shell (shell, SWT.RESIZE | SWT.ON_TOP);
+		Point size = new Point (200, 200);
+		testShell.setSize(size);
+		testShell.open();
+		assertEquals(size, testShell.getSize());
+		testShell.dispose();
+	}
+}
+
 @Override
 @Test
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
