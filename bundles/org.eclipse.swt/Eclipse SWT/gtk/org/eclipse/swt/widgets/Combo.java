@@ -662,6 +662,34 @@ long /*int*/ findPopupHandle (long /*int*/ oldList) {
 	return result;
 }
 
+@Override
+Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
+	Point sizes = new Point (width, height);
+	/*
+	 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
+	 * elements which we cannot access. If the to-be-allocated size minus
+	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && widget == handle) {
+		GtkRequisition minimumSize = new GtkRequisition();
+		GtkRequisition naturalSize = new GtkRequisition();
+		// Use the handle only for READ_ONLY Combos, otherwise use the GtkEntry
+		long /*int*/ preferredSizeHandle = ((style & SWT.READ_ONLY) == 0 && entryHandle != 0) ? entryHandle : handle;
+		GTK.gtk_widget_get_preferred_size(preferredSizeHandle, minimumSize, naturalSize);
+		/*
+		 * Use the smallest of the minimum/natural sizes to prevent oversized
+		 * widgets.
+		 */
+		int smallestWidth = Math.min(minimumSize.width, naturalSize.width);
+		int smallestHeight = Math.min(minimumSize.height, naturalSize.height);
+		sizes.x = (width - (smallestWidth - width)) < 0 ? smallestWidth : width;
+		sizes.y = (height - (smallestHeight - height)) < 0 ? smallestHeight : height;
+		return sizes;
+	} else {
+		return super.resizeCalculationsGTK3(widget, width, height);
+	}
+}
+
 long /*int*/ findButtonHandle() {
 	/*
 	* Feature in GTK.  There is no API to query the button
@@ -1423,25 +1451,30 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	/*
-	 * Feature in GTK3.20+: READ_ONLY Combos have their clip unioned
+	 * Feature in GTK3.20+: Combos have their clip unioned
 	 * with the parent container (Composite in this case). This causes
 	 * overdrawing into neighbouring widgets and breaks resizing.
 	 *
-	 * The fix is to adjust the clip and allocation of the Combo and its children
+	 * The fix is to adjust the clip and allocation of the Combo (and its children)
 	 * in the parent Composite's draw handler, as it ensures that the draw events
 	 * going to the Combo have the correct geometry specifications. This has to
 	 * happen in the parent Composite since neighouring widgets that share the
 	 * same parent are affected. See bug 500703.
+	 *
+	 * An additional fix was implemented to support non-READ_ONLY Combos, as well
+	 * as the case when one Composite has multiple Combos within it -- see bug 535323.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && (style & SWT.READ_ONLY) != 0) {
-		if (parent != null && parent.fixClipHandle == 0) {
-			long /*int*/ parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
-			if (parentHandle != 0) {
-				parent.fixClipHandle = parentHandle;
-				GTK.gtk_widget_queue_draw(parentHandle);
-				long [] /*int*/ array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
-				parent.fixClipHandleChildren = new long /*int*/ [array.length];
-				System.arraycopy (array, 0, parent.fixClipHandleChildren, 0, array.length);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		long /*int*/ parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
+		if (parentHandle != 0) {
+			if (parent.fixClipHandle == 0) parent.fixClipHandle = parentHandle;
+			GTK.gtk_widget_queue_draw(parentHandle);
+			if ((style & SWT.READ_ONLY) != 0) {
+				long /*int*/ [] array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
+				parent.fixClipMap.put(this, array);
+			} else {
+				long /*int*/ [] array = {fixedHandle, handle, entryHandle, buttonBoxHandle, buttonHandle};
+				parent.fixClipMap.put(this, array);
 			}
 		}
 	}

@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -72,13 +74,15 @@ public class Composite extends Scrollable {
 	 */
 	long /*int*/ fixClipHandle;
 	/**
-	 * If fixClipHandle is set, fixClipArray can contain additional child widgets
-	 * that also need to have their clips adjusted.
+	 * If fixClipHandle is set, then the fixClipMap HashMap contains children
+	 * of fixClipHandle that also need to have their clips adjusted.
 	 *
-	 * <p>The array <b>must</b> be ordered by widget hierarchy, as this array will be
-	 * traversed in-order to adjust the clipping of each element. See bug 500703.</p>
+	 * <p>Each key is a Control which needs to have its clip adjusted, and each value
+	 * is an array of handles (descendants of the Control) ordered by widget hierarchy.
+	 * This array will be traversed in-order to adjust the clipping of each element.
+	 * See bug 500703 and 535323.</p>
 	 */
-	long /*int*/ [] fixClipHandleChildren = {};
+	Map<Control, long /*int*/ []> fixClipMap = new HashMap<> ();
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -356,41 +360,48 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
  * <p>If the array is empty this method just returns. See bug 500703.</p>
  */
 void fixChildClippings () {
-	if (fixClipHandleChildren == null) {
+	if (fixClipHandle == 0 || fixClipMap.isEmpty()) {
 		return;
 	} else {
 		GtkRequisition minimumSize = new GtkRequisition ();
 		GtkRequisition naturalSize = new GtkRequisition ();
 		GtkAllocation clip = new GtkAllocation ();
 		GtkAllocation allocation = new GtkAllocation ();
-		for (long /*int*/ widget : fixClipHandleChildren) {
-			GTK.gtk_widget_get_allocation(widget, allocation);
-			GTK.gtk_widget_get_clip(widget, clip);
-			/*
-			 * If the clip is negative, add the x coordinate to the width
-			 * and set the x coordinate to 0.
-			 */
-			if (clip.x < 0) {
-				clip.width = clip.width + clip.x;
-				clip.x = 0;
-				/*
-				 * Some "transient" widgets like menus get allocations of
-				 * {-1, -1, 1, 1}. Check to make sure this isn't the case
-				 * before proceeding.
-				 */
-				if (allocation.x < -1 && (allocation.width > 1 || allocation.height > 1)) {
-					// Adjust the allocation just like the clip, if it's negative
-					allocation.width = allocation.width + allocation.x;
-					allocation.x = 0;
-					// Call gtk_widget_get_preferred_size() to prevent warnings
-					GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
-					// Allocate and queue a resize event
-					GTK.gtk_widget_size_allocate(widget, allocation);
-					GTK.gtk_widget_queue_resize(widget);
+		Control [] children = _getChildren();
+		for (Control child : children) {
+			if (fixClipMap.containsKey(child)) {
+				long /*int*/ [] childHandles = fixClipMap.get(child);
+				for (long /*int*/ widget : childHandles) {
+					GTK.gtk_widget_get_allocation(widget, allocation);
+					GTK.gtk_widget_get_clip(widget, clip);
+					/*
+					 * If the clip is negative, add the x coordinate to the width
+					 * and set the x coordinate to 0.
+					 */
+					if (clip.x < 0) {
+						clip.width = clip.width + clip.x;
+						clip.x = 0;
+						/*
+						 * Some "transient" widgets like menus get allocations of
+						 * {-1, -1, 1, 1}. Check to make sure this isn't the case
+						 * before proceeding.
+						 */
+						if (allocation.x < -1 && (allocation.width > 1 || allocation.height > 1)) {
+							// Adjust the allocation just like the clip, if it's negative
+							allocation.width = allocation.width + allocation.x;
+							allocation.x = 0;
+							// Call gtk_widget_get_preferred_size() to prevent warnings
+							GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
+							// Allocate and queue a resize event
+							GTK.gtk_widget_size_allocate(widget, allocation);
+							GTK.gtk_widget_queue_resize(widget);
+						}
+					}
+					// Adjust the clip
+					GTK.gtk_widget_set_clip(widget, allocation);
+
 				}
 			}
-			// Adjust the clip
-			GTK.gtk_widget_set_clip(widget, allocation);
 		}
 	}
 }
