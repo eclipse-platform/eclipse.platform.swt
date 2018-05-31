@@ -63,7 +63,6 @@ public class Bug489640_ComboPerformanceTest {
 
 		final long start = System.currentTimeMillis();
 		int count = 200;
-		final String[] items = new String[count];
 		for (int i = 0; i < count; i++) {
 			combo.add("item " + i);     // <<< via add.
 		}
