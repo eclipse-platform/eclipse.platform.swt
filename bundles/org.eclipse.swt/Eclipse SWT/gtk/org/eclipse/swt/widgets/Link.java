@@ -570,12 +570,21 @@ String parse (String string) {
 	ids = new String [length / 4];
 	mnemonics = new int [length / 4 + 1];
 	StringBuilder result = new StringBuilder ();
-	char [] buffer = new char [length];
-	string.getChars (0, string.length (), buffer, 0);
+	StringBuilder buffer = new StringBuilder(string);
 	int index = 0, state = 0, linkIndex = 0;
 	int start = 0, tagStart = 0, linkStart = 0, endtagStart = 0, refStart = 0;
 	while (index < length) {
-		char c = Character.toLowerCase (buffer [index]);
+		char c = Character.toLowerCase (buffer.charAt(index));
+
+		// escape < or > with \\< or \\>
+		if (c == '\\' && index + 1 < length) {
+			char c2 = Character.toLowerCase(buffer.charAt(index + 1));
+			if (c2 == '<' || c2 == '>') {
+				buffer.deleteCharAt(index);
+				length--;
+			}
+		}
+
 		switch (state) {
 			case 0:
 				if (c == '<') {
@@ -614,12 +623,12 @@ String parse (String string) {
 				break;
 			case 6:
 				if (c == '>') {
-					mnemonics [linkIndex] = parseMnemonics (buffer, start, tagStart, result);
+					mnemonics [linkIndex] = parseMnemonics (buffer.toString().toCharArray(), start, tagStart, result);
 					int offset = result.length ();
-					parseMnemonics (buffer, linkStart, endtagStart, result);
+					parseMnemonics (buffer.toString().toCharArray(), linkStart, endtagStart, result);
 					offsets [linkIndex] = new Point (offset, result.length () - 1);
 					if (ids [linkIndex] == null) {
-						ids [linkIndex] = new String (buffer, linkStart, endtagStart - linkStart);
+						ids [linkIndex] = new String (buffer.toString().toCharArray(), linkStart, endtagStart - linkStart);
 					}
 					linkIndex++;
 					start = tagStart = linkStart = endtagStart = refStart = index + 1;
@@ -650,7 +659,7 @@ String parse (String string) {
 				break;
 			case 12:
 				if (c == '"') {
-					ids[linkIndex] = new String (buffer, refStart, index - refStart);
+					ids[linkIndex] = new String (buffer.toString().toCharArray(), refStart, index - refStart);
 					state = 2;
 				}
 				break;
@@ -674,8 +683,8 @@ String parse (String string) {
 		index++;
 	}
 	if (start < length) {
-		int tmp = parseMnemonics (buffer, start, tagStart, result);
-		int mnemonic = parseMnemonics (buffer, Math.max (tagStart, linkStart), length, result);
+		int tmp = parseMnemonics (buffer.toString().toCharArray(), start, tagStart, result);
+		int mnemonic = parseMnemonics (buffer.toString().toCharArray(), Math.max (tagStart, linkStart), length, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
 	} else {
@@ -778,7 +787,9 @@ void setOrientation (boolean create) {
  * In the rare case of identical hyperlinks within the same string, the
  * HREF attribute can be used to distinguish between them.  The string may
  * include the mnemonic character and line delimiters. The only delimiter
- * the HREF attribute supports is the quotation mark (").
+ * the HREF attribute supports is the quotation mark ("). Text containing
+ * angle-bracket characters &lt or &gt may be escaped using \\, however
+ * this operation is a hint and varies from platform to platform.
  * </p>
  * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
