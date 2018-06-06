@@ -26,16 +26,11 @@ requires.5.range = [$version$,$version$]
 requires.5.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.6.namespace = org.eclipse.equinox.p2.iu
-requires.6.name = org.eclipse.swt.gtk.linux.ppc64
+requires.6.name = org.eclipse.swt.gtk.linux.x86_64
 requires.6.range = [$version$,$version$]
-requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64)(!(org.eclipse.swt.buildtime=true)))
+requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.7.namespace = org.eclipse.equinox.p2.iu
-requires.7.name = org.eclipse.swt.gtk.linux.x86_64
+requires.7.name = org.eclipse.swt.gtk.linux.ppc64le
 requires.7.range = [$version$,$version$]
-requires.7.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=x86_64)(!(org.eclipse.swt.buildtime=true)))
-
-requires.8.namespace = org.eclipse.equinox.p2.iu
-requires.8.name = org.eclipse.swt.gtk.linux.ppc64le
-requires.8.range = [$version$,$version$]
-requires.8.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le)(!(org.eclipse.swt.buildtime=true)))
+requires.7.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le)(!(org.eclipse.swt.buildtime=true)))

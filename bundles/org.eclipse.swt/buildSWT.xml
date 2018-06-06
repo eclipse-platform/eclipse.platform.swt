@@ -60,10 +60,6 @@
 		</antcall>
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="9"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -131,14 +127,6 @@
 			trust="true"
 			outputproperty="m_linux_x86_64_output"
 			command="hostname"/>
-		<sshexec host="${m_linux_ppc64}"
-			port="2254"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_ppc64_output"
-			command="hostname"/>
 		<sshexec host="${m_linux_ppc64le}"
 			port="2256"
 			username="swtbuild"
@@ -169,12 +157,6 @@
 				<matches pattern="x${m_linux_x86_64_output}*" string="x${m_linux_x86_64}"/>
 			</and>
 		</condition>
-		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_ppc64_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_ppc64_output}*" string="x${m_linux_ppc64}"/>
-			</and>
-		</condition>
 		<condition property="m_linux_ppc64le_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_linux_ppc64le_output}" when="greater" length="0"/>
@@ -192,12 +174,11 @@
 		<echo></echo>
 		<echo>${m_linux_x86} - ${m_linux_x86_test}</echo>
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
-		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
 		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
 		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc64_test} ${m_mac_test}"/>
+			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc64le_test} ${m_mac_test}"/>
 		</condition>
 		<fail if="m_fail" message="Failed"/>
 	</target>

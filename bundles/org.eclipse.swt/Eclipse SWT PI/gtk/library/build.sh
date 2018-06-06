@@ -172,17 +172,6 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
-	"linux.ppc64")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
-		fi
-		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
-		fi
-		;;
 	"linux.ppc64le")
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
@@ -205,35 +194,21 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
-	"aix.ppc64")
-		if [ "${CC}" = "" ]; then
-			export CC=gcc
-		fi
-		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/AIX/PPC64/j564/sdk"
-		fi
-		;;
 esac	
 
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' -o ${MODEL} = 'ppc64le' -o ${MODEL} = 'aarch64' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
 		export XLIB64
 	fi
-	if [ ${MODEL} = 'ppc64' -o ${MODEL} = 'ppc64le' ]; then
-		if [ ${OS} = 'AIX' ]; then
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -maix64"
-			SWT_LFLAGS=-maix64
-			export SWT_LFLAGS
-		else
-			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
-			XLIB64="${XLIB64} -L/usr/lib64"
-			SWT_LFLAGS=-m64
-			export SWT_LFLAGS
-		fi
+	if [ ${MODEL} = 'ppc64le' ]; then
+		SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"
+		XLIB64="${XLIB64} -L/usr/lib64"
+		SWT_LFLAGS=-m64
+		export SWT_LFLAGS
 	fi
 	export SWT_PTR_CFLAGS
 fi
