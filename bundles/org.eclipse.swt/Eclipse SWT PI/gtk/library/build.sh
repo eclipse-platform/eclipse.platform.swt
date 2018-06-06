@@ -77,14 +77,6 @@ if [ "${OS}" = "" ]; then
 	OS=`uname -s`
 fi
 case $OS in
-	"AIX")
-		SWT_OS=aix
-		MAKEFILE=make_aix.mak
-		;;
-	"FreeBSD")
-		SWT_OS=freebsd
-		MAKEFILE=make_freebsd.mak
-		;;
 	"Windows_NT")
 		SWT_OS=win32
 		MAKEFILE=make_win32.mak
