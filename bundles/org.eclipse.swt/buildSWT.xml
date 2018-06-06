@@ -85,12 +85,12 @@
 		<property name="checkdir" value="~/build/check_libraries"/>
 		<property name="library_count" value="48"/>
 		<property name="fragment" value=""/>
-		<fileset id="match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
+		<fileset id="match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64le/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}."/>
 			<exclude name="**/.git/**"/>
 		</fileset>
-		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64*/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
+		<fileset id="not_match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.ppc64le/**, **/org.eclipse.swt.gtk.linux.x86*/**, **/org.eclipse.swt.win32.*/**, **/org.eclipse.swt.cocoa.macosx.*/**">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
