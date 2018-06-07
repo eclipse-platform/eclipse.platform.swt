@@ -13,9 +13,13 @@ package org.eclipse.swt.examples.controlexample;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Widget;
 
 abstract class RangeTab extends Tab {
 	/* Style widgets added to the "Style" group */
@@ -153,7 +157,7 @@ abstract class RangeTab extends Tab {
 				horizontalButton.setSelection ((widgets [0].getStyle () & SWT.HORIZONTAL) != 0);
 				verticalButton.setSelection ((widgets [0].getStyle () & SWT.VERTICAL) != 0);
 			}
-			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
+			borderButton.setEnabled(false);
 		}
 	}
 

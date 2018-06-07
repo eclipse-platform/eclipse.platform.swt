@@ -13,10 +13,13 @@ package org.eclipse.swt.examples.controlexample;
 
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * <code>ButtonTab</code> is the class that
@@ -249,6 +252,6 @@ class ButtonTab extends AlignableTab {
 		arrowButton.setSelection ((button1.getStyle () & SWT.ARROW) != 0);
 		flatButton.setSelection ((button1.getStyle () & SWT.FLAT) != 0);
 		wrapButton.setSelection ((button1.getStyle () & SWT.WRAP) != 0);
-		borderButton.setSelection ((button1.getStyle () & SWT.BORDER) != 0);
+		borderButton.setEnabled(false);
 	}
 }

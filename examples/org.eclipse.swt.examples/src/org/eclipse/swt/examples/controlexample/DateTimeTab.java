@@ -11,9 +11,13 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Widget;
 
 class DateTimeTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -59,7 +63,6 @@ class DateTimeTab extends Tab {
 		if (mediumButton.getSelection ()) style |= SWT.MEDIUM;
 		if (longButton.getSelection ()) style |= SWT.LONG;
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
-		if (borderButton.getSelection ()) style |= SWT.BORDER;
 
 		/* Create the example widgets */
 		dateTime1 = new DateTime (dateTimeGroup, style);
@@ -138,7 +141,13 @@ class DateTimeTab extends Tab {
 		shortButton.setSelection ((dateTime1.getStyle () & SWT.SHORT) != 0);
 		mediumButton.setSelection ((dateTime1.getStyle () & SWT.MEDIUM) != 0);
 		longButton.setSelection ((dateTime1.getStyle () & SWT.LONG) != 0);
-		dropDownButton.setSelection ((dateTime1.getStyle () & SWT.DROP_DOWN) != 0);
-		borderButton.setSelection ((dateTime1.getStyle () & SWT.BORDER) != 0);
+		if ((dateTime1.getStyle() & SWT.DATE) != 0) {
+			dropDownButton.setEnabled(true);
+			dropDownButton.setSelection ((dateTime1.getStyle () & SWT.DROP_DOWN) != 0);
+		} else {
+			dropDownButton.setSelection(false);
+			dropDownButton.setEnabled(false);
+		}
+		borderButton.setEnabled(false);
 	}
 }

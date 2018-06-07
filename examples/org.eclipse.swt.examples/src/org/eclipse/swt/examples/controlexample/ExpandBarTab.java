@@ -11,9 +11,16 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Widget;
 
 class ExpandBarTab extends Tab {
 	/* Example widgets and groups that contain them */
@@ -147,7 +154,7 @@ class ExpandBarTab extends Tab {
 		Widget [] widgets = getExampleWidgets ();
 		if (widgets.length != 0){
 			verticalButton.setSelection ((widgets [0].getStyle () & SWT.V_SCROLL) != 0);
-			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
+			borderButton.setEnabled(false);
 		}
 	}
 }
