@@ -1562,6 +1562,11 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 		fromRGB = backgroundRGB;
 		toRGB   = foregroundRGB;
 	}
+	if (vertical) {
+		width = width * (DPIUtil.getDeviceZoom() / 100);
+	} else {
+		height = height * (DPIUtil.getDeviceZoom() / 100);
+	}
 	if (fromRGB.equals(toRGB)) {
 		fillRectangleInPixels(x, y, width, height);
 		return;
