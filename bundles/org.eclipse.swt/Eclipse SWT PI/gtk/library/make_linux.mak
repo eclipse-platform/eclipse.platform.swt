@@ -98,7 +98,7 @@ ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitgtk_custom.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
-CFLAGS = -O -Wall \
+CFLAGS := $(CFLAGS) \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		$(SWT_DEBUG) \
@@ -106,7 +106,6 @@ CFLAGS = -O -Wall \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/linux \
-		-fPIC \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 

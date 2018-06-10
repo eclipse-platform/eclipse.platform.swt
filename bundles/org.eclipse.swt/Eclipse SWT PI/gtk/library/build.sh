@@ -72,6 +72,8 @@ cd `dirname $0`
 
 MAKE_TYPE=make
 
+export CFLAGS='-O -Wall -fPIC'
+
 # Determine which OS we are on
 if [ "${OS}" = "" ]; then
 	OS=`uname -s`
