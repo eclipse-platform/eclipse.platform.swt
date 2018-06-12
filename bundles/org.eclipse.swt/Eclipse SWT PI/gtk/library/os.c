@@ -4846,6 +4846,23 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1renderer_1get_1padding
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1cell_1renderer_1get_1padding)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1padding_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_cell_renderer_get_padding((GtkCellRenderer *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1get_1padding_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jintArray arg4)

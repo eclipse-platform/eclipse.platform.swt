@@ -1722,7 +1722,7 @@ int getItemHeightInPixels () {
 		int height = h [0];
 		if (GTK.GTK3) {
 			long /*int*/ textRenderer = getTextRenderer (column);
-			GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+			if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
 			height += h [0];
 		}
 		ignoreSize = false;
@@ -1737,7 +1737,14 @@ int getItemHeightInPixels () {
 			GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 			int [] w = new int [1], h = new int [1];
 			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-			height = Math.max (height, h [0]);
+			if (GTK.GTK3) {
+				long /*int*/ textRenderer = getTextRenderer(column);
+				int [] ypad = new int[1];
+				if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
+				height = Math.max(height, h [0] + ypad [0]);
+			} else {
+				height = Math.max (height, h [0]);
+			}
 		}
 		OS.g_free (iter);
 		return height;

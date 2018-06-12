@@ -1082,6 +1082,20 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @param cell cast=(GtkCellRenderer *)
+	 * @param xpad cast=(gint *)
+	 * @param ypad cast=(gint *)
+	 */
+	public static final native void _gtk_cell_renderer_get_padding(long /*int*/ cell, int [] xpad, int [] ypad);
+	public static final void gtk_cell_renderer_get_padding(long /*int*/ cell, int [] xpad, int [] ypad) {
+		lock.lock();
+		try {
+			_gtk_cell_renderer_get_padding(cell, xpad, ypad);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 * @param cell cast=(GtkCellRenderer *)
 	 */
