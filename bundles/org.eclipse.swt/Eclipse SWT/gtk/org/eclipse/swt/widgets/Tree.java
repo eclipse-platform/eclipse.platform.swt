@@ -3146,7 +3146,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (wasSelected) drawState |= SWT.SELECTED;
 				GdkRectangle rect = new GdkRectangle ();
 				long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-				GTK.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
+				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
 				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
 				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
