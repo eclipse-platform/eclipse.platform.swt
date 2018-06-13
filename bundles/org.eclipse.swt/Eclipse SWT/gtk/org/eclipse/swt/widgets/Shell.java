@@ -1731,6 +1731,12 @@ public void open () {
 		}
 	}
 	if (!restored) {
+		/* If a shell is opened during the FocusOut event of a widget,
+		 * it is required to set focus to all shells except for ON_TOP
+		 * shells in order to maintain consistency with other platforms.
+		 */
+		if ((style & SWT.ON_TOP) == 0) display.focusEvent = SWT.None;
+
 		if (defaultButton != null && !defaultButton.isDisposed ()) {
 			defaultButton.setFocus ();
 		} else {
