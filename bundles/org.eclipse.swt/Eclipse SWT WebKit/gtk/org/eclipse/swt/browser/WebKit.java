@@ -1758,17 +1758,16 @@ private static class Webkit2AsyncToSync {
 			OS.g_error_free(gerrorRes[0]);
 			retObj.returnValue = (String) "";
 		} else {
-			long /*int*/ GString;
-			GString = OS.g_string_new_len(guchar_data, gsize_len[0]); //(Str + len) -> (null terminated str)
-			String text = Converter.cCharPtrToJavaString(OS.GString_str(GString), false);
-			OS.g_string_free(GString, 1);
-			retObj.returnValue = (String) text;
+			int len = (int) gsize_len[0];
+			byte[] buffer = new byte [len];
+			C.memmove (buffer, guchar_data, len);
+			String text = Converter.byteToStringViaHeuristic(buffer);
+			retObj.returnValue = text;
 		}
 
 		retObj.callbackFinished = true;
 		Display.getCurrent().wake();
 	}
-
 	/**
 	 * You should check 'retObj.swtAsyncTimeout' after making a call to this.
 	 */
