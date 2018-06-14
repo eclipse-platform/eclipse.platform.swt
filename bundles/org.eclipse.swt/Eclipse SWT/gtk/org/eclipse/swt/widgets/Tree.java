@@ -3004,8 +3004,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 			GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			GTK.gtk_tree_path_free (path);
-			// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-			if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+			// Use the x and width information from the Cairo context. See bug 535124.
+			if (cr != 0 && GTK.GTK3) {
 				GdkRectangle r2 = new GdkRectangle ();
 				GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 				rect.x = r2.x;
@@ -3065,15 +3065,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
 
-				if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
-					GdkRectangle r = new GdkRectangle();
-					GDK.gdk_cairo_get_clip_rectangle(cr, r);
-					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height));
-					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
+				if (GTK.GTK3 && cr != 0) {
+					// Use the original rectangle, not the Cairo clipping for the y, width, and height values.
+					// See bug 535124.
+					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
-					if (GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-						rect.width = r.width;
-					}
 				} else {
 					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
@@ -3148,8 +3144,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
-				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				// Use the x and width information from the Cairo context. See bug 535124.
+				if (cr != 0 && GTK.GTK3) {
 					GdkRectangle r2 = new GdkRectangle ();
 					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 					rect.x = r2.x;
@@ -3166,9 +3162,8 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					Rectangle bounds = image.getBounds ();
 					imageWidth = bounds.width;
 				}
-				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle
-				// need to adjust clip rectangle with image width
-				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				// Account for the image width on GTK3, see bug 535124.
+				if (cr != 0 && GTK.GTK3) {
 					rect.x -= imageWidth;
 					rect.width +=imageWidth;
 				}
