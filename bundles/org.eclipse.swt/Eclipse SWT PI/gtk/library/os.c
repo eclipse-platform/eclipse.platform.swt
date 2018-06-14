@@ -1012,6 +1012,26 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1monitor)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1get_1primary_1monitor
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1primary_1monitor)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1primary_1monitor_FUNC);
+/*
+	rc = (jintLong)gdk_display_get_primary_monitor(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_primary_monitor)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1primary_1monitor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1supports_1cursor_1color
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1710,6 +1730,28 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1keyval_1to_1unicode)
 }
 #endif
 
+#ifndef NO__1gdk_1monitor_1get_1geometry
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1geometry)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1monitor_1get_1geometry_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	gdk_monitor_get_geometry(arg0, lparg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_monitor_get_geometry)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1monitor_1get_1geometry_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1monitor_1get_1scale_1factor
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1scale_1factor)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1726,6 +1768,26 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1scale_1factor)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1monitor_1get_1scale_1factor_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1monitor_1get_1width_1mm
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1width_1mm)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1monitor_1get_1width_1mm_FUNC);
+/*
+	rc = (jint)gdk_monitor_get_width_mm(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_monitor_get_width_mm)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1monitor_1get_1width_1mm_FUNC);
 	return rc;
 }
 #endif

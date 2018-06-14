@@ -2066,6 +2066,30 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
+	 */
+	public static final native int _gdk_monitor_get_width_mm(long /*int*/ monitor);
+	public static final int gdk_monitor_get_width_mm(long /*int*/ monitor) {
+		lock.lock();
+		try {
+			return _gdk_monitor_get_width_mm(monitor);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_display_get_primary_monitor(long /*int*/ display);
+	public static final long /*int*/ gdk_display_get_primary_monitor(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_primary_monitor(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 * @param dest flags=no_in
 	 */
@@ -2074,6 +2098,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_screen_get_monitor_geometry(screen, monitor_num, dest);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param dest flags=no_in
+	 */
+	public static final native void _gdk_monitor_get_geometry (long /*int*/ monitor, GdkRectangle dest);
+	public static final void gdk_monitor_get_geometry (long /*int*/ monitor, GdkRectangle dest) {
+		lock.lock();
+		try {
+			_gdk_monitor_get_geometry(monitor, dest);
 		} finally {
 			lock.unlock();
 		}

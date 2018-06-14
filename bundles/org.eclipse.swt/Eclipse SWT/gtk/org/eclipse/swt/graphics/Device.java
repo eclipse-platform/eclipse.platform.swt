@@ -467,13 +467,22 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 }
 
 Point getScreenDPI () {
-	long /*int*/ screen = GDK.gdk_screen_get_default();
-	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
-	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
-	if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
-		int monitor_num = GDK.gdk_screen_get_monitor_at_point (screen, 0, 0);
-		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
-		dpi = dpi * scale;
+	int dpi = 96; //default value
+	if (GTK.GTK3) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ pMonitor = GDK.gdk_display_get_primary_monitor(display);
+		if (pMonitor == 0) {
+			pMonitor = GDK.gdk_display_get_monitor(display, 0);
+		}
+		int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
+		int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
+		GdkRectangle monitorGeometry = new GdkRectangle ();
+		GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
+		dpi = Compatibility.round (254 * monitorGeometry.width * scaleFactor, widthMM * 10);
+	} else {
+		int widthMM = GDK.gdk_screen_width_mm ();
+		int width = GDK.gdk_screen_width ();
+		dpi = Compatibility.round (254 * width, widthMM * 10);
 	}
 	return new Point (dpi, dpi);
 }
@@ -1067,7 +1076,15 @@ int _getDPIx () {
  * @since 3.105
  */
 protected int getDeviceZoom() {
-	return DPIUtil.mapDPIToZoom (getScreenDPI().x);
+	long /*int*/ screen = GDK.gdk_screen_get_default();
+	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
+	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
+	if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		int monitor_num = GDK.gdk_screen_get_monitor_at_point (screen, 0, 0);
+		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
+		dpi = dpi * scale;
+	}
+	return DPIUtil.mapDPIToZoom (dpi);
 }
 /**
  * @noreference This method is not intended to be referenced by clients.
