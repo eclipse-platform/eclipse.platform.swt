@@ -12,8 +12,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,20 +37,27 @@ public class Bug127132_TableColumnPackVirtual {
 			Shell shell = new Shell(display);
 			shell.setLayout(new GridLayout());
 
-
-
 			final Table table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL);
 			table.setLayoutData(new GridData(GridData.FILL_BOTH));
 			column1 = new TableColumn(table, SWT.NONE);
 			column1.setText("A");
 			column2 = new TableColumn(table, SWT.NONE);
-			column1.setText("B");
+			column2.setText("B");
 			column3 = new TableColumn(table, SWT.NONE);
-			column1.setText("C");
+			column3.setText("C");
+
+			table.setLinesVisible (true);
+			table.setHeaderVisible (true);
 
 			for (int i = 0; i < 500; i++) {
 				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(new String[] { "cell "+i+" 0", "cell "+i+" 1", "cell "+i+" 2"});
+				if (i < 200) {
+					item.setText(new String[] { "cell "+i+" 0", "medium cell "+i+" 1", "cell "+i+" 2"});
+				} else if (i < 300) {
+					item.setText(new String[] { "medium cell "+i+" 0", "medium cell "+i+" 1", "medium cell "+i+" 2"});
+				} else {
+					item.setText(new String[] { "this is a long cell "+i+" 0", "this is a long cell "+i+" 1", "this is a long cell "+i+" 2"});
+				}
 			}
 
 			// These have no effects on Linux GTK?
@@ -62,21 +67,11 @@ public class Bug127132_TableColumnPackVirtual {
 
 			Button action = new Button(shell, SWT.PUSH);
 			action.setText("Pack Columns");
-			action.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// These have no effects on Linux GTK?
-					column1.pack();
-					column2.pack();
-					column3.pack();
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-
-
-				}});
+			action.addListener(SWT.Selection,  e -> {
+				column1.pack();
+				column2.pack();
+				column3.pack();
+			});
 
 			shell.open();
 			while (!shell.isDisposed()) {

@@ -346,7 +346,10 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	if (GTK.GTK3) {
 		int [] width = new int [1];
 		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
-		return width [0];
+		long /*int*/ textRenderer = getTextRenderer (column);
+		int [] xpad = new int[1];
+		if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
+		return width [0] + xpad [0]*2;
 	} else {
 		int width = 0;
 		int [] w = new int [1];

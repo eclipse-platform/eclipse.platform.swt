@@ -451,9 +451,25 @@ public void pack () {
 		width = requisition.width;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {
+		boolean calcWidth = false;
+		Rectangle itemBounds = null;
+		int tableHeight = 0;
+		if (parent.isVisible()) {
+			Rectangle tableBounds = parent.getBounds();
+			tableHeight = tableBounds.height - parent.getHeaderHeight();
+		} else {
+			calcWidth = true;
+		}
 		for (int i=0; i<parent.items.length; i++) {
 			TableItem item = parent.items [i];
-			if (item != null && item.cached) {
+			if (itemBounds == null) itemBounds = item.getBounds();
+			boolean isVisible = false;
+			if (!calcWidth) {
+				int itemTopBound = itemBounds.y + itemBounds.height * i + i;
+				int itemBottomBound = itemTopBound + itemBounds.height;
+				isVisible = (itemTopBound > 0 && itemBottomBound < tableHeight);
+			}
+			if (item != null && item.cached && (isVisible || calcWidth)) {
 				width = Math.max (width, parent.calculateWidth (handle, item.handle));
 			}
 		}
