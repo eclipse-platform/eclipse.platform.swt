@@ -37,5 +37,5 @@ public interface PaintListener extends SWTEventListener {
  *
  * @param e an event containing information about the paint
  */
-public void paintControl(PaintEvent e);
+void paintControl(PaintEvent e);
 }

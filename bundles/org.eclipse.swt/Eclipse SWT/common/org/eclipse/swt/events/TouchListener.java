@@ -43,5 +43,5 @@ public interface TouchListener extends SWTEventListener {
  *
  * @param e an event containing information about the touch
  */
-public void touch(TouchEvent e);
+void touch(TouchEvent e);
 }

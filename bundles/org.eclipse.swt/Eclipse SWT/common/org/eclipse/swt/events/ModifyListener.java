@@ -36,5 +36,5 @@ public interface ModifyListener extends SWTEventListener {
  *
  * @param e an event containing information about the modify
  */
-public void modifyText(ModifyEvent e);
+void modifyText(ModifyEvent e);
 }

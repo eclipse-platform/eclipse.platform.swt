@@ -37,14 +37,14 @@ public interface MenuListener extends SWTEventListener {
  *
  * @param e an event containing information about the menu operation
  */
-public void menuHidden(MenuEvent e);
+void menuHidden(MenuEvent e);
 
 /**
  * Sent when a menu is shown.
  *
  * @param e an event containing information about the menu operation
  */
-public void menuShown(MenuEvent e);
+void menuShown(MenuEvent e);
 
 /**
  * Static helper method to create a <code>MenuListener</code> for the
@@ -54,7 +54,7 @@ public void menuShown(MenuEvent e);
  * @return MenuListener
  * @since 3.107
  */
-public static MenuListener menuHiddenAdapter(Consumer<MenuEvent> c) {
+static MenuListener menuHiddenAdapter(Consumer<MenuEvent> c) {
 	return new MenuAdapter() {
 		@Override
 		public void menuHidden(MenuEvent e) {
@@ -71,7 +71,7 @@ public static MenuListener menuHiddenAdapter(Consumer<MenuEvent> c) {
  * @return MenuListener
  * @since 3.107
  */
-public static MenuListener menuShownAdapter(Consumer<MenuEvent> c) {
+static MenuListener menuShownAdapter(Consumer<MenuEvent> c) {
 	return new MenuAdapter() {
 		@Override
 		public void menuShown(MenuEvent e) {

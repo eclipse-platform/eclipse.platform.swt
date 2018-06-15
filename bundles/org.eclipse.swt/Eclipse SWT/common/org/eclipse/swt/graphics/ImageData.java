@@ -1635,7 +1635,7 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 	return nearestPixel;
 }
 
-static final ImageData convertMask(ImageData mask) {
+static ImageData convertMask(ImageData mask) {
 	if (mask.depth == 1) return mask;
 	PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255,255,255));
 	ImageData newMask = new ImageData(mask.width, mask.height, 1, palette);
@@ -1663,7 +1663,7 @@ static final ImageData convertMask(ImageData mask) {
 	return newMask;
 }
 
-static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
+static byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
 	int stride = (width * depth + 7) / 8;
 	int bpl = (stride + (pad - 1)) / pad * pad;
@@ -3576,7 +3576,7 @@ static ImageData createGradientBand(
 /*
  * Fill in gradated values for a color channel
  */
-static final void buildPreciseGradientChannel(int from, int to, int steps,
+static void buildPreciseGradientChannel(int from, int to, int steps,
 	int bandWidth, int bandHeight, boolean vertical,
 	byte[] bitmapData, int dp, int bytesPerLine) {
 	int val = from << 16;
@@ -3597,7 +3597,7 @@ static final void buildPreciseGradientChannel(int from, int to, int steps,
 /*
  * Fill in dithered gradated values for a color channel
  */
-static final void buildDitheredGradientChannel(int from, int to, int steps,
+static void buildDitheredGradientChannel(int from, int to, int steps,
 	int bandWidth, int bandHeight, boolean vertical,
 	byte[] bitmapData, int dp, int bytesPerLine, int bits) {
 	final int mask = 0xff00 >>> bits;

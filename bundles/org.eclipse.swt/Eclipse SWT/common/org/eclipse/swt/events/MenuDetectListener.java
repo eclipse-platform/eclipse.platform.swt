@@ -40,5 +40,5 @@ public interface MenuDetectListener extends SWTEventListener {
  *
  * @param e an event containing information about the menu detect
  */
-public void menuDetected (MenuDetectEvent e);
+void menuDetected (MenuDetectEvent e);
 }

@@ -40,6 +40,6 @@ public interface ImageLoaderListener extends SWTEventListener {
  *
  * @param e an event containing information about the image loading operation
  */
-public void imageDataLoaded(ImageLoaderEvent e);
+void imageDataLoaded(ImageLoaderEvent e);
 
 }

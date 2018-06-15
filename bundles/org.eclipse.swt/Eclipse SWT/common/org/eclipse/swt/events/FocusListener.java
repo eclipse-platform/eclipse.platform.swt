@@ -39,14 +39,14 @@ public interface FocusListener extends SWTEventListener {
  *
  * @param e an event containing information about the focus change
  */
-public void focusGained(FocusEvent e);
+void focusGained(FocusEvent e);
 
 /**
  * Sent when a control loses focus.
  *
  * @param e an event containing information about the focus change
  */
-public void focusLost(FocusEvent e);
+void focusLost(FocusEvent e);
 
 
 /**
@@ -57,7 +57,7 @@ public void focusLost(FocusEvent e);
  * @return FocusListener
  * @since 3.106
  */
-public static FocusListener focusGainedAdapter(Consumer<FocusEvent> c) {
+static FocusListener focusGainedAdapter(Consumer<FocusEvent> c) {
 	return new FocusAdapter() {
 		@Override
 		public void focusGained(FocusEvent e) {
@@ -74,7 +74,7 @@ public static FocusListener focusGainedAdapter(Consumer<FocusEvent> c) {
  * @return FocusListener
  * @since 3.106
 */
-public static FocusListener focusLostAdapter(Consumer<FocusEvent> c) {
+static FocusListener focusLostAdapter(Consumer<FocusEvent> c) {
 	return new FocusAdapter() {
 		@Override
 		public void focusLost(FocusEvent e) {

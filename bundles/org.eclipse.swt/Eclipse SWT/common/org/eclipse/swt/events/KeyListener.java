@@ -39,14 +39,14 @@ public interface KeyListener extends SWTEventListener {
  *
  * @param e an event containing information about the key press
  */
-public void keyPressed(KeyEvent e);
+void keyPressed(KeyEvent e);
 
 /**
  * Sent when a key is released on the system keyboard.
  *
  * @param e an event containing information about the key release
  */
-public void keyReleased(KeyEvent e);
+void keyReleased(KeyEvent e);
 
 /**
  * Static helper method to create a <code>KeyListener</code> for the
@@ -56,7 +56,7 @@ public void keyReleased(KeyEvent e);
  * @return KeyListener
  * @since 3.106
  */
-public static KeyListener keyPressedAdapter(Consumer<KeyEvent> c) {
+static KeyListener keyPressedAdapter(Consumer<KeyEvent> c) {
 	return new KeyAdapter() {
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -73,7 +73,7 @@ public static KeyListener keyPressedAdapter(Consumer<KeyEvent> c) {
  * @return KeyListener
  * @since 3.106
 */
-public static KeyListener keyReleasedAdapter(Consumer<KeyEvent> c) {
+static KeyListener keyReleasedAdapter(Consumer<KeyEvent> c) {
 	return new KeyAdapter() {
 		@Override
 		public void keyReleased(KeyEvent e) {

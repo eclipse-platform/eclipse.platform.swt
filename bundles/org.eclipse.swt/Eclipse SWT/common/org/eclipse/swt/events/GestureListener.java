@@ -43,6 +43,6 @@ public interface GestureListener extends SWTEventListener {
  *
  * @param e an event containing information about the gesture.
  */
-public void gesture(GestureEvent e);
+void gesture(GestureEvent e);
 
 }

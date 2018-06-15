@@ -44,5 +44,5 @@ public interface TraverseListener extends SWTEventListener {
  *
  * @param e an event containing information about the traverse
  */
-public void keyTraversed(TraverseEvent e);
+void keyTraversed(TraverseEvent e);
 }

@@ -40,7 +40,7 @@ public interface MouseTrackListener extends SWTEventListener {
  *
  * @param e an event containing information about the mouse enter
  */
-public void mouseEnter(MouseEvent e);
+void mouseEnter(MouseEvent e);
 
 /**
  * Sent when the mouse pointer passes out of the area of
@@ -48,7 +48,7 @@ public void mouseEnter(MouseEvent e);
  *
  * @param e an event containing information about the mouse exit
  */
-public void mouseExit(MouseEvent e);
+void mouseExit(MouseEvent e);
 
 /**
  * Sent when the mouse pointer hovers (that is, stops moving
@@ -57,7 +57,7 @@ public void mouseExit(MouseEvent e);
  *
  * @param e an event containing information about the hover
  */
-public void mouseHover(MouseEvent e);
+void mouseHover(MouseEvent e);
 
 /**
  * Static helper method to create a <code>MouseTrackListener</code> for the
@@ -67,7 +67,7 @@ public void mouseHover(MouseEvent e);
  * @return MouseTrackListener
  * @since 3.107
  */
-public static MouseTrackListener mouseEnterAdapter(Consumer<MouseEvent> c) {
+static MouseTrackListener mouseEnterAdapter(Consumer<MouseEvent> c) {
 	return new MouseTrackAdapter() {
 		@Override
 		public void mouseEnter(MouseEvent e) {
@@ -84,7 +84,7 @@ public static MouseTrackListener mouseEnterAdapter(Consumer<MouseEvent> c) {
  * @return MouseTrackListener
  * @since 3.107
  */
-public static MouseTrackListener mouseExitAdapter(Consumer<MouseEvent> c) {
+static MouseTrackListener mouseExitAdapter(Consumer<MouseEvent> c) {
 	return new MouseTrackAdapter() {
 		@Override
 		public void mouseExit(MouseEvent e) {
@@ -101,7 +101,7 @@ public static MouseTrackListener mouseExitAdapter(Consumer<MouseEvent> c) {
  * @return MouseTrackListener
  * @since 3.107
  */
-public static MouseTrackListener mouseHoverAdapter(Consumer<MouseEvent> c) {
+static MouseTrackListener mouseHoverAdapter(Consumer<MouseEvent> c) {
 	return new MouseTrackAdapter() {
 		@Override
 		public void mouseHover(MouseEvent e) {

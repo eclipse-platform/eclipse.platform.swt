@@ -38,6 +38,6 @@ public interface ImageDataProvider {
 	 *         and no image is available for the given zoom level.
 	 * @since 3.104
 	 */
-	public ImageData getImageData (int zoom);
+	ImageData getImageData (int zoom);
 
 }

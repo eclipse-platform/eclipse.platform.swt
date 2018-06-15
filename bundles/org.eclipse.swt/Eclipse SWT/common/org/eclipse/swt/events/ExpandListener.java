@@ -40,14 +40,14 @@ public interface ExpandListener extends SWTEventListener {
  *
  * @param e an event containing information about the operation
  */
-public void itemCollapsed(ExpandEvent e);
+void itemCollapsed(ExpandEvent e);
 
 /**
  * Sent when an item is expanded.
  *
  * @param e an event containing information about the operation
  */
-public void itemExpanded(ExpandEvent e);
+void itemExpanded(ExpandEvent e);
 
 /**
  * Static helper method to create a <code>ExpandListener</code> for the
@@ -57,7 +57,7 @@ public void itemExpanded(ExpandEvent e);
  * @return ExpandListener
  * @since 3.107
  */
-public static ExpandListener itemCollapsedAdapter(Consumer<ExpandEvent> c) {
+static ExpandListener itemCollapsedAdapter(Consumer<ExpandEvent> c) {
 	return new ExpandAdapter() {
 		@Override
 		public void itemCollapsed(ExpandEvent e) {
@@ -74,7 +74,7 @@ public static ExpandListener itemCollapsedAdapter(Consumer<ExpandEvent> c) {
  * @return ExpandListener
  * @since 3.107
  */
-public static ExpandListener itemExpandedAdapter(Consumer<ExpandEvent> c) {
+static ExpandListener itemExpandedAdapter(Consumer<ExpandEvent> c) {
 	return new ExpandAdapter() {
 		@Override
 		public void itemExpanded(ExpandEvent e) {

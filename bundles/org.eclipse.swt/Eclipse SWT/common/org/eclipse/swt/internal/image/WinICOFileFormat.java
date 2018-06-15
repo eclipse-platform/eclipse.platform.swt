@@ -25,7 +25,7 @@ byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	return data;
 }
 
-static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
+static byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
 	int stride = (width * depth + 7) / 8;
 	int bpl = (stride + (pad - 1)) / pad * pad;

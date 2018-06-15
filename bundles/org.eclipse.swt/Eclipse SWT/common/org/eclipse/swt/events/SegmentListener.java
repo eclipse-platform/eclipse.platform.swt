@@ -35,6 +35,6 @@ public interface SegmentListener extends SWTEventListener {
  * @param event the given event
  * @see SegmentEvent
  */
-public void getSegments(SegmentEvent event);
+void getSegments(SegmentEvent event);
 
 }

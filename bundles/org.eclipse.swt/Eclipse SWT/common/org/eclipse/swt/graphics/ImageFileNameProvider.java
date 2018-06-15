@@ -38,6 +38,6 @@ public interface ImageFileNameProvider {
 	 *         zoom level.
 	 * @since 3.104
 	 */
-	public String getImagePath (int zoom);
+	String getImagePath (int zoom);
 
 }

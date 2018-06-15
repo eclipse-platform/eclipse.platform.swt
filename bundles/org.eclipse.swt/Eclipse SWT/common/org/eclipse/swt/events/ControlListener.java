@@ -39,14 +39,14 @@ public interface ControlListener extends SWTEventListener {
  *
  * @param e an event containing information about the move
  */
-public void controlMoved(ControlEvent e);
+void controlMoved(ControlEvent e);
 
 /**
  * Sent when the size (width, height) of a control changes.
  *
  * @param e an event containing information about the resize
  */
-public void controlResized(ControlEvent e);
+void controlResized(ControlEvent e);
 
 /**
  * Static helper method to create a <code>ControlListener</code> for the
@@ -56,7 +56,7 @@ public void controlResized(ControlEvent e);
  * @return ControlListener
  * @since 3.107
  */
-public static ControlListener controlMovedAdapter(Consumer<ControlEvent> c) {
+static ControlListener controlMovedAdapter(Consumer<ControlEvent> c) {
 	return new ControlAdapter() {
 		@Override
 		public void controlMoved(ControlEvent e) {
@@ -73,7 +73,7 @@ public static ControlListener controlMovedAdapter(Consumer<ControlEvent> c) {
  * @return ControlListener
  * @since 3.107
  */
-public static ControlListener controlResizedAdapter(Consumer<ControlEvent> c) {
+static ControlListener controlResizedAdapter(Consumer<ControlEvent> c) {
 	return new ControlAdapter() {
 		@Override
 		public void controlResized(ControlEvent e) {
