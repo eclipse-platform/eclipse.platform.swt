@@ -984,8 +984,9 @@ Point getCaretLocationInPixels () {
 	long /*int*/ layout = GTK.gtk_entry_get_layout (entryHandle);
 	PangoRectangle pos = new PangoRectangle ();
 	OS.pango_layout_index_to_pos (layout, index, pos);
-	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
-	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
+	Point thickness = getThickness (entryHandle);
+	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels () - thickness.x;
+	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y) - thickness.y;
 	return new Point (x, y);
 }
 
