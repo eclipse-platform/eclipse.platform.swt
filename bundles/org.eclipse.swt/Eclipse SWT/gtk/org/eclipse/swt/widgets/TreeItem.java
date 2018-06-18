@@ -1724,7 +1724,10 @@ public void setItemCount (int count) {
 public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (getText (index).equals (string)) return;
+	if (strings == null) {
+		if (_getText (index).equals (string)) return;
+	}
+	else if ( getText (index).equals (string)) return;
 
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
