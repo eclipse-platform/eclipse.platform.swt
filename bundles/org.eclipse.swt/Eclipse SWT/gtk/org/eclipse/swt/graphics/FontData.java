@@ -343,7 +343,7 @@ public void setHeight(int height) {
 }
 
 /*public*/ void setHeight(float height) {
-	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (height < 0 || Float.isNaN(height) || Float.isInfinite(height)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 	this.string = null;
 }
