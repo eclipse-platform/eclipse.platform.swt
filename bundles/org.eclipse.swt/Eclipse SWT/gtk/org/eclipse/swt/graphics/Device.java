@@ -469,16 +469,18 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 Point getScreenDPI () {
 	int dpi = 96; //default value
 	if (GTK.GTK3) {
-		long /*int*/ display = GDK.gdk_display_get_default();
-		long /*int*/ pMonitor = GDK.gdk_display_get_primary_monitor(display);
-		if (pMonitor == 0) {
-			pMonitor = GDK.gdk_display_get_monitor(display, 0);
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			long /*int*/ display = GDK.gdk_display_get_default();
+			long /*int*/ pMonitor = GDK.gdk_display_get_primary_monitor(display);
+			if (pMonitor == 0) {
+				pMonitor = GDK.gdk_display_get_monitor(display, 0);
+			}
+			int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
+			int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
+			GdkRectangle monitorGeometry = new GdkRectangle ();
+			GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
+			dpi = Compatibility.round (254 * monitorGeometry.width * scaleFactor, widthMM * 10);
 		}
-		int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
-		int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
-		GdkRectangle monitorGeometry = new GdkRectangle ();
-		GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
-		dpi = Compatibility.round (254 * monitorGeometry.width * scaleFactor, widthMM * 10);
 	} else {
 		int widthMM = GDK.gdk_screen_width_mm ();
 		int width = GDK.gdk_screen_width ();
