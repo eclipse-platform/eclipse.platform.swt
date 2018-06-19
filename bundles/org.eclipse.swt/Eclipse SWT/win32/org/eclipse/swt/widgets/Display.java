@@ -3317,6 +3317,10 @@ int numpadKey (int key) {
  * <li>(in) character a character that corresponds to a keyboard key</li>
  * <li>(in) keyCode the key code of the key that was typed,
  *          as defined by the key code constants in class <code>SWT</code></li>
+ * <p> Optional (on some platforms): </p>
+ * <li>(in) stateMask the state of the keyboard modifier,
+ * 			as defined by the key code constants in class <code>SWT</code>
+ * </li>
  * </ul>
  * <p>MouseDown, MouseUp</p>
  * <p>The following fields in the <code>Event</code> apply:

@@ -351,6 +351,7 @@ public class Display extends Device {
 		{GDK.GDK_Shift_R,		SWT.SHIFT},
 		{GDK.GDK_Control_L,	SWT.CONTROL},
 		{GDK.GDK_Control_R,	SWT.CONTROL},
+		{GDK.GDK_ISO_Level3_Shift, SWT.ALT_GR},
 //		{OS.GDK_????,		SWT.COMMAND},
 //		{OS.GDK_????,		SWT.COMMAND},
 
@@ -4306,6 +4307,10 @@ long /*int*/ mouseHoverProc (long /*int*/ handle) {
  * <li>(in) character a character that corresponds to a keyboard key</li>
  * <li>(in) keyCode the key code of the key that was typed,
  *          as defined by the key code constants in class <code>SWT</code></li>
+ * <p> Optional (on some platforms): </p>
+ * <li>(in) stateMask the state of the keyboard modifier,
+ * 			as defined by the key code constants in class <code>SWT</code>
+ * </li>
  * </ul>
  * <p>MouseDown, MouseUp</p>
  * <p>The following fields in the <code>Event</code> apply:
@@ -4359,15 +4364,35 @@ public boolean post (Event event) {
 			if (!OS.isX11()) {
 				return false;
 			}
-			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
 			int type = event.type;
+
+			if (type == SWT.MouseMove) {
+				Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
+				setCursorLocationInPixels(new Point(loc.x, loc.y));
+				return true;
+			}
+
+			long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
+			long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
+			long /*int*/ gdkWindow = GDK.gdk_screen_get_active_window(gdkScreen);
+			int[] x = new int[1], y = new int[1];
+			if (gdkWindow == 0) {
+				// Under some window managers or wayland gdk can not determine the active window and passing null
+				// to gdk_test_simulate_button leads to crash.
+				return false;
+			}
+			if (GTK.GTK3) {
+				long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+				GDK.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
+			} else {
+				GDK.gdk_window_get_pointer(gdkWindow, x, y, new int[1]);
+			}
+
 			switch (type) {
 				case SWT.KeyDown:
 				case SWT.KeyUp: {
-					int keyCode = 0;
-					long /*int*/ keysym = untranslateKey (event.keyCode);
-					if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-					if (keyCode == 0) {
+					int keysym = untranslateKey (event.keyCode);
+					if (keysym == 0) {
 						char key = event.character;
 						switch (key) {
 							case SWT.BS: keysym = GDK.GDK_BackSpace; break;
@@ -4379,15 +4404,18 @@ public boolean post (Event event) {
 							default:
 								keysym = key;
 						}
-						keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-						if (keyCode == 0) return false;
+						if (keysym == 0) return false;
 					}
-					OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
-					return true;
-				}
-				case SWT.MouseMove: {
-					Rectangle loc = DPIUtil.autoScaleUp(event.getBounds ());
-					setCursorLocationInPixels(new Point(loc.x, loc.y));
+					int modifier = 0;
+					switch (event.stateMask) {
+						case SWT.SHIFT: modifier = GDK.GDK_SHIFT_MASK; break;
+						case SWT.ALT: modifier = GDK.GDK_MOD1_MASK; break;
+						case SWT.CONTROL: modifier = GDK.GDK_CONTROL_MASK; break;
+						case SWT.ALT_GR: modifier = GDK.GDK_MOD5_MASK; break;
+						default:
+							modifier = 0;
+					}
+					GDK.gdk_test_simulate_key(gdkWindow, x[0], y[0], keysym, modifier, type == SWT.KeyDown ? GDK.GDK_KEY_PRESS: GDK.GDK_KEY_RELEASE);
 					return true;
 				}
 				case SWT.MouseDown:
@@ -4400,21 +4428,6 @@ public boolean post (Event event) {
 						case 4: button = 6;	break;
 						case 5: button = 7;	break;
 						default: return false;
-					}
-					long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
-					long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
-					long /*int*/ gdkWindow = GDK.gdk_screen_get_active_window(gdkScreen);
-					int[] x = new int[1], y = new int[1];
-					if (gdkWindow == 0) {
-						// Under some window managers or wayland gdk can not determine the active window and passing null
-						// to gdk_test_simulate_button leads to crash.
-						return false;
-					}
-					if (GTK.GTK3) {
-						long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-						GDK.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
-					} else {
-						GDK.gdk_window_get_pointer(gdkWindow, x, y, new int[1]);
 					}
 					GDK.gdk_test_simulate_button(gdkWindow, x[0], y[0], button, 0, type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS: GDK.GDK_BUTTON_RELEASE);
 					return true;

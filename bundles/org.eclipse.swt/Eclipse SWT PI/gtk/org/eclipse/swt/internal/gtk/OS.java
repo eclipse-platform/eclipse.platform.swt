@@ -980,19 +980,6 @@ public static final int XQueryPointer(long /*int*/ display, long /*int*/ w, long
 		lock.unlock();
 	}
 }
-/**
- * @param display cast=(Display *)
- * @param keysym cast=(KeySym)
- */
-public static final native int _XKeysymToKeycode(long /*int*/ display, long /*int*/ keysym);
-public static final int XKeysymToKeycode(long /*int*/ display, long /*int*/ keysym) {
-	lock.lock();
-	try {
-		return _XKeysymToKeycode(display, keysym);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param handler cast=(XIOErrorHandler) */
 public static final native long /*int*/ _XSetIOErrorHandler(long /*int*/ handler);
 public static final long /*int*/ XSetIOErrorHandler(long /*int*/ handler) {
@@ -1046,20 +1033,6 @@ public static final long /*int*/ XSynchronize(long /*int*/ display, boolean onof
 	lock.lock();
 	try {
 		return _XSynchronize(display, onoff);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param is_press cast=(Bool)
- * @param delay cast=(unsigned long)
- */
-public static final native void _XTestFakeKeyEvent(long /*int*/ display, int keycode, boolean is_press, long /*int*/ delay);
-public static final void XTestFakeKeyEvent(long /*int*/ display, int keycode, boolean is_press, long /*int*/ delay) {
-	lock.lock();
-	try {
-		_XTestFakeKeyEvent(display, keycode, is_press, delay);
 	} finally {
 		lock.unlock();
 	}

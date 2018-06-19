@@ -2817,6 +2817,18 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1test_1simulate_1button)
 }
 #endif
 
+#ifndef NO__1gdk_1test_1simulate_1key
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1test_1simulate_1key)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1test_1simulate_1key_FUNC);
+	rc = (jboolean)gdk_test_simulate_key((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (guint)arg3, (GdkModifierType)arg4, (GdkEventType)arg5);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1test_1simulate_1key_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1text_1property_1to_1utf8_1list_1for_1display
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1text_1property_1to_1utf8_1list_1for_1display)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLongArray arg5)
@@ -15674,18 +15686,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFree)
 }
 #endif
 
-#ifndef NO__1XKeysymToKeycode
-JNIEXPORT jint JNICALL OS_NATIVE(_1XKeysymToKeycode)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XKeysymToKeycode_FUNC);
-	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
-	OS_NATIVE_EXIT(env, that, _1XKeysymToKeycode_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1XQueryPointer
 JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryPointer)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
@@ -15777,16 +15777,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XSynchronize)
 	rc = (jintLong)XSynchronize((Display *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1XSynchronize_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1XTestFakeKeyEvent
-JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeKeyEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2, jintLong arg3)
-{
-	OS_NATIVE_ENTER(env, that, _1XTestFakeKeyEvent_FUNC);
-	XTestFakeKeyEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
-	OS_NATIVE_EXIT(env, that, _1XTestFakeKeyEvent_FUNC);
 }
 #endif
 

@@ -126,6 +126,7 @@ public class GDK extends OS {
 	public static final int GDK_INTERP_BILINEAR = 0x2;
 	public static final int GDK_Insert = 0xff63;
 	public static final int GDK_ISO_Left_Tab = 0xfe20;
+	public static final int GDK_ISO_Level3_Shift = 0xfe03;
 	public static final int GDK_KEY_PRESS = 0x8;
 	public static final int GDK_KEY_PRESS_MASK = 0x400;
 	public static final int GDK_KEY_RELEASE = 0x9;
@@ -178,7 +179,8 @@ public class GDK extends OS {
 	 * See also:
 	 * <a href="https://askubuntu.com/questions/19558/what-are-the-meta-super-and-hyper-keys">Stack Overflow post</a>
 	 */
-	public static final int GDK_MOD1_MASK = 0x8,
+	public static final int GDK_MOD1_MASK = 1 << 3,
+							GDK_MOD5_MASK = 1 << 7,
 							GDK_SUPER_MASK = 0x4000000,
 							GDK_HYPER_MASK = 0x8000000,
 							GDK_META_MASK = 0x10000000;
@@ -2297,13 +2299,28 @@ public class GDK extends OS {
 	 * @param modifiers cast=(GdkModifierType)
 	 * @param button_pressrelease cast=(GdkEventType)
 	 */
-	public static final native boolean _gdk_test_simulate_button(long /*int*/ window, int x, int y, int button,
-			int modifiers, int button_pressrelease);
-	public static final boolean gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers,
-			int button_pressrelease) {
+	public static final native boolean _gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers, int button_pressrelease);
+	public static final boolean gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers, int button_pressrelease) {
 		lock.lock();
 		try {
 			return _gdk_test_simulate_button(window, x, y, button, modifiers, button_pressrelease);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 * @param keyval cast=(guint)
+	 * @param modifiers cast=(GdkModifierType)
+	 * @param key_pressrelease cast=(GdkEventType)
+	 */
+	public static final native boolean _gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease);
+	public static final boolean gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease) {
+		lock.lock();
+		try {
+			return _gdk_test_simulate_key(window, x, y, keyval, modifiers, key_pressrelease);
 		} finally {
 			lock.unlock();
 		}

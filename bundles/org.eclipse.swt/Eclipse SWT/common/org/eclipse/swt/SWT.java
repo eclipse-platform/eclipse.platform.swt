@@ -2354,6 +2354,15 @@ public class SWT {
 	public static final char SPACE = ' ';
 
 	/**
+	 * keyboard and/or mouse event mask indicating that the ALT_GR key
+	 * was pushed on the keyboard when the event was generated
+	 * (value is 1 &lt;&lt 15).
+	 *
+	 * @since 3.108
+	 */
+	public static final int ALT_GR = 1 << 15;
+
+	/**
 	 * keyboard and/or mouse event mask indicating that the ALT key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1&lt;&lt;16).
@@ -4594,7 +4603,7 @@ static {
 	* in the declaration to stop the compiler from inlining.
 	*/
 	BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3 | BUTTON4 | BUTTON5;
-	MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND;
+	MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND | ALT_GR;
 
 	/*
 	* These values can be different on different platforms.
