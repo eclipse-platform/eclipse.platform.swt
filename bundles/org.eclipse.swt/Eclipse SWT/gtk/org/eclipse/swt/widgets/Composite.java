@@ -127,7 +127,13 @@ public Composite (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
-	style &= ~SWT.NO_BACKGROUND;
+	/*
+	 * With setRegion() using Cairo now, we need to keep this style bit
+	 * for cases where this Composite is used as an overlay. See bug 475784.
+	 */
+	if (GTK.GTK_VERSION < OS.VERSION(3, 10, 0)) {
+		style &= ~SWT.NO_BACKGROUND;
+	}
 	style &= ~SWT.TRANSPARENT;
 	return style;
 }
