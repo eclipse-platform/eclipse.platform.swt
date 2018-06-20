@@ -608,17 +608,7 @@ void bringToTop (boolean force) {
 			}
 		}
 	} else {
-		/*
-		* Bug in metacity.  Calling gdk_window_focus() with a timestamp more
-		* recent than the last user interaction time can cause windows not
-		* to come forward in versions > 2.10.0.  The fix is to use the last
-		* user event time.
-		*/
-		if (display.windowManager.toLowerCase ().equals ("metacity")) {
-			GDK.gdk_window_focus (window, display.lastUserEventTime);
-		} else {
-			GDK.gdk_window_focus (window, GDK.GDK_CURRENT_TIME);
-		}
+		GDK.gdk_window_focus (window, GDK.GDK_CURRENT_TIME);
 	}
 	display.activeShell = this;
 	display.activePending = true;
