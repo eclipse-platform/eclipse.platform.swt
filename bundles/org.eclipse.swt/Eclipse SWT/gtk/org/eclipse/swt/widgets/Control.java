@@ -60,12 +60,23 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	Region region;
 	long /*int*/ eventRegion;
+	/**
+	 * The handle to the Region, which is neccessary in the case
+	 * that <code>region</code> is disposed before this Control.
+	 */
+	long /*int*/ regionHandle;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
 	Control labelRelation;
 	String cssBackground, cssForeground = " ";
 	boolean drawRegion;
+	/**
+	 * Cache the NO_BACKGROUND flag as it gets removed automatically in
+	 * Composite. Only relevant for GTK3.10+ as we need it for Cairo setRegion()
+	 * functionality. See bug 475784.
+	 */
+	boolean cachedNoBackground;
 	/**
 	 * Point for storing the (x, y) coordinate of the last input (click/scroll/etc.).
 	 * This is useful for checking input event coordinates in methods that act on input,
@@ -172,6 +183,13 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ region, 
 
 void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long /*int*/ region, int x, int y, int width, int height) {
 	long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
+	/*
+	 * It's possible that a client is using an SWT.NO_BACKGROUND Composite with custom painting
+	 * and a region to provide "overlay" functionality. In this case we don't want to paint
+	 * any background color, as it will likely break desired behavior. The fix is to paint
+	 * this Control as transparent. See bug 475784.
+	 */
+	boolean noBackgroundRegion = drawRegion && hooks(SWT.Paint) && cachedNoBackground;
 	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 	if (region != 0) {
 		GDK.gdk_cairo_region(cairo, region);
@@ -195,7 +213,11 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 		GdkRGBA rgba;
 		if (GTK.GTK3) {
 			rgba = control.getBackgroundGdkRGBA();
-			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+			if (noBackgroundRegion) {
+				Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
+			} else {
+				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+			}
 		} else {
 			GdkColor color = control.getBackgroundGdkColor ();
 			Cairo.cairo_set_source_rgba_compatibility (cairo, color);
@@ -1376,6 +1398,11 @@ public void setRegion (Region region) {
 		GDK.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	} else {
 		drawRegion = (this.region != null && this.region.handle != 0);
+		if (drawRegion) {
+			cairoCopyRegion(this.region);
+		} else {
+			cairoDisposeRegion();
+		}
 		GTK.gtk_widget_queue_draw(topHandle());
 	}
 }
@@ -3580,6 +3607,24 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 }
 
 /**
+ * Copies the region at the Cairo level, as we need to re-use these resources
+ * after the Region object is disposed.
+ *
+ * @param region the Region object to copy to this Control
+ */
+void cairoCopyRegion (Region region) {
+	if (region == null || region.isDisposed() || region.handle == 0) return;
+	regionHandle = Cairo.cairo_region_copy(region.handle);
+	return;
+}
+
+void cairoDisposeRegion () {
+	if (regionHandle != 0) GDK.gdk_region_destroy(regionHandle);
+	if (eventRegion != 0) GDK.gdk_region_destroy(eventRegion);
+	regionHandle = 0;
+	eventRegion = 0;
+}
+/**
  * Convenience method that applies a region to the Control using cairo_clip.
  *
  * @param cairo the cairo context to apply the region to
@@ -3587,13 +3632,16 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 void cairoClipRegion (long /*int*/ cairo) {
 	GdkRectangle rect = new GdkRectangle ();
 	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
-	long /*int*/ regionHandle = this.region.handle;
-	GdkRectangle regionRect = new GdkRectangle();
+	long /*int*/ regionHandle = this.regionHandle;
+	// Disposal check just in case
+	if (regionHandle == 0) {
+		drawRegion = false;
+		return;
+	}
 	/*
 	 * These gdk_region_* functions actually map to the proper
 	 * cairo_* functions in os.h.
 	 */
-	GDK.gdk_region_get_clipbox(regionHandle, regionRect);
 	long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
 	GDK.gdk_region_subtract(actualRegion, regionHandle);
 	// Draw the Shell bg using cairo, only if it's a different color
@@ -3631,6 +3679,11 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((style & SWT.MIRRORED) != 0) eventBounds.x = DPIUtil.autoScaleDown (getClientWidth ()) - eventBounds.width - eventBounds.x;
 	event.setBounds (eventBounds);
 	GCData data = new GCData ();
+	/*
+	 * Pass the region into the GCData so that GC.fill* methods can be aware of the region
+	 * and clip themselves accordingly. Only relevant on GTK3.10+, see bug 475784.
+	 */
+	if (drawRegion) data.regionSet = eventRegion;
 //	data.damageRgn = gdkEvent.region;
 	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0) || (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0) && OS.CAIRO_CONTEXT_REUSE)) {
 		data.cairo = cairo;
@@ -4310,6 +4363,7 @@ void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;
 	parent = null;
+	cairoDisposeRegion();
 }
 
 @Override

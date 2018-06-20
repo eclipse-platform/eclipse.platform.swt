@@ -124,6 +124,13 @@ Composite () {
  */
 public Composite (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	/*
+	 * Cache the NO_BACKGROUND flag for use in the Cairo setRegion()
+	 * implementation. Only relevant to GTK3.10+, see bug 475784.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && (style & SWT.NO_BACKGROUND) != 0) {
+		cachedNoBackground = true;
+	}
 }
 
 static int checkStyle (int style) {
