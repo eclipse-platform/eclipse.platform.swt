@@ -114,6 +114,27 @@ void addRelation (Control control) {
 }
 
 @Override
+Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
+	int width = wHint, height = hHint;
+	/*
+	 * Feature in GTK3: Labels with long text have an extremely large natural width.
+	 * As a result, such Labels created with SWT.WRAP end up being too big. The fix
+	 * is to use the minimum width instead of the natural width when SWT.WRAP is specified.
+	 * In all other cases, use the natural width. See bug 534768.
+	 */
+	boolean wrapGTK3 = GTK.GTK3 && labelHandle != 0 && (style & SWT.WRAP) != 0 && GTK.gtk_widget_get_visible (labelHandle);
+	if (wrapGTK3 && wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+		GtkRequisition naturalSize = new GtkRequisition ();
+		GtkRequisition minimumSize = new GtkRequisition ();
+		GTK.gtk_widget_get_preferred_size(h, minimumSize, naturalSize);
+		width = minimumSize.width;
+		height = naturalSize.height;
+		return new Point(width, height);
+	} else {
+		return super.computeNativeSize(h, wHint, hHint, changed);
+	}
+}
+@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
