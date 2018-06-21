@@ -939,6 +939,16 @@ public int[] getItemOrder () {
 	}
 	return indices;
 }
+@Override
+public void setBackground (Color color) {
+	for (CoolItem ci : originalItems) {
+		Control ctrl = ci.getControl();
+		if (ctrl != null) {
+			ctrl.setBackground(color);
+		}
+	}
+	super.setBackground(color);
+}
 void setItemOrder (int[] itemOrder) {
 	if (itemOrder == null) error(SWT.ERROR_NULL_ARGUMENT);
 	int count = originalItems.length;
