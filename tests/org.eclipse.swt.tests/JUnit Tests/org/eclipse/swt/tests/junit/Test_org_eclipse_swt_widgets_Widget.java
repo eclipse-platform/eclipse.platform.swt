@@ -16,6 +16,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.function.BooleanSupplier;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
@@ -207,6 +209,21 @@ protected String getClassName() {
     return clazz;
 }
 
+protected void processEvents(int timeoutMs, BooleanSupplier condition) throws InterruptedException {
+	if (condition == null) {
+		condition = () -> false;
+	}
+	long targetTimestamp = System.currentTimeMillis() + timeoutMs;
+	while (!condition.getAsBoolean()) {
+		if (!shell.getDisplay().readAndDispatch()) {
+			if (System.currentTimeMillis() < targetTimestamp) {
+				Thread.sleep(50);
+			} else {
+				return;
+			}
+		}
+	}
+}
 
 
 }

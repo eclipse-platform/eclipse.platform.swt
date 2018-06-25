@@ -48,7 +48,10 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GlyphMetrics;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -59,6 +62,7 @@ import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -5196,6 +5200,53 @@ public void test_insertInBlockSelection() {
 			.startsWith("SampleFoo Test Selection" + System.getProperty("line.separator")
 					+ "SampleFoo Test Selection" + System.getProperty("line.separator") + "Sample Test Selection"
 					+ System.getProperty("line.separator")));
+}
+
+@Test
+public void test_setStyleRanges_render() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	shell.setVisible(true);
+	text.setText("abc");
+	text.setMargins(0, 0, 0, 0);
+	text.pack();
+	processEvents(1000, () -> hasPixel(text, text.getBackground()) && !hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	assertTrue(hasPixel(text, text.getBackground()));
+	assertFalse(hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	text.setStyleRanges(new StyleRange[] {
+			new StyleRange(0, 1, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
+			new StyleRange(2, 1, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
+	});
+	processEvents(100, () ->
+		hasPixel(text, text.getBackground()) &&
+		hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	assertTrue(hasPixel(text, text.getBackground()));
+	assertTrue(hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	text.replaceStyleRanges(0, 3, new StyleRange[] {
+			new StyleRange(0, 3, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
+	});
+	processEvents(1000, () -> !hasPixel(text, text.getBackground()) && hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	assertFalse(hasPixel(text, text.getBackground()));
+	assertTrue(hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+}
+
+private boolean hasPixel(StyledText text, Color expectedColor) {
+	GC gc = new GC(text);
+	final Image image = new Image(text.getDisplay(), text.getSize().x, text.getSize().y);
+	gc.copyArea(image, 0, 0);
+	gc.dispose();
+	ImageData imageData = image.getImageData();
+	RGB expectedRGB = expectedColor.getRGB();
+	for (int x = 1; x < image.getBounds().width - 1; x++) { // ignore first and last columns
+		for (int y = 0; y < image.getBounds().height; y++) {
+			RGB pixelRGB = imageData.palette.getRGB(imageData.getPixel(x, y));
+			if (expectedRGB.equals(pixelRGB)) {
+				image.dispose();
+				return true;
+			}
+		}
+	}
+	image.dispose();
+	return false;
 }
 
 private String blockSelectionTestText() {

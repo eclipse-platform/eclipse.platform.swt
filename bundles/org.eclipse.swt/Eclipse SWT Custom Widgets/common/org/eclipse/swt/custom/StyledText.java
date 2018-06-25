@@ -10156,24 +10156,24 @@ private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRang
 	while (currentOffset < content.getCharCount() && (referenceRangeIndex < referenceStyles.length || newRangeIndex < newRanges.length)) {
 		int nextMilestoneOffset = Integer.MAX_VALUE; // next new range start/end after current offset
 
-		while (referenceRangeIndex < referenceStyles.length && lastRangeOffset(referenceRanges, referenceRangeIndex) < currentOffset) {
+		while (referenceRangeIndex < referenceStyles.length && endRangeOffset(referenceRanges, referenceRangeIndex) <= currentOffset) {
 			referenceRangeIndex++;
 		}
 		StyleRange referenceStyleAtCurrentOffset = defaultStyle;
 		if (isInRange(referenceRanges, referenceRangeIndex, currentOffset)) { // has styling
 			referenceStyleAtCurrentOffset = referenceStyles[referenceRangeIndex];
-			nextMilestoneOffset =  Math.min(nextMilestoneOffset, lastRangeOffset(referenceRanges, referenceRangeIndex) + 1); //just after current range
+			nextMilestoneOffset =  Math.min(nextMilestoneOffset, endRangeOffset(referenceRanges, referenceRangeIndex));
 		} else if (referenceRangeIndex + 1 < referenceStyles.length) { // no range, default styling
 			nextMilestoneOffset = referenceRanges[2 * (referenceRangeIndex + 1)]; // beginning of next range
 		}
 
-		while (newRangeIndex < newStyles.length && lastRangeOffset(newRanges, newRangeIndex) < currentOffset) {
+		while (newRangeIndex < newStyles.length && endRangeOffset(newRanges, newRangeIndex) <= currentOffset) {
 			newRangeIndex++;
 		}
 		StyleRange newStyleAtCurrentOffset = defaultStyle;
 		if (isInRange(newRanges, newRangeIndex, currentOffset)) {
 			newStyleAtCurrentOffset = newStyles[newRangeIndex];
-			nextMilestoneOffset = Math.min(nextMilestoneOffset, lastRangeOffset(newRanges, newRangeIndex) + 1);
+			nextMilestoneOffset = Math.min(nextMilestoneOffset, endRangeOffset(newRanges, newRangeIndex));
 		} else if (newRangeIndex + 1 < newStyles.length) {
 			nextMilestoneOffset = newRanges[2 * (newRangeIndex + 1)];
 		}
@@ -10207,10 +10207,16 @@ private boolean isInRange(int[] ranges, int styleIndex, int offset) {
 	}
 	int start = ranges[2 * styleIndex];
 	int length = ranges[2 * styleIndex + 1];
-	return offset >= start && offset <= start + length;
+	return offset >= start && offset < start + length;
 }
 
-private int lastRangeOffset(int[] ranges, int styleIndex) {
+/**
+ * The offset on which the range ends (excluded)
+ * @param ranges
+ * @param styleIndex
+ * @return
+ */
+private int endRangeOffset(int[] ranges, int styleIndex) {
 	if (styleIndex < 0 || 2 * styleIndex > ranges.length) {
 		throw new IllegalArgumentException();
 	}
