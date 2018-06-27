@@ -2053,9 +2053,13 @@ public void select (int index) {
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	if (rgba == null) {
+		background = defaultBackground();
+	} else {
+		background = rgba;
+	}
 	// CSS to be parsed for various widgets within Combo
-	background = rgba;
-	String css = "* {\n";
+	String css = "* {";
 	String color;
 	if (rgba != null) {
 		color = display.gtk_rgba_to_css_string (rgba);
@@ -2066,7 +2070,15 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 			color = display.gtk_rgba_to_css_string (display.COLOR_LIST_BACKGROUND_RGBA);
 		}
 	}
-	css += "background: " + color + ";}";
+	css += "background: " + color + ";}\n";
+
+	// Set the selected background color
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handleRGBA;
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
+	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+	css += name + selection + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n";
+	css += name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
 	// Cache background color
 	cssBackground = css;
