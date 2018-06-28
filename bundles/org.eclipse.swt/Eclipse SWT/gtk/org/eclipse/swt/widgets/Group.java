@@ -336,7 +336,11 @@ void releaseWidget () {
 @Override
 void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
-	super.setBackgroundGdkRGBA(fixedHandle, rgba);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+		super.setBackgroundGdkRGBA(handle, rgba);
+	} else {
+		super.setBackgroundGdkRGBA(fixedHandle, rgba);
+	}
 }
 
 @Override
