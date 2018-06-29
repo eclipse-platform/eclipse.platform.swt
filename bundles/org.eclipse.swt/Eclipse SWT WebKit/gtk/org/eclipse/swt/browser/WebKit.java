@@ -2476,7 +2476,6 @@ void onDispose (Event e) {
 		GTK.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
 		long /*int*/ webViewTempRef = webView;
 		browser.getDisplay().asyncExec(() -> {
-			GTK._gtk_widget_destroy(webViewTempRef);
 			OS.g_object_unref (webViewTempRef);
 		});
 		webView = 0;
