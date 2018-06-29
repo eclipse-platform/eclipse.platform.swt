@@ -274,7 +274,7 @@ public static String byteToStringViaHeuristic(byte [] bytes) {
 	 *   a byte sequence with many null bytes is likely UTF-16.
 	 * - Valid UTF-8 technically can contain null bytes, but it's rare.
 	 *
-	 * Some times it can get confused if it receives two non-null bytes. e.g Ё = (UTF-16  [01,04])
+	 * Some times it can get confused if it receives two non-null bytes. e.g (E with two dots on top) = (UTF-16  [01,04])
 	 * It can either mean a valid set of UTF-8 characters or a single UTF-16 character.
 	 * This issue typically only occurs for very short sequences 1-5 characters of very special characters).
 	 * Improving the heuristic for such corner cases is complicated. We'd have to implement a mechanism
@@ -333,7 +333,7 @@ public static String byteToStringViaHeuristic(byte [] bytes) {
 		}
 
 		// Problem 3: Short 2-byte sequences are very ambiguous.
-		//            E.g Unicode Hyphen U+2010 '‐'  ( which btw different from the ascii U+002D  '-' Hyphen-Minus)
+		//            E.g Unicode Hyphen U+2010 (which looks like a '-') ( which btw different from the ascii U+002D  '-' Hyphen-Minus)
 		//		          can be miss-understood as 16 (Synchronous Idle) & 32 (Space).
 		// Solution: Unless we have two valid alphabet characters, it's probably a single utf-16 character.
 		//           However, this leads to the problem that single non-alphabetic unicode characters are not recognized correctly.
