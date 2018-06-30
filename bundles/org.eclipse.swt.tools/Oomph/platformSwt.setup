@@ -227,10 +227,6 @@
     </workingSet>
   </setupTask>
   <setupTask
-      xsi:type="setup:VariableTask"
-      name="swt.tools.update.url"
-      defaultValue="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
-  <setupTask
       xsi:type="setup.p2:P2Task"
       label="SWT Tools">
     <requirement
@@ -243,42 +239,11 @@
         name="org.eclipse.pde.feature.group"/>
     <requirement
         name="org.eclipse.pde.api.tools.ee.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.targlets.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.setup.targlets.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.setup.pde.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.setup.jdt.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.setup.git.feature.group"/>
-    <requirement
-        name="org.eclipse.egit.feature.group"/>
-    <requirement
-        name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <repository
-        url="${swt.tools.update.url}"/>
-    <repository
-        url="${setup.targlets.p2}"/>
-    <repository
-        url="${setup.pde.p2}"/>
-    <repository
-        url="${setup.jdt.p2}"/>
-    <repository
-        url="${setup.git.p2}"/>
-    <repository
-        url="${setup.egit.p2}"/>
-    <repository
-        url="${setup.workingsets.p2}"/>
+        url="${eclipse.latest.p2}"/>
   </setupTask>
   <stream name="master"
-      label="Master">
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="swt.tools.update.url"
-        value="http://download.eclipse.org/eclipse/updates/4.8-I-builds"/>
-  </stream>
+      label="Master"/>
   <logicalProjectContainer
       xsi:type="setup:Project"
       href="index:/org.eclipse.setup#//@projectCatalogs[name='org.eclipse']/@projects[name='platform']"/>
