@@ -107,7 +107,6 @@ typedef enum {
 	_1cairo_1rectangle_FUNC,
 	_1cairo_1reference_FUNC,
 	_1cairo_1region_1contains_1point_FUNC,
-	_1cairo_1region_1copy_FUNC,
 	_1cairo_1region_1get_1rectangle_FUNC,
 	_1cairo_1region_1num_1rectangles_FUNC,
 	_1cairo_1reset_1clip_FUNC,

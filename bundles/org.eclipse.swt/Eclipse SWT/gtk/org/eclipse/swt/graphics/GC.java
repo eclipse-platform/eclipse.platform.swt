@@ -206,23 +206,6 @@ static int checkStyle (int style) {
 }
 
 /**
- * Convenience method that applies a region to the Control using cairo_clip.
- *
- * @param cairo the cairo context to apply the region to
- */
-void cairoClipRegion (long /*int*/ cairo) {
-	if (cairo == 0) return;
-	GdkRectangle rect = new GdkRectangle ();
-	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
-	long /*int*/ regionHandle = data.regionSet;
-	long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
-	GDK.gdk_region_subtract(actualRegion, regionHandle);
-	GDK.gdk_cairo_region(cairo, actualRegion);
-	Cairo.cairo_clip(cairo);
-	Cairo.cairo_paint(cairo);
-}
-
-/**
  * Invokes platform specific functionality to wrap a graphics context.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -1758,11 +1741,7 @@ void fillRectangleInPixels(int x, int y, int width, int height) {
 		height = -height;
 	}
 	long /*int*/ cairo = data.cairo;
-	if (data.regionSet != 0) {
-		cairoClipRegion(cairo);
-	} else {
-		Cairo.cairo_rectangle(cairo, x, y, width, height);
-	}
+	Cairo.cairo_rectangle(cairo, x, y, width, height);
 	Cairo.cairo_fill(cairo);
 }
 

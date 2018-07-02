@@ -69,7 +69,7 @@ public final class GCData {
 	public int interpolation = SWT.DEFAULT;
 	public Image image;
 
-	public long /*int*/ clipRgn, context, layout, damageRgn, drawable, cairo, regionSet;
+	public long /*int*/ clipRgn, context, layout, damageRgn, drawable, cairo;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
 	public double[] identity, clippingTransform;
