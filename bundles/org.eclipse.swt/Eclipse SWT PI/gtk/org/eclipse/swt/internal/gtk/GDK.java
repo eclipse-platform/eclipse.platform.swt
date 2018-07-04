@@ -246,6 +246,7 @@ public class GDK extends OS {
 	public static final int GDK_WA_Y = 1 << 3;
 	public static final int GDK_WA_VISUAL = 1 << 6;
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
+	public static final int GDK_WINDOW_TYPE_HINT_UTILITY = 5;
 	public static final int GDK_WINDOW_TYPE_HINT_TOOLTIP = 10;
 
 	/** sizeof(TYPE) for 32/64 bit support */

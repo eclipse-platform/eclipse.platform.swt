@@ -754,6 +754,9 @@ void createHandle (int index) {
 				GTK.gtk_widget_modify_bg (shellHandle, GTK.GTK_STATE_NORMAL, color);
 			}
 		}
+		if ((style & SWT.TOOL) != 0) {
+			GTK.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
+		}
 		if ((style & SWT.NO_TRIM) != 0 ) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
 		}
