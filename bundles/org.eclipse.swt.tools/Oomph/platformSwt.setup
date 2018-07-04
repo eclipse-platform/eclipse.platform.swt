@@ -145,11 +145,17 @@
               <operand
                   xsi:type="predicates:NamePredicate"
                   pattern="org\.eclipse\.swt\.tests\.gtk"/>
+              <operand
+                  xsi:type="predicates:NamePredicate"
+                  pattern="org\.eclipse\.swt\.examples\.ole\.win32"/>
             </operand>
           </operand>
           <operand
               xsi:type="predicates:NamePredicate"
               pattern="org\.eclipse\.swt\.tests\.${osgi.ws}"/>
+          <operand
+              xsi:type="predicates:NamePredicate"
+              pattern="org\.eclipse\.swt\.examples\.ole\.${osgi.ws}"/>
         </predicate>
       </sourceLocator>
     </targlet>
