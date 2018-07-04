@@ -1368,9 +1368,8 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
     	// Form background string
         String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
-        String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
         String css = name + " {background: " + display.gtk_rgba_to_css_string (rgba) + ";}\n" +
-        		name + selection + " {background: " + display.gtk_rgba_to_css_string(display.COLOR_LIST_SELECTION_RGBA) + ";}";
+        		name + ":selected" + " {background: " + display.gtk_rgba_to_css_string(display.COLOR_LIST_SELECTION_RGBA) + ";}";
 
         // Cache background
         cssBackground = css;
