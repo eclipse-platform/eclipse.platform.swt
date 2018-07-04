@@ -239,7 +239,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		GTK.gtk_widget_set_size_request (handle, wHint, hHint);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (handle, requisition, null);
-		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+		width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
 		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	} else {
 		OS.pango_layout_get_pixel_size (layout, w, h);
