@@ -104,6 +104,10 @@ public class WebKitGTK extends C {
 	// Authentication.
 	public static final byte[] authenticate = ascii ("authenticate"); // $NON-NLS-1$		// Webkit1 & Webkit2
 
+	// TLS load failure signal
+	// Webkit2 only
+	public static final byte[] load_failed_with_tls_errors = ascii ("load-failed-with-tls-errors"); // $NON-NLS-1$
+
 	// Close webview
 	public static final byte[] close_web_view = ascii ("close-web-view"); // $NON-NLS-1$   // Webkit1
 	public static final byte[] close = ascii ("close"); // $NON-NLS-1$					   // Webkit2
@@ -801,6 +805,18 @@ public static final void webkit_credential_free (long /*int*/ credential) {
 	}
 }
 
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_context_allow_tls_certificate_for_host(long /*int*/ webKitWebContext, long /*int*/ GTlsCertificate, byte[] constGCharHost);
+public static final long /*int*/ webkit_web_context_allow_tls_certificate_for_host(long /*int*/ webKitWebContext, long /*int*/ GTlsCertificate, byte[] constGCharHost) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	// since 2.6
+	lock.lock();
+	try {
+		return _webkit_web_context_allow_tls_certificate_for_host(webKitWebContext, GTlsCertificate, constGCharHost);
+	} finally {
+		lock.unlock();
+	}
+}
 
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_context_get_type ();

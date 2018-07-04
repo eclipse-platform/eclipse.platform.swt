@@ -140,6 +140,10 @@ class WebKit extends WebBrowser {
 	BrowserFunction eventFunction; //Webkit1 only.
 
 	boolean ignoreDispose; // Webkit1 & Webkit2.
+	boolean tlsError;
+	long /*int*/ tlsErrorCertificate;
+	String tlsErrorUriString;
+	URI tlsErrorUri;
 
 	/**
 	 * Timeout used for javascript execution / deadlock detection.
@@ -235,6 +239,7 @@ class WebKit extends WebBrowser {
 	static final int FINISHED = 23; // webkit2 only.
 	static final int DOWNLOAD_STARTED = 24;   // Webkit2 (webkit1 equivalent is DOWNLOAD_REQUESTED)
 	static final int WIDGET_EVENT = 25;		// Webkit2. Used for events like keyboard/mouse input. See Bug 528549 and Bug 533833.
+	static final int LOAD_FAILED_TLS = 26; // Webkit2 only
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
@@ -260,6 +265,9 @@ class WebKit extends WebBrowser {
 
 	/** Webkit1 & Webkit2, Process key/mouse events from javascript. */
 	static Callback JSDOMEventProc;
+
+	/** Flag indicating whether TLS errors (like self-signed certificates) are to be ignored. Webkit2 only.*/
+	static final boolean ignoreTls;
 
 	static {
 			WebViewType = WebKitGTK.webkit_web_view_get_type ();
@@ -404,6 +412,7 @@ class WebKit extends WebBrowser {
 				SetPendingCookies (NativePendingCookies);
 				NativePendingCookies = null;
 			}
+			ignoreTls = WEBKIT2 && "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"));
 	}
 
 	@Override
@@ -1014,6 +1023,7 @@ long /*int*/ webViewProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ a
 		case CONSOLE_MESSAGE: return webkit_console_message (handle, arg0, arg1, arg2);
 		case WINDOW_OBJECT_CLEARED: return webkit_window_object_cleared (handle, arg0, arg1, arg2);
 		case CONTEXT_MENU: return webkit_context_menu(handle, arg0, arg1, arg2);
+		case LOAD_FAILED_TLS: return webkit_load_failed_tls(handle, arg0, arg1, arg2);
 		default: return 0;
 	}
 }
@@ -1088,7 +1098,7 @@ public void create (Composite parent, int style) {
 		bug522733FirstInstanceCreated = true;
 		OS.g_object_ref(webView);
 	}
-	if (WEBKIT2 && "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"))) {
+	if (ignoreTls) {
 		WebKitGTK.webkit_web_context_set_tls_errors_policy(WebKitGTK.webkit_web_view_get_context(webView),
 				WebKitGTK.WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 		System.out.println("***WARNING: WebKitGTK is configured to ignore TLS errors via -Dorg.eclipse.swt.internal.webkitgtk.ignoretlserrors=true .");
@@ -1128,6 +1138,7 @@ public void create (Composite parent, int style) {
 
 		OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
+		OS.g_signal_connect (webView, WebKitGTK.load_failed_with_tls_errors, Proc5.getAddress (), LOAD_FAILED_TLS);
 
 
 	}
@@ -3272,7 +3283,6 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 			return handleLoadCommitted (uri, true);
 		}
 		case WebKitGTK.WEBKIT2_LOAD_FINISHED: {
-
 			registerBrowserFunctions(); 	// Bug 508217
 			addEventHandlers (web_view, true);
 
@@ -3281,8 +3291,43 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 				long /*int*/ uri = WebKitGTK.webkit_web_view_get_uri (webView);
 				fireNewTitleEvent(getString(uri));
 			}
-
 			fireProgressCompletedEvent();
+
+			/*
+			 * If there is a pending TLS error, handle it by prompting the user for input.
+			 * This is done by popping up a message box and asking if the user would like
+			 * ignore warnings for this host. Clicking yes will do so, clicking no will
+			 * load the previous page.
+			 *
+			 *  Not applicable if the ignoreTls flag has been set. See bug 531341.
+			 */
+			if (tlsError && !ignoreTls) {
+				tlsError = false;
+				String javaHost = tlsErrorUri.getHost();
+				MessageBox prompt = new MessageBox (browser.getShell(), SWT.YES | SWT.NO);
+				prompt.setText("TLS Certificate Error");
+				prompt.setMessage("The host (" + javaHost + ") is using a self-signed "
+						+ "certificate. \n\nClick yes to store this exception and proceed to the page,"
+						+ " or no to go back.");
+				int result = prompt.open();
+				if (result == SWT.YES) {
+					long /*int*/ webkitcontext = WebKitGTK.webkit_web_view_get_context(web_view);
+					if (javaHost != null) {
+						byte [] host = Converter.javaStringToCString(javaHost);
+						WebKitGTK.webkit_web_context_allow_tls_certificate_for_host(webkitcontext, tlsErrorCertificate, host);
+						WebKitGTK.webkit_web_view_reload (web_view);
+					} else {
+						System.err.println("***ERROR: Unable to parse host from URI!");
+					}
+				} else {
+					back();
+				}
+				// De-reference Webkit certificate so it can be freed
+				if (tlsErrorCertificate != 0) {
+					OS.g_object_unref (tlsErrorCertificate);
+					tlsErrorCertificate = 0;
+				}
+			}
 
 			return 0;
 		}
@@ -3290,7 +3335,40 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 	return 0;
 }
 
+/**
+ * This method is only called by Webkit2.
+ *
+ * Called in cases where a web page failed to load due to TLS errors
+ * (self-signed certificates, as an example).
+ */
+long /*int*/ webkit_load_failed_tls (long /*int*/ web_view, long /*int*/ failing_uri, long /*int*/ certificate, long error) {
+	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
+	if (!ignoreTls) {
+		// Set tlsError flag so that the user can be prompted once this "bad" page has finished loading
+		tlsError = true;
+		OS.g_object_ref(certificate);
+		tlsErrorCertificate = certificate;
+		convertUri (failing_uri);
+	}
+	return 0;
+}
 
+/**
+ * Converts a WebKit URI into a Java URI object.
+ *
+ * @param webkitUri a long pointing to the URI in C string form (gchar *)
+ * @throws URISyntaxException if the string violates RFC 2396, or is otherwise
+ * malformed
+ */
+void convertUri (long /*int*/ webkitUri) {
+	try {
+		tlsErrorUriString = Converter.cCharPtrToJavaString(webkitUri, false);
+		tlsErrorUri = new URI (tlsErrorUriString);
+	} catch (URISyntaxException e) {
+		System.err.println("***ERROR: Malformed URI from WebKit!");
+		return;
+	}
+}
 
 /**
  * Triggered by a change in property. (both gdouble[0,1])

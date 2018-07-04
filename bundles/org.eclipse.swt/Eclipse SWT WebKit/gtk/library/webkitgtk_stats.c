@@ -136,6 +136,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1uri_1request_1new",
 	"_1webkit_1uri_1response_1get_1content_1length",
 	"_1webkit_1uri_1response_1get_1mime_1type",
+	"_1webkit_1web_1context_1allow_1tls_1certificate_1for_1host",
 	"_1webkit_1web_1context_1get_1default",
 	"_1webkit_1web_1context_1get_1type",
 	"_1webkit_1web_1context_1get_1website_1data_1manager",
