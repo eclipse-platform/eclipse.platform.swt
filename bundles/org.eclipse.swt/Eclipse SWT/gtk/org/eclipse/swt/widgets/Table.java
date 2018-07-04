@@ -2864,7 +2864,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			if (width != 0) C.memmove (width, contentWidth, 4);
 			if (height != 0) C.memmove (height, contentHeight, 4);
 			if (GTK.GTK3) {
-				GTK.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
+				GTK.gtk_cell_renderer_set_fixed_size (cell, -1, contentHeight [0]);
 			}
 		}
 	}

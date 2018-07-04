@@ -427,7 +427,19 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 	int [] w = new int [1];
 	long /*int*/ path = 0;
 
-	if (GTK.gtk_tree_view_get_expander_column (handle) == column) {
+	/*
+	 * gtk_tree_view_get_expander_column() returns 0 if the expander column is not visible.
+	 * When pack is called for the first time, the expander arrow indent is not added to
+	 * the width for the expander column. The fix is to always get the expander column as if
+	 * it is visible.
+	 */
+	long /*int*/ expander_column = GTK.gtk_tree_view_get_expander_column(handle);
+	if (expander_column == 0 && !GTK.gtk_tree_view_column_get_visible(column)) {
+		GTK.gtk_tree_view_column_set_visible(column, true);
+		expander_column = GTK.gtk_tree_view_get_expander_column(handle);
+		GTK.gtk_tree_view_column_set_visible(column, false);
+	}
+	if (expander_column == column) {
 		/* indent */
 		GdkRectangle rect = new GdkRectangle ();
 		GTK.gtk_widget_realize (handle);
@@ -435,8 +447,10 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 		GTK.gtk_tree_view_get_cell_area (handle, path, column, rect);
 		width += rect.x;
 		/* expander */
-		GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
-		width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		if (!GTK.gtk_tree_view_column_get_visible(column)) {
+			GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+			width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		}
 	}
 	GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
@@ -2923,7 +2937,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			if (width != 0) C.memmove (width, contentWidth, 4);
 			if (height != 0) C.memmove (height, contentHeight, 4);
 			if (GTK.GTK3) {
-				GTK.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
+				GTK.gtk_cell_renderer_set_fixed_size (cell, -1, contentHeight [0]);
 			}
 		}
 	}
@@ -3169,6 +3183,16 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
+
+				// Account for the expander arrow offset in x position
+				if (GTK.gtk_tree_view_get_expander_column (handle) == columnHandle) {
+					/* indent */
+					GdkRectangle rect3 = new GdkRectangle ();
+					GTK.gtk_widget_realize (handle);
+					path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+					GTK.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect3);
+					contentX[0] += rect3.x;
+				}
 				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
