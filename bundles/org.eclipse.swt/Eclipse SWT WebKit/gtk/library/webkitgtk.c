@@ -2296,6 +2296,30 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1uri_1response_1get_1mime_1
 }
 #endif
 
+#ifndef NO__1webkit_1web_1context_1allow_1tls_1certificate_1for_1host
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1allow_1tls_1certificate_1for_1host)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)webkit_web_context_allow_tls_certificate_for_host(arg0, arg1, lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_allow_tls_certificate_for_host)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jbyte *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1web_1context_1get_1default
 JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1get_1default)
 	(JNIEnv *env, jclass that)
