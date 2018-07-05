@@ -94,6 +94,8 @@ public class WebKitGTK extends C {
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_FOR_SESSION = 1;
 	public static final int WEBKIT_CREDENTIAL_PERSISTENCE_PERMANENT = 2;
 
+	public static final int WEBKIT_TLS_ERRORS_POLICY_IGNORE = 0;
+
 	public static final int WEBKIT_WEBSITE_DATA_COOKIES = 1 << 8; // Webkit2
 
 
@@ -1427,6 +1429,18 @@ public static final long /*int*/ webkit_web_context_set_favicon_database_directo
 	}
 }
 
+/** @method flags=dynamic */
+public static final native void _webkit_web_context_set_tls_errors_policy(long /*int*/ context, int policy);
+public static final void webkit_web_context_set_tls_errors_policy (long /*int*/ context, int policy) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_web_context_set_tls_errors_policy (context, policy);
+	} finally {
+		lock.unlock();
+	}
+}
+
 
 /** @method flags=dynamic */
 public static final native long /*int*/ _webkit_web_data_source_get_data (long /*int*/ data_source);
@@ -1592,6 +1606,18 @@ public static final long /*int*/ webkit_web_view_get_main_resource (long /*int*/
 	lock.lock();
 	try {
 		return _webkit_web_view_get_main_resource (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_view_get_context (long /*int*/ web_view);
+public static final long /*int*/ webkit_web_view_get_context (long /*int*/ web_view) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_web_view_get_context (web_view);
 	} finally {
 		lock.unlock();
 	}
@@ -2171,4 +2197,5 @@ public static final long /*int*/ SoupMessage_request_headers (long /*int*/ messa
 		lock.unlock();
 	}
 }
+
 }
