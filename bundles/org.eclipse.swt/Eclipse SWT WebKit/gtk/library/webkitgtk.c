@@ -2376,6 +2376,24 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1favicon
 }
 #endif
 
+#ifndef NO__1webkit_1web_1context_1set_1tls_1errors_1policy
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1tls_1errors_1policy)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1set_1tls_1errors_1policy_FUNC);
+/*
+	webkit_web_context_set_tls_errors_policy(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_tls_errors_policy)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1set_1tls_1errors_1policy_FUNC);
+}
+#endif
+
 #ifndef NO__1webkit_1web_1context_1set_1web_1extensions_1directory
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1web_1extensions_1directory)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
@@ -2776,6 +2794,26 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1execute_1script)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1execute_1script_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1web_1view_1get_1context
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1context)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1get_1context_FUNC);
+/*
+	rc = (jintLong)webkit_web_view_get_context(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_get_context)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1get_1context_FUNC);
+	return rc;
 }
 #endif
 

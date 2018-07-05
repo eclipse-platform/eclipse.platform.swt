@@ -1088,6 +1088,12 @@ public void create (Composite parent, int style) {
 		bug522733FirstInstanceCreated = true;
 		OS.g_object_ref(webView);
 	}
+	if (WEBKIT2 && "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"))) {
+		WebKitGTK.webkit_web_context_set_tls_errors_policy(WebKitGTK.webkit_web_view_get_context(webView),
+				WebKitGTK.WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+		System.out.println("***WARNING: WebKitGTK is configured to ignore TLS errors via -Dorg.eclipse.swt.internal.webkitgtk.ignoretlserrors=true .");
+		System.out.println("***WARNING: Please use for development purposes only!");
+	}
 
 	if (WEBKIT1) {
 		webViewData = C.malloc (C.PTR_SIZEOF);
