@@ -219,7 +219,7 @@ public void test_getActiveShell() {
 		Shell shell = new Shell(display);
 		shell.setText("test_getActiveShell");
 		shell.open();
-		drainEventQueue(display, 200); // workaround for https://bugs.eclipse.org/506680
+		drainEventQueue(display, 2000); // workaround for https://bugs.eclipse.org/506680
 		assertSame(shell, display.getActiveShell());
 		shell.dispose();
 	} finally {

@@ -508,7 +508,7 @@ public void test_setActive() {
 	Shell shell2 = new Shell();
 	shell2.open();
 	if (SwtTestUtil.isCocoa) {
-		drainEventQueue(shell.getDisplay(), 1500); //workaround for Bug 536564
+		drainEventQueue(shell.getDisplay(), 5000); //workaround for Bug 536564
 	}
 
 	/* Test setActive for visible shell. */
