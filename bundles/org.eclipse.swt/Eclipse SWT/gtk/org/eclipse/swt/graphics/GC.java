@@ -2063,7 +2063,7 @@ Rectangle getClippingInPixels() {
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
-			if (data.clippingTransform != null && (GTK.GTK_VERSION < OS.VERSION (3, 14, 0) || !OS.CAIRO_CONTEXT_REUSE)) {
+			if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 				clipRgn = convertRgn(clipRgn, data.clippingTransform);
 				GDK.gdk_region_intersect(rgn, clipRgn);
 				GDK.gdk_region_destroy(clipRgn);
@@ -2072,7 +2072,7 @@ Rectangle getClippingInPixels() {
 			}
 		}
 		/* Convert to user space */
-		if (cairo != 0 && (GTK.GTK_VERSION < OS.VERSION (3, 14, 0) || !OS.CAIRO_CONTEXT_REUSE)) {
+		if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			double[] matrix = new double[6];
 			Cairo.cairo_get_matrix(cairo, matrix);
 			Cairo.cairo_matrix_invert(matrix);
@@ -2121,7 +2121,7 @@ public void getClipping(Region region) {
 		GDK.gdk_region_union_with_rect(clipping, rect);
 	} else {
 		/* Convert clipping to device space if needed */
-		if (data.clippingTransform != null && (GTK.GTK_VERSION < OS.VERSION (3, 14, 0) || !OS.CAIRO_CONTEXT_REUSE)) {
+		if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			long /*int*/ rgn = convertRgn(clipRgn, data.clippingTransform);
 			GDK.gdk_region_union(clipping, rgn);
 			GDK.gdk_region_destroy(rgn);
@@ -2133,7 +2133,7 @@ public void getClipping(Region region) {
 		GDK.gdk_region_intersect(clipping, data.damageRgn);
 	}
 	/* Convert to user space */
-	if (cairo != 0 && (GTK.GTK_VERSION < OS.VERSION (3, 14, 0) || !OS.CAIRO_CONTEXT_REUSE)) {
+	if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 		double[] matrix = new double[6];
 		Cairo.cairo_get_matrix(cairo, matrix);
 		Cairo.cairo_matrix_invert(matrix);
@@ -2521,7 +2521,7 @@ public void getTransform(Transform transform) {
 		 * They do not want to know about the global coordinates of their widget, which is contained in Cairo.cairo_get_matrix().
 		 * So we return whatever the client specified with setTransform.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0) && OS.CAIRO_CONTEXT_REUSE) {
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 			if (currentTransform != null) {
 				transform.handle = currentTransform.clone();
 			} else {
@@ -2620,7 +2620,7 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 	initCairo();
 	if ((data.style & SWT.MIRRORED) != 0) {
 		// Don't overwrite the Cairo transformation matrix in GTK 3.14 and above; it contains a translation relative to the parent widget.
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0) && OS.CAIRO_CONTEXT_REUSE) {
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 			int[] w = new int[1], h = new int[1];
 			getSize(w, h);
 			Cairo.cairo_translate(cairo, w[0], 0);
@@ -2629,11 +2629,9 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 			Cairo.cairo_set_matrix(data.cairo, identity());
 		}
 	}
-	if (OS.CAIRO_CONTEXT_REUSE) {
-		if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
-		Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
-		clipping = getClipping();
-	}
+	if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
+	Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
+	clipping = getClipping();
 }
 
 void initCairo() {
@@ -2952,7 +2950,7 @@ void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 		 * The Cairo handle is shared by all widgets, but GC.setClipping allows global clipping changes.
 		 * So we intersect whatever the client sets with the initial GC clipping.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && OS.CAIRO_CONTEXT_REUSE) {
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 			limitClipping(clipRgnCopy);
 		}
 
@@ -3028,7 +3026,7 @@ void setClipping(long /*int*/ clipRgn) {
 		if (data.clipRgn == 0) data.clipRgn = GDK.gdk_region_new();
 		GDK.gdk_region_subtract(data.clipRgn, data.clipRgn);
 		GDK.gdk_region_union(data.clipRgn, clipRgn);
-		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0) || !OS.CAIRO_CONTEXT_REUSE) {
+		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			if (data.clippingTransform == null) data.clippingTransform = new double[6];
 			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
 		}
@@ -3144,7 +3142,7 @@ void setClippingInPixels(Rectangle rect) {
 }
 
 private void resetClipping() {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && OS.CAIRO_CONTEXT_REUSE) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		/*
 		 * Bug 531667: widgets paint over other widgets
 		 *
@@ -3750,7 +3748,7 @@ public void setTransform(Transform transform) {
 	if (data.cairo == 0 && transform == null) return;
 	initCairo();
 	long /*int*/ cairo = data.cairo;
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0) && OS.CAIRO_CONTEXT_REUSE) {
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		// Re-set the original Cairo transformation matrix: it contains a translation relative to the parent widget.
 		if (currentTransform != null) {
 			Cairo.cairo_set_matrix(cairo, cairoTransformationMatrix);

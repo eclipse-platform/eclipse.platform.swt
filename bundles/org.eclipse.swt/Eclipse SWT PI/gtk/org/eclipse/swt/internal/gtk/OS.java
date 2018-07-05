@@ -760,27 +760,6 @@ public class OS extends C {
 		}
 	}
 
-    /* Fix for Bug 421127 causes regression in Control.print(GC), namely Canvas.print(GC) doesn't work.
-    * To avoid dealing with breaking API change in GTK 3.10, the fix initializes a new Cairo object for each widget.
-    * Fixes for Bug 531667 ensures that the print method functions, by propagating the same Cairo object to each widget.
-    * Since any number of classes can be affected by this change, its not clear whether the present fixes are sufficient.
-    * We therefore add a kill switch for this patch, which is to be used as last resort
-    * in case of widget rendering problems due to incomplete fixes.
-	*
-	* Use by adding a VM argument: -Dorg.eclipse.swt.internal.gtk.cairoContextReuse=false
-	*
-	* For more information see:
-	* Bug 421127, Bug 531667
-	*/
-	public static final boolean CAIRO_CONTEXT_REUSE;
-	static {
-		boolean cairoContextReuse = true;
-		if ("false".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoContextReuse"))) {
-			cairoContextReuse = false;
-		}
-		CAIRO_CONTEXT_REUSE = cairoContextReuse;
-	}
-
 protected static byte [] ascii (String name) {
 	int length = name.length ();
 	char [] chars = new char [length];

@@ -3685,7 +3685,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	 */
 	if (drawRegion) data.regionSet = eventRegion;
 //	data.damageRgn = gdkEvent.region;
-	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0) || (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0) && OS.CAIRO_CONTEXT_REUSE)) {
+	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0) || GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		data.cairo = cairo;
 	}
 	GC gc = event.gc = GC.gtk_new (this, data);
