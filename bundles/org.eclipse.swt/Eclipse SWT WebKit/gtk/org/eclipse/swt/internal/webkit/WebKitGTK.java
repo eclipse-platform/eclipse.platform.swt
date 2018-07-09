@@ -96,6 +96,15 @@ public class WebKitGTK extends C {
 
 	public static final int WEBKIT_TLS_ERRORS_POLICY_IGNORE = 0;
 
+	public static final int G_TLS_CERTIFICATE_UNKNOWN_CA = 0;
+	public static final int G_TLS_CERTIFICATE_BAD_IDENTITY = 1;
+	public static final int G_TLS_CERTIFICATE_NOT_ACTIVATED = 2;
+	public static final int G_TLS_CERTIFICATE_EXPIRED = 3;
+	public static final int G_TLS_CERTIFICATE_REVOKED = 4;
+	public static final int G_TLS_CERTIFICATE_INSECURE = 5;
+	public static final int G_TLS_CERTIFICATE_GENERIC_ERROR = 6;
+	public static final int G_TLS_CERTIFICATE_VALIDATE_ALL = 7;
+
 	public static final int WEBKIT_WEBSITE_DATA_COOKIES = 1 << 8; // Webkit2
 
 

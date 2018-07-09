@@ -144,6 +144,7 @@ class WebKit extends WebBrowser {
 	long /*int*/ tlsErrorCertificate;
 	String tlsErrorUriString;
 	URI tlsErrorUri;
+	String tlsErrorType;
 
 	/**
 	 * Timeout used for javascript execution / deadlock detection.
@@ -3305,10 +3306,11 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 				tlsError = false;
 				String javaHost = tlsErrorUri.getHost();
 				MessageBox prompt = new MessageBox (browser.getShell(), SWT.YES | SWT.NO);
-				prompt.setText("TLS Certificate Error");
-				prompt.setMessage("The host (" + javaHost + ") is using a self-signed "
-						+ "certificate. \n\nClick yes to store this exception and proceed to the page,"
-						+ " or no to go back.");
+				prompt.setText(SWT.getMessage("SWT_InvalidCert_Title"));
+				String specific = tlsErrorType.isEmpty() ? "\n\n" : "\n\n" + tlsErrorType + "\n\n";
+				String message = SWT.getMessage("SWT_InvalidCert_Message", new Object[] {javaHost}) +
+						specific + SWT.getMessage("SWT_InvalidCert_Connect");
+				prompt.setMessage(message);
 				int result = prompt.open();
 				if (result == SWT.YES) {
 					long /*int*/ webkitcontext = WebKitGTK.webkit_web_view_get_context(web_view);
@@ -3341,7 +3343,7 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
  * Called in cases where a web page failed to load due to TLS errors
  * (self-signed certificates, as an example).
  */
-long /*int*/ webkit_load_failed_tls (long /*int*/ web_view, long /*int*/ failing_uri, long /*int*/ certificate, long error) {
+long /*int*/ webkit_load_failed_tls (long /*int*/ web_view, long /*int*/ failing_uri, long /*int*/ certificate, long /*int*/ error) {
 	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	if (!ignoreTls) {
 		// Set tlsError flag so that the user can be prompted once this "bad" page has finished loading
@@ -3349,6 +3351,44 @@ long /*int*/ webkit_load_failed_tls (long /*int*/ web_view, long /*int*/ failing
 		OS.g_object_ref(certificate);
 		tlsErrorCertificate = certificate;
 		convertUri (failing_uri);
+		switch ((int)/*64*/error) {
+			case WebKitGTK.G_TLS_CERTIFICATE_UNKNOWN_CA: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_UnknownCA");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_BAD_IDENTITY: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_BadIdentity");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_NOT_ACTIVATED: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_NotActivated");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_EXPIRED: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Expired");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_REVOKED: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Revoked");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_INSECURE: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_Insecure");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_GENERIC_ERROR: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_GenericError");
+				break;
+			}
+			case WebKitGTK.G_TLS_CERTIFICATE_VALIDATE_ALL: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_ValidateAll");
+				break;
+			}
+			default: {
+				tlsErrorType = SWT.getMessage("SWT_InvalidCert_GenericError");
+				break;
+			}
+		}
 	}
 	return 0;
 }
