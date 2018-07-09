@@ -425,52 +425,50 @@ void releaseWidget () {
 void resizeControl (int yScroll) {
 	if (control != null && !control.isDisposed ()) {
 		boolean visible = GTK.gtk_expander_get_expanded (handle);
-		if (visible) {
-			GtkAllocation allocation = new GtkAllocation ();
-			GTK.gtk_widget_get_allocation (clientHandle, allocation);
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation (clientHandle, allocation);
 
-			//454940 change in hierarchy
-			/* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
-			* causes GTK+ to move the clientHandle's SwtFixed down by the size of the label.
-			* These calls can come up from 'shell' and ExpandItem has no control over these calls.
-			* This is an undesired side-effect. Client handle's x & y positions should never
-			* be incremented as this is an internal sub-container.
-			* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
-			* is now neccessary.
-			* See also other 454940 notes and similar fix in: 453827 */
-			int x = (GTK.GTK3) ? 0 : allocation.x;
-			int y = (GTK.GTK3) ? 0 : allocation.y;
+		//454940 change in hierarchy
+		/* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
+		* causes GTK+ to move the clientHandle's SwtFixed down by the size of the label.
+		* These calls can come up from 'shell' and ExpandItem has no control over these calls.
+		* This is an undesired side-effect. Client handle's x & y positions should never
+		* be incremented as this is an internal sub-container.
+		* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
+		* is now neccessary.
+		* See also other 454940 notes and similar fix in: 453827 */
+		int x = (GTK.GTK3) ? 0 : allocation.x;
+		int y = (GTK.GTK3) ? 0 : allocation.y;
 
-			if (x != -1 && y != -1) {
-				int width = allocation.width;
-				int height = allocation.height;
-				int [] property = new int [1];
-				GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
-				y += property [0] * 2;
-				height -= property [0] * 2;
+		if (x != -1 && y != -1) {
+			int width = allocation.width;
+			int height = allocation.height;
+			int [] property = new int [1];
+			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			y += property [0] * 2;
+			height -= property [0] * 2;
 
-				/*
-				* Feature in GTK. When the ExpandBar is resize too small the control
-				* shows up on top of the vertical scrollbar. This happen because the
-				* GtkExpander does not set the size of child smaller than the request
-				* size of its parent and because the control is not parented in the
-				* hierarchy of the GtkScrolledWindow.
-				* The fix is calculate the width ourselves when the scrollbar is visible.
-				*/
-				ScrollBar vBar = parent.verticalBar;
-				if (vBar != null) {
-					if (GTK.gtk_widget_get_visible (vBar.handle)) {
-						GTK.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
-						width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
-					}
+			/*
+			* Feature in GTK. When the ExpandBar is resize too small the control
+			* shows up on top of the vertical scrollbar. This happen because the
+			* GtkExpander does not set the size of child smaller than the request
+			* size of its parent and because the control is not parented in the
+			* hierarchy of the GtkScrolledWindow.
+			* The fix is calculate the width ourselves when the scrollbar is visible.
+			*/
+			ScrollBar vBar = parent.verticalBar;
+			if (vBar != null) {
+				if (GTK.gtk_widget_get_visible (vBar.handle)) {
+					GTK.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
+					width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
 				}
-				// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
-				if (GTK.GTK3) {
-					control.setBounds (x, y, width, Math.max (0, height), true, true);
-				}
-				else {
-					control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
-				}
+			}
+			// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
+			if (GTK.GTK3) {
+				control.setBounds (x, y, width, Math.max (0, height), true, true);
+			}
+			else {
+				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
 			}
 		}
 		control.setVisible (visible);
