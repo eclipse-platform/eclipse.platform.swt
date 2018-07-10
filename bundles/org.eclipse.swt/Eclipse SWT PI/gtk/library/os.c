@@ -10466,6 +10466,16 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1tool_1item_1retrieve_1proxy_1menu_1ite
 }
 #endif
 
+#ifndef NO__1gtk_1tool_1item_1set_1homogeneous
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tool_1item_1set_1homogeneous)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1tool_1item_1set_1homogeneous_FUNC);
+	gtk_tool_item_set_homogeneous((GtkToolItem *)arg0, (gboolean)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1tool_1item_1set_1homogeneous_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tool_1item_1set_1is_1important
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tool_1item_1set_1is_1important)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)

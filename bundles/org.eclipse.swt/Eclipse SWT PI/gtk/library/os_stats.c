@@ -828,6 +828,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1tool_1button_1set_1use_1underline",
 	"_1gtk_1tool_1item_1get_1proxy_1menu_1item",
 	"_1gtk_1tool_1item_1retrieve_1proxy_1menu_1item",
+	"_1gtk_1tool_1item_1set_1homogeneous",
 	"_1gtk_1tool_1item_1set_1is_1important",
 	"_1gtk_1tool_1item_1set_1proxy_1menu_1item",
 	"_1gtk_1toolbar_1insert",

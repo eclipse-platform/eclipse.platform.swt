@@ -7017,6 +7017,19 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param item cast=(GtkToolItem *)
+	 * @param homogeneous cast=(gboolean)
+	 */
+	public static final native void _gtk_tool_item_set_homogeneous(long item, boolean homogeneous);
+	public static final void gtk_tool_item_set_homogeneous(long item, boolean homogeneous) {
+		lock.lock();
+		try {
+			_gtk_tool_item_set_homogeneous(item, homogeneous);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param item cast=(GtkToolItem *)
 	 * @param menu_id cast=(const gchar *)
 	 * @param widget cast=(GtkWidget *)
 	 */

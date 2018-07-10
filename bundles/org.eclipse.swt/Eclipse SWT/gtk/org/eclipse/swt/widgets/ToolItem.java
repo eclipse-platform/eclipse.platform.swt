@@ -247,6 +247,11 @@ void createHandle (int index) {
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) GTK.gtk_tool_item_set_is_important (handle, true);
 	if ((style & SWT.SEPARATOR) == 0) GTK.gtk_tool_button_set_use_underline (handle, true);
+	/*
+	 * Set the "homogeneous" property to false, otherwise all ToolItems will be as large as
+	 * the largest one in the ToolBar. See bug 548331, 395296 for more information.
+	 */
+	GTK.gtk_tool_item_set_homogeneous(handle, false);
 }
 
 @Override
