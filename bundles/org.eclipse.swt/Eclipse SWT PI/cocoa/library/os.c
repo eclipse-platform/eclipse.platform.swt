@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -927,6 +927,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setMarkedText_1selectedRange_1)
 	OS_NATIVE_ENTER(env, that, CALLBACK_1setMarkedText_1selectedRange_1_FUNC);
 	rc = (jintLong)CALLBACK_setMarkedText_selectedRange_(arg0);
 	OS_NATIVE_EXIT(env, that, CALLBACK_1setMarkedText_1selectedRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setNeedsDisplayInRect_1
+static jintLong CALLBACK_1setNeedsDisplayInRect_1;
+static void proc_CALLBACK_1setNeedsDisplayInRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1setNeedsDisplayInRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_setNeedsDisplayInRect_(jintLong func) {
+	CALLBACK_1setNeedsDisplayInRect_1 = func;
+	return (jintLong)proc_CALLBACK_1setNeedsDisplayInRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setNeedsDisplayInRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setNeedsDisplayInRect_1_FUNC);
+	rc = (jintLong)CALLBACK_setNeedsDisplayInRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setNeedsDisplayInRect_1_FUNC);
 	return rc;
 }
 #endif

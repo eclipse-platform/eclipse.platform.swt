@@ -753,7 +753,9 @@ void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect ce
 
 void drawRect (long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	if (!isDrawing()) return;
+	Display display = this.display;
 	NSView view = new NSView(id);
+	display.isPainting.addObject(view);
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	context.saveGraphicsState();
 	setClipRegion(view);
@@ -763,16 +765,15 @@ void drawRect (long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 	if (!isDisposed()) {
-		display.inPaint = true;
 		/*
 		* Feature in Cocoa. There are widgets that draw outside of the UI thread,
 		* such as the progress bar and default button.  The fix is to draw the
 		* widget but not send paint events.
 		*/
 		drawWidget (id, context, rect);
-		display.inPaint = false;
 	}
 	context.restoreGraphicsState();
+	display.isPainting.removeObjectIdenticalTo(view);
 }
 
 void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
@@ -1880,6 +1881,45 @@ void setLocationMask (Event event, NSEvent nsEvent) {
 
 boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*int*/ string, long /*int*/ range) {
 	return true;
+}
+
+void setNeedsDisplay (long /*int*/ id, long /*int*/ sel, boolean flag) {
+	if (flag && !isDrawing()) return;
+	NSView view = new NSView(id);
+	if (flag && display.isPainting.containsObject(view)) {
+		NSMutableArray needsDisplay = display.needsDisplay;
+		if (needsDisplay == null) {
+			needsDisplay = (NSMutableArray)new NSMutableArray().alloc();
+			display.needsDisplay = needsDisplay = needsDisplay.initWithCapacity(12);
+		}
+		needsDisplay.addObject(view);
+		return;
+	}
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, flag);
+}
+
+void setNeedsDisplayInRect (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+	if (!isDrawing()) return;
+	NSRect rect = new NSRect();
+	OS.memmove(rect, arg0, NSRect.sizeof);
+	NSView view = new NSView(id);
+	if (display.isPainting.containsObject(view)) {
+		NSMutableArray needsDisplayInRect = display.needsDisplayInRect;
+		if (needsDisplayInRect == null) {
+			needsDisplayInRect = (NSMutableArray)new NSMutableArray().alloc();
+			display.needsDisplayInRect = needsDisplayInRect = needsDisplayInRect.initWithCapacity(12);
+		}
+		needsDisplayInRect.addObject(view);
+		needsDisplayInRect.addObject(NSValue.valueWithRect(rect));
+		return;
+	}
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, rect);
 }
 
 void setObjectValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
