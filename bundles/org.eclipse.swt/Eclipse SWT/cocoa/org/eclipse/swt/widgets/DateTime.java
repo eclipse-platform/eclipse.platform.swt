@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * Note: Only one of the styles DATE, TIME, or CALENDAR may be specified,
  * and only one of the styles SHORT, MEDIUM, or LONG may be specified.
- * The DROP_DOWN style is a <em>HINT</em>, and it is only valid with the DATE style.
+ * The DROP_DOWN style is only valid with the DATE style.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -103,9 +103,10 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	style = checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
 	style = checkBits (style, SWT.MEDIUM, SWT.SHORT, SWT.LONG, 0, 0, 0);
 	if ((style & SWT.DATE) == 0) style &=~ SWT.DROP_DOWN;
-	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+	return style;
 }
 
 @Override
