@@ -517,7 +517,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		 * height as height. In that case, calculate the table height based on
 		 * the number of items in the table.
 		 */
-		if (hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
+		if (hHint == SWT.DEFAULT && (size.y == getHeaderHeight()) || size.y == 0) {
 			size.y = getItemCount() * getItemHeight() + getHeaderHeight();
 		}
 		/*
