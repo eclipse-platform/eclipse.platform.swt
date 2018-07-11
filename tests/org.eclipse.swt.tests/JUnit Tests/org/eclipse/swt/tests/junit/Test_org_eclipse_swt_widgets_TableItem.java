@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -469,17 +470,17 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setCheckedZ() {
-	assertEquals(false, tableItem.getChecked());
+	assertFalse(tableItem.getChecked());
 
 	tableItem.setChecked(true);
-	assertEquals(false, tableItem.getChecked());
+	assertFalse(tableItem.getChecked());
  	Table t = new Table(shell, SWT.CHECK);
 	TableItem ti = new TableItem(t, SWT.NULL);
 	ti.setChecked(true);
 	assertTrue(ti.getChecked());
 
 	ti.setChecked(false);
-	assertEquals(false, ti.getChecked());
+	assertFalse(ti.getChecked());
 	t.dispose();
 }
 
@@ -624,11 +625,11 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 public void test_setGrayedZ() {
 	Table newTable = new Table(shell, SWT.CHECK);
 	TableItem tItem = new TableItem(newTable,0);
-	assertEquals(false, tItem.getGrayed());
+	assertFalse(tItem.getGrayed());
 	tItem.setGrayed(true);
 	assertTrue(tItem.getGrayed());
 	tItem.setGrayed(false);
-	assertEquals(false, tItem.getGrayed());
+	assertFalse(tItem.getGrayed());
 	newTable.dispose();
 }
 

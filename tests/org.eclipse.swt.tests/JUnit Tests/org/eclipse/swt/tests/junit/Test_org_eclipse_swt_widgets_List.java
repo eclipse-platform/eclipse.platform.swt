@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -331,9 +331,9 @@ public void test_deselectI() {
 	list.deselect(5);
 	assertArrayEquals(items2, list.getSelection());
 	list.deselect(1);
-	assertEquals(false, list.isSelected(1));
+	assertFalse(list.isSelected(1));
 	list.deselect(1);
-	assertEquals(false, list.isSelected(1));
+	assertFalse(list.isSelected(1));
 
 
 	setSingleList();
@@ -343,11 +343,11 @@ public void test_deselectI() {
 	list.deselect(5);
 	assertArrayEquals(new String[] { "item3" }, list.getSelection());
 	list.deselect(2);
-	assertEquals(false, list.isSelected(2));
+	assertFalse(list.isSelected(2));
 	list.deselect(1);
-	assertEquals(false, list.isSelected(1));
+	assertFalse(list.isSelected(1));
 	list.deselect(1);
-	assertEquals(false, list.isSelected(1));
+	assertFalse(list.isSelected(1));
 }
 
 @Test
@@ -857,7 +857,7 @@ public void test_isSelectedI() {
 	assertTrue(list.isSelected(0));
 	assertTrue(list.isSelected(1));
 	assertTrue(list.isSelected(2));
-	assertEquals(false, list.isSelected(3));
+	assertFalse(list.isSelected(3));
 
 
 	setSingleList();
@@ -865,10 +865,10 @@ public void test_isSelectedI() {
 	list.setItems(items);
 	list.setSelection(items);
 	if (SwtTestUtil.fCheckSWTPolicy) {
-		assertEquals(false, list.isSelected(0));
+		assertFalse(list.isSelected(0));
 		assertTrue(list.isSelected(1));
-		assertEquals(false, list.isSelected(2));
-		assertEquals(false, list.isSelected(3));
+		assertFalse(list.isSelected(2));
+		assertFalse(list.isSelected(3));
 	}
 
 }

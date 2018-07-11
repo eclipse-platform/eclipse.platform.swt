@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -632,7 +632,7 @@ public void test_setBoundsIIII() {
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	control.setBounds(20, 30, 40, 50);
-	assertEquals(false, control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
+	assertFalse(control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
 
 	control.setBounds(10, 20, 30, 40);
 }
@@ -642,7 +642,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	control.setBounds(new Rectangle(20, 30, 40, 50));
-	assertEquals(false, control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
+	assertFalse(control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
 
 	try {
 		control.setBounds(null);

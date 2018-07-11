@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -546,13 +547,13 @@ public void test_getBoundsI() {
 
 @Test
 public void test_getExpanded() {
-	assertEquals(false, treeItem.getExpanded());
+	assertFalse(treeItem.getExpanded());
 	// there must be at least one subitem before you can set the treeitem expanded
 	new TreeItem(treeItem, 0);
 	treeItem.setExpanded(true);
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
-	assertEquals(false, treeItem.getExpanded());
+	assertFalse(treeItem.getExpanded());
 }
 
 @Test
@@ -766,10 +767,10 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setCheckedZ() {
-	assertEquals(false, treeItem.getChecked());
+	assertFalse(treeItem.getChecked());
 
 	treeItem.setChecked(true);
-	assertEquals(false, treeItem.getChecked());
+	assertFalse(treeItem.getChecked());
 
 	Tree t = new Tree(shell, SWT.CHECK);
 	TreeItem ti = new TreeItem(t, SWT.NULL);
@@ -777,29 +778,29 @@ public void test_setCheckedZ() {
 	assertTrue(ti.getChecked());
 
 	ti.setChecked(false);
-	assertEquals(false, ti.getChecked());
+	assertFalse(ti.getChecked());
 	t.dispose();
 }
 
 @Test
 public void test_setExpandedZ() {
-	assertEquals(false, treeItem.getExpanded());
+	assertFalse(treeItem.getExpanded());
 
 	// there must be at least one subitem before you can set the treeitem expanded
 	treeItem.setExpanded(true);
-	assertEquals(false, treeItem.getExpanded());
+	assertFalse(treeItem.getExpanded());
 
 
 	new TreeItem(treeItem, SWT.NULL);
 	treeItem.setExpanded(true);
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
-	assertEquals(false, treeItem.getExpanded());
+	assertFalse(treeItem.getExpanded());
 
 	TreeItem ti = new TreeItem(treeItem, SWT.NULL);
 	ti.setExpanded(true);
 	treeItem.setExpanded(false);
-	assertEquals(false, ti.getExpanded());
+	assertFalse(ti.getExpanded());
 }
 
 @Test
@@ -942,11 +943,11 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 public void test_setGrayedZ() {
 	Tree newTree = new Tree(shell, SWT.CHECK);
 	TreeItem tItem = new TreeItem(newTree,0);
-	assertEquals(false, tItem.getGrayed());
+	assertFalse(tItem.getGrayed());
 	tItem.setGrayed(true);
 	assertTrue(tItem.getGrayed());
 	tItem.setGrayed(false);
-	assertEquals(false, tItem.getGrayed());
+	assertFalse(tItem.getGrayed());
 	newTree.dispose();
 }
 

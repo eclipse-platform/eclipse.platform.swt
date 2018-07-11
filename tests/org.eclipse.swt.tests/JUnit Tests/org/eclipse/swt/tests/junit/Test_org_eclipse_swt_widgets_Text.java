@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -498,7 +498,7 @@ public void test_getDoubleClickEnabled() {
 	assertTrue(text.getDoubleClickEnabled());
 
 	text.setDoubleClickEnabled(false);
-	assertEquals(false, text.getDoubleClickEnabled());
+	assertFalse(text.getDoubleClickEnabled());
 
 	// this method tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -507,7 +507,7 @@ public void test_getDoubleClickEnabled() {
 	assertTrue(text.getDoubleClickEnabled());
 
 	text.setDoubleClickEnabled(false);
-	assertEquals(false, text.getDoubleClickEnabled());
+	assertFalse(text.getDoubleClickEnabled());
 }
 
 @Test
@@ -1084,7 +1084,7 @@ public void test_setDoubleClickEnabledZ() {
 	assertTrue(text.getDoubleClickEnabled());
 
 	text.setDoubleClickEnabled(false);
-	assertEquals(false, text.getDoubleClickEnabled());
+	assertFalse(text.getDoubleClickEnabled());
 
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
@@ -1093,7 +1093,7 @@ public void test_setDoubleClickEnabledZ() {
 	assertTrue(text.getDoubleClickEnabled());
 
 	text.setDoubleClickEnabled(false);
-	assertEquals(false, text.getDoubleClickEnabled());
+	assertFalse(text.getDoubleClickEnabled());
 }
 
 @Test
