@@ -3926,7 +3926,7 @@ public class GTK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gtk_css_provider_to_string(long /*int*/ provider);
-	public static final long /*int*/gtk_css_provider_to_string(long /*int*/ provider) {
+	public static final long /*int*/ gtk_css_provider_to_string(long /*int*/ provider) {
 		lock.lock();
 		try {
 			return _gtk_css_provider_to_string(provider);
@@ -3939,7 +3939,7 @@ public class GTK extends OS {
 	 *  @param variant cast=(const gchar *)
 	 */
 	public static final native long /*int*/ _gtk_css_provider_get_named (byte[] name, byte[] variant);
-	public static final long /*int*/gtk_css_provider_get_named(byte[] name, byte[] variant) {
+	public static final long /*int*/ gtk_css_provider_get_named(byte[] name, byte[] variant) {
 		lock.lock();
 		try {
 			return _gtk_css_provider_get_named(name, variant);

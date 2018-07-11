@@ -1921,36 +1921,12 @@ String gtk_css_create_css_color_string (String background, String foreground, in
  * parameter to this method.
  *
  * @param swt an Integer corresponding to the SWT color
+ * @param cssOutput the gtk theme represented as css string.
  *
  * @return a String representation of the color parsed or "parsed" if the color was assigned
  * directly
  */
-String gtk_css_default_theme_values (int swt) {
-	/*
-	 * Find current GTK theme: either use the system theme,
-	 * or one provided using the GTK_THEME environment variable.
-	 * See bug 534007.
-	 */
-	int length;
-	long /*int*/ str;
-	byte [] buffer = OS.GTK_THEME_SET ? Converter.wcsToMbcs (OS.GTK_THEME_NAME, true) : OS.getThemeNameBytes();
-	// Load the dark variant if specified
-	byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
-	if (buffer == null || buffer.length == 0) {
-		return "";
-	}
-
-	// Fetch the actual theme in char/string format
-	long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
-	str = GTK.gtk_css_provider_to_string (themeProvider);
-	length = C.strlen (str);
-	if (length == 0) {
-		return "";
-	}
-	byte [] themeBuffer = new byte [length];
-	C.memmove (themeBuffer, str, length);
-	OS.g_free(str);
-	String cssOutput = new String (Converter.mbcsToWcs (themeBuffer));
+String gtk_css_default_theme_values (int swt, String cssOutput) {
 
 	// Parse the theme values based on the corresponding SWT value
 	// i.e. theme_selected_bg_color in GTK is SWT.COLOR_LIST_SELECTION in SWT
@@ -1963,11 +1939,11 @@ String gtk_css_default_theme_values (int swt) {
 	String color = "";
 	switch (swt) {
 		case SWT.COLOR_INFO_FOREGROUND:
-			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
+			return gtk_css_default_theme_values_irregular(swt, cssOutput);
 		case SWT.COLOR_INFO_BACKGROUND:
-			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
+			return gtk_css_default_theme_values_irregular(swt, cssOutput);
 		case SWT.COLOR_LINK_FOREGROUND:
-			return gtk_css_default_theme_values_irregular(swt, cssOutput, themeProvider);
+			return gtk_css_default_theme_values_irregular(swt, cssOutput);
 		case SWT.COLOR_LIST_BACKGROUND:
 			tSelected = cssOutput.indexOf ("@define-color theme_base_color");
 			selected = cssOutput.indexOf ("@define-color base_color");
@@ -2110,13 +2086,12 @@ String gtk_css_default_theme_values (int swt) {
  *
  * @param swt an Integer corresponding to the SWT color
  * @param cssOutput a String representation of the currently loaded CSS theme
- * @param themeProvider a pointer to the GtkCssProvider associated with the
  * currently loaded CSS theme
  *
  * @return a String representation of the color parsed or "parsed" if the color was assigned
  * directly
  */
-String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*int*/ themeProvider) {
+String gtk_css_default_theme_values_irregular(int swt, String cssOutput) {
 	int tSelected, selected, classDef;
 	String color = "";
 	switch (swt) {
@@ -2139,9 +2114,9 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
 				}
 			} else if (classDef != -1){
 				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "tooltip * {");
+					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(cssOutput, "tooltip * {");
 				} else {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, ".tooltip {");
+					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(cssOutput, ".tooltip {");
 				}
 				return "parsed";
 			}
@@ -2160,7 +2135,7 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
 					break;
 				}
 			} else if (classDef != -1) {
-				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(themeProvider, "tooltip.background {");
+				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(cssOutput, "tooltip.background {");
 				return "parsed";
 			}
 			break;
@@ -2184,7 +2159,7 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
 				COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
 				return "parsed";
 			} else if (classDef != -1) {
-				COLOR_LINK_FOREGROUND_RGBA = gtk_css_parse_foreground(themeProvider, "*:link {");
+				COLOR_LINK_FOREGROUND_RGBA = gtk_css_parse_foreground(cssOutput, "*:link {");
 				return "parsed";
 			}
 			break;
@@ -2201,25 +2176,18 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput, long /*
  * this method will return a GdkRGBA object with the color red. Supported formats
  * include "background-color" and just "background".
  *
- * @param provider a pointer to the GtkCssProvider associated with the CSS being parsed
+ * @param css a CSS being parsed
  * @param precise a String representation of a selector to search for, or NULL if
  * the entire GtkCssProvider is to be parsed
  *
  * @return a GdkRGBA object representing the background color, or COLOR_WIDGET_BACKGROUND
  * if the background color could not be parsed or isn't set
  */
-GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
+GdkRGBA gtk_css_parse_background (String css, String precise) {
 	String shortOutput;
 	int startIndex;
 	GdkRGBA rgba = new GdkRGBA ();
-	// Fetch the CSS in char/string format from the GtkCssProvider.
-	long /*int*/ str = GTK.gtk_css_provider_to_string (provider);
-	if (str == 0) return COLOR_WIDGET_BACKGROUND_RGBA;
-	int length = C.strlen (str);
-	byte [] buffer = new byte [length];
-	C.memmove (buffer, str, length);
-	OS.g_free(str);
-	String cssOutput = new String (Converter.mbcsToWcs (buffer));
+	if (css.isEmpty()) return COLOR_WIDGET_BACKGROUND_RGBA;
 	String searched = "";
 	/*
 	 * This section allows for finer searching: for example
@@ -2231,11 +2199,11 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	 * of the provider.
 	 */
 	if (precise != null) {
-		if (cssOutput.contains(precise)) {
-			searched = cssOutput.substring(cssOutput.indexOf(precise));
+		if (css.contains(precise)) {
+			searched = css.substring(css.indexOf(precise));
 		}
 	} else {
-		searched = cssOutput;
+		searched = css;
 	}
 	if (searched.isEmpty()) {
 		return COLOR_WIDGET_BACKGROUND_RGBA;
@@ -2257,6 +2225,20 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
 	return rgba;
 }
 
+String gtk_css_provider_to_string (long /*int*/ provider) {
+	// Fetch the CSS in char/string format from the provider.
+	if (provider == 0) {
+		return "";
+	}
+	long /*int*/ str = GTK.gtk_css_provider_to_string(provider);
+	if (str == 0) return "";
+	int length = C.strlen (str);
+	byte [] buffer = new byte [length];
+	C.memmove (buffer, str, length);
+	OS.g_free(str);
+	return new String (Converter.mbcsToWcs (buffer));
+}
+
 /**
  * This method allows for parsing of foreground colors from a GTK CSS string.
  * It allows for specific search input, such as a selector or tag, or for parsing
@@ -2265,26 +2247,18 @@ GdkRGBA gtk_css_parse_background (long /*int*/ provider, String precise) {
  * For example: given the string GtkWidget {color: rgba(255, 0, 0, 255);}
  * this method will return a GdkRGBA object with the color red.
  *
- * @param provider a pointer to the GtkCssProvider associated with the CSS being parsed
+ * @param css a CSS representation of the gtk theme
  * @param precise a String representation of a selector to search for, or NULL if
  * the entire GtkCssProvider is to be parsed
  *
  * @return a GdkRGBA object representing the foreground color or COLOR_WIDGET_FOREGROUND
  * if the foreground color could not be parsed or isn't set
  */
-GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
-	if (provider == 0) return COLOR_WIDGET_FOREGROUND_RGBA;
+GdkRGBA gtk_css_parse_foreground (String css, String precise) {
+	if (css.isEmpty()) return COLOR_WIDGET_FOREGROUND_RGBA;
 	String shortOutput;
 	int startIndex;
 	GdkRGBA rgba = new GdkRGBA ();
-	// Fetch the CSS in char/string format from the provider.
-	long /*int*/ str = GTK.gtk_css_provider_to_string(provider);
-	if (str == 0) return COLOR_WIDGET_FOREGROUND_RGBA;
-	int length = C.strlen (str);
-	byte [] buffer = new byte [length];
-	C.memmove (buffer, str, length);
-	OS.g_free(str);
-	String cssOutput = new String (Converter.mbcsToWcs (buffer));
 	String searched = "";
 	/*
 	 * This section allows for finer searching: for example
@@ -2296,11 +2270,11 @@ GdkRGBA gtk_css_parse_foreground (long /*int*/ provider, String precise) {
 	 * of the provider.
 	 */
 	if (precise != null) {
-		if (cssOutput.contains(precise)) {
-			searched = cssOutput.substring(cssOutput.indexOf(precise));
+		if (css.contains(precise)) {
+			searched = css.substring(css.indexOf(precise));
 		}
 	} else {
-		searched = cssOutput;
+		searched = css;
 	}
 	if (searched.isEmpty()) {
 		return COLOR_WIDGET_FOREGROUND_RGBA;
@@ -3204,9 +3178,22 @@ void initializeSystemColors () {
 
 		// Initialize and create a list of X11 named colors
 		initializeColorList();
+		/*
+		 * Find current GTK theme: either use the system theme,
+		 * or one provided using the GTK_THEME environment variable.
+		 * See bug 534007.
+		 */
+		byte [] buffer = OS.GTK_THEME_SET ? Converter.wcsToMbcs (OS.GTK_THEME_NAME, true) : OS.getThemeNameBytes();
+		// Load the dark variant if specified
+		byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
+
+		// Fetch the actual theme in char/string format
+		long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
+
+		String cssOutput = gtk_css_provider_to_string(themeProvider);
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND);
+			String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND, cssOutput);
 			if (!colorInfoForeground.isEmpty()) {
 				if (colorInfoForeground != "parsed") {
 					COLOR_INFO_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorInfoForeground);
@@ -3219,7 +3206,7 @@ void initializeSystemColors () {
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND);
+			String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND, cssOutput);
 			if (!colorInfoBackground.isEmpty()) {
 				if (colorInfoBackground != "parsed") {
 					COLOR_INFO_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorInfoBackground);
@@ -3235,7 +3222,7 @@ void initializeSystemColors () {
 		context = GTK.gtk_widget_get_style_context (shellHandle);
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorWidgetForeground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_FOREGROUND);
+			String colorWidgetForeground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_FOREGROUND, cssOutput);
 			if (!colorWidgetForeground.isEmpty()) {
 				COLOR_WIDGET_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetForeground);
 			} else {
@@ -3246,7 +3233,7 @@ void initializeSystemColors () {
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorWidgetBackground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_BACKGROUND);
+			String colorWidgetBackground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_BACKGROUND, cssOutput);
 			if (!colorWidgetBackground.isEmpty()) {
 				COLOR_WIDGET_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetBackground);
 			} else {
@@ -3267,7 +3254,7 @@ void initializeSystemColors () {
 		GTK.gtk_style_context_invalidate(context);
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListForeground = gtk_css_default_theme_values(SWT.COLOR_LIST_FOREGROUND);
+			String colorListForeground = gtk_css_default_theme_values(SWT.COLOR_LIST_FOREGROUND, cssOutput);
 			if (!colorListForeground.isEmpty()) {
 				COLOR_LIST_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorListForeground);
 			} else {
@@ -3278,7 +3265,7 @@ void initializeSystemColors () {
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListBackground = gtk_css_default_theme_values(SWT.COLOR_LIST_BACKGROUND);
+			String colorListBackground = gtk_css_default_theme_values(SWT.COLOR_LIST_BACKGROUND, cssOutput);
 			if (!colorListBackground.isEmpty()) {
 				COLOR_LIST_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorListBackground);
 			} else {
@@ -3293,7 +3280,7 @@ void initializeSystemColors () {
 		GTK.gtk_style_context_restore (context);
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionText = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION_TEXT);
+			String colorListSelectionText = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION_TEXT, cssOutput);
 			if (!colorListSelectionText.isEmpty()) {
 				COLOR_LIST_SELECTION_TEXT_RGBA = gtk_css_property_to_rgba (colorListSelectionText);
 			} else {
@@ -3305,7 +3292,7 @@ void initializeSystemColors () {
 		COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION);
+			String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION, cssOutput);
 			if (!colorListSelection.isEmpty()) {
 				COLOR_LIST_SELECTION_RGBA = gtk_css_property_to_rgba (colorListSelection);
 			} else {
@@ -3320,7 +3307,7 @@ void initializeSystemColors () {
 		COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionTextInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE);
+			String colorListSelectionTextInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE, cssOutput);
 			if (!colorListSelectionTextInactive.isEmpty()) {
 				COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionTextInactive);
 			} else {
@@ -3331,7 +3318,7 @@ void initializeSystemColors () {
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_INACTIVE);
+			String colorListSelectionInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_INACTIVE, cssOutput);
 			if (!colorListSelectionInactive.isEmpty()) {
 				COLOR_LIST_SELECTION_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionInactive);
 			} else {
@@ -3344,7 +3331,7 @@ void initializeSystemColors () {
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorTitleInactiveForeground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
+			String colorTitleInactiveForeground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_FOREGROUND, cssOutput);
 			if (!colorTitleInactiveForeground.isEmpty()) {
 				COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveForeground);
 			} else {
@@ -3356,7 +3343,7 @@ void initializeSystemColors () {
 
 		COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = rgba;
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorTitleInactiveBackground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
+			String colorTitleInactiveBackground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_BACKGROUND, cssOutput);
 			if (!colorTitleInactiveBackground.isEmpty()) {
 				COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveBackground);
 			} else {
@@ -3373,7 +3360,7 @@ void initializeSystemColors () {
 		// way to find it on GTK3 using GtkStyleContext machinery. Use COLOR_LIST_SELECTION instead
 		// as they are often the same.
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND);
+			String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND, cssOutput);
 			if (!colorLinkForeground.isEmpty()) {
 				if (colorLinkForeground != "parsed") {
 					COLOR_LINK_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorLinkForeground);
@@ -5781,9 +5768,8 @@ String simple_color_parser (String output, String value, int index) {
 	 */
 	if (output != null && value != null) {
 		int position;
-		String color;
 		position = index + value.length() + 1;
-		color = output.substring(position);
+		String color = output.substring(position);
 		// Check for rgb color case
 		if (color.startsWith("#") || color.startsWith("rgb")) {
 			return color;

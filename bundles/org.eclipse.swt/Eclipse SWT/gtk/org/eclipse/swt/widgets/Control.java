@@ -2931,7 +2931,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	}
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		if (provider != 0) {
-			return display.gtk_css_parse_background (provider, null);
+			return display.gtk_css_parse_background (display.gtk_css_provider_to_string(provider), null);
 		} else {
 			return defaultBackground();
 		}
@@ -2947,7 +2947,7 @@ GdkRGBA getContextColorGdkRGBA () {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	long /*int*/ fontHandle = fontHandle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		return display.gtk_css_parse_foreground(provider, null);
+		return display.gtk_css_parse_foreground(display.gtk_css_provider_to_string(provider), null);
 	} else {
 		long /*int*/ context = GTK.gtk_widget_get_style_context (fontHandle);
 		GdkRGBA rgba = display.styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
