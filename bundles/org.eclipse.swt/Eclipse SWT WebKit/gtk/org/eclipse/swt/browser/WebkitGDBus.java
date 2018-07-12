@@ -15,6 +15,8 @@
 
 package org.eclipse.swt.browser;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -33,11 +35,29 @@ import org.eclipse.swt.internal.gtk.*;
  */
 class WebkitGDBus {
 	private static String DBUS_SERVICE_NAME;
-	private static final String DBUS_OBJECT_NAME = "/org/eclipse/swt/gdbus";
+	private static final String DBUS_OBJECT_PATH = "/org/eclipse/swt/gdbus";
 	private static final String INTERFACE_NAME = "org.eclipse.swt.gdbusInterface";
+	private static final String EXTENSION_INTERFACE_NAME = "org.eclipse.swt.webkitgtk_extension.gdbusInterface";
+	private static String EXTENSION_DBUS_NAME;
+	private static String EXTENSION_DBUS_PATH;
 
 	/** Accepted methods over gdbus */
 	private static final String webkit2callJava = WebKit.Webkit2Extension.getJavaScriptFunctionName();
+	private static final String webkitWebExtensionIdentifier = WebKit.Webkit2Extension.getWebExtensionIdentifer();
+
+	/** Proxy connection to the web extension.*/
+	static long /*int*/ proxy;
+	/** A field that is set to true if the proxy connection has been established, false otherwise */
+	static boolean proxyToExtension;
+	/** Set to true if there are <code>BrowserFunction</code> objects waiting to be registered with the web extension.*/
+	static boolean functionsPending;
+	/**
+	 * HashMap that stores any BrowserFunctions which have been created but not yet registered with the web extension.
+	 * These functions will be registered with the web extension as soon as the proxy to the extension is set up.
+	 *
+	 * The format of the HashMap is (page ID, list of function string and URL).
+	 */
+	static HashMap<Long, ArrayList<ArrayList<String>>> pendingBrowserFunctions = new HashMap<>();
 
 
 	/**
@@ -77,6 +97,11 @@ class WebkitGDBus {
 			+  "      <arg type='" + OS.DBUS_TYPE_SINGLE_COMPLETE + "' name='arguments' direction='in'/>"
 			+  "      <arg type='" + OS.DBUS_TYPE_SINGLE_COMPLETE + "' name='result' direction='out'/>"
 			+  "    </method>"
+			+  "	<method name='" + webkitWebExtensionIdentifier + "'>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webExtensionDbusName' direction='in'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webExtensionDbusPath' direction='in'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS + "' name='result' direction='out'/>"
+			+  "    </method>"
 			+  "  </interface>"
 			+  "</node>";
 
@@ -96,6 +121,9 @@ class WebkitGDBus {
 	private static Callback onNameLostCallback;
 	private static Callback handleMethodCallback;
 
+	/** Callback for asynchronous proxy calls to the extension */
+	private static Callback callExtensionAsyncCallback;
+
 	static {
 		onBusAcquiredCallback = new Callback (WebkitGDBus.class, "onBusAcquiredCallback", 3); //$NON-NLS-1$
 		if (onBusAcquiredCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -108,9 +136,12 @@ class WebkitGDBus {
 
 		handleMethodCallback = new Callback (WebkitGDBus.class, "handleMethodCallback", 8); //$NON-NLS-1$
 		if (handleMethodCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		callExtensionAsyncCallback = new Callback (WebkitGDBus.class, "callExtensionAsyncCallback", 3); //$NON-NLS-1$
+		if (callExtensionAsyncCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
-	static private boolean initialized;
+	static boolean initialized;
 
 	/** This method is not intended to be referenced by clients. Internal class. */
 	static void init(String uniqueId) {
@@ -169,7 +200,7 @@ class WebkitGDBus {
 			// Other times it validates it fine. We ignore for now as 32bit will be dropped anyway.
 			OS.g_dbus_connection_register_object(
 					connection,
-					Converter.javaStringToCString(DBUS_OBJECT_NAME),
+					Converter.javaStringToCString(DBUS_OBJECT_PATH),
 					interface_info,
 					vtable,
 					0, // user_data
@@ -177,7 +208,7 @@ class WebkitGDBus {
 					error);
 
 			if (error[0] != 0) {
-				System.err.println("SWT WebkitGDBus: Failed to register object: " + DBUS_OBJECT_NAME);
+				System.err.println("SWT WebkitGDBus: Failed to register object: " + DBUS_OBJECT_PATH);
 				return 0;
 			}
 		}
@@ -236,19 +267,123 @@ class WebkitGDBus {
 
 		String java_method_name = Converter.cCharPtrToJavaString(method_name, false);
 		Object result = null;
-		if (java_method_name != null && java_method_name.equals(webkit2callJava)) {
-			try {
-				Object [] java_parameters = (Object []) convertGVariantToJava(gvar_parameters);
-				result = WebKit.Webkit2Extension.webkit2callJavaCallback(java_parameters);
-			} catch (Exception e) {
-				// gdbus should always return to prevent extension from hanging.
-				result = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
-				System.err.println("SWT Webkit: Exception occured in Webkit2 callback logic. Bug?");
+		if (java_method_name != null) {
+			if (java_method_name.equals(webkit2callJava)) {
+				try {
+					Object [] java_parameters = (Object []) convertGVariantToJava(gvar_parameters);
+					result = WebKit.Webkit2Extension.webkit2callJavaCallback(java_parameters);
+				} catch (Exception e) {
+					// gdbus should always return to prevent extension from hanging.
+					result = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+					System.err.println("SWT Webkit: Exception occured in Webkit2 callback logic. Bug?");
+				}
+			} else if (java_method_name.equals(webkitWebExtensionIdentifier)) {
+				Object [] nameArray = (Object []) convertGVariantToJava(gvar_parameters);
+				if (nameArray [0] != null && nameArray[0] instanceof String) EXTENSION_DBUS_NAME = (String) nameArray[0];
+				if (nameArray [1] != null && nameArray[1] instanceof String) EXTENSION_DBUS_PATH = (String) nameArray[1];
+				proxyToExtension = proxyToExtensionInit();
+				if (proxyToExtension) {
+					invokeReturnValueExtensionIdentifier(pendingBrowserFunctions, invocation);
+				} else {
+					invokeReturnValueExtensionIdentifier(null, invocation);
+					System.err.println("SWT webkit: proxy to web extension failed to load, BrowserFunction may not work.");
+				}
+				return 0;
 			}
 		} else {
-			result = (String) "SWT Webkit: Gdbus called an unknown method?";
-			System.err.println("SWT WebkitGDBus: Received a call from an unknown method: " + java_method_name);
+			result = (String) "SWT webkit: GDBus called an unknown method?";
+			System.err.println("SWT webkit: Received a call from an unknown method: " + java_method_name);
 		}
+		invokeReturnValue(result, invocation);
+		return 0;
+	}
+
+	@SuppressWarnings("unused")
+	private static long /*int*/ callExtensionAsyncCallback (long /*int*/ source_object, long /*int*/ res, long /*int*/ user_data) {
+		long /*int*/[] gerror = new long /*int*/[1];
+		long /*int*/ result = OS.g_dbus_proxy_call_finish (proxy, res, gerror);
+		if (gerror[0] != 0){
+			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			String msg = Converter.cCharPtrToJavaString(errMsg, false);
+			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension (Java callback).");
+			System.err.println("SWT webkit: the error message provided is " + msg);
+			OS.g_error_free(gerror[0]);
+		}
+		return 0;
+	}
+
+	/**
+	 * Returns a GVariant to the DBus invocation of the extension identifier method. When the extension
+	 * is initialized it sends a DBus message to the SWT webkit instance. As a return value, the SWT webkit
+	 * instance sends any BrowserFunctions that have been registered. If no functions have been registered,
+	 * an "empty" function with a page ID of -1 is sent.
+	 *
+	 * @param map the HashMap of BrowserFunctions waiting to be registered in the extension, or null
+	 * if you'd like to explicitly send an empty function signature
+	 * @param invocation the GDBus invocation to return the value on
+	 */
+	private static void invokeReturnValueExtensionIdentifier (HashMap<Long, ArrayList<ArrayList<String>>> map,
+			long /*int*/ invocation) {
+		long /*int*/ resultGVariant;
+		long /*int*/ builder;
+		long /*int*/ type = OS.g_variant_type_new(OS.G_VARIANT_TYPE_ARRAY_BROWSER_FUNCS);
+		builder = OS.g_variant_builder_new(type);
+		if (builder == 0) return;
+		Object [] tupleArray = new Object[3];
+		boolean sendEmptyFunction;
+		if (map == null) {
+			sendEmptyFunction = true;
+		} else {
+			sendEmptyFunction = map.isEmpty() && !functionsPending;
+		}
+		/*
+		 * No functions to register, send a page ID of -1 and empty strings.
+		 */
+		if (sendEmptyFunction) {
+			tupleArray[0] = (long)-1;
+			tupleArray[1] = "";
+			tupleArray[2] = "";
+			long /*int*/ tupleGVariant = convertJavaToGVariant(tupleArray);
+			if (tupleGVariant != 0) {
+				OS.g_variant_builder_add_value(builder, tupleGVariant);
+			} else {
+				System.err.println("SWT webkit: error creating empty BrowserFunction GVariant tuple, skipping.");
+			}
+		} else {
+			for (long id : map.keySet()) {
+				ArrayList<ArrayList<String>> list = map.get(id);
+				if (list != null) {
+					for (ArrayList<String> stringList : list) {
+						Object [] stringArray = stringList.toArray();
+						if (stringArray.length > 2) {
+							System.err.println("SWT webkit: String array with BrowserFunction and URL should never have"
+									+ "more than 2 Strings");
+						}
+						tupleArray[0] = id;
+						System.arraycopy(stringArray, 0, tupleArray, 1, 2);
+						long /*int*/ tupleGVariant = convertJavaToGVariant(tupleArray);
+						if (tupleGVariant != 0) {
+							OS.g_variant_builder_add_value(builder, tupleGVariant);
+						} else {
+							System.err.println("SWT webkit: error creating BrowserFunction GVariant tuple, skipping.");
+						}
+					}
+				}
+			}
+		}
+		resultGVariant = OS.g_variant_builder_end(builder);
+		String typeString = Converter.cCharPtrToJavaString(OS.g_variant_get_type_string(resultGVariant), false);
+		if (!OS.DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS.equals(typeString)) {
+			System.err.println("An error packaging the GVariant occurred: type mismatch.");
+		}
+		long /*int*/ [] variants = {resultGVariant};
+		long /*int*/ finalGVariant = OS.g_variant_new_tuple(variants, 1);
+		OS.g_dbus_method_invocation_return_value(invocation, finalGVariant);
+		OS.g_variant_builder_unref(builder);
+		return;
+	}
+
+	private static void invokeReturnValue (Object result, long /*int*/ invocation) {
 		long /*int*/ resultGVariant = 0;
 		try {
 			resultGVariant = convertJavaToGVariant(new Object [] {result}); // Result has to be a tuple.
@@ -258,10 +393,98 @@ class WebkitGDBus {
 			resultGVariant = convertJavaToGVariant(new Object [] {errMsg});
 		}
 		OS.g_dbus_method_invocation_return_value(invocation, resultGVariant);
-		return 0; // void return value.
+		return; // void return value.
 	}
 
+	/**
+	 * Initializes the proxy connection to the web extension.
+	 *
+	 * @return true if establishing the proxy connections succeeded,
+	 * false otherwise
+	 */
+	private static boolean proxyToExtensionInit() {
+		if (proxy != 0) {
+			return true;
+		} else {
+			if (EXTENSION_DBUS_NAME != null && EXTENSION_DBUS_PATH != null) {
+				long /*int*/ [] error = new long /*int*/ [1];
+				byte [] name = Converter.javaStringToCString(EXTENSION_DBUS_NAME);
+				byte [] path = Converter.javaStringToCString(EXTENSION_DBUS_PATH);
+				byte [] interfaceName = Converter.javaStringToCString(EXTENSION_INTERFACE_NAME);
+				proxy = OS.g_dbus_proxy_new_for_bus_sync(OS.G_BUS_TYPE_SESSION, OS.G_DBUS_PROXY_FLAGS_NONE, 0, name, path, interfaceName, 0, error);
+				if (error[0] != 0) {
+					long /*int*/ errMsg = OS.g_error_get_message(error[0]);
+					String msg = Converter.cCharPtrToJavaString(errMsg, false);
+					OS.g_error_free(error[0]);
+					System.err.println("SWT webkit: there was an error establishing the proxy connection to the extension. " +
+							" The error is " + msg);
+					return false;
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
+	/**
+	 * Calls the web extension synchronously. Returns true if the operation succeeded, and false
+	 * otherwise (or if the operation times out).
+	 *
+	 * @param params a pointer to the GVariant containing the parameters
+	 * @param methodName a String representing the DBus method name in the extension
+	 * @return an Object representing the return value from DBus in boolean form
+	 */
+	static Object callExtensionSync (long /*int*/ params, String methodName) {
+		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
+		long /*int*/ gVariant = OS.g_dbus_proxy_call_sync(proxy, Converter.javaStringToCString(methodName),
+				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, gerror);
+		if (gerror[0] != 0) {
+			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			String msg = Converter.cCharPtrToJavaString(errMsg, false);
+			/*
+			 * Don't print console warnings for timeout errors, as we can handle these ourselves.
+			 * Note, most timeout errors happen only when running test cases, not during "normal" use.
+			 */
+			if (msg != null && (!msg.contains("Timeout") && !msg.contains("timeout"))) {
+				System.err.println("SWT webkit: There was an error executing something synchronously with the extension.");
+				System.err.println("SWT webkit: The error message is: " + msg);
+				return (Object) false;
+			}
+			OS.g_error_free(gerror[0]);
+			return (Object) "timeout";
+		}
+		Object resultObject = gVariant != 0 ? convertGVariantToJava(gVariant) : (Object) false;
+		// Sometimes we get back tuples from GDBus, which get converted into Object arrays. In this case
+		// we only care about the first value, since the extension never returns anything more than that.
+		if (resultObject instanceof Object[]) {
+			return ((Object []) resultObject)[0];
+		}
+		return resultObject;
+	}
+
+	/**
+	 * Calls the web extension asynchronously. Note, this method returning true does not
+	 * guarantee the operation's success, it only means no errors occurred.
+	 *
+	 * @param params a pointer to the GVariant containing the parameters
+	 * @param methodName a String representing the DBus method name in the extension
+	 * @return true if the extension was called without errors, false otherwise
+	 */
+	static boolean callExtensionAsync (long /*int*/ params, String methodName) {
+		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
+		OS.g_dbus_proxy_call(proxy, Converter.javaStringToCString(methodName),
+				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, callExtensionAsyncCallback.getAddress(), gerror);
+		if (gerror[0] != 0) {
+			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			String msg = Converter.cCharPtrToJavaString(errMsg, false);
+			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension.");
+			System.err.println("SWT webkit: The error message is: " + msg);
+			OS.g_error_free(gerror[0]);
+			return false;
+		}
+		return true;
+	}
 
 	/* TYPE NOTES
 	 *
@@ -314,6 +537,10 @@ class WebkitGDBus {
 			return new Double(OS.g_variant_get_double(gVariant));
 		}
 
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_UINT64)){
+			return new Long(OS.g_variant_get_uint64(gVariant));
+		}
+
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_STRING)){
 			return Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariant, null), false);
 		}
@@ -344,6 +571,10 @@ class WebkitGDBus {
 
 		if (javaObject == null) {
 			return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
+		}
+
+		if (javaObject instanceof Long) {
+			return OS.g_variant_new_uint64((Long) javaObject);
 		}
 
 		if (javaObject instanceof String) {

@@ -2921,6 +2921,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1main_1reso
 }
 #endif
 
+#ifndef NO__1webkit_1web_1view_1get_1page_1id
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1page_1id)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1get_1page_1id_FUNC);
+/*
+	rc = (jintLong)webkit_web_view_get_page_id(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_get_page_id)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1get_1page_1id_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1web_1view_1get_1progress
 JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1get_1progress)
 	(JNIEnv *env, jclass that, jintLong arg0)

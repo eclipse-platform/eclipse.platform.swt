@@ -204,6 +204,16 @@ public class OS extends C {
 	 * @category gdbus */
 	public static final int G_BUS_NAME_OWNER_FLAGS_REPLACE = (1<<1);
 
+	// Proxy flags found here: https://developer.gnome.org/gio/stable/GDBusProxy.html#GDBusProxyFlags
+	public static final int G_DBUS_PROXY_FLAGS_NONE = 0;
+	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES = 1;
+	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS = 2;
+	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START = 3;
+	public static final int G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES = 4;
+	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START_AT_CONSTRUCTION = 5;
+
+	public static final int G_DBUS_CALL_FLAGS_NONE = 0;
+	public static final int G_DBUS_CALL_FLAGS_NO_AUTO_START = (1<<0);
 
 	/**
 	 * DBus Data types as defined by:
@@ -220,7 +230,11 @@ public class OS extends C {
 	/** @category gdbus */
 	public static final String DBUS_TYPE_STRING_ARRAY = "as";
 	/** @category gdbus */
+	public static final String DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS = "a(tss)";
+	/** @category gdbus */
 	public static final String DBUS_TYPE_INT32 = "i";
+	/** @category gdbus */
+	public static final String DBUS_TYPE_UINT64 = "t";
 	/** @category gdbus */
 	public static final String DBUS_TYPE_DOUBLE = "d";
 	/** @category gdbus */
@@ -245,9 +259,13 @@ public class OS extends C {
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_IN32 = ascii(DBUS_TYPE_INT32);
 	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_UINT64 = ascii(DBUS_TYPE_UINT64);
+	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_DOUBLE = ascii(DBUS_TYPE_DOUBLE);
 	/** @category gdbus */
 	public static final byte[] G_VARIANT_TYPE_TUPLE = ascii(DBUS_TYPE_STRUCT);
+	/** @category gdbus */
+	public static final byte[] G_VARIANT_TYPE_ARRAY_BROWSER_FUNCS = ascii(DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS);
 
 
 	/** Signals */
@@ -4261,6 +4279,79 @@ public static final void setDarkThemePreferred(boolean preferred){
 			GTK.gtk_application_prefer_dark_theme);
 }
 
+/**
+ * @param info cast=(GDBusInterfaceInfo *)
+ * @param name cast=(const gchar *)
+ * @param object_path cast=(const gchar *)
+ * @param interface_name cast=(const gchar *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_proxy_new_for_bus_sync (int bus_type, int flags, long /*int*/ info, byte [] name, byte [] object_path, byte [] interface_name,
+		long /*int*/ cancellable, long /*int*/[] error);
+public static final long /*int*/ g_dbus_proxy_new_for_bus_sync (int bus_type, int flags, long /*int*/ info, byte [] name, byte [] object_path, byte [] interface_name,
+		long /*int*/ cancellable, long /*int*/[] error) {
+  lock.lock();
+  try {
+    return _g_dbus_proxy_new_for_bus_sync (bus_type, flags, info, name, object_path, interface_name, cancellable, error);
+  } finally {
+    lock.unlock();
+  }
+}
+
+/**
+ * @param proxy cast=(GDBusProxy *)
+ * @param method_name cast=(const gchar *)
+ * @param parameters cast=(GVariant *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_proxy_call_sync (long /*int*/ proxy, byte[] method_name, long /*int*/ parameters, int flags, int timeout_msec, long /*int*/ cancellable, long /*int*/[] error);
+public static final long /*int*/ g_dbus_proxy_call_sync (long /*int*/ proxy, byte[] method_name, long /*int*/ parameters, int flags, int timeout_msec, long /*int*/ cancellable, long /*int*/[] error) {
+	lock.lock();
+	try {
+		return _g_dbus_proxy_call_sync (proxy, method_name, parameters, flags, timeout_msec, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param proxy cast=(GDBusProxy *)
+ * @param method_name cast=(const gchar *)
+ * @param parameters cast=(GVariant *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native void _g_dbus_proxy_call (long /*int*/ proxy, byte[] method_name, long /*int*/ parameters, int flags, int timeout_msec, long /*int*/ cancellable, long /*int*/ callback, long /*int*/[] error);
+public static final void g_dbus_proxy_call (long /*int*/ proxy, byte[] method_name, long /*int*/ parameters, int flags, int timeout_msec, long /*int*/ cancellable, long /*int*/ callback, long /*int*/[] error) {
+	lock.lock();
+	try {
+		_g_dbus_proxy_call (proxy, method_name, parameters, flags, timeout_msec, cancellable, callback, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param proxy cast=(GDBusProxy *)
+ * @param res cast=(GAsyncResult *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_dbus_proxy_call_finish (long /*int*/ proxy, long /*int*/ res, long /*int*/[] error);
+public static final long /*int*/ g_dbus_proxy_call_finish (long /*int*/ proxy, long /*int*/ res, long /*int*/[] error) {
+	lock.lock();
+	try {
+		return _g_dbus_proxy_call_finish (proxy, res, error);
+	} finally {
+		lock.unlock();
+	}
+}
 
 /**
  * @param xml_data cast=(const gchar *)
@@ -4348,6 +4439,82 @@ public static final void g_dbus_method_invocation_return_value (long /*int*/ inv
 	lock.lock();
 	try {
 		_g_dbus_method_invocation_return_value (invocation, parameters);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param type cast=(const GVariantType *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_builder_new (long /*int*/ type);
+/** @category gdbus */
+public static final long /*int*/ g_variant_builder_new (long /*int*/ type) {
+	lock.lock();
+	try {
+		return _g_variant_builder_new(type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param builder cast=(GVariantBuilder *)
+ * @param value cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native void /*int*/ _g_variant_builder_add_value (long /*int*/ builder, long /*int*/ value);
+/** @category gdbus */
+public static final void /*int*/ g_variant_builder_add_value (long /*int*/ builder, long /*int*/ value) {
+	lock.lock();
+	try {
+		_g_variant_builder_add_value(builder, value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param type cast=(const gchar *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_type_new (byte [] type);
+/** @category gdbus */
+public static final long /*int*/ g_variant_type_new (byte [] type) {
+	lock.lock();
+	try {
+		return _g_variant_type_new(type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param builder cast=(GVariantBuilder *)
+ * @category gdbus
+ */
+public static final native long /*int*/ _g_variant_builder_end (long /*int*/ builder);
+/** @category gdbus */
+public static final long /*int*/ g_variant_builder_end (long /*int*/ builder) {
+	lock.lock();
+	try {
+		return _g_variant_builder_end(builder);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param builder cast=(GVariantBuilder *)
+ * @category gdbus
+ */
+public static final native void /*int*/ _g_variant_builder_unref (long /*int*/ builder);
+/** @category gdbus */
+public static final void /*int*/ g_variant_builder_unref (long /*int*/ builder) {
+	lock.lock();
+	try {
+		_g_variant_builder_unref(builder);
 	} finally {
 		lock.unlock();
 	}
@@ -4442,6 +4609,31 @@ public static final double g_variant_get_double (long /*int*/ gvariant) {
 	lock.lock();
 	try {
 		return _g_variant_get_double (gvariant);
+	} finally {
+		lock.unlock();
+	}
+}
+
+public static final native long /*int*/ _g_variant_new_uint64 (long value);
+public static final long /*int*/ g_variant_new_uint64 (long value) {
+	lock.lock();
+	try {
+		return _g_variant_new_uint64 (value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param gvariant cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native long _g_variant_get_uint64 (long /*int*/ gvariant);
+/** @category gdbus */
+public static final long g_variant_get_uint64 (long /*int*/ gvariant) {
+	lock.lock();
+	try {
+		return _g_variant_get_uint64 (gvariant);
 	} finally {
 		lock.unlock();
 	}

@@ -1722,6 +1722,17 @@ public static final long /*int*/ webkit_web_view_get_main_frame (long /*int*/ we
 }
 
 /** @method flags=dynamic */
+public static final native long /*int*/ _webkit_web_view_get_page_id (long /*int*/ web_view);
+public static final long /*int*/ webkit_web_view_get_page_id (long /*int*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_page_id (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native double _webkit_web_view_get_progress (long /*int*/ web_view);
 public static final double webkit_web_view_get_progress (long /*int*/ web_view) {
 	assert WEBKIT1 : Webkit1AssertMsg;

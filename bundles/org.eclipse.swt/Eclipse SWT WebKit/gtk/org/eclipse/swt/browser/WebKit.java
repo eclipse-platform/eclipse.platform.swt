@@ -127,6 +127,7 @@ class WebKit extends WebBrowser {
 	 */
 	long /*int*/ webView;
 	long /*int*/ scrolledWindow;
+	long pageId;
 
 	/** Webkit1 only. Used by the externalObject for javascript callback to java. */
 	long /*int*/ webViewData;
@@ -419,12 +420,52 @@ class WebKit extends WebBrowser {
 	@Override
 	public void createFunction(BrowserFunction function) {
 		if (WEBKIT2) {
-			if (!Webkit2Extension.gdbus_init()) {
-				System.err.println("SWT Webkit Warning: Webkit extension failed to initialize. BrowserFunction will not work.: " + function.name);
+			if (!WebkitGDBus.initialized) {
+				System.err.println("SWT webkit: WebkitGDBus and/or Webkit2Extension not loaded, BrowserFunction will not work." +
+					"Tried to create "+ function.name);
 				return;
 			}
 		}
 		super.createFunction(function);
+		if (WEBKIT2) {
+			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
+			/*
+			 * If the proxy to the extension has not yet been loaded, store the BrowserFunction page ID,
+			 * function string, and URL in a HashMap. Once the proxy to the extension is loaded, these
+			 * functions will be sent to and registered in the extension.
+			 */
+			if (!WebkitGDBus.proxyToExtension) {
+				WebkitGDBus.functionsPending = true;
+				ArrayList<ArrayList<String>> list = new ArrayList<>();
+				ArrayList<String> functionAndUrl = new ArrayList<>();
+				functionAndUrl.add(0, function.functionString);
+				functionAndUrl.add(1, url);
+				list.add(functionAndUrl);
+				ArrayList<ArrayList<String>> existing = WebkitGDBus.pendingBrowserFunctions.putIfAbsent(this.pageId, list);
+				if (existing != null) {
+					existing.add(functionAndUrl);
+				}
+			} else {
+				// If the proxy to the extension is already loaded, register the function in the extension via DBus
+				boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "register");
+				if (!successful) {
+					System.err.println("SWT webkit: failure registering BrowserFunction " + function.name);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void destroyFunction (BrowserFunction function) {
+		// Only deregister functions if the proxy to the extension has been loaded
+		if (WebkitGDBus.proxyToExtension && WEBKIT2) {
+			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
+			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "deregister");
+			if (!successful) {
+				System.err.println("SWT webkit: failure deregistering BrowserFunction from extension " + function.name);
+			}
+		}
+		super.destroyFunction(function);
 	}
 
 	private static String getInternalErrorMsg () {
@@ -458,6 +499,7 @@ class WebKit extends WebBrowser {
 	static class Webkit2Extension {
 		/** Note, if updating this, you need to change it also in webkitgtk_extension.c */
 		private static final String javaScriptFunctionName = "webkit2callJava";  // $NON-NLS-1$
+		private static final String webkitWebExtensionIdentifier = "webkitWebExtensionIdentifer";  // $NON-NLS-1$
 		private static Callback initializeWebExtensions_callback;
 		private static int uniqueID = OS.getpid();
 
@@ -470,6 +512,9 @@ class WebKit extends WebBrowser {
 		static String getJavaScriptFunctionName() {
 			return javaScriptFunctionName;
 		}
+		static String getWebExtensionIdentifer() {
+			return webkitWebExtensionIdentifier;
+		}
 		static String getJavaScriptFunctionDeclaration(long /*int*/ webView) {
 			return "if (!window.callJava) {\n"
 			+ "		window.callJava = function callJava(index, token, args) {\n"
@@ -479,6 +524,12 @@ class WebKit extends WebBrowser {
 		}
 
 		static void init() {
+			/*
+			 * Initialize GDBus before the extension, as the extension initialization callback at the C level
+			 * sends data back to SWT via GDBus. Failure to load GDBus here will result in crashes.
+			 * See bug 536141.
+			 */
+			gdbus_init();
 			initializeWebExtensions_callback = new Callback(Webkit2Extension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
 			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
@@ -1199,6 +1250,7 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
 		// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
 	}
+	this.pageId = WebKitGTK.webkit_web_view_get_page_id (webView);
 	if (WEBKIT1) {
 		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
 		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
@@ -1520,6 +1572,46 @@ void nonBlockingExecute(String script) {
 	} finally {
 		nonBlockingEvaluate--;
 	}
+}
+
+/**
+ * Modifies a BrowserFunction in the web extension. This method can be used to register/deregister BrowserFunctions
+ * in the web extension, so that those BrowserFunctions are executed upon triggering of the object_cleared callback (in
+ * the extension, not in Java).
+ *
+ * This function will return true if: the operation succeeds synchronously, or if the synchronous call timed out and an
+ * asynchronous call was performed instead. All other cases will return false.
+ *
+ * Supported actions: "register" and "deregister"
+ *
+ * @param pageId the page ID of the WebKit instance/web page
+ * @param function the function string
+ * @param url the URL
+ * @param action the action being performed on the function, which will be used to form the DBus method name.
+ * @return true if the action succeeded (or was performed asynchronously), false if it failed
+ */
+private boolean webkit_extension_modify_function (long pageId, String function, String url, String action){
+	long /*int*/ args[] = { OS.g_variant_new_uint64(pageId),
+			OS.g_variant_new_string (Converter.javaStringToCString(function)),
+			OS.g_variant_new_string (Converter.javaStringToCString(url))};
+	final long /*int*/ argsTuple = OS.g_variant_new_tuple(args, args.length);
+	if (argsTuple == 0) return false;
+	String dbusMethodName = "webkitgtk_extension_" + action + "_function";
+	Object returnVal = WebkitGDBus.callExtensionSync(argsTuple, dbusMethodName);
+	if (returnVal instanceof Boolean) {
+		return (Boolean) returnVal;
+	} else if (returnVal instanceof String) {
+		String returnString = (String) returnVal;
+		/*
+		 * Call the extension asynchronously if a synchronous call times out.
+		 * Note: this is a pretty rare case, and usually only happens when running test cases.
+		 * See bug 536141.
+		 */
+		if ("timeout".equals(returnString)) {
+			return WebkitGDBus.callExtensionAsync(argsTuple, dbusMethodName);
+		}
+	}
+	return false;
 }
 
 @Override
@@ -3284,7 +3376,6 @@ long /*int*/ webkit_load_changed (long /*int*/ web_view, int status, long user_d
 			return handleLoadCommitted (uri, true);
 		}
 		case WebKitGTK.WEBKIT2_LOAD_FINISHED: {
-			registerBrowserFunctions(); 	// Bug 508217
 			addEventHandlers (web_view, true);
 
 			long /*int*/ title = WebKitGTK.webkit_web_view_get_title (webView);

@@ -177,6 +177,7 @@ typedef enum {
 	_1webkit_1web_1view_1get_1load_1status_FUNC,
 	_1webkit_1web_1view_1get_1main_1frame_FUNC,
 	_1webkit_1web_1view_1get_1main_1resource_FUNC,
+	_1webkit_1web_1view_1get_1page_1id_FUNC,
 	_1webkit_1web_1view_1get_1progress_FUNC,
 	_1webkit_1web_1view_1get_1settings_FUNC,
 	_1webkit_1web_1view_1get_1title_FUNC,

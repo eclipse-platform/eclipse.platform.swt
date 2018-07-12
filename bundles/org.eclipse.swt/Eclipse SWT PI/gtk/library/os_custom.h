@@ -67,6 +67,7 @@
 #define g_thread_init_LIB LIB_GTHREAD
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
+#define g_dbus_proxy_call_LIB LIB_GLIB
 
 // GTK3 only
 #define g_bytes_new_LIB LIB_GLIB

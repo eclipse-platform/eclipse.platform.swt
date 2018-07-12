@@ -16235,6 +16235,91 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1dbus_1proxy_1call
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1dbus_1proxy_1call)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jint arg3, jint arg4, jintLong arg5, jintLong arg6, jintLongArray arg7)
+{
+	jbyte *lparg1=NULL;
+	jintLong *lparg7=NULL;
+	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1call_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
+/*
+	g_dbus_proxy_call((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, arg6, (GError **)lparg7);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_dbus_proxy_call)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GDBusProxy *, const gchar *, GVariant *, jint, jint, GCancellable *, jintLong, GError **))fp)((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, arg6, (GError **)lparg7);
+		}
+	}
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1dbus_1proxy_1call_FUNC);
+}
+#endif
+
+#ifndef NO__1g_1dbus_1proxy_1call_1finish
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1dbus_1proxy_1call_1finish)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+{
+	jintLong *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1call_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)g_dbus_proxy_call_finish((GDBusProxy *)arg0, (GAsyncResult *)arg1, (GError **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1dbus_1proxy_1call_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1dbus_1proxy_1call_1sync
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1dbus_1proxy_1call_1sync)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jint arg3, jint arg4, jintLong arg5, jintLongArray arg6)
+{
+	jbyte *lparg1=NULL;
+	jintLong *lparg6=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1call_1sync_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	rc = (jintLong)g_dbus_proxy_call_sync((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, (GError **)lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseIntLongArrayElements(env, arg6, lparg6, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1dbus_1proxy_1call_1sync_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1dbus_1proxy_1new_1for_1bus_1sync
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1dbus_1proxy_1new_1for_1bus_1sync)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintLong arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jintLong arg6, jintLongArray arg7)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jintLong *lparg7=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1new_1for_1bus_1sync_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	rc = (jintLong)g_dbus_proxy_new_for_bus_sync(arg0, arg1, (GDBusInterfaceInfo *)arg2, (const gchar *)lparg3, (const gchar *)lparg4, (const gchar *)lparg5, (GCancellable *)arg6, (GError **)lparg7);
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1dbus_1proxy_1new_1for_1bus_1sync_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1error_1free
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1error_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -17970,6 +18055,50 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1value_1peek_1pointer)
 }
 #endif
 
+#ifndef NO__1g_1variant_1builder_1add_1value
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1builder_1add_1value)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1builder_1add_1value_FUNC);
+	g_variant_builder_add_value((GVariantBuilder *)arg0, (GVariant *)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1builder_1add_1value_FUNC);
+}
+#endif
+
+#ifndef NO__1g_1variant_1builder_1end
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1builder_1end)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1builder_1end_FUNC);
+	rc = (jintLong)g_variant_builder_end((GVariantBuilder *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1builder_1end_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1builder_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1builder_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1builder_1new_FUNC);
+	rc = (jintLong)g_variant_builder_new((const GVariantType *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1builder_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1builder_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1builder_1unref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1builder_1unref_FUNC);
+	g_variant_builder_unref((GVariantBuilder *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1builder_1unref_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1variant_1get_1boolean
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1variant_1get_1boolean)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -18066,6 +18195,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1get_1type_1string)
 	OS_NATIVE_ENTER(env, that, _1g_1variant_1get_1type_1string_FUNC);
 	rc = (jintLong)g_variant_get_type_string((GVariant *)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1get_1type_1string_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1get_1uint64
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1get_1uint64)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1get_1uint64_FUNC);
+	rc = (jlong)g_variant_get_uint64((GVariant *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1get_1uint64_FUNC);
 	return rc;
 }
 #endif
@@ -18174,6 +18315,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1new_1tuple)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntLongArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1new_1tuple_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new_1uint64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1new_1uint64)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1new_1uint64_FUNC);
+	rc = (jintLong)g_variant_new_uint64(arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1new_1uint64_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1type_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1variant_1type_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1type_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)g_variant_type_new((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1type_1new_FUNC);
 	return rc;
 }
 #endif

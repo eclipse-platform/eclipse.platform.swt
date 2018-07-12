@@ -167,6 +167,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1get_1load_1status",
 	"_1webkit_1web_1view_1get_1main_1frame",
 	"_1webkit_1web_1view_1get_1main_1resource",
+	"_1webkit_1web_1view_1get_1page_1id",
 	"_1webkit_1web_1view_1get_1progress",
 	"_1webkit_1web_1view_1get_1settings",
 	"_1webkit_1web_1view_1get_1title",
