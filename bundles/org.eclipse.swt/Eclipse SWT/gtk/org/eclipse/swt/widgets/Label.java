@@ -237,8 +237,14 @@ void createHandle (int index) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
 			handle = gtk_separator_new (GTK.GTK_ORIENTATION_HORIZONTAL);
+			if (handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				GTK.gtk_widget_set_valign(handle, GTK.GTK_ALIGN_CENTER);
+			}
 		} else {
 			handle = gtk_separator_new (GTK.GTK_ORIENTATION_VERTICAL);
+			if (handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				GTK.gtk_widget_set_halign(handle, GTK.GTK_ALIGN_CENTER);
+			}
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
