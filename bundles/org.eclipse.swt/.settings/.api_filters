@@ -1886,4 +1886,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="New API constant has been added to SWT class but is not visible due to a filter on it." id="926941240">
+            <message_arguments>
+                <message_argument value="3.108.0"/>
+                <message_argument value="3.107.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
