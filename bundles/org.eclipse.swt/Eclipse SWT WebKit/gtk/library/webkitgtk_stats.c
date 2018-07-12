@@ -140,7 +140,6 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1context_1get_1default",
 	"_1webkit_1web_1context_1get_1type",
 	"_1webkit_1web_1context_1get_1website_1data_1manager",
-	"_1webkit_1web_1context_1set_1favicon_1database_1directory",
 	"_1webkit_1web_1context_1set_1tls_1errors_1policy",
 	"_1webkit_1web_1context_1set_1web_1extensions_1directory",
 	"_1webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data",

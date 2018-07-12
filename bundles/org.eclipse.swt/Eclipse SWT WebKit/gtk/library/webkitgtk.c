@@ -2380,26 +2380,6 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1get_1website
 }
 #endif
 
-#ifndef NO__1webkit_1web_1context_1set_1favicon_1database_1directory
-JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1favicon_1database_1directory)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1set_1favicon_1database_1directory_FUNC);
-/*
-	rc = (jintLong)webkit_web_context_set_favicon_database_directory(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_favicon_database_directory)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1set_1favicon_1database_1directory_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1webkit_1web_1context_1set_1tls_1errors_1policy
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1set_1tls_1errors_1policy)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)

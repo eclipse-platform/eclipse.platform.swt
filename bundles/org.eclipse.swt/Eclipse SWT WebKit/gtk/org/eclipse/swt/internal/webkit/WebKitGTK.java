@@ -1443,18 +1443,6 @@ try {
 }
 
 /** @method flags=dynamic */
-public static final native long /*int*/ _webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path);
-public static final long /*int*/ webkit_web_context_set_favicon_database_directory (long /*int*/ context, long /*int*/ path) { // Never called.
-	assert WEBKIT2 : Webkit2AssertMsg;
-	lock.lock();
-	try {
-		return _webkit_web_context_set_favicon_database_directory (context, path);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
 public static final native void _webkit_web_context_set_tls_errors_policy(long /*int*/ context, int policy);
 public static final void webkit_web_context_set_tls_errors_policy (long /*int*/ context, int policy) {
 	assert WEBKIT2 : Webkit2AssertMsg;
