@@ -409,6 +409,7 @@ public class OS extends C {
 	public static final int DT_WORDBREAK = 0x10;
 	public static final int DTM_FIRST = 0x1000;
 	public static final int DTM_GETSYSTEMTIME = DTM_FIRST + 1;
+	public static final int DTM_SETMCSTYLE = DTM_FIRST + 11;
 	public static final int DTM_GETIDEALSIZE = DTM_FIRST + 15;
 	public static final int DTM_SETFORMAT = DTM_FIRST + 50;
 	public static final int DTM_SETSYSTEMTIME = DTM_FIRST + 2;
@@ -957,6 +958,7 @@ public class OS extends C {
 	public static final int MCN_SELCHANGE = MCN_FIRST + 1;
 	public static final int MCN_SELECT = MCN_FIRST + 4;
 	public static final int MCS_NOTODAY = 0x0010;
+	public static final int MCS_WEEKNUMBERS = 0x0004;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
 	public static final int MDT_EFFECTIVE_DPI = 0;
 	public static final int MFS_CHECKED = 0x8;

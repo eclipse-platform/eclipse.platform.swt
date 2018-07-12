@@ -25,7 +25,7 @@ class DateTimeTab extends Tab {
 	Group dateTimeGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button dateButton, timeButton, calendarButton, shortButton, mediumButton, longButton, dropDownButton;
+	Button dateButton, timeButton, calendarButton, shortButton, mediumButton, longButton, dropDownButton, weekNumbersButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -63,6 +63,7 @@ class DateTimeTab extends Tab {
 		if (mediumButton.getSelection ()) style |= SWT.MEDIUM;
 		if (longButton.getSelection ()) style |= SWT.LONG;
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
+		if (weekNumbersButton.getSelection ()) style |= SWT.CALENDAR_WEEKNUMBERS;
 
 		/* Create the example widgets */
 		dateTime1 = new DateTime (dateTimeGroup, style);
@@ -92,6 +93,8 @@ class DateTimeTab extends Tab {
 		longButton.setText("SWT.LONG");
 		dropDownButton = new Button(styleGroup, SWT.CHECK);
 		dropDownButton.setText("SWT.DROP_DOWN");
+		weekNumbersButton = new Button(styleGroup, SWT.CHECK);
+		weekNumbersButton.setText("SWT.CALENDAR_WEEKNUMBERS");
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	}
@@ -147,6 +150,12 @@ class DateTimeTab extends Tab {
 		} else {
 			dropDownButton.setSelection(false);
 			dropDownButton.setEnabled(false);
+		}
+		if ((dateTime1.getStyle() & SWT.CALENDAR) != 0 || (dateTime1.getStyle() & SWT.DROP_DOWN) != 0) {
+			weekNumbersButton.setEnabled(true);
+		} else {
+			weekNumbersButton.setEnabled(false);
+			weekNumbersButton.setSelection(false);
 		}
 		borderButton.setEnabled(false);
 	}

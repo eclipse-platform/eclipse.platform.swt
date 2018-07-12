@@ -465,9 +465,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TableTree.java">
-        <filter comment="Bug 475833 - Delete TableTree and related items" id="0"/>
-    </resource>
     <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TableTree.java" type="org.eclipse.swt.custom.TableTree">
         <filter comment="Bug 475833 - Delete TableTree and related items" id="336744520">
             <message_arguments>
@@ -1216,6 +1213,12 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.SWT"/>
                 <message_argument value="ALT_GR"/>
+            </message_arguments>
+        </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="CALENDAR_WEEKNUMBERS"/>
             </message_arguments>
         </filter>
         <filter comment="Bug 525305: Provide SWT.OpenUrl event" id="336658481">

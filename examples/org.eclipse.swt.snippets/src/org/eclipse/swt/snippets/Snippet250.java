@@ -31,10 +31,10 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setLayout (new RowLayout ());
 
-	DateTime calendar = new DateTime (shell, SWT.CALENDAR);
+	DateTime calendar = new DateTime (shell, SWT.CALENDAR | SWT.CALENDAR_WEEKNUMBERS);
 	calendar.addSelectionListener (widgetSelectedAdapter(e -> System.out.println ("calendar date changed")));
 
-	DateTime calendarDropDown = new DateTime (shell, SWT.DROP_DOWN);
+	DateTime calendarDropDown = new DateTime (shell, SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 	calendarDropDown.addSelectionListener (
 		widgetSelectedAdapter(e -> System.out.println ("calendar date changed via drop-down")));
 

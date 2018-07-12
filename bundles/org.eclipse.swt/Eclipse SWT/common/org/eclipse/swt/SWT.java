@@ -2178,6 +2178,17 @@ public class SWT {
 	public static final int CALENDAR = 1 << 10;
 
 	/**
+	 * Style constant for displaying the week numbers.
+	 * <br>Note that this is a <em>HINT</em> and is supported on Windows & GTK platforms only.
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 *
+	 * @since 3.108
+	 */
+	public static final int CALENDAR_WEEKNUMBERS = 1 << 14;
+
+	/**
 	 * Style constant for short date/time format (value is 1&lt;&lt;15).
 	 * <p>
 	 * A short date displays the month and year.

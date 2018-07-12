@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN</dd>
+ * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN, CALENDAR_WEEKNUMBERS</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Selection</dd>
  * </dl>
@@ -149,6 +149,7 @@ public class DateTime extends Composite {
  * @see SWT#DATE
  * @see SWT#TIME
  * @see SWT#CALENDAR
+ * @see SWT#CALENDAR_WEEKNUMBERS
  * @see SWT#SHORT
  * @see SWT#MEDIUM
  * @see SWT#LONG
@@ -233,6 +234,12 @@ protected void checkSubclass () {
 			width = rect.right;
 			height = rect.bottom;
 		} else {
+			// customize the style of the drop-down calendar, to get the correct size
+			if ((style & SWT.CALENDAR_WEEKNUMBERS) != 0) {
+				// get current style and add week numbers to the calendar drop-down
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				OS.SendMessage(handle, OS.DTM_SETMCSTYLE, 0, bits | OS.MCS_WEEKNUMBERS);
+			}
 			SIZE size = new SIZE ();
 			OS.SendMessage(handle, OS.DTM_GETIDEALSIZE, 0, size);
 			width = size.cx;
@@ -701,6 +708,9 @@ public void setYear (int year) {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
+	if ((style & SWT.CALENDAR_WEEKNUMBERS) != 0) {
+		bits |= OS.MCS_WEEKNUMBERS;
+	}
 	if ((style & SWT.CALENDAR) != 0) return bits | OS.MCS_NOTODAY;
 	/*
 	* Bug in Windows: When WS_CLIPCHILDREN is set in a

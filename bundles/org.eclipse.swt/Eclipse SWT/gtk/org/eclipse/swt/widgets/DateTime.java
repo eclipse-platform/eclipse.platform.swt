@@ -39,7 +39,7 @@ import org.eclipse.swt.internal.gtk.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN</dd>
+ * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN, CALENDAR_WEEKNUMBERS</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Selection</dd>
  * </dl>
@@ -132,6 +132,7 @@ public class DateTime extends Composite {
  * @see SWT#DATE
  * @see SWT#TIME
  * @see SWT#CALENDAR
+ * @see SWT#CALENDAR_WEEKNUMBERS
  * @see SWT#SHORT
  * @see SWT#MEDIUM
  * @see SWT#LONG
@@ -404,7 +405,12 @@ private void createHandleForCalendar () {
 	containerHandle = calendarHandle;
 
 	GTK.gtk_container_add (fixedHandle, calendarHandle);
-	GTK.gtk_calendar_set_display_options (calendarHandle, GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES);
+
+	int flags = GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES;
+	if (showWeekNumbers()) {
+		flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
+	}
+	GTK.gtk_calendar_set_display_options (calendarHandle, flags);
 	GTK.gtk_widget_show (calendarHandle);
 }
 
@@ -484,7 +490,11 @@ void createDropDownButton () {
 
 void createPopupShell (int year, int month, int day) {
 	popupShell = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
-	popupCalendar = new DateTime (popupShell, SWT.CALENDAR);
+	int popupStyle = SWT.CALENDAR;
+	if (showWeekNumbers()) {
+		popupStyle |= SWT.CALENDAR_WEEKNUMBERS;
+	}
+	popupCalendar = new DateTime (popupShell, popupStyle);
 	if (font != null) popupCalendar.setFont (font);
 	if (fg != null) popupCalendar.setForeground (fg);
 	if (bg != null) popupCalendar.setBackground (bg);
@@ -987,6 +997,10 @@ private boolean isTime () {
 
 private boolean isReadOnly () {
 	return ((style & SWT.READ_ONLY) != 0);
+}
+
+private boolean showWeekNumbers() {
+	return ((style & SWT.CALENDAR_WEEKNUMBERS) != 0);
 }
 
 void initAccessible () {
