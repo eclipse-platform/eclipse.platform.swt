@@ -462,9 +462,9 @@ public void pack () {
 		}
 		for (int i=0; i<parent.items.length; i++) {
 			TableItem item = parent.items [i];
-			if (itemBounds == null) itemBounds = item.getBounds();
+			if (itemBounds == null && item != null) itemBounds = item.getBounds();
 			boolean isVisible = false;
-			if (!calcWidth) {
+			if (!calcWidth && itemBounds != null) {
 				int itemTopBound = itemBounds.y + itemBounds.height * i + i;
 				int itemBottomBound = itemTopBound + itemBounds.height;
 				isVisible = (itemTopBound > 0 && itemBottomBound < tableHeight);
