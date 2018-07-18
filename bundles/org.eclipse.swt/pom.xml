@@ -10,84 +10,165 @@
      Igor Fedorenko - initial implementation
      Krzysztof Daniel, Red Hat, Inc. - building native SWT parts.
 --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>eclipse.platform.swt</artifactId>
-    <groupId>eclipse.platform.swt</groupId>
-    <version>4.9.0-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
-  </parent>
-  <groupId>org.eclipse.swt</groupId>
-  <artifactId>org.eclipse.swt</artifactId>
-  <version>3.108.0-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
-  <properties>
-    <forceContextQualifier>v20180713-1901</forceContextQualifier>
-    <sonar.sources>Eclipse SWT Accessibility/cocoa,Eclipse SWT Accessibility/common,Eclipse SWT Accessibility/gtk,Eclipse SWT Accessibility/win32,Eclipse SWT AWT/cocoa,Eclipse SWT AWT/common,Eclipse SWT AWT/gtk,Eclipse SWT AWT/win32,Eclipse SWT Browser/cocoa,Eclipse SWT Browser/common,Eclipse SWT Browser/gtk,Eclipse SWT Browser/win32,Eclipse SWT Custom Widgets/common,Eclipse SWT Drag and Drop/cocoa,Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/gtk,Eclipse SWT Drag and Drop/win32,Eclipse SWT OLE Win32/win32,Eclipse SWT OpenGL/cocoa,Eclipse SWT OpenGL/common,Eclipse SWT OpenGL/glx,Eclipse SWT OpenGL/gtk,Eclipse SWT OpenGL/win32,Eclipse SWT PI/cairo,Eclipse SWT PI/cocoa,Eclipse SWT PI/common,Eclipse SWT PI/gtk,Eclipse SWT PI/win32,Eclipse SWT Printing/cocoa,Eclipse SWT Printing/common,Eclipse SWT Printing/gtk,Eclipse SWT Printing/win32,Eclipse SWT Program/cocoa,Eclipse SWT Program/common,Eclipse SWT Program/gtk,Eclipse SWT Program/win32,Eclipse SWT WebKit/cocoa,Eclipse SWT WebKit/gtk,Eclipse SWT WebKit/win32,Eclipse SWT/cairo,Eclipse SWT/cocoa,Eclipse SWT/common_j2se,Eclipse SWT/common,Eclipse SWT/emulated/bidi,Eclipse SWT/emulated/coolbar,Eclipse SWT/emulated/expand,Eclipse SWT/emulated/taskbar,Eclipse SWT/emulated/tooltip,Eclipse SWT/gtk,Eclipse SWT/win32</sonar.sources>
-  </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-packaging-plugin</artifactId>
-        <configuration>
-          <forceContextQualifier>${forceContextQualifier}</forceContextQualifier>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <configuration>
-          <dependency-resolution>
-            <optionalDependencies>ignore</optionalDependencies>
-            <profileProperties>
-              <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
-            </profileProperties>
-          </dependency-resolution>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <profiles>
-    <profile>
-      <id>build-all</id>
-      <activation>
-        <property>
-          <name>checkAllWS</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
+      
+    <modelVersion>4.0.0</modelVersion>
+      
+    <parent>
+            
+        <artifactId>eclipse.platform.swt</artifactId>
+            
+        <groupId>eclipse.platform.swt</groupId>
+            
+        <version>4.9.0-SNAPSHOT</version>
+            
+        <relativePath>../../</relativePath>
+          
+    </parent>
+      
+    <groupId>org.eclipse.swt</groupId>
+      
+    <artifactId>org.eclipse.swt</artifactId>
+      
+    <version>3.108.0-SNAPSHOT</version>
+      
+    <packaging>eclipse-plugin</packaging>
+      
+    <properties>
+            
+        <forceContextQualifier>v20180718-0123</forceContextQualifier>
+            
+        <sonar.sources>Eclipse SWT Accessibility/cocoa,Eclipse SWT Accessibility/common,Eclipse SWT Accessibility/gtk,Eclipse SWT Accessibility/win32,Eclipse SWT AWT/cocoa,Eclipse SWT AWT/common,Eclipse SWT AWT/gtk,Eclipse SWT AWT/win32,Eclipse SWT Browser/cocoa,Eclipse SWT Browser/common,Eclipse SWT Browser/gtk,Eclipse SWT Browser/win32,Eclipse SWT Custom Widgets/common,Eclipse SWT Drag and Drop/cocoa,Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/gtk,Eclipse SWT Drag and Drop/win32,Eclipse SWT OLE Win32/win32,Eclipse SWT OpenGL/cocoa,Eclipse SWT OpenGL/common,Eclipse SWT OpenGL/glx,Eclipse SWT OpenGL/gtk,Eclipse SWT OpenGL/win32,Eclipse SWT PI/cairo,Eclipse SWT PI/cocoa,Eclipse SWT PI/common,Eclipse SWT PI/gtk,Eclipse SWT PI/win32,Eclipse SWT Printing/cocoa,Eclipse SWT Printing/common,Eclipse SWT Printing/gtk,Eclipse SWT Printing/win32,Eclipse SWT Program/cocoa,Eclipse SWT Program/common,Eclipse SWT Program/gtk,Eclipse SWT Program/win32,Eclipse SWT WebKit/cocoa,Eclipse SWT WebKit/gtk,Eclipse SWT WebKit/win32,Eclipse SWT/cairo,Eclipse SWT/cocoa,Eclipse SWT/common_j2se,Eclipse SWT/common,Eclipse SWT/emulated/bidi,Eclipse SWT/emulated/coolbar,Eclipse SWT/emulated/expand,Eclipse SWT/emulated/taskbar,Eclipse SWT/emulated/tooltip,Eclipse SWT/gtk,Eclipse SWT/win32</sonar.sources>
+          
+    </properties>
+      
+    <build>
+            
         <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>buildAll</id>
-                <phase>process-resources</phase>
+                  
+            <plugin>
+                        
+                <groupId>org.eclipse.tycho</groupId>
+                        
+                <artifactId>tycho-packaging-plugin</artifactId>
+                        
                 <configuration>
-                  <target>
-                    <property name="repo.src" value="../../"/>
-                    <ant antfile="buildSWT.xml" target="check_compilation_all_platforms"/>
-                  </target>
+                              
+                    <forceContextQualifier>${forceContextQualifier}</forceContextQualifier>
+                            
                 </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-            <dependencies>
-              <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>tools</artifactId>
-                <version>0.0.0</version>
-                <scope>system</scope>
-                <systemPath>${toolsjar}</systemPath>
-             </dependency>
-            </dependencies>
-          </plugin>
+                      
+            </plugin>
+                  
+            <plugin>
+                        
+                <groupId>org.eclipse.tycho</groupId>
+                        
+                <artifactId>target-platform-configuration</artifactId>
+                        
+                <configuration>
+                              
+                    <dependency-resolution>
+                                    
+                        <optionalDependencies>ignore</optionalDependencies>
+                                    
+                        <profileProperties>
+                                          
+                            <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+                                        
+                        </profileProperties>
+                                  
+                    </dependency-resolution>
+                            
+                </configuration>
+                      
+            </plugin>
+                
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+          
+    </build>
+      
+    <profiles>
+            
+        <profile>
+                  
+            <id>build-all</id>
+                  
+            <activation>
+                        
+                <property>
+                              
+                    <name>checkAllWS</name>
+                              
+                    <value>true</value>
+                            
+                </property>
+                      
+            </activation>
+                  
+            <build>
+                        
+                <plugins>
+                              
+                    <plugin>
+                                    
+                        <artifactId>maven-antrun-plugin</artifactId>
+                                    
+                        <executions>
+                                          
+                            <execution>
+                                                
+                                <id>buildAll</id>
+                                                
+                                <phase>process-resources</phase>
+                                                
+                                <configuration>
+                                                      
+                                    <target>
+                                                            
+                                        <property name="repo.src" value="../../"/>
+                                                            
+                                        <ant antfile="buildSWT.xml" target="check_compilation_all_platforms"/>
+                                                          
+                                    </target>
+                                                    
+                                </configuration>
+                                                
+                                <goals>
+                                                      
+                                    <goal>run</goal>
+                                                    
+                                </goals>
+                                              
+                            </execution>
+                                        
+                        </executions>
+                                    
+                        <dependencies>
+                                          
+                            <dependency>
+                                                
+                                <groupId>com.sun</groupId>
+                                                
+                                <artifactId>tools</artifactId>
+                                                
+                                <version>0.0.0</version>
+                                                
+                                <scope>system</scope>
+                                                
+                                <systemPath>${toolsjar}</systemPath>
+                                             
+                            </dependency>
+                                        
+                        </dependencies>
+                                  
+                    </plugin>
+                            
+                </plugins>
+                      
+            </build>
+                
+        </profile>
+          
+    </profiles>
+    
 </project>
