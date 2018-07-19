@@ -195,7 +195,9 @@ void setColor_forAttribute(long /*int*/ id, long /*int*/ sel, long /*int*/ color
 			NSColor color = new NSColor(colorArg);
 			Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 			double /*float*/ [] handle = display.getNSColorRGB(color);
-			rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+			if (handle != null) {
+				rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+			}
 		} else {
 			rgb = null;
 		}

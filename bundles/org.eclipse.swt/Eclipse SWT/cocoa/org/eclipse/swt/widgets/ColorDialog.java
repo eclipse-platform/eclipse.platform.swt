@@ -184,7 +184,9 @@ public RGB open() {
 		NSColor color = panel.color();
 		if (color != null) {
 			double /*float*/ [] handle = display.getNSColorRGB(color);
-			rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+			if (handle != null) {
+				rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+			}
 		}
 	}
 	NSArray keys = colorList.allKeys();
@@ -193,7 +195,9 @@ public RGB open() {
 	for (int i=0; i<length; i++) {
 		NSString key = new NSString(keys.objectAtIndex(i));
 		double /*float*/ [] handle = display.getNSColorRGB(colorList.colorWithKey(key));
-		rgbs[i] = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+		if (handle != null) {
+			rgbs[i] = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+		}
 	}
 	colorList.release();
 	return rgb;
