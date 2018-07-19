@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -6941,7 +6941,11 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor(OS.COLOR_3DDKSHADOW));
 							long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
 							int center = rects[i].left + (rects[i].right - rects[i].left) / 2;
-							int leg = 3;
+							/*
+							 * Sort indicator size needs to scale as per the Native Windows OS DPI level
+							 * when header is custom drawn. For more details refer bug 537097.
+							 */
+							int leg = DPIUtil.autoScaleUpUsingNativeDPI(3);
 							if (sortDirection == SWT.UP) {
 								OS.Polyline(nmcd.hdc, new int[] {center-leg, 1+leg, center+1, 0}, 2);
 								OS.Polyline(nmcd.hdc, new int[] {center+leg, 1+leg, center-1, 0}, 2);
