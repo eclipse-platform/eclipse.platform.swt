@@ -2443,11 +2443,30 @@ public void setVisible (boolean visible) {
 		* unminimized or shown on the desktop.
 		*/
 		mapped = false;
+		/*
+		 * Bug/Feature in GTK: calling gtk_widget_show for the first time before
+		 * gtk_widget_resize assumes the initial default size for any subsequent calls
+		 * to gtk_widget_move. This causes issue with shell.setBounds where the
+		 * location can only be moved to a limited bound on the screen corresponding
+		 * to the default size by the window manager, even when the new resized shell
+		 * is smaller and is able to move to further x, y position without being cutoff by
+		 * the screen. The fix is to set the default size to the smallest possible (1, 1)
+		 * before gtk_widget_show.
+		 */
+		if (oldWidth == 0 && oldHeight == 0) {
+			int [] init_width = new int[1], init_height = new int[1];
+			GTK.gtk_window_get_size(shellHandle, init_width, init_height);
+			GTK.gtk_window_resize(shellHandle, 1, 1);
+			GTK.gtk_widget_show (shellHandle);
+			GTK.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
+			resizeBounds (init_width[0], init_height[0], false);
+		} else {
+			GTK.gtk_widget_show (shellHandle);
+		}
 		/**
 		 *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
 		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
 		 */
-		GTK.gtk_widget_show (shellHandle);
 		if (enableWindow != 0) GDK.gdk_window_raise (enableWindow);
 		if (isDisposed ()) return;
 		if (!(OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
