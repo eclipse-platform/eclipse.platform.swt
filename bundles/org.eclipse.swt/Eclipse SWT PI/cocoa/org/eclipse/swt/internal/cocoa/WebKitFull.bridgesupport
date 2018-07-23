@@ -99,7 +99,7 @@
 <struct name='NPCocoaEvent' type='{_NPCocoaEvent=&quot;type&quot;i&quot;version&quot;I&quot;data&quot;(?=&quot;mouse&quot;{?=&quot;modifierFlags&quot;I&quot;pluginX&quot;d&quot;pluginY&quot;d&quot;buttonNumber&quot;i&quot;clickCount&quot;i&quot;deltaX&quot;d&quot;deltaY&quot;d&quot;deltaZ&quot;d}&quot;key&quot;{?=&quot;modifierFlags&quot;I&quot;characters&quot;^{_NPNSString}&quot;charactersIgnoringModifiers&quot;^{_NPNSString}&quot;isARepeat&quot;C&quot;keyCode&quot;S}&quot;draw&quot;{?=&quot;context&quot;^{CGContext}&quot;x&quot;d&quot;y&quot;d&quot;width&quot;d&quot;height&quot;d}&quot;focus&quot;{?=&quot;hasFocus&quot;C}&quot;text&quot;{?=&quot;text&quot;^{_NPNSString}})}'>
 <field declared_type='NPCocoaEventType' name='type' type='i'/>
 <field declared_type='uint32_t' name='version' type='I'/>
-<field declared_type='union (anonymous union at /System/Library/Frameworks/WebKit.framework/Headers/npapi.h:615:3)' name='data' type='(?=&quot;mouse&quot;{?=&quot;modifierFlags&quot;I&quot;pluginX&quot;d&quot;pluginY&quot;d&quot;buttonNumber&quot;i&quot;clickCount&quot;i&quot;deltaX&quot;d&quot;deltaY&quot;d&quot;deltaZ&quot;d}&quot;key&quot;{?=&quot;modifierFlags&quot;I&quot;characters&quot;^{_NPNSString}&quot;charactersIgnoringModifiers&quot;^{_NPNSString}&quot;isARepeat&quot;C&quot;keyCode&quot;S}&quot;draw&quot;{?=&quot;context&quot;^{CGContext}&quot;x&quot;d&quot;y&quot;d&quot;width&quot;d&quot;height&quot;d}&quot;focus&quot;{?=&quot;hasFocus&quot;C}&quot;text&quot;{?=&quot;text&quot;^{_NPNSString}})'/>
+<field declared_type='union (anonymous union at /System/Library/Frameworks/WebKit.framework/Headers/npapi.h:621:3)' name='data' type='(?=&quot;mouse&quot;{?=&quot;modifierFlags&quot;I&quot;pluginX&quot;d&quot;pluginY&quot;d&quot;buttonNumber&quot;i&quot;clickCount&quot;i&quot;deltaX&quot;d&quot;deltaY&quot;d&quot;deltaZ&quot;d}&quot;key&quot;{?=&quot;modifierFlags&quot;I&quot;characters&quot;^{_NPNSString}&quot;charactersIgnoringModifiers&quot;^{_NPNSString}&quot;isARepeat&quot;C&quot;keyCode&quot;S}&quot;draw&quot;{?=&quot;context&quot;^{CGContext}&quot;x&quot;d&quot;y&quot;d&quot;width&quot;d&quot;height&quot;d}&quot;focus&quot;{?=&quot;hasFocus&quot;C}&quot;text&quot;{?=&quot;text&quot;^{_NPNSString}})'/>
 </struct>
 <struct name='NPEmbedPrint' type='{_NPEmbedPrint=&quot;window&quot;{_NPWindow=&quot;window&quot;^v&quot;x&quot;i&quot;y&quot;i&quot;width&quot;I&quot;height&quot;I&quot;clipRect&quot;{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}&quot;type&quot;i}&quot;platformPrint&quot;^v}'>
 <field declared_type='NPWindow' name='window' type='{_NPWindow=&quot;window&quot;^v&quot;x&quot;i&quot;y&quot;i&quot;width&quot;I&quot;height&quot;I&quot;clipRect&quot;{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}&quot;type&quot;i}'/>
@@ -110,7 +110,7 @@
 <field declared_type='NPBool' name='printOne' type='C'/>
 <field declared_type='void*' name='platformPrint' type='^v'/>
 </struct>
-<struct name='NPNetscapeFuncs' type='{_NPNetscapeFuncs=&quot;size&quot;S&quot;version&quot;S&quot;geturl&quot;^?&quot;posturl&quot;^?&quot;requestread&quot;^?&quot;newstream&quot;^?&quot;write&quot;^?&quot;destroystream&quot;^?&quot;status&quot;^?&quot;uagent&quot;^?&quot;memalloc&quot;^?&quot;memfree&quot;^?&quot;memflush&quot;^?&quot;reloadplugins&quot;^?&quot;getJavaEnv&quot;^?&quot;getJavaPeer&quot;^?&quot;geturlnotify&quot;^?&quot;posturlnotify&quot;^?&quot;getvalue&quot;^?&quot;setvalue&quot;^?&quot;invalidaterect&quot;^?&quot;invalidateregion&quot;^?&quot;forceredraw&quot;^?&quot;getstringidentifier&quot;^?&quot;getstringidentifiers&quot;^?&quot;getintidentifier&quot;^?&quot;identifierisstring&quot;^?&quot;utf8fromidentifier&quot;^?&quot;intfromidentifier&quot;^?&quot;createobject&quot;^?&quot;retainobject&quot;^?&quot;releaseobject&quot;^?&quot;invoke&quot;^?&quot;invokeDefault&quot;^?&quot;evaluate&quot;^?&quot;getproperty&quot;^?&quot;setproperty&quot;^?&quot;removeproperty&quot;^?&quot;hasproperty&quot;^?&quot;hasmethod&quot;^?&quot;releasevariantvalue&quot;^?&quot;setexception&quot;^?&quot;pushpopupsenabledstate&quot;^?&quot;poppopupsenabledstate&quot;^?&quot;enumerate&quot;^?&quot;pluginthreadasynccall&quot;^?&quot;construct&quot;^?&quot;getvalueforurl&quot;^?&quot;setvalueforurl&quot;^?&quot;getauthenticationinfo&quot;^?&quot;scheduletimer&quot;^?&quot;unscheduletimer&quot;^?&quot;popupcontextmenu&quot;^?&quot;convertpoint&quot;^?}'>
+<struct name='NPNetscapeFuncs' type='{_NPNetscapeFuncs=&quot;size&quot;S&quot;version&quot;S&quot;geturl&quot;^?&quot;posturl&quot;^?&quot;requestread&quot;^?&quot;newstream&quot;^?&quot;write&quot;^?&quot;destroystream&quot;^?&quot;status&quot;^?&quot;uagent&quot;^?&quot;memalloc&quot;^?&quot;memfree&quot;^?&quot;memflush&quot;^?&quot;reloadplugins&quot;^?&quot;getJavaEnv&quot;^?&quot;getJavaPeer&quot;^?&quot;geturlnotify&quot;^?&quot;posturlnotify&quot;^?&quot;getvalue&quot;^?&quot;setvalue&quot;^?&quot;invalidaterect&quot;^?&quot;invalidateregion&quot;^?&quot;forceredraw&quot;^?&quot;getstringidentifier&quot;^?&quot;getstringidentifiers&quot;^?&quot;getintidentifier&quot;^?&quot;identifierisstring&quot;^?&quot;utf8fromidentifier&quot;^?&quot;intfromidentifier&quot;^?&quot;createobject&quot;^?&quot;retainobject&quot;^?&quot;releaseobject&quot;^?&quot;invoke&quot;^?&quot;invokeDefault&quot;^?&quot;evaluate&quot;^?&quot;getproperty&quot;^?&quot;setproperty&quot;^?&quot;removeproperty&quot;^?&quot;hasproperty&quot;^?&quot;hasmethod&quot;^?&quot;releasevariantvalue&quot;^?&quot;setexception&quot;^?&quot;pushpopupsenabledstate&quot;^?&quot;poppopupsenabledstate&quot;^?&quot;enumerate&quot;^?&quot;pluginthreadasynccall&quot;^?&quot;construct&quot;^?&quot;getvalueforurl&quot;^?&quot;setvalueforurl&quot;^?&quot;getauthenticationinfo&quot;^?&quot;scheduletimer&quot;^?&quot;unscheduletimer&quot;^?&quot;popupcontextmenu&quot;^?&quot;convertpoint&quot;^?&quot;handleevent&quot;^?&quot;unfocusinstance&quot;^?&quot;urlredirectresponse&quot;^?}'>
 <field declared_type='uint16_t' name='size' type='S'/>
 <field declared_type='uint16_t' name='version' type='S'/>
 <field declared_type='NPN_GetURLProcPtr' function_pointer='true' name='geturl' type='^?'>
@@ -418,6 +418,23 @@
 <arg declared_type='NPCoordinateSpace' type='i'/>
 <retval declared_type='NPBool' type='C'/>
 </field>
+<field declared_type='NPN_HandleEventPtr' function_pointer='true' name='handleevent' type='^?'>
+<arg declared_type='NPP' type='^{_NPP=^v^v}'/>
+<arg declared_type='void*' type='^v'/>
+<arg declared_type='NPBool' type='C'/>
+<retval declared_type='NPBool' type='C'/>
+</field>
+<field declared_type='NPN_UnfocusInstancePtr' function_pointer='true' name='unfocusinstance' type='^?'>
+<arg declared_type='NPP' type='^{_NPP=^v^v}'/>
+<arg declared_type='NPFocusDirection' type='i'/>
+<retval declared_type='NPBool' type='C'/>
+</field>
+<field declared_type='NPN_URLRedirectResponsePtr' function_pointer='true' name='urlredirectresponse' type='^?'>
+<arg declared_type='NPP' type='^{_NPP=^v^v}'/>
+<arg declared_type='void*' type='^v'/>
+<arg declared_type='NPBool' type='C'/>
+<retval declared_type='void' type='v'/>
+</field>
 </struct>
 <struct name='NPObject' type='{NPObject=&quot;_class&quot;^{NPClass}&quot;referenceCount&quot;I}'>
 <field declared_type='NPClass*' name='_class' type='^{NPClass=I^?^?^?^?^?^?^?^?^?^?^?^?}'/>
@@ -541,7 +558,7 @@
 </struct>
 <struct name='NPPrint' type='{_NPPrint=&quot;mode&quot;S&quot;print&quot;(?=&quot;fullPrint&quot;{_NPFullPrint=&quot;pluginPrinted&quot;C&quot;printOne&quot;C&quot;platformPrint&quot;^v}&quot;embedPrint&quot;{_NPEmbedPrint=&quot;window&quot;{_NPWindow=&quot;window&quot;^v&quot;x&quot;i&quot;y&quot;i&quot;width&quot;I&quot;height&quot;I&quot;clipRect&quot;{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}&quot;type&quot;i}&quot;platformPrint&quot;^v})}'>
 <field declared_type='uint16_t' name='mode' type='S'/>
-<field declared_type='union (anonymous union at /System/Library/Frameworks/WebKit.framework/Headers/npapi.h:489:3)' name='print' type='(?=&quot;fullPrint&quot;{_NPFullPrint=&quot;pluginPrinted&quot;C&quot;printOne&quot;C&quot;platformPrint&quot;^v}&quot;embedPrint&quot;{_NPEmbedPrint=&quot;window&quot;{_NPWindow=&quot;window&quot;^v&quot;x&quot;i&quot;y&quot;i&quot;width&quot;I&quot;height&quot;I&quot;clipRect&quot;{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}&quot;type&quot;i}&quot;platformPrint&quot;^v})'/>
+<field declared_type='union (anonymous union at /System/Library/Frameworks/WebKit.framework/Headers/npapi.h:495:3)' name='print' type='(?=&quot;fullPrint&quot;{_NPFullPrint=&quot;pluginPrinted&quot;C&quot;printOne&quot;C&quot;platformPrint&quot;^v}&quot;embedPrint&quot;{_NPEmbedPrint=&quot;window&quot;{_NPWindow=&quot;window&quot;^v&quot;x&quot;i&quot;y&quot;i&quot;width&quot;I&quot;height&quot;I&quot;clipRect&quot;{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}&quot;type&quot;i}&quot;platformPrint&quot;^v})'/>
 </struct>
 <struct name='NPRect' type='{_NPRect=&quot;top&quot;S&quot;left&quot;S&quot;bottom&quot;S&quot;right&quot;S}'>
 <field declared_type='uint16_t' name='top' type='S'/>
@@ -602,7 +619,15 @@
 <constant const='true' declared_type='NSString*' name='DOMException' type='@'/>
 <constant const='true' declared_type='NSString*' name='DOMRangeException' type='@'/>
 <constant const='true' declared_type='NSString*' name='DOMXPathException' type='@'/>
-<constant const='true' declared_type64='NSString*' name='WKErrorDomain' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKErrorDomain' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeCookies' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeDiskCache' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeIndexedDBDatabases' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeLocalStorage' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeMemoryCache' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeOfflineWebApplicationCache' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeSessionStorage' type64='@'/>
+<constant const='true' declared_type64='NSString * _Nonnull' name='WKWebsiteDataTypeWebSQLDatabases' type64='@'/>
 <constant declared_type='NSString*' name='WebActionButtonKey' type='@'/>
 <constant declared_type='NSString*' name='WebActionElementKey' type='@'/>
 <constant declared_type='NSString*' name='WebActionModifierFlagsKey' type='@'/>
@@ -727,6 +752,8 @@
 <enum name='DOM_INVALID_MODIFICATION_ERR' value='13'/>
 <enum name='DOM_INVALID_NODE_TYPE_ERR' value='2'/>
 <enum name='DOM_INVALID_STATE_ERR' value='11'/>
+<enum name='DOM_KEYFRAMES_RULE' value='7'/>
+<enum name='DOM_KEYFRAME_RULE' value='8'/>
 <enum name='DOM_KEY_LOCATION_LEFT' value='1'/>
 <enum name='DOM_KEY_LOCATION_NUMPAD' value='3'/>
 <enum name='DOM_KEY_LOCATION_RIGHT' value='2'/>
@@ -767,6 +794,7 @@
 <enum name='DOM_START_TO_START' value='0'/>
 <enum name='DOM_STRING_TYPE' value='2'/>
 <enum name='DOM_STYLE_RULE' value='1'/>
+<enum name='DOM_SUPPORTS_RULE' value='12'/>
 <enum name='DOM_SYNTAX_ERR' value='12'/>
 <enum name='DOM_TEXT_NODE' value='3'/>
 <enum name='DOM_TYPE_ERR' value='52'/>
@@ -834,6 +862,7 @@
 <enum name='NPNVcontentsScaleFactor' value='1001'/>
 <enum name='NPNVisOfflineBool' value='6'/>
 <enum name='NPNVjavascriptEnabledBool' value='4'/>
+<enum name='NPNVmuteAudioBool' value='4000'/>
 <enum name='NPNVnetscapeWindow' value='3'/>
 <enum name='NPNVpluginDrawingModel' value='1000'/>
 <enum name='NPNVprivateModeBool' value='18'/>
@@ -855,6 +884,7 @@
 <enum name='NPPVpluginDescriptionString' value='2'/>
 <enum name='NPPVpluginDrawingModel' value='1000'/>
 <enum name='NPPVpluginEventModel' value='1001'/>
+<enum name='NPPVpluginIsPlayingAudio' value='4000'/>
 <enum name='NPPVpluginKeepLibraryInMemory' value='13'/>
 <enum name='NPPVpluginNameString' value='1'/>
 <enum name='NPPVpluginNativeAccessibleAtkPlugId' value='19'/>
@@ -929,8 +959,9 @@
 <enum name='NP_NORMAL' value='1'/>
 <enum name='NP_SEEK' value='2'/>
 <enum name='NP_VERSION_MAJOR' value='0'/>
-<enum name='NP_VERSION_MINOR' value='24'/>
+<enum name='NP_VERSION_MINOR' value='26'/>
 <enum name='WKErrorJavaScriptExceptionOccurred' value64='4'/>
+<enum name='WKErrorJavaScriptResultTypeIsUnsupported' value64='5'/>
 <enum name='WKErrorUnknown' value64='1'/>
 <enum name='WKErrorWebContentProcessTerminated' value64='2'/>
 <enum name='WKErrorWebViewInvalidated' value64='3'/>
@@ -1127,6 +1158,12 @@
 <arg declared_type='uint32_t*' name='len' type='^I'/>
 <retval declared_type='NPError' type='s'/>
 </function>
+<function name='NPN_HandleEvent'>
+<arg declared_type='NPP' name='instance' type='^{_NPP=^v^v}'/>
+<arg declared_type='void*' name='event' type='^v'/>
+<arg declared_type='NPBool' name='handled' type='C'/>
+<retval declared_type='NPBool' type='C'/>
+</function>
 <function name='NPN_HasMethod'>
 <arg declared_type='NPP' name='npp' type='^{_NPP=^v^v}'/>
 <arg declared_type='NPObject*' name='npobj' type='^{NPObject=^{NPClass}I}'/>
@@ -1304,9 +1341,20 @@
 <arg const='true' declared_type='char*' name='message' type='*'/>
 <retval declared_type='void' type='v'/>
 </function>
+<function name='NPN_URLRedirectResponse'>
+<arg declared_type='NPP' name='instance' type='^{_NPP=^v^v}'/>
+<arg declared_type='void*' name='notifyData' type='^v'/>
+<arg declared_type='NPBool' name='allow' type='C'/>
+<retval declared_type='void' type='v'/>
+</function>
 <function name='NPN_UTF8FromIdentifier'>
 <arg declared_type='NPIdentifier' name='identifier' type='^v'/>
 <retval declared_type='NPUTF8*' type='*'/>
+</function>
+<function name='NPN_UnfocusInstance'>
+<arg declared_type='NPP' name='instance' type='^{_NPP=^v^v}'/>
+<arg declared_type='NPFocusDirection' name='direction' type='i'/>
+<retval declared_type='NPBool' type='C'/>
 </function>
 <function name='NPN_UnscheduleTimer'>
 <arg declared_type='NPP' name='instance' type='^{_NPP=^v^v}'/>
@@ -2861,7 +2909,7 @@
 <retval declared_type='DOMElement*' type='@'/>
 </method>
 <method selector='getElementsByClassName:'>
-<arg declared_type='NSString*' index='0' name='tagname' type='@'/>
+<arg declared_type='NSString*' index='0' name='classNames' type='@'/>
 <retval declared_type='DOMNodeList*' type='@'/>
 </method>
 <method selector='getElementsByName:'>
@@ -3136,6 +3184,9 @@
 <method selector='image'>
 <retval declared_type='NSImage*' type='@'/>
 </method>
+<method selector='innerHTML'>
+<retval declared_type='NSString*' type='@'/>
+</method>
 <method selector='innerText'>
 <retval declared_type='NSString*' type='@'/>
 </method>
@@ -3159,6 +3210,9 @@
 </method>
 <method selector='offsetWidth'>
 <retval declared_type='int' type='i'/>
+</method>
+<method selector='outerHTML'>
+<retval declared_type='NSString*' type='@'/>
 </method>
 <method selector='previousElementSibling'>
 <retval declared_type='DOMElement*' type='@'/>
@@ -3249,6 +3303,14 @@
 </method>
 <method selector='setClassName:'>
 <arg declared_type='NSString*' index='0' name='className' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setInnerHTML:'>
+<arg declared_type='NSString*' index='0' name='innerHTML' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setOuterHTML:'>
+<arg declared_type='NSString*' index='0' name='outerHTML' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='setScrollLeft:'>
@@ -3922,9 +3984,6 @@
 <method selector='idName'>
 <retval declared_type='NSString*' type='@'/>
 </method>
-<method selector='innerHTML'>
-<retval declared_type='NSString*' type='@'/>
-</method>
 <method selector='innerText'>
 <retval declared_type='NSString*' type='@'/>
 </method>
@@ -3932,9 +3991,6 @@
 <retval declared_type='BOOL' type='B'/>
 </method>
 <method selector='lang'>
-<retval declared_type='NSString*' type='@'/>
-</method>
-<method selector='outerHTML'>
 <retval declared_type='NSString*' type='@'/>
 </method>
 <method selector='outerText'>
@@ -3956,20 +4012,12 @@
 <arg declared_type='NSString*' index='0' name='idName' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
-<method selector='setInnerHTML:'>
-<arg declared_type='NSString*' index='0' name='innerHTML' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
 <method selector='setInnerText:'>
 <arg declared_type='NSString*' index='0' name='innerText' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='setLang:'>
 <arg declared_type='NSString*' index='0' name='lang' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-<method selector='setOuterHTML:'>
-<arg declared_type='NSString*' index='0' name='outerHTML' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='setOuterText:'>
@@ -6347,14 +6395,6 @@
 <retval declared_type='unsigned int' type='I'/>
 </method>
 </class>
-<class name='DOMNotation'>
-<method selector='publicId'>
-<retval declared_type='NSString*' type='@'/>
-</method>
-<method selector='systemId'>
-<retval declared_type='NSString*' type='@'/>
-</method>
-</class>
 <class name='DOMObject'>
 <method selector='sheet'>
 <retval declared_type='DOMStyleSheet*' type='@'/>
@@ -6833,7 +6873,7 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='handleEvent:'>
-<arg declared_type='DOMEvent*' index='0' name='evt' type='@'/>
+<arg declared_type='DOMEvent*' index='0' name='event' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='ignore'>
@@ -6933,8 +6973,8 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='userContentController:didReceiveScriptMessage:'>
-<arg declared_type64='WKUserContentController*' index='0' name='userContentController' type64='@'/>
-<arg declared_type64='WKScriptMessage*' index='1' name='message' type64='@'/>
+<arg declared_type64='WKUserContentController * _Nonnull' index='0' name='userContentController' type64='@'/>
+<arg declared_type64='WKScriptMessage * _Nonnull' index='1' name='message' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='viewDidMoveToHostWindow'>
@@ -7010,11 +7050,11 @@
 <retval declared_type='WebView*' type='@'/>
 </method>
 <method selector='webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKWebViewConfiguration*' index='1' name='configuration' type64='@'/>
-<arg declared_type64='WKNavigationAction*' index='2' name='navigationAction' type64='@'/>
-<arg declared_type64='WKWindowFeatures*' index='3' name='windowFeatures' type64='@'/>
-<retval declared_type64='WKWebView*' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKWebViewConfiguration * _Nonnull' index='1' name='configuration' type64='@'/>
+<arg declared_type64='WKNavigationAction * _Nonnull' index='2' name='navigationAction' type64='@'/>
+<arg declared_type64='WKWindowFeatures * _Nonnull' index='3' name='windowFeatures' type64='@'/>
+<retval declared_type64='WKWebView * _Nullable' type64='@'/>
 </method>
 <method selector='webView:createWebViewWithRequest:'>
 <arg declared_type='WebView*' index='0' name='sender' type='@'/>
@@ -7030,9 +7070,9 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:decidePolicyForNavigationAction:decisionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigationAction*' index='1' name='navigationAction' type64='@'/>
-<arg declared_type64='void (^)(WKNavigationActionPolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigationAction * _Nonnull' index='1' name='navigationAction' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(WKNavigationActionPolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
 <arg declared_type64='WKNavigationActionPolicy' type64='q'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
@@ -7047,9 +7087,9 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:decidePolicyForNavigationResponse:decisionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigationResponse*' index='1' name='navigationResponse' type64='@'/>
-<arg declared_type64='void (^)(WKNavigationResponsePolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigationResponse * _Nonnull' index='1' name='navigationResponse' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(WKNavigationResponsePolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
 <arg declared_type64='WKNavigationResponsePolicy' type64='q'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
@@ -7085,8 +7125,8 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didCommitNavigation:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didCreateJavaScriptContext:forFrame:'>
@@ -7102,9 +7142,9 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didFailNavigation:withError:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
-<arg declared_type64='NSError*' index='2' name='error' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
+<arg declared_type64='NSError * _Nonnull' index='2' name='error' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didFailProvisionalLoadWithError:forFrame:'>
@@ -7114,9 +7154,9 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didFailProvisionalNavigation:withError:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
-<arg declared_type64='NSError*' index='2' name='error' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
+<arg declared_type64='NSError * _Nonnull' index='2' name='error' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didFinishLoadForFrame:'>
@@ -7125,16 +7165,16 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didFinishNavigation:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didReceiveAuthenticationChallenge:completionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSURLAuthenticationChallenge*' index='1' name='challenge' type64='@'/>
-<arg declared_type64='void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSURLAuthenticationChallenge * _Nonnull' index='1' name='challenge' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
 <arg declared_type64='NSURLSessionAuthChallengeDisposition' type64='q'/>
-<arg declared_type64='NSURLCredential*' type64='@'/>
+<arg declared_type64='NSURLCredential * _Nullable' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
@@ -7151,8 +7191,8 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didReceiveServerRedirectForProvisionalNavigation:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didReceiveTitle:forFrame:'>
@@ -7167,8 +7207,8 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:didStartProvisionalNavigation:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:doCommandBySelector:'>
@@ -7291,10 +7331,10 @@
 <retval declared_type='void' type='v'/>
 </method>
 <method selector='webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='message' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='2' name='frame' type64='@'/>
-<arg declared_type64='void (^)()' function_pointer='true' index='3' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='message' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='2' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(void)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
@@ -7311,10 +7351,10 @@
 <retval declared_type='BOOL' type='B'/>
 </method>
 <method selector='webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='message' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='2' name='frame' type64='@'/>
-<arg declared_type64='void (^)(BOOL)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='message' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='2' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(BOOL)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
 <arg declared_type64='BOOL' type64='B'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
@@ -7334,12 +7374,12 @@
 <retval declared_type='NSString*' type='@'/>
 </method>
 <method selector='webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='prompt' type64='@'/>
-<arg declared_type64='NSString*' index='2' name='defaultText' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='3' name='frame' type64='@'/>
-<arg declared_type64='void (^)(NSString *)' function_pointer='true' index='4' name='completionHandler' type64='@?'>
-<arg declared_type64='NSString*' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='prompt' type64='@'/>
+<arg declared_type64='NSString * _Nullable' index='2' name='defaultText' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='3' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(NSString * _Nullable)' function_pointer='true' index='4' name='completionHandler' type64='@?'>
+<arg declared_type64='NSString * _Nullable' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
@@ -7511,6 +7551,10 @@
 <arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
+<method selector='webViewDidClose:'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<retval declared_type64='void' type64='v'/>
+</method>
 <method selector='webViewDidEndEditing:'>
 <arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
 <retval declared_type='void' type='v'/>
@@ -7559,37 +7603,41 @@
 <arg declared_type='WebView*' index='0' name='sender' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
+<method selector='webViewWebContentProcessDidTerminate:'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<retval declared_type64='void' type64='v'/>
+</method>
 </class>
 <class name='WKBackForwardList'>
 <method selector='backItem'>
-<retval declared_type64='WKBackForwardListItem*' type64='@'/>
+<retval declared_type64='WKBackForwardListItem * _Nullable' type64='@'/>
 </method>
 <method selector='backList'>
-<retval declared_type64='NSArray*' type64='@'/>
+<retval declared_type64='NSArray * _Nonnull' type64='@'/>
 </method>
 <method selector='currentItem'>
-<retval declared_type64='WKBackForwardListItem*' type64='@'/>
+<retval declared_type64='WKBackForwardListItem * _Nullable' type64='@'/>
 </method>
 <method selector='forwardItem'>
-<retval declared_type64='WKBackForwardListItem*' type64='@'/>
+<retval declared_type64='WKBackForwardListItem * _Nullable' type64='@'/>
 </method>
 <method selector='forwardList'>
-<retval declared_type64='NSArray*' type64='@'/>
+<retval declared_type64='NSArray * _Nonnull' type64='@'/>
 </method>
 <method selector='itemAtIndex:'>
 <arg declared_type64='NSInteger' index='0' name='index' type64='q'/>
-<retval declared_type64='WKBackForwardListItem*' type64='@'/>
+<retval declared_type64='WKBackForwardListItem * _Nullable' type64='@'/>
 </method>
 </class>
 <class name='WKBackForwardListItem'>
 <method selector='URL'>
-<retval declared_type64='NSURL*' type64='@'/>
+<retval declared_type64='NSURL * _Nonnull' type64='@'/>
 </method>
 <method selector='initialURL'>
-<retval declared_type64='NSURL*' type64='@'/>
+<retval declared_type64='NSURL * _Nonnull' type64='@'/>
 </method>
 <method selector='title'>
-<retval declared_type64='NSString*' type64='@'/>
+<retval declared_type64='NSString * _Nullable' type64='@'/>
 </method>
 </class>
 <class name='WKFrameInfo'>
@@ -7597,7 +7645,10 @@
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='request'>
-<retval declared_type64='NSURLRequest*' type64='@'/>
+<retval declared_type64='NSURLRequest * _Nonnull' type64='@'/>
+</method>
+<method selector='securityOrigin'>
+<retval declared_type64='WKSecurityOrigin * _Nonnull' type64='@'/>
 </method>
 </class>
 <class name='WKNavigationAction'>
@@ -7611,13 +7662,13 @@
 <retval declared_type64='WKNavigationType' type64='q'/>
 </method>
 <method selector='request'>
-<retval declared_type64='NSURLRequest*' type64='@'/>
+<retval declared_type64='NSURLRequest * _Nonnull' type64='@'/>
 </method>
 <method selector='sourceFrame'>
-<retval declared_type64='WKFrameInfo*' type64='@'/>
+<retval declared_type64='WKFrameInfo * _Nonnull' type64='@'/>
 </method>
 <method selector='targetFrame'>
-<retval declared_type64='WKFrameInfo*' type64='@'/>
+<retval declared_type64='WKFrameInfo * _Nullable' type64='@'/>
 </method>
 </class>
 <class name='WKNavigationResponse'>
@@ -7628,7 +7679,7 @@
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='response'>
-<retval declared_type64='NSURLResponse*' type64='@'/>
+<retval declared_type64='NSURLResponse * _Nonnull' type64='@'/>
 </method>
 </class>
 <class name='WKPreferences'>
@@ -7670,45 +7721,56 @@
 </class>
 <class name='WKScriptMessage'>
 <method selector='body'>
-<retval declared_type64='id' type64='@'/>
+<retval declared_type64='id _Nonnull' type64='@'/>
 </method>
 <method selector='frameInfo'>
-<retval declared_type64='WKFrameInfo*' type64='@'/>
+<retval declared_type64='WKFrameInfo * _Nonnull' type64='@'/>
 </method>
 <method selector='name'>
-<retval declared_type64='NSString*' type64='@'/>
+<retval declared_type64='NSString * _Nonnull' type64='@'/>
 </method>
 <method selector='webView'>
-<retval declared_type64='WKWebView*' type64='@'/>
+<retval declared_type64='WKWebView * _Nullable' type64='@'/>
+</method>
+</class>
+<class name='WKSecurityOrigin'>
+<method selector='host'>
+<retval declared_type64='NSString * _Nonnull' type64='@'/>
+</method>
+<method selector='port'>
+<retval declared_type64='NSInteger' type64='q'/>
+</method>
+<method selector='protocol'>
+<retval declared_type64='NSString * _Nonnull' type64='@'/>
 </method>
 </class>
 <class name='WKUserContentController'>
 <method selector='addScriptMessageHandler:name:'>
-<arg declared_type64='id' index='0' name='scriptMessageHandler' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='name' type64='@'/>
+<arg declared_type64='id _Nonnull' index='0' name='scriptMessageHandler' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='name' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='addUserScript:'>
-<arg declared_type64='WKUserScript*' index='0' name='userScript' type64='@'/>
+<arg declared_type64='WKUserScript * _Nonnull' index='0' name='userScript' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='removeAllUserScripts'>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='removeScriptMessageHandlerForName:'>
-<arg declared_type64='NSString*' index='0' name='name' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='0' name='name' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='userScripts'>
-<retval declared_type64='NSArray*' type64='@'/>
+<retval declared_type64='NSArray * _Nonnull' type64='@'/>
 </method>
 </class>
 <class name='WKUserScript'>
 <method selector='initWithSource:injectionTime:forMainFrameOnly:'>
-<arg declared_type64='NSString*' index='0' name='source' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='0' name='source' type64='@'/>
 <arg declared_type64='WKUserScriptInjectionTime' index='1' name='injectionTime' type64='q'/>
 <arg declared_type64='BOOL' index='2' name='forMainFrameOnly' type64='B'/>
-<retval declared_type64='instancetype' type64='@'/>
+<retval declared_type64='instancetype _Nonnull' type64='@'/>
 </method>
 <method selector='injectionTime'>
 <retval declared_type64='WKUserScriptInjectionTime' type64='q'/>
@@ -7717,24 +7779,27 @@
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='source'>
-<retval declared_type64='NSString*' type64='@'/>
+<retval declared_type64='NSString * _Nonnull' type64='@'/>
 </method>
 </class>
 <class name='WKWebView'>
 <method selector='UIDelegate'>
-<retval declared_type64='id' type64='@'/>
+<retval declared_type64='id _Nullable' type64='@'/>
 </method>
 <method selector='URL'>
-<retval declared_type64='NSURL*' type64='@'/>
+<retval declared_type64='NSURL * _Nullable' type64='@'/>
 </method>
 <method selector='allowsBackForwardNavigationGestures'>
+<retval declared_type64='BOOL' type64='B'/>
+</method>
+<method selector='allowsLinkPreview'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='allowsMagnification'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='backForwardList'>
-<retval declared_type64='WKBackForwardList*' type64='@'/>
+<retval declared_type64='WKBackForwardList * _Nonnull' type64='@'/>
 </method>
 <method selector='canGoBack'>
 <retval declared_type64='BOOL' type64='B'/>
@@ -7742,85 +7807,111 @@
 <method selector='canGoForward'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
+<method selector='certificateChain'>
+<retval declared_type64='NSArray * _Nonnull' type64='@'/>
+</method>
 <method selector='configuration'>
-<retval declared_type64='WKWebViewConfiguration*' type64='@'/>
+<retval declared_type64='WKWebViewConfiguration * _Nonnull' type64='@'/>
+</method>
+<method selector='customUserAgent'>
+<retval declared_type64='NSString * _Nullable' type64='@'/>
 </method>
 <method selector='estimatedProgress'>
 <retval declared_type64='double' type64='d'/>
 </method>
 <method selector='evaluateJavaScript:completionHandler:'>
-<arg declared_type64='NSString*' index='0' name='javaScriptString' type64='@'/>
-<arg declared_type64='void (^)(id, NSError *)' function_pointer='true' index='1' name='completionHandler' type64='@?'>
-<arg declared_type64='id' type64='@'/>
-<arg declared_type64='NSError*' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='0' name='javaScriptString' type64='@'/>
+<arg declared_type64='void (^ _Nullable)(id _Nullable, NSError * _Nullable)' function_pointer='true' index='1' name='completionHandler' type64='@?'>
+<arg declared_type64='id _Nullable' type64='@'/>
+<arg declared_type64='NSError * _Nullable' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='goBack'>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='goBack:'>
-<arg declared_type64='id' index='0' name='sender' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='sender' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='goForward'>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='goForward:'>
-<arg declared_type64='id' index='0' name='sender' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='sender' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='goToBackForwardListItem:'>
-<arg declared_type64='WKBackForwardListItem*' index='0' name='item' type64='@'/>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<arg declared_type64='WKBackForwardListItem * _Nonnull' index='0' name='item' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='hasOnlySecureContent'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='initWithFrame:configuration:'>
 <arg declared_type64='CGRect' index='0' name='frame' type64='{CGRect={CGPoint=dd}{CGSize=dd}}'/>
-<arg declared_type64='WKWebViewConfiguration*' index='1' name='configuration' type64='@'/>
-<retval declared_type64='instancetype' type64='@'/>
+<arg declared_type64='WKWebViewConfiguration * _Nonnull' index='1' name='configuration' type64='@'/>
+<retval declared_type64='instancetype _Nonnull' type64='@'/>
 </method>
 <method selector='isLoading'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
+<method selector='loadData:MIMEType:characterEncodingName:baseURL:'>
+<arg declared_type64='NSData * _Nonnull' index='0' name='data' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='MIMEType' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='2' name='characterEncodingName' type64='@'/>
+<arg declared_type64='NSURL * _Nonnull' index='3' name='baseURL' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
+</method>
+<method selector='loadFileURL:allowingReadAccessToURL:'>
+<arg declared_type64='NSURL * _Nonnull' index='0' name='URL' type64='@'/>
+<arg declared_type64='NSURL * _Nonnull' index='1' name='readAccessURL' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
+</method>
 <method selector='loadHTMLString:baseURL:'>
-<arg declared_type64='NSString*' index='0' name='string' type64='@'/>
-<arg declared_type64='NSURL*' index='1' name='baseURL' type64='@'/>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='0' name='string' type64='@'/>
+<arg declared_type64='NSURL * _Nullable' index='1' name='baseURL' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='loadRequest:'>
-<arg declared_type64='NSURLRequest*' index='0' name='request' type64='@'/>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<arg declared_type64='NSURLRequest * _Nonnull' index='0' name='request' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='magnification'>
 <retval declared_type64='CGFloat' type64='d'/>
 </method>
 <method selector='navigationDelegate'>
-<retval declared_type64='id' type64='@'/>
+<retval declared_type64='id _Nullable' type64='@'/>
 </method>
 <method selector='reload'>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='reload:'>
-<arg declared_type64='id' index='0' name='sender' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='sender' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='reloadFromOrigin'>
-<retval declared_type64='WKNavigation*' type64='@'/>
+<retval declared_type64='WKNavigation * _Nullable' type64='@'/>
 </method>
 <method selector='reloadFromOrigin:'>
-<arg declared_type64='id' index='0' name='sender' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='sender' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setAllowsBackForwardNavigationGestures:'>
 <arg declared_type64='BOOL' index='0' name='allowsBackForwardNavigationGestures' type64='B'/>
 <retval declared_type64='void' type64='v'/>
 </method>
+<method selector='setAllowsLinkPreview:'>
+<arg declared_type64='BOOL' index='0' name='allowsLinkPreview' type64='B'/>
+<retval declared_type64='void' type64='v'/>
+</method>
 <method selector='setAllowsMagnification:'>
 <arg declared_type64='BOOL' index='0' name='allowsMagnification' type64='B'/>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='setCustomUserAgent:'>
+<arg declared_type64='NSString * _Nullable' index='0' name='customUserAgent' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setMagnification:'>
@@ -7833,37 +7924,51 @@
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setNavigationDelegate:'>
-<arg declared_type64='id' index='0' name='navigationDelegate' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='navigationDelegate' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setUIDelegate:'>
-<arg declared_type64='id' index='0' name='UIDelegate' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='UIDelegate' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='stopLoading'>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='stopLoading:'>
-<arg declared_type64='id' index='0' name='sender' type64='@'/>
+<arg declared_type64='id _Nullable' index='0' name='sender' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='title'>
-<retval declared_type64='NSString*' type64='@'/>
+<retval declared_type64='NSString * _Nullable' type64='@'/>
 </method>
 </class>
 <class name='WKWebViewConfiguration'>
+<method selector='allowsAirPlayForMediaPlayback'>
+<retval declared_type64='BOOL' type64='B'/>
+</method>
+<method selector='applicationNameForUserAgent'>
+<retval declared_type64='NSString * _Nullable' type64='@'/>
+</method>
 <method selector='preferences'>
-<retval declared_type64='WKPreferences*' type64='@'/>
+<retval declared_type64='WKPreferences * _Nonnull' type64='@'/>
 </method>
 <method selector='processPool'>
-<retval declared_type64='WKProcessPool*' type64='@'/>
+<retval declared_type64='WKProcessPool * _Nonnull' type64='@'/>
+</method>
+<method selector='setAllowsAirPlayForMediaPlayback:'>
+<arg declared_type64='BOOL' index='0' name='allowsAirPlayForMediaPlayback' type64='B'/>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='setApplicationNameForUserAgent:'>
+<arg declared_type64='NSString * _Nullable' index='0' name='applicationNameForUserAgent' type64='@'/>
+<retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setPreferences:'>
-<arg declared_type64='WKPreferences*' index='0' name='preferences' type64='@'/>
+<arg declared_type64='WKPreferences * _Nonnull' index='0' name='preferences' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setProcessPool:'>
-<arg declared_type64='WKProcessPool*' index='0' name='processPool' type64='@'/>
+<arg declared_type64='WKProcessPool * _Nonnull' index='0' name='processPool' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setSuppressesIncrementalRendering:'>
@@ -7871,40 +7976,93 @@
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='setUserContentController:'>
-<arg declared_type64='WKUserContentController*' index='0' name='userContentController' type64='@'/>
+<arg declared_type64='WKUserContentController * _Nonnull' index='0' name='userContentController' type64='@'/>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='setWebsiteDataStore:'>
+<arg declared_type64='WKWebsiteDataStore * _Nonnull' index='0' name='websiteDataStore' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='suppressesIncrementalRendering'>
 <retval declared_type64='BOOL' type64='B'/>
 </method>
 <method selector='userContentController'>
-<retval declared_type64='WKUserContentController*' type64='@'/>
+<retval declared_type64='WKUserContentController * _Nonnull' type64='@'/>
+</method>
+<method selector='websiteDataStore'>
+<retval declared_type64='WKWebsiteDataStore * _Nonnull' type64='@'/>
+</method>
+</class>
+<class name='WKWebsiteDataRecord'>
+<method selector='dataTypes'>
+<retval declared_type64='NSSet * _Nonnull' type64='@'/>
+</method>
+<method selector='displayName'>
+<retval declared_type64='NSString * _Nonnull' type64='@'/>
+</method>
+</class>
+<class name='WKWebsiteDataStore'>
+<method class_method='true' selector='allWebsiteDataTypes'>
+<retval declared_type64='NSSet * _Nonnull' type64='@'/>
+</method>
+<method class_method='true' selector='defaultDataStore'>
+<retval declared_type64='WKWebsiteDataStore * _Nonnull' type64='@'/>
+</method>
+<method selector='fetchDataRecordsOfTypes:completionHandler:'>
+<arg declared_type64='NSSet * _Nonnull' index='0' name='dataTypes' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(NSArray * _Nonnull)' function_pointer='true' index='1' name='completionHandler' type64='@?'>
+<arg declared_type64='NSArray * _Nonnull' type64='@'/>
+<retval declared_type64='void' type64='v'/>
+</arg>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='isPersistent'>
+<retval declared_type64='BOOL' type64='B'/>
+</method>
+<method class_method='true' selector='nonPersistentDataStore'>
+<retval declared_type64='WKWebsiteDataStore * _Nonnull' type64='@'/>
+</method>
+<method selector='removeDataOfTypes:forDataRecords:completionHandler:'>
+<arg declared_type64='NSSet * _Nonnull' index='0' name='dataTypes' type64='@'/>
+<arg declared_type64='NSArray * _Nonnull' index='1' name='dataRecords' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(void)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
+<retval declared_type64='void' type64='v'/>
+</arg>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='removeDataOfTypes:modifiedSince:completionHandler:'>
+<arg declared_type64='NSSet * _Nonnull' index='0' name='websiteDataTypes' type64='@'/>
+<arg declared_type64='NSDate * _Nonnull' index='1' name='date' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(void)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
+<retval declared_type64='void' type64='v'/>
+</arg>
+<retval declared_type64='void' type64='v'/>
 </method>
 </class>
 <class name='WKWindowFeatures'>
 <method selector='allowsResizing'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='height'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='menuBarVisibility'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='statusBarVisibility'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='toolbarsVisibility'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='width'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='x'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 <method selector='y'>
-<retval declared_type64='NSNumber*' type64='@'/>
+<retval declared_type64='NSNumber * _Nullable' type64='@'/>
 </method>
 </class>
 <class name='WebArchive'>
@@ -8242,6 +8400,9 @@
 </method>
 </class>
 <class name='WebPreferences'>
+<method selector='allowsAirPlayForMediaPlayback'>
+<retval declared_type='BOOL' type='B'/>
+</method>
 <method selector='allowsAnimatedImageLooping'>
 <retval declared_type='BOOL' type='B'/>
 </method>
@@ -8308,6 +8469,10 @@
 </method>
 <method selector='serifFontFamily'>
 <retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='setAllowsAirPlayForMediaPlayback:'>
+<arg declared_type='BOOL' index='0' name='allowsAirPlayForMediaPlayback' type='B'/>
+<retval declared_type='void' type='v'/>
 </method>
 <method selector='setAllowsAnimatedImageLooping:'>
 <arg declared_type='BOOL' index='0' name='allowsAnimatedImageLooping' type='B'/>
@@ -9031,7 +9196,7 @@
 </class>
 <informal_protocol name='DOMEventListener'>
 <method selector='handleEvent:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='DOMEvent*' index='0' name='evt' type='@'/>
+<arg declared_type='DOMEvent*' index='0' name='event' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 </informal_protocol>
@@ -9079,109 +9244,117 @@
 </informal_protocol>
 <informal_protocol name='WKNavigationDelegate'>
 <method selector='webView:decidePolicyForNavigationAction:decisionHandler:' type64='v40@0:8@16@24@?32'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigationAction*' index='1' name='navigationAction' type64='@'/>
-<arg declared_type64='void (^)(WKNavigationActionPolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigationAction * _Nonnull' index='1' name='navigationAction' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(WKNavigationActionPolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
 <arg declared_type64='WKNavigationActionPolicy' type64='q'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:decidePolicyForNavigationResponse:decisionHandler:' type64='v40@0:8@16@24@?32'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigationResponse*' index='1' name='navigationResponse' type64='@'/>
-<arg declared_type64='void (^)(WKNavigationResponsePolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigationResponse * _Nonnull' index='1' name='navigationResponse' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(WKNavigationResponsePolicy)' function_pointer='true' index='2' name='decisionHandler' type64='@?'>
 <arg declared_type64='WKNavigationResponsePolicy' type64='q'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didCommitNavigation:' type64='v32@0:8@16@24'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didFailNavigation:withError:' type64='v40@0:8@16@24@32'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
-<arg declared_type64='NSError*' index='2' name='error' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
+<arg declared_type64='NSError * _Nonnull' index='2' name='error' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didFailProvisionalNavigation:withError:' type64='v40@0:8@16@24@32'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
-<arg declared_type64='NSError*' index='2' name='error' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
+<arg declared_type64='NSError * _Nonnull' index='2' name='error' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didFinishNavigation:' type64='v32@0:8@16@24'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didReceiveAuthenticationChallenge:completionHandler:' type64='v40@0:8@16@24@?32'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSURLAuthenticationChallenge*' index='1' name='challenge' type64='@'/>
-<arg declared_type64='void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSURLAuthenticationChallenge * _Nonnull' index='1' name='challenge' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable)' function_pointer='true' index='2' name='completionHandler' type64='@?'>
 <arg declared_type64='NSURLSessionAuthChallengeDisposition' type64='q'/>
-<arg declared_type64='NSURLCredential*' type64='@'/>
+<arg declared_type64='NSURLCredential * _Nullable' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didReceiveServerRedirectForProvisionalNavigation:' type64='v32@0:8@16@24'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:didStartProvisionalNavigation:' type64='v32@0:8@16@24'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKNavigation*' index='1' name='navigation' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKNavigation * _Null_unspecified' index='1' name='navigation' type64='@'/>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='webViewWebContentProcessDidTerminate:' type64='v24@0:8@16'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 </informal_protocol>
 <informal_protocol name='WKScriptMessageHandler'>
 <method selector='userContentController:didReceiveScriptMessage:' type64='v32@0:8@16@24'>
-<arg declared_type64='WKUserContentController*' index='0' name='userContentController' type64='@'/>
-<arg declared_type64='WKScriptMessage*' index='1' name='message' type64='@'/>
+<arg declared_type64='WKUserContentController * _Nonnull' index='0' name='userContentController' type64='@'/>
+<arg declared_type64='WKScriptMessage * _Nonnull' index='1' name='message' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 </informal_protocol>
 <informal_protocol name='WKUIDelegate'>
 <method selector='webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:' type64='@48@0:8@16@24@32@40'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='WKWebViewConfiguration*' index='1' name='configuration' type64='@'/>
-<arg declared_type64='WKNavigationAction*' index='2' name='navigationAction' type64='@'/>
-<arg declared_type64='WKWindowFeatures*' index='3' name='windowFeatures' type64='@'/>
-<retval declared_type64='WKWebView*' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='WKWebViewConfiguration * _Nonnull' index='1' name='configuration' type64='@'/>
+<arg declared_type64='WKNavigationAction * _Nonnull' index='2' name='navigationAction' type64='@'/>
+<arg declared_type64='WKWindowFeatures * _Nonnull' index='3' name='windowFeatures' type64='@'/>
+<retval declared_type64='WKWebView * _Nullable' type64='@'/>
 </method>
 <method selector='webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:' type64='v48@0:8@16@24@32@?40'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='message' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='2' name='frame' type64='@'/>
-<arg declared_type64='void (^)()' function_pointer='true' index='3' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='message' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='2' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(void)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:' type64='v48@0:8@16@24@32@?40'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='message' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='2' name='frame' type64='@'/>
-<arg declared_type64='void (^)(BOOL)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='message' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='2' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(BOOL)' function_pointer='true' index='3' name='completionHandler' type64='@?'>
 <arg declared_type64='BOOL' type64='B'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
 <retval declared_type64='void' type64='v'/>
 </method>
 <method selector='webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:' type64='v56@0:8@16@24@32@40@?48'>
-<arg declared_type64='WKWebView*' index='0' name='webView' type64='@'/>
-<arg declared_type64='NSString*' index='1' name='prompt' type64='@'/>
-<arg declared_type64='NSString*' index='2' name='defaultText' type64='@'/>
-<arg declared_type64='WKFrameInfo*' index='3' name='frame' type64='@'/>
-<arg declared_type64='void (^)(NSString *)' function_pointer='true' index='4' name='completionHandler' type64='@?'>
-<arg declared_type64='NSString*' type64='@'/>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
+<arg declared_type64='NSString * _Nonnull' index='1' name='prompt' type64='@'/>
+<arg declared_type64='NSString * _Nullable' index='2' name='defaultText' type64='@'/>
+<arg declared_type64='WKFrameInfo * _Nonnull' index='3' name='frame' type64='@'/>
+<arg declared_type64='void (^ _Nonnull)(NSString * _Nullable)' function_pointer='true' index='4' name='completionHandler' type64='@?'>
+<arg declared_type64='NSString * _Nullable' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </arg>
+<retval declared_type64='void' type64='v'/>
+</method>
+<method selector='webViewDidClose:' type64='v24@0:8@16'>
+<arg declared_type64='WKWebView * _Nonnull' index='0' name='webView' type64='@'/>
 <retval declared_type64='void' type64='v'/>
 </method>
 </informal_protocol>
@@ -9274,6 +9447,86 @@
 <method selector='downloadWindowForAuthenticationSheet:' type='@12@0:4@8' type64='@24@0:8@16'>
 <arg declared_type='WebDownload*' index='0' name='download' type='@'/>
 <retval declared_type='NSWindow*' type='@'/>
+</method>
+</informal_protocol>
+<informal_protocol name='WebEditingDelegate'>
+<method selector='undoManagerForWebView:' type='@12@0:4@8' type64='@24@0:8@16'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<retval declared_type='NSUndoManager*' type='@'/>
+</method>
+<method selector='webView:doCommandBySelector:' type='B16@0:4@8:12' type64='B32@0:8@16:24'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='SEL' index='1' name='selector' type=':'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldApplyStyle:toElementsInDOMRange:' type='B20@0:4@8@12@16' type64='B40@0:8@16@24@32'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMCSSStyleDeclaration*' index='1' name='style' type='@'/>
+<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldBeginEditingInDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:' type='B28@0:4@8@12@16I20B24' type64='B52@0:8@16@24@32Q40B48'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMRange*' index='1' name='currentRange' type='@'/>
+<arg declared_type='DOMRange*' index='2' name='proposedRange' type='@'/>
+<arg declared_type='NSSelectionAffinity' index='3' name='selectionAffinity' type='I' type64='Q'/>
+<arg declared_type='BOOL' index='4' name='flag' type='B'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldChangeTypingStyle:toStyle:' type='B20@0:4@8@12@16' type64='B40@0:8@16@24@32'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMCSSStyleDeclaration*' index='1' name='currentStyle' type='@'/>
+<arg declared_type='DOMCSSStyleDeclaration*' index='2' name='proposedStyle' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldDeleteDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldEndEditingInDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldInsertNode:replacingDOMRange:givenAction:' type='B24@0:4@8@12@16i20' type64='B48@0:8@16@24@32q40'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='DOMNode*' index='1' name='node' type='@'/>
+<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
+<arg declared_type='WebViewInsertAction' index='3' name='action' type='i' type64='q'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webView:shouldInsertText:replacingDOMRange:givenAction:' type='B24@0:4@8@12@16i20' type64='B48@0:8@16@24@32q40'>
+<arg declared_type='WebView*' index='0' name='webView' type='@'/>
+<arg declared_type='NSString*' index='1' name='text' type='@'/>
+<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
+<arg declared_type='WebViewInsertAction' index='3' name='action' type='i' type64='q'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='webViewDidBeginEditing:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='webViewDidChange:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='webViewDidChangeSelection:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='webViewDidChangeTypingStyle:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='webViewDidEndEditing:' type='v12@0:4@8' type64='v24@0:8@16'>
+<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
+<retval declared_type='void' type='v'/>
 </method>
 </informal_protocol>
 <informal_protocol name='WebFrameLoadDelegate'>
@@ -9784,86 +10037,6 @@
 </method>
 <method selector='webViewUnfocus:' type='v12@0:4@8' type64='v24@0:8@16'>
 <arg declared_type='WebView*' index='0' name='sender' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-</informal_protocol>
-<informal_protocol name='WebViewEditingDelegate'>
-<method selector='undoManagerForWebView:' type='@12@0:4@8' type64='@24@0:8@16'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<retval declared_type='NSUndoManager*' type='@'/>
-</method>
-<method selector='webView:doCommandBySelector:' type='B16@0:4@8:12' type64='B32@0:8@16:24'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='SEL' index='1' name='selector' type=':'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldApplyStyle:toElementsInDOMRange:' type='B20@0:4@8@12@16' type64='B40@0:8@16@24@32'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMCSSStyleDeclaration*' index='1' name='style' type='@'/>
-<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldBeginEditingInDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:' type='B28@0:4@8@12@16I20B24' type64='B52@0:8@16@24@32Q40B48'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMRange*' index='1' name='currentRange' type='@'/>
-<arg declared_type='DOMRange*' index='2' name='proposedRange' type='@'/>
-<arg declared_type='NSSelectionAffinity' index='3' name='selectionAffinity' type='I' type64='Q'/>
-<arg declared_type='BOOL' index='4' name='flag' type='B'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldChangeTypingStyle:toStyle:' type='B20@0:4@8@12@16' type64='B40@0:8@16@24@32'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMCSSStyleDeclaration*' index='1' name='currentStyle' type='@'/>
-<arg declared_type='DOMCSSStyleDeclaration*' index='2' name='proposedStyle' type='@'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldDeleteDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldEndEditingInDOMRange:' type='B16@0:4@8@12' type64='B32@0:8@16@24'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMRange*' index='1' name='range' type='@'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldInsertNode:replacingDOMRange:givenAction:' type='B24@0:4@8@12@16i20' type64='B48@0:8@16@24@32q40'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='DOMNode*' index='1' name='node' type='@'/>
-<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
-<arg declared_type='WebViewInsertAction' index='3' name='action' type='i' type64='q'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webView:shouldInsertText:replacingDOMRange:givenAction:' type='B24@0:4@8@12@16i20' type64='B48@0:8@16@24@32q40'>
-<arg declared_type='WebView*' index='0' name='webView' type='@'/>
-<arg declared_type='NSString*' index='1' name='text' type='@'/>
-<arg declared_type='DOMRange*' index='2' name='range' type='@'/>
-<arg declared_type='WebViewInsertAction' index='3' name='action' type='i' type64='q'/>
-<retval declared_type='BOOL' type='B'/>
-</method>
-<method selector='webViewDidBeginEditing:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-<method selector='webViewDidChange:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-<method selector='webViewDidChangeSelection:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-<method selector='webViewDidChangeTypingStyle:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
-<retval declared_type='void' type='v'/>
-</method>
-<method selector='webViewDidEndEditing:' type='v12@0:4@8' type64='v24@0:8@16'>
-<arg declared_type='NSNotification*' index='0' name='notification' type='@'/>
 <retval declared_type='void' type='v'/>
 </method>
 </informal_protocol>

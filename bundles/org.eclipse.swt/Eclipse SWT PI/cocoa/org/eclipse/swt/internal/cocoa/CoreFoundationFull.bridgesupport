@@ -745,6 +745,7 @@
 <constant const='true' declared_type='CFStringRef' name='kCFLocaleScriptCode' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFLocaleUsesMetricSystem' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFLocaleVariantCode' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFIndex' name='kCFNotFound' type='l' type64='q'/>
 <constant const='true' declared_type='CFNullRef' name='kCFNull' type='^{__CFNull=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFNumberFormatterAlwaysShowDecimalSeparator' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFNumberFormatterCurrencyCode' type='^{__CFString=}'/>
@@ -839,6 +840,7 @@
 <constant const='true' declared_type='CFDictionaryValueCallBacks' name='kCFTypeDictionaryValueCallBacks' type='{_CFDictionaryValueCallBacks=i^?^?^?^?}' type64='{_CFDictionaryValueCallBacks=q^?^?^?^?}'/>
 <constant const='true' declared_type='CFSetCallBacks' name='kCFTypeSetCallBacks' type='{_CFSetCallBacks=i^?^?^?^?^?}' type64='{_CFSetCallBacks=q^?^?^?^?^?}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLAddedToDirectoryDateKey' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLApplicationIsScriptableKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLAttributeModificationDateKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLContentAccessDateKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLContentModificationDateKey' type='^{__CFString=}'/>
@@ -853,6 +855,11 @@
 <constant const='true' declared_type='CFStringRef' name='kCFURLFileLength' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLFileOwnerID' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLFilePOSIXMode' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLFileProtectionComplete' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLFileProtectionCompleteUnlessOpen' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLFileProtectionCompleteUntilFirstUserAuthentication' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLFileProtectionKey' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLFileProtectionNone' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLFileResourceIdentifierKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLFileResourceTypeBlockSpecial' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLFileResourceTypeCharacterSpecial' type='^{__CFString=}'/>
@@ -870,6 +877,7 @@
 <constant const='true' declared_type='CFStringRef' name='kCFURLHTTPStatusLine' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLHasHiddenExtensionKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLIsAliasFileKey' type='^{__CFString=}'/>
+<constant const='true' declared_type='CFStringRef' name='kCFURLIsApplicationKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLIsDirectoryKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLIsExcludedFromBackupKey' type='^{__CFString=}'/>
 <constant const='true' declared_type='CFStringRef' name='kCFURLIsExecutableKey' type='^{__CFString=}'/>
@@ -1040,6 +1048,10 @@
 <enum name='kCFCoreFoundationVersionNumber10_0' value='196.40'/>
 <enum name='kCFCoreFoundationVersionNumber10_0_3' value='196.50'/>
 <enum name='kCFCoreFoundationVersionNumber10_1' value='226.00'/>
+<enum name='kCFCoreFoundationVersionNumber10_10' value='1151.16'/>
+<enum name='kCFCoreFoundationVersionNumber10_10_1' value='1151.16'/>
+<enum name='kCFCoreFoundationVersionNumber10_10_2' value='1152'/>
+<enum name='kCFCoreFoundationVersionNumber10_10_3' value='1153.18'/>
 <enum name='kCFCoreFoundationVersionNumber10_1_1' value='226.00'/>
 <enum name='kCFCoreFoundationVersionNumber10_1_2' value='227.20'/>
 <enum name='kCFCoreFoundationVersionNumber10_1_3' value='227.20'/>
@@ -1143,7 +1155,6 @@
 <enum name='kCFMessagePortSendTimeout' value='-1'/>
 <enum name='kCFMessagePortSuccess' value='0'/>
 <enum name='kCFMessagePortTransportError' value='-4'/>
-<enum name='kCFNotFound' value='-1'/>
 <enum name='kCFNotificationDeliverImmediately' value='1'/>
 <enum name='kCFNotificationPostToAllSessions' value='2'/>
 <enum name='kCFNumberCFIndexType' value='14'/>
@@ -1153,9 +1164,13 @@
 <enum name='kCFNumberFloat32Type' value='5'/>
 <enum name='kCFNumberFloat64Type' value='6'/>
 <enum name='kCFNumberFloatType' value='12'/>
+<enum name='kCFNumberFormatterCurrencyAccountingStyle' value='10'/>
+<enum name='kCFNumberFormatterCurrencyISOCodeStyle' value='8'/>
+<enum name='kCFNumberFormatterCurrencyPluralStyle' value='9'/>
 <enum name='kCFNumberFormatterCurrencyStyle' value='2'/>
 <enum name='kCFNumberFormatterDecimalStyle' value='1'/>
 <enum name='kCFNumberFormatterNoStyle' value='0'/>
+<enum name='kCFNumberFormatterOrdinalStyle' value='6'/>
 <enum name='kCFNumberFormatterPadAfterPrefix' value='1'/>
 <enum name='kCFNumberFormatterPadAfterSuffix' value='3'/>
 <enum name='kCFNumberFormatterPadBeforePrefix' value='0'/>
@@ -3970,6 +3985,18 @@
 <arg declared_type='CFRunLoopObserverContext*' name='context' type='^{_CFRunLoopObserverContext=i^v^?^?^?}' type64='^{_CFRunLoopObserverContext=q^v^?^?^?}'/>
 <retval already_retained='true' declared_type='CFRunLoopObserverRef' type='^{__CFRunLoopObserver=}'/>
 </function>
+<function name='CFRunLoopObserverCreateWithHandler'>
+<arg declared_type='CFAllocatorRef' name='allocator' type='^{__CFAllocator=}'/>
+<arg declared_type='CFOptionFlags' name='activities' type='L' type64='Q'/>
+<arg declared_type='Boolean' name='repeats' type='B'/>
+<arg declared_type='CFIndex' name='order' type='l' type64='q'/>
+<arg declared_type='void (^)(CFRunLoopObserverRef, CFRunLoopActivity)' function_pointer='true' name='block' type='@?'>
+<arg declared_type='CFRunLoopObserverRef' type='^{__CFRunLoopObserver=}'/>
+<arg declared_type='CFRunLoopActivity' type='L' type64='Q'/>
+<retval declared_type='void' type='v'/>
+</arg>
+<retval already_retained='true' declared_type='CFRunLoopObserverRef' type='^{__CFRunLoopObserver=}'/>
+</function>
 <function name='CFRunLoopObserverDoesRepeat'>
 <arg declared_type='CFRunLoopObserverRef' name='observer' type='^{__CFRunLoopObserver=}'/>
 <retval declared_type='Boolean' type='B'/>
@@ -3998,6 +4025,14 @@
 <arg declared_type='CFRunLoopObserverRef' name='observer' type='^{__CFRunLoopObserver=}'/>
 <retval declared_type='Boolean' type='B'/>
 </function>
+<function name='CFRunLoopPerformBlock'>
+<arg declared_type='CFRunLoopRef' name='rl' type='^{__CFRunLoop=}'/>
+<arg declared_type='CFTypeRef' name='mode' type='@'/>
+<arg declared_type='void (^)(void)' function_pointer='true' name='block' type='@?'>
+<retval declared_type='void' type='v'/>
+</arg>
+<retval declared_type='void' type='v'/>
+</function>
 <function name='CFRunLoopRemoveObserver'>
 <arg declared_type='CFRunLoopRef' name='rl' type='^{__CFRunLoop=}'/>
 <arg declared_type='CFRunLoopObserverRef' name='observer' type='^{__CFRunLoopObserver=}'/>
@@ -4023,7 +4058,7 @@
 <arg declared_type='CFStringRef' name='mode' type='^{__CFString=}'/>
 <arg declared_type='CFTimeInterval' name='seconds' type='d'/>
 <arg declared_type='Boolean' name='returnAfterSourceHandled' type='B'/>
-<retval declared_type='SInt32' type='l' type64='i'/>
+<retval declared_type='CFRunLoopRunResult' type='l' type64='i'/>
 </function>
 <function name='CFRunLoopSourceCreate'>
 <arg declared_type='CFAllocatorRef' name='allocator' type='^{__CFAllocator=}'/>
@@ -4071,6 +4106,18 @@
 <retval declared_type='void' type='v'/>
 </arg>
 <arg declared_type='CFRunLoopTimerContext*' name='context' type='^{_CFRunLoopTimerContext=i^v^?^?^?}' type64='^{_CFRunLoopTimerContext=q^v^?^?^?}'/>
+<retval already_retained='true' declared_type='CFRunLoopTimerRef' type='^{__CFRunLoopTimer=}'/>
+</function>
+<function name='CFRunLoopTimerCreateWithHandler'>
+<arg declared_type='CFAllocatorRef' name='allocator' type='^{__CFAllocator=}'/>
+<arg declared_type='CFAbsoluteTime' name='fireDate' type='d'/>
+<arg declared_type='CFTimeInterval' name='interval' type='d'/>
+<arg declared_type='CFOptionFlags' name='flags' type='L' type64='Q'/>
+<arg declared_type='CFIndex' name='order' type='l' type64='q'/>
+<arg declared_type='void (^)(CFRunLoopTimerRef)' function_pointer='true' name='block' type='@?'>
+<arg declared_type='CFRunLoopTimerRef' type='^{__CFRunLoopTimer=}'/>
+<retval declared_type='void' type='v'/>
+</arg>
 <retval already_retained='true' declared_type='CFRunLoopTimerRef' type='^{__CFRunLoopTimer=}'/>
 </function>
 <function name='CFRunLoopTimerDoesRepeat'>
