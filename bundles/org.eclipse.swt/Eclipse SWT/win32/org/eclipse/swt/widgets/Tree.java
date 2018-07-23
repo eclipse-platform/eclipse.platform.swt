@@ -7693,7 +7693,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 
 						if (columns[i] == sortColumn && sortDirection != SWT.NONE) {
 							// the display.getSortImage looks terrible after scaling up.
-							long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor(OS.COLOR_3DDKSHADOW));
+							long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, getHeaderForegroundPixel());
 							long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
 							int center = rects[i].left + (rects[i].right - rects[i].left) / 2;
 							/*
