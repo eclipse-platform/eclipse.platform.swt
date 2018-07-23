@@ -306,6 +306,9 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 
 	// strip any _Nullable and _Nonnull annotations
 	value = value.replace("_Nullable", "").replace("_Nonnull", "").replace("_Null_unspecified", "");
+	
+	// strip greater-than (>) sign
+	value = value.replace(">", "");
 
 	// also remove any white spaces
 	value = value.chars().filter((c)->!Character.isWhitespace(c)).mapToObj(c -> String.valueOf((char)c)).collect(Collectors.joining());
