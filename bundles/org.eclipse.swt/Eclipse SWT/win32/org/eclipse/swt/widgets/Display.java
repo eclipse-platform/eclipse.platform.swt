@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1625,6 +1625,22 @@ public static Display getDefault () {
 		if (Default == null) Default = new Display ();
 		return Default;
 	}
+}
+
+/**
+ * @since 3.108
+ */
+@Override
+protected int getDeviceZoom() {
+	/*
+	 * Win8.1 and above we should pick zoom for the primary monitor which always
+	 * reflects the latest OS zoom value, for more details refer bug 537273.
+	 */
+	if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
+		return getPrimaryMonitor().getZoom();
+	}
+	/* Otherwise return Windows zoom level, as set during session login. */
+	return super.getDeviceZoom();
 }
 
 static boolean isValidClass (Class<?> clazz) {
