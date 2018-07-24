@@ -17,6 +17,7 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -588,7 +589,6 @@ protected void init () {
 	this.dpi = getDPI();
 	this.scaleFactor = getDeviceZoom ();
 	DPIUtil.setDeviceZoom (scaleFactor);
-	DPIUtil.setIsGtk3(GTK.GTK3);
 
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;
@@ -660,6 +660,15 @@ protected void init () {
 	shellHandle = GTK.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize(shellHandle);
+
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ surface = GDK.gdk_window_create_similar_surface(GDK.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, 10, 10);
+		double sx[] = new double[1];
+		double sy[] = new double[1];
+		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
+
+		DPIUtil.setUseCairoAutoScale((sx[0]*100) == scaleFactor);
+	}
 
 	/* Initialize the system font slot */
 	long /*int*/ [] defaultFontArray = new long /*int*/ [1];

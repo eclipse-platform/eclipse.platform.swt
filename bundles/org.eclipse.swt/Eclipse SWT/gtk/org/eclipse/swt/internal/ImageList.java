@@ -30,12 +30,17 @@ public static long /*int*/ convertSurface(Image image) {
 	long /*int*/ newSurface = image.surface;
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
-		Rectangle bounds = image.getBounds();
+		Rectangle bounds;
+		if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+			bounds = image.getBounds();
+		} else {
+			bounds = image.getBoundsInPixels();
+		}
 		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		//retain device scale set in the original surface
-		if (GTK.GTK3) {
+		if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
 			double sx[] = new double[1];
 			double sy[] = new double[1];
 			Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);

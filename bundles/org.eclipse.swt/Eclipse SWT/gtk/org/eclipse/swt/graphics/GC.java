@@ -1581,16 +1581,19 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 	}
 	long /*int*/ cairo = data.cairo;
 	long /*int*/ pattern;
-	/*
-	 * Here the co-ordinates passed are in points for GTK3.
-	 * That means the user is expecting surface to be at
-	 * device scale equal to current scale factor. So need
-	 * to set the device scale to current scale factor
-	 */
-	long /*int*/ surface = Cairo.cairo_get_target(cairo);
-	if ((GTK.GTK3)&&(surface != 0)) {
-		float scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+
+	if (DPIUtil.useCairoAutoScale() ) {
+		/*
+		 * Here the co-ordinates passed are in points for GTK3.
+		 * That means the user is expecting surface to be at
+		 * device scale equal to current scale factor. So need
+		 * to set the device scale to current scale factor
+		 */
+		long /*int*/ surface = Cairo.cairo_get_target(cairo);
+		if ((GTK.GTK3)&&(surface != 0)) {
+			float scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+			Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+		}
 	}
 
 	if (fromRGB.equals(toRGB)) {

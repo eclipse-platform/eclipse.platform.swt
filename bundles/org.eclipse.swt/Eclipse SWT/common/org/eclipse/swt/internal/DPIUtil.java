@@ -40,7 +40,7 @@ public class DPIUtil {
 	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
 
 	private static String autoScaleValue;
-	private static boolean isGtk3 = false;
+	private static boolean useCairoAutoScale = false;
 
 	/**
 	 * System property that controls the autoScale functionality.
@@ -375,7 +375,7 @@ public static Rectangle autoScaleUp (Drawable drawable, Rectangle rect) {
  * @return float scaling factor
  */
 private static float getScalingFactor () {
-	if (isGtk3) {
+	if (useCairoAutoScale) {
 		return 1;
 	}
 	return deviceZoom / 100f;
@@ -440,10 +440,13 @@ public static void setDeviceZoom (int nativeDeviceZoom) {
 	}
 }
 
-public static void setIsGtk3 (boolean gtk3) {
-	isGtk3 = gtk3;
+public static void setUseCairoAutoScale (boolean cairoAutoScale) {
+	useCairoAutoScale = cairoAutoScale;
 }
 
+public static boolean useCairoAutoScale() {
+	return useCairoAutoScale;
+}
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	int zoom = 0;
