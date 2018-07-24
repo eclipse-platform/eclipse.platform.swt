@@ -2729,7 +2729,18 @@ void updateMinimized (boolean minimized) {
 @Override
 void deregister () {
 	super.deregister ();
-	display.removeWidget (shellHandle);
+	Widget disposed = display.removeWidget (shellHandle);
+	if(Display.strictChecks && !(disposed instanceof Shell)) {
+		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Wrong widgetTable entry: " + disposed + " removed for shell: " + this + display.dumpWidgetTableInfo());
+	}
+	if(Display.strictChecks) {
+		Shell[] shells = display.getShells();
+		for (Shell shell : shells) {
+			if(shell == this) {
+				SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Disposed shell still in the widgetTable: " + this + display.dumpWidgetTableInfo());
+			}
+		}
+	}
 }
 
 @Override

@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map.*;
 import java.util.function.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
@@ -104,6 +105,11 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Display extends Device {
+
+	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.gtk.enableStrictChecks") != null;
+
+	private static final int SLOT_IN_USE = -2;
+	private static final int LAST_TABLE_INDEX = -1;
 
 	/* Events Dispatching and Callback */
 	int gdkEventCount;
@@ -789,7 +795,8 @@ void addSkinnableWidget (Widget widget) {
 
 void addWidget (long /*int*/ handle, Widget widget) {
 	if (handle == 0) return;
-	if (freeSlot == -1) {
+	// Last element in the indexTable is -1, so if freeSlot == -1 we have no place anymore
+	if (freeSlot == LAST_TABLE_INDEX) {
 		int length = (freeSlot = indexTable.length) + GROW_SIZE;
 		int[] newIndexTable = new int[length];
 		Widget[] newWidgetTable = new Widget [length];
@@ -798,15 +805,28 @@ void addWidget (long /*int*/ handle, Widget widget) {
 		for (int i = freeSlot; i < length - 1; i++) {
 			newIndexTable[i] = i + 1;
 		}
-		newIndexTable[length - 1] = -1;
+		// mark last slot as "need resize"
+		newIndexTable[length - 1] = LAST_TABLE_INDEX;
 		indexTable = newIndexTable;
 		widgetTable = newWidgetTable;
 	}
 	int index = freeSlot + 1;
+	if(strictChecks) {
+		long /*int*/ data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX);
+		if(data > 0 && data != index) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Potential leak of " + widget + debugInfoForIndex(data - 1));
+		}
+	}
 	OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, index);
 	int oldSlot = freeSlot;
 	freeSlot = indexTable[oldSlot];
-	indexTable [oldSlot] = -2;
+	// Mark old index slot as used
+	indexTable [oldSlot] = SLOT_IN_USE;
+	if(strictChecks) {
+		if(widgetTable [oldSlot] != null) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Trying to override non empty slot with " + widget + debugInfoForIndex(oldSlot));
+		}
+	}
 	widgetTable [oldSlot] = widget;
 }
 
@@ -4900,15 +4920,63 @@ Widget removeWidget (long /*int*/ handle) {
 	if (handle == 0) return null;
 	lastWidget = null;
 	Widget widget = null;
-	int index = (int)/*64*/ OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	int index;
+	long /*int*/ data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	if(strictChecks && (data < 0 || data > Integer.MAX_VALUE)) {
+		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". g_object_get_qdata returned unexpected index value" +  debugInfoForIndex(data));
+	}
+	index = (int)data;
 	if (0 <= index && index < widgetTable.length) {
 		widget = widgetTable [index];
 		widgetTable [index] = null;
 		indexTable [index] = freeSlot;
 		freeSlot = index;
 		OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, 0);
+
+		if(strictChecks && widget == null) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Widget already released" + debugInfoForIndex(index));
+		}
+	} else {
+		if(strictChecks) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Invalid index for handle " + handle + debugInfoForIndex(index));
+		}
 	}
 	return widget;
+}
+
+String debugInfoForIndex(long /*int*/ index) {
+	String s = ", index: " + index;
+	int idx = (int) index;
+	if(idx >= 0 && idx < widgetTable.length) {
+		s += ", current value at: " + widgetTable[idx];
+	}
+	s += dumpWidgetTableInfo();
+	return s;
+}
+
+String dumpWidgetTableInfo() {
+	StringBuilder sb = new StringBuilder(", table size: ");
+	sb.append(widgetTable.length);
+	IdentityHashMap<Widget, Collection<Integer>> disposed = new IdentityHashMap<>();
+	for (int i = 0; i < widgetTable.length; i++) {
+		Widget w = widgetTable[i];
+		if(w.isDisposed()) {
+			Collection<Integer> list = disposed.get(w);
+			if(list == null) {
+				list = new ArrayList<>();
+				disposed.put(w, list);
+			}
+			list.add(Integer.valueOf(i));
+		}
+	}
+	if(!disposed.isEmpty()) {
+		sb.append(", leaked elements:");
+		Set<Entry<Widget,Collection<Integer>>> set = disposed.entrySet();
+		for (Entry<Widget, Collection<Integer>> entry : set) {
+			sb.append(" ").append(entry.getKey()).append(" at ").append(entry.getValue()).append(",");
+		}
+	}
+	return sb.toString();
 }
 
 boolean runAsyncMessages (boolean all) {
