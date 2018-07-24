@@ -711,7 +711,20 @@ void createHandle (int index) {
 		}
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (parent != null) {
-			GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+			/*
+			 * Bug 530138: On Wayland, GTK_WINDOW_POPUP attached to a GTK_WINDOW_POPUP parent
+			 * gets positioned relatively to the GTK_WINDOW_POPUP. We want to position it
+			 * relatively to the GTK_WINDOW_TOPLEVEL surface.
+			 */
+			if (!OS.isX11()) {
+				Composite topLevelParent = parent;
+				while (topLevelParent != null && (topLevelParent.style & SWT.ON_TOP) != 0) {
+					topLevelParent = parent.getParent();
+				}
+				GTK.gtk_window_set_transient_for(shellHandle, topLevelParent.topHandle());
+			} else {
+				GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+			}
 			GTK.gtk_window_set_destroy_with_parent (shellHandle, true);
 			// if child shells are minimizable, we want them to have a
 			// taskbar icon, so they can be unminimized
