@@ -17,12 +17,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.function.BooleanSupplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -57,14 +59,22 @@ public void tearDown() {
 	if (widget != null) {
 		assertEquals(disposedIntentionally, widget.isDisposed());
 	}
+	Display display = null;
 	if (!disposedIntentionally) {
 		assertFalse(shell.isDisposed());
+		display = shell.getDisplay();
 	}
 	shell.dispose();
 	if (widget != null) {
 		assertTrue(widget.isDisposed());
+		if(display != null) {
+			assertNotExists(getWidgetTable(display), widget);
+		}
 	}
 	assertTrue(shell.isDisposed());
+	if(display != null) {
+		assertNotExists(getWidgetTable(display), shell);
+	}
 }
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
@@ -226,5 +236,24 @@ protected void processEvents(int timeoutMs, BooleanSupplier condition) throws In
 	}
 }
 
+protected void assertNotExists(Widget[] widgetTable, Widget w) {
+	for (Widget widget : widgetTable) {
+		if(widget == w) {
+			fail("Widget table leaks: " + w);
+		}
+	}
+}
+
+protected static Widget[] getWidgetTable(Display display) {
+	try {
+		Field field = Display.class.getDeclaredField("widgetTable");
+		field.setAccessible(true);
+		Widget[] widgetTable = (Widget[]) field.get(display);
+		return widgetTable;
+	} catch (Throwable t) {
+		t.printStackTrace();
+		return null;
+	}
+}
 
 }

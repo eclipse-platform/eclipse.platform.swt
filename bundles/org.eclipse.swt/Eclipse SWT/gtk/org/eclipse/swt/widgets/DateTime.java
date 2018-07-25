@@ -791,6 +791,9 @@ public int getMonth () {
 
 @Override
 String getNameText () {
+	if(calendar == null) {
+		return "";
+	}
 	if (isTime ()) {
 		return getHours () + ":" + getMinutes () + ":" + getSeconds ();
 	} else {
@@ -1846,8 +1849,8 @@ void updateControl() {
 @Override
 void register () {
 	super.register ();
-	if (containerHandle != 0) display.addWidget (containerHandle, this);
-	if (textEntryHandle != 0) display.addWidget (textEntryHandle, this);
+	if (containerHandle != 0 && containerHandle != handle) display.addWidget (containerHandle, this);
+	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.addWidget (textEntryHandle, this);
 }
 
 @Override
@@ -1858,9 +1861,8 @@ GdkRGBA defaultBackground () {
 @Override
 void deregister () {
 	super.deregister ();
-	if (containerHandle != 0) display.removeWidget (containerHandle);
-	if (fixedHandle != 0) display.removeWidget (fixedHandle);
-	if (textEntryHandle != 0) display.removeWidget (textEntryHandle);
+	if (containerHandle != 0 && containerHandle != handle) display.removeWidget (containerHandle);
+	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.removeWidget (textEntryHandle);
 }
 
 int getArrow(long /*int*/ widget) {
