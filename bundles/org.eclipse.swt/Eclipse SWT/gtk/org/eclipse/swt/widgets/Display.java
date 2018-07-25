@@ -2791,7 +2791,10 @@ public Shell [] getShells () {
 	Shell [] result = new Shell [16];
 	for (int i = 0; i < widgetTable.length; i++) {
 		Widget widget = widgetTable [i];
-		if (widget != null && widget instanceof Shell) {
+		if (!(widget instanceof Shell)) {
+			continue;
+		}
+		if (!widget.isDisposed()) {
 			int j = 0;
 			while (j < index) {
 				if (result [j] == widget) break;
@@ -2804,6 +2807,22 @@ public Shell [] getShells () {
 					result = newResult;
 				}
 				result [index++] = (Shell) widget;
+			}
+		} else {
+			// bug 532632: somehow widgetTable got corrupted and we have disposed
+			// shell entries in the table (at least one).
+
+			// We don't throw an error here because it was not broken here, but
+			// we at least try to report an error (we have no logging context).
+			System.err.println ("SWT ERROR: disposed shell detected in the table" + debugInfoForIndex(i));
+
+			// As of today widgetTable contains *four* entries for the *same*
+			// Shell instance. If we found one broken, there can be others...
+			// So we clean here all the occurencies of the leaked shell.
+			for (int j = i; j < widgetTable.length; j++) {
+				if(widgetTable[j] == widget) {
+					widgetTable[j] = null;
+				}
 			}
 		}
 	}
