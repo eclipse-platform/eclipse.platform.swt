@@ -678,7 +678,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 				textViewMouse.x = x;
 				textViewMouse.y = y;
 				long /*int*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(textViewMouse);
-				if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
+				if (charPosition != OS.NSNotFound() && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
 					if (super.dragDetect(x, y, filter, consume)) {
 						if (consume != null) consume[0] = true;
 						return true;

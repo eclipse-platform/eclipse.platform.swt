@@ -357,7 +357,7 @@ boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /
 }
 
 long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ point) {
-	return OS.NSNotFound;
+	return OS.NSNotFound();
 }
 
 long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {

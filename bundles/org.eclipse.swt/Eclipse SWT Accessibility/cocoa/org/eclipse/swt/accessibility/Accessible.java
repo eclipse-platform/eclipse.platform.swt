@@ -1722,14 +1722,14 @@ public class Accessible {
 			// FIXME: Doesn't account for right-to-left text?
 			switch (docAttributes.alignment) {
 			case SWT.CENTER:
-				osAlignment = OS.NSCenterTextAlignment;
+				osAlignment = OS.NSTextAlignmentCenter;
 				break;
 			case SWT.RIGHT:
-				osAlignment = OS.NSRightTextAlignment;
+				osAlignment = OS.NSTextAlignmentRight;
 				break;
 			case SWT.LEFT:
 			default:
-				osAlignment = OS.NSLeftTextAlignment;
+				osAlignment = OS.NSTextAlignmentLeft;
 				break;
 			}
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));

@@ -1368,10 +1368,10 @@ public Rectangle getClientArea () {
 	Rectangle rect = super.getClientArea ();
 	/*
 	 * OSX version < 10.11 - The origin of the tree is the top-left of the rows
-	 * of the table, not the header. We adjust the y value and height of the rect 
+	 * of the table, not the header. We adjust the y value and height of the rect
 	 * accordingly, to include the header.
-	 * 
-	 * OSX 10.11 & above - The origin of the tree is the header and the header's 
+	 *
+	 * OSX 10.11 & above - The origin of the tree is the header and the header's
 	 * height is already included in the rect. Hence, we return the rect as is.
 	 */
 	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 11, 0)) {
@@ -1916,7 +1916,7 @@ public TreeItem getTopItem () {
 	point.y = rect.y;
 	/*
 	 * In OSX 10.11, the origin of the tree is the header, not the top-left of the rows.
-	 * Offset the point's y coordinate accordingly. 
+	 * Offset the point's y coordinate accordingly.
 	 */
 	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 11, 0)) {
 		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
@@ -2280,13 +2280,13 @@ void outlineView_willDisplayCell_forTableColumn_item (long /*int*/ id, long /*in
 		color = NSColor.disabledControlTextColor();
 	}
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
-	int alignment = OS.NSLeftTextAlignment;
+	int alignment = OS.NSTextAlignmentLeft;
 	if (columnCount > 0) {
 		int style = columns [index].style;
 		if ((style & SWT.CENTER) != 0) {
-			alignment = OS.NSCenterTextAlignment;
+			alignment = OS.NSTextAlignmentCenter;
 		} else if ((style & SWT.RIGHT) != 0) {
-			alignment = OS.NSRightTextAlignment;
+			alignment = OS.NSTextAlignmentRight;
 		}
 	}
 	Font font = item.cellFont != null ? item.cellFont [index] : null;
@@ -3352,7 +3352,7 @@ public void setTopItem (TreeItem item) {
 	pt.y = widget.frameOfCellAtColumn(0, row).y;
 	/*
 	 * In OSX 10.11, the origin of the tree is the header, not the top-left of the rows.
-	 * Offset the point's y coordinate accordingly. 
+	 * Offset the point's y coordinate accordingly.
 	 */
 	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
 		if (widget.headerView() != null) {

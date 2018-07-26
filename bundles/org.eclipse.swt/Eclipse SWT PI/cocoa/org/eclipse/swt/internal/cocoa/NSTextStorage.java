@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,8 @@ public NSTextStorage(id id) {
 	super(id);
 }
 
-public void addLayoutManager(NSLayoutManager obj) {
-	OS.objc_msgSend(this.id, OS.sel_addLayoutManager_, obj != null ? obj.id : 0);
+public void addLayoutManager(NSLayoutManager aLayoutManager) {
+	OS.objc_msgSend(this.id, OS.sel_addLayoutManager_, aLayoutManager != null ? aLayoutManager.id : 0);
 }
 
 public NSArray paragraphs() {

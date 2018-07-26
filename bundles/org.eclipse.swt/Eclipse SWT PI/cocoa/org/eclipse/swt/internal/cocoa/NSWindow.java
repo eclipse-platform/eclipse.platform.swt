@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -276,12 +276,12 @@ public void setCollectionBehavior(long /*int*/ collectionBehavior) {
 	OS.objc_msgSend(this.id, OS.sel_setCollectionBehavior_, collectionBehavior);
 }
 
-public void setContentView(id contentView) {
+public void setContentView(NSView contentView) {
 	OS.objc_msgSend(this.id, OS.sel_setContentView_, contentView != null ? contentView.id : 0);
 }
 
-public void setDefaultButtonCell(NSButtonCell defButt) {
-	OS.objc_msgSend(this.id, OS.sel_setDefaultButtonCell_, defButt != null ? defButt.id : 0);
+public void setDefaultButtonCell(NSButtonCell defaultButtonCell) {
+	OS.objc_msgSend(this.id, OS.sel_setDefaultButtonCell_, defaultButtonCell != null ? defaultButtonCell.id : 0);
 }
 
 public void setDelegate(id delegate) {

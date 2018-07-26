@@ -184,7 +184,7 @@ void createHandle () {
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	widget.textContainer().setLineFragmentPadding(2);
 	widget.setFont(getFont().handle);
-	widget.setAlignment (OS.NSLeftTextAlignment);
+	widget.setAlignment (OS.NSTextAlignmentLeft);
 
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	dict.setDictionary(widget.selectedTextAttributes());

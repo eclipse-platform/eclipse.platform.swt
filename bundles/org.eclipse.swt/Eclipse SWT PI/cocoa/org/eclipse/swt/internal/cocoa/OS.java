@@ -2405,7 +2405,6 @@ public static final int NSBoxSeparator = 2;
 public static final int NSButtLineCapStyle = 0;
 public static final int NSCancelButton = 0;
 public static final int NSCarriageReturnCharacter = 13;
-public static final int NSCenterTextAlignment = 2;
 public static final int NSClockAndCalendarDatePickerStyle = 1;
 public static final int NSClosableWindowMask = 2;
 public static final int NSClosePathBezierPathElement = 3;
@@ -2468,7 +2467,6 @@ public static final int NSImageOnly = 1;
 public static final int NSImageOverlaps = 6;
 public static final int NSInformationalAlertStyle = 1;
 public static final int NSItalicFontMask = 1;
-public static final int NSJustifiedTextAlignment = 3;
 public static final int NSKeyDown = 10;
 public static final int NSKeyUp = 11;
 public static final int NSLandscapeOrientation = 1;
@@ -2479,7 +2477,6 @@ public static final int NSLeftMouseDraggedMask = 64;
 public static final int NSLeftMouseUp = 2;
 public static final int NSLeftMouseUpMask = 4;
 public static final int NSLeftTabStopType = 0;
-public static final int NSLeftTextAlignment = 0;
 public static final int NSLineBreakByClipping = 2;
 public static final int NSLineBreakByTruncatingMiddle = 5;
 public static final int NSLineBreakByTruncatingTail = 4;
@@ -2537,7 +2534,6 @@ public static final int NSResizableWindowMask = 8;
 public static final int NSRightMouseDown = 3;
 public static final int NSRightMouseDragged = 7;
 public static final int NSRightMouseUp = 4;
-public static final int NSRightTextAlignment = 1;
 public static final int NSRoundLineCapStyle = 1;
 public static final int NSRoundLineJoinStyle = 1;
 public static final int NSRoundedBezelStyle = 1;
@@ -2570,6 +2566,11 @@ public static final int NSTableViewNoColumnAutoresizing = 0;
 public static final int NSTableViewSolidVerticalGridLineMask = 1;
 public static final int NSTerminateCancel = 0;
 public static final int NSTerminateNow = 1;
+public static final int NSTextAlignmentCenter = 2;
+public static final int NSTextAlignmentJustified = 3;
+public static final int NSTextAlignmentLeft = 0;
+public static final int NSTextAlignmentNatural = 4;
+public static final int NSTextAlignmentRight = 1;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTextFieldDatePickerStyle = 2;
 public static final int NSTitledWindowMask = 1;
@@ -2652,7 +2653,6 @@ public static final int kCTWritingDirectionRightToLeft = 1;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
 public static final int NSCachesDirectory = 13;
-public static final int NSNotFound = 2147483647;
 public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLErrorBadURL = -1000;
@@ -3257,6 +3257,8 @@ public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFa
 /** @method flags=const */
 public static final native long /*int*/ NSLocaleLanguageCode();
 public static final NSString NSLocaleLanguageCode = new NSString(NSLocaleLanguageCode());
+/** @method flags=const */
+public static final native long /*int*/ NSNotFound();
 
 /** Functions */
 
@@ -3719,9 +3721,9 @@ public static final native double /*float*/ CTFontGetDescent(long /*int*/ font);
  */
 public static final native double /*float*/ CTFontGetLeading(long /*int*/ font);
 /**
- * @param string cast=(CFAttributedStringRef)
+ * @param attrString cast=(CFAttributedStringRef)
  */
-public static final native long /*int*/ CTLineCreateWithAttributedString(long /*int*/ string);
+public static final native long /*int*/ CTLineCreateWithAttributedString(long /*int*/ attrString);
 /**
  * @param line cast=(CTLineRef)
  * @param context cast=(CGContextRef)

@@ -108,7 +108,7 @@ long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, lo
 
 @Override
 long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ point) {
-	if (!isInlineEnabled ()) return OS.NSNotFound;
+	if (!isInlineEnabled ()) return OS.NSNotFound();
 	NSPoint pt = new NSPoint ();
 	OS.memmove (pt, point, NSPoint.sizeof);
 	NSView view = parent.view;
@@ -120,7 +120,7 @@ long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*i
 	event.y = (int) pt.y;
 	sendEvent (SWT.ImeComposition, event);
 	int offset = event.index + event.count;
-	return offset != -1 ? offset : OS.NSNotFound;
+	return offset != -1 ? offset : OS.NSNotFound();
 }
 
 @Override
@@ -374,7 +374,7 @@ NSRange markedRange (long /*int*/ id, long /*int*/ sel) {
 		range.location = startOffset;
 		range.length = text.length ();
 	} else {
-		range.location = OS.NSNotFound;
+		range.location = OS.NSNotFound();
 	}
 	return range;
 }

@@ -3487,13 +3487,13 @@ void tableView_willDisplayCell_forTableColumn_row (long /*int*/ id, long /*int*/
 		color = NSColor.disabledControlTextColor();
 	}
 	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
-	int alignment = OS.NSLeftTextAlignment;
+	int alignment = OS.NSTextAlignmentLeft;
 	if (columnCount > 0) {
 		int style = columns [index].style;
 		if ((style & SWT.CENTER) != 0) {
-			alignment = OS.NSCenterTextAlignment;
+			alignment = OS.NSTextAlignmentCenter;
 		} else if ((style & SWT.RIGHT) != 0) {
-			alignment = OS.NSRightTextAlignment;
+			alignment = OS.NSTextAlignmentRight;
 		}
 	}
 	Font font = item.cellFont != null ? item.cellFont [index] : null;

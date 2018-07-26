@@ -158,17 +158,17 @@ void computeRuns() {
 	defaultFont.addTraits(attrStr, range);
 	//TODO ascend descent wrap
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
-	int align = OS.NSLeftTextAlignment;
+	int align = OS.NSTextAlignmentLeft;
 	if (wrapWidth != -1) {
 		if (justify) {
-			align = OS.NSJustifiedTextAlignment;
+			align = OS.NSTextAlignmentJustified;
 		} else {
 			switch (alignment) {
 				case SWT.CENTER:
-					align = OS.NSCenterTextAlignment;
+					align = OS.NSTextAlignmentCenter;
 					break;
 				case SWT.RIGHT:
-					align = OS.NSRightTextAlignment;
+					align = OS.NSTextAlignmentRight;
 			}
 		}
 	}
@@ -2302,9 +2302,9 @@ int untranslateOffset (int offset) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @noreference This method is not intended to be referenced by clients. 
- * 
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ *
  * DO NOT USE This might be removed in 4.8
  * @since 3.107
  */

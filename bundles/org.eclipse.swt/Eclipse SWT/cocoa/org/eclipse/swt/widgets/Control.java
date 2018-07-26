@@ -995,11 +995,11 @@ NSAttributedString createString (String string, Font font, double /*float*/ [] f
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 	paragraphStyle.setLineBreakMode (wrap ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	if (alignment != 0) {
-		int align = OS.NSLeftTextAlignment;
+		int align = OS.NSTextAlignmentLeft;
 		if ((alignment & SWT.CENTER) != 0) {
-			align = OS.NSCenterTextAlignment;
+			align = OS.NSTextAlignmentCenter;
 		} else if ((alignment & SWT.RIGHT) != 0) {
-			align = OS.NSRightTextAlignment;
+			align = OS.NSTextAlignmentRight;
 		}
 		paragraphStyle.setAlignment (align);
 	}

@@ -4837,7 +4837,6 @@
 	<enum name="NSButtLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSCancelButton" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
-	<enum name="NSCenterTextAlignment" swt_gen="true"></enum>
 	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSClosableWindowMask" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
@@ -4900,7 +4899,6 @@
 	<enum name="NSImageOverlaps" swt_gen="true"></enum>
 	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSItalicFontMask" swt_gen="true"></enum>
-	<enum name="NSJustifiedTextAlignment" swt_gen="true"></enum>
 	<enum name="NSKeyDown" swt_gen="true"></enum>
 	<enum name="NSKeyUp" swt_gen="true"></enum>
 	<enum name="NSLandscapeOrientation" swt_gen="true"></enum>
@@ -4911,7 +4909,6 @@
 	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
 	<enum name="NSLeftMouseUpMask" swt_gen="true"></enum>
 	<enum name="NSLeftTabStopType" swt_gen="true"></enum>
-	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
 	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
 	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
 	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
@@ -4969,7 +4966,6 @@
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
 	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
 	<enum name="NSRightMouseUp" swt_gen="true"></enum>
-	<enum name="NSRightTextAlignment" swt_gen="true"></enum>
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
@@ -5002,6 +4998,11 @@
 	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
 	<enum name="NSTerminateCancel" swt_gen="true"></enum>
 	<enum name="NSTerminateNow" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentCenter" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentJustified" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentLeft" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentNatural" swt_gen="true"></enum>
+	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>

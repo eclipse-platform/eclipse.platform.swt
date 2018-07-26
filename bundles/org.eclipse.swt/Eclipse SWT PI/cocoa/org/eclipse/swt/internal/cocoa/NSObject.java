@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -194,8 +194,8 @@ public void addEventListener(NSString type, id listener, boolean useCapture) {
 	OS.objc_msgSend(this.id, OS.sel_addEventListener_listener_useCapture_, type != null ? type.id : 0, listener != null ? listener.id : 0, useCapture);
 }
 
-public void handleEvent(DOMEvent evt) {
-	OS.objc_msgSend(this.id, OS.sel_handleEvent_, evt != null ? evt.id : 0);
+public void handleEvent(DOMEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_handleEvent_, event != null ? event.id : 0);
 }
 
 }

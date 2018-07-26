@@ -530,9 +530,9 @@ void createHandle () {
 		 * Fix is to use NSJustifiedTextAlignment instead, since for
 		 * a single line of text, justified has the same effect as left aligned.
 		 */
-		int align = ((style & SWT.SEARCH) != 0) ? OS.NSJustifiedTextAlignment : OS.NSLeftTextAlignment;
-		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
-		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
+		int align = ((style & SWT.SEARCH) != 0) ? OS.NSTextAlignmentJustified : OS.NSTextAlignmentLeft;
+		if ((style & SWT.CENTER) != 0) align = OS.NSTextAlignmentCenter;
+		if ((style & SWT.RIGHT) != 0) align = OS.NSTextAlignmentRight;
 		widget.setAlignment (align);
 		NSCell cell = widget.cell();
 		cell.setWraps(false);
@@ -567,9 +567,9 @@ void createHandle () {
 			textContainer.setContainerSize (csize);
 		}
 
-		int align = OS.NSLeftTextAlignment;
-		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
-		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
+		int align = OS.NSTextAlignmentLeft;
+		if ((style & SWT.CENTER) != 0) align = OS.NSTextAlignmentCenter;
+		if ((style & SWT.RIGHT) != 0) align = OS.NSTextAlignmentRight;
 		widget.setAlignment (align);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4838,6 +4838,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSModalPanelRunLoopMode)
 	OS_NATIVE_ENTER(env, that, NSModalPanelRunLoopMode_FUNC);
 	rc = (jintLong)NSModalPanelRunLoopMode;
 	OS_NATIVE_EXIT(env, that, NSModalPanelRunLoopMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSNotFound
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSNotFound)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSNotFound_FUNC);
+	rc = (jintLong)NSNotFound;
+	OS_NATIVE_EXIT(env, that, NSNotFound_FUNC);
 	return rc;
 }
 #endif

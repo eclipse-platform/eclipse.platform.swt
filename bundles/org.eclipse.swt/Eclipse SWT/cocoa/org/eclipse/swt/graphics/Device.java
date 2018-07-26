@@ -542,7 +542,7 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 
 	paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
-	paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
+	paragraphStyle.setAlignment(OS.NSTextAlignmentLeft);
 	paragraphStyle.setLineBreakMode(OS.NSLineBreakByClipping);
 	NSArray tabs = new NSArray(new NSArray().alloc().init());
 	paragraphStyle.setTabStops(tabs);

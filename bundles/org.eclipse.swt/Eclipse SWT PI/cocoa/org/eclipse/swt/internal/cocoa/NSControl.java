@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,8 +79,8 @@ public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
-public void setCell(NSCell aCell) {
-	OS.objc_msgSend(this.id, OS.sel_setCell_, aCell != null ? aCell.id : 0);
+public void setCell(NSCell cell) {
+	OS.objc_msgSend(this.id, OS.sel_setCell_, cell != null ? cell.id : 0);
 }
 
 public static void setCellClass(long /*int*/ factoryId) {
@@ -99,7 +99,7 @@ public void setFont(NSFont font) {
 	OS.objc_msgSend(this.id, OS.sel_setFont_, font != null ? font.id : 0);
 }
 
-public void setFormatter(id formatter) {
+public void setFormatter(NSFormatter formatter) {
 	OS.objc_msgSend(this.id, OS.sel_setFormatter_, formatter != null ? formatter.id : 0);
 }
 
