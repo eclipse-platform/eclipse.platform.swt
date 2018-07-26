@@ -2911,7 +2911,13 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
 			if (image != null && !image.isDisposed()) {
-				Rectangle bounds = image.getBounds ();
+				Rectangle bounds;
+				if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+					bounds = image.getBounds ();
+				} else {
+					bounds = image.getBoundsInPixels ();
+				}
+				bounds = image.getBounds ();
 				imageWidth = bounds.width;
 			}
 			contentWidth [0] += imageWidth;
@@ -3173,7 +3179,12 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				Image image = item.getImage (columnIndex);
 				int imageWidth = 0;
 				if (image != null) {
-					Rectangle bounds = image.getBounds ();
+					Rectangle bounds;
+					if(GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+						bounds = image.getBounds ();
+					} else {
+						bounds = image.getBoundsInPixels ();
+					}
 					imageWidth = bounds.width;
 				}
 				// Account for the image width on GTK3, see bug 535124.

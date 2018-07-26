@@ -796,7 +796,12 @@ Rectangle getTextBoundsInPixels (int index) {
 		Image image = _getImage(index);
 		int imageWidth = 0;
 		if (image != null) {
-			imageWidth = image.getBounds ().width;
+			if (DPIUtil.useCairoAutoScale()) {
+				imageWidth = image.getBounds ().width;
+			} else {
+				imageWidth = image.getBoundsInPixels ().width;
+			}
+
 		}
 		if (x [0] < imageWidth) {
 			rect.x += imageWidth;
@@ -1212,15 +1217,17 @@ public void setImage (int index, Image image) {
 	 * underlying GTK structure.
 	 */
 	if (GTK.GTK3) {
-		/*
-		 * Bug in GTK the default renderer does scale again on pixbuf.
-		 * Need to scaledown here and no need to scaledown id device scale is 1
-		 */
-		if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
-			Rectangle imgSize = image.getBounds();
-			long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
-			if (scaledPixbuf !=0) {
-				pixbuf = scaledPixbuf;
+		if (DPIUtil.useCairoAutoScale()) {
+			/*
+			 * Bug in GTK the default renderer does scale again on pixbuf.
+			 * Need to scaledown here and no need to scaledown id device scale is 1
+			 */
+			if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
+				Rectangle imgSize = image.getBounds();
+				long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
+				if (scaledPixbuf !=0) {
+					pixbuf = scaledPixbuf;
+				}
 			}
 		}
 		long /*int*/parentHandle = parent.handle;
@@ -1231,8 +1238,14 @@ public void setImage (int index, Image image) {
 		GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
 		if (!parent.pixbufSizeSet) {
 			if (image != null) {
-				int iWidth = image.getBounds ().width;
-				int iHeight = image.getBounds ().height;
+				int iWidth, iHeight;
+				if (DPIUtil.useCairoAutoScale()) {
+					iWidth = image.getBounds ().width;
+					iHeight = image.getBounds ().height;
+				} else {
+					iWidth = image.getBoundsInPixels ().width;
+					iHeight = image.getBoundsInPixels ().height;
+				}
 				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 					GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 					parent.pixbufHeight = iHeight;
@@ -1266,7 +1279,13 @@ public void setImage (int index, Image image) {
 			int [] w = new int [1];
 			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
 			gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
-			if (w[0] < image.getBounds().width) {
+			int iWidth;
+			if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+				iWidth = image.getBounds ().width;
+			} else {
+				iWidth = image.getBoundsInPixels ().width;
+			}
+			if (w[0] < iWidth) {
 				/*
 				* There is no direct way to clear the cell renderer width so we
 				* are relying on the fact that it is done as part of modifying
