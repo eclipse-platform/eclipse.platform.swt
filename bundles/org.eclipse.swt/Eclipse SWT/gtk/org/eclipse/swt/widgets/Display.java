@@ -770,6 +770,12 @@ void addPopup (Menu menu) {
 	int length = popups.length;
 	for (int i=0; i<length; i++) {
 		if (popups [i] == menu) return;
+		/* Bug 530577, 528998: Clicking on button that triggers popup menus causes
+		 * menu.setVisible to be called twice, once due to MouseDown, and once due to ButtonClicked.
+		 * This causes two duplicate menus (with different handles) to popup at the same time.
+		 * The fix is to avoid having two identical popup menus in the queue.
+		 */
+		if (popups[i] != null && popups[i].getNameText().equals(menu.getNameText())) return;
 	}
 	int index = 0;
 	while (index < length) {

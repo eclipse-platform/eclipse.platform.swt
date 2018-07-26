@@ -40,10 +40,6 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class Menu extends Widget {
 	int x, y;
-	/**
-	 * Only set to true on X11, as Wayland has no global
-	 * coordinates. See bug 530204.
-	 */
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
@@ -234,8 +230,7 @@ void _setVisible (boolean visible) {
 				* event processed is used.
 				*/
 				GTK.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
-			}
-			else {
+			} else {
 				long /*int*/ eventPtr = 0;
 				if (hasLocation) {
 					// Create the GdkEvent manually as we need to control
@@ -243,27 +238,35 @@ void _setVisible (boolean visible) {
 					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
 					event.type = GDK.GDK_BUTTON_PRESS;
-					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
-					// Get and (add reference to) the global GdkWindow
-					event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
-					OS.g_object_ref(event.window);
-					/*
-					 * Get the origin of the global GdkWindow to calculate the size of any offsets
-					 * such as client side decorations, or the system tray.
-					 */
-					int [] globalWindowOriginY = new int [1];
-					int [] globalWindowOriginX = new int [1];
-					GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
-					// Set the time and save the event in memory
-					event.time = display.getLastEventTime ();
-					OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
+					event.time = display.getLastEventTime();
 
 					// Create the rectangle relative to the parent (in this case, global) GdkWindow
 					GdkRectangle rect = new GdkRectangle();
-					rect.x = this.x - globalWindowOriginX[0];
-					rect.y = this.y - globalWindowOriginY[0];
-
-					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the global GdkWindow
+					if (OS.isX11()) {
+						// Get and (add reference to) the global GdkWindow
+						event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+						OS.g_object_ref(event.window);
+						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+						/*
+						 * Get the origin of the global GdkWindow to calculate the size of any offsets
+						 * such as client side decorations, or the system tray.
+						 */
+						int [] globalWindowOriginY = new int [1];
+						int [] globalWindowOriginX = new int [1];
+						GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+						rect.x = this.x - globalWindowOriginX[0];
+						rect.y = this.y - globalWindowOriginY[0];
+					} else {
+						// On Wayland, get the relative GdkWindow from the parent shell.
+						event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().topHandle()));
+						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
+						// final_rect.y popup menu position is off by 1 compared to this.x and this.y
+						rect.x = this.x + 1;
+						rect.y = this.y + 1;
+					}
+					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
 					GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
 							GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
 					GDK.gdk_event_free (eventPtr);
@@ -288,7 +291,7 @@ void _setVisible (boolean visible) {
 					}
 					adjustParentWindowWayland(eventPtr);
 					verifyMenuPosition(getItemCount());
-					GTK.gtk_menu_popup_at_pointer (handle, eventPtr);
+					GTK.gtk_menu_popup_at_pointer(handle, eventPtr);
 					GDK.gdk_event_free (eventPtr);
 				}
 			}
@@ -1090,10 +1093,7 @@ void setLocationInPixels (int x, int y) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	this.x = x;
 	this.y = y;
-	// Only set the hasLocation flag on X11.
-	if (OS.isX11()) {
-		hasLocation = true;
-	}
+	hasLocation = true;
 }
 
 /**
