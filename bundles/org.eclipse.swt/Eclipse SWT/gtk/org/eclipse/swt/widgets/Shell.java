@@ -2730,7 +2730,7 @@ void updateMinimized (boolean minimized) {
 void deregister () {
 	super.deregister ();
 	Widget disposed = display.removeWidget (shellHandle);
-	if(Display.strictChecks && !(disposed instanceof Shell)) {
+	if(shellHandle != 0 && !(disposed instanceof Shell)) {
 		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". Wrong widgetTable entry: " + disposed + " removed for shell: " + this + display.dumpWidgetTableInfo());
 	}
 	if(Display.strictChecks) {

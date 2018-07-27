@@ -822,10 +822,8 @@ void addWidget (long /*int*/ handle, Widget widget) {
 	freeSlot = indexTable[oldSlot];
 	// Mark old index slot as used
 	indexTable [oldSlot] = SLOT_IN_USE;
-	if(strictChecks) {
-		if(widgetTable [oldSlot] != null) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Trying to override non empty slot with " + widget + debugInfoForIndex(oldSlot));
-		}
+	if(widgetTable [oldSlot] != null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Trying to override non empty slot with " + widget + debugInfoForIndex(oldSlot));
 	}
 	widgetTable [oldSlot] = widget;
 }
@@ -4941,7 +4939,7 @@ Widget removeWidget (long /*int*/ handle) {
 	Widget widget = null;
 	int index;
 	long /*int*/ data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
-	if(strictChecks && (data < 0 || data > Integer.MAX_VALUE)) {
+	if(data < 0 || data > Integer.MAX_VALUE) {
 		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". g_object_get_qdata returned unexpected index value" +  debugInfoForIndex(data));
 	}
 	index = (int)data;
@@ -4952,13 +4950,11 @@ Widget removeWidget (long /*int*/ handle) {
 		freeSlot = index;
 		OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, 0);
 
-		if(strictChecks && widget == null) {
+		if(widget == null) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Widget already released" + debugInfoForIndex(index));
 		}
 	} else {
-		if(strictChecks) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Invalid index for handle " + handle + debugInfoForIndex(index));
-		}
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Invalid index for handle " + handle + debugInfoForIndex(index));
 	}
 	return widget;
 }
