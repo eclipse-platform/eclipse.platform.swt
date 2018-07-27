@@ -67,12 +67,12 @@ public void tearDown() {
 	shell.dispose();
 	if (widget != null) {
 		assertTrue(widget.isDisposed());
-		if(display != null) {
+		if(SwtTestUtil.isLinux && display != null) {
 			assertNotExists(getWidgetTable(display), widget);
 		}
 	}
 	assertTrue(shell.isDisposed());
-	if(display != null) {
+	if(SwtTestUtil.isLinux && display != null) {
 		assertNotExists(getWidgetTable(display), shell);
 	}
 }
