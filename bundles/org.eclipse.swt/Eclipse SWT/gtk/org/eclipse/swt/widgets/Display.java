@@ -4966,7 +4966,7 @@ Widget removeWidget (long /*int*/ handle) {
 String debugInfoForIndex(long /*int*/ index) {
 	String s = ", index: " + index;
 	int idx = (int) index;
-	if(idx >= 0 && idx < widgetTable.length) {
+	if (idx >= 0 && idx < widgetTable.length) {
 		s += ", current value at: " + widgetTable[idx];
 	}
 	s += dumpWidgetTableInfo();
@@ -4979,16 +4979,16 @@ String dumpWidgetTableInfo() {
 	IdentityHashMap<Widget, Collection<Integer>> disposed = new IdentityHashMap<>();
 	for (int i = 0; i < widgetTable.length; i++) {
 		Widget w = widgetTable[i];
-		if(w.isDisposed()) {
+		if (w != null && w.isDisposed()) {
 			Collection<Integer> list = disposed.get(w);
-			if(list == null) {
+			if (list == null) {
 				list = new ArrayList<>();
 				disposed.put(w, list);
 			}
 			list.add(Integer.valueOf(i));
 		}
 	}
-	if(!disposed.isEmpty()) {
+	if (!disposed.isEmpty()) {
 		sb.append(", leaked elements:");
 		Set<Entry<Widget,Collection<Integer>>> set = disposed.entrySet();
 		for (Entry<Widget, Collection<Integer>> entry : set) {
