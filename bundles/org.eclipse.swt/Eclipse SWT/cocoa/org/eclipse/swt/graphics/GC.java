@@ -488,11 +488,13 @@ public void copyArea(Image image, int x, int y) {
 				C.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
 				double /*float*/ scaling = 1;
-				for (int j = 0; j < screens.count(); j++) {
-					NSScreen screen = new NSScreen(screens.objectAtIndex(j));
-					if (display[0] == new NSNumber(screen.deviceDescription().objectForKey(key)).intValue()) {
-						scaling = screen.backingScaleFactor();
-						break;
+				if (screens != null) {
+					for (int j = 0; j < screens.count(); j++) {
+						NSScreen screen = new NSScreen(screens.objectAtIndex(j));
+						if (display[0] == new NSNumber(screen.deviceDescription().objectForKey(key)).intValue()) {
+							scaling = screen.backingScaleFactor();
+							break;
+						}
 					}
 				}
 				/*

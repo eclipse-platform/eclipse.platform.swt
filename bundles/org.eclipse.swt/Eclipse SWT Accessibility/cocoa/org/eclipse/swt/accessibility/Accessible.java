@@ -1760,6 +1760,8 @@ public class Accessible {
 
 			// Flip y coordinate for Cocoa.
 			NSArray screens = NSScreen.screens();
+			if (screens == null) return null;
+
 			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 			NSRect frame = screen.frame();
 			rect.y = frame.height - event.y - event.height;
@@ -1802,6 +1804,8 @@ public class Accessible {
 		NSRange range = new NSRange();
 		if (accessibleTextExtendedListenersSize() > 0) {
 			NSArray screens = NSScreen.screens();
+			if (screens == null) return null;
+
 			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 			NSRect frame = screen.frame();
 			point.y = frame.height - point.y;

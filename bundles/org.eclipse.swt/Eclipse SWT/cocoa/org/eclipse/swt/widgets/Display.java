@@ -1291,6 +1291,8 @@ public Rectangle getBounds () {
 }
 
 Rectangle getBounds (NSArray screens) {
+	if (screens == null) return new Rectangle(0, 0, 0, 0);
+
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect primaryFrame = screen.frame();
 	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
@@ -1346,6 +1348,8 @@ int getCaretBlinkTime () {
 public Rectangle getClientArea () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
+	if (screens == null) return new Rectangle(0, 0, 0, 0);
+	
 	if (screens.count() != 1) return getBounds (screens);
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();
@@ -1674,6 +1678,8 @@ NSPanel getModalPanel () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
+	if (screens == null) return new Monitor[] {};
+
 	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
 	int count = (int)/*64*/screens.count();
 	Monitor [] monitors = new Monitor [count];
@@ -1699,7 +1705,7 @@ public Monitor [] getMonitors () {
 
 NSRect getPrimaryFrame () {
 	NSArray screens = NSScreen.screens();
-	return new NSScreen(screens.objectAtIndex(0)).frame();
+	return (screens != null) ? new NSScreen(screens.objectAtIndex(0)).frame() : new NSRect();
 }
 
 /**
@@ -1713,6 +1719,8 @@ public Monitor getPrimaryMonitor () {
 	checkDevice ();
 	Monitor monitor = new Monitor ();
 	NSArray screens = NSScreen.screens();
+	if (screens == null) return monitor;
+
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();
 	monitor.handle = screen.id;

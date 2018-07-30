@@ -89,6 +89,8 @@ class AccessibleTableHeader extends Accessible {
 				e.x = (int) position.x;
 				// Flip y coordinate for Cocoa.
 				NSArray screens = NSScreen.screens();
+				if (screens == null) return;
+
 				NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 				NSRect frame = screen.frame();
 				e.y = (int) (frame.height - position.y - height);

@@ -873,6 +873,8 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	NSPoint mouse = draggingState.draggingLocation();
 	NSPoint globalMouse = draggingState.draggingDestinationWindow().convertBaseToScreen(mouse);
 	NSArray screens = NSScreen.screens();
+	if (screens == null) return false;
+
 	NSRect screenRect = new NSScreen(screens.objectAtIndex(0)).frame();
 	globalMouse.y = screenRect.height - globalMouse.y;
 

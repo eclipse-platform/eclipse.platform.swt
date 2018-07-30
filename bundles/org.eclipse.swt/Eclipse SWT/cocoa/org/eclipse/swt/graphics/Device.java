@@ -240,7 +240,9 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	NSRect frame = getPrimaryScreen().frame();
+	NSScreen primaryScreen = getPrimaryScreen();
+	if (primaryScreen == null) return new Rectangle(0, 0, 0, 0);
+	NSRect frame = primaryScreen.frame();
 	return new Rectangle((int)frame.x, (int)frame.y, (int)frame.width, (int)frame.height);
 }
 
@@ -317,7 +319,9 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();
-	return (int)/*64*/OS.NSBitsPerPixelFromDepth(getPrimaryScreen().depth());
+	NSScreen primaryScreen = getPrimaryScreen();
+	if (primaryScreen == null) return 0;
+	return (int)/*64*/OS.NSBitsPerPixelFromDepth(primaryScreen.depth());
 }
 
 /**
@@ -338,7 +342,7 @@ public Point getDPI () {
 
 NSScreen getPrimaryScreen () {
 	NSArray screens = NSScreen.screens();
-	return new NSScreen(screens.objectAtIndex(0));
+	return (screens != null) ? new NSScreen(screens.objectAtIndex(0)) : null;
 }
 
 /**
@@ -416,6 +420,8 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 
 Point getScreenDPI () {
 	NSScreen screen = getPrimaryScreen();
+	if (screen == null) return new Point(0, 0);
+
 	NSDictionary dictionary = screen.deviceDescription();
 	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
 	NSSize size = value.sizeValue();
