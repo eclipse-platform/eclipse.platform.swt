@@ -1265,7 +1265,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateFromFSRef)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CFURLCreateFromFSRef_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)CFURLCreateFromFSRef((CFAllocatorRef)arg0, (struct FSRef*)lparg1);
+	rc = (jintLong)CFURLCreateFromFSRef((CFAllocatorRef)arg0, (FSRef*)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, CFURLCreateFromFSRef_FUNC);
