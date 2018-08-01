@@ -441,7 +441,7 @@ public void pack () {
 	int width = 0;
 	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		if (parent.getHeaderVisible() && GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(buttonHandle)) {
+		if (GTK.GTK3) {
 			GTK.gtk_widget_show(buttonHandle);
 			gtk_widget_get_preferred_size (buttonHandle, requisition);
 			GTK.gtk_widget_hide(buttonHandle);

@@ -1185,6 +1185,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1window_1set_1destroy_1with_1parent",
 	"_1gtk_1window_1set_1geometry_1hints",
 	"_1gtk_1window_1set_1icon_1list",
+	"_1gtk_1window_1set_1keep_1above",
 	"_1gtk_1window_1set_1modal",
 	"_1gtk_1window_1set_1opacity",
 	"_1gtk_1window_1set_1resizable",

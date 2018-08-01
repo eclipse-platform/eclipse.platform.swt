@@ -14950,6 +14950,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1set_1icon_1list)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1set_1keep_1above
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1set_1keep_1above)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1window_1set_1keep_1above_FUNC);
+	gtk_window_set_keep_above((GtkWindow *)arg0, (gboolean)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1window_1set_1keep_1above_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1set_1modal
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1set_1modal)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)

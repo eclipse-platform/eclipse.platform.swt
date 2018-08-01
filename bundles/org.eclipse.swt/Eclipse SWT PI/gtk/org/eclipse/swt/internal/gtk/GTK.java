@@ -9803,6 +9803,19 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param window cast=(GtkWindow *)
+	 * @param setting cast=(gboolean)
+	 */
+	public static final native void _gtk_window_set_keep_above(long /*int*/ window, boolean setting);
+	public static final void gtk_window_set_keep_above(long /*int*/ window, boolean setting) {
+		lock.lock();
+		try {
+			_gtk_window_set_keep_above(window, setting);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GtkWindow *)
 	 * @param modal cast=(gboolean)
 	 */
 	public static final native void _gtk_window_set_modal(long /*int*/ window, boolean modal);

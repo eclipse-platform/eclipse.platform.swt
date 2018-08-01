@@ -414,7 +414,7 @@ public static Shell internal_new (Display display, long /*int*/ handle) {
 static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
-	if ((style & SWT.ON_TOP) != 0) style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
+	if (parent != null && (style & SWT.ON_TOP) != 0) style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	if ((style & SWT.SHEET) != 0) {
 		style &= ~SWT.SHEET;
@@ -704,7 +704,7 @@ void createHandle (int index) {
 	if (shellHandle == 0) {
 		if (handle == 0) {
 			int type = GTK.GTK_WINDOW_TOPLEVEL;
-			if ((style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
+			if (parent != null && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
 			shellHandle = GTK.gtk_window_new (type);
 		} else {
 			shellHandle = GTK.gtk_plug_new (handle);
@@ -742,6 +742,8 @@ void createHandle (int index) {
 //			if (!isUndecorated ()) {
 //				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
 //			}
+		} else {
+			if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
 		}
 		/*
 		* Feature in GTK.  The window size must be set when the window
@@ -770,7 +772,15 @@ void createHandle (int index) {
 		if ((style & SWT.TOOL) != 0) {
 			GTK.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
 		}
-		if ((style & SWT.NO_TRIM) != 0 ) {
+		if ((style & SWT.NO_TRIM) != 0) {
+			GTK.gtk_window_set_decorated(shellHandle, false);
+		}
+		/*
+		 * On Wayland, shells with no SHELL_TRIM style specified have decorations by default.
+		 * This fixes the issue that the open editor dialog (Ctrl+E) for Eclipse on Wayland
+		 * has a tile bar on top.
+		 */
+		if (!OS.isX11() && (style & SWT.SHELL_TRIM) == 0) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
 		}
 		if (isCustomResize ()) {
