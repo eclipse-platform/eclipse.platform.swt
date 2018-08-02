@@ -443,6 +443,9 @@ public class Display extends Device {
 
 	};
 
+	/* Cache pressed modifier. See Bug 537025. */
+	int cachedModifier = 0;
+
 	/* Latin layout key group */
 	private int latinKeyGroup;
 
@@ -4421,6 +4424,22 @@ public boolean post (Event event) {
 			switch (type) {
 				case SWT.KeyDown:
 				case SWT.KeyUp: {
+					int pressedModifier = 0;
+					switch (event.keyCode) {
+						case SWT.SHIFT: pressedModifier = GDK.GDK_SHIFT_MASK; break;
+						case SWT.ALT: pressedModifier = GDK.GDK_MOD1_MASK; break;
+						case SWT.CONTROL: pressedModifier = GDK.GDK_CONTROL_MASK; break;
+						case SWT.ALT_GR: pressedModifier = GDK.GDK_MOD5_MASK; break;
+						default:
+							pressedModifier = 0;
+					}
+					if (pressedModifier != 0) {
+						if (type == SWT.KeyDown) {
+							cachedModifier |= pressedModifier;
+						} else {
+							cachedModifier &= ~pressedModifier;
+						}
+					}
 					int keysym = untranslateKey (event.keyCode);
 					if (keysym == 0) {
 						char key = event.character;
@@ -4436,14 +4455,14 @@ public boolean post (Event event) {
 						}
 						if (keysym == 0) return false;
 					}
-					int modifier = 0;
+					int modifier = cachedModifier;
 					switch (event.stateMask) {
-						case SWT.SHIFT: modifier = GDK.GDK_SHIFT_MASK; break;
-						case SWT.ALT: modifier = GDK.GDK_MOD1_MASK; break;
-						case SWT.CONTROL: modifier = GDK.GDK_CONTROL_MASK; break;
-						case SWT.ALT_GR: modifier = GDK.GDK_MOD5_MASK; break;
+						case SWT.SHIFT: modifier = cachedModifier | GDK.GDK_SHIFT_MASK; break;
+						case SWT.ALT: modifier = cachedModifier | GDK.GDK_MOD1_MASK; break;
+						case SWT.CONTROL: modifier = cachedModifier | GDK.GDK_CONTROL_MASK; break;
+						case SWT.ALT_GR: modifier = cachedModifier | GDK.GDK_MOD5_MASK; break;
 						default:
-							modifier = 0;
+							modifier = cachedModifier;
 					}
 					GDK.gdk_test_simulate_key(gdkWindow, x[0], y[0], keysym, modifier, type == SWT.KeyDown ? GDK.GDK_KEY_PRESS: GDK.GDK_KEY_RELEASE);
 					return true;
