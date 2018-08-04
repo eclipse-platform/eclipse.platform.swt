@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -106,9 +106,6 @@
 #if GTK_CHECK_VERSION(3,0,0)
 #include <gtk/gtkx.h>
 #endif
-
-#include <X11/extensions/XTest.h>
-
 #else
 
 #define NO_GDK_1IS_1X11_1DISPLAY
@@ -135,9 +132,7 @@
 #define NO__1XSetIOErrorHandler
 #define NO__1XSetTransientForHint
 #define NO__1XSynchronize
-#define NO__1XTestFakeButtonEvent
-#define NO__1XTestFakeKeyEvent
-#define NO__1XWarpPointer
+X#define NO__1XWarpPointer
 #define NO__1GDK_1PIXMAP_1XID
 #define NO__1gdk_x11_atom_to_xatom
 #define NO__1gdk_1x11_1atom_1to_1xatom
