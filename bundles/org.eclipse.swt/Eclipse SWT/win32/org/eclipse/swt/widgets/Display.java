@@ -2056,7 +2056,11 @@ Monitor getMonitor (long /*int*/ hmonitor) {
 		int [] dpiY = new int[1];
 		int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
 		result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
-		monitor.zoom = DPIUtil.getZoomForAutoscaleProperty (result);
+		/*
+		 * Always return true monitor zoom value as fetched from native, else will lead
+		 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
+		 */
+		monitor.zoom = result;
 	} else {
 		monitor.zoom = getDeviceZoom ();
 	}
