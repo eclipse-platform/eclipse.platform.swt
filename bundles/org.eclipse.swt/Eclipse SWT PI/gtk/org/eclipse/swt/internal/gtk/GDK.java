@@ -209,6 +209,14 @@ public class GDK extends OS {
 	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
 	public static final int GDK_SB_UP_ARROW = 0x72;
 	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
+	public static final int GDK_SEAT_CAPABILITY_NONE = 0;
+	public static final int GDK_SEAT_CAPABILITY_POINTER = 1 << 0;
+	public static final int GDK_SEAT_CAPABILITY_TOUCH = 1 << 1;
+	public static final int GDK_SEAT_CAPABILITY_TABLET_STYLUS = 1 << 2;
+	public static final int GDK_SEAT_CAPABILITY_KEYBOARD = 1 << 3;
+	public static final int GDK_SEAT_CAPABILITY_TABLET_PAD = 1 << 4;
+	public static final int GDK_SEAT_CAPABILITY_ALL_POINTING = GDK_SEAT_CAPABILITY_POINTER | GDK_SEAT_CAPABILITY_TOUCH | GDK_SEAT_CAPABILITY_TABLET_STYLUS;
+	public static final int GDK_SEAT_CAPABILITY_ALL = GDK_SEAT_CAPABILITY_ALL_POINTING | GDK_SEAT_CAPABILITY_KEYBOARD;
 	public static final int GDK_SCROLL_UP = 0;
 	public static final int GDK_SCROLL_DOWN = 1;
 	public static final int GDK_SCROLL_LEFT = 2;

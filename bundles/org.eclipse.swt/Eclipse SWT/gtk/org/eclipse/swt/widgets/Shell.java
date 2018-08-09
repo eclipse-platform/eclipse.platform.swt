@@ -573,7 +573,7 @@ void bringToTop (boolean force) {
 	* Feature in GTK.  When the shell is an override redirect
 	* window, gdk_window_focus() does not give focus to the
 	* window.  The fix is to use XSetInputFocus() to force
-	* the focus, or gtk_grab_add() for Wayland.
+	* the focus, or gtk_grab_add() for GTK > 3.20.
 	*/
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
@@ -597,14 +597,20 @@ void bringToTop (boolean force) {
 			}
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				GTK.gtk_grab_add(shellHandle);
+				/*
+				 * On Wayland, calling gdk_seat_grab on visible window causes caret to get stuck in Eclipse
+				 * after closing Javadoc/completion popup. Workaround is to hide the immediate popup mapped
+				 * to a top level window before grabbing, and show it using gdkSeatGrabPrepareFunc callback.
+				 */
 				if (gdkSeatGrabCallback == null) {
 					gdkSeatGrabCallback = new Callback(Shell.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 				}
 				long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
 				if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-				GTK.gtk_grab_add(shellHandle);
 				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
-				GDK.gdk_seat_grab(seat, window, 1, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
+				if (GTK.gtk_widget_get_visible(shellHandle) && !isMappedToPopup()) GTK.gtk_widget_hide(shellHandle);
+				GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
 			}
 		}
 	} else {
@@ -943,6 +949,15 @@ boolean isCustomResize () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
+}
+
+/**
+ * Determines whether a Shell's parent is a popup window. See bug 534554.
+ *
+ * @return true if the parent of this Shell has style SWT.ON_TOP, false otherwise.
+ */
+boolean isMappedToPopup () {
+	return parent != null && (parent.style & SWT.ON_TOP) != 0;
 }
 
 @Override
@@ -1326,8 +1341,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		 */
 		if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				long /*int*/ seat = GDK.gdk_event_get_seat(event);
+				GDK.gdk_seat_ungrab(seat);
 				GTK.gtk_grab_remove(shellHandle);
-				GDK.gdk_seat_ungrab(GDK.gdk_event_get_seat(event));
 				GTK.gtk_widget_hide(shellHandle);
 			}
 		}
@@ -2549,9 +2565,10 @@ public void setVisible (boolean visible) {
 		// the hidden widget and can never be returned.
 		if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				long /*int*/ window = gtk_widget_get_window (shellHandle);
+				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+				GDK.gdk_seat_ungrab(seat);
 				GTK.gtk_grab_remove(shellHandle);
-				GDK.gdk_seat_ungrab(GDK.gdk_display_get_default_seat(
-							GDK.gdk_window_get_display(GTK.gtk_widget_get_window(shellHandle))));
 			}
 		}
 		GTK.gtk_widget_hide (shellHandle);
@@ -2799,9 +2816,10 @@ public void dispose () {
 	fixActiveShell ();
 	if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 		if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			long /*int*/ window = gtk_widget_get_window (shellHandle);
+			long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+			GDK.gdk_seat_ungrab(seat);
 			GTK.gtk_grab_remove(shellHandle);
-			GDK.gdk_seat_ungrab(GDK.gdk_display_get_default_seat(
-				GDK.gdk_window_get_display(GTK.gtk_widget_get_window(shellHandle))));
 		}
 	}
 	GTK.gtk_widget_hide (shellHandle);
