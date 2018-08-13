@@ -4870,6 +4870,10 @@ class AccessibleObject {
 				OS.g_object_notify(atkHandle, ATK.accessible_hypertext_nlinks);
 				break;
 			case ACC.EVENT_ATTRIBUTE_CHANGED:
+				if (GTK.GTK3) {
+					long /*int*/ gType = OS.G_OBJECT_TYPE(atkHandle);
+					if (gType == GTK.GTK_TYPE_TEXT_VIEW_ACCESSIBLE()) break;
+				}
 				OS.g_signal_emit_by_name (atkHandle, ATK.attributes_changed);
 				break;
 			case ACC.EVENT_TABLE_CAPTION_CHANGED:

@@ -234,6 +234,7 @@ X#define NO__1XWarpPointer
 #define NO_SwtFixedAccessible
 #define NO__1swt_1fixed_1accessible_1get_1type
 #define NO__1swt_1fixed_1accessible_1register_1accessible
+#define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 
 #define NO_GdkRGBA
 #define NO__1GDK_1TYPE_1RGBA
