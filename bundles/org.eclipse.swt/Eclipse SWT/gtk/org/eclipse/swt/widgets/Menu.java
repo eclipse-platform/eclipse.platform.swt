@@ -757,7 +757,6 @@ long /*int*/ gtk_hide (long /*int*/ widget) {
 		if (display.activeShell != null) {
 			display.activeShell = getShell ();
 			display.activeShell.ignoreFocusOut = false;
-			display.activeShell.ignoreActivate = false;
 		}
 	}
 	sendEvent (SWT.Hide);
@@ -777,7 +776,6 @@ long /*int*/ gtk_show (long /*int*/ widget) {
 		if (display.activeShell != null) {
 			display.activeShell = getShell ();
 			display.activeShell.ignoreFocusOut = true;
-			display.activeShell.ignoreActivate = true;
 		}
 		return 0;
 	}
