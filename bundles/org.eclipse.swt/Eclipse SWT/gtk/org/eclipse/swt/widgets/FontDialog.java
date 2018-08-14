@@ -160,11 +160,6 @@ public FontData open () {
 	if (parent!=null) {
 		long /*int*/ shellHandle = parent.topHandle ();
 		GTK.gtk_window_set_transient_for(handle, shellHandle);
-		long /*int*/ pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
-		if (pixbufs != 0) {
-			GTK.gtk_window_set_icon_list (handle, pixbufs);
-			OS.g_list_free (pixbufs);
-		}
 	}
 	long /*int*/ group = GTK.gtk_window_get_group(0);
 	GTK.gtk_window_group_add_window (group, handle);
