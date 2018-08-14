@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4855,6 +4855,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		case OS.WM_XBUTTONDBLCLK:		result = WM_XBUTTONDBLCLK (wParam, lParam); break;
 		case OS.WM_XBUTTONDOWN:			result = WM_XBUTTONDOWN (wParam, lParam); break;
 		case OS.WM_XBUTTONUP:			result = WM_XBUTTONUP (wParam, lParam); break;
+		case OS.WM_DPICHANGED:			result = WM_DPICHANGED (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
 	// widget could be disposed at this point
@@ -4935,6 +4936,25 @@ LRESULT WM_CUT (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_DESTROY (long /*int*/ wParam, long /*int*/ lParam) {
 	OS.KillTimer (this.handle, Menu.ID_TOOLTIP_TIMER);
 	return null;
+}
+
+LRESULT WM_DPICHANGED (long /*int*/ wParam, long /*int*/ lParam) {
+	// Map DPI to Zoom and compare
+	int nativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
+	int newSWTZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
+	int oldSWTZoom = DPIUtil.getDeviceZoom();
+
+	// Throw the DPI change event if zoom value changes
+	if (newSWTZoom != oldSWTZoom) {
+		Event event = new Event();
+		event.type = SWT.ZoomChanged;
+		event.widget = this;
+		event.detail = newSWTZoom;
+		event.doit = true;
+		notifyListeners(SWT.ZoomChanged, event);
+		return LRESULT.ZERO;
+	}
+	return LRESULT.ONE;
 }
 
 LRESULT WM_DRAWITEM (long /*int*/ wParam, long /*int*/ lParam) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -855,6 +855,26 @@ public class SWT {
 	 * @since 3.107
 	 */
 	public static final int OpenUrl = 54;
+
+	/**
+	 * The SWT zoom change event type (value is 55).
+	 *
+	 * <p>
+	 * This event is sent on <code>Shell</code> when the SWT zoom has changed. SWT
+	 * zoom changes when the system DPI or scale factor changes dynamically.
+	 * </p>
+	 * <p>
+	 * Note: This operation is a hint and is not supported on platforms that do not
+	 * have this concept. Currently supported on Windows10 only.
+	 * </p>
+	 *
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 *
+	 * @since 3.108
+	 */
+	public static final int ZoomChanged = 55;
 
 	/* Event Details */
 
