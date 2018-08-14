@@ -664,30 +664,13 @@ long /*int*/ findPopupHandle (long /*int*/ oldList) {
 
 @Override
 Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
-	Point sizes = new Point (width, height);
 	/*
-	 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
-	 * elements which we cannot access. If the to-be-allocated size minus
-	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
+	 * Combo is a complex widget which has many widgets inside of it.
+	 * Some of these widgets have large natural and/or minimum sizes. To prevent
+	 * API breakage, just set the width and height from setBounds().
+	 * See bug 537713.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && widget == handle) {
-		GtkRequisition minimumSize = new GtkRequisition();
-		GtkRequisition naturalSize = new GtkRequisition();
-		// Use the handle only for READ_ONLY Combos, otherwise use the GtkEntry
-		long /*int*/ preferredSizeHandle = ((style & SWT.READ_ONLY) == 0 && entryHandle != 0) ? entryHandle : handle;
-		GTK.gtk_widget_get_preferred_size(preferredSizeHandle, minimumSize, naturalSize);
-		/*
-		 * Use the smallest of the minimum/natural sizes to prevent oversized
-		 * widgets.
-		 */
-		int smallestWidth = Math.min(minimumSize.width, naturalSize.width);
-		int smallestHeight = Math.min(minimumSize.height, naturalSize.height);
-		sizes.x = (width - (smallestWidth - width)) < 0 ? smallestWidth : width;
-		sizes.y = (height - (smallestHeight - height)) < 0 ? smallestHeight : height;
-		return sizes;
-	} else {
-		return super.resizeCalculationsGTK3(widget, width, height);
-	}
+	return new Point (width, height);
 }
 
 long /*int*/ findButtonHandle() {
