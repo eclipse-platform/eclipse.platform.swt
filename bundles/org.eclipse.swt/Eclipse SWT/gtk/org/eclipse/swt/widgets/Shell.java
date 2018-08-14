@@ -125,7 +125,7 @@ public class Shell extends Decorations {
 	int minWidth, minHeight;
 	Control lastActive;
 	ToolTip [] toolTips;
-	boolean ignoreFocusOut;
+	boolean ignoreFocusOut, ignoreFocusIn;
 	Region originalRegion;
 
 	static final int MAXIMUM_TRIM = 128;
@@ -1466,7 +1466,11 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	}
 	display.activeShell = this;
 	display.activePending = false;
-	sendEvent (SWT.Activate);
+	if (!ignoreFocusIn) {
+		sendEvent (SWT.Activate);
+	} else {
+		ignoreFocusIn = false;
+	}
 	return 0;
 }
 
@@ -1476,8 +1480,10 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	Display display = this.display;
-	sendEvent (SWT.Deactivate);
-	setActiveControl (null);
+	if (!ignoreFocusOut) {
+		sendEvent (SWT.Deactivate);
+		setActiveControl (null);
+	}
 	if (display.activeShell == this && !ignoreFocusOut) {
 		display.activeShell = null;
 		display.activePending = false;

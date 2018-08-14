@@ -756,6 +756,7 @@ long /*int*/ gtk_hide (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) {
 			display.activeShell = getShell ();
+			if (display.activeShell.ignoreFocusOut) display.activeShell.ignoreFocusIn = true;
 			display.activeShell.ignoreFocusOut = false;
 		}
 	}
