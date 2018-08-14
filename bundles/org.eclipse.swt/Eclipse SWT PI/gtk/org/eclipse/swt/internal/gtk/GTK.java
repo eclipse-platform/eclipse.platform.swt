@@ -57,7 +57,6 @@ public class GTK extends OS {
 	public static final int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
 	public static final int GTK_FRAME_LABEL_PAD = 1;
 	public static final int GTK_FRAME_LABEL_SIDE_PAD = 2;
-	public static final int GTK_HAS_FOCUS = 1 << 12;
 	public static final int GTK_ICON_SIZE_MENU = 1;
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_LARGE_TOOLBAR = 3;

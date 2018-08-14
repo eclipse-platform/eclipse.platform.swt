@@ -1743,9 +1743,7 @@ boolean setTabItemFocus (boolean next) {
 	if (!super.setTabItemFocus (next)) return false;
 	if (socketHandle != 0) {
 		int direction = next ? GTK.GTK_DIR_TAB_FORWARD : GTK.GTK_DIR_TAB_BACKWARD;
-		GTK.GTK_WIDGET_UNSET_FLAGS (socketHandle, GTK.GTK_HAS_FOCUS);
 		GTK.gtk_widget_child_focus (socketHandle, direction);
-		GTK.GTK_WIDGET_SET_FLAGS (socketHandle, GTK.GTK_HAS_FOCUS);
 	}
 	return true;
 }
