@@ -180,8 +180,10 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
 		 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
 		 *  caret when it is intended to. See Bug 517487.
+		 *
+		 *  Additionally, only draw the caret if it has focus. See bug 528819.
 		 */
-		if (caret != null && blink == true) {
+		if (caret != null && blink == true && caret.isFocusCaret()) {
 			drawCaret(widget,cairo);
 			blink = false;
 		}
