@@ -641,14 +641,20 @@ public void removeSelectionListener (SelectionListener listener) {
 
 @Override
 void resizeHandle (int width, int height) {
-	super.resizeHandle (width, height);
-	/*
-	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
-	* only the minimum size necessary for its child. This causes the child
-	* alignment to fail. The fix is to set the child size to the size
-	* of the button.
-	*/
-	if (!GTK.GTK3) {
+	if (GTK.GTK3) {
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0 && (style & SWT.WRAP) == 0) {
+			OS.swt_fixed_resize (GTK.gtk_widget_get_parent (topHandle()), topHandle(), width, height);
+		} else {
+			super.resizeHandle(width, height);
+		}
+	} else {
+		super.resizeHandle (width, height);
+		/*
+		* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
+		* only the minimum size necessary for its child. This causes the child
+		* alignment to fail. The fix is to set the child size to the size
+		* of the button.
+		*/
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			GTK.gtk_widget_set_size_request (boxHandle, width, -1);
 		}
