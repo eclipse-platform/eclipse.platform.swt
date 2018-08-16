@@ -1126,6 +1126,11 @@ public boolean getFullScreen () {
 @Override
 Point getLocationInPixels () {
 	checkWidget ();
+	// Bug in GTK: when shell is moved and then hidden, its location does not get updated.
+	// Move it before getting its location.
+	if (!getVisible() && moved) {
+		setLocationInPixels(oldX, oldY);
+	}
 	int [] x = new int [1], y = new int [1];
 	GTK.gtk_window_get_position (shellHandle, x,y);
 	return new Point (x [0], y [0]);
