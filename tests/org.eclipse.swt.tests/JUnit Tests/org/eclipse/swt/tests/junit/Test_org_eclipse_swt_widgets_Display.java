@@ -219,7 +219,10 @@ public void test_getActiveShell() {
 		Shell shell = new Shell(display);
 		shell.setText("test_getActiveShell");
 		shell.open();
-		drainEventQueue(display, 2000); // workaround for https://bugs.eclipse.org/506680
+		drainEventQueue(display, 5000); // workaround for https://bugs.eclipse.org/506680
+		if (SwtTestUtil.isCocoa) {
+			Screenshots.takeScreenshot(this.getClass(), "test_setActive2");
+		}
 		assertSame(shell, display.getActiveShell());
 		shell.dispose();
 	} finally {
