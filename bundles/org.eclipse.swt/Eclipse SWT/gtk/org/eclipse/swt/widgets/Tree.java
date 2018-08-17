@@ -97,6 +97,7 @@ public class Tree extends Composite {
 	double cachedAdjustment, currentAdjustment;
 	Color headerBackground, headerForeground;
 	String headerCSSBackground, headerCSSForeground;
+	boolean boundsChangedSinceLastDraw;
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -2341,7 +2342,22 @@ void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	boolean haveBoundsChanged = boundsChangedSinceLastDraw;
+	boundsChangedSinceLastDraw = false;
 	if ((state & OBSCURED) != 0) return 0;
+	/*
+	 * Bug 537960: JFace tree viewers miss a repaint when resized by a SashForm
+	 *
+	 * If a listener of type SWT.MeasureItem, SWT.PaintItem and or SWT.EraseItem is registered,
+	 * GTK will sometimes not invalidate the tree widget pixel cache when the tree is resized.
+	 * As a result, a few of the bottom rows of JFace tree viewers that use styled text are often not drawn on resize.
+	 * If the tree was resized since the last paint, we ignore this draw request
+	 * and queue another draw request so that the pixel cache is properly invalidated.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && ownerDraw && haveBoundsChanged) {
+		GTK.gtk_widget_queue_draw(handle);
+		return 0;
+	}
 	drawInheritedBackground	(0, cairo);
 	return super.gtk_draw (widget, cairo);
 }
@@ -3483,6 +3499,9 @@ void setBackgroundPixmap (Image image) {
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
+	if (result != 0) {
+		boundsChangedSinceLastDraw = true;
+	}
 	/*
 	* Bug on GTK.  The tree view sometimes does not get a paint
 	* event or resizes to a one pixel square when resized in a new
