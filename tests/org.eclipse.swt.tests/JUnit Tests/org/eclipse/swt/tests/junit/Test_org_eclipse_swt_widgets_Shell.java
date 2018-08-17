@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.test.Screenshots;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -515,7 +514,6 @@ public void test_setActive() {
 	shell.setActive();
 	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
 		drainEventQueue(shell.getDisplay(), 5000);
-		Screenshots.takeScreenshot(this.getClass(), "test_setActive1");
 	}
 	assertTrue("visible shell was not made active", shell.getDisplay().getActiveShell() == shell);
 
@@ -526,7 +524,6 @@ public void test_setActive() {
 	testShell.setActive();
 	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
 		drainEventQueue(shell.getDisplay(), 2000);
-		Screenshots.takeScreenshot(this.getClass(), "test_setActive2");
 	}
 	assertTrue("visible dialog shell was not made active", testShell.getDisplay().getActiveShell() == testShell);
 
@@ -537,7 +534,6 @@ public void test_setActive() {
 	shell2.setText("Shell2: Not active");
 	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
 		drainEventQueue(shell.getDisplay(), 2000);
-		Screenshots.takeScreenshot(this.getClass(), "test_setActive3");
 	}
 	assertTrue("non-visible shell was made active", shell.getDisplay().getActiveShell() != shell);
 
@@ -548,7 +544,6 @@ public void test_setActive() {
 	shell2.setText("Shell2: Not active");
 	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
 		drainEventQueue(shell.getDisplay(), 2000);
-		Screenshots.takeScreenshot(this.getClass(), "test_setActive4");
 	}
 	assertTrue("non-visible dialog shell was made active", testShell.getDisplay().getActiveShell() != testShell);
 
