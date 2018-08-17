@@ -880,9 +880,6 @@ Rectangle getBoundsInPixels(int start, int end) {
 
 	GDK.gdk_region_get_clipbox(clipRegion, rect);
 	GDK.gdk_region_destroy(clipRegion);
-	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
-		rect.x = width() - rect.x - rect.width;
-	}
 	rect.x += Math.min (indent, wrapIndent);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
@@ -1035,9 +1032,6 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	int height = OS.PANGO_PIXELS(rect.height);
 	if (ascentInPoints != -1 && descentInPoints != -1) {
 		height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
-	}
-	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
-		x = width() - x - width;
 	}
 	x += Math.min (indent, wrapIndent);
 	return new Rectangle(x, y, width, height);
@@ -2343,9 +2337,9 @@ int width () {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * @noreference This method is not intended to be referenced by clients. 
- * 
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ *
  * DO NOT USE This might be removed in 4.8
  * @since 3.107
  */
