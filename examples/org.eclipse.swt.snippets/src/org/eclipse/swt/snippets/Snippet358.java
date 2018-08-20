@@ -1,6 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2016 IBM Corporation and others.
- * All rights reserved. This Example Content is intended to demonstrate
+ *
+ * This Example Content is intended to demonstrate
  * usage of Eclipse technology. It is provided to you under the terms and
  * conditions of the Eclipse Distribution License v1.0 which is available
  * at http://www.eclipse.org/org/documents/edl-v10.php
