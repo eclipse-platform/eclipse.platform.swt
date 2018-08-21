@@ -864,8 +864,9 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	return 0;
-	//Note on SWT Tree/Table/List. This signal is no longer used. Instead SendDefaultSelection is
-	//Manually emitted.  See Bug 312568.
+	// Note on SWT Tree/Table/List. This signal is no longer used for sending events, instead
+	// Send DefaultSelection is manually emitted. We use this function to know whether a
+	// 'row-activated' is triggered. See Bug 312568, 518414.
 }
 
 long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {

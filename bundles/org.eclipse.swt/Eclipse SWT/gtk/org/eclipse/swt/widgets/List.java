@@ -49,6 +49,7 @@ public class List extends Scrollable {
 
 	static final int TEXT_COLUMN = 0;
 	double cachedAdjustment, currentAdjustment;
+	boolean rowActivated;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -907,12 +908,25 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		}
 	}
 
-	//If Mouse double-click pressed, manually send a DefaultSelection.  See Bug 312568.
-	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
+	/*
+	 * Bug 312568: If mouse double-click pressed, manually send a DefaultSelection.
+	 * Bug 518414: Added rowActivated guard flag to only send a DefaultSelection when the
+	 * double-click triggers a 'row-activated' signal. Note that this relies on the fact
+	 * that 'row-activated' signal comes before double-click event. This prevents
+	 * opening of the current highlighted item when double clicking on any expander arrow.
+	 */
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS && rowActivated) {
 		sendTreeDefaultSelection ();
+		rowActivated = false;
 	}
 
 	return result;
+}
+
+@Override
+long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
+	rowActivated = true;
+	return 0;
 }
 
 
@@ -977,19 +991,20 @@ void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	}
 }
 
-//Used to emulate DefaultSelection event. See Bug 312568.
-//Feature in GTK. 'row-activation' event comes before DoubleClick event.
-//This is causing the editor not to get focus after doubleclick.
-//The solution is to manually send the DefaultSelection event after a doubleclick,
-//and to emulate it for Space/Return.
+/**
+ * Used to emulate DefaultSelection event. See Bug 312568.
+ * Feature in GTK. 'row-activation' event comes before DoubleClick event.
+ * This is causing the editor not to get focus after double-click.
+ * The solution is to manually send the DefaultSelection event after a double-click,
+ * and to emulate it for Space/Return.
+ */
 void sendTreeDefaultSelection() {
 
 	//Note, similar DefaultSelectionHandling in SWT List/Table/Tree
 	Event event = new Event ();
 	event.index = this.getFocusIndex ();
 
-	if (event.index >= 0)
-		event.text = this.getItem (event.index);
+	if (event.index >= 0) event.text = this.getItem (event.index);
 	sendSelectionEvent (SWT.DefaultSelection, event, false);
 }
 
