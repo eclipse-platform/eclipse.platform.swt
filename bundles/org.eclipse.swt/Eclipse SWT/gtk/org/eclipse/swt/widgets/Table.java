@@ -94,7 +94,6 @@ public class Table extends Composite {
 	double cachedAdjustment, currentAdjustment;
 	int pixbufHeight, pixbufWidth;
 	boolean boundsChangedSinceLastDraw;
-	boolean rowActivated;
 
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -2141,27 +2140,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		}
 	}
 
-	/*
-	 * Bug 312568: If mouse double-click pressed, manually send a DefaultSelection.
-	 * Bug 518414: Added rowActivated guard flag to only send a DefaultSelection when the
-	 * double-click triggers a 'row-activated' signal. Note that this relies on the fact
-	 * that 'row-activated' signal comes before double-click event. This prevents
-	 * opening of the current highlighted item when double clicking on any expander arrow.
-	 */
-	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS && rowActivated) {
+	//If Mouse double-click pressed, manually send a DefaultSelection.  See Bug 312568.
+	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
 		sendTreeDefaultSelection ();
-		rowActivated = false;
 	}
 
 	return result;
 }
-
-@Override
-long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
-	rowActivated = true;
-	return 0;
-}
-
 
 @Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
@@ -2191,13 +2176,11 @@ void keyPressDefaultSelectionHandler (long /*int*/ event, int key) {
 	}
 }
 
-/**
- * Used to emulate DefaultSelection event. See Bug 312568.
- * Feature in GTK. 'row-activation' event comes before DoubleClick event.
- * This is causing the editor not to get focus after double-click.
- * The solution is to manually send the DefaultSelection event after a double-click,
- * and to emulate it for Space/Return.
- */
+//Used to emulate DefaultSelection event. See Bug 312568.
+//Feature in GTK. 'row-activation' event comes before DoubleClick event.
+//This is causing the editor not to get focus after doubleclick.
+//The solution is to manually send the DefaultSelection event after a doubleclick,
+//and to emulate it for Space/Return.
 void sendTreeDefaultSelection() {
 
 	//Note, similar DefaultSelectionHandling in SWT List/Table/Tree
