@@ -468,6 +468,13 @@ void resizeControl (int yScroll) {
 			}
 			// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
 			if (GTK.GTK3) {
+				/*
+				 * Bug 538114: ExpandBar has no content until resized or collapsed/expanded.
+				 * When widget is first created inside ExpandItem's control, the size is allocated
+				 * to be zero, and the widget is never shown during a layout operation, similar to
+				 * Bug 487757. The fix is to show the control before setting any bounds.
+				 */
+				if (visible) GTK.gtk_widget_show(control.topHandle ());
 				control.setBounds (x, y, width, Math.max (0, height), true, true);
 			}
 			else {
