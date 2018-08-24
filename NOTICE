@@ -1,0 +1,43 @@
+# Notices for Eclipse Platform
+
+This content is produced and maintained by the Eclipse Platform project.
+
+* Project home: https://projects.eclipse.org/projects/eclipse.platform
+
+## Trademarks
+
+Eclipse Platform is a trademark of the Eclipse Foundation.
+
+## Copyright
+
+All content is the property of the respective authors or their employers. For
+more information regarding authorship of content, please consult the listed
+source code repository logs.
+
+## Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License v. 2.0 which is available at
+http://www.eclipse.org/legal/epl-2.0.
+
+SPDX-License-Identifier: EPL-2.0
+
+## Source Code
+
+The project maintains the following source code repositories:
+
+* http://git.eclipse.org/c/platform/eclipse.platform.common.git
+* http://git.eclipse.org/c/platform/eclipse.platform.debug.git
+* http://git.eclipse.org/c/platform/eclipse.platform.git
+* http://git.eclipse.org/c/platform/eclipse.platform.releng.aggregator.git
+* http://git.eclipse.org/c/platform/eclipse.platform.releng.buildtools.git
+* http://git.eclipse.org/c/platform/eclipse.platform.releng.git
+* http://git.eclipse.org/c/platform/eclipse.platform.resources.git
+* http://git.eclipse.org/c/platform/eclipse.platform.runtime.git
+* http://git.eclipse.org/c/platform/eclipse.platform.swt.git
+* http://git.eclipse.org/c/platform/eclipse.platform.swt.binaries.git
+* http://git.eclipse.org/c/platform/eclipse.platform.team.git
+* http://git.eclipse.org/c/platform/eclipse.platform.text.git
+* http://git.eclipse.org/c/platform/eclipse.platform.ua.git
+* http://git.eclipse.org/c/platform/eclipse.platform.ui.git
+* http://git.eclipse.org/c/platform/eclipse.platform.ui.tools.git
