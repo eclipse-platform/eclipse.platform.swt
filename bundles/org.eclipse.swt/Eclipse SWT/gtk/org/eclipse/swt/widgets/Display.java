@@ -1607,6 +1607,20 @@ public Rectangle getBounds () {
 	return DPIUtil.autoScaleDown (getBoundsInPixels ());
 }
 
+@Override
+public Rectangle getClientArea () {
+	if (OS.isX11()) {
+		Rectangle workArea = getWorkArea();
+		/*
+		 * getWorkArea() can return null if the WM isn't running Xorg (i.e. x11 on Wayland).
+		 * To workaround these cases, return the workArea only if getWorkArea() succeeds,
+		 * otherwise call super.getClientArea(). See bug 33659.
+		 */
+		if (workArea != null) return workArea;
+	}
+	return super.getClientArea();
+}
+
 Rectangle getBoundsInPixels () {
 	checkDevice ();
 	return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
