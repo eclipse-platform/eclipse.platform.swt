@@ -6965,17 +6965,19 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						   The method getSlightlyDifferentColor gives us a color, that is near enough to the windows algorithm. */
 						long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), getSlightlyDifferentColor(getHeaderBackgroundPixel()));
 						long /*int*/ oldPen = OS.SelectObject (nmcd.hdc, pen);
-						OS.Polyline(nmcd.hdc, new int[] {rects[i].right-1, rects[i].top, rects[i].right-1, rects[i].bottom}, 2);
+						int alignmentCorrection = _getLinesVisible () ? 0 : 1;
+						OS.Polyline(nmcd.hdc, new int[] {rects[i].right-alignmentCorrection, rects[i].top, rects[i].right-alignmentCorrection, rects[i].bottom}, 2);
 						OS.SelectObject (nmcd.hdc, oldPen);
 						OS.DeleteObject (pen);
 
-						if (_getLinesVisible()) {
-							pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
-							oldPen = OS.SelectObject (nmcd.hdc, pen);
-							OS.Polyline(nmcd.hdc, new int[] {rects[i].right, rects[i].top, rects[i].right, rects[i].bottom}, 2);
-							OS.SelectObject (nmcd.hdc, oldPen);
-							OS.DeleteObject (pen);
-						}
+						pen = OS.CreatePen (OS.PS_SOLID, getGridLineWidthInPixels(), OS.GetSysColor(OS.COLOR_3DFACE));
+						oldPen = OS.SelectObject (nmcd.hdc, pen);
+						/* To differentiate headers, always draw header column separator. */
+						OS.Polyline(nmcd.hdc, new int[] {rects[i].right - alignmentCorrection, rects[i].top, rects[i].right - alignmentCorrection, rects[i].bottom}, 2);
+						/* To differentiate header & content area, always draw the line separator between header & first row. */
+						if (i == 0) OS.Polyline(nmcd.hdc, new int[] {nmcd.left, nmcd.bottom-1, nmcd.right+1, nmcd.bottom-1}, 2);
+						OS.SelectObject (nmcd.hdc, oldPen);
+						OS.DeleteObject (pen);
 
 						if (headerItemDragging && highlightedHeaderDividerX == -1) {
 							int distanceToLeftBorder = cursorPos.x - rects[i].left;
@@ -7017,7 +7019,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						// draw background of the 'no column' area
 						RECT rect = new RECT();
 						lastColumnRight += _getLinesVisible() ? 1 : 0;
-						OS.SetRect(rect, lastColumnRight, nmcd.top, nmcd.right, nmcd.bottom);
+						OS.SetRect(rect, lastColumnRight, nmcd.top, nmcd.right, nmcd.bottom-1);
 						long /*int*/ brush = OS.CreateSolidBrush(getHeaderBackgroundPixel());
 						OS.FillRect(nmcd.hdc, rect, brush);
 						OS.DeleteObject(brush);
