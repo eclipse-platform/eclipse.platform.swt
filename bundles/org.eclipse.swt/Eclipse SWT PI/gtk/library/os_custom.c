@@ -827,6 +827,9 @@ AtkObject *swt_fixed_accessible_new (GtkWidget *widget) {
 	// Create the SwtFixedAccessible instance and call the initializer
 	accessible = g_object_new (SWT_TYPE_FIXED_ACCESSIBLE, NULL);
 	atk_object_initialize (accessible, widget);
+	// Set the widget for this accessible, as not all SwtFixed instances
+	// have a matching Java Accessible. See bug 536974.
+	gtk_accessible_set_widget (GTK_ACCESSIBLE (accessible), widget);
 
 	return accessible;
 }
