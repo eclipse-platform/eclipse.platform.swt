@@ -1158,7 +1158,7 @@ public ImageData getImageData (int zoom) {
 			return data;
 		}
 		// AutoScale the image at 100% zoom
-		return DPIUtil.autoScaleUp (device, data);
+		return DPIUtil.autoScaleImageData (device, data, zoom, 100);
 	} else if (imageFileNameProvider != null) {
 		boolean[] found = new boolean[1];
 		String fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom, found);
@@ -1167,7 +1167,7 @@ public ImageData getImageData (int zoom) {
 			return new ImageData (fileName);
 		}
 		// AutoScale the image at 100% zoom
-		return DPIUtil.autoScaleUp (device, new ImageData (fileName));
+		return DPIUtil.autoScaleImageData (device, new ImageData (fileName), zoom, 100);
 	} else {
 		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
 	}
