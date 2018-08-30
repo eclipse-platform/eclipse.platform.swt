@@ -2505,49 +2505,18 @@ long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEv
 	event.y = y;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	event.detail = nsEvent.buttonNumber() > 0 ? SWT.MENU_MOUSE : SWT.MENU_KEYBOARD;
-
-	int initialNumberOfPopups = 0;
-	boolean menuAlreadyHandledByDisplay = false;
-	if (display.popups != null) {
-		while (initialNumberOfPopups < display.popups.length && display.popups[initialNumberOfPopups] != null) {
-			if (display.popups[initialNumberOfPopups] == menu) {
-				menuAlreadyHandledByDisplay = true;
-			}
-			initialNumberOfPopups++;
-		}
-	}
-
-	sendEvent(SWT.MenuDetect, event);
-	// widget could be disposed at this point
+	sendEvent (SWT.MenuDetect, event);
+	//widget could be disposed at this point
 	if (isDisposed ()) return 0;
+	if (!event.doit) return 0;
 	Menu menu = getMenu ();
-	// Count popups again: if it's different, the last one should be our menu.
-	int newNumberOfPopups = 0;
-	if (display.popups != null) {
-		while (newNumberOfPopups < display.popups.length && display.popups[newNumberOfPopups] != null) {
-			newNumberOfPopups++;
-		}
-	}
-	if (event.doit && menu != null && !menu.isDisposed () && !menuAlreadyHandledByDisplay) {
-		// If our new menu is in popups, we need to remove it, otherwise it may appear twice: once
-		// from being handled by Cocoa (return of the id), and once from the deferred popup.
-		if (newNumberOfPopups != initialNumberOfPopups && newNumberOfPopups > 0 && display.popups[newNumberOfPopups - 1] == menu) {
-			display.popups[newNumberOfPopups - 1] = null;
-		}
+	if (menu != null && !menu.isDisposed ()) {
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
 		}
-		return menu.nsMenu.id;
+		menu.setVisible(true);
+		return 0;
 	}
-
-	// There is either no popup menu set for the Control or event.doit = false.
-	// If a popup was triggered in the MenuDetect listener, return it.
-	if (newNumberOfPopups != initialNumberOfPopups && newNumberOfPopups > 0) {
-		Menu menu1 = display.popups[newNumberOfPopups - 1];
-		display.popups[newNumberOfPopups - 1] = null;
-		return menu1.nsMenu.id;
-	}
-	if (!event.doit) return 0;
 	return super.menuForEvent (id, sel, theEvent);
 }
 
