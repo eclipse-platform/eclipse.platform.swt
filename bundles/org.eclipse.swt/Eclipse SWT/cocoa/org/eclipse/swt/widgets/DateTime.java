@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN</dd>
+ * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG, DROP_DOWN, CALENDAR_WEEKNUMBERS</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Selection</dd>
  * </dl>
@@ -86,6 +86,7 @@ public class DateTime extends Composite {
  * @see SWT#DATE
  * @see SWT#TIME
  * @see SWT#CALENDAR
+ * @see SWT#CALENDAR_WEEKNUMBERS
  * @see SWT#SHORT
  * @see SWT#MEDIUM
  * @see SWT#LONG

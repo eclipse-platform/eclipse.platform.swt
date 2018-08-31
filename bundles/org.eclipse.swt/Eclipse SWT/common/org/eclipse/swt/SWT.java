@@ -863,12 +863,12 @@ public class SWT {
 	 * The SWT zoom change event type (value is 55).
 	 *
 	 * <p>
-	 * This event is sent on <code>Shell</code> when the SWT zoom has changed. SWT
-	 * zoom changes when the system DPI or scale factor changes dynamically.
+	 * This event is sent on <code>Shell</code> when the SWT zoom has changed. The SWT
+	 * zoom changes when the operating system DPI or scale factor changes dynamically.
 	 * </p>
 	 * <p>
-	 * Note: This operation is a hint and is not supported on platforms that do not
-	 * have this concept. Currently supported on Windows10 only.
+	 * Note that this is a <em>HINT</em> and is not sent on platforms that do not
+	 * support dynamic DPI changes. This event is currently sent on Windows 10 only.
 	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
@@ -2201,7 +2201,7 @@ public class SWT {
 	public static final int CALENDAR = 1 << 10;
 
 	/**
-	 * Style constant for displaying the week numbers.
+	 * Style constant for displaying week numbers in the calendar.
 	 * <br>Note that this is a <em>HINT</em> and is supported on Windows & GTK platforms only.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
@@ -2388,7 +2388,7 @@ public class SWT {
 	public static final char SPACE = ' ';
 
 	/**
-	 * keyboard and/or mouse event mask indicating that the ALT_GR key
+	 * Keyboard and/or mouse event mask indicating that the ALT_GR key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1 &lt;&lt 15).
 	 *
