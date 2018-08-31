@@ -57,6 +57,8 @@ public class CTabFolderRenderer {
 	 */
 	Color lastBorderColor = null;
 
+	Font chevronFont = null;
+
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
 	static final int[] TOP_LEFT_CORNER_HILITE = new int[] {5,2, 4,2, 3,3, 2,4, 2,5, 1,6};
@@ -98,6 +100,8 @@ public class CTabFolderRenderer {
 	static final int INTERNAL_SPACING = 4;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER;
 	static final String ELLIPSIS = "..."; //$NON-NLS-1$
+	private static final String CHEVRON_ELLIPSIS = "99+"; //$NON-NLS-1$
+	private static final int CHEVRON_FONT_HEIGHT = 10;
 
 	//Part constants
 	/**
@@ -299,8 +303,12 @@ public class CTabFolderRenderer {
 				width = height = BUTTON_SIZE;
 				break;
 			case PART_CHEVRON_BUTTON:
-				width = 3*BUTTON_SIZE/2;
+				Font prevFont = gc.getFont();
+				gc.setFont(getChevronFont(parent.getDisplay()));
+				int widthOfDoubleArrows = 8; // see drawChevron method
+				width = gc.textExtent(CHEVRON_ELLIPSIS).x + widthOfDoubleArrows;
 				height = BUTTON_SIZE;
+				gc.setFont(prevFont);
 				break;
 			default:
 				if (0 <= part && part < parent.getItemCount()) {
@@ -536,6 +544,10 @@ public class CTabFolderRenderer {
 		if (fillColor != null) {
 		    fillColor.dispose();
 		    fillColor = null;
+		}
+		if (chevronFont != null) {
+			chevronFont.dispose();
+			chevronFont = null;
 		}
 	}
 
@@ -907,13 +919,9 @@ public class CTabFolderRenderer {
 		int selectedIndex = parent.selectedIndex;
 		// draw chevron (10x7)
 		Display display = parent.getDisplay();
-		Point dpi = display.getDPI();
-		int fontHeight = 72 * 10 / dpi.y;
-		FontData fd = parent.getFont().getFontData()[0];
-		fd.setHeight(fontHeight);
-		Font f = new Font(display, fd);
-		int fHeight = f.getFontData()[0].getHeight() * dpi.y / 72;
-		int indent = Math.max(2, (chevronRect.height - fHeight - 4) /2);
+		Font font = getChevronFont(display);
+		int fontHeight = font.getFontData()[0].getHeight();
+		int indent = Math.max(2, (chevronRect.height - fontHeight - 4) /2);
 		int x = chevronRect.x + 2;
 		int y = chevronRect.y + indent;
 		int count;
@@ -927,59 +935,49 @@ public class CTabFolderRenderer {
 			}
 			count = itemCount - showCount;
 		}
-		String chevronString = count > 99 ? "99+" : String.valueOf(count); //$NON-NLS-1$
+		String chevronString = count > 99 ? CHEVRON_ELLIPSIS : String.valueOf(count);
 		switch (chevronImageState & (SWT.HOT | SWT.SELECTED)) {
 			case SWT.NONE: {
 				Color chevronBorder = parent.single ? parent.getSelectionForeground() : parent.getForeground();
 				gc.setForeground(chevronBorder);
-				gc.setFont(f);
-				gc.drawLine(x,y,     x+2,y+2);
-				gc.drawLine(x+2,y+2, x,y+4);
-				gc.drawLine(x+1,y,   x+3,y+2);
-				gc.drawLine(x+3,y+2, x+1,y+4);
-				gc.drawLine(x+4,y,   x+6,y+2);
-				gc.drawLine(x+6,y+2, x+4,y+4);
-				gc.drawLine(x+5,y,   x+7,y+2);
-				gc.drawLine(x+7,y+2, x+5,y+4);
-				gc.drawString(chevronString, x+7, y+3, true);
+				gc.setFont(font);
+				drawChevronContent(gc, x, y, chevronString);
 				break;
 			}
 			case SWT.HOT: {
 				gc.setForeground(display.getSystemColor(BUTTON_BORDER));
 				gc.setBackground(display.getSystemColor(BUTTON_FILL));
-				gc.setFont(f);
-				gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-				gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
-				gc.drawLine(x,y,     x+2,y+2);
-				gc.drawLine(x+2,y+2, x,y+4);
-				gc.drawLine(x+1,y,   x+3,y+2);
-				gc.drawLine(x+3,y+2, x+1,y+4);
-				gc.drawLine(x+4,y,   x+6,y+2);
-				gc.drawLine(x+6,y+2, x+4,y+4);
-				gc.drawLine(x+5,y,   x+7,y+2);
-				gc.drawLine(x+7,y+2, x+5,y+4);
-				gc.drawString(chevronString, x+7, y+3, true);
+				gc.setFont(font);
+				drawRoundRectangle(gc, chevronRect);
+				drawChevronContent(gc, x, y, chevronString);
 				break;
 			}
 			case SWT.SELECTED: {
 				gc.setForeground(display.getSystemColor(BUTTON_BORDER));
 				gc.setBackground(display.getSystemColor(BUTTON_FILL));
-				gc.setFont(f);
-				gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
-				gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
-				gc.drawLine(x+1,y+1, x+3,y+3);
-				gc.drawLine(x+3,y+3, x+1,y+5);
-				gc.drawLine(x+2,y+1, x+4,y+3);
-				gc.drawLine(x+4,y+3, x+2,y+5);
-				gc.drawLine(x+5,y+1, x+7,y+3);
-				gc.drawLine(x+7,y+3, x+5,y+5);
-				gc.drawLine(x+6,y+1, x+8,y+3);
-				gc.drawLine(x+8,y+3, x+6,y+5);
-				gc.drawString(chevronString, x+8, y+4, true);
+				gc.setFont(font);
+				drawRoundRectangle(gc, chevronRect);
+				drawChevronContent(gc, x+1, y+1, chevronString);
 				break;
 			}
 		}
-		f.dispose();
+	}
+
+	private void drawRoundRectangle(GC gc, Rectangle chevronRect) {
+		gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width,     chevronRect.height,     6, 6);
+		gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
+	}
+
+	private void drawChevronContent(GC gc, int x, int y, String chevronString) {
+		gc.drawLine(x,y,     x+2,y+2);
+		gc.drawLine(x+2,y+2, x,y+4);
+		gc.drawLine(x+1,y,   x+3,y+2);
+		gc.drawLine(x+3,y+2, x+1,y+4);
+		gc.drawLine(x+4,y,   x+6,y+2);
+		gc.drawLine(x+6,y+2, x+4,y+4);
+		gc.drawLine(x+5,y,   x+7,y+2);
+		gc.drawLine(x+7,y+2, x+5,y+4);
+		gc.drawString(chevronString, x+7, y+3, true);
 	}
 
 	/*
@@ -1144,8 +1142,7 @@ public class CTabFolderRenderer {
 				break;
 			}
 			case SWT.HOT: {
-				gc.fillRoundRectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height, 6, 6);
-				gc.drawRoundRectangle(maxRect.x, maxRect.y, maxRect.width - 1, maxRect.height - 1, 6, 6);
+				drawRoundRectangle(gc, maxRect);
 				if (!parent.getMaximized()) {
 					gc.fillRectangle(x, y, 9, 9);
 					gc.drawRectangle(x, y, 9, 9);
@@ -1161,8 +1158,7 @@ public class CTabFolderRenderer {
 				break;
 			}
 			case SWT.SELECTED: {
-				gc.fillRoundRectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height, 6, 6);
-				gc.drawRoundRectangle(maxRect.x, maxRect.y, maxRect.width - 1, maxRect.height - 1, 6, 6);
+				drawRoundRectangle(gc, maxRect);
 				if (!parent.getMaximized()) {
 					gc.fillRectangle(x+1, y+1, 9, 9);
 					gc.drawRectangle(x+1, y+1, 9, 9);
@@ -1205,8 +1201,7 @@ public class CTabFolderRenderer {
 				break;
 			}
 			case SWT.HOT: {
-				gc.fillRoundRectangle(minRect.x, minRect.y, minRect.width, minRect.height, 6, 6);
-				gc.drawRoundRectangle(minRect.x, minRect.y, minRect.width - 1, minRect.height - 1, 6, 6);
+				drawRoundRectangle(gc, minRect);
 				if (!parent.getMinimized()) {
 					gc.fillRectangle(x, y, 9, 3);
 					gc.drawRectangle(x, y, 9, 3);
@@ -1221,8 +1216,7 @@ public class CTabFolderRenderer {
 				break;
 			}
 			case SWT.SELECTED: {
-				gc.fillRoundRectangle(minRect.x, minRect.y, minRect.width, minRect.height, 6, 6);
-				gc.drawRoundRectangle(minRect.x, minRect.y, minRect.width - 1, minRect.height - 1, 6, 6);
+				drawRoundRectangle(gc, minRect);
 				if (!parent.getMinimized()) {
 					gc.fillRectangle(x+1, y+1, 9, 3);
 					gc.drawRectangle(x+1, y+1, 9, 3);
@@ -1704,6 +1698,17 @@ public class CTabFolderRenderer {
 			fillColor = new Color(parent.getDisplay(), CLOSE_FILL);
 		}
 		return fillColor;
+	}
+
+	private Font getChevronFont(Display display) {
+		if (chevronFont == null) {
+			Point dpi = display.getDPI();
+			int fontHeight = 72 * CHEVRON_FONT_HEIGHT / dpi.y;
+			FontData fd = parent.getFont().getFontData()[0];
+			fd.setHeight(fontHeight);
+			chevronFont = new Font(display, fd);
+		}
+		return chevronFont;
 	}
 
 	/*
