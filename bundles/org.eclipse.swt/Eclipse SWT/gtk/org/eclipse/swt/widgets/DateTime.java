@@ -1852,6 +1852,7 @@ void updateControl() {
 @Override
 void register () {
 	super.register ();
+	if (handle != 0 && display.getWidget(handle) == null) display.addWidget(handle, this);
 	if (containerHandle != 0 && containerHandle != handle) display.addWidget (containerHandle, this);
 	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.addWidget (textEntryHandle, this);
 }
@@ -1864,6 +1865,7 @@ GdkRGBA defaultBackground () {
 @Override
 void deregister () {
 	super.deregister ();
+	if (handle != 0 && display.getWidget(handle) != null) display.removeWidget(handle);
 	if (containerHandle != 0 && containerHandle != handle) display.removeWidget (containerHandle);
 	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.removeWidget (textEntryHandle);
 }
