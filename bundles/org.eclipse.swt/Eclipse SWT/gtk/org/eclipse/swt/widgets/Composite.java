@@ -409,7 +409,6 @@ void fixChildClippings () {
 					}
 					// Adjust the clip
 					GTK.gtk_widget_set_clip(widget, allocation);
-
 				}
 			}
 		}

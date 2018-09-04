@@ -69,6 +69,7 @@ public class Combo extends Composite {
 	String [] items = new String [0];
 	int indexSelected;
 	GdkRGBA background;
+	boolean firstDraw = true;
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -1455,13 +1456,16 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		long /*int*/ parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
 		if (parentHandle != 0) {
 			if (parent.fixClipHandle == 0) parent.fixClipHandle = parentHandle;
-			GTK.gtk_widget_queue_draw(parentHandle);
-			if ((style & SWT.READ_ONLY) != 0) {
-				long /*int*/ [] array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
-				parent.fixClipMap.put(this, array);
-			} else {
-				long /*int*/ [] array = {fixedHandle, handle, entryHandle, buttonBoxHandle, buttonHandle};
-				parent.fixClipMap.put(this, array);
+			if (firstDraw) {
+				if ((style & SWT.READ_ONLY) != 0) {
+					long /*int*/ [] array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
+					parent.fixClipMap.put(this, array);
+				} else {
+					long /*int*/ [] array = {fixedHandle, handle, entryHandle, buttonBoxHandle, buttonHandle};
+					parent.fixClipMap.put(this, array);
+				}
+				firstDraw = false;
+				GTK.gtk_widget_queue_draw(parentHandle);
 			}
 		}
 	}
