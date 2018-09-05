@@ -1874,6 +1874,13 @@ int getArrow(long /*int*/ widget) {
 	int adj_value = (int) GTK.gtk_adjustment_get_value(GTK.gtk_spin_button_get_adjustment(widget));
 	int new_value = 0;
 	if (isDate()) {
+		if ((style & SWT.LONG) != 0) {
+			if (adj_value == 0) {
+				return 0;
+			} else {
+				return adj_value > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
+			}
+		}
 		FieldPosition firstField = getNextField(null);
 		new_value = calendar.get(getCalendarField(firstField));
 	} else if (isTime()) {
