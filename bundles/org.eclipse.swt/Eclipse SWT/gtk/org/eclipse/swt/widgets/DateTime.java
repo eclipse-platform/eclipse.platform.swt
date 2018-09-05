@@ -89,16 +89,21 @@ public class DateTime extends Composite {
 	Listener popupListener, popupFilter;
 
 	Point prefferedSize;
+	Locale locale;
 
 	/** Used when SWT.DROP_DOWN is set */
 	Listener mouseEventListener;
 
-	static final String DEFAULT_SHORT_DATE_FORMAT = "MM/YYYY";
-	static final String DEFAULT_MEDIUM_DATE_FORMAT = "MM/DD/YYYY";
-	static final String DEFAULT_LONG_DATE_FORMAT = "MM/DD/YYYY";
-	static final String DEFAULT_SHORT_TIME_FORMAT = "HH:MM AM";
-	static final String DEFAULT_MEDIUM_TIME_FORMAT = "HH:MM:SS AM";
-	static final String DEFAULT_LONG_TIME_FORMAT = "HH:MM:SS AM";
+	/*
+	 * Used for easier access to format pattern of DATE and TIME.
+	 * See https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+	 */
+	static final String DEFAULT_SHORT_DATE_FORMAT = "dd/MM/yy";
+	static final String DEFAULT_MEDIUM_DATE_FORMAT = "d-MMM-yyyy";
+	static final String DEFAULT_LONG_DATE_FORMAT = "MMMM d, yyyy";
+	static final String DEFAULT_SHORT_TIME_FORMAT = "h:mm a";
+	static final String DEFAULT_MEDIUM_TIME_FORMAT = "h:mm:ss a";
+	static final String DEFAULT_LONG_TIME_FORMAT = "h:mm:ss z a";
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
 	static final int SPACE_FOR_CURSOR = 1;
@@ -170,13 +175,11 @@ public DateTime (Composite parent, int style) {
 
 void createText() {
 	String property = System.getProperty("swt.datetime.locale");
-	Locale locale;
 	if (property == null || property.isEmpty()) {
 		locale = Locale.getDefault();
 	} else {
 		locale = Locale.forLanguageTag(property);
 	}
-
 	dateFormat = getFormat(locale, style);
 	dateFormat.setLenient(false);
 	calendar = Calendar.getInstance(locale);
@@ -259,6 +262,51 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+/**
+ * Compute the native text entry size when the formatted text inside the entry
+ * is at the longest length possible. i.e. Assume DATE/HOUR field to be double digit,
+ * MONTH field for SWT.DATE | SWT.LONG is the longest text.
+ *
+ * @param wHint
+ * @param hHint
+ * @param changed
+ * @return text entry size to hold the longest possible formatted text.
+ */
+Point computeMaxTextSize (int wHint, int hHint, boolean changed) {
+	String currentText = getFormattedString();
+	String formatPattern = getComputeSizeString(style);
+
+	switch (formatPattern) {
+		case DEFAULT_MEDIUM_DATE_FORMAT:
+			// Make the DATE field a double digit
+			String longDateText = currentText.replaceFirst("\\d{1,2}", "00");
+			setText(longDateText);
+			break;
+		case DEFAULT_LONG_DATE_FORMAT:
+			// Make the MONTH field the longest length possible, the DATE field a double digit.
+			Set<String> months = calendar.getDisplayNames(Calendar.MONTH, Calendar.LONG, locale).keySet();
+			String longestMonth = Collections.max(months, (s1, s2) -> s1.length() - s2.length()); // Probably September
+			String doubleDigitDate = currentText.replaceFirst("\\d{1,2}", "00");
+			String longText = doubleDigitDate.replaceFirst("[^\\s]+", longestMonth);
+			setText(longText);
+			break;
+		case DEFAULT_SHORT_TIME_FORMAT:
+		case DEFAULT_MEDIUM_TIME_FORMAT:
+		case DEFAULT_LONG_TIME_FORMAT:
+			// Make the HOUR field a double digit
+			String longTimeText = currentText.replaceFirst("\\d{1,2}", "00");
+			setText(longTimeText);
+			break;
+		default:
+			// Fixed length for DEFAULT_SHORT_DATE_FORMAT, no need to adjust text length.
+	}
+
+	Point textSize = computeNativeSize (textEntryHandle, wHint, hHint, changed);
+	// Change the text back to match the current calendar
+	updateControl();
+	return textSize;
+}
+
 @Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -277,7 +325,13 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			width = size.x;
 			height = size.y;
 		} else {
-			Point textSize = computeNativeSize (textEntryHandle, wHint, hHint, changed);
+			/*
+			 * Bug 538612: Computing the native size for textEntry when the current text
+			 * is not the longest length possible causes sizing issues when the entry text
+			 * is changed. Fix is to always allocate enough size to hold the longest possible
+			 * formatted text.
+			 */
+			Point textSize = computeMaxTextSize (wHint, hHint, changed);
 			Rectangle trim = computeTrimInPixels (0,0, textSize.x,textSize.y);
 			if (isDateWithDropDownButton ()){
 				Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, changed);
