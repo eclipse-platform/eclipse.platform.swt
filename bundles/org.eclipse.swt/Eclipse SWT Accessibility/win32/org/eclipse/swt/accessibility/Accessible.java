@@ -2521,6 +2521,10 @@ public class Accessible {
 					if (widget != null && widget instanceof TreeItem) {
 						TreeItem item = (TreeItem) widget;
 						for (int i = 1; i < columnCount; i++) {
+							if (tree.isDisposed() || item.isDisposed()) {
+								event.result = "";
+								return COM.S_OK;
+							}
 							event.result += tree.getColumn(i).getText() + ": " + item.getText(i);
 							if (i + 1 < columnCount) event.result += ", ";
 						}
