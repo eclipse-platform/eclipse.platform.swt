@@ -2803,7 +2803,17 @@ public void removeAll () {
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
+	/*
+	 * Bug 499850: On GTK3, calling gtk_list_store_clear with GtkSelectionMode GTK_SELECTION_MULTIPLE
+	 * takes exponential time. Temporarily change the mode GTK_SELECTION_BROWSE before
+	 * making the call to avoid performance hang.
+	 */
+	long /*int*/ selectionHandle = GTK.gtk_tree_view_get_selection(handle);
+	boolean changeMode = GTK.GTK3 && (style & SWT.MULTI) != 0;
+	if (changeMode) GTK.gtk_tree_selection_set_mode(selectionHandle, GTK.GTK_SELECTION_BROWSE);
 	GTK.gtk_list_store_clear (modelHandle);
+	if (changeMode) GTK.gtk_tree_selection_set_mode(selectionHandle, GTK.GTK_SELECTION_MULTIPLE);
+
 	if (fixAccessibility ()) {
 		ignoreAccessibility = false;
 		OS.g_object_notify (handle, OS.model);
