@@ -160,6 +160,8 @@ public class Display extends Device {
 
 	Menu menuBar;
 	Menu[] menus, popups;
+	long lastHandledMenuForEventId;
+
 	/* Menu items with ESC key as accelerator need to be handled differently on Cocoa */
 	boolean escAsAcceleratorPresent = false;
 
@@ -1352,7 +1354,7 @@ public Rectangle getClientArea () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
 	if (screens == null) return new Rectangle(0, 0, 0, 0);
-	
+
 	if (screens.count() != 1) return getBounds (screens);
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();

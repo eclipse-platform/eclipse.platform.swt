@@ -2493,6 +2493,8 @@ void markLayout (boolean changed, boolean all) {
 
 @Override
 long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+	if (display.lastHandledMenuForEventId == theEvent) return 0;
+	display.lastHandledMenuForEventId = theEvent;
 	if (!isEnabled ()) return 0;
 
 	NSPoint pt = NSEvent.mouseLocation();

@@ -750,6 +750,7 @@ public boolean isSelected (int index) {
  */
 @Override
 long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+	if (display.lastHandledMenuForEventId == theEvent) return 0;
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
 

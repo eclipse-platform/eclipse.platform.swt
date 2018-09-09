@@ -2073,6 +2073,7 @@ void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 
 @Override
 long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+	if (display.lastHandledMenuForEventId == theEvent) return 0;
 	if (id != headerView.id) {
 		/*
 		 * Feature in Cocoa: Table views do not change the selection when the user
