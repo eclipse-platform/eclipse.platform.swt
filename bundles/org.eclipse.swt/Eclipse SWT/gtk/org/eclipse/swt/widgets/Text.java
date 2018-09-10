@@ -824,12 +824,6 @@ void fixIM () {
 }
 
 @Override
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getBaseGdkColor ();
-}
-
-@Override
 int getBorderWidthInPixels () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return super.getBorderWidthInPixels ();
@@ -1024,12 +1018,6 @@ public boolean getEditable () {
 		return GTK.gtk_editable_get_editable (handle);
 	}
 	return GTK.gtk_text_view_get_editable (handle);
-}
-
-@Override
-GdkColor getForegroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getTextColor ();
 }
 
 /**
@@ -1708,27 +1696,14 @@ void drawMessage (long /*int*/ cr) {
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
 				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
-			GdkColor textColor = new GdkColor ();
-			GdkColor baseColor = new GdkColor ();
-			if (GTK.GTK3) {
-				long /*int*/ styleContext = GTK.gtk_widget_get_style_context (handle);
-				GdkRGBA textRGBA;
-				textRGBA = display.styleContextGetColor (styleContext, GTK.GTK_STATE_FLAG_INSENSITIVE);
-				Point thickness = getThickness (handle);
-				x += thickness.x;
-				y += thickness.y;
-				long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
-				Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
-			} else {
-				long /*int*/ style = GTK.gtk_widget_get_style (handle);
-				GTK.gtk_style_get_text (style, GTK.GTK_STATE_INSENSITIVE, textColor);
-				GTK.gtk_style_get_base (style, GTK.GTK_STATE_NORMAL, baseColor);
-				long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
-				Cairo.cairo_set_source_rgba_compatibility (cairo, textColor);
-				Cairo.cairo_move_to(cairo, x, y);
-				OS.pango_cairo_show_layout(cairo, layout);
-				if (cr != cairo) Cairo.cairo_destroy(cairo);
-			}
+			long /*int*/ styleContext = GTK.gtk_widget_get_style_context (handle);
+			GdkRGBA textRGBA;
+			textRGBA = display.styleContextGetColor (styleContext, GTK.GTK_STATE_FLAG_INSENSITIVE);
+			Point thickness = getThickness (handle);
+			x += thickness.x;
+			y += thickness.y;
+			long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
+			Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
 			OS.g_object_unref (layout);
 		}
 	}
@@ -2281,13 +2256,6 @@ public void selectAll () {
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	GTK.gtk_widget_modify_base (handle, 0, color);
-}
-
-@Override
 GdkRGBA getContextBackgroundGdkRGBA () {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null && (state & BACKGROUND) != 0) {
@@ -2421,12 +2389,6 @@ public void setEditable (boolean editable) {
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	setTabStops (tabs);
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color, false);
 }
 
 /**

@@ -66,10 +66,6 @@ public abstract class Device implements Drawable {
 	Object [] objects;
 	Object trackingLock;
 
-	/* Colormap and reference count */
-	GdkColor [] gdkColors;
-	int [] colorRefCount;
-
 	/* Disposed flag */
 	boolean disposed;
 
@@ -936,23 +932,6 @@ protected void release () {
 	/* Dispose the default font */
 	if (systemFont != null) systemFont.dispose ();
 	systemFont = null;
-
-	if (gdkColors != null) {
-		if (!GTK.GTK3) {
-			long /*int*/ colormap = GDK.gdk_colormap_get_system();
-			for (int i = 0; i < gdkColors.length; i++) {
-				GdkColor color = gdkColors [i];
-				if (color != null) {
-					while (colorRefCount [i] > 0) {
-						GDK.gdk_colormap_free_colors(colormap, color, 1);
-						--colorRefCount [i];
-					}
-				}
-			}
-		}
-	}
-	gdkColors = null;
-	colorRefCount = null;
 
 	if (COLOR_BLACK != null) COLOR_BLACK.dispose();
 	if (COLOR_DARK_RED != null) COLOR_DARK_RED.dispose();

@@ -685,16 +685,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 }
 
 @Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundGdkColor (color);
-	ToolItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		items[i].setForegroundColor (color);
-	}
-}
-
-@Override
 void setOrientation (boolean create) {
 	super.setOrientation (create);
 	ToolItem [] items = _getItems ();

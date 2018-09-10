@@ -66,18 +66,6 @@ void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
 #define GTypeQuery_sizeof() 0
 #endif
 
-#ifndef NO_GdkColor
-void cacheGdkColorFields(JNIEnv *env, jobject lpObject);
-GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
-void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
-#define GdkColor_sizeof() sizeof(GdkColor)
-#else
-#define cacheGdkColorFields(a,b)
-#define getGdkColorFields(a,b,c) NULL
-#define setGdkColorFields(a,b,c)
-#define GdkColor_sizeof() 0
-#endif
-
 #ifndef NO_GdkDragContext
 void cacheGdkDragContextFields(JNIEnv *env, jobject lpObject);
 GdkDragContext *getGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct);

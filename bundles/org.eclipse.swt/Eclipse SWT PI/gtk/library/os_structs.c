@@ -203,46 +203,6 @@ void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
 }
 #endif
 
-#ifndef NO_GdkColor
-typedef struct GdkColor_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID pixel, red, green, blue;
-} GdkColor_FID_CACHE;
-
-GdkColor_FID_CACHE GdkColorFc;
-
-void cacheGdkColorFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkColorFc.cached) return;
-	GdkColorFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkColorFc.pixel = (*env)->GetFieldID(env, GdkColorFc.clazz, "pixel", "I");
-	GdkColorFc.red = (*env)->GetFieldID(env, GdkColorFc.clazz, "red", "S");
-	GdkColorFc.green = (*env)->GetFieldID(env, GdkColorFc.clazz, "green", "S");
-	GdkColorFc.blue = (*env)->GetFieldID(env, GdkColorFc.clazz, "blue", "S");
-	GdkColorFc.cached = 1;
-}
-
-GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct)
-{
-	if (!GdkColorFc.cached) cacheGdkColorFields(env, lpObject);
-	lpStruct->pixel = (guint32)(*env)->GetIntField(env, lpObject, GdkColorFc.pixel);
-	lpStruct->red = (guint16)(*env)->GetShortField(env, lpObject, GdkColorFc.red);
-	lpStruct->green = (guint16)(*env)->GetShortField(env, lpObject, GdkColorFc.green);
-	lpStruct->blue = (guint16)(*env)->GetShortField(env, lpObject, GdkColorFc.blue);
-	return lpStruct;
-}
-
-void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct)
-{
-	if (!GdkColorFc.cached) cacheGdkColorFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GdkColorFc.pixel, (jint)lpStruct->pixel);
-	(*env)->SetShortField(env, lpObject, GdkColorFc.red, (jshort)lpStruct->red);
-	(*env)->SetShortField(env, lpObject, GdkColorFc.green, (jshort)lpStruct->green);
-	(*env)->SetShortField(env, lpObject, GdkColorFc.blue, (jshort)lpStruct->blue);
-}
-#endif
-
 #ifndef NO_GdkDragContext
 typedef struct GdkDragContext_FID_CACHE {
 	int cached;

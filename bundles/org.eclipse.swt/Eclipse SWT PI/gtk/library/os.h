@@ -214,7 +214,6 @@ X#define NO__1XWarpPointer
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J
 #define NO_GtkFixed
-#define NO__1GDK_1TYPE_1COLOR
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2
 

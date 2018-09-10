@@ -320,7 +320,7 @@ void createItem (TabItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	if ((state & FOREGROUND) != 0) {
-		item.setForegroundGdkColor (getForegroundGdkColor());
+		item.setForegroundGdkRGBA (item.handle, getForegroundGdkRGBA());
 	}
 	if ((state & FONT) != 0) {
 		item.setFontDescription (getFontDescription());
@@ -799,18 +799,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
 			items[i].setForegroundRGBA (rgba);
-		}
-	}
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundGdkColor (color);
-	TabItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setForegroundGdkColor (color);
 		}
 	}
 }

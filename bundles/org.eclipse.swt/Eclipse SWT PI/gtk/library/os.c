@@ -60,18 +60,6 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(GDK_1IS_1X11_1DISPLAY)
 }
 #endif
 
-#ifndef NO_GdkColor_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkColor_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkColor_1sizeof_FUNC);
-	rc = (jint)GdkColor_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkColor_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkDragContext_1sizeof
 JNIEXPORT jint JNICALL GDK_NATIVE(GdkDragContext_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -276,18 +264,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1GDK_1PIXMAP_1XID)
 }
 #endif
 
-#ifndef NO__1GDK_1TYPE_1COLOR
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1GDK_1TYPE_1COLOR)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1GDK_1TYPE_1COLOR_FUNC);
-	rc = (jintLong)GDK_TYPE_COLOR;
-	GDK_NATIVE_EXIT(env, that, _1GDK_1TYPE_1COLOR_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1GDK_1TYPE_1PIXBUF
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1GDK_1TYPE_1PIXBUF)
 	(JNIEnv *env, jclass that)
@@ -464,28 +440,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1reset_1clip)
 }
 #endif
 
-#ifndef NO__1gdk_1cairo_1set_1source_1color
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1color_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_cairo_set_source_color(arg0, lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_set_source_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1color_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1cairo_1set_1source_1pixbuf
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
@@ -562,140 +516,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1window)
 }
 #endif
 
-#ifndef NO__1gdk_1color_1free
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1color_1free)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1color_1free_FUNC);
-/*
-	gdk_color_free((GdkColor *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_color_free)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkColor *))fp)((GdkColor *)arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1color_1free_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1color_1parse
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1color_1parse)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1)
-{
-	jbyte *lparg0=NULL;
-	GdkColor _arg1, *lparg1=NULL;
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1color_1parse_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_color_parse((const gchar *)lparg0, (GdkColor *)lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_color_parse)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(const gchar *, GdkColor *))fp)((const gchar *)lparg0, (GdkColor *)lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1color_1parse_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1color_1white
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1color_1white)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1color_1white_FUNC);
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_color_white(arg0, lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_color_white)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1color_1white_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1colormap_1alloc_1color
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1colormap_1alloc_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jboolean arg2, jboolean arg3)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1colormap_1alloc_1color_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_colormap_alloc_color(arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_colormap_alloc_color)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkColor *, gboolean, gboolean))fp)(arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1colormap_1alloc_1color_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1colormap_1free_1colors
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1colormap_1free_1colors)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1colormap_1free_1colors_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_colormap_free_colors(arg0, (GdkColor *)lparg1, (gint)arg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_colormap_free_colors)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *, gint))fp)(arg0, (GdkColor *)lparg1, (gint)arg2);
-		}
-	}
-fail:
-	GDK_NATIVE_EXIT(env, that, _1gdk_1colormap_1free_1colors_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1colormap_1get_1system
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1colormap_1get_1system)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1colormap_1get_1system_FUNC);
-/*
-	rc = (jintLong)gdk_colormap_get_system();
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_colormap_get_system)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1colormap_1get_1system_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1cursor_1new_1for_1display
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1for_1display)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -740,31 +560,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1cursor_1new_1from_1pixmap
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3, jint arg4, jint arg5)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GdkColor _arg3, *lparg3=NULL;
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
-/*
-	rc = (jintLong)gdk_cursor_new_from_pixmap(arg0, arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cursor_new_from_pixmap)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, GdkColor *, GdkColor *, gint, gint))fp)(arg0, arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
-		}
-	}
-fail:
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
 	return rc;
 }
 #endif
@@ -1567,27 +1362,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1fill)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1fill_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1foreground
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1foreground)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1foreground_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_gc_set_foreground(arg0, lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_set_foreground)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1foreground_FUNC);
 }
 #endif
 
@@ -5389,28 +5163,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1color_1selection_1get_1current_1color
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1color_1selection_1get_1current_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	gtk_color_selection_get_current_color(arg0, lparg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_color_selection_get_current_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1color_1selection_1palette_1to_1string
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1color_1selection_1palette_1to_1string)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -5428,27 +5180,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1color_1selection_1palette_1to_1stri
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1palette_1to_1string_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1color_1selection_1set_1current_1color
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1color_1selection_1set_1current_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1set_1current_1color_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gtk_color_selection_set_current_color(arg0, lparg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_color_selection_set_current_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1current_1color_FUNC);
 }
 #endif
 
@@ -8218,30 +7949,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1list_1store_1set__JJIJI)(JNIEnv *env, j
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
-#else
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
-#endif
-{
-	GdkColor _arg3, *lparg3=NULL;
-#ifndef JNI64
-	GTK_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	GTK_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#endif
-	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
-	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
-fail:
-#ifndef JNI64
-	GTK_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	GTK_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO__1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
@@ -9801,19 +9508,6 @@ JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1rc_1style_1get_1color_1flags)
 }
 #endif
 
-#ifndef NO__1gtk_1rc_1style_1set_1bg
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1bg)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1bg_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-	gtk_rc_style_set_bg((GtkRcStyle *)arg0, arg1, lparg2);
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1bg_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1rc_1style_1set_1bg_1pixmap_1name
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1bg_1pixmap_1name)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
@@ -9831,32 +9525,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1color_1flags)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1color_1flags_FUNC);
 	gtk_rc_style_set_color_flags((GtkRcStyle *)arg0, arg1, arg2);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1color_1flags_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1rc_1style_1set_1fg
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1fg)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1fg_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-	gtk_rc_style_set_fg((GtkRcStyle *)arg0, arg1, lparg2);
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1fg_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1rc_1style_1set_1text
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1text_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-	gtk_rc_style_set_text((GtkRcStyle *)arg0, arg1, lparg2);
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1text_FUNC);
 }
 #endif
 
@@ -10842,76 +10510,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1set_1state)
 }
 #endif
 
-#ifndef NO__1gtk_1style_1get_1base
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1base)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1base_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_base((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1base_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1bg
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1bg)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1bg_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_bg((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1bg_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1black
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1black)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkColor _arg1, *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1black_FUNC);
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-	gtk_style_get_black((GtkStyle *)arg0, lparg1);
-fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1black_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1dark
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1dark)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1dark_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_dark((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1dark_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1fg
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1fg)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1fg_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_fg((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1fg_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1style_1get_1font_1desc
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1style_1get_1font_1desc)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -10921,34 +10519,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1style_1get_1font_1desc)
 	rc = (jintLong)gtk_style_get_font_desc((GtkStyle *)arg0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1font_1desc_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1light
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1light)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1light_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_light((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1light_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1style_1get_1text
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1get_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1get_1text_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	gtk_style_get_text((GtkStyle *)arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_FUNC);
 }
 #endif
 
@@ -12335,30 +11905,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1store_1set__JJIJI)(JNIEnv *env, j
 	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIIJI_FUNC);
 #else
 	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIJI_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO__1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
-#else
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
-#endif
-{
-	GdkColor _arg3, *lparg3=NULL;
-#ifndef JNI64
-	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#endif
-	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
-	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
-fail:
-#ifndef JNI64
-	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #endif
 }
 #endif
@@ -13983,48 +13529,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1mnemonic_1activate)
 	rc = (jboolean)gtk_widget_mnemonic_activate((GtkWidget *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1mnemonic_1activate_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1modify_1base
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1modify_1base)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1base_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_widget_modify_base((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_modify_base)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType, GdkColor *))fp)((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
-		}
-	}
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1base_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1modify_1bg
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1modify_1bg)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
-{
-	GdkColor _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1bg_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_widget_modify_bg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_modify_bg)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType, GdkColor *))fp)((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
-		}
-	}
-fail:
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1bg_FUNC);
 }
 #endif
 
@@ -17125,34 +16629,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2, jintLong arg3)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2, jintLong arg3)
-#endif
-{
-	jbyte *lparg1=NULL;
-	GdkColor _arg2, *lparg2=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, _1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
-#endif
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, _1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2, jintLong arg3)
@@ -19832,30 +19308,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#endif
-{
-	GdkColor _arg1, *lparg1=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
-#endif
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
@@ -20154,32 +19606,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	GdkColor _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ_FUNC);
-#endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkColorFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ_FUNC);
 #endif
 }
 #endif

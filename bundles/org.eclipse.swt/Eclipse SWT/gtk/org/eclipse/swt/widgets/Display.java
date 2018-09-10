@@ -281,15 +281,6 @@ public class Display extends Device {
 	Resource [] resources;
 	static final int RESOURCE_SIZE = 1 + 4 + SWT.CURSOR_HAND + 1;
 
-	/* Colors, GTK2 */
-	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
-	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
-	GdkColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
-	GdkColor COLOR_LIST_SELECTION_INACTIVE, COLOR_LIST_SELECTION_TEXT_INACTIVE;
-	GdkColor COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND, COLOR_LINK_FOREGROUND;
-	GdkColor COLOR_TITLE_FOREGROUND, COLOR_TITLE_BACKGROUND, COLOR_TITLE_BACKGROUND_GRADIENT;
-	GdkColor COLOR_TITLE_INACTIVE_FOREGROUND, COLOR_TITLE_INACTIVE_BACKGROUND, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
-
 	/* Colors, GTK3 */
 	GdkRGBA COLOR_WIDGET_DARK_SHADOW_RGBA, COLOR_WIDGET_NORMAL_SHADOW_RGBA, COLOR_WIDGET_LIGHT_SHADOW_RGBA;
 	GdkRGBA COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA, COLOR_WIDGET_BACKGROUND_RGBA, COLOR_WIDGET_FOREGROUND_RGBA, COLOR_WIDGET_BORDER_RGBA;
@@ -477,7 +468,7 @@ public class Display extends Device {
 
 	/* GTK Version */
 	static final int GTK3_MAJOR = 3;
-	static final int GTK3_MINOR = 0;
+	static final int GTK3_MINOR = 4;
 	static final int GTK3_MICRO = 0;
 
 	/* Display Data */
@@ -2903,63 +2894,33 @@ public Thread getSyncThread () {
 @Override
 public Color getSystemColor (int id) {
 	checkDevice ();
-	if (GTK.GTK3) {
-		GdkRGBA gdkRGBA = null;
-		switch (id) {
-		case SWT.COLOR_LINK_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_LINK_FOREGROUND_RGBA); break;
-		case SWT.COLOR_INFO_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_INFO_FOREGROUND_RGBA); break;
-		case SWT.COLOR_INFO_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_INFO_BACKGROUND_RGBA); break;
-		case SWT.COLOR_TITLE_FOREGROUND:					gdkRGBA = copyRGBA(COLOR_TITLE_FOREGROUND_RGBA); break;
-		case SWT.COLOR_TITLE_BACKGROUND:					gdkRGBA = copyRGBA(COLOR_TITLE_BACKGROUND_RGBA); break;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			gdkRGBA = copyRGBA(COLOR_TITLE_BACKGROUND_GRADIENT_RGBA); break;
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_FOREGROUND_RGBA); break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_BACKGROUND_RGBA); break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA); break;
-		case SWT.COLOR_WIDGET_DARK_SHADOW:					gdkRGBA = copyRGBA(COLOR_WIDGET_DARK_SHADOW_RGBA); break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				gdkRGBA = copyRGBA(COLOR_WIDGET_NORMAL_SHADOW_RGBA); break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				gdkRGBA = copyRGBA(COLOR_WIDGET_LIGHT_SHADOW_RGBA); break;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				gdkRGBA = copyRGBA(COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA); break;
-		case SWT.COLOR_WIDGET_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_WIDGET_BACKGROUND_RGBA); break;
-		case SWT.COLOR_WIDGET_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_WIDGET_FOREGROUND_RGBA); break;
-		case SWT.COLOR_WIDGET_BORDER: 						gdkRGBA = copyRGBA(COLOR_WIDGET_BORDER_RGBA); break;
-		case SWT.COLOR_LIST_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_LIST_FOREGROUND_RGBA); break;
-		case SWT.COLOR_LIST_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_LIST_BACKGROUND_RGBA); break;
-		case SWT.COLOR_LIST_SELECTION: 						gdkRGBA = copyRGBA(COLOR_LIST_SELECTION_RGBA); break;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 				gdkRGBA = copyRGBA(COLOR_LIST_SELECTION_TEXT_RGBA); break;
-		default:
-			return super.getSystemColor (id);
-		}
-		if (gdkRGBA == null) return super.getSystemColor (SWT.COLOR_BLACK);
-		return Color.gtk_new (this, gdkRGBA);
-	} else {
-		GdkColor gdkColor = null;
-		switch (id) {
-		case SWT.COLOR_LINK_FOREGROUND: 					gdkColor = COLOR_LINK_FOREGROUND; break;
-		case SWT.COLOR_INFO_FOREGROUND: 					gdkColor = COLOR_INFO_FOREGROUND; break;
-		case SWT.COLOR_INFO_BACKGROUND: 					gdkColor = COLOR_INFO_BACKGROUND; break;
-		case SWT.COLOR_TITLE_FOREGROUND:					gdkColor = COLOR_TITLE_FOREGROUND; break;
-		case SWT.COLOR_TITLE_BACKGROUND:					gdkColor = COLOR_TITLE_BACKGROUND; break;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			gdkColor = COLOR_TITLE_BACKGROUND_GRADIENT; break;
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			gdkColor = COLOR_TITLE_INACTIVE_FOREGROUND; break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			gdkColor = COLOR_TITLE_INACTIVE_BACKGROUND; break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	gdkColor = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT; break;
-		case SWT.COLOR_WIDGET_DARK_SHADOW:					gdkColor = COLOR_WIDGET_DARK_SHADOW; break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				gdkColor = COLOR_WIDGET_NORMAL_SHADOW; break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				gdkColor = COLOR_WIDGET_LIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				gdkColor = COLOR_WIDGET_HIGHLIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_BACKGROUND: 					gdkColor = COLOR_WIDGET_BACKGROUND; break;
-		case SWT.COLOR_WIDGET_FOREGROUND: 					gdkColor = COLOR_WIDGET_FOREGROUND; break;
-		case SWT.COLOR_WIDGET_BORDER: 						gdkColor = COLOR_WIDGET_BORDER; break;
-		case SWT.COLOR_LIST_FOREGROUND: 					gdkColor = COLOR_LIST_FOREGROUND; break;
-		case SWT.COLOR_LIST_BACKGROUND: 					gdkColor = COLOR_LIST_BACKGROUND; break;
-		case SWT.COLOR_LIST_SELECTION: 						gdkColor = COLOR_LIST_SELECTION; break;
-		case SWT.COLOR_LIST_SELECTION_TEXT:					gdkColor = COLOR_LIST_SELECTION_TEXT; break;
-		default:
-			return super.getSystemColor (id);
-		}
-		if (gdkColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
-		return Color.gtk_new (this, gdkColor);
+	GdkRGBA gdkRGBA = null;
+	switch (id) {
+	case SWT.COLOR_LINK_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_LINK_FOREGROUND_RGBA); break;
+	case SWT.COLOR_INFO_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_INFO_FOREGROUND_RGBA); break;
+	case SWT.COLOR_INFO_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_INFO_BACKGROUND_RGBA); break;
+	case SWT.COLOR_TITLE_FOREGROUND:					gdkRGBA = copyRGBA(COLOR_TITLE_FOREGROUND_RGBA); break;
+	case SWT.COLOR_TITLE_BACKGROUND:					gdkRGBA = copyRGBA(COLOR_TITLE_BACKGROUND_RGBA); break;
+	case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			gdkRGBA = copyRGBA(COLOR_TITLE_BACKGROUND_GRADIENT_RGBA); break;
+	case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_FOREGROUND_RGBA); break;
+	case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_BACKGROUND_RGBA); break;
+	case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	gdkRGBA = copyRGBA(COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA); break;
+	case SWT.COLOR_WIDGET_DARK_SHADOW:					gdkRGBA = copyRGBA(COLOR_WIDGET_DARK_SHADOW_RGBA); break;
+	case SWT.COLOR_WIDGET_NORMAL_SHADOW:				gdkRGBA = copyRGBA(COLOR_WIDGET_NORMAL_SHADOW_RGBA); break;
+	case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				gdkRGBA = copyRGBA(COLOR_WIDGET_LIGHT_SHADOW_RGBA); break;
+	case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				gdkRGBA = copyRGBA(COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA); break;
+	case SWT.COLOR_WIDGET_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_WIDGET_BACKGROUND_RGBA); break;
+	case SWT.COLOR_WIDGET_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_WIDGET_FOREGROUND_RGBA); break;
+	case SWT.COLOR_WIDGET_BORDER: 						gdkRGBA = copyRGBA(COLOR_WIDGET_BORDER_RGBA); break;
+	case SWT.COLOR_LIST_FOREGROUND: 					gdkRGBA = copyRGBA(COLOR_LIST_FOREGROUND_RGBA); break;
+	case SWT.COLOR_LIST_BACKGROUND: 					gdkRGBA = copyRGBA(COLOR_LIST_BACKGROUND_RGBA); break;
+	case SWT.COLOR_LIST_SELECTION: 						gdkRGBA = copyRGBA(COLOR_LIST_SELECTION_RGBA); break;
+	case SWT.COLOR_LIST_SELECTION_TEXT: 				gdkRGBA = copyRGBA(COLOR_LIST_SELECTION_TEXT_RGBA); break;
+	default:
+		return super.getSystemColor (id);
 	}
+	if (gdkRGBA == null) return super.getSystemColor (SWT.COLOR_BLACK);
+	return Color.gtk_new (this, gdkRGBA);
 }
 
 /**
@@ -3198,329 +3159,228 @@ void initializeSystemColors () {
 	GTK.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	GTK.gtk_widget_realize (tooltipShellHandle);
 
-	if (GTK.GTK3) {
-		COLOR_WIDGET_DARK_SHADOW_RGBA = new GdkRGBA ();
-		COLOR_WIDGET_DARK_SHADOW_RGBA.alpha = 1.0;
-		/*
-		 * Feature in GTK: previously SWT fetched system colors using
-		 * GtkStyleContext machinery. This machinery is largely deprecated
-		 * and will all together stop functioning eventually. Instead, we
-		 * can parse the GTK system theme and use the values stored there to
-		 * generate SWT's system colors.
-		 *
-		 * The functionality works for GTK3.14 and above as follows:
-		 *
-		 * 1) load and parse the system theme
-		 * 2) check to see if the value needed exists in the theme
-		 * 3a) if the value exists, parse it and convert it to a GdkColor object
-		 * 3b) if the value doesn't exist, use the old GtkStyleContext machinery
-		 *     to fetch and return it as a GdkColor object
-		 *
-		 * Some colors have multiple different theme values that correspond to
-		 * them, while some colors only have one potential match. Therefore
-		 * some colors will have better theme coverage than others.
-		 */
-		long /*int*/ context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
-		GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_TOOLTIP);
-		GTK.gtk_style_context_invalidate(context);
-		GdkRGBA rgba = new GdkRGBA();
+	COLOR_WIDGET_DARK_SHADOW_RGBA = new GdkRGBA ();
+	COLOR_WIDGET_DARK_SHADOW_RGBA.alpha = 1.0;
+	/*
+	 * Feature in GTK: previously SWT fetched system colors using
+	 * GtkStyleContext machinery. This machinery is largely deprecated
+	 * and will all together stop functioning eventually. Instead, we
+	 * can parse the GTK system theme and use the values stored there to
+	 * generate SWT's system colors.
+	 *
+	 * The functionality works for GTK3.14 and above as follows:
+	 *
+	 * 1) load and parse the system theme
+	 * 2) check to see if the value needed exists in the theme
+	 * 3a) if the value exists, parse it and convert it to a GdkColor object
+	 * 3b) if the value doesn't exist, use the old GtkStyleContext machinery
+	 *     to fetch and return it as a GdkColor object
+	 *
+	 * Some colors have multiple different theme values that correspond to
+	 * them, while some colors only have one potential match. Therefore
+	 * some colors will have better theme coverage than others.
+	 */
+	long /*int*/ context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
+	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_TOOLTIP);
+	GTK.gtk_style_context_invalidate(context);
+	GdkRGBA rgba = new GdkRGBA();
+	// Initialize and create a list of X11 named colors
+	initializeColorList();
+	/*
+	 * Find current GTK theme: either use the system theme,
+	 * or one provided using the GTK_THEME environment variable.
+	 * See bug 534007.
+	 */
+	byte [] buffer = OS.GTK_THEME_SET ? Converter.wcsToMbcs (OS.GTK_THEME_NAME, true) : OS.getThemeNameBytes();
+	// Load the dark variant if specified
+	byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
 
-		// Initialize and create a list of X11 named colors
-		initializeColorList();
-		/*
-		 * Find current GTK theme: either use the system theme,
-		 * or one provided using the GTK_THEME environment variable.
-		 * See bug 534007.
-		 */
-		byte [] buffer = OS.GTK_THEME_SET ? Converter.wcsToMbcs (OS.GTK_THEME_NAME, true) : OS.getThemeNameBytes();
-		// Load the dark variant if specified
-		byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
+	// Fetch the actual theme in char/string format
+	long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
 
-		// Fetch the actual theme in char/string format
-		long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
+	String cssOutput = gtk_css_provider_to_string(themeProvider);
 
-		String cssOutput = gtk_css_provider_to_string(themeProvider);
-
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND, cssOutput);
-			if (!colorInfoForeground.isEmpty()) {
-				if (colorInfoForeground != "parsed") {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorInfoForeground);
-				}
-			} else {
-				COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND, cssOutput);
+		if (!colorInfoForeground.isEmpty()) {
+			if (colorInfoForeground != "parsed") {
+				COLOR_INFO_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorInfoForeground);
 			}
 		} else {
 			COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
 		}
+	} else {
+		COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND, cssOutput);
-			if (!colorInfoBackground.isEmpty()) {
-				if (colorInfoBackground != "parsed") {
-					COLOR_INFO_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorInfoBackground);
-				}
-			} else {
-				COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND, cssOutput);
+		if (!colorInfoBackground.isEmpty()) {
+			if (colorInfoBackground != "parsed") {
+				COLOR_INFO_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorInfoBackground);
 			}
 		} else {
 			COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
 		}
-		GTK.gtk_widget_destroy (tooltipShellHandle);
+	} else {
+		COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
+	GTK.gtk_widget_destroy (tooltipShellHandle);
 
-		context = GTK.gtk_widget_get_style_context (shellHandle);
+	context = GTK.gtk_widget_get_style_context (shellHandle);
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorWidgetForeground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_FOREGROUND, cssOutput);
-			if (!colorWidgetForeground.isEmpty()) {
-				COLOR_WIDGET_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetForeground);
-			} else {
-				COLOR_WIDGET_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorWidgetForeground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_FOREGROUND, cssOutput);
+		if (!colorWidgetForeground.isEmpty()) {
+			COLOR_WIDGET_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetForeground);
 		} else {
 			COLOR_WIDGET_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
 		}
+	} else {
+		COLOR_WIDGET_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorWidgetBackground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_BACKGROUND, cssOutput);
-			if (!colorWidgetBackground.isEmpty()) {
-				COLOR_WIDGET_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetBackground);
-			} else {
-				GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-				COLOR_WIDGET_BACKGROUND_RGBA = copyRGBA (rgba);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorWidgetBackground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_BACKGROUND, cssOutput);
+		if (!colorWidgetBackground.isEmpty()) {
+			COLOR_WIDGET_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorWidgetBackground);
 		} else {
 			GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
 			COLOR_WIDGET_BACKGROUND_RGBA = copyRGBA (rgba);
 		}
-		COLOR_WIDGET_LIGHT_SHADOW_RGBA = COLOR_WIDGET_BACKGROUND_RGBA;
-		COLOR_WIDGET_NORMAL_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 0.7);
-		COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 1.3);
+	} else {
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_WIDGET_BACKGROUND_RGBA = copyRGBA (rgba);
+	}
+	COLOR_WIDGET_LIGHT_SHADOW_RGBA = COLOR_WIDGET_BACKGROUND_RGBA;
+	COLOR_WIDGET_NORMAL_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 0.7);
+	COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 1.3);
 
-		GTK.gtk_style_context_save (context);
-		GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_VIEW);
-		GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_CELL);
-		GTK.gtk_style_context_invalidate(context);
+	GTK.gtk_style_context_save (context);
+	GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_VIEW);
+	GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_CELL);
+	GTK.gtk_style_context_invalidate(context);
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListForeground = gtk_css_default_theme_values(SWT.COLOR_LIST_FOREGROUND, cssOutput);
-			if (!colorListForeground.isEmpty()) {
-				COLOR_LIST_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorListForeground);
-			} else {
-				COLOR_LIST_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListForeground = gtk_css_default_theme_values(SWT.COLOR_LIST_FOREGROUND, cssOutput);
+		if (!colorListForeground.isEmpty()) {
+			COLOR_LIST_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorListForeground);
 		} else {
 			COLOR_LIST_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
 		}
+	} else {
+		COLOR_LIST_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListBackground = gtk_css_default_theme_values(SWT.COLOR_LIST_BACKGROUND, cssOutput);
-			if (!colorListBackground.isEmpty()) {
-				COLOR_LIST_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorListBackground);
-			} else {
-				GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-				COLOR_LIST_BACKGROUND_RGBA = copyRGBA(rgba);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListBackground = gtk_css_default_theme_values(SWT.COLOR_LIST_BACKGROUND, cssOutput);
+		if (!colorListBackground.isEmpty()) {
+			COLOR_LIST_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorListBackground);
 		} else {
 			GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
 			COLOR_LIST_BACKGROUND_RGBA = copyRGBA(rgba);
 		}
+	} else {
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_LIST_BACKGROUND_RGBA = copyRGBA(rgba);
+	}
 
-		GTK.gtk_style_context_restore (context);
+	GTK.gtk_style_context_restore (context);
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionText = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION_TEXT, cssOutput);
-			if (!colorListSelectionText.isEmpty()) {
-				COLOR_LIST_SELECTION_TEXT_RGBA = gtk_css_property_to_rgba (colorListSelectionText);
-			} else {
-				COLOR_LIST_SELECTION_TEXT_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_SELECTED);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListSelectionText = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION_TEXT, cssOutput);
+		if (!colorListSelectionText.isEmpty()) {
+			COLOR_LIST_SELECTION_TEXT_RGBA = gtk_css_property_to_rgba (colorListSelectionText);
 		} else {
 			COLOR_LIST_SELECTION_TEXT_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_SELECTED);
 		}
-		COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
+	} else {
+		COLOR_LIST_SELECTION_TEXT_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_SELECTED);
+	}
+	COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION, cssOutput);
-			if (!colorListSelection.isEmpty()) {
-				COLOR_LIST_SELECTION_RGBA = gtk_css_property_to_rgba (colorListSelection);
-			} else {
-				GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_SELECTED, rgba);
-				COLOR_LIST_SELECTION_RGBA = copyRGBA (rgba);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION, cssOutput);
+		if (!colorListSelection.isEmpty()) {
+			COLOR_LIST_SELECTION_RGBA = gtk_css_property_to_rgba (colorListSelection);
 		} else {
 			GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_SELECTED, rgba);
 			COLOR_LIST_SELECTION_RGBA = copyRGBA (rgba);
 		}
-		COLOR_TITLE_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
-		COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
+	} else {
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_SELECTED, rgba);
+		COLOR_LIST_SELECTION_RGBA = copyRGBA (rgba);
+	}
+	COLOR_TITLE_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
+	COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionTextInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE, cssOutput);
-			if (!colorListSelectionTextInactive.isEmpty()) {
-				COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionTextInactive);
-			} else {
-				COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_ACTIVE);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListSelectionTextInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE, cssOutput);
+		if (!colorListSelectionTextInactive.isEmpty()) {
+			COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionTextInactive);
 		} else {
 			COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_ACTIVE);
 		}
+	} else {
+		COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_ACTIVE);
+	}
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorListSelectionInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_INACTIVE, cssOutput);
-			if (!colorListSelectionInactive.isEmpty()) {
-				COLOR_LIST_SELECTION_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionInactive);
-			} else {
-				GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_ACTIVE, rgba);
-				COLOR_LIST_SELECTION_INACTIVE_RGBA = copyRGBA (rgba);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorListSelectionInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_INACTIVE, cssOutput);
+		if (!colorListSelectionInactive.isEmpty()) {
+			COLOR_LIST_SELECTION_INACTIVE_RGBA = gtk_css_property_to_rgba (colorListSelectionInactive);
 		} else {
 			GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_ACTIVE, rgba);
 			COLOR_LIST_SELECTION_INACTIVE_RGBA = copyRGBA (rgba);
 		}
+	} else {
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_ACTIVE, rgba);
+		COLOR_LIST_SELECTION_INACTIVE_RGBA = copyRGBA (rgba);
+	}
 
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorTitleInactiveForeground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_FOREGROUND, cssOutput);
-			if (!colorTitleInactiveForeground.isEmpty()) {
-				COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveForeground);
-			} else {
-				COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
-			}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorTitleInactiveForeground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_FOREGROUND, cssOutput);
+		if (!colorTitleInactiveForeground.isEmpty()) {
+			COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveForeground);
 		} else {
 			COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 		}
+	} else {
+		COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
+	}
 
-		COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = rgba;
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorTitleInactiveBackground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_BACKGROUND, cssOutput);
-			if (!colorTitleInactiveBackground.isEmpty()) {
-				COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveBackground);
-			} else {
-				GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_INSENSITIVE, rgba);
-				COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = copyRGBA (rgba);
-			}
+	COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = rgba;
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorTitleInactiveBackground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_BACKGROUND, cssOutput);
+		if (!colorTitleInactiveBackground.isEmpty()) {
+			COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorTitleInactiveBackground);
 		} else {
 			GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_INSENSITIVE, rgba);
 			COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = copyRGBA (rgba);
 		}
-		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, 1.3);
+	} else {
+		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = copyRGBA (rgba);
+	}
+	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, 1.3);
 
-		// NOTE: If COLOR_LINK_FOREGROUND cannot be found from the GTK CSS theme then there is no reliable
-		// way to find it on GTK3 using GtkStyleContext machinery. Use COLOR_LIST_SELECTION instead
-		// as they are often the same.
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND, cssOutput);
-			if (!colorLinkForeground.isEmpty()) {
-				if (colorLinkForeground != "parsed") {
-					COLOR_LINK_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorLinkForeground);
-				}
-			} else {
-				COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
+	// NOTE: If COLOR_LINK_FOREGROUND cannot be found from the GTK CSS theme then there is no reliable
+	// way to find it on GTK3 using GtkStyleContext machinery. Use COLOR_LIST_SELECTION instead
+	// as they are often the same.
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorLinkForeground = gtk_css_default_theme_values(SWT.COLOR_LINK_FOREGROUND, cssOutput);
+		if (!colorLinkForeground.isEmpty()) {
+			if (colorLinkForeground != "parsed") {
+				COLOR_LINK_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorLinkForeground);
 			}
 		} else {
 			COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
 		}
-
-		return;
 	} else {
-		COLOR_LINK_FOREGROUND = initializeColorLinkForeground(tooltipShellHandle);
-
-		long /*int*/ colormap = GDK.gdk_colormap_get_system();
-		GDK.gdk_colormap_alloc_color(colormap, COLOR_LINK_FOREGROUND, true, true);
-
-		/* Get Tooltip resources */
-		long /*int*/ tooltipStyle = GTK.gtk_widget_get_style (tooltipShellHandle);
-		GdkColor gdkColor = new GdkColor();
-		GTK.gtk_style_get_fg (tooltipStyle, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_INFO_FOREGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_bg (tooltipStyle, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_INFO_BACKGROUND = gdkColor;
-		GTK.gtk_widget_destroy (tooltipShellHandle);
-
-		/* Get Shell resources */
-		long /*int*/ style = GTK.gtk_widget_get_style (shellHandle);
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_black (style, gdkColor);
-		COLOR_WIDGET_DARK_SHADOW = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_dark (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_bg (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_light (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_fg (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_WIDGET_FOREGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_bg (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_WIDGET_BACKGROUND = gdkColor;
-		//gdkColor = new GdkColor();
-		//OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
-		//COLOR_TEXT_FOREGROUND = gdkColor;
-		//gdkColor = new GdkColor();
-		//OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
-		//COLOR_TEXT_BACKGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_text (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_LIST_FOREGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_base (style, GTK.GTK_STATE_NORMAL, gdkColor);
-		COLOR_LIST_BACKGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_text (style, GTK.GTK_STATE_SELECTED, gdkColor);
-		COLOR_LIST_SELECTION_TEXT = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_base (style, GTK.GTK_STATE_SELECTED, gdkColor);
-		COLOR_LIST_SELECTION = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_text (style, GTK.GTK_STATE_ACTIVE, gdkColor);
-		COLOR_LIST_SELECTION_TEXT_INACTIVE = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_base (style, GTK.GTK_STATE_ACTIVE, gdkColor);
-		COLOR_LIST_SELECTION_INACTIVE = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_bg (style, GTK.GTK_STATE_SELECTED, gdkColor);
-		COLOR_TITLE_BACKGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_fg (style, GTK.GTK_STATE_SELECTED, gdkColor);
-		COLOR_TITLE_FOREGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_light (style, GTK.GTK_STATE_SELECTED, gdkColor);
-		COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_bg (style, GTK.GTK_STATE_INSENSITIVE, gdkColor);
-		COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_fg (style, GTK.GTK_STATE_INSENSITIVE, gdkColor);
-		COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
-		gdkColor = new GdkColor();
-		GTK.gtk_style_get_light (style, GTK.GTK_STATE_INSENSITIVE, gdkColor);
-		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
-
+		COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
 	}
-}
 
-/*
- * Initialize COLOR_LINK_FOREGROUND in a helper method to allow for calling on GTK2.
- */
-GdkColor initializeColorLinkForeground (long /*int*/ tooltipShellHandle) {
-	long /*int*/ linkWidget = GTK.gtk_label_new (new byte[1]);
-	if (linkWidget == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (tooltipShellHandle, linkWidget);
-	long /*int*/ [] linkColor = new long /*int*/ [1];
-	GTK.gtk_widget_style_get (linkWidget, OS.link_color, linkColor, 0);
-	GdkColor gdkColor = new GdkColor();
-	if (linkColor [0] != 0) {
-		OS.memmove (gdkColor, linkColor[0], GdkColor.sizeof);
-		GDK.gdk_color_free (linkColor [0]);
-	} else {
-		gdkColor.blue = (short)0xeeee;
-	}
-	return gdkColor;
+	return;
 }
 
 GdkRGBA styleContextGetColor(long /*int*/ context, int flag) {
@@ -4039,13 +3899,8 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.device = this;
 		data.drawable = root;
-		if (GTK.GTK3) {
-			data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
-			data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
-		} else {
-			data.background = getSystemColor (SWT.COLOR_WHITE).handle;
-			data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
-		}
+		data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
+		data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
 		data.font = getSystemFont ();
 	}
 	return gc;
@@ -4771,13 +4626,13 @@ void releaseDisplay () {
 	}
 
 	/* Release the System Colors */
-	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
-	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
-	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
-	COLOR_LIST_SELECTION_INACTIVE = COLOR_LIST_SELECTION_TEXT_INACTIVE =
-	COLOR_WIDGET_FOREGROUND = COLOR_TITLE_FOREGROUND = COLOR_TITLE_BACKGROUND = COLOR_TITLE_BACKGROUND_GRADIENT =
-	COLOR_TITLE_INACTIVE_FOREGROUND = COLOR_TITLE_INACTIVE_BACKGROUND = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT =
-	COLOR_INFO_BACKGROUND = COLOR_INFO_FOREGROUND = COLOR_LINK_FOREGROUND = null;
+	COLOR_WIDGET_DARK_SHADOW_RGBA = COLOR_WIDGET_NORMAL_SHADOW_RGBA = COLOR_WIDGET_LIGHT_SHADOW_RGBA =
+	COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA = COLOR_WIDGET_BACKGROUND_RGBA = COLOR_WIDGET_BORDER_RGBA =
+	COLOR_LIST_FOREGROUND_RGBA = COLOR_LIST_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA =
+	COLOR_LIST_SELECTION_INACTIVE_RGBA = COLOR_LIST_SELECTION_TEXT_INACTIVE_RGBA =
+	COLOR_WIDGET_FOREGROUND_RGBA = COLOR_TITLE_FOREGROUND_RGBA = COLOR_TITLE_BACKGROUND_RGBA = COLOR_TITLE_BACKGROUND_GRADIENT_RGBA =
+	COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA =
+	COLOR_INFO_BACKGROUND_RGBA = COLOR_INFO_FOREGROUND_RGBA = COLOR_LINK_FOREGROUND_RGBA = null;
 
 	/* Dispose the event callback */
 	GDK.gdk_event_handler_set (0, 0, 0);
@@ -5522,14 +5377,8 @@ void showIMWindow (Control control) {
 	if (preeditString [0] != 0 && C.strlen (preeditString [0]) > 0) {
 		Control widget = control.findBackgroundControl ();
 		if (widget == null) widget = control;
-		if (GTK.GTK3) {
-			widget.setBackgroundGdkRGBA (preeditWindow, control.getBackgroundGdkRGBA());
-			widget.setForegroundGdkRGBA (preeditLabel, control.getForegroundGdkRGBA());
-		} else {
-			GdkColor color = widget.getBackgroundGdkColor ();
-			GTK.gtk_widget_modify_bg (preeditWindow,  GTK.GTK_STATE_NORMAL, color);
-			widget.setForegroundColor (preeditLabel, control.getForegroundGdkColor());
-		}
+		widget.setBackgroundGdkRGBA (preeditWindow, control.getBackgroundGdkRGBA());
+		widget.setForegroundGdkRGBA (preeditLabel, control.getForegroundGdkRGBA());
 		widget.setFontDescription (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);

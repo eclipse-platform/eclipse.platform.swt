@@ -1470,20 +1470,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color);
-	/** [GTK2/GTK3; 3.4 deprecated] */
-	public static final void gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_color_selection_get_current_color(colorsel, color);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors);
 	/** [GTK2/GTK3; 3.6 deprecated] */
@@ -1491,20 +1477,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_color_selection_palette_to_string(colors, n_colors);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param color flags=no_out
-	 */
-	public static final native void _gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color);
-	/** [GTK2/GTK3; 3.4 deprecated] */
-	public static final void gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_color_selection_set_current_color(colorsel, color);
 		} finally {
 			lock.unlock();
 		}
@@ -4033,21 +4005,6 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 * @param value flags=no_out
 	 */
-	public static final native void _gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator);
-	public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator) {
-		lock.lock();
-		assert !GTK3 : "GTK2 code was run by GTK3";
-		try {
-			_gtk_list_store_set(store, iter, column, value, terminator);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param store cast=(GtkListStore *)
-	 * @param iter cast=(GtkTreeIter *)
-	 * @param value flags=no_out
-	 */
 	public static final native void _gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
 	public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
 		lock.lock();
@@ -5561,19 +5518,6 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param style cast=(GtkRcStyle *)
-	 * @param color flags=no_out
-	 */
-	public static final native void _gtk_rc_style_set_bg(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_rc_style_set_bg(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_rc_style_set_bg(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkRcStyle *)
 	 * @param name cast=(char *)
 	 */
 	public static final native void _gtk_rc_style_set_bg_pixmap_name(long /*int*/ style, int index, long /*int*/ name);
@@ -5630,32 +5574,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_scrollable_get_vadjustment(scrollable);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkRcStyle *)
-	 * @param color flags=no_out
-	 */
-	public static final native void _gtk_rc_style_set_fg(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_rc_style_set_fg(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_rc_style_set_fg(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkRcStyle *)
-	 * @param color flags=no_out
-	 */
-	public static final native void _gtk_rc_style_set_text(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_rc_style_set_text(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_rc_style_set_text(style, index, color);
 		} finally {
 			lock.unlock();
 		}
@@ -6147,19 +6065,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_base(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_base(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_base(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_style_context_add_class(long /*int*/ context, byte[] class_name);
 	public static final void gtk_style_context_add_class(long /*int*/ context, byte[] class_name) {
@@ -6289,90 +6194,12 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_black(long /*int*/ style, GdkColor color);
-	public static final void gtk_style_get_black(long /*int*/ style, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_black(style, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_bg(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_bg(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_bg(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_dark(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_dark(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_dark(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_fg(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_fg(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_fg(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param style cast=(GtkStyle *) */
 	public static final native long /*int*/ _gtk_style_get_font_desc(long /*int*/ style);
 	public static final long /*int*/ gtk_style_get_font_desc(long /*int*/ style) {
 		lock.lock();
 		try {
 			return _gtk_style_get_font_desc(style);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_light(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_light(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_light(style, index, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkStyle *)
-	 * @param color flags=no_in
-	 */
-	public static final native void _gtk_style_get_text(long /*int*/ style, int index, GdkColor color);
-	public static final void gtk_style_get_text(long /*int*/ style, int index, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_style_get_text(style, index, color);
 		} finally {
 			lock.unlock();
 		}
@@ -7691,21 +7518,6 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 * @param value flags=no_out
 	 */
-	public static final native void _gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator);
-	public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkColor value, int terminator) {
-		lock.lock();
-		assert !GTK3 : "GTK2 code was run by GTK3";
-		try {
-			_gtk_tree_store_set(store, iter, column, value, terminator);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param store cast=(GtkTreeStore *)
-	 * @param iter cast=(GtkTreeIter *)
-	 * @param value flags=no_out
-	 */
 	public static final native void _gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
 	public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
 		lock.lock();
@@ -8971,38 +8783,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_mnemonic_activate(widget, group_cycling);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param state cast=(GtkStateType)
-	 * @param color cast=(GdkColor *),flags=no_out
-	 */
-	public static final native void _gtk_widget_modify_base(long /*int*/ widget, int state, GdkColor color);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_widget_modify_base(long /*int*/ widget, int state, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_widget_modify_base(widget, state, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param state cast=(GtkStateType)
-	 * @param color cast=(GdkColor *),flags=no_out
-	 */
-	public static final native void _gtk_widget_modify_bg(long /*int*/ widget, int state, GdkColor color);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_widget_modify_bg(long /*int*/ widget, int state, GdkColor color) {
-		lock.lock();
-		try {
-			_gtk_widget_modify_bg(widget, state, color);
 		} finally {
 			lock.unlock();
 		}

@@ -329,96 +329,79 @@ void drawRectangles (Rectangle [] rects) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
 	if (window == 0) return;
-	if (GTK.GTK3) {
-		if (overlay == 0) return;
-		GTK.gtk_widget_shape_combine_region (overlay, 0);
 
-		// Bug 498217.
-		// As of Gtk 3.9.1, Commit a60ccd3672467efb454b121993febc36f33cbc79, off-screen GDK windows are not processed.
-		// Because of this gtk doesn't send move events to SWT. Platform.UI uses an off-screen tracker to draw
-		// custom rectangles for it's part-drag-preview. Drawing/updates for these broke because tracker is off screen.
-		// Solution: If a tracker is to move off-screen, then instead draw it 1x1 and transparent.
-		boolean isOnScreen = true;
-		{ // Figure out if the combined rectangles are on or off screen.
+	if (overlay == 0) return;
+	GTK.gtk_widget_shape_combine_region (overlay, 0);
 
-			// Produce a single rectangle big enough to contain all rects.
-			// Note, this is different from loop below that creates a Region. (See region != rectangle note in javadoc).
-			cachedUnion.x = rects[0].x;
-			cachedUnion.y = rects[0].y;
-			cachedUnion.width = rects[0].width;
-			cachedUnion.height = rects[0].height;
-			if (rects.length > 1) {
-				for (int i = 1; i < rects.length; i++) {
-					cachedUnion.add(rects[i]);
-				}
-			}
+	// Bug 498217.
+	// As of Gtk 3.9.1, Commit a60ccd3672467efb454b121993febc36f33cbc79, off-screen GDK windows are not processed.
+	// Because of this gtk doesn't send move events to SWT. Platform.UI uses an off-screen tracker to draw
+	// custom rectangles for it's part-drag-preview. Drawing/updates for these broke because tracker is off screen.
+	// Solution: If a tracker is to move off-screen, then instead draw it 1x1 and transparent.
+	boolean isOnScreen = true;
+	{ // Figure out if the combined rectangles are on or off screen.
 
-			// Ensure we have absolute screen coordinates. (btw, there are no absolute coordinates on Wayland, so Tracker(Display) is probably broken).
-			if (parent != null) {  // if Tracker(Display) has absolute coords.  Tracker(Composite) has relative. For relative, we need to find absolute.
-				cachedUnion = display.mapInPixels(parent, null, cachedUnion) ;
-			}
-
-			if (!cachedCombinedDisplayResolution.intersects(cachedUnion)) {
-				isOnScreen = false;
+		// Produce a single rectangle big enough to contain all rects.
+		// Note, this is different from loop below that creates a Region. (See region != rectangle note in javadoc).
+		cachedUnion.x = rects[0].x;
+		cachedUnion.y = rects[0].y;
+		cachedUnion.width = rects[0].width;
+		cachedUnion.height = rects[0].height;
+		if (rects.length > 1) {
+			for (int i = 1; i < rects.length; i++) {
+				cachedUnion.add(rects[i]);
 			}
 		}
 
-		long /*int*/ region = GDK.gdk_region_new ();
-		GdkRectangle rect = new GdkRectangle();
-		if (isOnScreen) {
-			// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
-			for (int i = 0; i < rects.length; i++) {
-				// Turn filled rectangles into just the outer lines by drawing one line at a time.
-				Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
-				rect.x = r.x;
-				rect.y = r.y;
-				rect.width = r.width + 1;
-				rect.height = 1;
-				GDK.gdk_region_union_with_rect(region, rect); // Top line
-				rect.width = 1;
-				rect.height = r.height + 1;
-				GDK.gdk_region_union_with_rect(region, rect); // Left line.
-				rect.x = r.x + r.width;
-				GDK.gdk_region_union_with_rect(region, rect); // Right line.
-				rect.x = r.x;
-				rect.y = r.y + r.height;
-				rect.width = r.width + 1;
-				rect.height = 1;
-				GDK.gdk_region_union_with_rect(region, rect); // Bottom line
-			}
-			setTrackerBackground(true);
-		} else { // Offscreen
-			// part of Bug 498217 fix. Tracker must be at least 1x1 for move events to work.
-			rect.x = 0;
-			rect.y = 0;
-			rect.height = 1;
-			rect.width = 1;
-			GDK.gdk_region_union_with_rect(region, rect);
-			setTrackerBackground(false);
+		// Ensure we have absolute screen coordinates. (btw, there are no absolute coordinates on Wayland, so Tracker(Display) is probably broken).
+		if (parent != null) {  // if Tracker(Display) has absolute coords.  Tracker(Composite) has relative. For relative, we need to find absolute.
+			cachedUnion = display.mapInPixels(parent, null, cachedUnion) ;
 		}
 
-		GTK.gtk_widget_shape_combine_region (overlay, region);
-		GDK.gdk_region_destroy (region);
-		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
-		GDK.gdk_window_hide (overlayWindow);
-		GDK.gdk_window_show (overlayWindow);
-	} else { // GTK2
-		long /*int*/ gc = GDK.gdk_gc_new (window);
-		if (gc == 0) return;
-		long /*int*/ colormap = GDK.gdk_colormap_get_system ();
-		GdkColor color = new GdkColor ();
-		GDK.gdk_color_white (colormap, color);
-		GDK.gdk_gc_set_foreground (gc, color);
-		GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
-		GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
-		for (int i=0; i<rects.length; i++) {
-			Rectangle rect = rects [i];
-			int x = rect.x;
-			if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
-			GDK.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
+		if (!cachedCombinedDisplayResolution.intersects(cachedUnion)) {
+			isOnScreen = false;
 		}
-		OS.g_object_unref (gc);
 	}
+
+	long /*int*/ region = GDK.gdk_region_new ();
+	GdkRectangle rect = new GdkRectangle();
+	if (isOnScreen) {
+		// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
+		for (int i = 0; i < rects.length; i++) {
+			// Turn filled rectangles into just the outer lines by drawing one line at a time.
+			Rectangle r = parent != null ? display.mapInPixels(parent, null, rects[i]) : rects[i];
+			rect.x = r.x;
+			rect.y = r.y;
+			rect.width = r.width + 1;
+			rect.height = 1;
+			GDK.gdk_region_union_with_rect(region, rect); // Top line
+			rect.width = 1;
+			rect.height = r.height + 1;
+			GDK.gdk_region_union_with_rect(region, rect); // Left line.
+			rect.x = r.x + r.width;
+			GDK.gdk_region_union_with_rect(region, rect); // Right line.
+			rect.x = r.x;
+			rect.y = r.y + r.height;
+			rect.width = r.width + 1;
+			rect.height = 1;
+			GDK.gdk_region_union_with_rect(region, rect); // Bottom line
+		}
+		setTrackerBackground(true);
+	} else { // Offscreen
+		// part of Bug 498217 fix. Tracker must be at least 1x1 for move events to work.
+		rect.x = 0;
+		rect.y = 0;
+		rect.height = 1;
+		rect.width = 1;
+		GDK.gdk_region_union_with_rect(region, rect);
+		setTrackerBackground(false);
+	}
+
+	GTK.gtk_widget_shape_combine_region (overlay, region);
+	GDK.gdk_region_destroy (region);
+	long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
+	GDK.gdk_window_hide (overlayWindow);
+	GDK.gdk_window_show (overlayWindow);
 }
 
 /**

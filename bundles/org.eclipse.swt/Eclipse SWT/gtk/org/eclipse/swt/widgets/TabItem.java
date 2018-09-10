@@ -333,13 +333,6 @@ void setForegroundRGBA (GdkRGBA rgba) {
 	setForegroundGdkRGBA (imageHandle, rgba);
 }
 
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	/* Don't set the color in vbox handle (it doesn't draw) */
-	setForegroundColor (labelHandle, color, false);
-	setForegroundColor (imageHandle, color, false);
-}
-
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	GdkRGBA toSet = new GdkRGBA();

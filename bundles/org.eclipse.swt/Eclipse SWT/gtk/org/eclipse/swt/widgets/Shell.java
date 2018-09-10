@@ -768,14 +768,8 @@ void createHandle (int index) {
 		GTK.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			GTK.gtk_container_set_border_width (shellHandle, 1);
-			if (GTK.GTK3) {
-				if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-					GTK.gtk_widget_override_background_color (shellHandle, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
-				}
-			} else {
-				GdkColor color = new GdkColor ();
-				GTK.gtk_style_get_black (GTK.gtk_widget_get_style (shellHandle), color);
-				GTK.gtk_widget_modify_bg (shellHandle, GTK.GTK_STATE_NORMAL, color);
+			if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
+				GTK.gtk_widget_override_background_color (shellHandle, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 			}
 		}
 		if ((style & SWT.TOOL) != 0) {

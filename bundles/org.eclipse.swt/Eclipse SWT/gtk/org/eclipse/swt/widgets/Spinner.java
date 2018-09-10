@@ -425,24 +425,12 @@ void fixIM () {
 }
 
 @Override
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getBaseGdkColor ();
-}
-
-@Override
 int getBorderWidthInPixels () {
 	checkWidget();
 	if ((this.style & SWT.BORDER) != 0) {
 		return getThickness (handle).x;
 	}
 	return 0;
-}
-
-@Override
-GdkColor getForegroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getTextColor ();
 }
 
 /**
@@ -957,24 +945,11 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	GTK.gtk_widget_modify_base (handle, 0, color);
-}
-
-@Override
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color, false);
 }
 
 /**

@@ -1646,53 +1646,6 @@ void setFontDescription (long /*int*/ widget, long /*int*/ font) {
 	}
 }
 
-void setForegroundColor (long /*int*/ handle, GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color, true);
-}
-
-void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateActive) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	/*
-	 * Feature in GTK. When the widget doesn't have focus, then
-	 * gtk_default_draw_flat_box () changes the background color state_type
-	 * to GTK_STATE_ACTIVE. Widgets whose background is drawn using
-	 * gtk_paint_flat_box or gtk_default_draw_flat_box have to pass false for
-	 * setStateActive.
-	 */
-	long /*int*/ style = GTK.gtk_widget_get_modifier_style (handle);
-	GTK.gtk_rc_style_set_fg (style, GTK.GTK_STATE_NORMAL, color);
-	if (setStateActive) GTK.gtk_rc_style_set_fg (style, GTK.GTK_STATE_ACTIVE, color);
-	GTK.gtk_rc_style_set_fg (style, GTK.GTK_STATE_PRELIGHT, color);
-	int flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_NORMAL);
-	flags = (color == null) ? flags & ~GTK.GTK_RC_FG: flags | GTK.GTK_RC_FG;
-	GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_NORMAL, flags);
-	if (setStateActive) {
-		flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_ACTIVE);
-		flags = (color == null) ? flags & ~GTK.GTK_RC_FG: flags | GTK.GTK_RC_FG;
-		GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_ACTIVE, flags);
-	}
-	flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_PRELIGHT);
-	flags = (color == null) ? flags & ~GTK.GTK_RC_FG: flags | GTK.GTK_RC_FG;
-	GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_PRELIGHT, flags);
-
-	GTK.gtk_rc_style_set_text (style, GTK.GTK_STATE_NORMAL, color);
-	if (setStateActive) GTK.gtk_rc_style_set_text (style, GTK.GTK_STATE_ACTIVE, color);
-	GTK.gtk_rc_style_set_text (style, GTK.GTK_STATE_PRELIGHT, color);
-	flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_NORMAL);
-	flags = (color == null) ? flags & ~GTK.GTK_RC_TEXT: flags | GTK.GTK_RC_TEXT;
-	GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_NORMAL, flags);
-	flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_PRELIGHT);
-	flags = (color == null) ? flags & ~GTK.GTK_RC_TEXT: flags | GTK.GTK_RC_TEXT;
-	GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_PRELIGHT, flags);
-	if (setStateActive) {
-		flags = GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_ACTIVE);
-		flags = (color == null) ? flags & ~GTK.GTK_RC_TEXT: flags | GTK.GTK_RC_TEXT;
-		GTK.gtk_rc_style_set_color_flags (style, GTK.GTK_STATE_ACTIVE, flags);
-	}
-	modifyStyle (handle, style);
-}
-
 boolean setInputState (Event event, int state) {
 	if ((state & GDK.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
 	if ((state & GDK.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;

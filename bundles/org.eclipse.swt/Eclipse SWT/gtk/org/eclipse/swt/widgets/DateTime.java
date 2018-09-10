@@ -724,16 +724,6 @@ private void hideDropDownCalendar () {
 	return;
 }
 
-@Override
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	if (isCalendar ()) {
-		return getBaseGdkColor ();
-	} else {
-		return super.getBackgroundGdkColor ();
-	}
-}
-
 String getComputeSizeString (int style) {
 	if ((style & SWT.DATE) != 0) {
 		return (style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT;
@@ -1402,23 +1392,8 @@ void sendSelectionEvent () {
 @Override
 public void setBackground (Color color) {
 	super.setBackground (color);
-	if (!GTK.GTK3) {
-		if ((isCalendar ()) && color == null) {
-			GTK.gtk_widget_modify_base (containerHandle, 0, null);
-		}
-	}
 	bg = color;
 	if (popupCalendar != null) popupCalendar.setBackground (color);
-}
-
-@Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	if (isCalendar ()) {
-		GTK.gtk_widget_modify_base (containerHandle, 0, color);
-	} else {
-		super.setBackgroundGdkColor (color);
-	}
 }
 
 @Override
@@ -1469,12 +1444,6 @@ public void setFont (Font font) {
 	this.font = font;
 	if (popupCalendar != null) popupCalendar.setFont (font);
 	redraw ();
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (containerHandle, color, false);
 }
 
 @Override

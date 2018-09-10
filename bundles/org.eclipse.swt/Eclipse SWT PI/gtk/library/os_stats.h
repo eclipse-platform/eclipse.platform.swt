@@ -35,7 +35,6 @@ typedef enum {
 	GDK_1EVENT_1TYPE_FUNC,
 	GDK_1EVENT_1WINDOW_FUNC,
 	GDK_1IS_1X11_1DISPLAY_FUNC,
-	GdkColor_1sizeof_FUNC,
 	GdkDragContext_1sizeof_FUNC,
 	GdkEventAny_1sizeof_FUNC,
 	GdkEventButton_1sizeof_FUNC,
@@ -53,7 +52,6 @@ typedef enum {
 	GdkRectangle_1sizeof_FUNC,
 	GdkWindowAttr_1sizeof_FUNC,
 	_1GDK_1PIXMAP_1XID_FUNC,
-	_1GDK_1TYPE_1COLOR_FUNC,
 	_1GDK_1TYPE_1PIXBUF_FUNC,
 	_1GDK_1TYPE_1RGBA_FUNC,
 	_1gdk_1atom_1intern_FUNC,
@@ -64,21 +62,13 @@ typedef enum {
 	_1gdk_1cairo_1region_FUNC,
 	_1gdk_1cairo_1region_1create_1from_1surface_FUNC,
 	_1gdk_1cairo_1reset_1clip_FUNC,
-	_1gdk_1cairo_1set_1source_1color_FUNC,
 	_1gdk_1cairo_1set_1source_1pixbuf_FUNC,
 	_1gdk_1cairo_1set_1source_1pixmap_FUNC,
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
-	_1gdk_1color_1free_FUNC,
-	_1gdk_1color_1parse_FUNC,
-	_1gdk_1color_1white_FUNC,
-	_1gdk_1colormap_1alloc_1color_FUNC,
-	_1gdk_1colormap_1free_1colors_FUNC,
-	_1gdk_1colormap_1get_1system_FUNC,
 	_1gdk_1cursor_1new_1for_1display_FUNC,
 	_1gdk_1cursor_1new_1from_1name_FUNC,
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
-	_1gdk_1cursor_1new_1from_1pixmap_FUNC,
 	_1gdk_1cursor_1unref_FUNC,
 	_1gdk_1device_1get_1associated_1device_FUNC,
 	_1gdk_1device_1get_1window_1at_1position_FUNC,
@@ -125,7 +115,6 @@ typedef enum {
 	_1gdk_1flush_FUNC,
 	_1gdk_1gc_1new_FUNC,
 	_1gdk_1gc_1set_1fill_FUNC,
-	_1gdk_1gc_1set_1foreground_FUNC,
 	_1gdk_1gc_1set_1function_FUNC,
 	_1gdk_1gc_1set_1stipple_FUNC,
 	_1gdk_1gc_1set_1subwindow_FUNC,
@@ -401,9 +390,7 @@ typedef enum {
 	_1gtk_1color_1chooser_1set_1use_1alpha_FUNC,
 	_1gtk_1color_1selection_1dialog_1get_1color_1selection_FUNC,
 	_1gtk_1color_1selection_1dialog_1new_FUNC,
-	_1gtk_1color_1selection_1get_1current_1color_FUNC,
 	_1gtk_1color_1selection_1palette_1to_1string_FUNC,
-	_1gtk_1color_1selection_1set_1current_1color_FUNC,
 	_1gtk_1color_1selection_1set_1has_1palette_FUNC,
 	_1gtk_1combo_1box_1get_1active_FUNC,
 	_1gtk_1combo_1box_1get_1model_FUNC,
@@ -617,11 +604,6 @@ typedef enum {
 	_1gtk_1list_1store_1set__JJIJI_FUNC,
 #endif
 #ifndef JNI64
-	_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
-#else
-	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
-#endif
-#ifndef JNI64
 	_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
 #else
 	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
@@ -753,11 +735,8 @@ typedef enum {
 	_1gtk_1rc_1parse_1string_FUNC,
 	_1gtk_1rc_1style_1get_1bg_1pixmap_1name_FUNC,
 	_1gtk_1rc_1style_1get_1color_1flags_FUNC,
-	_1gtk_1rc_1style_1set_1bg_FUNC,
 	_1gtk_1rc_1style_1set_1bg_1pixmap_1name_FUNC,
 	_1gtk_1rc_1style_1set_1color_1flags_FUNC,
-	_1gtk_1rc_1style_1set_1fg_FUNC,
-	_1gtk_1rc_1style_1set_1text_FUNC,
 	_1gtk_1render_1background_FUNC,
 	_1gtk_1render_1focus_FUNC,
 	_1gtk_1render_1frame_FUNC,
@@ -825,14 +804,7 @@ typedef enum {
 	_1gtk_1style_1context_1restore_FUNC,
 	_1gtk_1style_1context_1save_FUNC,
 	_1gtk_1style_1context_1set_1state_FUNC,
-	_1gtk_1style_1get_1base_FUNC,
-	_1gtk_1style_1get_1bg_FUNC,
-	_1gtk_1style_1get_1black_FUNC,
-	_1gtk_1style_1get_1dark_FUNC,
-	_1gtk_1style_1get_1fg_FUNC,
 	_1gtk_1style_1get_1font_1desc_FUNC,
-	_1gtk_1style_1get_1light_FUNC,
-	_1gtk_1style_1get_1text_FUNC,
 	_1gtk_1style_1get_1xthickness_FUNC,
 	_1gtk_1style_1get_1ythickness_FUNC,
 	_1gtk_1target_1list_1new_FUNC,
@@ -965,11 +937,6 @@ typedef enum {
 	_1gtk_1tree_1store_1set__IIIJI_FUNC,
 #else
 	_1gtk_1tree_1store_1set__JJIJI_FUNC,
-#endif
-#ifndef JNI64
-	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
-#else
-	_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
@@ -1105,8 +1072,6 @@ typedef enum {
 	_1gtk_1widget_1is_1focus_FUNC,
 	_1gtk_1widget_1map_FUNC,
 	_1gtk_1widget_1mnemonic_1activate_FUNC,
-	_1gtk_1widget_1modify_1base_FUNC,
-	_1gtk_1widget_1modify_1bg_FUNC,
 	_1gtk_1widget_1modify_1font_FUNC,
 	_1gtk_1widget_1modify_1style_FUNC,
 	_1gtk_1widget_1override_1background_1color_FUNC,
@@ -1400,11 +1365,6 @@ typedef enum {
 	_1g_1object_1set__J_3BJJ_FUNC,
 #endif
 #ifndef JNI64
-	_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
-#else
-	_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
-#endif
-#ifndef JNI64
 	_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
 #else
 	_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J_FUNC,
@@ -1664,11 +1624,6 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_GTypeInfo_2I_FUNC,
 #endif
 #ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
-#endif
-#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J_FUNC,
@@ -1732,11 +1687,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC,

@@ -281,23 +281,14 @@ void checkGC (int mask) {
 	data.state |= mask;
 	long /*int*/ cairo = data.cairo;
 	if ((state & (BACKGROUND | FOREGROUND)) != 0) {
-		GdkColor color = null;
 		GdkRGBA colorRGBA = null;
 		Pattern pattern;
 		if ((state & FOREGROUND) != 0) {
-			if (GTK.GTK3) {
-				colorRGBA = data.foregroundRGBA;
-			} else {
-				color = data.foreground;
-			}
+			colorRGBA = data.foregroundRGBA;
 			pattern = data.foregroundPattern;
 			data.state &= ~BACKGROUND;
 		} else {
-			if (GTK.GTK3) {
-				colorRGBA = data.backgroundRGBA;
-			} else {
-				color = data.background;
-			}
+			colorRGBA = data.backgroundRGBA;
 			pattern = data.backgroundPattern;
 			data.state &= ~FOREGROUND;
 		}
@@ -314,11 +305,7 @@ void checkGC (int mask) {
 				Cairo.cairo_set_source(cairo, pattern.handle);
 			}
 		} else {
-			if (GTK.GTK3) {
-				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, data.alpha / (float)0xFF);
-			} else {
-				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-			}
+			Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, data.alpha / (float)0xFF);
 		}
 	}
 	if ((state & FONT) != 0) {
@@ -1982,11 +1969,7 @@ public int getAntialias() {
  */
 public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (GTK.GTK3) {
-		return Color.gtk_new(data.device, data.backgroundRGBA);
-	} else {
-		return Color.gtk_new(data.device, data.background);
-	}
+	return Color.gtk_new(data.device, data.backgroundRGBA);
 }
 
 /**
@@ -2226,11 +2209,7 @@ public FontMetrics getFontMetrics() {
  */
 public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (GTK.GTK3) {
-		return Color.gtk_new(data.device, data.foregroundRGBA);
-	} else {
-		return Color.gtk_new(data.device, data.foreground);
-	}
+	return Color.gtk_new(data.device, data.foregroundRGBA);
 }
 
 /**
@@ -2598,13 +2577,8 @@ double[] identity() {
 }
 
 void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
-	if (GTK.GTK3) {
-		if (data.foregroundRGBA != null) data.state &= ~FOREGROUND;
-		if (data.backgroundRGBA != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
-	} else {
-		if (data.foreground != null) data.state &= ~FOREGROUND;
-		if (data.background != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
-	}
+	if (data.foregroundRGBA != null) data.state &= ~FOREGROUND;
+	if (data.backgroundRGBA != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
 	if (data.font != null) data.state &= ~FONT;
 	Image image = data.image;
 	if (image != null) {
@@ -2845,11 +2819,7 @@ public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (GTK.GTK3) {
-		data.backgroundRGBA = color.handleRGBA;
-	} else {
-		data.background = color.handle;
-	}
+	data.backgroundRGBA = color.handleRGBA;
 	data.backgroundPattern = null;
 	data.state &= ~(BACKGROUND | BACKGROUND_BG);
 }
@@ -2916,17 +2886,8 @@ static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
-	if (GTK.GTK3) {
-		GdkRGBA rgba = c.handleRGBA;
-		Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, rgba.red, rgba.green, rgba.blue, alpha / 255f);
-	} else {
-		GdkColor color = c.handle;
-		double aa = (alpha & 0xFF) / (double)0xFF;
-		double red = ((color.red & 0xFFFF) / (double)0xFFFF);
-		double green = ((color.green & 0xFFFF) / (double)0xFFFF);
-		double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
-		Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
-	}
+	GdkRGBA rgba = c.handleRGBA;
+	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, rgba.red, rgba.green, rgba.blue, alpha / 255f);
 }
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
@@ -3259,11 +3220,7 @@ public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (GTK.GTK3) {
-		data.foregroundRGBA = color.handleRGBA;
-	} else {
-		data.foreground = color.handle;
-	}
+	data.foregroundRGBA = color.handleRGBA;
 	data.foregroundPattern = null;
 	data.state &= ~FOREGROUND;
 }

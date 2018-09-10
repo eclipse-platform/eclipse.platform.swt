@@ -2070,20 +2070,6 @@ public static final void g_object_set(long /*int*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
-/**
- * @param object cast=(gpointer)
- * @param first_property_name cast=(const gchar *)
- * @param terminator cast=(const gchar *),flags=sentinel
- */
-public static final native void _g_object_set(long /*int*/ object, byte[] first_property_name, GdkColor data, long /*int*/ terminator);
-public static final void g_object_set(long /*int*/ object, byte[] first_property_name, GdkColor data, long /*int*/ terminator) {
-	lock.lock();
-	try {
-		_g_object_set(object, first_property_name, data, terminator);
-	} finally {
-		lock.unlock();
-	}
-}
 
 //Note, the function below is handled in a special way in os.h because of the GdkRGBA (gtk3 only) struct. See os.h
 //So although it is not marked as dynamic, it is only build on gtk3.
@@ -2920,13 +2906,6 @@ public static final native void memmove(long /*int*/ dest, GTypeInfo src, int si
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GtkTargetEntry src, long /*int*/ size);
-//NOTE: Call only on GTK2 as this uses GdkColor.
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long /*int*/ dest, GdkColor src, long /*int*/ size);
 //NOTE: Call only on GTK3 as this uses GdkRGBA.
 /**
  * @param dest cast=(void *)
@@ -2991,13 +2970,6 @@ public static final native void memmove(GtkWidgetClass dest, long /*int*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GtkBorder dest, long /*int*/ src, long /*int*/ size);
-//NOTE: Call only on GTK2 as this uses GdkColor.
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkColor dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

@@ -452,76 +452,61 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 }
 
 long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
-	if (GTK.GTK3) {
-		for (int i = 0; i < sourceData.length; i++) {
-			byte s = sourceData[i];
-			sourceData[i] = (byte)(((s & 0x80) >> 7) |
-				((s & 0x40) >> 5) |
-				((s & 0x20) >> 3) |
-				((s & 0x10) >> 1) |
-				((s & 0x08) << 1) |
-				((s & 0x04) << 3) |
-				((s & 0x02) << 5) |
-				((s & 0x01) << 7));
-			sourceData[i] = (byte) ~sourceData[i];
-		}
-		for (int i = 0; i < maskData.length; i++) {
-			byte s = maskData[i];
-			maskData[i] = (byte)(((s & 0x80) >> 7) |
-				((s & 0x40) >> 5) |
-				((s & 0x20) >> 3) |
-				((s & 0x10) >> 1) |
-				((s & 0x08) << 1) |
-				((s & 0x04) << 3) |
-				((s & 0x02) << 5) |
-				((s & 0x01) << 7));
-			maskData[i] = (byte) ~maskData[i];
-		}
-		PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
-		ImageData source = new ImageData(width, height, 1, palette, 1, sourceData);
-		ImageData mask = new ImageData(width, height, 1, palette, 1, maskData);
-		byte[] data = new byte[source.width * source.height * 4];
-		for (int y = 0; y < source.height; y++) {
-			int offset = y * source.width * 4;
-			for (int x = 0; x < source.width; x++) {
-				int pixel = source.getPixel(x, y);
-				int maskPixel = mask.getPixel(x, y);
-				if (pixel == 0 && maskPixel == 0) {
-					// BLACK
-					data[offset+3] = (byte)0xFF;
-				} else if (pixel == 0 && maskPixel == 1) {
-					// WHITE - cursor color
-					data[offset] = data[offset + 1] = data[offset + 2] = data[offset + 3] = (byte)0xFF;
-				} else if (pixel == 1 && maskPixel == 0) {
-					// SCREEN
-				} else {
-					/* no support */
-					// REVERSE SCREEN -> SCREEN
-				}
-				offset += 4;
+	for (int i = 0; i < sourceData.length; i++) {
+		byte s = sourceData[i];
+		sourceData[i] = (byte)(((s & 0x80) >> 7) |
+			((s & 0x40) >> 5) |
+			((s & 0x20) >> 3) |
+			((s & 0x10) >> 1) |
+			((s & 0x08) << 1) |
+			((s & 0x04) << 3) |
+			((s & 0x02) << 5) |
+			((s & 0x01) << 7));
+		sourceData[i] = (byte) ~sourceData[i];
+	}
+	for (int i = 0; i < maskData.length; i++) {
+		byte s = maskData[i];
+		maskData[i] = (byte)(((s & 0x80) >> 7) |
+			((s & 0x40) >> 5) |
+			((s & 0x20) >> 3) |
+			((s & 0x10) >> 1) |
+			((s & 0x08) << 1) |
+			((s & 0x04) << 3) |
+			((s & 0x02) << 5) |
+			((s & 0x01) << 7));
+		maskData[i] = (byte) ~maskData[i];
+	}
+	PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
+	ImageData source = new ImageData(width, height, 1, palette, 1, sourceData);
+	ImageData mask = new ImageData(width, height, 1, palette, 1, maskData);
+	byte[] data = new byte[source.width * source.height * 4];
+	for (int y = 0; y < source.height; y++) {
+		int offset = y * source.width * 4;
+		for (int x = 0; x < source.width; x++) {
+			int pixel = source.getPixel(x, y);
+			int maskPixel = mask.getPixel(x, y);
+			if (pixel == 0 && maskPixel == 0) {
+				// BLACK
+				data[offset+3] = (byte)0xFF;
+			} else if (pixel == 0 && maskPixel == 1) {
+				// WHITE - cursor color
+				data[offset] = data[offset + 1] = data[offset + 2] = data[offset + 3] = (byte)0xFF;
+			} else if (pixel == 1 && maskPixel == 0) {
+				// SCREEN
+			} else {
+				/* no support */
+				// REVERSE SCREEN -> SCREEN
 			}
+			offset += 4;
 		}
-		long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-		long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
-		C.memmove(pixels, data, stride * height);
-		long /*int*/ cursor = GDK.gdk_cursor_new_from_pixbuf(GDK.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
-		OS.g_object_unref(pixbuf);
-		return cursor;
 	}
-	long /*int*/ sourcePixmap = GDK.gdk_bitmap_create_from_data(0, sourceData, width, height);
-	long /*int*/ maskPixmap = GDK.gdk_bitmap_create_from_data(0, maskData, width, height);
-	long /*int*/ cursor = 0;
-	if (sourcePixmap != 0 && maskPixmap != 0) {
-		GdkColor foreground = new GdkColor();
-		if (!reverse) foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
-		GdkColor background = new GdkColor();
-		if (reverse) background.red = background.green = background.blue = (short)0xFFFF;
-		cursor = GDK.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
-	}
-	if (sourcePixmap != 0) OS.g_object_unref (sourcePixmap);
-	if (maskPixmap != 0) OS.g_object_unref (maskPixmap);
+	long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
+	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
+	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+	C.memmove(pixels, data, stride * height);
+	long /*int*/ cursor = GDK.gdk_cursor_new_from_pixbuf(GDK.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
+	OS.g_object_unref(pixbuf);
 	return cursor;
 }
 

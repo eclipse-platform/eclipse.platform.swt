@@ -846,15 +846,6 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	setBackgroundGdkColor(fixedHandle, color);
-	if (labelHandle != 0) setBackgroundGdkColor(labelHandle, color);
-	if (imageHandle != 0) setBackgroundGdkColor(imageHandle, color);
-}
-
-@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	* Bug in GTK.  For some reason, when the label is
@@ -959,15 +950,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 			(style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		gtk_swt_set_border_color (rgba);
 	}
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundGdkColor (color);
-	setForegroundColor (fixedHandle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
 @Override

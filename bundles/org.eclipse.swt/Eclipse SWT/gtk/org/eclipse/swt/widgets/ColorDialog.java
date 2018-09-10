@@ -138,84 +138,36 @@ public RGB open () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ colorsel = 0;
 	GdkRGBA rgba;
-	GdkColor color;
-	if (GTK.GTK_VERSION <= OS.VERSION (3, 4, 0)) {
-		if (parent != null) {
-			long /*int*/ shellHandle = parent.topHandle ();
-			GTK.gtk_window_set_transient_for (handle, shellHandle);
-		}
-		long /*int*/ group = GTK.gtk_window_get_group (0);
-		GTK.gtk_window_group_add_window (group, handle);
-		GTK.gtk_window_set_modal (handle, true);
-
-		colorsel = GTK.gtk_color_selection_dialog_get_color_selection (handle);
-		if (rgb != null) {
-			color = new GdkColor ();
-			color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
-			color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
-			color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-			GTK.gtk_color_selection_set_current_color (colorsel, color);
-		}
-		GTK.gtk_color_selection_set_has_palette (colorsel, true);
-	} else {
-		rgba = new GdkRGBA ();
-		if (rgb != null) {
-			rgba.red = (double) rgb.red / 255;
-			rgba.green = (double) rgb.green / 255;
-			rgba.blue = (double) rgb.blue / 255;
-			rgba.alpha = 1;
-		}
-		GTK.gtk_color_chooser_set_rgba (handle, rgba);
+	rgba = new GdkRGBA ();
+	if (rgb != null) {
+		rgba.red = (double) rgb.red / 255;
+		rgba.green = (double) rgb.green / 255;
+		rgba.blue = (double) rgb.blue / 255;
+		rgba.alpha = 1;
 	}
+	GTK.gtk_color_chooser_set_rgba (handle, rgba);
 	if (rgbs != null) {
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
-			int colorsPerRow = 9;
-			long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
-			rgba = new GdkRGBA ();
-			for (int i=0; i<rgbs.length; i++) {
-				RGB rgbS = rgbs[i];
-				if (rgbS != null) {
-					rgba.red = (double) rgbS.red / 255;
-					rgba.green = (double) rgbS.green / 255;
-					rgba.blue = (double) rgbS.blue / 255;
-					OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
-				}
-			}
-			GTK.gtk_color_chooser_add_palette(handle, GTK.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
-					rgbs.length, gdkRGBAS);
-			GTK.gtk_color_chooser_set_rgba (handle, rgba);
-
-
-			if (GTK.gtk_color_chooser_get_use_alpha(handle)) {
-				GTK.gtk_color_chooser_set_use_alpha (handle, false);
-			}
-			OS.g_free (gdkRGBAS);
-		} else {
-			long /*int*/ gdkColors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
-			for (int i=0; i<rgbs.length; i++) {
-				RGB rgb = rgbs[i];
-				if (rgb != null) {
-					color = new GdkColor ();
-					color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
-					color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
-					color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-					OS.memmove (gdkColors + i * GdkColor.sizeof, color, GdkColor.sizeof);
-				}
-			}
-			long /*int*/ strPtr = GTK.gtk_color_selection_palette_to_string(gdkColors, rgbs.length);
-			int length = C.strlen (strPtr);
-
-			buffer = new byte [length];
-			C.memmove (buffer, strPtr, length);
-			String paletteString = new String (Converter.mbcsToWcs (buffer));
-			buffer = Converter.wcsToMbcs (paletteString, true);
-			OS.g_free (gdkColors);
-			long /*int*/ settings = GTK.gtk_settings_get_default ();
-			if (settings != 0) {
-				GTK.gtk_settings_set_string_property(settings, GTK.gtk_color_palette, buffer, Converter.wcsToMbcs ("gtk_color_selection_palette_to_string", true));
-
+		int colorsPerRow = 9;
+		long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
+		rgba = new GdkRGBA ();
+		for (int i=0; i<rgbs.length; i++) {
+			RGB rgbS = rgbs[i];
+			if (rgbS != null) {
+				rgba.red = (double) rgbS.red / 255;
+				rgba.green = (double) rgbS.green / 255;
+				rgba.blue = (double) rgbS.blue / 255;
+				OS.memmove (gdkRGBAS + i * GdkRGBA.sizeof, rgba, GdkRGBA.sizeof);
 			}
 		}
+		GTK.gtk_color_chooser_add_palette(handle, GTK.GTK_ORIENTATION_HORIZONTAL, colorsPerRow,
+				rgbs.length, gdkRGBAS);
+		GTK.gtk_color_chooser_set_rgba (handle, rgba);
+
+
+		if (GTK.gtk_color_chooser_get_use_alpha(handle)) {
+			GTK.gtk_color_chooser_set_use_alpha (handle, false);
+		}
+		OS.g_free (gdkRGBAS);
 	}
 
 	display.addIdleProc ();
@@ -251,48 +203,11 @@ public RGB open () {
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
-			rgba = new GdkRGBA ();
-			GTK.gtk_color_chooser_get_rgba (handle, rgba);
-			red =  (int) (rgba.red * 255);
-			green = (int) (rgba.green * 255);
-			blue =  (int) (rgba.blue *  255);
-		} else {
-			color = new GdkColor ();
-			GTK.gtk_color_selection_get_current_color (colorsel, color);
-			red = (color.red >> 8) & 0xFF;
-			green = (color.green >> 8) & 0xFF;
-			blue = (color.blue >> 8) & 0xFF;
-
-			long /*int*/ settings = GTK.gtk_settings_get_default ();
-			if (settings != 0) {
-
-				long /*int*/ [] ptr = new long /*int*/ [1];
-				OS.g_object_get (settings, GTK.gtk_color_palette, ptr, 0);
-				if (ptr [0] != 0) {
-					int length = C.strlen (ptr [0]);
-					buffer = new byte [length];
-					C.memmove (buffer, ptr [0], length);
-					OS.g_free (ptr [0]);
-					String [] gdkColorStrings = null;
-					if (length > 0) {
-						String gtk_color_palette = new String(Converter.mbcsToWcs (buffer));
-						gdkColorStrings = splitString(gtk_color_palette, ':');
-						length = gdkColorStrings.length;
-					}
-					rgbs = new RGB [length];
-					for (int i=0; i<length; i++) {
-						String colorString = gdkColorStrings[i];
-						buffer = Converter.wcsToMbcs (colorString, true);
-						GDK.gdk_color_parse(buffer, color);
-						int redI = (color.red >> 8) & 0xFF;
-						int greenI = (color.green >> 8) & 0xFF;
-						int blueI = (color.blue >> 8) & 0xFF;
-						rgbs [i] = new RGB (redI, greenI, blueI);
-					}
-				}
-			}
-		}
+		rgba = new GdkRGBA ();
+		GTK.gtk_color_chooser_get_rgba (handle, rgba);
+		red =  (int) (rgba.red * 255);
+		green = (int) (rgba.green * 255);
+		blue =  (int) (rgba.blue *  255);
 		rgb = new RGB (red, green, blue);
 	}
 

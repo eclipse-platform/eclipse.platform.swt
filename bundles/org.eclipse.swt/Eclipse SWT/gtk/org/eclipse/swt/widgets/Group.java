@@ -347,15 +347,6 @@ void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	setBackgroundGdkColor (fixedHandle, color);
-	// Bug 453827 - client handle should also be painted as it's visible to the user now.
-	setBackgroundGdkColor (clientHandle, color);
-}
-
-@Override
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	setFontDescription (labelHandle, font);
@@ -378,13 +369,6 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 		super.setForegroundGdkRGBA (labelHandle, rgba);
 	}
 	foreground = rgba;
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundGdkColor (color);
-	setForegroundColor(labelHandle, color);
 }
 
 @Override

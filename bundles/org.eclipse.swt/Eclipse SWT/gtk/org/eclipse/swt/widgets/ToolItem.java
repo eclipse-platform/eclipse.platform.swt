@@ -240,9 +240,6 @@ void createHandle (int index) {
 	if (imageHandle != 0) {
 		GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
 	}
-	if ((parent.state & FOREGROUND) != 0) {
-		setForegroundColor (parent.getForegroundGdkColor());
-	}
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
@@ -1034,11 +1031,6 @@ void setForegroundRGBA (GdkRGBA rgba) {
 void setBackgroundRGBA (GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (handle != 0) setBackgroundRGBA (handle, rgba);
-}
-
-void setForegroundColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 }
 
 void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {

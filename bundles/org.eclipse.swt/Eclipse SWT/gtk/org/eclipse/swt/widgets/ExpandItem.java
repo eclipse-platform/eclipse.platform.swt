@@ -585,13 +585,6 @@ void setFontDescription (long /*int*/ font) {
 	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
-void setForegroundColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
-}
-
 void setForegroundRGBA (GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	parent.setForegroundGdkRGBA (handle, rgba);

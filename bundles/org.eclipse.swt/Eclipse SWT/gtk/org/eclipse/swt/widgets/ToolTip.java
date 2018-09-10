@@ -278,16 +278,12 @@ void createHandle (int index) {
 		state |= HANDLE;
 		handle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		if (GTK.GTK3) {
-			long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
-			GdkRGBA bgRGBA = background.handleRGBA;
-			String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
-			String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
-			gtk_css_provider_load_from_css (context, css);
-			GTK.gtk_style_context_invalidate (context);
-		} else {
-			GTK.gtk_widget_modify_bg (handle, GTK.GTK_STATE_NORMAL, background.handle);
-		}
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		GdkRGBA bgRGBA = background.handleRGBA;
+		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
+		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
+		gtk_css_provider_load_from_css (context, css);
+		GTK.gtk_style_context_invalidate (context);
 		GTK.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	}
 }
@@ -512,11 +508,7 @@ void drawTooltip (long /*int*/ cr) {
 		x += INSET;
 		int [] w = new int [1], h = new int [1];
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		if (GTK.GTK3) {
-			GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
-		} else {
-			GDK.gdk_cairo_set_source_color(cairo,foreground.handle);
-		}
+		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
 		Cairo.cairo_move_to(cairo, x,y );
 		OS.pango_cairo_show_layout(cairo, layoutText);
 		OS.pango_layout_get_pixel_size (layoutText, w, h);
@@ -525,11 +517,7 @@ void drawTooltip (long /*int*/ cr) {
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		if (GTK.GTK3) {
-			GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
-		} else {
-			GDK.gdk_cairo_set_source_color(cairo,foreground.handle);
-		}
+		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layoutMessage);
 	}

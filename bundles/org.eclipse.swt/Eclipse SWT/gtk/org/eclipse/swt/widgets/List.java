@@ -447,12 +447,6 @@ long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
-@Override
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getBaseGdkColor ();
-}
-
 /**
  * Returns the zero-relative index of the item which currently
  * has the focus in the receiver, or -1 if no item has focus.
@@ -474,12 +468,6 @@ public int getFocusIndex () {
 	if (indices != 0) C.memmove (index, indices, 4);
 	GTK.gtk_tree_path_free (path [0]);
 	return index [0];
-}
-
-@Override
-GdkColor getForegroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getTextColor ();
 }
 
 /**
@@ -1440,13 +1428,6 @@ void selectFocusIndex (int index) {
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	GTK.gtk_widget_modify_base (handle, 0, color);
-}
-
-@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
@@ -1534,12 +1515,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 	} else {
 		super.setForegroundGdkRGBA(rgba);
 	}
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color, false);
 }
 
 /**

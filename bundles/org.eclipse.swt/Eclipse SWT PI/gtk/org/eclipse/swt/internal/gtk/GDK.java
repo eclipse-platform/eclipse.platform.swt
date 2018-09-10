@@ -258,7 +258,6 @@ public class GDK extends OS {
 	public static final int GDK_WINDOW_TYPE_HINT_TOOLTIP = 10;
 
 	/** sizeof(TYPE) for 32/64 bit support */
-	public static final native int GdkColor_sizeof();
 	public static final native int GdkKeymapKey_sizeof();
 	public static final native int GdkRGBA_sizeof();
 	public static final native int GdkDragContext_sizeof();
@@ -290,17 +289,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _GDK_PIXMAP_XID(pixmap);
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/** @method flags=const */
-	public static final native long /*int*/ _GDK_TYPE_COLOR();
-	public static final long /*int*/ GDK_TYPE_COLOR() {
-		lock.lock();
-		try {
-			return _GDK_TYPE_COLOR();
 		} finally {
 			lock.unlock();
 		}
@@ -536,16 +524,6 @@ public class GDK extends OS {
 		}
 	}
 	/** @method flags=dynamic */
-	public static final native void _gdk_cairo_set_source_color(long /*int*/ cairo, GdkColor color);
-	public static final void gdk_cairo_set_source_color(long /*int*/ cairo, GdkColor color) {
-		lock.lock();
-		try {
-			_gdk_cairo_set_source_color(cairo, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
 	public static final native void _gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba);
 	public static final void gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba) {
 		lock.lock();
@@ -635,86 +613,6 @@ public class GDK extends OS {
 	                lock.unlock();
 	        }
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param color cast=(GdkColor *) */
-	public static final native void _gdk_color_free(long /*int*/ color);
-	public static final void gdk_color_free(long /*int*/ color) {
-		lock.lock();
-		assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-		try {
-			_gdk_color_free(color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param spec cast=(const gchar *)
-	 * @param color cast=(GdkColor *),flags=no_in
-	 */
-	public static final native boolean _gdk_color_parse(byte[] spec, GdkColor color);
-	public static final boolean gdk_color_parse(byte[] spec, GdkColor color) {
-		lock.lock();
-		assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-		try {
-			return _gdk_color_parse(spec, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param color flags=no_in
-	 */
-	public static final native boolean _gdk_color_white(long /*int*/ colormap, GdkColor color);
-	public static final boolean gdk_color_white(long /*int*/ colormap, GdkColor color) {
-		lock.lock();
-		try {
-			return _gdk_color_white(colormap, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 *  @method flags=dynamic
-	 * @param color cast=(GdkColor *)
-	 * @param writeable cast=(gboolean)
-	 * @param best_match cast=(gboolean)
-	 */
-	public static final native boolean _gdk_colormap_alloc_color(long /*int*/ colormap, GdkColor color, boolean writeable, boolean best_match);
-	public static final boolean gdk_colormap_alloc_color(long /*int*/ colormap, GdkColor color, boolean writeable, boolean best_match) {
-		lock.lock();
-		try {
-			return _gdk_colormap_alloc_color(colormap, color, writeable, best_match);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param colors cast=(GdkColor *),flags=no_out
-	 * @param ncolors cast=(gint)
-	 */
-	public static final native void _gdk_colormap_free_colors(long /*int*/ colormap, GdkColor colors, int ncolors);
-	public static final void gdk_colormap_free_colors(long /*int*/ colormap, GdkColor colors, int ncolors) {
-		lock.lock();
-		try {
-			_gdk_colormap_free_colors(colormap, colors, ncolors);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_colormap_get_system();
-	public static final long /*int*/ gdk_colormap_get_system() {
-		lock.lock();
-		try {
-			return _gdk_colormap_get_system();
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native void _gdk_cursor_unref(long /*int*/ cursor);
 	public static final void gdk_cursor_unref(long /*int*/ cursor) {
@@ -745,22 +643,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_cursor_new_from_name(display, cursor_name);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param fg cast=(GdkColor *),flags=no_out
-	 * @param bg cast=(GdkColor *),flags=no_out
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native long /*int*/ _gdk_cursor_new_from_pixmap(long /*int*/ source, long /*int*/ mask, GdkColor fg, GdkColor bg, int x, int y);
-	public static final long /*int*/ gdk_cursor_new_from_pixmap(long /*int*/ source, long /*int*/ mask, GdkColor fg, GdkColor bg, int x, int y) {
-		lock.lock();
-		try {
-			return _gdk_cursor_new_from_pixmap(source, mask, fg, bg, x, y);
 		} finally {
 			lock.unlock();
 		}
@@ -1296,19 +1178,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_gc_set_fill(gc, fill);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param color flags=no_out
-	 */
-	public static final native void _gdk_gc_set_foreground(long /*int*/ gc, GdkColor color);
-	public static final void gdk_gc_set_foreground(long /*int*/ gc, GdkColor color) {
-		lock.lock();
-		try {
-			_gdk_gc_set_foreground(gc, color);
 		} finally {
 			lock.unlock();
 		}

@@ -455,15 +455,6 @@ void setFontDescription (long /*int*/ font) {
 }
 
 @Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundGdkColor (color);
-	for (int i = 0; i < itemCount; i++) {
-		items[i].setForegroundColor (color);
-	}
-}
-
-@Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);

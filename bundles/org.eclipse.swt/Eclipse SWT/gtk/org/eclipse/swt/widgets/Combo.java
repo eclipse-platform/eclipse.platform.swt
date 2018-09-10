@@ -934,12 +934,6 @@ long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
-@Override
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getBaseGdkColor ();
-}
-
 /**
  * Returns a point describing the location of the caret relative
  * to the receiver.
@@ -1008,12 +1002,6 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 		return background;
 	}
 	return defaultBackground();
-}
-
-@Override
-GdkColor getForegroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getTextColor ();
 }
 
 /**
@@ -2099,18 +2087,6 @@ void setBackgroundGdkRGBA (GdkRGBA rgba) {
 }
 
 @Override
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setBackgroundGdkColor (color);
-	if (entryHandle != 0) GTK.gtk_widget_modify_base (entryHandle, 0, color);
-	if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
-	OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
-
-	if (entryHandle != 0) setBackgroundGdkColor(entryHandle, color);
-	setBackgroundGdkColor (fixedHandle, color);
-}
-
-@Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = height;
 	if (resize) newHeight = Math.max (getTextHeightInPixels (), height);
@@ -2162,16 +2138,6 @@ void setFontDescription (long /*int*/ font) {
 		GTK.gtk_combo_box_set_active (handle, index);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	}
-}
-
-@Override
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	super.setForegroundColor (handle, color, false);
-	if (entryHandle != 0) {
-		setForegroundColor (entryHandle, color, false);
-	}
-	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
 }
 
 @Override

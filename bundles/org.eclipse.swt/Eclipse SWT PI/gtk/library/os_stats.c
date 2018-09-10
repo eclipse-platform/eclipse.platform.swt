@@ -25,7 +25,6 @@ char * GDK_nativeFunctionNames[] = {
 	"GDK_1EVENT_1TYPE",
 	"GDK_1EVENT_1WINDOW",
 	"GDK_1IS_1X11_1DISPLAY",
-	"GdkColor_1sizeof",
 	"GdkDragContext_1sizeof",
 	"GdkEventAny_1sizeof",
 	"GdkEventButton_1sizeof",
@@ -43,7 +42,6 @@ char * GDK_nativeFunctionNames[] = {
 	"GdkRectangle_1sizeof",
 	"GdkWindowAttr_1sizeof",
 	"_1GDK_1PIXMAP_1XID",
-	"_1GDK_1TYPE_1COLOR",
 	"_1GDK_1TYPE_1PIXBUF",
 	"_1GDK_1TYPE_1RGBA",
 	"_1gdk_1atom_1intern",
@@ -54,21 +52,13 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1region_1create_1from_1surface",
 	"_1gdk_1cairo_1reset_1clip",
-	"_1gdk_1cairo_1set_1source_1color",
 	"_1gdk_1cairo_1set_1source_1pixbuf",
 	"_1gdk_1cairo_1set_1source_1pixmap",
 	"_1gdk_1cairo_1set_1source_1rgba",
 	"_1gdk_1cairo_1set_1source_1window",
-	"_1gdk_1color_1free",
-	"_1gdk_1color_1parse",
-	"_1gdk_1color_1white",
-	"_1gdk_1colormap_1alloc_1color",
-	"_1gdk_1colormap_1free_1colors",
-	"_1gdk_1colormap_1get_1system",
 	"_1gdk_1cursor_1new_1for_1display",
 	"_1gdk_1cursor_1new_1from_1name",
 	"_1gdk_1cursor_1new_1from_1pixbuf",
-	"_1gdk_1cursor_1new_1from_1pixmap",
 	"_1gdk_1cursor_1unref",
 	"_1gdk_1device_1get_1associated_1device",
 	"_1gdk_1device_1get_1window_1at_1position",
@@ -115,7 +105,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1flush",
 	"_1gdk_1gc_1new",
 	"_1gdk_1gc_1set_1fill",
-	"_1gdk_1gc_1set_1foreground",
 	"_1gdk_1gc_1set_1function",
 	"_1gdk_1gc_1set_1stipple",
 	"_1gdk_1gc_1set_1subwindow",
@@ -403,9 +392,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1color_1chooser_1set_1use_1alpha",
 	"_1gtk_1color_1selection_1dialog_1get_1color_1selection",
 	"_1gtk_1color_1selection_1dialog_1new",
-	"_1gtk_1color_1selection_1get_1current_1color",
 	"_1gtk_1color_1selection_1palette_1to_1string",
-	"_1gtk_1color_1selection_1set_1current_1color",
 	"_1gtk_1color_1selection_1set_1has_1palette",
 	"_1gtk_1combo_1box_1get_1active",
 	"_1gtk_1combo_1box_1get_1model",
@@ -619,11 +606,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1list_1store_1set__JJIJI",
 #endif
 #ifndef JNI64
-	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#endif
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
 #else
 	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
@@ -755,11 +737,8 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1rc_1parse_1string",
 	"_1gtk_1rc_1style_1get_1bg_1pixmap_1name",
 	"_1gtk_1rc_1style_1get_1color_1flags",
-	"_1gtk_1rc_1style_1set_1bg",
 	"_1gtk_1rc_1style_1set_1bg_1pixmap_1name",
 	"_1gtk_1rc_1style_1set_1color_1flags",
-	"_1gtk_1rc_1style_1set_1fg",
-	"_1gtk_1rc_1style_1set_1text",
 	"_1gtk_1render_1background",
 	"_1gtk_1render_1focus",
 	"_1gtk_1render_1frame",
@@ -827,14 +806,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1style_1context_1restore",
 	"_1gtk_1style_1context_1save",
 	"_1gtk_1style_1context_1set_1state",
-	"_1gtk_1style_1get_1base",
-	"_1gtk_1style_1get_1bg",
-	"_1gtk_1style_1get_1black",
-	"_1gtk_1style_1get_1dark",
-	"_1gtk_1style_1get_1fg",
 	"_1gtk_1style_1get_1font_1desc",
-	"_1gtk_1style_1get_1light",
-	"_1gtk_1style_1get_1text",
 	"_1gtk_1style_1get_1xthickness",
 	"_1gtk_1style_1get_1ythickness",
 	"_1gtk_1target_1list_1new",
@@ -967,11 +939,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1tree_1store_1set__IIIJI",
 #else
 	"_1gtk_1tree_1store_1set__JJIJI",
-#endif
-#ifndef JNI64
-	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
@@ -1107,8 +1074,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1is_1focus",
 	"_1gtk_1widget_1map",
 	"_1gtk_1widget_1mnemonic_1activate",
-	"_1gtk_1widget_1modify_1base",
-	"_1gtk_1widget_1modify_1bg",
 	"_1gtk_1widget_1modify_1font",
 	"_1gtk_1widget_1modify_1style",
 	"_1gtk_1widget_1override_1background_1color",
@@ -1414,11 +1379,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1set__J_3BJJ",
 #endif
 #ifndef JNI64
-	"_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
 #else
 	"_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkRGBA_2J",
@@ -1678,11 +1638,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J",
@@ -1746,11 +1701,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II",

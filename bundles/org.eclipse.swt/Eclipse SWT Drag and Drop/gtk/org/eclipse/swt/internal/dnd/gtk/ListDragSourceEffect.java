@@ -161,15 +161,7 @@ public class ListDragSourceEffect extends DragSourceEffect {
 				}
 			}
 			Cairo.cairo_destroy(cairo);
-			if (GTK.GTK3) {
-				dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
-			} else {
-				long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
-				if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				long /*int*/ colormap = GDK.gdk_colormap_get_system();
-				GDK.gdk_pixbuf_get_from_drawable(pixbuf, surface, colormap, 0, 0, 0, 0, width, height);
-				dragSourceImage = Image.gtk_new_from_pixbuf(display, SWT.ICON, pixbuf);
-			}
+			dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
 		}
 		OS.g_list_free (originalList);
 		return dragSourceImage;

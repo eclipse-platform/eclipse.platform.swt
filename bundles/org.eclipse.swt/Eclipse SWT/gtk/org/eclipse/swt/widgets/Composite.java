@@ -518,13 +518,8 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 			Cairo.cairo_surface_destroy (surface);
 			Cairo.cairo_pattern_destroy (pattern);
 		} else {
-			if (GTK.GTK3) {
-				GdkRGBA rgba = control.getBackgroundGdkRGBA ();
-				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-			} else {
-				GdkColor color = control.getBackgroundGdkColor ();
-				Cairo.cairo_set_source_rgba_compatibility (cairo, color);
-			}
+			GdkRGBA rgba = control.getBackgroundGdkRGBA ();
+			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 		}
 		Cairo.cairo_rectangle (cairo, x, y, width, height);
 		Cairo.cairo_fill (cairo);

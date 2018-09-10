@@ -213,17 +213,11 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 		Cairo.cairo_set_source (cairo, pattern);
 		Cairo.cairo_pattern_destroy (pattern);
 	} else {
-		GdkRGBA rgba;
-		if (GTK.GTK3) {
-			rgba = control.getBackgroundGdkRGBA();
-			if (noBackgroundRegion) {
-				Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
-			} else {
-				Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-			}
+		GdkRGBA rgba = control.getBackgroundGdkRGBA();
+		if (noBackgroundRegion) {
+			Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
 		} else {
-			GdkColor color = control.getBackgroundGdkColor ();
-			Cairo.cairo_set_source_rgba_compatibility (cairo, color);
+			Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 		}
 	}
 	Cairo.cairo_rectangle (cairo, x, y, width, height);
@@ -304,14 +298,6 @@ void fixStyle (long /*int*/ handle) {
 	*/
 	if ((state & BACKGROUND) != 0) return;
 	if ((state & THEME_BACKGROUND) == 0) return;
-	if (!GTK.GTK3) {
-		long /*int*/ childStyle = parent.childStyle ();
-		if (childStyle != 0) {
-			GdkColor color = new GdkColor();
-			GTK.gtk_style_get_bg (childStyle, 0, color);
-			setBackgroundGdkColor (color);
-		}
-	}
 }
 
 long /*int*/ focusHandle () {
@@ -2874,37 +2860,19 @@ boolean forceFocus (long /*int*/ focusHandle) {
 public Color getBackground () {
 	checkWidget();
 	Color color;
-	if (GTK.GTK3) {
-		if (backgroundAlpha == 0) {
-			color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), 0);
-			return color;
-		}
-		else {
-			Control control = findBackgroundControl ();
-			if (control == null) control = this;
-			return Color.gtk_new (display, control.getBackgroundGdkRGBA (), backgroundAlpha);
-		}
+	if (backgroundAlpha == 0) {
+		color = Color.gtk_new (display, this.getBackgroundGdkRGBA (), 0);
+		return color;
 	} else {
-		if (backgroundAlpha == 0) {
-			color = Color.gtk_new (display, this.getBackgroundGdkColor (), 0);
-			return color;
-		}
-		else {
-			Control control = findBackgroundControl ();
-			if (control == null) control = this;
-			return Color.gtk_new (display, control.getBackgroundGdkColor (), backgroundAlpha);
-		}
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		return Color.gtk_new (display, control.getBackgroundGdkRGBA (), backgroundAlpha);
 	}
 }
 
 GdkRGBA getBackgroundGdkRGBA () {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	return getBgGdkRGBA ();
-}
-
-GdkColor getBackgroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getBgGdkColor ();
 }
 
 /**
@@ -2963,32 +2931,9 @@ GdkRGBA getBgGdkRGBA () {
 	return getContextBackgroundGdkRGBA ();
 }
 
-GdkColor getBgGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	long /*int*/ fontHandle = fontHandle ();
-	GTK.gtk_widget_realize (fontHandle);
-	GdkColor color = new GdkColor ();
-
-	long /*int*/ style = GTK.gtk_widget_get_style (fontHandle);
-	if (style != 0){
-		GTK.gtk_style_get_bg (style, GTK.GTK_STATE_NORMAL, color);
-	}
-
-	return color;
-}
-
 GdkRGBA getBaseGdkRGBA () {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	return getContextBackgroundGdkRGBA ();
-}
-
-GdkColor getBaseGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	long /*int*/ fontHandle = fontHandle ();
-	GTK.gtk_widget_realize (fontHandle);
-	GdkColor color = new GdkColor ();
-	GTK.gtk_style_get_base (GTK.gtk_widget_get_style (fontHandle), GTK.GTK_STATE_NORMAL, color);
-	return color;
 }
 
 /**
@@ -3126,7 +3071,7 @@ long /*int*/ getFontDescription () {
 public Color getForeground () {
 	checkWidget();
 	Color color;
-	color = GTK.GTK3? Color.gtk_new (display, getForegroundGdkRGBA ()) : Color.gtk_new (display, getForegroundGdkColor ());
+	color = Color.gtk_new (display, getForegroundGdkRGBA ());
 	return color;
 }
 
@@ -3135,35 +3080,8 @@ GdkRGBA getForegroundGdkRGBA () {
 	return getContextColorGdkRGBA();
 }
 
-GdkColor getForegroundGdkColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	return getFgColor ();
-}
-
-GdkColor getFgColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	long /*int*/ fontHandle = fontHandle ();
-	GTK.gtk_widget_realize (fontHandle);
-	GdkColor color = new GdkColor ();
-
-	long /*int*/ style = GTK.gtk_widget_get_style (fontHandle);
-	if (style != 0){
-		GTK.gtk_style_get_fg (style, GTK.GTK_STATE_NORMAL, color);
-	}
-	return color;
-}
-
 Point getIMCaretPos () {
 	return new Point (0, 0);
-}
-
-GdkColor getTextColor () {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	long /*int*/ fontHandle = fontHandle ();
-	GTK.gtk_widget_realize (fontHandle);
-	GdkColor color = new GdkColor ();
-	GTK.gtk_style_get_text (GTK.gtk_widget_get_style (fontHandle), GTK.GTK_STATE_NORMAL, color);
-	return color;
 }
 
 /**
@@ -4042,13 +3960,8 @@ public long /*int*/ internal_new_GC (GCData data) {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		data.font = font != null ? font : defaultFont ();
-		if (GTK.GTK3) {
-			data.foregroundRGBA = getForegroundGdkRGBA ();
-			data.backgroundRGBA = control.getBackgroundGdkRGBA ();
-		} else {
-			data.foreground = getForegroundGdkColor ();
-			data.background = control.getBackgroundGdkColor ();
-		}
+		data.foregroundRGBA = getForegroundGdkRGBA ();
+		data.backgroundRGBA = control.getBackgroundGdkRGBA ();
 	}
 	return gc;
 }
@@ -4728,44 +4641,19 @@ public void setBackground (Color color) {
 private void _setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
 	boolean set = false;
-	if (GTK.GTK3) {
-		GdkRGBA rgba = null;
-		if (color != null) {
-			rgba = color.handleRGBA;
-			backgroundAlpha = color.getAlpha();
-		}
-		set = true;
-		if (set) {
-			if (color == null) {
-				state &= ~BACKGROUND;
-			} else {
-				state |= BACKGROUND;
-			}
-			setBackgroundGdkRGBA (rgba);
-		}
-	} else {
-		GdkColor gdkColor = null;
-		if (color != null) {
-			if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-			gdkColor = color.handle;
-			backgroundAlpha = color.getAlpha ();
-		}
-		if (gdkColor == null) {
-			long /*int*/ style = GTK.gtk_widget_get_modifier_style (handle);
-			set = (GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_NORMAL) & GTK.GTK_RC_BG) != 0;
+	GdkRGBA rgba = null;
+	if (color != null) {
+		rgba = color.handleRGBA;
+		backgroundAlpha = color.getAlpha();
+	}
+	set = true;
+	if (set) {
+		if (color == null) {
+			state &= ~BACKGROUND;
 		} else {
-			GdkColor oldColor = getBackgroundGdkColor ();
-			set = oldColor.pixel != gdkColor.pixel;
+			state |= BACKGROUND;
 		}
-		if (set) {
-
-			if (color == null) {
-				state &= ~BACKGROUND;
-			} else {
-				state |= BACKGROUND;
-			}
-			setBackgroundGdkColor (gdkColor);
-		}
+		setBackgroundGdkRGBA (rgba);
 	}
 	redrawChildren ();
 }
@@ -4820,42 +4708,6 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		OS.g_object_unref (provider);
 	}
 	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
-}
-
-void setBackgroundGdkColor (long /*int*/ handle, GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	int index = GTK.GTK_STATE_NORMAL;
-	long /*int*/ style = GTK.gtk_widget_get_modifier_style (handle);
-	long /*int*/ ptr = GTK.gtk_rc_style_get_bg_pixmap_name (style, index);
-	if (ptr != 0) OS.g_free (ptr);
-	ptr = 0;
-
-	String pixmapName = null;
-	int flags = GTK.gtk_rc_style_get_color_flags (style, index);
-	if (color != null) {
-		flags |= GTK.GTK_RC_BG;
-		pixmapName = "<none>"; //$NON-NLS-1$
-	} else {
-		flags &= ~GTK.GTK_RC_BG;
-		if (backgroundImage == null && (state & PARENT_BACKGROUND) != 0) {
-			pixmapName = "<parent>"; //$NON-NLS-1$
-		}
-	}
-	if (pixmapName != null) {
-		byte[] buffer = Converter.wcsToMbcs (pixmapName, true);
-		ptr = OS.g_malloc (buffer.length);
-		C.memmove (ptr, buffer, buffer.length);
-	}
-
-	GTK.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);
-	GTK.gtk_rc_style_set_bg (style, index, color);
-	GTK.gtk_rc_style_set_color_flags (style, index, flags);
-	modifyStyle (handle, style);
-}
-
-void setBackgroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setBackgroundGdkColor (handle, color);
 }
 
 void setBackgroundGdkRGBA(GdkRGBA rgba) {
@@ -5228,46 +5080,22 @@ void setFontDescription (long /*int*/ font) {
 public void setForeground (Color color) {
 	checkWidget();
 	if (((state & FOREGROUND) == 0) && color == null) return;
-	GdkColor gdkColor = null;
-	if (color != null) {
-		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		gdkColor = color.handle;
-	}
 	boolean set = false;
-	if (GTK.GTK3) {
-		set = !getForeground().equals(color);
-	} else {
-		if (gdkColor == null) {
-			long /*int*/ style = GTK.gtk_widget_get_modifier_style (handle);
-			set = (GTK.gtk_rc_style_get_color_flags (style, GTK.GTK_STATE_NORMAL) & GTK.GTK_RC_FG) != 0;
-		} else {
-			GdkColor oldColor = getForegroundGdkColor ();
-			set = oldColor.pixel != gdkColor.pixel;
-		}
-	}
+	set = !getForeground().equals(color);
 	if (set) {
 		if (color == null) {
 			state &= ~FOREGROUND;
 		} else {
 			state |= FOREGROUND;
 		}
-		if (GTK.GTK3) {
-			GdkRGBA rgba = color == null ? null : color.handleRGBA;
-			setForegroundGdkRGBA (rgba);
-		} else {
-			setForegroundGdkColor (gdkColor);
-		}
+		GdkRGBA rgba = color == null ? null : color.handleRGBA;
+		setForegroundGdkRGBA (rgba);
 	}
 }
 
 void setForegroundGdkRGBA (GdkRGBA rgba) {
 	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	setForegroundGdkRGBA (handle, rgba);
-}
-
-void setForegroundGdkColor (GdkColor color) {
-	assert !GTK.GTK3 : "GTK2 code was run by GTK3";
-	setForegroundColor (handle, color);
 }
 
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
@@ -5603,13 +5431,8 @@ public boolean setParent (Composite parent) {
 }
 
 void setParentBackground () {
-	if (GTK.GTK3) {
-		setBackgroundGdkRGBA (handle, null);
-		if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, null);
-	} else {
-		setBackgroundGdkColor (handle, null);
-		if (fixedHandle != 0) setBackgroundGdkColor (fixedHandle, null);
-	}
+	setBackgroundGdkRGBA (handle, null);
+	if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, null);
 }
 
 void setParentGdkWindow (Control child) {
@@ -5976,15 +5799,9 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 }
 
 void setWidgetBackground  () {
-	if (GTK.GTK3) {
-		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
-		if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, rgba);
-		setBackgroundGdkRGBA (handle, rgba);
-	} else {
-		GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundGdkColor () : null;
-		if (fixedHandle != 0) setBackgroundGdkColor (fixedHandle, color);
-		setBackgroundGdkColor (handle, color);
-	}
+	GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
+	if (fixedHandle != 0) setBackgroundGdkRGBA (fixedHandle, rgba);
+	setBackgroundGdkRGBA (handle, rgba);
 }
 
 boolean showMenu (int x, int y) {

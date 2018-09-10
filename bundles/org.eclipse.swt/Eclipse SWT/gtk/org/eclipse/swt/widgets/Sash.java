@@ -150,23 +150,7 @@ void createHandle (int index) {
 }
 
 void drawBand (int x, int y, int width, int height) {
-	if ((style & SWT.SMOOTH) != 0) return;
-	long /*int*/ window = gtk_widget_get_window (parent.paintHandle());
-	if (window == 0) return;
-	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
-	long /*int*/ stipplePixmap = GDK.gdk_bitmap_create_from_data (window, bits, 8, 8);
-	long /*int*/ gc = GDK.gdk_gc_new (window);
-	long /*int*/ colormap = GDK.gdk_colormap_get_system();
-	GdkColor color = new GdkColor ();
-	GDK.gdk_color_white (colormap, color);
-	GDK.gdk_gc_set_foreground (gc, color);
-	GDK.gdk_gc_set_stipple (gc, stipplePixmap);
-	GDK.gdk_gc_set_subwindow (gc, GDK.GDK_INCLUDE_INFERIORS);
-	GDK.gdk_gc_set_fill (gc, GDK.GDK_STIPPLED);
-	GDK.gdk_gc_set_function (gc, GDK.GDK_XOR);
-	GDK.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
-	OS.g_object_unref (stipplePixmap);
-	OS.g_object_unref (gc);
+	if ((style & SWT.SMOOTH) != 0 || GTK.GTK3) return;
 }
 
 @Override

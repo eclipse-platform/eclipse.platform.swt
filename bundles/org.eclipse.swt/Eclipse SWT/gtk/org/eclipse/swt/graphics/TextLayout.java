@@ -221,16 +221,11 @@ void computeRuns () {
 					if (style.foreground == null) {
 						// Bug 497071: use COLOR_LINK_FOREGROUND for StyledText links
 						long /*int*/ attr;
-						if (GTK.GTK3) {
-							GdkRGBA linkRGBA = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handleRGBA;
-							// Manual conversion since PangoAttrColor is a special case.
-							// It uses GdkColor style colors but is supported on GTK3.
-							attr = OS.pango_attr_foreground_new((short)(linkRGBA.red * 0xFFFF),
-									(short)(linkRGBA.green * 0xFFFF), (short)(linkRGBA.blue * 0xFFFF));
-						} else {
-							GdkColor linkColor = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handle;
-							attr = OS.pango_attr_foreground_new(linkColor.red, linkColor.green, linkColor.blue);
-						}
+						GdkRGBA linkRGBA = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handleRGBA;
+						// Manual conversion since PangoAttrColor is a special case.
+						// It uses GdkColor style colors but is supported on GTK3.
+						attr = OS.pango_attr_foreground_new((short)(linkRGBA.red * 0xFFFF),
+								(short)(linkRGBA.green * 0xFFFF), (short)(linkRGBA.blue * 0xFFFF));
 						OS.memmove (attribute, attr, PangoAttribute.sizeof);
 						attribute.start_index = byteStart;
 						attribute.end_index = byteEnd;
@@ -249,14 +244,9 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.underlineColor != null) {
-				if (GTK.GTK3) {
-					GdkRGBA rgba = style.underlineColor.handleRGBA;
-					attr = OS.pango_attr_underline_color_new((short)(rgba.red * 0xFFFF),
-							(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
-				} else {
-					GdkColor fg = style.underlineColor.handle;
-					attr = OS.pango_attr_underline_color_new(fg.red, fg.green, fg.blue);
-				}
+				GdkRGBA rgba = style.underlineColor.handleRGBA;
+				attr = OS.pango_attr_underline_color_new((short)(rgba.red * 0xFFFF),
+						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
 					attribute.start_index = byteStart;
@@ -276,14 +266,9 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.strikeoutColor != null) {
-				if (GTK.GTK3) {
-					GdkRGBA rgba = style.strikeoutColor.handleRGBA;
-					attr = OS.pango_attr_strikethrough_color_new((short)(rgba.red * 0xFFFF),
-							(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
-				} else {
-					GdkColor fg = style.strikeoutColor.handle;
-					attr = OS.pango_attr_strikethrough_color_new(fg.red, fg.green, fg.blue);
-				}
+				GdkRGBA rgba = style.strikeoutColor.handleRGBA;
+				attr = OS.pango_attr_strikethrough_color_new((short)(rgba.red * 0xFFFF),
+						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 				if (attr != 0) {
 					OS.memmove(attribute, attr, PangoAttribute.sizeof);
 					attribute.start_index = byteStart;
@@ -297,14 +282,9 @@ void computeRuns () {
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
 			long /*int*/ attr;
-			if (GTK.GTK3) {
-				GdkRGBA rgba = foreground.handleRGBA;
-				attr = OS.pango_attr_foreground_new((short)(rgba.red * 0xFFFF),
-						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
-			} else {
-				GdkColor fg = foreground.handle;
-				attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
-			}
+			GdkRGBA rgba = foreground.handleRGBA;
+			attr = OS.pango_attr_foreground_new((short)(rgba.red * 0xFFFF),
+					(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -314,14 +294,9 @@ void computeRuns () {
 		Color background = style.background;
 		if (background != null && !background.isDisposed()) {
 			long /*int*/ attr;
-			if (GTK.GTK3) {
-				GdkRGBA rgba = background.handleRGBA;
-				attr = OS.pango_attr_background_new((short)(rgba.red * 0xFFFF),
-						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
-			} else {
-				GdkColor bg = background.handle;
-				attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
-			}
+			GdkRGBA rgba = background.handleRGBA;
+			attr = OS.pango_attr_background_new((short)(rgba.red * 0xFFFF),
+					(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -503,13 +478,8 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		long /*int*/ iter = OS.pango_layout_get_iter(layout);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 		Cairo.cairo_save(cairo);
-		if (GTK.GTK3) {
-			GdkRGBA rgba = selectionBackground.handleRGBA;
-			Cairo.cairo_set_source_rgba(cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
-		} else {
-			GdkColor color = selectionBackground.handle;
-			Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-		}
+		GdkRGBA rgba = selectionBackground.handleRGBA;
+		Cairo.cairo_set_source_rgba(cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 		int lineIndex = 0;
 		do {
 			int lineEnd;
@@ -621,19 +591,11 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	if (rgn != 0) {
 		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
-		if (GTK.GTK3) {
-			Cairo.cairo_set_source_rgba(cairo, bg.handleRGBA.red, bg.handleRGBA.green, bg.handleRGBA.blue, bg.handleRGBA.alpha);
-		} else {
-			Cairo.cairo_set_source_rgba(cairo, (bg.handle.red & 0xFFFF) / (float)0xFFFF, (bg.handle.green & 0xFFFF) / (float)0xFFFF, (bg.handle.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-		}
+		Cairo.cairo_set_source_rgba(cairo, bg.handleRGBA.red, bg.handleRGBA.green, bg.handleRGBA.blue, bg.handleRGBA.alpha);
 		Cairo.cairo_paint(cairo);
 		GDK.gdk_region_destroy(rgn);
 	}
-	if (GTK.GTK3) {
-		Cairo.cairo_set_source_rgba(cairo, fg.handleRGBA.red, fg.handleRGBA.green, fg.handleRGBA.blue, fg.handleRGBA.alpha);
-	} else {
-		Cairo.cairo_set_source_rgba(cairo, (fg.handle.red & 0xFFFF) / (float)0xFFFF, (fg.handle.green & 0xFFFF) / (float)0xFFFF, (fg.handle.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-	}
+	Cairo.cairo_set_source_rgba(cairo, fg.handleRGBA.red, fg.handleRGBA.green, fg.handleRGBA.blue, fg.handleRGBA.alpha);
 	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_layout_set_attributes(layout, selAttrList);
 	OS.pango_cairo_show_layout(cairo, layout);
@@ -671,18 +633,10 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 				Region.gdk_region_get_rectangles(rgn, rects, nRects);
 				GdkRectangle rect = new GdkRectangle();
 				GdkRGBA colorRGBA = null;
-				GdkColor color = null;
-				if (GTK.GTK3) {
-					if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handleRGBA;
-					if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handleRGBA;
-					if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handleRGBA;
-					if (colorRGBA == null) colorRGBA = data.foregroundRGBA;
-				} else {
-					if (color == null && style.borderColor != null) color = style.borderColor.handle;
-					if (color == null && selectionColor != null) color = selectionColor.handle;
-					if (color == null && style.foreground != null) color = style.foreground.handle;
-					if (color == null) color = data.foreground;
-				}
+				if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handleRGBA;
+				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handleRGBA;
+				if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handleRGBA;
+				if (colorRGBA == null) colorRGBA = data.foregroundRGBA;
 				int width = 1;
 				float[] dashes = null;
 				switch (style.borderStyle) {
@@ -690,11 +644,7 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 					case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
 					case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 				}
-				if (GTK.GTK3) {
-					Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
-				} else {
-					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
-				}
+				Cairo.cairo_set_source_rgba(cairo, colorRGBA.red, colorRGBA.green, colorRGBA.blue, colorRGBA.alpha);
 				Cairo.cairo_set_line_width(cairo, width);
 				if (dashes != null) {
 					double[] cairoDashes = new double[dashes.length];
