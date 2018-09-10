@@ -814,6 +814,7 @@ void destroyItem (CTabItem item) {
 		selectedIndex --;
 	}
 
+	requestLayout();
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW_TABS);
 }
 
