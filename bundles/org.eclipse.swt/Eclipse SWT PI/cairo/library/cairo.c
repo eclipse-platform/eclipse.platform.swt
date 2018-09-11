@@ -1455,18 +1455,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1version)
 }
 #endif
 
-#ifndef NO_cairo_1version_1string
-JNIEXPORT jintLong JNICALL Cairo_NATIVE(cairo_1version_1string)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	Cairo_NATIVE_ENTER(env, that, cairo_1version_1string_FUNC);
-	rc = (jintLong)cairo_version_string();
-	Cairo_NATIVE_EXIT(env, that, cairo_1version_1string_FUNC);
-	return rc;
-}
-#endif
-
 #if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2JJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL Cairo_NATIVE(memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)

@@ -154,7 +154,6 @@ typedef enum {
 	cairo_1path_1data_1t_1sizeof_FUNC,
 	cairo_1path_1t_1sizeof_FUNC,
 	cairo_1version_FUNC,
-	cairo_1version_1string_FUNC,
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II_FUNC,
 #else

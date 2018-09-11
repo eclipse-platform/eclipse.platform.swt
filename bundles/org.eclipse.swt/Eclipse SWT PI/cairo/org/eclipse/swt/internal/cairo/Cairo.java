@@ -1224,7 +1224,7 @@ public static final void cairo_user_to_device_distance(long /*int*/ cr, double[]
 	}
 }
 public static final native int cairo_version();
-public static final native long /*int*/ cairo_version_string();
+
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(Drawable)

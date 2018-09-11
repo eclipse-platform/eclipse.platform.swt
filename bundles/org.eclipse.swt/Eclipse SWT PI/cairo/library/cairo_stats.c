@@ -144,7 +144,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1path_1data_1t_1sizeof",
 	"cairo_1path_1t_1sizeof",
 	"cairo_1version",
-	"cairo_1version_1string",
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II",
 #else
