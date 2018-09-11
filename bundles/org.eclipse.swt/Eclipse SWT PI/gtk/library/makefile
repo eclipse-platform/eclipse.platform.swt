@@ -4,16 +4,7 @@
 #   Build servers call build.sh directly.
 
 all:
-	./build.sh -gtk-all install
-
-gtk3:
-	./build.sh -gtk3 install
-
-gtk3-build-only:
-	./build.sh -gtk3
-
-gtk2:
-	./build.sh -gtk2 install
+	./build.sh install
 
 clean:
 	./build.sh clean

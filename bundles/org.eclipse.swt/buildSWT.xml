@@ -62,15 +62,15 @@
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
+			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
+			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="9"/>
+			<param name="library_count" value="8"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -719,23 +719,8 @@
 			<param name="port" value="${port}"/>
 			<param name="keyfile" value="${keyfile}"/>
 		</antcall>
-		<antcall target="build_gtk3"/>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="refresh_fragment"/>
-	</target>
-
-	<target name="build_gtk3"  depends="get_version" if="machine_gtk3">
-		<exec executable="mkdir">
-			<arg value="-p"/>
-			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
-		</exec>
-		<antcall target="${build_task}">
-			<param name="build_machine" value="${machine_gtk3}"/>
-			<param name="build_targets" value="install"/>
-			<param name="libs" value="*pi3*"/>
-			<param name="exports" value="export GTK_VERSION=3.0;"/>
-			<param name="gtk_version" value="3.0"/>
-		</antcall>
 	</target>
 
 	<target name="build_remote" depends="init_keyfile">
@@ -787,7 +772,11 @@
 	</target>
 
 	<target name="build_local">
-		<property name="gtk_version" value="2.0" />
+		<property name="gtk_version" value="3.0" />
+		<exec executable="mkdir">
+			<arg value="-p"/>
+			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
+		</exec>
 		<exec dir="${build_dir}" executable="sh" failonerror="true">
 			<arg line="build.sh"/>
 			<env key="GTK_VERSION" value="${gtk_version}"/>

@@ -39,12 +39,12 @@ func_configure_fedora () {
 	func_echo_plus "Installing Java 8 development packages that include jni.h for JNI bindings. Update this script to '9' when java 9 comes out"
 	sudo $INSTALL_CMD -y install java-1.8.0-openjdk-devel.x86_64
 
-	func_echo_plus "Installing Gtk2 and Gtk3 development packages"
-	sudo $INSTALL_CMD -y install gtk3-devel gtk2-devel
+	func_echo_plus "Installing Gtk3 development packages"
+	sudo $INSTALL_CMD -y install gtk3-devel
 
 	func_echo_plus "Installing X11 Development libraries. Someday when wayland takes over these will not be needed..."
 	# Deals with error: "#include <X11/Intrinsic.h>, #include <X11/extensions/XTest.h>" build errors)
-	sudo $INSTALL_CMD -y install libXt-devel libXtst-devel
+	sudo $INSTALL_CMD -y install libXt-devel
 
 	func_echo_plus "Install Mesa (OpenGL headers)"
 	# Deals with error: "/usr/bin/ld: cannot find -lGLU collect2: error: ld returned 1 exit status"
@@ -66,8 +66,8 @@ Consider updating this script for your distribution.
 In general, You should install the following packages:
  - C Development tools (usually comes in a 'group install')
  - java-*-openjdk-devel  (depending on current version of java)
- - gtk2-devel gtk3-devel
- - libXt-devel libXts-devel
+ - gtk3-devel
+ - libXt-devel
  - mesa-libGLU-devel
 "
 

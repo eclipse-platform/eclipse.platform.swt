@@ -1,5 +1,5 @@
 # About this folder
-This folder contains gnome/gtk scripts to help SWT developers compile/analyze native code.  
+This folder contains gnome/gtk scripts to help SWT developers compile/analyze native code. 
 
 The scripts in this folder are not used as part of the build process on a build server,
 but only during development work.  
