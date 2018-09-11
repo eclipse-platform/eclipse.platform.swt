@@ -479,9 +479,6 @@ public class Display extends Device {
 	static final int GTK3_MAJOR = 3;
 	static final int GTK3_MINOR = 0;
 	static final int GTK3_MICRO = 0;
-	static final int GTK2_MAJOR = 2;
-	static final int GTK2_MINOR = 24;
-	static final int GTK2_MICRO = 0;
 
 	/* Display Data */
 	Object data;
@@ -1040,26 +1037,15 @@ void createDisplay (DeviceData data) {
 	//set GTK+ Theme name as property for introspection purposes
 	System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
 	if (OS.isX11()) xDisplay = GDK.gdk_x11_get_default_xdisplay();
-	int major = GTK.gtk_major_version ();
-	long /*int*/ ptr;
-	if (major == GTK3_MAJOR) {
-		ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
-	} else {
-		ptr = GTK.gtk_check_version (GTK2_MAJOR, GTK2_MINOR, GTK2_MICRO);
-	}
+	long /*int*/ ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
 	if (ptr != 0) {
 		int length = C.strlen (ptr);
 		byte [] buffer = new byte [length];
 		C.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
-		System.out.println ("***WARNING: SWT requires GTK " + GTK2_MAJOR+ "." + GTK2_MINOR + "." + GTK2_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		int minor = GTK.gtk_minor_version (), micro = GTK.gtk_micro_version ();
+		System.out.println ("***WARNING: SWT requires GTK " + GTK3_MAJOR+ "." + GTK3_MINOR + "." + GTK3_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		int major = GTK.gtk_major_version(), minor = GTK.gtk_minor_version (), micro = GTK.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	}
-	if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 9, 4)) {
-		System.out.println ("***WARNING: SWT requires Cairo 1.9.4 or newer"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		String version = Converter.cCharPtrToJavaString(Cairo.cairo_version_string(), false);
-		System.out.println ("***WARNING: Detected: " + version);
 	}
 	if (GTK.GTK3) {
 		fixed_type = OS.swt_fixed_get_type();
