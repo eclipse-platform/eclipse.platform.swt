@@ -68,7 +68,9 @@ public class Combo extends Composite {
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
 	int indexSelected;
-	GdkRGBA background;
+	GdkRGBA background, buttonBackground;
+	String cssButtonBackground, cssButtonForeground = " ";
+	long /*int*/ buttonProvider;
 	boolean firstDraw = true;
 	/**
 	 * the operating system limit for the number of characters
@@ -610,6 +612,10 @@ public void cut () {
 @Override
 GdkRGBA defaultBackground () {
 	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+}
+
+GdkRGBA defaultButtonBackground () {
+	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
 }
 
 @Override
@@ -2027,6 +2033,45 @@ public void select (int index) {
 	}
 }
 
+void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {
+	if (rgba == null) {
+		buttonBackground = defaultButtonBackground();
+	} else {
+		buttonBackground = rgba;
+	}
+	String color = display.gtk_rgba_to_css_string (buttonBackground);
+	String css = "* {background: " + color + ";}\n";
+	cssButtonBackground = css;
+	String finalCss = display.gtk_css_create_css_color_string (cssButtonBackground, cssButtonForeground, SWT.BACKGROUND);
+	long /*int*/ buttonContext = GTK.gtk_widget_get_style_context(buttonHandle);
+	if (buttonProvider == 0) {
+		buttonProvider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(buttonContext, buttonProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref(buttonProvider);
+	}
+	GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs(finalCss, true), -1, null);
+}
+
+void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
+	assert GTK.GTK3 : "GTK3 code was run by GTK2";
+	GdkRGBA toSet;
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+	}
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String css = "* {color: " + color + ";}\n";
+	cssButtonForeground = css;
+	String finalCss = display.gtk_css_create_css_color_string(cssButtonBackground, cssButtonForeground, SWT.FOREGROUND);
+	long /*int*/ buttonContext = GTK.gtk_widget_get_style_context(buttonHandle);
+	if (buttonProvider == 0) {
+		buttonProvider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(buttonContext, buttonProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref(buttonProvider);
+	}
+	GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs(finalCss, true), -1, null);
+}
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
@@ -2066,8 +2111,10 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 		gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context(buttonHandle), finalCss);
 	} else {
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			// For GTK3.14+, only the GtkEntry needs to be themed.
-			gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context(entryHandle), finalCss);
+			// GtkEntry and GtkToggleButton needs to be themed separately with different
+			// providers for coherent background. Similar to Tree/Table headers.
+			gtk_css_provider_load_from_css (GTK._gtk_widget_get_style_context(entryHandle), finalCss);
+			setButtonBackgroundGdkRGBA (rgba);
 		} else {
 			// Maintain GTK3.12- functionality
 			setBackgroundGradientGdkRGBA (GTK.gtk_widget_get_style_context (entryHandle), handle, rgba);
@@ -2146,10 +2193,12 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 	if (entryHandle != 0) {
 		setForegroundGdkRGBA (entryHandle, rgba);
 	}
+	if ((style & SWT.READ_ONLY) == 0 && buttonHandle != 0) {
+		setButtonForegroundGdkRGBA (rgba);
+	}
 	OS.g_object_set (textRenderer, OS.foreground_rgba, rgba, 0);
 	super.setForegroundGdkRGBA(rgba);
 }
-
 
 /**
  * Sets the text of the item in the receiver's list at the given
