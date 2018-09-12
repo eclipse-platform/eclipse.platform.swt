@@ -19,7 +19,7 @@ include make_common.mak
 SWT_PREFIX=swt
 SWTPI_PREFIX=swt-pi
 WS_PREFIX=cocoa
-SWT_VERSION=$(maj_ver)$(min_ver)
+SWT_VERSION=$(maj_ver)$(min_ver)r$(rev)
 SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 

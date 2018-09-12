@@ -22,7 +22,7 @@
 
 SWT_PREFIX  = swt
 WS_PREFIX   = win32
-SWT_VERSION = $(maj_ver)$(min_ver)
+SWT_VERSION = $(maj_ver)$(min_ver)r$(rev)
 SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 SWT_LIBS    = comctl32.lib shell32.lib imm32.lib oleacc.lib usp10.lib wininet.lib Crypt32.lib Shlwapi.lib
 SWT_OBJS    = swt.obj callback.obj c.obj c_stats.obj \
@@ -63,9 +63,9 @@ WEBKITCFLAGS = -c -O1\
 
 #CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
 CFLAGS = -O1 -DNDEBUG /c $(cflags) $(cvarsmt) $(CFLAGS) \
-	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER \
+	-DSWT_VERSION=$(maj_ver)$(min_ver) -DSWT_REVISION=$(rev) $(NATIVE_STATS) -DUSE_ASSEMBLER \
 	/I"$(SWT_JAVA_HOME)\include" /I"$(SWT_JAVA_HOME)\include\win32" /I.
-RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
+RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver).$(rev).0\" -DSWT_COMMA_VERSION=$(comma_ver)
 ldebug = /RELEASE  /INCREMENTAL:NO /NOLOGO
 dlllflags = -dll
 guilibsmt = kernel32.lib  ws2_32.lib mswsock.lib advapi32.lib bufferoverflowu.lib user32.lib gdi32.lib comdlg32.lib winspool.lib

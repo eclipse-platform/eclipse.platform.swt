@@ -28,7 +28,7 @@ endif
 
 include make_common.mak
 
-SWT_VERSION=$(maj_ver)$(min_ver)
+SWT_VERSION=$(maj_ver)$(min_ver)r$(rev)
 GTK_VERSION?=2.0
 
 # Define the various shared libraries to be build.

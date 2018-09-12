@@ -358,7 +358,8 @@
 		<echo>Incrementing version from ${swt_version} to ${new_version}...</echo>
 		<replace file="${repo.src}/${file_library}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_library}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
-		<replace file="${repo.src}/${file_version}" token="version ${maj_ver}.${min_ver}" value="version ${new_maj_ver}.${new_min_ver}"/>
+		<replace file="${repo.src}/${file_library}" token="REVISION = ${rev}" value="REVISION = ${new_rev}"/>
+		<replace file="${repo.src}/${file_version}" token="version ${maj_ver}.${min_ver}.${rev}.0" value="version ${new_maj_ver}.${new_min_ver}.${new_rev}.0"/>
 		<replace file="${repo.src}/${file_make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
@@ -410,26 +411,29 @@
 		<echo>New tag=${swt_new_tag}.</echo>
 	</target>
 
-	<!-- Set swt_version, new_version, (and min_ver, maj_ver, new_min_ver, new_maj_ver) from the make_common.mak  -->
+	<!-- Set swt_version, new_version, (and rev, min_ver, maj_ver, new_rev, new_min_ver, new_maj_ver) from the make_common.mak  -->
 	<target name="get_version" unless="swt_version">
 		<loadproperties srcFile="${repo.src}/${file_make_common}"/>
 		<script language="javascript">
 		<![CDATA[
+			rev = project.getProperty("rev");
 			min_ver = project.getProperty("min_ver");
 			maj_ver = project.getProperty("maj_ver");
-			new_min_ver = parseInt(min_ver) + 1;
+			new_rev = parseInt(rev) + 1;
+			new_min_ver = min_ver;
 			new_maj_ver = maj_ver;
 			one = new_maj_ver;
-			two = Math.floor(new_min_ver / 100);
-			three = Math.floor((new_min_ver - (two * 100)) / 10);
-			four = Math.floor(new_min_ver - (two * 100) - (three * 10));
+			two = new_min_ver;
+			three = new_rev;
+			four = 0;
+			project.setProperty("new_rev", new_rev);
 			project.setProperty("new_min_ver", new_min_ver);
 			project.setProperty("new_maj_ver", new_maj_ver);
 			project.setProperty("new_comma_ver", one + "," + two + "," + three + "," + four);
    	 	]]>
 		</script>
-		<property name="swt_version" value="${maj_ver}${min_ver}"/>
-		<property name="new_version" value="${new_maj_ver}${new_min_ver}"/>
+		<property name="swt_version" value="${maj_ver}${min_ver}r${rev}"/>
+		<property name="new_version" value="${new_maj_ver}${new_min_ver}r${new_rev}"/>
 		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
 
@@ -437,27 +441,59 @@
 		<loadproperties srcFile="${repo.src}/${file_make_common}"/>
 		<script language="javascript">
 		<![CDATA[
+			rev = project.getProperty("rev");
 			min_ver = project.getProperty("min_ver");
 			maj_ver = project.getProperty("maj_ver");
-			new_min_ver = (Math.floor(parseInt(min_ver) / 100) + 1) * 100;
+			new_rev = 1;
+			new_min_ver = parseInt(min_ver) + 2;
 			new_maj_ver = maj_ver;
 			if (new_min_ver >= 1000) {
 				new_min_ver = "000";
 				new_maj_ver = parseInt(new_maj_ver) + 1;
 			}
 			one = new_maj_ver;
-			two = Math.floor(new_min_ver / 100);
-			three = Math.floor((new_min_ver - (two * 100)) / 10);
-			four = Math.floor(new_min_ver - (two * 100) - (three * 10));
+			two = new_min_ver;
+			three = new_rev;
+			four = 0;
+			project.setProperty("new_rev", new_rev);
 			project.setProperty("new_min_ver", new_min_ver);
 			project.setProperty("new_maj_ver", new_maj_ver);
 			project.setProperty("new_comma_ver", one + "," + two + "," + three + "," + four);
    	 	]]>
 		</script>
-		<property name="swt_version" value="${maj_ver}${min_ver}"/>
-		<property name="new_version" value="${new_maj_ver}${new_min_ver}"/>
+		<property name="swt_version" value="${maj_ver}${min_ver}r${rev}"/>
+		<property name="new_version" value="${new_maj_ver}${new_min_ver}r${new_rev}"/>
 		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
+	
+	<target name="get_new_maintenance_release_version" unless="min_ver">
+			<loadproperties srcFile="${repo.src}/${file_make_common}"/>
+			<script language="javascript">
+			<![CDATA[
+				rev = project.getProperty("rev");
+				min_ver = project.getProperty("min_ver");
+				maj_ver = project.getProperty("maj_ver");
+				new_rev = 1;
+				new_min_ver = parseInt(min_ver) + 1;
+				new_maj_ver = maj_ver;
+				if (new_min_ver >= 1000) {
+					new_min_ver = "000";
+					new_maj_ver = parseInt(new_maj_ver) + 1;
+				}
+				one = new_maj_ver;
+				two = new_min_ver;
+				three = new_rev;
+				four = 0;
+				project.setProperty("new_rev", new_rev);
+				project.setProperty("new_min_ver", new_min_ver);
+				project.setProperty("new_maj_ver", new_maj_ver);
+				project.setProperty("new_comma_ver", one + "," + two + "," + three + "," + four);
+	   	 	]]>
+			</script>
+			<property name="swt_version" value="${maj_ver}${min_ver}r${rev}"/>
+			<property name="new_version" value="${new_maj_ver}${new_min_ver}r${new_rev}"/>
+			<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
+		</target>
 
 	<!-- Set natives_changed if there are changes in the C code -->
 	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">

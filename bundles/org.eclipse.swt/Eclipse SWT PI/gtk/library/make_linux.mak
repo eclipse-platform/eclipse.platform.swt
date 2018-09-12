@@ -26,7 +26,7 @@ endif
 
 include make_common.mak
 
-SWT_VERSION=$(maj_ver)$(min_ver)
+SWT_VERSION=$(maj_ver)$(min_ver)r$(rev)
 GTK_VERSION=3.0
 
 # Define the various shared libraries to be build.
@@ -52,7 +52,7 @@ ALL_SWT_LIBS = $(SWT_LIB) $(AWT_LIB) $(SWTPI_LIB) $(CAIRO_LIB) $(ATK_LIB) $(GLX_
 # Webkit extension lib has to be put into a separate folder and is treated differently from the other libraries.
 WEBKIT_EXTENSION_LIB = lib$(WEBKIT_EXTENSION_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 WEBEXTENSION_BASE_DIR = webkitextensions
-WEBEXTENSION_DIR = $(WEBEXTENSION_BASE_DIR)$(maj_ver)$(min_ver)
+WEBEXTENSION_DIR = $(WEBEXTENSION_BASE_DIR)$(maj_ver)$(min_ver)r$(rev)
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
