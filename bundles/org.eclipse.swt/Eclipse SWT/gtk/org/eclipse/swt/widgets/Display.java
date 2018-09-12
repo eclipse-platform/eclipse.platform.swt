@@ -1015,6 +1015,19 @@ protected void create (DeviceData data) {
 	if (Default == null) Default = this;
 }
 
+/**
+ * Check if the XIM module is present and generates a warning for potential graphical issues
+ * if GTK_IM_MODULE=xim is detected. See Bug 517671.
+ */
+void checkXimModule () {
+	Map<String, String> env = System.getenv();
+	String module = env.get("GTK_IM_MODULE");
+	if (module != null && module.equals("xim")) {
+		System.err.println("***WARNING: Detected: GTK_IM_MODULE=xim. This input method is unsupported and can cause graphical issues.");
+		System.err.println("***WARNING: Unset GTK_IM_MODULE or set GTK_IM_MODULE=ibus if flicking is experienced. ");
+	}
+}
+
 void createDisplay (DeviceData data) {
 	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {
 		/* Required for g_main_context_wakeup */
@@ -1025,6 +1038,7 @@ void createDisplay (DeviceData data) {
 	if (!GTK.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
+	checkXimModule();
 	//set GTK+ Theme name as property for introspection purposes
 	System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
 	if (OS.isX11()) xDisplay = GDK.gdk_x11_get_default_xdisplay();
