@@ -198,8 +198,6 @@ public class ATK extends OS {
 	public static final byte[] accessible_table_summary = OS.ascii ("accessible-table-summary");
 
 /** 64 bit */
-public static final native int AtkObjectFactory_sizeof ();
-public static final native int AtkObjectFactoryClass_sizeof ();
 public static final native int AtkAttribute_sizeof ();
 public static final native int AtkTextRange_sizeof ();
 public static final native int AtkTextRectangle_sizeof ();
@@ -224,7 +222,6 @@ public static final native long /*int*/ ATK_TYPE_TEXT ();
 public static final native long /*int*/ ATK_TYPE_VALUE ();
 /** @method flags=const */
 public static final native long /*int*/ ATK_TYPE_OBJECT_FACTORY ();
-public static final native boolean ATK_IS_NO_OP_OBJECT_FACTORY (long /*int*/ obj);
 public static final native long /*int*/ _ATK_ACTION_GET_IFACE (long /*int*/ obj);
 public static final long /*int*/ ATK_ACTION_GET_IFACE (long /*int*/ obj) {
 	lock.lock();
@@ -298,38 +295,6 @@ public static final long /*int*/ ATK_VALUE_GET_IFACE (long /*int*/ handle) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _atk_get_default_registry ();
-public static final long /*int*/ atk_get_default_registry () {
-	lock.lock();
-	try {
-		return _atk_get_default_registry();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param factory cast=(AtkObjectFactory *) */
-public static final native long /*int*/ _atk_object_factory_get_accessible_type (long /*int*/ factory);
-public static final long /*int*/ atk_object_factory_get_accessible_type (long /*int*/ factory) {
-	lock.lock();
-	try {
-		return _atk_object_factory_get_accessible_type(factory);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param accessible cast=(AtkObject *)
- * @param data cast=(gpointer)
- */
-public static final native void _atk_object_initialize (long /*int*/ accessible, long /*int*/ data);
-public static final void atk_object_initialize (long /*int*/ accessible, long /*int*/ data) {
-	lock.lock();
-	try {
-		_atk_object_initialize(accessible, data);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param accessible cast=(AtkObject *) */
 public static final native void _atk_object_notify_state_change (long /*int*/ accessible, int state, boolean value);
 public static final void atk_object_notify_state_change (long /*int*/ accessible, int state, boolean value) {
@@ -364,46 +329,6 @@ public static final boolean atk_object_remove_relationship (long /*int*/ object,
 	lock.lock();
 	try {
 		return _atk_object_remove_relationship(object, relationship, target);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param name cast=(const gchar *)
- */
-public static final native int _atk_role_register (byte[] name); //Note, deprecated, do not use. See atk docu.
-public static final int atk_role_register (byte[] name) {
-	lock.lock();
-	try {
-		return _atk_role_register(name);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param registry cast=(AtkRegistry *)
- * @param type cast=(GType)
- */
-public static final native long /*int*/ _atk_registry_get_factory (long /*int*/ registry, long /*int*/ type);
-public static final long /*int*/ atk_registry_get_factory (long /*int*/ registry, long /*int*/ type) {
-	lock.lock();
-	try {
-		return _atk_registry_get_factory(registry, type);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param registry cast=(AtkRegistry *)
- * @param type cast=(GType)
- * @param factory_type cast=(GType)
- */
-public static final native void _atk_registry_set_factory_type (long /*int*/ registry, long /*int*/ type, long /*int*/ factory_type);
-public static final void atk_registry_set_factory_type (long /*int*/ registry, long /*int*/ type, long /*int*/ factory_type) {
-	lock.lock();
-	try {
-		_atk_registry_set_factory_type(registry, type, factory_type);
 	} finally {
 		lock.unlock();
 	}
@@ -480,7 +405,6 @@ public static final native void memmove (AtkComponentIface dest, long /*int*/ sr
 public static final native void memmove (AtkEditableTextIface dest, long /*int*/ src);
 public static final native void memmove (AtkHypertextIface dest, long /*int*/ src);
 public static final native void memmove (AtkObjectClass dest, long /*int*/ src);
-public static final native void memmove (AtkObjectFactoryClass  dest, long /*int*/ src);
 public static final native void memmove (AtkSelectionIface dest, long /*int*/ src);
 public static final native void memmove (AtkTableIface dest, long /*int*/ src);
 public static final native void memmove (AtkTextIface dest, long /*int*/ src);
@@ -490,7 +414,6 @@ public static final native void memmove (long /*int*/ dest, AtkComponentIface sr
 public static final native void memmove (long /*int*/ dest, AtkEditableTextIface src);
 public static final native void memmove (long /*int*/ dest, AtkHypertextIface src);
 public static final native void memmove (long /*int*/ dest, AtkObjectClass src);
-public static final native void memmove (long /*int*/ dest, AtkObjectFactoryClass src);
 public static final native void memmove (long /*int*/ dest, AtkSelectionIface src);
 public static final native void memmove (long /*int*/ dest, AtkTableIface src);
 public static final native void memmove (long /*int*/ dest, AtkTextIface src);

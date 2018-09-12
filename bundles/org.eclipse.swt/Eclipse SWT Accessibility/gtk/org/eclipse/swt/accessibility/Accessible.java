@@ -117,13 +117,9 @@ public class Accessible {
 	Accessible (Control control) {
 		super ();
 		this.control = control;
-		if (GTK.GTK3) {
-			long /*int*/ type = OS.G_OBJECT_TYPE (getControlHandle());
-			accessibleObject = new AccessibleObject (type, getControlHandle(), this, false);
-			addRelations();
-		} else {
-			AccessibleFactory.registerAccessible (this);
-		}
+		long /*int*/ type = OS.G_OBJECT_TYPE (getControlHandle());
+		accessibleObject = new AccessibleObject (type, getControlHandle(), this, false);
+		addRelations();
 	}
 
 	/**
@@ -483,23 +479,13 @@ public class Accessible {
 
 	AccessibleObject getAccessibleObject () {
 		if (accessibleObject == null) {
-			if (GTK.GTK3) {
-				long /*int*/ widget = this.getControlHandle();
-				long /*int*/ type = OS.G_OBJECT_TYPE (widget);
-				if (parent == null) {
-					accessibleObject = new AccessibleObject (type, widget, this, false);
-				} else {
-					accessibleObject = new AccessibleObject (type, 0, this, true);
-					accessibleObject.parent = parent.getAccessibleObject();
-				}
+			long /*int*/ widget = this.getControlHandle();
+			long /*int*/ type = OS.G_OBJECT_TYPE (widget);
+			if (parent == null) {
+				accessibleObject = new AccessibleObject (type, widget, this, false);
 			} else {
-				if (parent == null) {
-					AccessibleFactory.createAccessible(this);
-				} else {
-					accessibleObject = AccessibleFactory.createChildAccessible(this, ACC.CHILDID_SELF);
-					accessibleObject.parent = parent.getAccessibleObject();
-				}
-
+				accessibleObject = new AccessibleObject (type, 0, this, true);
+				accessibleObject.parent = parent.getAccessibleObject();
 			}
 		}
 		return accessibleObject;
@@ -538,7 +524,6 @@ public class Accessible {
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public void internal_dispose_Accessible() {
-		if (!GTK.GTK3) AccessibleFactory.unregisterAccessible (Accessible.this);
 		release ();
 	}
 

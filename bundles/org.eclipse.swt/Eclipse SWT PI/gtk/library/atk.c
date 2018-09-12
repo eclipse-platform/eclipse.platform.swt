@@ -24,18 +24,6 @@
 #define ATK_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 #endif
 
-#ifndef NO_ATK_1IS_1NO_1OP_1OBJECT_1FACTORY
-JNIEXPORT jboolean JNICALL ATK_NATIVE(ATK_1IS_1NO_1OP_1OBJECT_1FACTORY)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1IS_1NO_1OP_1OBJECT_1FACTORY_FUNC);
-	rc = (jboolean)ATK_IS_NO_OP_OBJECT_FACTORY(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1IS_1NO_1OP_1OBJECT_1FACTORY_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_ATK_1TYPE_1ACTION
 JNIEXPORT jintLong JNICALL ATK_NATIVE(ATK_1TYPE_1ACTION)
 	(JNIEnv *env, jclass that)
@@ -152,30 +140,6 @@ JNIEXPORT jint JNICALL ATK_NATIVE(AtkAttribute_1sizeof)
 	ATK_NATIVE_ENTER(env, that, AtkAttribute_1sizeof_FUNC);
 	rc = (jint)AtkAttribute_sizeof();
 	ATK_NATIVE_EXIT(env, that, AtkAttribute_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_AtkObjectFactoryClass_1sizeof
-JNIEXPORT jint JNICALL ATK_NATIVE(AtkObjectFactoryClass_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, AtkObjectFactoryClass_1sizeof_FUNC);
-	rc = (jint)AtkObjectFactoryClass_sizeof();
-	ATK_NATIVE_EXIT(env, that, AtkObjectFactoryClass_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_AtkObjectFactory_1sizeof
-JNIEXPORT jint JNICALL ATK_NATIVE(AtkObjectFactory_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, AtkObjectFactory_1sizeof_FUNC);
-	rc = (jint)AtkObjectFactory_sizeof();
-	ATK_NATIVE_EXIT(env, that, AtkObjectFactory_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -312,18 +276,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1VALUE_1GET_1IFACE)
 }
 #endif
 
-#ifndef NO__1atk_1get_1default_1registry
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1get_1default_1registry_FUNC);
-	rc = (jintLong)atk_get_default_registry();
-	ATK_NATIVE_EXIT(env, that, _1atk_1get_1default_1registry_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1atk_1object_1add_1relationship
 JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1add_1relationship)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
@@ -333,28 +285,6 @@ JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1add_1relationship)
 	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
 	ATK_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1object_1factory_1get_1accessible_1type
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1factory_1get_1accessible_1type)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1object_1factory_1get_1accessible_1type_FUNC);
-	rc = (jintLong)atk_object_factory_get_accessible_type((AtkObjectFactory *)arg0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1object_1factory_1get_1accessible_1type_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1object_1initialize
-JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1initialize)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	ATK_NATIVE_ENTER(env, that, _1atk_1object_1initialize_FUNC);
-	atk_object_initialize((AtkObject *)arg0, (gpointer)arg1);
-	ATK_NATIVE_EXIT(env, that, _1atk_1object_1initialize_FUNC);
 }
 #endif
 
@@ -376,52 +306,6 @@ JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1remove_1relationship)
 	ATK_NATIVE_ENTER(env, that, _1atk_1object_1remove_1relationship_FUNC);
 	rc = (jboolean)atk_object_remove_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
 	ATK_NATIVE_EXIT(env, that, _1atk_1object_1remove_1relationship_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1registry_1get_1factory
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1registry_1get_1factory)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1get_1factory_FUNC);
-	rc = (jintLong)atk_registry_get_factory((AtkRegistry *)arg0, (GType)arg1);
-	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1get_1factory_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1registry_1set_1factory_1type
-JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1registry_1set_1factory_1type)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
-{
-	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
-	atk_registry_set_factory_type((AtkRegistry *)arg0, (GType)arg1, (GType)arg2);
-	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
-}
-#endif
-
-#ifndef NO__1atk_1role_1register
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1role_1register)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1role_1register_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)atk_role_register((const gchar *)lparg0);
-*/
-	{
-		ATK_LOAD_FUNCTION(fp, atk_role_register)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1role_1register_FUNC);
 	return rc;
 }
 #endif
@@ -679,27 +563,6 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__JLorg_eclipse_swt_internal_accessibil
 	ATK_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC);
 #else
 	ATK_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#else
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#endif
-{
-#ifndef JNI64
-	ATK_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC);
-#else
-	ATK_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC);
-#endif
-	if (arg1) getAtkObjectFactoryClassFields(env, arg1, (AtkObjectFactoryClass *)arg0);
-#ifndef JNI64
-	ATK_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC);
-#else
-	ATK_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC);
 #endif
 }
 #endif
@@ -962,27 +825,6 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibili
 	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I_FUNC);
 #else
 	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I_FUNC);
-#else
-	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J_FUNC);
-#endif
-	if (arg0) setAtkObjectFactoryClassFields(env, arg0, (AtkObjectFactoryClass *)arg1);
-#ifndef JNI64
-	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I_FUNC);
-#else
-	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J_FUNC);
 #endif
 }
 #endif

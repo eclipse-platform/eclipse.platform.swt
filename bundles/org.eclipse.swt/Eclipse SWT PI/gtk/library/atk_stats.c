@@ -22,7 +22,6 @@
 #ifdef NATIVE_STATS
 
 char * ATK_nativeFunctionNames[] = {
-	"ATK_1IS_1NO_1OP_1OBJECT_1FACTORY",
 	"ATK_1TYPE_1ACTION",
 	"ATK_1TYPE_1COMPONENT",
 	"ATK_1TYPE_1EDITABLE_1TEXT",
@@ -33,8 +32,6 @@ char * ATK_nativeFunctionNames[] = {
 	"ATK_1TYPE_1TEXT",
 	"ATK_1TYPE_1VALUE",
 	"AtkAttribute_1sizeof",
-	"AtkObjectFactoryClass_1sizeof",
-	"AtkObjectFactory_1sizeof",
 	"AtkTextRange_1sizeof",
 	"AtkTextRectangle_1sizeof",
 	"_1ATK_1ACTION_1GET_1IFACE",
@@ -46,15 +43,9 @@ char * ATK_nativeFunctionNames[] = {
 	"_1ATK_1TABLE_1GET_1IFACE",
 	"_1ATK_1TEXT_1GET_1IFACE",
 	"_1ATK_1VALUE_1GET_1IFACE",
-	"_1atk_1get_1default_1registry",
 	"_1atk_1object_1add_1relationship",
-	"_1atk_1object_1factory_1get_1accessible_1type",
-	"_1atk_1object_1initialize",
 	"_1atk_1object_1notify_1state_1change",
 	"_1atk_1object_1remove_1relationship",
-	"_1atk_1registry_1get_1factory",
-	"_1atk_1registry_1set_1factory_1type",
-	"_1atk_1role_1register",
 	"_1atk_1state_1set_1add_1state",
 	"_1atk_1text_1attribute_1get_1name",
 	"_1atk_1text_1attribute_1get_1value",
@@ -107,11 +98,6 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
 #else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2",
@@ -172,11 +158,6 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I",

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -88,18 +88,6 @@ void setAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpSt
 #define getAtkObjectClassFields(a,b,c) NULL
 #define setAtkObjectClassFields(a,b,c)
 #define AtkObjectClass_sizeof() 0
-#endif
-
-#ifndef NO_AtkObjectFactoryClass
-void cacheAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject);
-AtkObjectFactoryClass *getAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject, AtkObjectFactoryClass *lpStruct);
-void setAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject, AtkObjectFactoryClass *lpStruct);
-#define AtkObjectFactoryClass_sizeof() sizeof(AtkObjectFactoryClass)
-#else
-#define cacheAtkObjectFactoryClassFields(a,b)
-#define getAtkObjectFactoryClassFields(a,b,c) NULL
-#define setAtkObjectFactoryClassFields(a,b,c)
-#define AtkObjectFactoryClass_sizeof() 0
 #endif
 
 #ifndef NO_AtkSelectionIface

@@ -3648,18 +3648,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(GTK_1TEXTVIEW_1IM_1CONTEXT)
 }
 #endif
 
-#ifndef NO_GTK_1TYPE_1ACCESSIBLE
-JNIEXPORT jintLong JNICALL GTK_NATIVE(GTK_1TYPE_1ACCESSIBLE)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
-	rc = (jintLong)GTK_TYPE_ACCESSIBLE;
-	GTK_NATIVE_EXIT(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 JNIEXPORT jintLong JNICALL GTK_NATIVE(GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE)
 	(JNIEnv *env, jclass that)
@@ -17251,22 +17239,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1type_1class_1unref)
 }
 #endif
 
-#ifndef NO__1g_1type_1from_1name
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1type_1from_1name)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1type_1from_1name_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)g_type_from_name((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1type_1from_1name_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1type_1interface_1peek_1parent
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1type_1interface_1peek_1parent)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -17287,18 +17259,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1type_1is_1a)
 	OS_NATIVE_ENTER(env, that, _1g_1type_1is_1a_FUNC);
 	rc = (jboolean)g_type_is_a((GType)arg0, (GType)arg1);
 	OS_NATIVE_EXIT(env, that, _1g_1type_1is_1a_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1type_1name
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1type_1name)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1type_1name_FUNC);
-	rc = (jintLong)g_type_name((GType)arg0);
-	OS_NATIVE_EXIT(env, that, _1g_1type_1name_FUNC);
 	return rc;
 }
 #endif

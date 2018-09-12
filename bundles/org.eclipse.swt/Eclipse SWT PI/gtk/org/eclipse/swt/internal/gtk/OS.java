@@ -2603,16 +2603,6 @@ public static final void g_type_class_unref (long /*int*/ g_class) {
 		lock.unlock();
 	}
 }
-/** @param name cast=(const gchar *) */
-public static final native long /*int*/ _g_type_from_name (byte[] name);
-public static final long /*int*/ g_type_from_name (byte[] name) {
-	lock.lock();
-	try {
-		return _g_type_from_name(name);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param iface cast=(gpointer) */
 public static final native long /*int*/ _g_type_interface_peek_parent (long /*int*/ iface);
 public static final long /*int*/ g_type_interface_peek_parent (long /*int*/ iface) {
@@ -2632,16 +2622,6 @@ public static final boolean g_type_is_a (long /*int*/ type, long /*int*/ is_a_ty
 	lock.lock();
 	try {
 		return _g_type_is_a(type, is_a_type);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param handle cast=(GType) */
-public static final native long /*int*/ _g_type_name (long /*int*/ handle);
-public static final long /*int*/ g_type_name (long /*int*/ handle) {
-	lock.lock();
-	try {
-		return _g_type_name(handle);
 	} finally {
 		lock.unlock();
 	}

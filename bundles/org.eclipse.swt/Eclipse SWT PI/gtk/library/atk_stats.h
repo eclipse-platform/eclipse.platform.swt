@@ -32,7 +32,6 @@ extern char* ATK_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	ATK_1IS_1NO_1OP_1OBJECT_1FACTORY_FUNC,
 	ATK_1TYPE_1ACTION_FUNC,
 	ATK_1TYPE_1COMPONENT_FUNC,
 	ATK_1TYPE_1EDITABLE_1TEXT_FUNC,
@@ -43,8 +42,6 @@ typedef enum {
 	ATK_1TYPE_1TEXT_FUNC,
 	ATK_1TYPE_1VALUE_FUNC,
 	AtkAttribute_1sizeof_FUNC,
-	AtkObjectFactoryClass_1sizeof_FUNC,
-	AtkObjectFactory_1sizeof_FUNC,
 	AtkTextRange_1sizeof_FUNC,
 	AtkTextRectangle_1sizeof_FUNC,
 	_1ATK_1ACTION_1GET_1IFACE_FUNC,
@@ -56,15 +53,9 @@ typedef enum {
 	_1ATK_1TABLE_1GET_1IFACE_FUNC,
 	_1ATK_1TEXT_1GET_1IFACE_FUNC,
 	_1ATK_1VALUE_1GET_1IFACE_FUNC,
-	_1atk_1get_1default_1registry_FUNC,
 	_1atk_1object_1add_1relationship_FUNC,
-	_1atk_1object_1factory_1get_1accessible_1type_FUNC,
-	_1atk_1object_1initialize_FUNC,
 	_1atk_1object_1notify_1state_1change_FUNC,
 	_1atk_1object_1remove_1relationship_FUNC,
-	_1atk_1registry_1get_1factory_FUNC,
-	_1atk_1registry_1set_1factory_1type_FUNC,
-	_1atk_1role_1register_FUNC,
 	_1atk_1state_1set_1add_1state_FUNC,
 	_1atk_1text_1attribute_1get_1name_FUNC,
 	_1atk_1text_1attribute_1get_1value_FUNC,
@@ -117,11 +108,6 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC,
-#endif
-#ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC,
 #endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2_FUNC,
@@ -182,11 +168,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I_FUNC,

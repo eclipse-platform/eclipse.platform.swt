@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -349,43 +349,6 @@ void setAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpSt
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.state_change, (jintLong)lpStruct->state_change);
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.visible_data_changed, (jintLong)lpStruct->visible_data_changed);
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.get_attributes, (jintLong)lpStruct->SWT_AtkObjectClass_get_attributes);
-}
-#endif
-
-#ifndef NO_AtkObjectFactoryClass
-typedef struct AtkObjectFactoryClass_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID create_accessible, invalidate, get_accessible_type;
-} AtkObjectFactoryClass_FID_CACHE;
-
-AtkObjectFactoryClass_FID_CACHE AtkObjectFactoryClassFc;
-
-void cacheAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject)
-{
-	if (AtkObjectFactoryClassFc.cached) return;
-	AtkObjectFactoryClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	AtkObjectFactoryClassFc.create_accessible = (*env)->GetFieldID(env, AtkObjectFactoryClassFc.clazz, "create_accessible", I_J);
-	AtkObjectFactoryClassFc.invalidate = (*env)->GetFieldID(env, AtkObjectFactoryClassFc.clazz, "invalidate", I_J);
-	AtkObjectFactoryClassFc.get_accessible_type = (*env)->GetFieldID(env, AtkObjectFactoryClassFc.clazz, "get_accessible_type", I_J);
-	AtkObjectFactoryClassFc.cached = 1;
-}
-
-AtkObjectFactoryClass *getAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject, AtkObjectFactoryClass *lpStruct)
-{
-	if (!AtkObjectFactoryClassFc.cached) cacheAtkObjectFactoryClassFields(env, lpObject);
-	lpStruct->create_accessible = (AtkObject *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectFactoryClassFc.create_accessible);
-	lpStruct->invalidate = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectFactoryClassFc.invalidate);
-	lpStruct->get_accessible_type = (GType (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectFactoryClassFc.get_accessible_type);
-	return lpStruct;
-}
-
-void setAtkObjectFactoryClassFields(JNIEnv *env, jobject lpObject, AtkObjectFactoryClass *lpStruct)
-{
-	if (!AtkObjectFactoryClassFc.cached) cacheAtkObjectFactoryClassFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, AtkObjectFactoryClassFc.create_accessible, (jintLong)lpStruct->create_accessible);
-	(*env)->SetIntLongField(env, lpObject, AtkObjectFactoryClassFc.invalidate, (jintLong)lpStruct->invalidate);
-	(*env)->SetIntLongField(env, lpObject, AtkObjectFactoryClassFc.get_accessible_type, (jintLong)lpStruct->get_accessible_type);
 }
 #endif
 

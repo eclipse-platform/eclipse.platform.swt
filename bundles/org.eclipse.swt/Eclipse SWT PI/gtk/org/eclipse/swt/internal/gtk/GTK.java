@@ -277,8 +277,6 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native int GTK_WIDGET_REQUISITION_HEIGHT(long /*int*/ widget);
 	/** @method flags=const */
-	public static final native long /*int*/ GTK_TYPE_ACCESSIBLE ();
-	/** @method flags=const */
 	public static final native long /*int*/ GTK_TYPE_TEXT_VIEW_ACCESSIBLE ();
 	public static final native long /*int*/ _GTK_ACCESSIBLE (long /*int*/ handle);
 	public static final native boolean _GTK_IS_ACCEL_LABEL(long /*int*/ obj);
