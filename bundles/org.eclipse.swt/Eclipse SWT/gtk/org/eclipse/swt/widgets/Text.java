@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1663,7 +1663,6 @@ void drawMessage (long /*int*/ cr) {
 			int [] w = new int [1], h = new int [1];
 			gdk_window_get_size (window, w, h);
 			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-			int width = w [0] - innerBorder.left - innerBorder.right;
 			int height = h [0] - innerBorder.top - innerBorder.bottom;
 			long /*int*/ context = GTK.gtk_widget_get_pango_context (handle);
 			long /*int*/ lang = OS.pango_context_get_language (context);
@@ -1688,19 +1687,10 @@ void drawMessage (long /*int*/ cr) {
 				y = height - rect.height;
 			}
 			y += innerBorder.top;
-			int x = innerBorder.left;
-			boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
-			int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
-			switch (alignment) {
-				case SWT.LEFT: x = rtl ? width - rect.width: innerBorder.left; break;
-				case SWT.CENTER: x = (width - rect.width) / 2; break;
-				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
-			}
 			long /*int*/ styleContext = GTK.gtk_widget_get_style_context (handle);
 			GdkRGBA textRGBA;
 			textRGBA = display.styleContextGetColor (styleContext, GTK.GTK_STATE_FLAG_INSENSITIVE);
 			Point thickness = getThickness (handle);
-			x += thickness.x;
 			y += thickness.y;
 			long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
 			Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);

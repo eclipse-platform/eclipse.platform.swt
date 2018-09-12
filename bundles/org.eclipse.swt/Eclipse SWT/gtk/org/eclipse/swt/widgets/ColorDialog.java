@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -136,7 +136,6 @@ public RGB open () {
 		handle = GTK.gtk_color_selection_dialog_new (buffer);
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	long /*int*/ colorsel = 0;
 	GdkRGBA rgba;
 	rgba = new GdkRGBA ();
 	if (rgb != null) {
