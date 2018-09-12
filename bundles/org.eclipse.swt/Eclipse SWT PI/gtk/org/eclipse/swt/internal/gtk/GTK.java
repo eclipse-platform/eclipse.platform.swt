@@ -7970,20 +7970,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param tree_view cast=(GtkTreeView *)
-	 */
-	public static final native boolean _gtk_tree_view_get_rules_hint(long /*int*/ tree_view);
-	/** [GTK2/GTK3; 3.14 deprecated] */
-	public static final boolean gtk_tree_view_get_rules_hint(long /*int*/ tree_view) {
-		lock.lock();
-		try {
-			return _gtk_tree_view_get_rules_hint(tree_view);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param tree_view cast=(GtkTreeView *) */
 	public static final native long /*int*/ _gtk_tree_view_get_selection(long /*int*/ tree_view);
 	public static final long /*int*/ gtk_tree_view_get_selection(long /*int*/ tree_view) {
@@ -8163,20 +8149,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_tree_view_set_model(tree_view, model);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param tree_view cast=(GtkTreeView *)
-	 */
-	public static final native void _gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting);
-	/** [GTK2/GTK3; 3.14 deprecated] */
-	public static final void gtk_tree_view_set_rules_hint(long /*int*/ tree_view, boolean setting) {
-		lock.lock();
-		try {
-			_gtk_tree_view_set_rules_hint(tree_view, setting);
 		} finally {
 			lock.unlock();
 		}

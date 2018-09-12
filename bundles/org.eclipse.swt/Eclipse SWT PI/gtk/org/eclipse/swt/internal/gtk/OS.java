@@ -353,7 +353,6 @@ public class OS extends C {
 	public static final byte[] background_gdk = ascii("background-gdk");
 	public static final byte[] background_rgba = ascii("background-rgba");
 	public static final byte[] button_relief = ascii("button-relief");
-	public static final byte[] cell_background_gdk = ascii("cell-background-gdk");
 	public static final byte[] cell_background_rgba = ascii("cell-background-rgba");
 	public static final byte[] default_border = ascii("default-border");
 	public static final byte[] expander_size = ascii("expander-size");

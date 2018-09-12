@@ -12317,26 +12317,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1tree_1view_1get_1rules_1hint
-JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1rules_1hint)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1rules_1hint_FUNC);
-/*
-	rc = (jboolean)gtk_tree_view_get_rules_hint((GtkTreeView *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_tree_view_get_rules_hint)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkTreeView *))fp)((GtkTreeView *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1rules_1hint_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1tree_1view_1get_1selection
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1selection)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -12506,24 +12486,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1view_1set_1model)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1set_1model_FUNC);
 	gtk_tree_view_set_model((GtkTreeView *)arg0, (GtkTreeModel *)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1set_1model_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1tree_1view_1set_1rules_1hint
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1view_1set_1rules_1hint)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1set_1rules_1hint_FUNC);
-/*
-	gtk_tree_view_set_rules_hint((GtkTreeView *)arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_tree_view_set_rules_hint)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkTreeView *, jboolean))fp)((GtkTreeView *)arg0, arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1set_1rules_1hint_FUNC);
 }
 #endif
 

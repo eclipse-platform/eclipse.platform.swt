@@ -196,7 +196,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
 	boolean isPixbuf = GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell);
 	boolean isText = GTK.GTK_IS_CELL_RENDERER_TEXT (cell);
-	if (isText && GTK.GTK3) {
+	if (isText) {
 		GTK.gtk_cell_renderer_set_fixed_size (cell, -1, -1);
 	}
 	if (!(isPixbuf || isText)) return 0;
@@ -225,7 +225,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 		ptr [0] = 0;
 		if (isPixbuf) {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, GTK.GTK3 ? OS.gicon : OS.pixbuf, ptr [0], 0);
+			OS.g_object_set (cell, OS.gicon, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1);
@@ -338,36 +338,12 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	*/
 
 	//This workaround is causing the problem Bug 459834 in GTK3. So reverting the workaround for GTK3
-	if (GTK.GTK3) {
-		int [] width = new int [1];
-		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
-		long /*int*/ textRenderer = getTextRenderer (column);
-		int [] xpad = new int[1];
-		if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
-		return width [0] + xpad [0]*2;
-	} else {
-		int width = 0;
-		int [] w = new int [1];
-		GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
-		width += 2 * w [0];
-		long /*int*/ list = GTK.gtk_cell_layout_get_cells(column);
-		if (list == 0) return 0;
-		long /*int*/ temp = list;
-		while (temp != 0) {
-			long /*int*/ renderer = OS.g_list_data (temp);
-			if (renderer != 0) {
-				gtk_cell_renderer_get_preferred_size (renderer, handle, w, null);
-				width += w [0];
-			}
-			temp = OS.g_list_next (temp);
-		}
-		OS.g_list_free (list);
-		if (GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE) {
-			GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
-			width += 2 * w [0];
-		}
-		return width;
-	}
+	int [] width = new int [1];
+	GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
+	long /*int*/ textRenderer = getTextRenderer (column);
+	int [] xpad = new int[1];
+	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
+	return width [0] + xpad [0]*2;
 }
 
 /**
@@ -506,23 +482,21 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	if (GTK.GTK3) {
-		/*
-		 * In GTK 3, computeNativeSize(..) sometimes just returns the header
-		 * height as height. In that case, calculate the table height based on
-		 * the number of items in the table.
-		 */
-		if (hHint == SWT.DEFAULT && (size.y == getHeaderHeight()) || size.y == 0) {
-			size.y = getItemCount() * getItemHeight() + getHeaderHeight();
-		}
-		/*
-		 * Bug 465056: single column Tables have a very small initial width.
-		 * Fix: set the width of the Table to the width of the widest
-		 * TableItem.
-		 */
-		if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
-			size.x = maxWidth;
-		}
+	/*
+	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
+	 * height as height. In that case, calculate the table height based on
+	 * the number of items in the table.
+	 */
+	if (hHint == SWT.DEFAULT && (size.y == getHeaderHeight()) || size.y == 0) {
+		size.y = getItemCount() * getItemHeight() + getHeaderHeight();
+	}
+	/*
+	 * Bug 465056: single column Tables have a very small initial width.
+	 * Fix: set the width of the Table to the width of the widest
+	 * TableItem.
+	 */
+	if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
+		size.x = maxWidth;
 	}
 	/*
 	 * In case the table doesn't contain any elements,
@@ -701,18 +675,7 @@ void createItem (TableColumn column, int index) {
 	column.labelHandle = labelHandle;
 	column.imageHandle = imageHandle;
 	GTK.gtk_tree_view_column_set_widget (column.handle, boxHandle);
-	if (GTK.GTK3) {
-		column.buttonHandle = GTK.gtk_tree_view_column_get_button(column.handle);
-	} else {
-		long /*int*/ widget = GTK.gtk_widget_get_parent (boxHandle);
-		while (widget != handle) {
-			if (GTK.GTK_IS_BUTTON (widget)) {
-				column.buttonHandle = widget;
-				break;
-			}
-			widget = GTK.gtk_widget_get_parent (widget);
-		}
-	}
+	column.buttonHandle = GTK.gtk_tree_view_column_get_button(column.handle);
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
@@ -790,11 +753,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 			GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, checkRenderer, display.cellDataProc, handle, 0);
 			OS.g_object_set_qdata (checkRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 		} else {
-			if (GTK.GTK3) {
-				GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
-			} else {
-				GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-			}
+			GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 		}
 	}
 	long /*int*/ pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : GTK.gtk_cell_renderer_pixbuf_new ();
@@ -802,7 +761,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 		error (SWT.ERROR_NO_HANDLES);
 	} else {
 		// set default size this size is used for calculating the icon and text positions in a table
-		if ((!ownerDraw) && (GTK.GTK3)) {
+		if (!ownerDraw) {
 			// Set render size to 0x0 until we actually add images, fix for
 			// Bug 457196 (this applies to Tables as well).
 			GTK.gtk_cell_renderer_set_fixed_size(pixbufRenderer, 0, 0);
@@ -851,20 +810,11 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	 */
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
-		if (GTK.GTK3) {
-			GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
-			GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
-		} else {
-			GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-			GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		}
+		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+		GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 	}
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
-	if (GTK.GTK3) {
-		GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_rgba, FOREGROUND_COLUMN);
-	} else {
-		GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
-	}
+	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_rgba, FOREGROUND_COLUMN);
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
 
 	boolean customDraw = firstCustomDraw;
@@ -890,9 +840,7 @@ void createWidget (int index) {
 	itemCount = columnCount = 0;
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 }
 
 @Override
@@ -1403,7 +1351,6 @@ public TableColumn [] getColumns () {
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null) {
 			return background;
 	} else {
@@ -1415,7 +1362,6 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		if (foreground != null) {
 			return foreground;
@@ -1671,11 +1617,9 @@ int getItemHeightInPixels () {
 		ignoreSize = true;
 		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 		int height = h [0];
-		if (GTK.GTK3) {
-			long /*int*/ textRenderer = getTextRenderer (column);
-			if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
-			height += h [0];
-		}
+		long /*int*/ textRenderer = getTextRenderer (column);
+		if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+		height += h [0];
 		ignoreSize = false;
 		return height;
 	} else {
@@ -1688,14 +1632,10 @@ int getItemHeightInPixels () {
 			GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 			int [] w = new int [1], h = new int [1];
 			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-			if (GTK.GTK3) {
-				long /*int*/ textRenderer = getTextRenderer (column);
-				int [] ypad = new int[1];
-				if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
-				height = Math.max(height, h [0] + ypad [0]);
-			} else {
-				height = Math.max (height, h [0]);
-			}
+			long /*int*/ textRenderer = getTextRenderer (column);
+			int [] ypad = new int[1];
+			if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
+			height = Math.max(height, h [0] + ypad [0]);
 		}
 		OS.g_free (iter);
 		return height;
@@ -1751,11 +1691,7 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible() {
 	checkWidget();
-	if (GTK.GTK3) {
-		return GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE;
-	} else  {
-		return GTK.gtk_tree_view_get_rules_hint (handle);
-	}
+	return GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE;
 }
 
 long /*int*/ getPixbufRenderer (long /*int*/ column) {
@@ -1997,11 +1933,7 @@ public int getTopIndex () {
 	 * using the UI. Otherwise, fetch topIndex using GtkTreeView API.
 	 */
 	long /*int*/ vAdjustment;
-	if (GTK.GTK3){
-		vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
-	} else {
-		vAdjustment = GTK.gtk_tree_view_get_vadjustment(handle);
-	}
+	vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
 	currentAdjustment = GTK.gtk_adjustment_get_value(vAdjustment);
 	if (cachedAdjustment == currentAdjustment){
 		return topIndex;
@@ -2769,7 +2701,7 @@ public void removeAll () {
 	 * making the call to avoid performance hang.
 	 */
 	long /*int*/ selectionHandle = GTK.gtk_tree_view_get_selection(handle);
-	boolean changeMode = GTK.GTK3 && (style & SWT.MULTI) != 0;
+	boolean changeMode = (style & SWT.MULTI) != 0;
 	if (changeMode) GTK.gtk_tree_selection_set_mode(selectionHandle, GTK.GTK_SELECTION_BROWSE);
 	GTK.gtk_list_store_clear (modelHandle);
 	if (changeMode) GTK.gtk_tree_selection_set_mode(selectionHandle, GTK.GTK_SELECTION_MULTIPLE);
@@ -2844,14 +2776,12 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			int [] contentWidth = new int [1], contentHeight = new int  [1];
 			if (width != 0) C.memmove (contentWidth, width, 4);
 			if (height != 0) C.memmove (contentHeight, height, 4);
-			if (GTK.GTK3) {
-				GTK.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
-			}
+			GTK.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
 			Image image = item.getImage (columnIndex);
 			int imageWidth = 0;
 			if (image != null) {
 				Rectangle bounds;
-				if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+				if (DPIUtil.useCairoAutoScale()) {
 					bounds = image.getBounds ();
 				} else {
 					bounds = image.getBoundsInPixels();
@@ -2875,9 +2805,7 @@ void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ heigh
 			if (contentHeight [0] < rect.height) contentHeight [0] = rect.height;
 			if (width != 0) C.memmove (width, contentWidth, 4);
 			if (height != 0) C.memmove (height, contentHeight, 4);
-			if (GTK.GTK3) {
-				GTK.gtk_cell_renderer_set_fixed_size (cell, -1, contentHeight [0]);
-			}
+			GTK.gtk_cell_renderer_set_fixed_size (cell, -1, contentHeight [0]);
 		}
 	}
 }
@@ -2953,7 +2881,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				GDK.gdk_rgba_free (ptr [0]);
 			}
 			if ((flags & GTK.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
-			if (!GTK.GTK3 || (flags & GTK.GTK_CELL_RENDERER_SELECTED) == 0) {
+			if ((flags & GTK.GTK_CELL_RENDERER_SELECTED) == 0) {
 				if ((flags & GTK.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
 			}
 
@@ -2974,9 +2902,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					if (control != null) {
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
-							if (!GTK.GTK3){
-								Cairo.cairo_reset_clip (cr);
-							}
 						}
 						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
 						if (cr != 0) {
@@ -3001,16 +2926,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
-					if (!GTK.GTK3){
-						if (cr != 0) {
-							Cairo.cairo_save (cr);
-							Cairo.cairo_reset_clip (cr);
-						}
-						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
-						if (cr != 0) {
-							Cairo.cairo_restore (cr);
-						}
-					}
 				}
 				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
@@ -3052,22 +2967,15 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= GTK.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= GTK.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
-					if (GTK.GTK3) {
-						Cairo.cairo_save (cr);
-						Cairo.cairo_reset_clip (cr);
-						long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
-						GTK.gtk_style_context_save (context);
-						GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_CELL);
-						GTK.gtk_style_context_set_state (context, GTK.GTK_STATE_FLAG_SELECTED);
-						GTK.gtk_render_background(context, cr, rect.x, rect.y, rect.width, rect.height);
-						GTK.gtk_style_context_restore (context);
-						Cairo.cairo_restore (cr);
-					} else {
-						long /*int*/ style = GTK.gtk_widget_get_style (widget);
-						//TODO - parity and sorted
-						byte[] detail = Converter.wcsToMbcs ("cell_odd", true);
-						GTK.gtk_paint_flat_box (style, window, GTK.GTK_STATE_SELECTED, GTK.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
-					}
+					Cairo.cairo_save (cr);
+					Cairo.cairo_reset_clip (cr);
+					long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
+					GTK.gtk_style_context_save (context);
+					GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_CELL);
+					GTK.gtk_style_context_set_state (context, GTK.GTK_STATE_FLAG_SELECTED);
+					GTK.gtk_render_background(context, cr, rect.x, rect.y, rect.width, rect.height);
+					GTK.gtk_style_context_restore (context);
+					Cairo.cairo_restore (cr);
 				} else {
 					if (wasSelected) {
 						drawForegroundRGBA = gc.getForeground ().handleRGBA;
@@ -3089,14 +2997,10 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
-		if (drawForegroundRGBA != null && GTK.GTK_IS_CELL_RENDERER_TEXT (cell) && GTK.GTK3) {
+		if (drawForegroundRGBA != null && GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			OS.g_object_set (cell, OS.foreground_rgba, drawForegroundRGBA, 0);
 		}
-		if (GTK.GTK3) {
-			OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
-		} else {
-			OS.call (klass.render, cell, window, widget, background_area, cell_area, expose_area, drawFlags);
-		}
+		OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
 	}
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
@@ -3122,7 +3026,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				int imageWidth = 0;
 				if (image != null) {
 					Rectangle bounds;
-					if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+					if (DPIUtil.useCairoAutoScale()) {
 						bounds = image.getBounds ();
 					} else {
 						bounds = image.getBoundsInPixels ();
@@ -3140,7 +3044,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				GC gc = getGC(cr);
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
-					if (GTK.gtk_widget_has_focus (handle) || GTK.GTK3) {
+					if (GTK.gtk_widget_has_focus (handle)) {
 						background = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 						foreground = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
 					} else {
@@ -3182,13 +3086,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 
 private GC getGC(long /*int*/ cr) {
 	GC gc;
-	if (GTK.GTK3){
-		GCData gcData = new GCData();
-		gcData.cairo = cr;
-		gc = GC.gtk_new(this, gcData );
-	} else {
-		gc = new GC (this);
-	}
+	GCData gcData = new GCData();
+	gcData.cairo = cr;
+	gc = GC.gtk_new(this, gcData );
 	return gc;
 }
 
@@ -3375,7 +3275,6 @@ void selectFocusIndex (int index) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	/* Setting the background color overrides the selected background color.
 	 * To prevent this, we need to re-set the default. This can be done with CSS
 	 * on GTK3.14+, or by using GtkStateFlags as an argument to
@@ -3487,7 +3386,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		foreground = rgba;
 		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
@@ -3525,28 +3423,26 @@ public void setHeaderBackground(Color color) {
 			return;
 	}
 	headerBackground = color;
-	if (GTK.GTK3) {
-		GdkRGBA background;
-		if (headerBackground != null) {
-			background = headerBackground.handleRGBA;
-		} else {
-			background = defaultBackground();
-		}
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
-		// background works for 3.18 and later, background-color only as of 3.20
-		String css = name + " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
-		headerCSSBackground = css;
-		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
-		for (TableColumn column : columns) {
-			if (column != null) {
-				long /*int*/ context = GTK.gtk_widget_get_style_context(column.buttonHandle);
-				// Create provider as we need it attached to the proper context which is not the widget one
-				long /*int*/ provider = GTK.gtk_css_provider_new ();
-				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.g_object_unref (provider);
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-				GTK.gtk_style_context_invalidate(context);
-			}
+	GdkRGBA background;
+	if (headerBackground != null) {
+		background = headerBackground.handleRGBA;
+	} else {
+		background = defaultBackground();
+	}
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+	// background works for 3.18 and later, background-color only as of 3.20
+	String css = name + " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+	headerCSSBackground = css;
+	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
+	for (TableColumn column : columns) {
+		if (column != null) {
+			long /*int*/ context = GTK.gtk_widget_get_style_context(column.buttonHandle);
+			// Create provider as we need it attached to the proper context which is not the widget one
+			long /*int*/ provider = GTK.gtk_css_provider_new ();
+			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.g_object_unref (provider);
+			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+			GTK.gtk_style_context_invalidate(context);
 		}
 	}
 	// Redraw not necessary, GTK handles the CSS update.
@@ -3580,27 +3476,25 @@ public void setHeaderForeground (Color color) {
 			return;
 	}
 	headerForeground = color;
-	if (GTK.GTK3) {
-		GdkRGBA foreground;
-		if (headerForeground != null) {
-			foreground = headerForeground.handleRGBA;
-		} else {
-			foreground = display.COLOR_LIST_FOREGROUND_RGBA;
-		}
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
-		String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
-		headerCSSForeground = css;
-		String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
-		for (TableColumn column : columns) {
-			if (column != null) {
-				long /*int*/ context = GTK.gtk_widget_get_style_context(column.buttonHandle);
-				// Create provider as we need it attached to the proper context which is not the widget one
-				long /*int*/ provider = GTK.gtk_css_provider_new ();
-				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-				OS.g_object_unref (provider);
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-				GTK.gtk_style_context_invalidate(context);
-			}
+	GdkRGBA foreground;
+	if (headerForeground != null) {
+		foreground = headerForeground.handleRGBA;
+	} else {
+		foreground = display.COLOR_LIST_FOREGROUND_RGBA;
+	}
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+	String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
+	headerCSSForeground = css;
+	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
+	for (TableColumn column : columns) {
+		if (column != null) {
+			long /*int*/ context = GTK.gtk_widget_get_style_context(column.buttonHandle);
+			// Create provider as we need it attached to the proper context which is not the widget one
+			long /*int*/ provider = GTK.gtk_css_provider_new ();
+			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			OS.g_object_unref (provider);
+			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+			GTK.gtk_style_context_invalidate(context);
 		}
 	}
 	// Redraw not necessary, GTK handles the CSS update.
@@ -3692,9 +3586,6 @@ public void setItemCount (int count) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget();
-	if (!GTK.GTK3) {
-		GTK.gtk_tree_view_set_rules_hint (handle, show);
-	}
 	//Note: this is overriden by the active theme in GTK3.
 	GTK.gtk_tree_view_set_grid_lines (handle, show ? GTK.GTK_TREE_VIEW_GRID_LINES_VERTICAL : GTK.GTK_TREE_VIEW_GRID_LINES_NONE);
 }
@@ -4022,16 +3913,9 @@ public void setTopIndex (int index) {
 	/*
 	 * Feature in GTK: cache the GtkAdjustment value for future use in
 	 * getTopIndex(). Set topIndex to index.
-	 *
-	 * Use gtk_tree_view_get_view_get_vadjustment for GTK2, GtkScrollable
-	 * doesn't exist on GTK2.
 	 */
 	long /*int*/ vAdjustment;
-	if (GTK.GTK3){
-		vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
-	} else {
-		vAdjustment = GTK.gtk_tree_view_get_vadjustment(handle);
-	}
+	vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
 	cachedAdjustment = GTK.gtk_adjustment_get_value(vAdjustment);
 	topIndex = index;
 	long /*int*/ path = GTK.gtk_tree_model_get_path (modelHandle, _getItem (index).handle);
