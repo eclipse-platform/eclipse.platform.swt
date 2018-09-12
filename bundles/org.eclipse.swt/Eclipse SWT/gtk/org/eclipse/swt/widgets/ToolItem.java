@@ -580,14 +580,6 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				long /*int*/ pixbuf = imageList.getPixbuf (index);
 				byte[] label = null;
 				int [] showImages = new int []{1};
-				long /*int*/ settings = GTK.gtk_settings_get_default();
-				if (settings != 0) {
-					if (!GTK.GTK3) {
-						long /*int*/ property = OS.g_object_class_find_property(OS.G_OBJECT_GET_CLASS(settings), GTK.gtk_menu_images);
-						if (property != 0) OS.g_object_get (settings, GTK.gtk_menu_images, showImages, 0);
-					}
-				}
-
 				/*
 				 * GTK tool items with only image appear as blank items
 				 * in overflow menu when the system property "gtk-menu-images"
@@ -606,38 +598,27 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				else {
 					label = Converter.wcsToMbcs(text, true);
 				}
-				long /*int*/ menuItem;
-				if (GTK.GTK3) {
+				long /*int*/ menuItem = GTK.gtk_menu_item_new ();
+				if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
 
-					menuItem = GTK.gtk_menu_item_new ();
-					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
+				long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-					long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
-					if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-					long /*int*/ menuLabel = GTK.gtk_accel_label_new (label);
-					if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
-					if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-						GTK.gtk_label_set_xalign (labelHandle, 0);
-						GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-					} else {
-						GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
-					}
-
-					long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
-					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
-
-					GTK.gtk_container_add (boxHandle, menuImage);
-					GTK.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
-					GTK.gtk_container_add (menuItem, boxHandle);
+				long /*int*/ menuLabel = GTK.gtk_accel_label_new (label);
+				if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
+				if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+					GTK.gtk_label_set_xalign (labelHandle, 0);
+					GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 				} else {
-					menuItem = GTK.gtk_image_menu_item_new_with_label (label);
-					if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
-
-					long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
-					if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
-					GTK.gtk_image_menu_item_set_image (menuItem, menuImage);
+					GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 				}
+
+				long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
+				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
+
+				GTK.gtk_container_add (boxHandle, menuImage);
+				GTK.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
+				GTK.gtk_container_add (menuItem, boxHandle);
 				GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 
 				/*

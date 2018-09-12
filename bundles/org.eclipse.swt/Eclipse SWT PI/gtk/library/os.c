@@ -4877,22 +4877,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1check_1menu_1item_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1check_1menu_1item_1new_1with_1label
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1check_1menu_1item_1new_1with_1label)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1check_1menu_1item_1new_1with_1label_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_check_menu_item_new_with_label((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1check_1menu_1item_1new_1with_1label_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1check_1menu_1item_1set_1active
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1check_1menu_1item_1set_1active)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
@@ -7502,48 +7486,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1im_1multicontext_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1image_1menu_1item_1new_1with_1label
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1image_1menu_1item_1new_1with_1label)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1image_1menu_1item_1new_1with_1label_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gtk_image_menu_item_new_with_label((const gchar *)lparg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_image_menu_item_new_with_label)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1image_1menu_1item_1new_1with_1label_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1image_1menu_1item_1set_1image
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1image_1menu_1item_1set_1image)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1image_1menu_1item_1set_1image_FUNC);
-/*
-	gtk_image_menu_item_set_image((GtkImageMenuItem *)arg0, (GtkWidget *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_image_menu_item_set_image)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkImageMenuItem *, GtkWidget *))fp)((GtkImageMenuItem *)arg0, (GtkWidget *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1image_1menu_1item_1set_1image_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1image_1new
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1image_1new)
 	(JNIEnv *env, jclass that)
@@ -8071,22 +8013,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1menu_1item_1new)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1menu_1item_1new_FUNC);
 	rc = (jintLong)gtk_menu_item_new();
 	GTK_NATIVE_EXIT(env, that, _1gtk_1menu_1item_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1menu_1item_1new_1with_1label
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1menu_1item_1new_1with_1label)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1menu_1item_1new_1with_1label_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_menu_item_new_with_label((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1menu_1item_1new_1with_1label_FUNC);
 	return rc;
 }
 #endif
@@ -9361,22 +9287,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1radio_1menu_1item_1new)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1radio_1menu_1item_1new_FUNC);
 	rc = (jintLong)gtk_radio_menu_item_new((GSList *)arg0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1radio_1menu_1item_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1radio_1menu_1item_1new_1with_1label
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1radio_1menu_1item_1new_1with_1label)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1radio_1menu_1item_1new_1with_1label_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_radio_menu_item_new_with_label((GSList *)arg0, (const gchar *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1radio_1menu_1item_1new_1with_1label_FUNC);
 	return rc;
 }
 #endif

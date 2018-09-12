@@ -1232,30 +1232,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long /*int*/ _gtk_image_menu_item_new_with_label(byte[] label);
-	/** [GTK2/GTK3; 3.10 deprecated] */
-	public static final long /*int*/ gtk_image_menu_item_new_with_label(byte[] label) {
-		lock.lock();
-		try {
-			return _gtk_image_menu_item_new_with_label(label);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param label cast=(const gchar *) */
-	public static final native long /*int*/ _gtk_check_menu_item_new_with_label(byte[] label);
-	public static final long /*int*/ gtk_check_menu_item_new_with_label(byte[] label) {
-		lock.lock();
-		try {
-			return _gtk_check_menu_item_new_with_label(label);
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long /*int*/ _gtk_check_menu_item_new();
 	public static final long /*int*/ gtk_check_menu_item_new() {
 		lock.lock();
@@ -3575,21 +3551,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param menu_item cast=(GtkImageMenuItem *)
-	 * @param image cast=(GtkWidget *)
-	 */
-	public static final native void _gtk_image_menu_item_set_image(long /*int*/ menu_item, long /*int*/ image);
-	/** [GTK2/GTK3; 3.10 deprecated] */
-	public static final void gtk_image_menu_item_set_image(long /*int*/ menu_item, long /*int*/ image) {
-		lock.lock();
-		try {
-			_gtk_image_menu_item_set_image(menu_item, image);
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long /*int*/ _gtk_image_new();
 	public static final long /*int*/ gtk_image_new() {
 		lock.lock();
@@ -4090,16 +4051,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_menu_item_get_submenu(menu_item);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param label cast=(const gchar *) */
-	public static final native long /*int*/ _gtk_menu_item_new_with_label(byte[] label);
-	public static final long /*int*/ gtk_menu_item_new_with_label(byte[] label) {
-		lock.lock();
-		try {
-			return _gtk_menu_item_new_with_label(label);
 		} finally {
 			lock.unlock();
 		}
@@ -5399,19 +5350,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_radio_menu_item_new(group);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param group cast=(GSList *)
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long /*int*/ _gtk_radio_menu_item_new_with_label(long /*int*/ group, byte[] label);
-	public static final long /*int*/ gtk_radio_menu_item_new_with_label(long /*int*/ group, byte[] label) {
-		lock.lock();
-		try {
-			return _gtk_radio_menu_item_new_with_label(group, label);
 		} finally {
 			lock.unlock();
 		}

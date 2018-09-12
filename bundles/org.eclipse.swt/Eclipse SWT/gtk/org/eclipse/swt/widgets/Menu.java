@@ -413,40 +413,35 @@ void createIMMenu (long /*int*/ imHandle) {
 	}
 	if (imItem == 0) {
 		byte[] buffer = Converter.wcsToMbcs (SWT.getMessage("SWT_InputMethods"), true);
-		if (GTK.GTK3) {
-			imItem = GTK.gtk_menu_item_new ();
-			if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
-			long /*int*/ imageHandle = 0;
-			long /*int*/ labelHandle = GTK.gtk_accel_label_new (buffer);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-				GTK.gtk_label_set_xalign (labelHandle, 0);
-				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-			} else {
-				GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
-			}
-			long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = GTK.gtk_image_new();
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				GTK.gtk_image_set_pixel_size (imageHandle, 16);
-				if (boxHandle != 0) {
-					GTK.gtk_container_add (boxHandle, imageHandle);
-					GTK.gtk_widget_show (imageHandle);
-				}
-			}
-			if (labelHandle != 0 && boxHandle != 0) {
-				GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-				GTK.gtk_widget_show (labelHandle);
-			}
-			if (boxHandle != 0) {
-				GTK.gtk_container_add (imItem, boxHandle);
-				GTK.gtk_widget_show (boxHandle);
-			}
+		imItem = GTK.gtk_menu_item_new ();
+		if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
+		long /*int*/ imageHandle = 0;
+		long /*int*/ labelHandle = GTK.gtk_accel_label_new (buffer);
+		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
+			GTK.gtk_label_set_xalign (labelHandle, 0);
+			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 		} else {
-			imItem = GTK.gtk_image_menu_item_new_with_label (buffer);
-			if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
+			GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
+		}
+		long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (OS.SWT_PADDED_MENU_ITEMS) {
+			imageHandle = GTK.gtk_image_new();
+			if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			GTK.gtk_image_set_pixel_size (imageHandle, 16);
+			if (boxHandle != 0) {
+				GTK.gtk_container_add (boxHandle, imageHandle);
+				GTK.gtk_widget_show (imageHandle);
+			}
+		}
+		if (labelHandle != 0 && boxHandle != 0) {
+			GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+			GTK.gtk_widget_show (labelHandle);
+		}
+		if (boxHandle != 0) {
+			GTK.gtk_container_add (imItem, boxHandle);
+			GTK.gtk_widget_show (boxHandle);
 		}
 		GTK.gtk_widget_show (imItem);
 		GTK.gtk_menu_shell_insert (handle, imItem, -1);
@@ -1226,7 +1221,7 @@ void adjustParentWindowWayland (long /*int*/ eventPtr) {
  * before it's about to be shown/popped-up
  */
 void verifyMenuPosition (int itemCount) {
-	if (GTK.GTK3 && OS.isX11()) {
+	if (OS.isX11()) {
 		if (itemCount != poppedUpCount && poppedUpCount != 0) {
 			int [] naturalHeight = new int [1];
 			/*
