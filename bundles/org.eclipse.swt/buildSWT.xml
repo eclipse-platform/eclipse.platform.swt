@@ -613,7 +613,7 @@
 	<target name="commit_binaries" depends="get_version">
 		<!-- Get libraries to remove from repo -->
 		<fileset id="removeid" dir="${repo.bin}">
-			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="[0-9][0-9][0-9][0-9]r[0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
 		</fileset>
@@ -621,7 +621,7 @@
 		<!-- Rename libraries that were not built -->
 		<copy todir="${repo.bin}" overwrite="false">
 			<fileset refid="removeid"/>
-			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
+			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9]r[0-9]+(.*)" to="\1${swt_version}\2"/>
 		</copy>
 		<property name="rfiles" refid="removeid"/>
 
