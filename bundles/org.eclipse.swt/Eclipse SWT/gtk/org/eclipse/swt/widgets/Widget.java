@@ -999,14 +999,6 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-long /*int*/ fixedMapProc (long /*int*/ widget) {
-	return 0;
-}
-
-long /*int*/ fixedSizeAllocateProc(long /*int*/ widget, long /*int*/ allocationPtr) {
-	return OS.Call (Display.oldFixedSizeAllocateProc, widget, allocationPtr);
-}
-
 char [] fixMnemonic (String string) {
 	return fixMnemonic (string, true);
 }

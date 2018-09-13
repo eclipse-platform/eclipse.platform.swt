@@ -2704,27 +2704,6 @@ static void gtk_widget_reparent (Control control, long /*int*/ newParentHandle) 
 	}
 }
 
-@Override
-long /*int*/ fixedMapProc (long /*int*/ widget) {
-	GTK.gtk_widget_set_mapped (widget, true);
-	long /*int*/ widgetList = GTK.gtk_container_get_children (widget);
-	if (widgetList != 0) {
-		long /*int*/ widgets = widgetList;
-		while (widgets != 0) {
-			long /*int*/ child = OS.g_list_data (widgets);
-			if (GTK.gtk_widget_get_visible (child) && GTK.gtk_widget_get_child_visible (child) && !GTK.gtk_widget_get_mapped (child)) {
-				GTK.gtk_widget_map (child);
-			}
-			widgets = OS.g_list_next (widgets);
-		}
-		OS.g_list_free (widgetList);
-	}
-	if (GTK.gtk_widget_get_has_window (widget)) {
-		GDK.gdk_window_show_unraised (gtk_widget_get_window (widget));
-	}
-	return 0;
-}
-
 void fixModal(long /*int*/ group, long /*int*/ modalGroup) {
 }
 

@@ -448,16 +448,6 @@ public class GTK extends OS {
 		}
 	}
 	/** @method flags=const */
-	public static final native long /*int*/ _GTK_TYPE_FIXED();
-	public static final long /*int*/ GTK_TYPE_FIXED() {
-		lock.lock();
-		try {
-			return _GTK_TYPE_FIXED();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=const */
 	public static final native long /*int*/ _GTK_TYPE_MENU();
 	public static final long /*int*/ GTK_TYPE_MENU() {
 		lock.lock();

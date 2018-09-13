@@ -1006,15 +1006,6 @@ void fixShell (Shell newShell, Control control) {
 }
 
 @Override
-long /*int*/ fixedSizeAllocateProc(long /*int*/ widget, long /*int*/ allocationPtr) {
-	int clientWidth = 0;
-	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
-	long /*int*/ result = super.fixedSizeAllocateProc (widget, allocationPtr);
-	if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
-	return result;
-}
-
-@Override
 void fixStyle (long /*int*/ handle) {
 }
 

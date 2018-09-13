@@ -327,9 +327,6 @@ public class Display extends Device {
 
 	/* Fixed Subclass */
 	static long /*int*/ fixed_type;
-	static long /*int*/ fixed_info_ptr;
-	static Callback fixedClassInitCallback, fixedMapCallback, fixedSizeAllocateCallback;
-	static long /*int*/ fixedClassInitProc, fixedMapProc, fixedSizeAllocateProc, oldFixedSizeAllocateProc;
 
 	/* Renderer Subclass */
 	static long /*int*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
@@ -1052,33 +1049,7 @@ void createDisplay (DeviceData data) {
 		int major = GTK.gtk_major_version(), minor = GTK.gtk_minor_version (), micro = GTK.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	if (GTK.GTK3) {
-		fixed_type = OS.swt_fixed_get_type();
-	}
-	if (fixed_type == 0) {
-		byte [] type_name = Converter.wcsToMbcs ("SwtFixed", true); //$NON-NLS-1$
-		fixedClassInitCallback = new Callback (getClass (), "fixedClassInitProc", 2); //$NON-NLS-1$
-		fixedClassInitProc = fixedClassInitCallback.getAddress ();
-		if (fixedClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		fixedMapCallback = new Callback (getClass (), "fixedMapProc", 1); //$NON-NLS-1$
-		fixedMapProc = fixedMapCallback.getAddress ();
-		if (fixedMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		fixedSizeAllocateCallback = new Callback (getClass (), "fixedSizeAllocateProc", 2); //$NON-NLS-1$
-		fixedSizeAllocateProc = fixedSizeAllocateCallback.getAddress ();
-		if (fixedSizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		long /*int*/ queryPtr = OS.g_malloc (GTypeQuery.sizeof);
-		OS.g_type_query (GTK.GTK_TYPE_FIXED(), queryPtr);
-		GTypeQuery query = new GTypeQuery ();
-		OS.memmove (query, queryPtr, GTypeQuery.sizeof);
-		OS.g_free (queryPtr);
-		GTypeInfo fixed_info = new GTypeInfo ();
-		fixed_info.class_size = (short) query.class_size;
-		fixed_info.class_init = fixedClassInitProc;
-		fixed_info.instance_size = (short) query.instance_size;
-		fixed_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
-		OS.memmove (fixed_info_ptr, fixed_info, GTypeInfo.sizeof);
-		fixed_type = OS.g_type_register_static (GTK.GTK_TYPE_FIXED (), type_name, fixed_info_ptr, 0);
-	}
+	fixed_type = OS.swt_fixed_get_type();
 	if (rendererClassInitProc == 0) {
 		rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2); //$NON-NLS-1$
 		rendererClassInitProc = rendererClassInitCallback.getAddress ();
@@ -1483,30 +1454,6 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
 public Widget findWidget (Widget widget, long /*int*/ id) {
 	checkDevice ();
 	return null;
-}
-
-static long /*int*/ fixedClassInitProc (long /*int*/ g_class, long /*int*/ class_data) {
-	GtkWidgetClass klass = new GtkWidgetClass ();
-	OS.memmove (klass, g_class);
-	klass.map = fixedMapProc;
-	oldFixedSizeAllocateProc = klass.size_allocate;
-	klass.size_allocate = fixedSizeAllocateProc;
-	OS.memmove (g_class, klass);
-	return 0;
-}
-
-static long /*int*/ fixedMapProc (long /*int*/ handle) {
-	Display display = getCurrent ();
-	Widget widget = display.getWidget (handle);
-	if (widget != null) return widget.fixedMapProc (handle);
-	return 0;
-}
-
-static long /*int*/ fixedSizeAllocateProc (long /*int*/ handle, long /*int*/ allocation) {
-	Display display = getCurrent ();
-	Widget widget = display.getWidget (handle);
-	if (widget != null) return widget.fixedSizeAllocateProc (handle, allocation);
-	return OS.Call (oldFixedSizeAllocateProc, handle, allocation);
 }
 
 static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ class_data) {
