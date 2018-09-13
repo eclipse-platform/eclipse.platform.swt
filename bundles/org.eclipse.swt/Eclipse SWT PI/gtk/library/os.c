@@ -458,24 +458,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 }
 #endif
 
-#ifndef NO__1gdk_1cairo_1set_1source_1pixmap
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1pixmap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1pixmap_FUNC);
-/*
-	gdk_cairo_set_source_pixmap(arg0, arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_set_source_pixmap)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jdouble, jdouble))fp)(arg0, arg1, arg2, arg3);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1pixmap_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1cairo_1set_1source_1rgba
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1rgba)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -1431,24 +1413,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1get_1default_1root_1window)
 }
 #endif
 
-#ifndef NO__1gdk_1keyboard_1ungrab
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1keyboard_1ungrab)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1keyboard_1ungrab_FUNC);
-/*
-	gdk_keyboard_ungrab(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_keyboard_ungrab)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jint))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1keyboard_1ungrab_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1keymap_1get_1default
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -1864,26 +1828,6 @@ fail:
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1pixmap_1get_1size_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1pixmap_1new
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1pixmap_1new)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1pixmap_1new_FUNC);
-/*
-	rc = (jintLong)gdk_pixmap_new((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_pixmap_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, gint, gint, gint))fp)((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1pixmap_1new_FUNC);
-	return rc;
 }
 #endif
 
@@ -5663,16 +5607,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1drag_1get_1data)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1drag_1get_1data_FUNC);
 	gtk_drag_get_data((GtkWidget *)arg0, (GdkDragContext *)arg1, (GdkAtom)arg2, (guint32)arg3);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1drag_1get_1data_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1drag_1set_1icon_1pixbuf
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1drag_1set_1icon_1pixbuf)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1drag_1set_1icon_1pixbuf_FUNC);
-	gtk_drag_set_icon_pixbuf((GdkDragContext *)arg0, (GdkPixbuf *)arg1, arg2, arg3);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1drag_1set_1icon_1pixbuf_FUNC);
 }
 #endif
 
@@ -19476,32 +19410,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	GdkDragContext _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ_FUNC);
-#endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkDragContextFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ_FUNC);
 #endif
 }
 #endif

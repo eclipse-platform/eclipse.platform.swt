@@ -66,18 +66,6 @@ void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
 #define GTypeQuery_sizeof() 0
 #endif
 
-#ifndef NO_GdkDragContext
-void cacheGdkDragContextFields(JNIEnv *env, jobject lpObject);
-GdkDragContext *getGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct);
-void setGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct);
-#define GdkDragContext_sizeof() sizeof(GdkDragContext)
-#else
-#define cacheGdkDragContextFields(a,b)
-#define getGdkDragContextFields(a,b,c) NULL
-#define setGdkDragContextFields(a,b,c)
-#define GdkDragContext_sizeof() 0
-#endif
-
 #ifndef NO_GdkEvent
 void cacheGdkEventFields(JNIEnv *env, jobject lpObject);
 GdkEvent *getGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);

@@ -63,7 +63,6 @@ typedef enum {
 	_1gdk_1cairo_1region_1create_1from_1surface_FUNC,
 	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1pixbuf_FUNC,
-	_1gdk_1cairo_1set_1source_1pixmap_FUNC,
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
 	_1gdk_1cursor_1new_1for_1display_FUNC,
@@ -119,7 +118,6 @@ typedef enum {
 	_1gdk_1gc_1set_1stipple_FUNC,
 	_1gdk_1gc_1set_1subwindow_FUNC,
 	_1gdk_1get_1default_1root_1window_FUNC,
-	_1gdk_1keyboard_1ungrab_FUNC,
 	_1gdk_1keymap_1get_1default_FUNC,
 	_1gdk_1keymap_1get_1entries_1for_1keyval_FUNC,
 	_1gdk_1keyval_1to_1lower_FUNC,
@@ -146,7 +144,6 @@ typedef enum {
 	_1gdk_1pixbuf_1save_1to_1bufferv_FUNC,
 	_1gdk_1pixbuf_1scale_1simple_FUNC,
 	_1gdk_1pixmap_1get_1size_FUNC,
-	_1gdk_1pixmap_1new_FUNC,
 	_1gdk_1pointer_1grab_FUNC,
 	_1gdk_1pointer_1ungrab_FUNC,
 	_1gdk_1property_1get_FUNC,
@@ -425,7 +422,6 @@ typedef enum {
 	_1gtk_1drag_1dest_1unset_FUNC,
 	_1gtk_1drag_1finish_FUNC,
 	_1gtk_1drag_1get_1data_FUNC,
-	_1gtk_1drag_1set_1icon_1pixbuf_FUNC,
 	_1gtk_1drag_1set_1icon_1surface_FUNC,
 	_1gtk_1editable_1copy_1clipboard_FUNC,
 	_1gtk_1editable_1cut_1clipboard_FUNC,
@@ -1679,11 +1675,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II_FUNC,

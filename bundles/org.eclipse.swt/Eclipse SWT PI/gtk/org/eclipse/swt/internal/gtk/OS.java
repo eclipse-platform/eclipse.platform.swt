@@ -2936,12 +2936,6 @@ public static final native void memmove(GObjectClass  dest, long /*int*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GTypeQuery dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkDragContext dest, long /*int*/ src, long /*int*/ size);
 /** @param dest flags=no_in */
 public static final native void memmove(GtkWidgetClass dest, long /*int*/ src);
 /**
@@ -4209,13 +4203,12 @@ public static final byte [] getThemeNameBytes() {
  *
  * @since 3.104
  */
-public static final void setDarkThemePreferred(boolean preferred){
-	if (!GTK.GTK3) return; //only applicable to GTK3
-	g_object_set(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme,
-			preferred, 0);
-	g_object_notify(GTK.gtk_settings_get_default(),
-			GTK.gtk_application_prefer_dark_theme);
-}
+	public static final void setDarkThemePreferred(boolean preferred) {
+		if (!GTK.GTK3)
+			return; // only applicable to GTK3
+		g_object_set(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme, preferred, 0);
+		g_object_notify(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme);
+	}
 
 /**
  * @param info cast=(GDBusInterfaceInfo *)

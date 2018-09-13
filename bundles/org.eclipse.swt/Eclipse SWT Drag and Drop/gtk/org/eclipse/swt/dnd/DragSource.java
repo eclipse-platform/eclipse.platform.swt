@@ -319,13 +319,7 @@ void drag(Event dragEvent) {
 		context = GTK.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 	}
 	if (context != 0 && image != null) {
-		if (GTK.GTK3) {
-			GTK.gtk_drag_set_icon_surface(context, image.surface);
-		} else {
-			long /*int*/ pixbuf = ImageList.createPixbuf(image);
-			GTK.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
-			OS.g_object_unref(pixbuf);
-		}
+		GTK.gtk_drag_set_icon_surface(context, image.surface);
 	}
 }
 
@@ -363,16 +357,11 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * NOTE: We believe that it is never an error to ungrab when
 	 * a drag is finished.
 	 */
-	if (GTK.GTK3) {
-		long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
-		GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
-		GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);
-	} else {
-		GDK.gdk_pointer_ungrab(GDK.GDK_CURRENT_TIME);
-		GDK.gdk_keyboard_ungrab(GDK.GDK_CURRENT_TIME);
-	}
+	long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
+	GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
+	GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);
 
 	int operation = DND.DROP_NONE;
 	if (context != 0) {
@@ -384,16 +373,9 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		 * GTKGestures will handle file operations correctly without the
 		 * gdk_drag_context_get_dest_window() call. See Bug 503431.
 		 */
-		if (GTK.GTK3) {
-			action = GDK.gdk_drag_context_get_selected_action(context);
-			if (OS.isX11()) { // Wayland
-				dest_window = GDK.gdk_drag_context_get_dest_window(context);
-			}
-		} else {
-			GdkDragContext gdkDragContext = new GdkDragContext ();
-			OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
-			dest_window = gdkDragContext.dest_window;
-			action = gdkDragContext.action;
+		action = GDK.gdk_drag_context_get_selected_action(context);
+		if (OS.isX11()) { // Wayland
+			dest_window = GDK.gdk_drag_context_get_dest_window(context);
 		}
 		if (dest_window != 0 || !OS.isX11()) { // Wayland. NOTE: if dest_window is 0, drag was aborted
 			if (moveData) {

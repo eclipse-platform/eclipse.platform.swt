@@ -567,13 +567,9 @@ public DropTargetEffect getDropTargetEffect() {
 
 int getOperationFromKeyState() {
 	int[] state = new int[1];
-	if (GTK.GTK3) {
-		long /*int*/ root = GDK.gdk_get_default_root_window ();
-		long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_window_get_display (root));
-		GDK.gdk_window_get_device_position(root, pointer, null, null, state);
-	} else {
-		GDK.gdk_window_get_pointer(0, null, null, state);
-	}
+	long /*int*/ root = GDK.gdk_get_default_root_window ();
+	long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_window_get_display (root));
+	GDK.gdk_window_get_device_position(root, pointer, null, null, state);
 	boolean ctrl = (state[0] & GDK.GDK_CONTROL_MASK) != 0;
 	boolean shift = (state[0] & GDK.GDK_SHIFT_MASK) != 0;
 	if (ctrl && shift) return DND.DROP_LINK;
@@ -734,17 +730,8 @@ public void setDropTargetEffect(DropTargetEffect effect) {
 
 boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent event) {
 	if (context == 0) return false;
-	long /*int*/ targets = 0;
-	int actions = 0;
-	if (GTK.GTK3) {
-		targets = GDK.gdk_drag_context_list_targets(context);
-		actions = GDK.gdk_drag_context_get_actions(context);
-	} else {
-		GdkDragContext dragContext = new GdkDragContext();
-		OS.memmove(dragContext, context, GdkDragContext.sizeof);
-		targets = dragContext.targets;
-		actions = dragContext.actions;
-	}
+	long /*int*/ targets = GDK.gdk_drag_context_list_targets(context);
+	int actions = GDK.gdk_drag_context_get_actions(context);
 	if (targets == 0) return false;
 
 	// get allowed operations

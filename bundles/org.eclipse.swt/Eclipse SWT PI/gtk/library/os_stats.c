@@ -53,7 +53,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1region_1create_1from_1surface",
 	"_1gdk_1cairo_1reset_1clip",
 	"_1gdk_1cairo_1set_1source_1pixbuf",
-	"_1gdk_1cairo_1set_1source_1pixmap",
 	"_1gdk_1cairo_1set_1source_1rgba",
 	"_1gdk_1cairo_1set_1source_1window",
 	"_1gdk_1cursor_1new_1for_1display",
@@ -109,7 +108,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1gc_1set_1stipple",
 	"_1gdk_1gc_1set_1subwindow",
 	"_1gdk_1get_1default_1root_1window",
-	"_1gdk_1keyboard_1ungrab",
 	"_1gdk_1keymap_1get_1default",
 	"_1gdk_1keymap_1get_1entries_1for_1keyval",
 	"_1gdk_1keyval_1to_1lower",
@@ -136,7 +134,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1save_1to_1bufferv",
 	"_1gdk_1pixbuf_1scale_1simple",
 	"_1gdk_1pixmap_1get_1size",
-	"_1gdk_1pixmap_1new",
 	"_1gdk_1pointer_1grab",
 	"_1gdk_1pointer_1ungrab",
 	"_1gdk_1property_1get",
@@ -427,7 +424,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1drag_1dest_1unset",
 	"_1gtk_1drag_1finish",
 	"_1gtk_1drag_1get_1data",
-	"_1gtk_1drag_1set_1icon_1pixbuf",
 	"_1gtk_1drag_1set_1icon_1surface",
 	"_1gtk_1editable_1copy_1clipboard",
 	"_1gtk_1editable_1cut_1clipboard",
@@ -1693,11 +1689,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II",

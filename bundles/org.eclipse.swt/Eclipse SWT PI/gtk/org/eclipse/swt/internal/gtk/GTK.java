@@ -1874,19 +1874,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @param context cast=(GdkDragContext *)
-	 * @param pixbuf cast=(GdkPixbuf *)
-	 */
-	public static final native void _gtk_drag_set_icon_pixbuf(long /*int*/ context, long /*int*/ pixbuf, int hot_x, int hot_y);
-	public static final void gtk_drag_set_icon_pixbuf(long /*int*/ context, long /*int*/ pixbuf, int hot_x, int hot_y) {
-		lock.lock();
-		try {
-			_gtk_drag_set_icon_pixbuf(context, pixbuf, hot_x, hot_y);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface);
 	public static final void gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface) {

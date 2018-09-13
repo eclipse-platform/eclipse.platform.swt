@@ -203,61 +203,6 @@ void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
 }
 #endif
 
-#ifndef NO_GdkDragContext
-typedef struct GdkDragContext_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID protocol, is_source, source_window, dest_window, targets, actions, suggested_action, action, start_time;
-} GdkDragContext_FID_CACHE;
-
-GdkDragContext_FID_CACHE GdkDragContextFc;
-
-void cacheGdkDragContextFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkDragContextFc.cached) return;
-	GdkDragContextFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkDragContextFc.protocol = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "protocol", "I");
-	GdkDragContextFc.is_source = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "is_source", "Z");
-	GdkDragContextFc.source_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "source_window", I_J);
-	GdkDragContextFc.dest_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "dest_window", I_J);
-	GdkDragContextFc.targets = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "targets", I_J);
-	GdkDragContextFc.actions = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "actions", "I");
-	GdkDragContextFc.suggested_action = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "suggested_action", "I");
-	GdkDragContextFc.action = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "action", "I");
-	GdkDragContextFc.start_time = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "start_time", "I");
-	GdkDragContextFc.cached = 1;
-}
-
-GdkDragContext *getGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct)
-{
-	if (!GdkDragContextFc.cached) cacheGdkDragContextFields(env, lpObject);
-	lpStruct->protocol = (GdkDragProtocol)(*env)->GetIntField(env, lpObject, GdkDragContextFc.protocol);
-	lpStruct->is_source = (gboolean)(*env)->GetBooleanField(env, lpObject, GdkDragContextFc.is_source);
-	lpStruct->source_window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.source_window);
-	lpStruct->dest_window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.dest_window);
-	lpStruct->targets = (GList *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.targets);
-	lpStruct->actions = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.actions);
-	lpStruct->suggested_action = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.suggested_action);
-	lpStruct->action = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.action);
-	lpStruct->start_time = (guint32)(*env)->GetIntField(env, lpObject, GdkDragContextFc.start_time);
-	return lpStruct;
-}
-
-void setGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct)
-{
-	if (!GdkDragContextFc.cached) cacheGdkDragContextFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.protocol, (jint)lpStruct->protocol);
-	(*env)->SetBooleanField(env, lpObject, GdkDragContextFc.is_source, (jboolean)lpStruct->is_source);
-	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.source_window, (jintLong)lpStruct->source_window);
-	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.dest_window, (jintLong)lpStruct->dest_window);
-	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.targets, (jintLong)lpStruct->targets);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.actions, (jint)lpStruct->actions);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.suggested_action, (jint)lpStruct->suggested_action);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.action, (jint)lpStruct->action);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.start_time, (jint)lpStruct->start_time);
-}
-#endif
-
 #ifndef NO_GdkEvent
 typedef struct GdkEvent_FID_CACHE {
 	int cached;

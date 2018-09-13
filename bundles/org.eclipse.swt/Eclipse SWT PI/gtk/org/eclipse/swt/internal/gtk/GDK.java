@@ -588,19 +588,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_cairo_set_source_pixmap(long /*int*/ cairo, long /*int*/ pixmap, double pixbuf_x, double pixbuf_y);
-	public static final void gdk_cairo_set_source_pixmap(long /*int*/ cairo, long /*int*/ pixmap, double pixbuf_x, double pixbuf_y) {
-	        lock.lock();
-	        try {
-	                _gdk_cairo_set_source_pixmap(cairo,pixmap,pixbuf_x,pixbuf_y);
-	        }
-	        finally {
-	                lock.unlock();
-	        }
-	}
-	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native void _gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y);
@@ -1225,16 +1212,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native void _gdk_keyboard_ungrab(int time);
-	public static final void gdk_keyboard_ungrab(int time) {
-		lock.lock();
-		try {
-			_gdk_keyboard_ungrab(time);
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long /*int*/ _gdk_keymap_get_default();
 	public static final long /*int*/ gdk_keymap_get_default() {
 		lock.lock();
@@ -1493,22 +1470,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_pixbuf_scale_simple(src, dest_width, dest_height, interp_type);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 * @param depth cast=(gint)
-	 */
-	public static final native long /*int*/ _gdk_pixmap_new(long /*int*/ window, int width, int height, int depth);
-	public static final long /*int*/ gdk_pixmap_new(long /*int*/ window, int width, int height, int depth) {
-		lock.lock();
-		try {
-			return _gdk_pixmap_new(window, width, height, depth);
 		} finally {
 			lock.unlock();
 		}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -118,19 +118,15 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				long /*int*/ path = OS.g_list_data (list);
 				GTK.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				icons[i] = GTK.gtk_tree_view_create_row_drag_icon(handle, path);
-				if (GTK.GTK3) {
-					switch (Cairo.cairo_surface_get_type(icons[i])) {
-					case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
-						w[0] = Cairo.cairo_image_surface_get_width(icons[i]);
-						h[0] = Cairo.cairo_image_surface_get_height(icons[i]);
-						break;
-					case Cairo.CAIRO_SURFACE_TYPE_XLIB:
-						w[0] = Cairo.cairo_xlib_surface_get_width(icons[i]);
-						h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
-						break;
-					}
-				} else {
-					GDK.gdk_pixmap_get_size(icons[i], w, h);
+				switch (Cairo.cairo_surface_get_type(icons[i])) {
+				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+					w[0] = Cairo.cairo_image_surface_get_width(icons[i]);
+					h[0] = Cairo.cairo_image_surface_get_height(icons[i]);
+					break;
+				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+					w[0] = Cairo.cairo_xlib_surface_get_width(icons[i]);
+					h[0] = Cairo.cairo_xlib_surface_get_height(icons[i]);
+					break;
 				}
 				width = Math.max(width, w[0]);
 				height = rect.y + h[0] - yy[0];
@@ -139,30 +135,16 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				list = OS.g_list_next (list);
 				GTK.gtk_tree_path_free (path);
 			}
-			long /*int*/ surface;
-			long /*int*/ cairo ;
-			if (GTK.GTK3) {
-				surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
-				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				cairo = Cairo.cairo_create(surface);
-			} else {
-				surface = GDK.gdk_pixmap_new(GDK.gdk_get_default_root_window(), width, height, -1);
-				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				cairo = GDK.gdk_cairo_create(surface);
-			}
+			long /*int*/ surface  = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+			if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			long /*int*/ cairo = Cairo.cairo_create(surface);
 			if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 			for (int i=0; i<count; i++) {
-				if (GTK.GTK3) {
-					Cairo.cairo_set_source_surface (cairo, icons[i], 2, yy[i] - yy[0] + 2);
-				} else {
-					GDK.gdk_cairo_set_source_pixmap(cairo, icons[i], 0, yy[i] - yy[0]);
-				}
+				Cairo.cairo_set_source_surface (cairo, icons[i], 2, yy[i] - yy[0] + 2);
 				Cairo.cairo_rectangle(cairo, 0, yy[i] - yy[0], width, hh[i]);
 				Cairo.cairo_fill(cairo);
-				if (GTK.GTK3) {
-					Cairo.cairo_surface_destroy(icons[i]);
-				}
+				Cairo.cairo_surface_destroy(icons[i]);
 			}
 			Cairo.cairo_destroy(cairo);
 			dragSourceImage =  Image.gtk_new (display, SWT.ICON, surface, 0);
