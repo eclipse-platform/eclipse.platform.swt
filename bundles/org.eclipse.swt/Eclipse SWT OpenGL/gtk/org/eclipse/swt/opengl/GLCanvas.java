@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -138,11 +138,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	glWindow = GDK.gdk_window_new (window, attrs, GDK.GDK_WA_VISUAL);
 	GDK.gdk_window_set_user_data (glWindow, handle);
 	if ((style & SWT.NO_BACKGROUND) != 0) GDK.gdk_window_set_back_pixmap (window, 0, false);
-	if (GTK.GTK3) {
-		xWindow = GDK.gdk_x11_window_get_xid (glWindow);
-	} else {
-		xWindow = GDK.gdk_x11_drawable_get_xid (glWindow);
-	}
+	xWindow = GDK.gdk_x11_window_get_xid (glWindow);
 	GDK.gdk_window_show (glWindow);
 
 	Listener listener = event -> {
