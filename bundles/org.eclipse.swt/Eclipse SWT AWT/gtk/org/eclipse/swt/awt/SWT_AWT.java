@@ -89,12 +89,8 @@ static synchronized void initializeSwing() {
 	* that make SWT exit.  The fix is to hide all X
 	* errors when AWT is running.
 	*/
-	if (GTK.GTK3) {
-		if (OS.isX11()) {
-			GDK.gdk_x11_display_error_trap_push(GDK.gdk_display_get_default());
-		}
-	} else {
-		GDK.gdk_error_trap_push();
+	if (OS.isX11()) {
+		GDK.gdk_x11_display_error_trap_push(GDK.gdk_display_get_default());
 	}
 	try {
 		/* Initialize the default focus traversal policy */
@@ -192,12 +188,7 @@ public static Frame new_Frame (final Composite parent) {
 					Shell shell = parent.getShell();
 					long /*int*/ awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
-					long /*int*/ xWindow;
-					if (GTK.GTK3) {
-						xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (shell.handle));
-					} else {
-						xWindow = GDK.gdk_x11_drawable_get_xid(GTK.gtk_widget_get_window(GTK.gtk_widget_get_toplevel(shell.handle)));
-					}
+					long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (shell.handle));
 					OS.XSetTransientForHint(GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default()), awtHandle, xWindow);
 				});
 			}
