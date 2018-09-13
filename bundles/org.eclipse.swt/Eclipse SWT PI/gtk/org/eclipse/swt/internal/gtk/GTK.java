@@ -2608,30 +2608,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @param fixed cast=(GtkFixed *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native void _gtk_fixed_move(long /*int*/ fixed, long /*int*/ widget, int x, int y);
-	public static final void gtk_fixed_move(long /*int*/ fixed, long /*int*/ widget, int x, int y) {
-		lock.lock();
-		try {
-			_gtk_fixed_move(fixed, widget, x, y);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native long /*int*/ _gtk_fixed_new();
-	public static final long /*int*/ gtk_fixed_new() {
-		lock.lock();
-		try {
-			return _gtk_fixed_new();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	 * @method flags=dynamic
 	 */
 	public static final native boolean _gtk_gesture_drag_get_start_point(long /*int*/ gesture, double[] x, double [] y);
@@ -4568,23 +4544,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_page_setup_get_page_height(setup, unit);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param area flags=no_out
-	 * @param widget cast=(GtkWidget *)
-	 * @param detail cast=(const gchar *)
-	 */
-	public static final native void _gtk_paint_handle(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height, int orientation);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_paint_handle(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height, int orientation) {
-		lock.lock();
-		try {
-			_gtk_paint_handle(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, orientation);
 		} finally {
 			lock.unlock();
 		}

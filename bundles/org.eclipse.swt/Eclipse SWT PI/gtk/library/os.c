@@ -6361,28 +6361,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1fixed_1move
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1fixed_1move)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1fixed_1move_FUNC);
-	gtk_fixed_move((GtkFixed *)arg0, (GtkWidget *)arg1, (gint)arg2, (gint)arg3);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1fixed_1move_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1fixed_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1fixed_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1fixed_1new_FUNC);
-	rc = (jintLong)gtk_fixed_new();
-	GTK_NATIVE_EXIT(env, that, _1gtk_1fixed_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1font_1chooser_1dialog_1new
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1font_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
@@ -8441,30 +8419,6 @@ fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1paint_1flat_1box_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1paint_1handle
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1paint_1handle)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jobject arg4, jintLong arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
-{
-	GdkRectangle _arg4, *lparg4=NULL;
-	jbyte *lparg6=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1paint_1handle_FUNC);
-	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-/*
-	gtk_paint_handle(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10, arg11);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_paint_handle)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint, GdkRectangle *, GtkWidget *, const gchar *, jint, jint, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10, arg11);
-		}
-	}
-fail:
-	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1paint_1handle_FUNC);
 }
 #endif
 
