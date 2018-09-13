@@ -362,6 +362,7 @@
 		<replace file="${repo.src}/${file_version}" token="version ${maj_ver}.${min_ver}.${rev}.0" value="version ${new_maj_ver}.${new_min_ver}.${new_rev}.0"/>
 		<replace file="${repo.src}/${file_make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
+		<replace file="${repo.src}/${file_make_common}" token="rev=${rev}" value="maj_ver=${new_rev}"/>
 		<replace file="${repo.src}/${file_make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 	</target>
 
