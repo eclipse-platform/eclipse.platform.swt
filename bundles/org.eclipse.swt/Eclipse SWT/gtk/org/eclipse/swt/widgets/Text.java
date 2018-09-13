@@ -20,7 +20,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -1654,56 +1653,10 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-void drawMessage (long /*int*/ cr) {
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 2, 0)) return;
-	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
-		long /*int*/ str = GTK.gtk_entry_get_text (handle);
-		if (!GTK.gtk_widget_has_focus (handle) && C.strlen (str) == 0) {
-			long /*int*/ window = paintWindow ();
-			int [] w = new int [1], h = new int [1];
-			gdk_window_get_size (window, w, h);
-			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-			int height = h [0] - innerBorder.top - innerBorder.bottom;
-			long /*int*/ context = GTK.gtk_widget_get_pango_context (handle);
-			long /*int*/ lang = OS.pango_context_get_language (context);
-			long /*int*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
-			int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
-			int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
-			OS.pango_font_metrics_unref (metrics);
-			byte [] buffer = Converter.wcsToMbcs (message, true);
-			long /*int*/ layout = GTK.gtk_widget_create_pango_layout (handle, buffer);
-			long /*int*/ line = OS.pango_layout_get_line (layout, 0);
-			PangoRectangle rect = new PangoRectangle ();
-			OS.pango_layout_line_get_extents (line, null, rect);
-			rect.y = OS.PANGO_PIXELS (rect.y);
-			rect.height = OS.PANGO_PIXELS (rect.height);
-			rect.width = OS.PANGO_PIXELS (rect.width);
-			int y = (height - ascent - descent) / 2 + ascent + rect.y;
-			if (rect.height > height) {
-				y = (height - rect.height) / 2;
-			} else if (y < 0) {
-				y = 0;
-			} else if (y + rect.height > height) {
-				y = height - rect.height;
-			}
-			y += innerBorder.top;
-			long /*int*/ styleContext = GTK.gtk_widget_get_style_context (handle);
-			GdkRGBA textRGBA;
-			textRGBA = display.styleContextGetColor (styleContext, GTK.GTK_STATE_FLAG_INSENSITIVE);
-			Point thickness = getThickness (handle);
-			y += thickness.y;
-			long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
-			Cairo.cairo_set_source_rgba(cairo, textRGBA.red, textRGBA.green, textRGBA.blue, textRGBA.alpha);
-			OS.g_object_unref (layout);
-		}
-	}
-}
-
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	long /*int*/ result = super.gtk_draw (widget, cairo);
-	drawMessage (cairo);
 	return result;
 }
 
@@ -1711,7 +1664,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	long /*int*/ result = super.gtk_expose_event (widget, event);
-	drawMessage (0);
 	return result;
 }
 
