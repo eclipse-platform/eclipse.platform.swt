@@ -422,24 +422,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cairo_1region_1create_1from_1surfac
 }
 #endif
 
-#ifndef NO__1gdk_1cairo_1reset_1clip
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1reset_1clip)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
-/*
-	gdk_cairo_reset_clip(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_reset_clip)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1cairo_1set_1source_1pixbuf
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
@@ -543,24 +525,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1cursor_1unref
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cursor_1unref)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1unref_FUNC);
-/*
-	gdk_cursor_unref(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cursor_unref)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1unref_FUNC);
 }
 #endif
 
@@ -1999,30 +1963,6 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1region_1point_1in)
 }
 #endif
 
-#ifndef NO__1gdk_1region_1polygon
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1region_1polygon)
-	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
-{
-	jint *lparg0=NULL;
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1region_1polygon_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gdk_region_polygon(lparg0, arg1, arg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_region_polygon)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jint *, jint, jint))fp)(lparg0, arg1, arg2);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1region_1polygon_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1region_1rect_1in
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1region_1rect_1in)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -2415,18 +2355,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1width)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1width_FUNC);
 	rc = (jint)gdk_screen_width();
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1width_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1screen_1width_1mm
-JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1width_1mm)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1width_1mm_FUNC);
-	rc = (jint)gdk_screen_width_mm();
-	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1width_1mm_FUNC);
 	return rc;
 }
 #endif

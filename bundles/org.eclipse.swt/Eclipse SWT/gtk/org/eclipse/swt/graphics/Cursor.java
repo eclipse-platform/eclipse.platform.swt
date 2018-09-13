@@ -512,7 +512,7 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 
 @Override
 void destroy() {
-	gdk_cursor_unref(handle);
+	OS.g_object_unref(handle);
 	handle = 0;
 }
 
@@ -595,14 +595,6 @@ public boolean isDisposed() {
 public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
 	return "Cursor {" + handle + "}";
-}
-
-void gdk_cursor_unref (long /*int*/ cursor) {
-	if (GTK.GTK3) {
-		OS.g_object_unref (cursor);
-	} else {
-		GDK.gdk_cursor_unref(cursor);
-	}
 }
 
 }

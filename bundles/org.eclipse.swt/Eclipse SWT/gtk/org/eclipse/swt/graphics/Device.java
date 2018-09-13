@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -468,23 +468,17 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 
 Point getScreenDPI () {
 	int dpi = 96; //default value
-	if (GTK.GTK3) {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			long /*int*/ display = GDK.gdk_display_get_default();
-			long /*int*/ pMonitor = GDK.gdk_display_get_primary_monitor(display);
-			if (pMonitor == 0) {
-				pMonitor = GDK.gdk_display_get_monitor(display, 0);
-			}
-			int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
-			int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
-			GdkRectangle monitorGeometry = new GdkRectangle ();
-			GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
-			dpi = Compatibility.round (254 * monitorGeometry.width * scaleFactor, widthMM * 10);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ pMonitor = GDK.gdk_display_get_primary_monitor(display);
+		if (pMonitor == 0) {
+			pMonitor = GDK.gdk_display_get_monitor(display, 0);
 		}
-	} else {
-		int widthMM = GDK.gdk_screen_width_mm ();
-		int width = GDK.gdk_screen_width ();
-		dpi = Compatibility.round (254 * width, widthMM * 10);
+		int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
+		int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
+		GdkRectangle monitorGeometry = new GdkRectangle ();
+		GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
+		dpi = Compatibility.round (254 * monitorGeometry.width * scaleFactor, widthMM * 10);
 	}
 	return new Point (dpi, dpi);
 }
@@ -672,23 +666,18 @@ protected void init () {
 	/* Initialize the system font slot */
 	long /*int*/ [] defaultFontArray = new long /*int*/ [1];
 	long /*int*/ defaultFont;
-	if (GTK.GTK3) {
-		long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
-		if ((GTK.GTK_VERSION < OS.VERSION(3, 8, 0))|| ("ppc64le".equals(System.getProperty("os.arch")))) {
-			defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
-		} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
-			GTK.gtk_style_context_save(context);
-			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
-			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
-			GTK.gtk_style_context_restore(context);
-			defaultFont = defaultFontArray [0];
-		} else {
-			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
-			defaultFont = defaultFontArray [0];
-		}
+	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	if ((GTK.GTK_VERSION < OS.VERSION(3, 8, 0))|| ("ppc64le".equals(System.getProperty("os.arch")))) {
+		defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
+	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+		GTK.gtk_style_context_save(context);
+		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
+		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+		GTK.gtk_style_context_restore(context);
+		defaultFont = defaultFontArray [0];
 	} else {
-		long /*int*/ style = GTK.gtk_widget_get_style (shellHandle);
-		defaultFont = GTK.gtk_style_get_font_desc (style);
+		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+		defaultFont = defaultFontArray [0];
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
 	Point dpi = getDPI(), screenDPI = getScreenDPI();
@@ -698,9 +687,7 @@ protected void init () {
 	}
 	systemFont = Font.gtk_new (this, defaultFont);
 
-	if (GTK.GTK3) {
-		overrideThemeValues();
-	}
+	overrideThemeValues();
 }
 
 /**
@@ -720,7 +707,6 @@ protected void init () {
  * Note that much of eclipse 'dark theme' is done by platform.ui's CSS engine, not by SWT.
  */
 private void overrideThemeValues () {
-	assert GTK.GTK3;
 	long /*int*/ screen = GDK.gdk_screen_get_default();
 	long /*int*/ provider = GTK.gtk_css_provider_new();
 	if (screen == 0 || provider == 0) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -34,7 +34,7 @@ public static long /*int*/ convertSurface(Image image) {
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
 		Rectangle bounds;
-		if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+		if (DPIUtil.useCairoAutoScale()) {
 			bounds = image.getBounds();
 		} else {
 			bounds = image.getBoundsInPixels();
@@ -43,7 +43,7 @@ public static long /*int*/ convertSurface(Image image) {
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		//retain device scale set in the original surface
-		if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+		if (DPIUtil.useCairoAutoScale()) {
 			double sx[] = new double[1];
 			double sy[] = new double[1];
 			Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);

@@ -549,12 +549,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		Cairo.cairo_paint(handle);
 		Cairo.cairo_restore(handle);
 		if (paint) {
-			long /*int*/ visibleRegion;
-			if (GTK.GTK3) {
-				visibleRegion = GDK.gdk_window_get_visible_region (drawable);
-			} else {
-				visibleRegion = GDK.gdk_drawable_get_visible_region (drawable);
-			}
+			long /*int*/ visibleRegion = GDK.gdk_window_get_visible_region (drawable);
 			GdkRectangle srcRect = new GdkRectangle ();
 			srcRect.x = srcX;
 			srcRect.y = srcY;
@@ -748,22 +743,8 @@ public void drawFocus(int x, int y, int width, int height) {
 void drawFocusInPixels(int x, int y, int width, int height) {
 	long /*int*/ cairo = data.cairo;
 	checkGC(FOREGROUND);
-	if (GTK.GTK3) {
-		long /*int*/  context = GTK.gtk_widget_get_style_context(data.device.shellHandle);
-		GTK.gtk_render_focus(context, cairo, x, y, width, height);
-	} else {
-		int[] lineWidth = new int[1];
-		GTK.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
-		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_line_width(cairo, lineWidth[0]);
-		double[] dashes = new double[]{1, 1};
-		double dash_offset = -lineWidth[0] / 2f;
-		while (dash_offset < 0) dash_offset += 2;
-		Cairo.cairo_set_dash(cairo, dashes, dashes.length, dash_offset);
-		Cairo.cairo_rectangle(cairo, x + lineWidth[0] / 2f, y + lineWidth[0] / 2f, width, height);
-		Cairo.cairo_stroke(cairo);
-		Cairo.cairo_restore(cairo);
-	}
+	long /*int*/  context = GTK.gtk_widget_get_style_context(data.device.shellHandle);
+	GTK.gtk_render_focus(context, cairo, x, y, width, height);
 }
 
 /**
@@ -1580,7 +1561,7 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 		 * to set the device scale to current scale factor
 		 */
 		long /*int*/ surface = Cairo.cairo_get_target(cairo);
-		if ((GTK.GTK3)&&(surface != 0)) {
+		if (surface != 0) {
 			float scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 			Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 		}
@@ -2892,11 +2873,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
-	if (data.drawable != 0 && !GTK.GTK3) {
-		GDK.gdk_cairo_reset_clip(cairo, data.drawable);
-	} else {
-		Cairo.cairo_reset_clip(cairo);
-	}
+	Cairo.cairo_reset_clip(cairo);
 	if (damageRgn != 0) {
 		double[] matrix = new double[6];
 		Cairo.cairo_get_matrix(cairo, matrix);

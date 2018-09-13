@@ -303,7 +303,7 @@ public Image(Device device, Image srcImage, int flag) {
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.useCairoAutoScale()) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
@@ -828,7 +828,7 @@ void createFromPixbuf(int type, long /*int*/ pixbuf) {
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (GTK.GTK3&&DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.useCairoAutoScale()) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
@@ -924,8 +924,6 @@ void createMask() {
 
 void createSurface() {
 	if (surface != 0) return;
-	/* There is no pixmaps in GTK 3. */
-	if (GTK.GTK3) return;
 }
 
 /**
@@ -1211,12 +1209,7 @@ public ImageData getImageData (int zoom) {
 public static Image gtk_new(Device device, int type, long /*int*/ imageHandle, long /*int*/ mask) {
 	Image image = new Image(device);
 	image.type = type;
-	if (GTK.GTK3) {
-		image.surface = imageHandle;
-	} else {
-		image.pixmap = imageHandle;
-		image.createSurface();
-	}
+	image.surface = imageHandle;
 	image.mask = mask;
 	return image;
 }
@@ -1276,7 +1269,7 @@ void init(int width, int height) {
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	// When we create a blank image we need to set it to 100 in GTK3 as we draw using 100% scale.
 	// Cairo will take care of scaling for us when image needs to be scaled.
-	if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.useCairoAutoScale()) {
 		currentDeviceZoom = 100;
 		Cairo.cairo_surface_set_device_scale(surface, 1f, 1f);
 	} else {
@@ -1304,7 +1297,7 @@ void init(ImageData image) {
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.useCairoAutoScale()) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -95,9 +95,6 @@ Region(Device device, long /*int*/ handle) {
 }
 
 static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
-	if (!GTK.GTK3) {
-		return GDK.gdk_region_polygon(pointArray, npoints, fill_rule);
-	}
 	//TODO this does not perform well and could fail if the polygon is too big
 	int minX = pointArray[0], maxX = minX;
 	int minY = pointArray[1], maxY = minY;
@@ -133,10 +130,6 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 }
 
 static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
-	if (!GTK.GTK3) {
-		GDK.gdk_region_get_rectangles (region, rectangles, n_rectangles);
-		return;
-	}
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);

@@ -1995,14 +1995,6 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	}
 }
 
-void gdk_cursor_unref (long /*int*/ cursor) {
-	if (GTK.GTK3) {
-		OS.g_object_unref (cursor);
-	} else {
-		GDK.gdk_cursor_unref(cursor);
-	}
-}
-
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
 	if (GTK.GTK3) {
 		long /*int*/ display = 0;

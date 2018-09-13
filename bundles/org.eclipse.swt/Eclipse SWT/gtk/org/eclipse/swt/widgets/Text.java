@@ -2251,7 +2251,7 @@ void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
-	if (cursor == 0) gdk_cursor_unref (defaultCursor);
+	if (cursor == 0) OS.g_object_unref (defaultCursor);
 }
 
 /**

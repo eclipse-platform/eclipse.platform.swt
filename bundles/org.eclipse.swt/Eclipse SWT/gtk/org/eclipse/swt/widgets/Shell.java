@@ -1584,7 +1584,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 					long /*int*/ window = gtk_widget_get_window (shellHandle);
 					long /*int*/ cursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), mode);
 					GDK.gdk_window_set_cursor (window, cursor);
-					gdk_cursor_unref (cursor);
+					OS.g_object_unref (cursor);
 					display.resizeMode = mode;
 				}
 			}

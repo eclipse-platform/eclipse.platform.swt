@@ -514,16 +514,6 @@ public class GDK extends OS {
 		}
 	}
 	/** @method flags=dynamic */
-	public static final native void _gdk_cairo_reset_clip(long /*int*/ cairo, long /*int*/ drawable);
-	public static final void gdk_cairo_reset_clip(long /*int*/ cairo, long /*int*/ drawable) {
-		lock.lock();
-		try {
-			_gdk_cairo_reset_clip(cairo, drawable);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
 	public static final native void _gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba);
 	public static final void gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba) {
 		lock.lock();
@@ -599,16 +589,6 @@ public class GDK extends OS {
 	        finally {
 	                lock.unlock();
 	        }
-	}
-	/** @method flags=dynamic */
-	public static final native void _gdk_cursor_unref(long /*int*/ cursor);
-	public static final void gdk_cursor_unref(long /*int*/ cursor) {
-		lock.lock();
-		try {
-			_gdk_cursor_unref(cursor);
-		} finally {
-			lock.unlock();
-		}
 	}
 	/** @param display cast=(GdkDisplay *)
 	 *  @param cursor_type cast=(GdkCursorType)
@@ -1674,16 +1654,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_region_polygon(int[] points, int npoints, int fill_rule);
-	public static final long /*int*/ gdk_region_polygon(int[] points, int npoints, int fill_rule) {
-		lock.lock();
-		try {
-			return _gdk_region_polygon(points, npoints, fill_rule);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param rectangle flags=no_out
 	 */
@@ -2010,15 +1980,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_screen_width();
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native int _gdk_screen_width_mm();
-	public static final int gdk_screen_width_mm() {
-		lock.lock();
-		try {
-			return _gdk_screen_width_mm();
 		} finally {
 			lock.unlock();
 		}

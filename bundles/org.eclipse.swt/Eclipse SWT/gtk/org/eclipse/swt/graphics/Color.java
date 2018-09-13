@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -354,7 +354,6 @@ public RGBA getRGBA () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	Color color = new Color(device);
 	color.handleRGBA = gdkRGBA;
 	color.alpha = (int) (gdkRGBA.alpha * 255);
@@ -378,7 +377,6 @@ public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	Color color = new Color(device);
 	color.handleRGBA = gdkRGBA;
 	color.alpha = alpha;
