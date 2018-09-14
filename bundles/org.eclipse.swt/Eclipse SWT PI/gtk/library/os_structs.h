@@ -306,18 +306,6 @@ void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendere
 #define GtkCellRendererClass_sizeof() 0
 #endif
 
-#ifndef NO_GtkFixed
-void cacheGtkFixedFields(JNIEnv *env, jobject lpObject);
-GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
-void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
-#define GtkFixed_sizeof() sizeof(GtkFixed)
-#else
-#define cacheGtkFixedFields(a,b)
-#define getGtkFixedFields(a,b,c) NULL
-#define setGtkFixedFields(a,b,c)
-#define GtkFixed_sizeof() 0
-#endif
-
 #ifndef NO_GtkRequisition
 void cacheGtkRequisitionFields(JNIEnv *env, jobject lpObject);
 GtkRequisition *getGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpStruct);

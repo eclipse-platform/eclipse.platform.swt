@@ -1210,37 +1210,6 @@ void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendere
 }
 #endif
 
-#ifndef NO_GtkFixed
-typedef struct GtkFixed_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID children;
-} GtkFixed_FID_CACHE;
-
-GtkFixed_FID_CACHE GtkFixedFc;
-
-void cacheGtkFixedFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkFixedFc.cached) return;
-	GtkFixedFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkFixedFc.children = (*env)->GetFieldID(env, GtkFixedFc.clazz, "children", I_J);
-	GtkFixedFc.cached = 1;
-}
-
-GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
-{
-	if (!GtkFixedFc.cached) cacheGtkFixedFields(env, lpObject);
-	lpStruct->children = (GList *)(*env)->GetIntLongField(env, lpObject, GtkFixedFc.children);
-	return lpStruct;
-}
-
-void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
-{
-	if (!GtkFixedFc.cached) cacheGtkFixedFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkFixedFc.children, (jintLong)lpStruct->children);
-}
-#endif
-
 #ifndef NO_GtkRequisition
 typedef struct GtkRequisition_FID_CACHE {
 	int cached;

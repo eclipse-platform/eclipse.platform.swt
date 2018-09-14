@@ -3022,16 +3022,6 @@ public static final native void memmove(GtkCellRendererClass dest, long /*int*/ 
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
  */
-public static final native void memmove(GtkFixed dest, long /*int*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *),flags=no_out
- */
-public static final native void memmove(long /*int*/ dest, GtkFixed src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
 public static final native void memmove(GdkImage dest, long /*int*/ src);
 /**
  * @param dest cast=(void *),flags=no_in

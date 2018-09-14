@@ -854,23 +854,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param filled cast=(gint)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 */
-	public static final native void _gdk_draw_rectangle(long /*int*/ drawable, long /*int*/ gc, int filled, int x, int y, int width, int height);
-	public static final void gdk_draw_rectangle(long /*int*/ drawable, long /*int*/ gc, int filled, int x, int y, int width, int height) {
-		lock.lock();
-		try {
-			_gdk_draw_rectangle(drawable, gc, filled, x, y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native int _gdk_drawable_get_depth(long /*int*/ drawable);
 	public static final int gdk_drawable_get_depth(long /*int*/ drawable) {
@@ -1129,33 +1112,11 @@ public class GDK extends OS {
 		}
 	}
 	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_gc_new(long /*int*/ window);
-	public static final long /*int*/ gdk_gc_new(long /*int*/ window) {
-		lock.lock();
-		try {
-			return _gdk_gc_new(window);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
 	public static final native void _gdk_gc_set_fill(long /*int*/ gc, int fill);
 	public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {
 		lock.lock();
 		try {
 			_gdk_gc_set_fill(gc, fill);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_gc_set_function(long /*int*/ gc, long /*int*/ function);
-	public static final void gdk_gc_set_function(long /*int*/ gc, long /*int*/ function) {
-		lock.lock();
-		try {
-			_gdk_gc_set_function(gc, function);
 		} finally {
 			lock.unlock();
 		}
@@ -1166,18 +1127,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_gc_set_stipple(gc, stipple);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_gc_set_subwindow(long /*int*/ gc, long /*int*/ mode);
-	public static final void gdk_gc_set_subwindow(long /*int*/ gc, long /*int*/ mode) {
-		lock.lock();
-		try {
-			_gdk_gc_set_subwindow(gc, mode);
 		} finally {
 			lock.unlock();
 		}

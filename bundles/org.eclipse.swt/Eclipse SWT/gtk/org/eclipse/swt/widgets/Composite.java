@@ -1286,42 +1286,8 @@ void markLayout (boolean changed, boolean all) {
 void moveAbove (long /*int*/ child, long /*int*/ sibling) {
 	if (child == sibling) return;
 	long /*int*/ parentHandle = parentingHandle ();
-	if (GTK.GTK3) {
-		OS.swt_fixed_restack (parentHandle, child, sibling, true);
-		return;
-	}
-	GtkFixed fixed = new GtkFixed ();
-	OS.memmove (fixed, parentHandle);
-	long /*int*/ children = fixed.children;
-	if (children == 0) return;
-	long /*int*/ [] data = new long /*int*/ [1];
-	long /*int*/ [] widget = new long /*int*/ [1];
-	long /*int*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
-	while (temp != 0) {
-		C.memmove (data, temp, C.PTR_SIZEOF);
-		C.memmove (widget, data [0], C.PTR_SIZEOF);
-		if (child == widget [0]) {
-			childLink = temp;
-			childData = data [0];
-		} else if (sibling == widget [0]) {
-			siblingLink = temp;
-		}
-		if (childData != 0 && (sibling == 0 || siblingLink != 0)) break;
-		temp = OS.g_list_next (temp);
-	}
-	children = OS.g_list_remove_link (children, childLink);
-	if (siblingLink == 0 || OS.g_list_previous (siblingLink) == 0) {
-		OS.g_list_free_1 (childLink);
-		children = OS.g_list_prepend (children, childData);
-	} else {
-		temp = OS.g_list_previous (siblingLink);
-		OS.g_list_set_previous (childLink, temp);
-		OS.g_list_set_next (temp, childLink);
-		OS.g_list_set_next (childLink, siblingLink);
-		OS.g_list_set_previous (siblingLink, childLink);
-	}
-	fixed.children = children;
-	OS.memmove (parentHandle, fixed);
+	OS.swt_fixed_restack (parentHandle, child, sibling, true);
+	return;
 }
 
 void moveBelow (long /*int*/ child, long /*int*/ sibling) {
@@ -1331,42 +1297,8 @@ void moveBelow (long /*int*/ child, long /*int*/ sibling) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
-	if (GTK.GTK3) {
-		OS.swt_fixed_restack (parentHandle, child, sibling, false);
-		return;
-	}
-	GtkFixed fixed = new GtkFixed ();
-	OS.memmove (fixed, parentHandle);
-	long /*int*/ children = fixed.children;
-	if (children == 0) return;
-	long /*int*/ [] data = new long /*int*/ [1];
-	long /*int*/ [] widget = new long /*int*/ [1];
-	long /*int*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
-	while (temp != 0) {
-		C.memmove (data, temp, C.PTR_SIZEOF);
-		C.memmove (widget, data [0], C.PTR_SIZEOF);
-		if (child == widget [0]) {
-			childLink = temp;
-			childData = data [0];
-		} else if (sibling == widget [0]) {
-			siblingLink = temp;
-		}
-		if (childData != 0 && (sibling == 0 || siblingLink != 0)) break;
-		temp = OS.g_list_next (temp);
-	}
-	children = OS.g_list_remove_link (children, childLink);
-	if (siblingLink == 0 || OS.g_list_next (siblingLink) == 0) {
-		OS.g_list_free_1 (childLink);
-		children = OS.g_list_append (children, childData);
-	} else {
-		temp = OS.g_list_next (siblingLink);
-		OS.g_list_set_next (childLink, temp);
-		OS.g_list_set_previous (temp, childLink);
-		OS.g_list_set_previous (childLink, siblingLink);
-		OS.g_list_set_next (siblingLink, childLink);
-	}
-	fixed.children = children;
-	OS.memmove (parentHandle, fixed);
+	OS.swt_fixed_restack (parentHandle, child, sibling, false);
+	return;
 }
 
 @Override

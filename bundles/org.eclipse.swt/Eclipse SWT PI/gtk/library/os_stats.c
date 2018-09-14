@@ -80,7 +80,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1draw_1arc",
 	"_1gdk_1draw_1image",
 	"_1gdk_1draw_1pixbuf",
-	"_1gdk_1draw_1rectangle",
 	"_1gdk_1drawable_1get_1depth",
 	"_1gdk_1drawable_1get_1image",
 	"_1gdk_1drawable_1get_1visible_1region",
@@ -100,11 +99,8 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1event_1peek",
 	"_1gdk_1event_1put",
 	"_1gdk_1flush",
-	"_1gdk_1gc_1new",
 	"_1gdk_1gc_1set_1fill",
-	"_1gdk_1gc_1set_1function",
 	"_1gdk_1gc_1set_1stipple",
-	"_1gdk_1gc_1set_1subwindow",
 	"_1gdk_1get_1default_1root_1window",
 	"_1gdk_1keymap_1get_1default",
 	"_1gdk_1keymap_1get_1entries_1for_1keyval",
@@ -1641,11 +1637,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J",
@@ -1754,11 +1745,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I",

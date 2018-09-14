@@ -955,24 +955,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1draw_1pixbuf)
 }
 #endif
 
-#ifndef NO__1gdk_1draw_1rectangle
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1draw_1rectangle)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1draw_1rectangle_FUNC);
-/*
-	gdk_draw_rectangle(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_draw_rectangle)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, gint, gint, gint))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1draw_1rectangle_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1drawable_1get_1depth
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1depth)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1273,26 +1255,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1flush)
 }
 #endif
 
-#ifndef NO__1gdk_1gc_1new
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1gc_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1new_FUNC);
-/*
-	rc = (jintLong)gdk_gc_new(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1set_1fill
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1fill)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -1311,24 +1273,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1fill)
 }
 #endif
 
-#ifndef NO__1gdk_1gc_1set_1function
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1function)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1function_FUNC);
-/*
-	gdk_gc_set_function(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_set_function)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1function_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1set_1stipple
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1stipple)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -1344,24 +1288,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1stipple)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1stipple_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1subwindow
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1subwindow)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1subwindow_FUNC);
-/*
-	gdk_gc_set_subwindow(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_set_subwindow)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1subwindow_FUNC);
 }
 #endif
 
@@ -18953,27 +18879,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GtkCell
 }
 #endif
 
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC);
-#endif
-	if (arg1) getGtkFixedFields(env, arg1, (GtkFixed *)arg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
@@ -19516,27 +19421,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkCellR
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J_FUNC);
-#endif
-	if (arg0) setGtkFixedFields(env, arg0, (GtkFixed *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J_FUNC);
 #endif
 }
 #endif

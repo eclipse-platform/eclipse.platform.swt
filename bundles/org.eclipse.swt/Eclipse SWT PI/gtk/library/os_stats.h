@@ -90,7 +90,6 @@ typedef enum {
 	_1gdk_1draw_1arc_FUNC,
 	_1gdk_1draw_1image_FUNC,
 	_1gdk_1draw_1pixbuf_FUNC,
-	_1gdk_1draw_1rectangle_FUNC,
 	_1gdk_1drawable_1get_1depth_FUNC,
 	_1gdk_1drawable_1get_1image_FUNC,
 	_1gdk_1drawable_1get_1visible_1region_FUNC,
@@ -110,11 +109,8 @@ typedef enum {
 	_1gdk_1event_1peek_FUNC,
 	_1gdk_1event_1put_FUNC,
 	_1gdk_1flush_FUNC,
-	_1gdk_1gc_1new_FUNC,
 	_1gdk_1gc_1set_1fill_FUNC,
-	_1gdk_1gc_1set_1function_FUNC,
 	_1gdk_1gc_1set_1stipple_FUNC,
-	_1gdk_1gc_1set_1subwindow_FUNC,
 	_1gdk_1get_1default_1root_1window_FUNC,
 	_1gdk_1keymap_1get_1default_FUNC,
 	_1gdk_1keymap_1get_1entries_1for_1keyval_FUNC,
@@ -1627,11 +1623,6 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC,
 #endif
 #ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2_FUNC,
-#endif
-#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J_FUNC,
@@ -1740,11 +1731,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I_FUNC,
