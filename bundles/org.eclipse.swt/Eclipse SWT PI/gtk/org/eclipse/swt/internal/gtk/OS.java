@@ -4203,8 +4203,6 @@ public static final byte [] getThemeNameBytes() {
  * @since 3.104
  */
 	public static final void setDarkThemePreferred(boolean preferred) {
-		if (!GTK.GTK3)
-			return; // only applicable to GTK3
 		g_object_set(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme, preferred, 0);
 		g_object_notify(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme);
 	}
