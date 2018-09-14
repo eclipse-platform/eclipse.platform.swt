@@ -107,7 +107,6 @@ public class DateTime extends Composite {
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
 	static final int SPACE_FOR_CURSOR = 1;
-	static final int GTK2_MANUAL_BORDER_PADDING = 2;
 
 	private int mdYear;
 
@@ -215,11 +214,6 @@ static int checkStyle (int style) {
 	*/
 	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 
-	//Workaround. Right_to_left is buggy on gtk2. Only allow on gtk3 onwards
-	if (!GTK.GTK3 && isDateWithDropDownButton (style)) {
-		style &= ~(SWT.RIGHT_TO_LEFT);
-	}
-
 	style = checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
 	if ((style & SWT.DATE) == 0) style &=~ SWT.DROP_DOWN;
 	return checkBits (style, SWT.MEDIUM, SWT.SHORT, SWT.LONG, 0, 0, 0);
@@ -313,7 +307,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 	int width = 0, height = 0;
 	//For Date and Time, we cache the preffered size as there is no need to recompute it.
-	if (!changed && (isDate () || isTime ()) && GTK.GTK3 && prefferedSize != null) {
+	if (!changed && (isDate () || isTime ()) && prefferedSize != null) {
 		width = (wHint != SWT.DEFAULT) ? wHint : prefferedSize.x;
 		height= (hHint != SWT.DEFAULT) ? hHint : prefferedSize.y;
 		return new Point (width,height);
@@ -338,14 +332,8 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 				width = trim.width + buttonSize.x;
 				height = Math.max (trim.height, buttonSize.y);
 			} else if (isDate () || isTime ()) {
-				if (GTK.GTK3) {
-					width = trim.width;
-					height = trim.height;
-				} else
-				{ //in GTK2, spin button looks broken if you incorperate the trim. Thus do not compute trim.
-					width = textSize.x;
-					height = textSize.y;
-				}
+				width = trim.width;
+				height = trim.height;
 			}
 		}
 	}
@@ -355,7 +343,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int borderWidth = getBorderWidthInPixels ();
 
-	if (prefferedSize == null && (isDateWithDropDownButton () && GTK.GTK3)) {
+	if (prefferedSize == null && isDateWithDropDownButton ()) {
 		prefferedSize = new Point (width + 2*borderWidth, height+ 2*borderWidth);
 		return prefferedSize;
 	} else {
@@ -372,40 +360,27 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
-		if (GTK.GTK3) {
-			GtkBorder tmp = new GtkBorder ();
-			long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+		GtkBorder tmp = new GtkBorder ();
+		long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+		} else {
+			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
+		}
+		trim.x -= tmp.left;
+		trim.y -= tmp.top;
+		trim.width += tmp.left + tmp.right;
+		trim.height += tmp.top + tmp.bottom;
+		if ((style & SWT.BORDER) != 0) {
 			if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-				GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+				GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
 			} else {
-				GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
+				GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
 			}
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
-			if ((style & SWT.BORDER) != 0) {
-				if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-					GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-				} else {
-					GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(textEntryHandle), tmp);
-				}
-				trim.x -= tmp.left;
-				trim.y -= tmp.top;
-				trim.width += tmp.left + tmp.right;
-				trim.height += tmp.top + tmp.bottom;
-			}
-		} else {
-			if ((style & SWT.BORDER) != 0) {
-				Point thickness = getThickness (textEntryHandle);
-				xborder += thickness.x;
-				yborder += thickness.y;
-			}
-			GtkBorder innerBorder = Display.getEntryInnerBorder (textEntryHandle);
-			trim.x -= innerBorder.left;
-			trim.y -= innerBorder.top;
-			trim.width += innerBorder.left + innerBorder.right;
-			trim.height += innerBorder.top + innerBorder.bottom;
 		}
 		trim.x -= xborder;
 		trim.y -= yborder;
@@ -490,9 +465,7 @@ private void createHandleForDateWithDropDown () {
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription (defaultFont ().handle);
-	}
+	setFontDescription (defaultFont ().handle);
 }
 
 private void createHandleForDateTime () {
@@ -1032,11 +1005,6 @@ private boolean isDateWithDropDownButton () {
 	return ((style & SWT.DROP_DOWN) != 0 && (style & SWT.DATE) != 0);
 }
 
-static private boolean isDateWithDropDownButton (int style) {
-	return ((style & SWT.DROP_DOWN) != 0 && (style & SWT.DATE) != 0);
-}
-
-
 private boolean isDate () {
 	return ((style & SWT.DATE) != 0);
 }
@@ -1398,7 +1366,6 @@ public void setBackground (Color color) {
 
 @Override
 void setBackgroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setBackgroundGdkRGBA(rgba);
 	if (calendarHandle != 0) {
 		setBackgroundGdkRGBA (calendarHandle, rgba);
@@ -1409,8 +1376,6 @@ void setBackgroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
-
 	// We need to override here because DateTime widgets use "background" instead of
 	// "background-color" as their CSS property.
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
@@ -1448,7 +1413,6 @@ public void setFont (Font font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	setForegroundGdkRGBA (containerHandle, rgba);
 }
 
@@ -1709,7 +1673,7 @@ public void setYear (int year) {
 void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
-	if (isDateWithDropDownButton () && GTK.GTK3) {
+	if (isDateWithDropDownButton ()) {
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (textEntryHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
@@ -1732,7 +1696,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 	 * native height.
 	 */
 	int fixedGtkVersion = OS.VERSION (3, 14, 2);
-	if (isCalendar () && GTK.GTK3 && (GTK.GTK_VERSION < fixedGtkVersion)) {
+	if (isCalendar () && (GTK.GTK_VERSION < fixedGtkVersion)) {
 			int calendarPrefferedVerticalSize = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, true).y;
 			if (height > calendarPrefferedVerticalSize) {
 				height = calendarPrefferedVerticalSize;
@@ -1769,22 +1733,15 @@ private void setDropDownButtonSize () {
  * @return GtkBorder object that holds the padding values.
  */
 GtkBorder getGtkBorderPadding () {
-	if (GTK.GTK3) {
-		//In Gtk3, acquire border.
-		GtkBorder gtkBorderPadding = new GtkBorder ();
-		long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
-		if (GTK.GTK_VERSION < OS.VERSION(3, 18 , 0)) {
-			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, gtkBorderPadding);
-		} else {
-			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), gtkBorderPadding);
-		}
-		return gtkBorderPadding;
+	//In Gtk3, acquire border.
+	GtkBorder gtkBorderPadding = new GtkBorder ();
+	long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+	if (GTK.GTK_VERSION < OS.VERSION(3, 18 , 0)) {
+		GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, gtkBorderPadding);
 	} else {
-		//in GTK2 hard code the padding
-		GtkBorder padding = new GtkBorder ();
-		padding.bottom = padding.top = padding.left = padding.right = GTK2_MANUAL_BORDER_PADDING;
-		return padding;
+		GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(textEntryHandle), gtkBorderPadding);
 	}
+	return gtkBorderPadding;
 }
 
 boolean onNumberKeyInput(int key) {
