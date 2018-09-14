@@ -1393,7 +1393,7 @@ void moveChildren(int oldWidth) {
 		* a call to gtk_widget_size_request().
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
-		gtk_widget_size_request (topHandle, requisition);
+		gtk_widget_get_preferred_size (topHandle, requisition);
 		allocation.x = x;
 		allocation.y = y;
 		GTK.gtk_widget_size_allocate (topHandle, allocation);
@@ -1563,11 +1563,7 @@ void reskinChildren (int flags) {
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
 	if (socketHandle != 0) {
-		if (GTK.GTK3) {
-			OS.swt_fixed_resize (handle, socketHandle, width, height);
-		} else {
-			GTK.gtk_widget_set_size_request (socketHandle, width, height);
-		}
+		OS.swt_fixed_resize (handle, socketHandle, width, height);
 	}
 }
 

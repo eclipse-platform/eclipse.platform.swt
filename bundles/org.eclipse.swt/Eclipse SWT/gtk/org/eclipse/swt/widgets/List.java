@@ -269,8 +269,8 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * So if the height is returned as zero calculate the table height
 	 * based on the number of items in the table
 	 */
-	 if (GTK.GTK3 && size.y == 0 && hHint == SWT.DEFAULT) {
-	 size.y = getItemCount() * getItemHeightInPixels();
+	 if (size.y == 0 && hHint == SWT.DEFAULT) {
+		 size.y = getItemCount() * getItemHeightInPixels();
 	 }
 
 	 /*
@@ -765,12 +765,7 @@ public int getTopIndex () {
 	 * if setTopIndex() has been called and the widget has not been scrolled
 	 * using the UI. Otherwise, fetch topIndex using GtkTreeView API.
 	 */
-	long /*int*/ vAdjustment;
-	if (GTK.GTK3) {
-		vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
-	} else {
-		vAdjustment = GTK.gtk_tree_view_get_vadjustment (handle);
-	}
+	long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	currentAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 	if (cachedAdjustment == currentAdjustment) {
 		return topIndex;
@@ -1686,12 +1681,7 @@ public void setTopIndex (int index) {
 	 * Use gtk_tree_view_get_view_get_vadjustment for GTK2, GtkScrollable
 	 * doesn't exist on GTK2.
 	 */
-	long /*int*/ vAdjustment;
-	if (GTK.GTK3) {
-		vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
-	} else {
-		vAdjustment = GTK.gtk_tree_view_get_vadjustment (handle);
-	}
+	long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	cachedAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 	topIndex = index;
 	/*

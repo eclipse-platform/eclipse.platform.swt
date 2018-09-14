@@ -466,37 +466,7 @@ void clearText () {
 @Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if ((style & SWT.READ_ONLY) != 0 || GTK.GTK3) {
-		return computeNativeSize (handle, wHint, hHint, changed);
-	}
-	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
-	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int[] w = new int [1], h = new int [1];
-	GTK.gtk_widget_realize (entryHandle);
-	long /*int*/ layout = GTK.gtk_entry_get_layout (entryHandle);
-	OS.pango_layout_get_pixel_size (layout, w, h);
-	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
-	Point thickness = getThickness (entryHandle);
-	xborder += thickness.x;
-	yborder += thickness.y;
-	int [] property = new int [1];
-	GTK.gtk_widget_style_get (entryHandle, OS.interior_focus, property, 0);
-	if (property [0] == 0) {
-		GTK.gtk_widget_style_get (entryHandle, OS.focus_line_width, property, 0);
-		xborder += property [0];
-		yborder += property [0];
-	}
-	int width = w [0] + xborder * 2;
-	int height = h [0] + yborder * 2;
-	GtkRequisition arrowRequesition = new GtkRequisition ();
-	gtk_widget_get_preferred_size (buttonHandle, arrowRequesition);
-	GtkRequisition listRequesition = new GtkRequisition ();
-	long /*int*/ listParent = GTK.gtk_bin_get_child(popupHandle);
-	gtk_widget_get_preferred_size (listParent, listRequesition);
-	width = Math.max (listRequesition.width, width) + arrowRequesition.width;
-	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? height : hHint;
-	return new Point (width, height);
+	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
 /**
@@ -1243,12 +1213,8 @@ public int getTextHeight () {
 int getTextHeightInPixels () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
-	gtk_widget_size_request (handle, requisition);
-	if (GTK.GTK3) {
-		return requisition.height;
-	} else {
-		return GTK.GTK_WIDGET_REQUISITION_HEIGHT (handle);
-	}
+	gtk_widget_get_preferred_size (handle, requisition);
+	return requisition.height;
 }
 
 /**

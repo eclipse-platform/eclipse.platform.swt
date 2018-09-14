@@ -272,10 +272,6 @@ public class GTK extends OS {
 	public static final native long /*int*/ GTK_ENTRY_IM_CONTEXT(long /*int*/ widget);
 	/** @param widget cast=(GtkTextView *) */
 	public static final native long /*int*/ GTK_TEXTVIEW_IM_CONTEXT(long /*int*/ widget);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native int GTK_WIDGET_REQUISITION_WIDTH(long /*int*/ widget);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native int GTK_WIDGET_REQUISITION_HEIGHT(long /*int*/ widget);
 	/** @method flags=const */
 	public static final native long /*int*/ GTK_TYPE_TEXT_VIEW_ACCESSIBLE ();
 	public static final native long /*int*/ _GTK_ACCESSIBLE (long /*int*/ handle);
@@ -1030,26 +1026,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_cell_layout_pack_start(cell_layout, cell, expand);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param cell cast=(GtkCellRenderer *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param area cast=(GdkRectangle *),flags=no_in
-	 * @param x_offset cast=(gint *)
-	 * @param y_offset cast=(gint *)
-	 * @param width cast=(gint *)
-	 * @param height cast=(gint *)
-	 */
-	public static final native void _gtk_cell_renderer_get_size(long /*int*/ cell, long /*int*/ widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height);
-	/**  [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_cell_renderer_get_size(long /*int*/ cell, long /*int*/ widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height) {
-		lock.lock();
-		try {
-			_gtk_cell_renderer_get_size(cell, widget, area, x_offset, y_offset, width, height);
 		} finally {
 			lock.unlock();
 		}
@@ -7886,20 +7862,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
-	 * @param tree_view cast=(GtkTreeView *)
-	 */
-	public static final native long /*int*/ _gtk_tree_view_get_vadjustment(long /*int*/ tree_view);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final long /*int*/ gtk_tree_view_get_vadjustment(long /*int*/ tree_view) {
-		lock.lock();
-		try {
-			return _gtk_tree_view_get_vadjustment(tree_view);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	 * @param tree_view cast=(GtkTreeView *)
 	 * @param x cast=(gint)
 	 * @param y cast=(gint)
@@ -9011,21 +8973,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_size_allocate(widget, allocation);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param requisition cast=(GtkRequisition *),flags=no_in
-	 */
-	public static final native void _gtk_widget_size_request(long /*int*/ widget, GtkRequisition requisition);
-	/** [GTK2/GTK3; 2.x/3.0 deprecated] */
-	public static final void gtk_widget_size_request(long /*int*/ widget, GtkRequisition requisition) {
-		lock.lock();
-		try {
-			_gtk_widget_size_request(widget, requisition);
 		} finally {
 			lock.unlock();
 		}

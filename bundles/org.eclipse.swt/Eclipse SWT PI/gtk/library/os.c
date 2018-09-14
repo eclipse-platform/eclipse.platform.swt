@@ -3512,30 +3512,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(GTK_1WIDGET_1GET_1CLASS)
 }
 #endif
 
-#ifndef NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
-JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1REQUISITION_1HEIGHT)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, GTK_1WIDGET_1REQUISITION_1HEIGHT_FUNC);
-	rc = (jint)GTK_WIDGET_REQUISITION_HEIGHT((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, GTK_1WIDGET_1REQUISITION_1HEIGHT_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1REQUISITION_1WIDTH
-JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1REQUISITION_1WIDTH)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC);
-	rc = (jint)GTK_WIDGET_REQUISITION_WIDTH((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkAllocation_1sizeof
 JNIEXPORT jint JNICALL GTK_NATIVE(GtkAllocation_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -4586,40 +4562,6 @@ fail:
 	if (arg3 && lparg3) setGtkRequisitionFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setGtkRequisitionFields(env, arg2, lparg2);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1get_1preferred_1size_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1cell_1renderer_1get_1size
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1cell_1renderer_1get_1size)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
-{
-	GdkRectangle _arg2, *lparg2=NULL;
-	jint *lparg3=NULL;
-	jint *lparg4=NULL;
-	jint *lparg5=NULL;
-	jint *lparg6=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1size_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-/*
-	gtk_cell_renderer_get_size((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GdkRectangle *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5, (gint *)lparg6);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_cell_renderer_get_size)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkCellRenderer *, GtkWidget *, GdkRectangle *, gint *, gint *, gint *, gint *))fp)((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GdkRectangle *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5, (gint *)lparg6);
-		}
-	}
-fail:
-	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1get_1size_FUNC);
 }
 #endif
 
@@ -12167,26 +12109,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1selection)
 }
 #endif
 
-#ifndef NO__1gtk_1tree_1view_1get_1vadjustment
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1vadjustment)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1vadjustment_FUNC);
-/*
-	rc = (jintLong)gtk_tree_view_get_vadjustment((GtkTreeView *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_tree_view_get_vadjustment)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkTreeView *))fp)((GtkTreeView *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1vadjustment_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1tree_1view_1get_1visible_1rect
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1visible_1rect)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -13671,28 +13593,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1size_1allocate)
 	gtk_widget_size_allocate((GtkWidget *)arg0, (GtkAllocation *)lparg1);
 fail:
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1size_1allocate_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1size_1request
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1size_1request)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GtkRequisition _arg1, *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1size_1request_FUNC);
-	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	gtk_widget_size_request((GtkWidget *)arg0, (GtkRequisition *)lparg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_size_request)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, GtkRequisition *))fp)((GtkWidget *)arg0, (GtkRequisition *)lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) setGtkRequisitionFields(env, arg1, lparg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1size_1request_FUNC);
 }
 #endif
 

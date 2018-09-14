@@ -951,14 +951,10 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
  * prevents a stack overflow from occurring.
  */
 boolean gtk_tree_view_column_cell_get_position (long /*int*/ column, long /*int*/ cell_renderer, int[] start_pos, int[] width) {
-	if (GTK.GTK3) {
-		Callback.setEnabled(false);
-		boolean result = GTK.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
-		Callback.setEnabled(true);
-		return result;
-	} else {
-		return GTK.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
-	}
+	Callback.setEnabled(false);
+	boolean result = GTK.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
+	Callback.setEnabled(true);
+	return result;
 }
 
 long /*int*/ gtk_unmap (long /*int*/ widget) {
@@ -2020,22 +2016,14 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 }
 
 void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {
-	if (GTK.GTK3) {
-		GtkRequisition minimum_size = new GtkRequisition ();
-		GTK.gtk_cell_renderer_get_preferred_size (cell, widget, minimum_size, null);
-		if (width != null) width [0] = minimum_size.width;
-		if (height != null) height[0] = minimum_size.height;
-	} else {
-		GTK.gtk_cell_renderer_get_size (cell, widget, null, null, null, width, height);
-	}
+	GtkRequisition minimum_size = new GtkRequisition ();
+	GTK.gtk_cell_renderer_get_preferred_size (cell, widget, minimum_size, null);
+	if (width != null) width [0] = minimum_size.width;
+	if (height != null) height[0] = minimum_size.height;
 }
 
 void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisition){
-	if (GTK.GTK3) {
-		GTK.gtk_widget_get_preferred_size (widget, requisition, null);
-	} else {
-		GTK.gtk_widget_size_request (widget, requisition);
-	}
+	GTK.gtk_widget_get_preferred_size (widget, requisition, null);
 }
 
 void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){

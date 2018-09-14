@@ -831,7 +831,7 @@ void forceResize () {
 	*/
 	long /*int*/ topHandle = topHandle ();
 	GtkRequisition requisition = new GtkRequisition ();
-	gtk_widget_size_request (topHandle, requisition);
+	gtk_widget_get_preferred_size (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
 	GTK.gtk_widget_size_allocate (topHandle, allocation);
@@ -1089,7 +1089,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		* a call to gtk_widget_size_request().
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
-		gtk_widget_size_request (topHandle, requisition);
+		gtk_widget_get_preferred_size (topHandle, requisition);
 		if (move) {
 			allocation.x = x;
 			allocation.y = y;
@@ -3812,10 +3812,6 @@ long /*int*/ gtk_unrealize (long /*int*/ widget) {
 	return 0;
 }
 
-void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
-	gtk_widget_get_preferred_size (widget, requisition);
-}
-
 /**
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -5302,7 +5298,7 @@ public boolean setParent (Composite parent) {
 	* a call to gtk_widget_size_request().
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
-	gtk_widget_size_request (topHandle, requisition);
+	gtk_widget_get_preferred_size (topHandle, requisition);
 	allocation.x = x;
 	allocation.y = y;
 	allocation.width = width;

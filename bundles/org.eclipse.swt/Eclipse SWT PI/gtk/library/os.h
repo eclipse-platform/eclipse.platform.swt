@@ -217,9 +217,6 @@ X#define NO__1XWarpPointer
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2
 
-#define NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
-#define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
-
 
 #else
 

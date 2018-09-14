@@ -272,8 +272,6 @@ char * GTK_nativeFunctionNames[] = {
 	"GTK_1TEXTVIEW_1IM_1CONTEXT",
 	"GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE",
 	"GTK_1WIDGET_1GET_1CLASS",
-	"GTK_1WIDGET_1REQUISITION_1HEIGHT",
-	"GTK_1WIDGET_1REQUISITION_1WIDTH",
 	"GtkAllocation_1sizeof",
 	"GtkBorder_1sizeof",
 	"GtkCellRendererPixbufClass_1sizeof",
@@ -358,7 +356,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1cell_1renderer_1get_1padding",
 	"_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width",
 	"_1gtk_1cell_1renderer_1get_1preferred_1size",
-	"_1gtk_1cell_1renderer_1get_1size",
 	"_1gtk_1cell_1renderer_1pixbuf_1new",
 	"_1gtk_1cell_1renderer_1set_1fixed_1size",
 	"_1gtk_1cell_1renderer_1text_1new",
@@ -978,7 +975,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1get_1headers_1visible",
 	"_1gtk_1tree_1view_1get_1path_1at_1pos",
 	"_1gtk_1tree_1view_1get_1selection",
-	"_1gtk_1tree_1view_1get_1vadjustment",
 	"_1gtk_1tree_1view_1get_1visible_1rect",
 	"_1gtk_1tree_1view_1insert_1column",
 	"_1gtk_1tree_1view_1move_1column_1after",
@@ -1091,7 +1087,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1shape_1combine_1region",
 	"_1gtk_1widget_1show",
 	"_1gtk_1widget_1size_1allocate",
-	"_1gtk_1widget_1size_1request",
 #ifndef JNI64
 	"_1gtk_1widget_1style_1get__I_3B_3II",
 #else

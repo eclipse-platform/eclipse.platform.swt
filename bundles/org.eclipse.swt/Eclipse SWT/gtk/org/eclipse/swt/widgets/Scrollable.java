@@ -469,19 +469,14 @@ void releaseChildren (boolean destroy) {
 
 @Override
 void resizeHandle (int width, int height) {
-	if (GTK.GTK3) {
-		if (fixedHandle != 0) {
-			OS.swt_fixed_resize (GTK.gtk_widget_get_parent(fixedHandle), fixedHandle, width, height);
-		}
-		long /*int*/ child = scrolledHandle != 0 ? scrolledHandle : handle;
-		Point sizes = resizeCalculationsGTK3 (child, width, height);
-		width = sizes.x;
-		height = sizes.y;
-		OS.swt_fixed_resize (GTK.gtk_widget_get_parent(child), child, width, height);
-	} else {
-		if (fixedHandle != 0) GTK.gtk_widget_set_size_request (fixedHandle, width, height);
-		GTK.gtk_widget_set_size_request (scrolledHandle != 0 ? scrolledHandle : handle, width, height);
+	if (fixedHandle != 0) {
+		OS.swt_fixed_resize (GTK.gtk_widget_get_parent(fixedHandle), fixedHandle, width, height);
 	}
+	long /*int*/ child = scrolledHandle != 0 ? scrolledHandle : handle;
+	Point sizes = resizeCalculationsGTK3 (child, width, height);
+	width = sizes.x;
+	height = sizes.y;
+	OS.swt_fixed_resize (GTK.gtk_widget_get_parent(child), child, width, height);
 }
 
 @Override

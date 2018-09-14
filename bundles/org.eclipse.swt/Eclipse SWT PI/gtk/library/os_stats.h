@@ -270,8 +270,6 @@ typedef enum {
 	GTK_1TEXTVIEW_1IM_1CONTEXT_FUNC,
 	GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE_FUNC,
 	GTK_1WIDGET_1GET_1CLASS_FUNC,
-	GTK_1WIDGET_1REQUISITION_1HEIGHT_FUNC,
-	GTK_1WIDGET_1REQUISITION_1WIDTH_FUNC,
 	GtkAllocation_1sizeof_FUNC,
 	GtkBorder_1sizeof_FUNC,
 	GtkCellRendererPixbufClass_1sizeof_FUNC,
@@ -356,7 +354,6 @@ typedef enum {
 	_1gtk_1cell_1renderer_1get_1padding_FUNC,
 	_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width_FUNC,
 	_1gtk_1cell_1renderer_1get_1preferred_1size_FUNC,
-	_1gtk_1cell_1renderer_1get_1size_FUNC,
 	_1gtk_1cell_1renderer_1pixbuf_1new_FUNC,
 	_1gtk_1cell_1renderer_1set_1fixed_1size_FUNC,
 	_1gtk_1cell_1renderer_1text_1new_FUNC,
@@ -976,7 +973,6 @@ typedef enum {
 	_1gtk_1tree_1view_1get_1headers_1visible_FUNC,
 	_1gtk_1tree_1view_1get_1path_1at_1pos_FUNC,
 	_1gtk_1tree_1view_1get_1selection_FUNC,
-	_1gtk_1tree_1view_1get_1vadjustment_FUNC,
 	_1gtk_1tree_1view_1get_1visible_1rect_FUNC,
 	_1gtk_1tree_1view_1insert_1column_FUNC,
 	_1gtk_1tree_1view_1move_1column_1after_FUNC,
@@ -1089,7 +1085,6 @@ typedef enum {
 	_1gtk_1widget_1shape_1combine_1region_FUNC,
 	_1gtk_1widget_1show_FUNC,
 	_1gtk_1widget_1size_1allocate_FUNC,
-	_1gtk_1widget_1size_1request_FUNC,
 #ifndef JNI64
 	_1gtk_1widget_1style_1get__I_3B_3II_FUNC,
 #else

@@ -201,7 +201,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	GTK.gtk_notebook_set_scrollable (handle, false);
 	Point notebookSize = computeNativeSize (handle, wHint, hHint, changed);
 	GTK.gtk_notebook_set_scrollable (handle, scrollable);
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 2, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
 		int[] initialGap = new int[1];
 		GTK.gtk_widget_style_get (handle, OS.initial_gap, initialGap, 0);
 		notebookSize.x += initialGap[0]*2;

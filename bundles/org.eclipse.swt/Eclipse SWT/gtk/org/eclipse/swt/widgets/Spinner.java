@@ -211,7 +211,6 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int[] w = new int [1], h = new int [1];
 	GTK.gtk_widget_realize (handle);
 	long /*int*/ layout = GTK.gtk_entry_get_layout (handle);
 	long /*int*/ hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
@@ -238,17 +237,11 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
 	int width, height = 0 ;
 	GTK.gtk_widget_realize (handle);
-	if (GTK.GTK3) {
-		GTK.gtk_widget_set_size_request (handle, wHint, hHint);
-		GtkRequisition requisition = new GtkRequisition ();
-		GTK.gtk_widget_get_preferred_size (handle, requisition, null);
-		width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
-		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	} else {
-		OS.pango_layout_get_pixel_size (layout, w, h);
-		width = wHint == SWT.DEFAULT ? w [0] : wHint;
-		height = hHint == SWT.DEFAULT ? h [0] : hHint;
-	}
+	GTK.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	GTK.gtk_widget_get_preferred_size (handle, requisition, null);
+	width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	return new Point (trim.width, trim.height);
@@ -259,36 +252,23 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
-	if (GTK.GTK3) {
-		GtkBorder tmp = new GtkBorder();
-		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+	GtkBorder tmp = new GtkBorder();
+	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+	if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+		GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+	} else {
+		GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
+	}
+	if ((style & SWT.BORDER) != 0) {
 		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+			GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
 		} else {
-			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
+			GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(handle), tmp);
 		}
-		if ((style & SWT.BORDER) != 0) {
-			if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-				GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-			} else {
-				GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(handle), tmp);
-			}
-			trim.x -= tmp.left;
-			trim.y -= tmp.top;
-			trim.width += tmp.left + tmp.right;
-			trim.height += tmp.top + tmp.bottom;
-		}
-	}else {
-		Point thickness = getThickness (handle);
-		if ((this.style & SWT.BORDER) != 0) {
-			xborder += thickness.x;
-			yborder += thickness.y;
-		}
-		long /*int*/ fontDesc = getFontDescription ();
-		int fontSize = OS.pango_font_description_get_size (fontDesc);
-		int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
-		arrowSize = arrowSize - arrowSize % 2;
-		trim.width += arrowSize + (2 * thickness.x);
+		trim.x -= tmp.left;
+		trim.y -= tmp.top;
+		trim.width += tmp.left + tmp.right;
+		trim.height += tmp.top + tmp.bottom;
 	}
 	int [] property = new int [1];
 	GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);

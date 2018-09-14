@@ -878,7 +878,7 @@ void resizeHandle(int width, int height) {
 	* a call to gtk_widget_size_request().
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
-	parent.gtk_widget_size_request (handle, requisition);
+	parent.gtk_widget_get_preferred_size (handle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	allocation.width = width;

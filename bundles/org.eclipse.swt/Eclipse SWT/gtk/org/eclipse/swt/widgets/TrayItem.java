@@ -294,8 +294,8 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 		if (GDK.gdk_drawable_get_depth (image.mask) == 1) {
 			GtkAllocation widgetAllocation = new GtkAllocation ();
 			GTK.gtk_widget_get_allocation (widget, widgetAllocation);
-			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -GTK.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
-			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - GTK.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
+			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width) * 0.5) + 0.5);
+			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height) * 0.5) + 0.5);
 			Rectangle b = image.getBoundsInPixels();
 			long /*int*/ gdkImagePtr = GDK.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);

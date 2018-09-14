@@ -2476,7 +2476,7 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
 }
 
 @Override
-void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
+void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisition) {
 	/*
 	 * Bug in GTK.  For some reason, gtk_widget_size_request() fails
 	 * to include the height of the tree view items when there are
@@ -2484,7 +2484,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 	 * visible.
 	 */
 	if (columnCount == 0) {
-		super.gtk_widget_size_request (widget, requisition);
+		super.gtk_widget_get_preferred_size (widget, requisition);
 		return;
 	}
 	long /*int*/ columns = GTK.gtk_tree_view_get_columns (handle), list = columns;
@@ -2502,7 +2502,7 @@ void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
 		columnHandle = OS.g_list_data (columns);
 		GTK.gtk_tree_view_column_set_visible (columnHandle, true);
 	}
-	super.gtk_widget_size_request (widget, requisition);
+	super.gtk_widget_get_preferred_size (widget, requisition);
 	if (fixVisible) {
 		GTK.gtk_tree_view_column_set_visible (columnHandle, false);
 	}

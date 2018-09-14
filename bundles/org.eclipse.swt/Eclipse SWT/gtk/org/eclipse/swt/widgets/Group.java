@@ -110,17 +110,7 @@ long /*int*/ clientHandle () {
 @Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSizeInPixels(wHint, hHint, changed);
-	int width;
-	if(GTK.GTK3){
-		width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
-	}
-	else{
-		int x_thickness = GTK.gtk_style_get_xthickness (GTK.gtk_widget_get_style (handle));
-		// GTK adds a LABEL_PAD and LABEL_SIDE_PAD to the label width, we also need to add
-          	// the thickness of the frame border
-		int minimalSizeAroundLabel = 2 * (GTK.GTK_FRAME_LABEL_PAD + GTK.GTK_FRAME_LABEL_SIDE_PAD + x_thickness);
-		width = computeNativeSize (labelHandle, SWT.DEFAULT, SWT.DEFAULT, false) .x + minimalSizeAroundLabel;
-	}
+	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
 	size.x = Math.max (size.x, width);
 	return size;
 }

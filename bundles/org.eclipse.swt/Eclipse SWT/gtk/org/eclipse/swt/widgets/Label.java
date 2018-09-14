@@ -125,8 +125,8 @@ Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) 
 	 * is to use the minimum width instead of the natural width when SWT.WRAP is specified.
 	 * In all other cases, use the natural width. See bug 534768.
 	 */
-	boolean wrapGTK3 = GTK.GTK3 && labelHandle != 0 && (style & SWT.WRAP) != 0 && GTK.gtk_widget_get_visible (labelHandle);
-	if (wrapGTK3 && wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && GTK.gtk_widget_get_visible (labelHandle);
+	if (wrap && wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition naturalSize = new GtkRequisition ();
 		GtkRequisition minimumSize = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size(h, minimumSize, naturalSize);
@@ -211,17 +211,11 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 		OS.pango_font_metrics_unref (metrics);
 		int fontHeight = ascent + descent;
-		if (GTK.GTK3) {
-			int [] bufferBottom = new int [1];
-			int [] bufferTop = new int [1];
-			OS.g_object_get(labelHandle, OS.margin_bottom, bufferBottom, 0);
-			OS.g_object_get(labelHandle, OS.margin_top, bufferTop, 0);
-			fontHeight += bufferBottom [0] + bufferTop [0];
-		} else {
-			int [] bufferYpad = new int[1];
-			OS.g_object_get (labelHandle, OS.ypad, bufferYpad, 0);
-			fontHeight += 2 * bufferYpad [0];
-		}
+		int [] bufferBottom = new int [1];
+		int [] bufferTop = new int [1];
+		OS.g_object_get(labelHandle, OS.margin_bottom, bufferBottom, 0);
+		OS.g_object_get(labelHandle, OS.margin_top, bufferTop, 0);
+		fontHeight += bufferBottom [0] + bufferTop [0];
 		if (frameHandle != 0) {
 			fontHeight += 2 * getThickness (frameHandle).y;
 			fontHeight += 2 * GTK.gtk_container_get_border_width (frameHandle);
@@ -454,17 +448,12 @@ void releaseWidget () {
 
 @Override
 void resizeHandle (int width, int height) {
-	if (GTK.GTK3) {
-		OS.swt_fixed_resize (GTK.gtk_widget_get_parent (fixedHandle), fixedHandle, width, height);
-		long /*int*/ child = frameHandle != 0 ? frameHandle : handle;
-		Point sizes = resizeCalculationsGTK3 (child, width, height);
-		width = sizes.x;
-		height = sizes.y;
-		OS.swt_fixed_resize (GTK.gtk_widget_get_parent (child), child, width, height);
-	} else {
-		GTK.gtk_widget_set_size_request (fixedHandle, width, height);
-		GTK.gtk_widget_set_size_request (frameHandle != 0 ? frameHandle : handle, width, height);
-	}
+	OS.swt_fixed_resize (GTK.gtk_widget_get_parent (fixedHandle), fixedHandle, width, height);
+	long /*int*/ child = frameHandle != 0 ? frameHandle : handle;
+	Point sizes = resizeCalculationsGTK3 (child, width, height);
+	width = sizes.x;
+	height = sizes.y;
+	OS.swt_fixed_resize (GTK.gtk_widget_get_parent (child), child, width, height);
 }
 
 /**

@@ -1018,9 +1018,7 @@ void forceResize () {
 
 void forceResize (int width, int height) {
 	int clientWidth = 0;
-	if (GTK.GTK3) {
-		if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
-	}
+	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 	GtkAllocation allocation = new GtkAllocation ();
 	int border = GTK.gtk_container_get_border_width (shellHandle);
 	allocation.x = border;
@@ -1035,9 +1033,7 @@ void forceResize (int width, int height) {
 		GTK.gtk_widget_get_preferred_size (vboxHandle, minimumSize, naturalSize);
 	}
 	GTK.gtk_widget_size_allocate (vboxHandle, allocation);
-	if (GTK.GTK3) {
-		if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
-	}
+	if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
 }
 
 /**
@@ -1638,7 +1634,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	//  infinitely recursive resize call. This causes non-resizable Shells/Dialogs to
 	//  crash. Fix: only call resizeBounds() on resizable Shells.
 	if ((!resized || oldWidth != width || oldHeight != height)
-			&& (GTK.GTK3 && !OS.isX11() ? ((style & SWT.RESIZE) != 0) : true)) {  //Wayland
+			&& (!OS.isX11() ? ((style & SWT.RESIZE) != 0) : true)) {  //Wayland
 		oldWidth = width;
 		oldHeight = height;
 		resizeBounds (width, height, true); //this is called to resize child widgets when the shell is resized.
@@ -1950,7 +1946,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	int border = GTK.gtk_container_get_border_width (shellHandle);
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
-	if (!GTK.GTK3 || (style & SWT.RESIZE) == 0) {
+	if ((style & SWT.RESIZE) == 0) {
 		GTK.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
 	}
 	forceResize (boxWidth, boxHeight);
