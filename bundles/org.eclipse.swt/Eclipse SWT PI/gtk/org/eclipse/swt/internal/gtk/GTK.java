@@ -3920,7 +3920,6 @@ public class GTK extends OS {
 	public static final native void _gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
 	public static final void gtk_list_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
 		lock.lock();
-		assert GTK3 : "GTK3 code was run by GTK2";
 		try {
 			_gtk_list_store_set(store, iter, column, value, terminator);
 		} finally {
@@ -7393,7 +7392,6 @@ public class GTK extends OS {
 	public static final native void _gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator);
 	public static final void gtk_tree_store_set(long /*int*/ store, long /*int*/ iter, int column, GdkRGBA value, int terminator) {
 		lock.lock();
-		assert GTK3 : "GTK3 code was run by GTK2";
 		try {
 			_gtk_tree_store_set(store, iter, column, value, terminator);
 		} finally {
