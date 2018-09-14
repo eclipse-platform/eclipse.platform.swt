@@ -297,7 +297,6 @@ public class GDK extends OS {
 	public static final native long /*int*/ _GDK_TYPE_RGBA();
 	public static final long /*int*/ GDK_TYPE_RGBA() {
 		lock.lock();
-		assert GTK.GTK3 : "GTK3 code was run by GTK2";
 		try {
 			return _GDK_TYPE_RGBA();
 		} finally {
@@ -1719,13 +1718,11 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param rgba cast=(GdkRGBA *)
 	 */
 	public static final native long /*int*/ _gdk_rgba_to_string(GdkRGBA rgba);
 	public static final long /*int*/ gdk_rgba_to_string(GdkRGBA rgba) {
 		lock.lock();
-		assert GTK.GTK3 : "GTK3 code was run by GTK2";
 		try {
 			return _gdk_rgba_to_string(rgba);
 		} finally {
@@ -1733,13 +1730,11 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param rgba cast=(GdkRGBA *)
 	 */
 	public static final native void _gdk_rgba_free(long /*int*/ rgba);
 	public static final void gdk_rgba_free(long /*int*/ rgba) {
 		lock.lock();
-		assert GTK.GTK3 : "GTK3 code was run by GTK2";
 		try {
 			_gdk_rgba_free(rgba);
 		} finally {
@@ -1747,13 +1742,11 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param rgba cast=(GdkRGBA *)
 	 */
 	public static final native int _gdk_rgba_hash(GdkRGBA rgba);
 	public static final int gdk_rgba_hash(GdkRGBA  rgba) {
 		lock.lock();
-		assert GTK.GTK3 : "GTK3 code was run by GTK2";
 		try {
 			return _gdk_rgba_hash(rgba);
 		} finally {
@@ -1761,14 +1754,12 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param rgba cast=(GdkRGBA *)
 	 * @param property cast=(const gchar *)
 	 */
 	public static final native long /*int*/ _gdk_rgba_parse(GdkRGBA rgba, byte[] property);
 	public static final long /*int*/ gdk_rgba_parse(GdkRGBA rgba, byte[] property) {
 		lock.lock();
-		assert GTK.GTK3 : "GTK3 code was run by GTK2";
 		try {
 			return _gdk_rgba_parse(rgba, property);
 		} finally {

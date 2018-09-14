@@ -2031,15 +2031,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1rgba_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1rgba_1free_FUNC);
-/*
 	gdk_rgba_free((GdkRGBA *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_rgba_free)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1rgba_1free_FUNC);
 }
 #endif
@@ -2052,15 +2044,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1rgba_1hash)
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1rgba_1hash_FUNC);
 	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
-/*
 	rc = (jint)gdk_rgba_hash((GdkRGBA *)lparg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_rgba_hash)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)lparg0);
-		}
-	}
 fail:
 	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1rgba_1hash_FUNC);
@@ -2078,15 +2062,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1rgba_1parse)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1rgba_1parse_FUNC);
 	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
 	rc = (jintLong)gdk_rgba_parse((GdkRGBA *)lparg0, (const gchar *)lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_rgba_parse)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkRGBA *, const gchar *))fp)((GdkRGBA *)lparg0, (const gchar *)lparg1);
-		}
-	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
@@ -2103,15 +2079,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1rgba_1to_1string)
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1rgba_1to_1string_FUNC);
 	if (arg0) if ((lparg0 = getGdkRGBAFields(env, arg0, &_arg0)) == NULL) goto fail;
-/*
 	rc = (jintLong)gdk_rgba_to_string((GdkRGBA *)lparg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_rgba_to_string)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkRGBA *))fp)((GdkRGBA *)lparg0);
-		}
-	}
 fail:
 	if (arg0 && lparg0) setGdkRGBAFields(env, arg0, lparg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1rgba_1to_1string_FUNC);
