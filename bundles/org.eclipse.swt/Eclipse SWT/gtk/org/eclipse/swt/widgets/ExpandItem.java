@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -162,13 +162,11 @@ void deregister() {
 
 @Override
 void release (boolean destroy) {
-	if (GTK.GTK3) {
-		//454940 ExpandBar DND fix.
-		//Since controls are now nested under the Item,
-		//Item is responsible for it's release.
-		if (control != null && !control.isDisposed ()) {
-			control.release (destroy);
-		}
+	//454940 ExpandBar DND fix.
+	//Since controls are now nested under the Item,
+	//Item is responsible for it's release.
+	if (control != null && !control.isDisposed ()) {
+		control.release (destroy);
 	}
 	super.release (destroy);
 }
@@ -440,8 +438,8 @@ void resizeControl (int yScroll) {
 		* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
 		* is now neccessary.
 		* See also other 454940 notes and similar fix in: 453827 */
-		int x = (GTK.GTK3) ? 0 : allocation.x;
-		int y = (GTK.GTK3) ? 0 : allocation.y;
+		int x = 0 ;
+		int y = 0;
 
 		if (x != -1 && y != -1) {
 			int width = allocation.width;
@@ -467,19 +465,14 @@ void resizeControl (int yScroll) {
 				}
 			}
 			// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
-			if (GTK.GTK3) {
-				/*
-				 * Bug 538114: ExpandBar has no content until resized or collapsed/expanded.
-				 * When widget is first created inside ExpandItem's control, the size is allocated
-				 * to be zero, and the widget is never shown during a layout operation, similar to
-				 * Bug 487757. The fix is to show the control before setting any bounds.
-				 */
-				if (visible) GTK.gtk_widget_show(control.topHandle ());
-				control.setBounds (x, y, width, Math.max (0, height), true, true);
-			}
-			else {
-				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
-			}
+			/*
+			 * Bug 538114: ExpandBar has no content until resized or collapsed/expanded.
+			 * When widget is first created inside ExpandItem's control, the size is allocated
+			 * to be zero, and the widget is never shown during a layout operation, similar to
+			 * Bug 487757. The fix is to show the control before setting any bounds.
+			 */
+			if (visible) GTK.gtk_widget_show(control.topHandle ());
+			control.setBounds (x, y, width, Math.max (0, height), true, true);
 		}
 		control.setVisible (visible);
 	}
@@ -533,15 +526,13 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
-		if (GTK.GTK3) {
-			//454940 ExpandBar DND fix.
-			//Reparenting on the GTK side.
-			//Proper hierachy on gtk side is required for DND to function properly.
-			//As ExpandItem's child can be created before the ExpandItem, our only
-			//option is to reparent the child upon the setControl(..) call.
-			//This is simmilar to TabFolder.
-			Control.gtk_widget_reparent (control, clientHandle ());
-		}
+		//454940 ExpandBar DND fix.
+		//Reparenting on the GTK side.
+		//Proper hierachy on gtk side is required for DND to function properly.
+		//As ExpandItem's child can be created before the ExpandItem, our only
+		//option is to reparent the child upon the setControl(..) call.
+		//This is simmilar to TabFolder.
+		Control.gtk_widget_reparent (control, clientHandle ());
 	}
 	parent.layoutItems (0, true);
 }
@@ -586,7 +577,6 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	parent.setForegroundGdkRGBA (handle, rgba);
 	if (labelHandle != 0) parent.setForegroundGdkRGBA (labelHandle, rgba);
 	if (imageHandle != 0) parent.setForegroundGdkRGBA (imageHandle, rgba);

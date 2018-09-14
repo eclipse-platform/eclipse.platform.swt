@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -157,9 +157,7 @@ void createHandle (int index) {
 	GTK.gtk_container_set_border_width (handle, 0);
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 }
 
 void createItem (ExpandItem item, int style, int index) {
@@ -456,7 +454,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setForegroundRGBA (rgba);
