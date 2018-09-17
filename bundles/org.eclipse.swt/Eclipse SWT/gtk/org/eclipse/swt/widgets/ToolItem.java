@@ -1005,17 +1005,14 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (labelHandle != 0) setForegroundRGBA (labelHandle, rgba);
 }
 
 void setBackgroundRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (handle != 0) setBackgroundRGBA (handle, rgba);
 }
 
 void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
 		long /*int*/ context = GTK.gtk_widget_get_style_context(handle);
@@ -1030,7 +1027,6 @@ void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 }
 
 void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
 		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);

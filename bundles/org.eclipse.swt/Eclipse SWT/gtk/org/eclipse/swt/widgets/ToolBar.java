@@ -597,7 +597,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
@@ -624,7 +623,6 @@ void setParentBackground () {
 
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		GdkRGBA toSet = new GdkRGBA();
 		if (rgba != null) {
@@ -676,7 +674,6 @@ void restoreBackground () {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA (rgba);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

@@ -3077,7 +3077,6 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 }
 
 GdkRGBA getBackgroundColor (long /*int*/ context, int state) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	/*
 	* Draw the context background to an offset screen surface and get the color
 	* in the middle of the surface.
@@ -3345,7 +3344,6 @@ void initializeSystemColors () {
 }
 
 GdkRGBA styleContextGetColor(long /*int*/ context, int flag) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	/*
 	* Feature in GTK: we need to handle calls to gtk_style_context_get_color()
 	* differently due to changes in GTK3.18+. This solves failing test cases

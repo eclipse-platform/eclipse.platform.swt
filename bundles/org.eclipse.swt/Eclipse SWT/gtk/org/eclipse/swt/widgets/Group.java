@@ -152,7 +152,6 @@ Rectangle getClientAreaInPixels () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		if (foreground != null) {
 			return foreground;
@@ -166,7 +165,6 @@ GdkRGBA getContextColorGdkRGBA () {
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		return super.getContextBackgroundGdkRGBA();
 	} else {
@@ -328,7 +326,6 @@ void releaseWidget () {
 
 @Override
 void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		super.setBackgroundGdkRGBA(handle, rgba);
 	} else {
@@ -344,7 +341,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
@@ -363,7 +359,6 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	setForegroundGdkRGBA (labelHandle, rgba);
 }

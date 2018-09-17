@@ -133,7 +133,6 @@ static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorde
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null && (state & BACKGROUND) != 0) {
 		return background;
 	}
@@ -810,8 +809,6 @@ void _setAlignment (int alignment) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
-
 	background = rgba;
 	//Pre GTK 3.10 doesn't handle CSS background color very well for GTK Check/Radio button.
 	// 3.10.3 as it was the latest to affect theming in button.
@@ -921,7 +918,6 @@ boolean setRadioSelection (boolean value) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	setForegroundGdkRGBA (fixedHandle, rgba);
 	if (labelHandle != 0) setForegroundGdkRGBA (labelHandle, rgba);
@@ -941,7 +937,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
@@ -963,7 +958,6 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 }
 
 private void gtk_swt_set_border_color (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	String css_string = "* {\n";
 	if (rgba != null) {
 		String css_color = display.gtk_rgba_to_css_string (rgba);

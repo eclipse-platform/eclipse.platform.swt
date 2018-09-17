@@ -973,7 +973,6 @@ public int getCaretPosition () {
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null && (state & BACKGROUND) != 0) {
 		return background;
 	}
@@ -2019,7 +2018,6 @@ void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {
 }
 
 void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	GdkRGBA toSet;
 	if (rgba != null) {
 		toSet = rgba;
@@ -2041,7 +2039,6 @@ void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (rgba == null) {
 		background = defaultBackground();
 	} else {
@@ -2093,7 +2090,6 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 
 @Override
 void setBackgroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setBackgroundGdkRGBA(rgba);
 	if (entryHandle != 0) setBackgroundGdkRGBA (entryHandle, rgba);
 	setBackgroundGdkRGBA (fixedHandle, rgba);
@@ -2155,7 +2151,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (entryHandle != 0) {
 		setForegroundGdkRGBA (entryHandle, rgba);
 	}

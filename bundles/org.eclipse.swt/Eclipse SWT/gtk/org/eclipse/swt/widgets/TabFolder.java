@@ -747,7 +747,6 @@ void reskinChildren (int flags) {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
     if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
     	// Form background string
     	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "notebook header" : "GtkNotebook.header";
@@ -793,7 +792,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA(rgba);
 	TabItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

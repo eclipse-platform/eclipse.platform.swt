@@ -569,7 +569,6 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 
 @Override
 void fixParentGdkWindow() {
-	assert GTK.GTK3;
 	// Changes to this method should be verified via
 	// org.eclipse.swt.tests.gtk/*/Bug510803_TabFolder_TreeEditor_Regression.java (part two)
 	for (Control child : _getChildren()) {

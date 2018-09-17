@@ -1503,7 +1503,6 @@ public void setItems (String... items) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
 		setForegroundGdkRGBA (handle, toSet);

@@ -328,13 +328,11 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	setForegroundGdkRGBA (labelHandle, rgba);
 	setForegroundGdkRGBA (imageHandle, rgba);
 }
 
 void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	GdkRGBA toSet = new GdkRGBA();
 	if (rgba != null) {
 		toSet = rgba;

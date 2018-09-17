@@ -2199,7 +2199,6 @@ public void selectAll () {
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	if (background != null && (state & BACKGROUND) != 0) {
 		return background;
 	}
@@ -2208,7 +2207,6 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	/* Setting the background color overrides the selected background color.
 	 * To prevent this, we need to re-set the default. This can be done with CSS
 	 * on GTK3.16+, or by using GtkStateFlags as an argument to

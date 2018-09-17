@@ -590,7 +590,6 @@ void setFontDescription (long /*int*/ font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	assert GTK.GTK3 : "GTK3 code was run by GTK2";
 	super.setForegroundGdkRGBA (rgba);
 	setForegroundGdkRGBA (fixedHandle, rgba);
 	if (labelHandle != 0) setForegroundGdkRGBA (labelHandle, rgba);
