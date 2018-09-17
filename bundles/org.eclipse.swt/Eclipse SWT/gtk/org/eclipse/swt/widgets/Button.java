@@ -323,11 +323,7 @@ void createHandle (int index) {
 	if ((style & SWT.ARROW) != 0) {
 		// Use gtk_button_set_image() on GTK3 to prevent icons from being
 		// trimmed with smaller sized buttons; see bug 528284.
-		if (GTK.GTK3) {
-			GTK.gtk_button_set_image(handle, arrowHandle);
-		} else {
-			GTK.gtk_container_add (handle, arrowHandle);
-		}
+		GTK.gtk_button_set_image(handle, arrowHandle);
 	} else {
 		boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 4);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -348,9 +344,7 @@ void createHandle (int index) {
 	if ((style & SWT.ARROW) != 0) return;
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 	_setAlignment (style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT));
 }
 
@@ -717,10 +711,8 @@ void _setAlignment (int alignment) {
 			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
 			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
 		} else {
-			if (GTK.GTK3) {
-				GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-				GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
-			}
+			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
@@ -748,10 +740,8 @@ void _setAlignment (int alignment) {
 			}
 
 		} else {
-			if (GTK.GTK3) {
-				GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-				GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
-			}
+			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0))  {
 				gtk_label_set_align(labelHandle,0.5f,0.5f);
@@ -769,10 +759,8 @@ void _setAlignment (int alignment) {
 			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_END);
 			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_END);
 		} else {
-			if (GTK.GTK3) {
-				GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-				GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
-			}
+			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0))  {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -219,9 +219,7 @@ void createHandle(int index) {
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription (defaultFont ().handle);
-	}
+	setFontDescription (defaultFont ().handle);
 }
 
 @Override
@@ -428,26 +426,24 @@ void showWidget () {
 
 @Override
 int setBounds(int x, int y, int width, int height, boolean move, boolean resize) {
-		if (GTK.GTK3) {
-			// Work around for bug 470129.
-			// See also https://bugzilla.gnome.org/show_bug.cgi?id=754976 :
-			// GtkFrame: Attempt to allocate size of width 1 (or a small number) fails
-			//
-			// GtkFrame does not handle well allocating less than its minimum size
-			GtkRequisition requisition = new GtkRequisition();
-			GTK.gtk_widget_get_preferred_size(handle, requisition, null);
-			/*
-			 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
-			 * elements which we cannot access. If the to-be-allocated size minus
-			 * these elements is < 0, allocate the preferred size instead.
-			 */
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
-				height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
-			} else {
-				width = Math.max(requisition.width, width);
-			}
-		}
+	// Work around for bug 470129.
+	// See also https://bugzilla.gnome.org/show_bug.cgi?id=754976 :
+	// GtkFrame: Attempt to allocate size of width 1 (or a small number) fails
+	//
+	// GtkFrame does not handle well allocating less than its minimum size
+	GtkRequisition requisition = new GtkRequisition();
+	GTK.gtk_widget_get_preferred_size(handle, requisition, null);
+	/*
+	 * Feature in GTK3.20+: size calculations take into account GtkCSSNode
+	 * elements which we cannot access. If the to-be-allocated size minus
+	 * these elements is < 0, allocate the preferred size instead.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
+		height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
+	} else {
+		width = Math.max(requisition.width, width);
+	}
 	return super.setBounds(x, y, width, height, move, resize);
 }
 

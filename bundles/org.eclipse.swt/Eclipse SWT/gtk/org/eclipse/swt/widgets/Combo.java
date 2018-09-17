@@ -193,13 +193,9 @@ public void add (String string, int index) {
 private void gtk_combo_box_insert(String string, int index) {
 	byte [] buffer = Converter.wcsToMbcs (string, true);
 	if (handle != 0) {
-		if (GTK.GTK3) {
-			gtk_combo_box_toggle_wrap(false);
-			GTK.gtk_combo_box_text_insert (handle, index, null, buffer);
-			gtk_combo_box_toggle_wrap(true);
-		} else {
-			GTK.gtk_combo_box_text_insert_text (handle, index, buffer);
-		}
+		gtk_combo_box_toggle_wrap(false);
+		GTK.gtk_combo_box_text_insert (handle, index, null, buffer);
+		gtk_combo_box_toggle_wrap(true);
 	}
 }
 
@@ -231,29 +227,21 @@ private void gtk_combo_box_insert(String string, int index) {
  */
 private void gtk_combo_box_toggle_wrap (boolean wrap) {
 	if (handle == 0) return;
-	if (GTK.GTK3) {
-		if (!wrap) {
-			if (GTK.gtk_combo_box_get_wrap_width(handle) == 1) {
-				GTK.gtk_combo_box_set_wrap_width(handle, 0);
-			}
-		} else  {
-			if (delayedEnableWrap) {
-				return;
-			} else {
-				delayedEnableWrap = true;
-				display.asyncExec(() -> {
-					if (!isDisposed() && handle != 0) {
-						GTK.gtk_combo_box_set_wrap_width(handle, 1);
-						delayedEnableWrap = false;
-					}
-				});
-			}
-		}
-	} else { // GTK2
-		if (wrap) {
-			GTK.gtk_combo_box_set_wrap_width(handle, 1);
-		} else {
+	if (!wrap) {
+		if (GTK.gtk_combo_box_get_wrap_width(handle) == 1) {
 			GTK.gtk_combo_box_set_wrap_width(handle, 0);
+		}
+	} else  {
+		if (delayedEnableWrap) {
+			return;
+		} else {
+			delayedEnableWrap = true;
+			display.asyncExec(() -> {
+				if (!isDisposed() && handle != 0) {
+					GTK.gtk_combo_box_set_wrap_width(handle, 1);
+					delayedEnableWrap = false;
+				}
+			});
 		}
 	}
 }
@@ -505,9 +493,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		entryHandle = GTK.gtk_bin_get_child (handle);
 		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (GTK.GTK3) {
-			imContext = OS.imContextLast();
-		}
+		imContext = OS.imContextLast();
 	}
 	popupHandle = findPopupHandle (oldList);
 	GTK.gtk_container_add (fixedHandle, handle);
@@ -555,9 +541,7 @@ void createHandle (int index) {
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 }
 
 /**
@@ -1814,11 +1798,11 @@ public void remove (int start, int end) {
 	int index = GTK.gtk_combo_box_get_active (handle);
 	if (start <= index && index <= end) clearText();
 
-	if (GTK.GTK3) gtk_combo_box_toggle_wrap(false);
+	gtk_combo_box_toggle_wrap(false);
 	for (int i = end; i >= start; i--) {
 		if (handle != 0) GTK.gtk_combo_box_text_remove(handle, i);
 	}
-	if (GTK.GTK3) gtk_combo_box_toggle_wrap(true);
+	gtk_combo_box_toggle_wrap(true);
 }
 
 /**
@@ -1856,16 +1840,9 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget();
-	int count = items.length;
 	items = new String[0];
 	clearText ();
-	if (GTK.GTK3) {
-		gtk_combo_box_text_remove_all();
-	} else {
-		for (int i = count - 1; i >= 0; i--) {
-			if (handle != 0) GTK.gtk_combo_box_text_remove (handle, i);
-		}
-	}
+	gtk_combo_box_text_remove_all();
 }
 
 /**
@@ -2214,17 +2191,10 @@ public void setItems (String... items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = this.items.length;
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
-	if (GTK.GTK3) {
-		gtk_combo_box_text_remove_all();
-	} else {
-		for (int i = count - 1; i >= 0; i--) {
-			if (handle != 0) GTK.gtk_combo_box_text_remove (handle, i);
-		}
-	}
+	gtk_combo_box_text_remove_all();
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
 		gtk_combo_box_insert(string, i);

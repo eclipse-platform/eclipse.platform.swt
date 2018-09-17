@@ -1369,20 +1369,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @param combo_box cast=(GtkComboBoxText *)
-	 * @param position cast=(gint)
-	 * @param text cast=(const gchar *)
-	 */
-	public static final native void _gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text);
-	public static final void gtk_combo_box_text_insert_text(long /*int*/ combo_box, int position, byte[] text) {
-		lock.lock();
-		try {
-			_gtk_combo_box_text_insert_text(combo_box, position, text);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param combo_box cast=(GtkComboBoxText *) */
 	public static final native void _gtk_combo_box_text_remove(long /*int*/ combo_box, int position);
 	public static final void gtk_combo_box_text_remove(long /*int*/ combo_box, int position) {

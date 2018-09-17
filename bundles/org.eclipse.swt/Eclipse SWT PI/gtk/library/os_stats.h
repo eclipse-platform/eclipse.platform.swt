@@ -366,7 +366,6 @@ typedef enum {
 	_1gtk_1combo_1box_1set_1focus_1on_1click_FUNC,
 	_1gtk_1combo_1box_1set_1wrap_1width_FUNC,
 	_1gtk_1combo_1box_1text_1insert_FUNC,
-	_1gtk_1combo_1box_1text_1insert_1text_FUNC,
 	_1gtk_1combo_1box_1text_1new_FUNC,
 	_1gtk_1combo_1box_1text_1new_1with_1entry_FUNC,
 	_1gtk_1combo_1box_1text_1remove_FUNC,

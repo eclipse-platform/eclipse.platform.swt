@@ -4657,20 +4657,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1combo_1box_1text_1insert_1text
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1combo_1box_1text_1insert_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2)
-{
-	jbyte *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_combo_box_text_insert_text((GtkComboBoxText *)arg0, (gint)arg1, (const gchar *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1insert_1text_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1combo_1box_1text_1new
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1combo_1box_1text_1new)
 	(JNIEnv *env, jclass that)
