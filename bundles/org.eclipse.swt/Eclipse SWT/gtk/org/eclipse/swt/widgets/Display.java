@@ -440,6 +440,9 @@ public class Display extends Device {
 	/* Latin layout key group */
 	private int latinKeyGroup;
 
+	/* Mapping from layout key group to number of Latin alphabet keys. See Bug 533395, Bug 61190. */
+	Map<Integer, Integer> groupKeysCount;
+
 	/* Keymap "keys-changed" callback */
 	long /*int*/ keysChangedProc;
 	Callback keysChangedCallback;
@@ -1125,13 +1128,14 @@ void createDisplay (DeviceData data) {
 }
 
 /**
- * Determine key group of Latin layout.
+ * Determine key group of Latin layout, and update the layout group to key count map.
+ * If there are multiple Latin keyboard layout group, return the first one.
  *
- * @return the most Latin keyboard layout group
+ * @return the most Latin keyboard layout group (i.e. group holding the max number of Latin alphabet keys)
  */
 private int findLatinKeyGroup () {
 	int result = 0;
-	Map<Integer, Integer> groupKeysCount = new HashMap<> ();
+	groupKeysCount = new HashMap<> ();
 	long /*int*/ keymap = GDK.gdk_keymap_get_default ();
 
 	// count all key groups for Latin alphabet
@@ -1174,6 +1178,13 @@ private int findLatinKeyGroup () {
  */
 int getLatinKeyGroup () {
 	return latinKeyGroup;
+}
+
+/**
+ * Return a mapping from layout group to the number of Latin alphabet (a-z) in each group
+ */
+Map<Integer, Integer> getGroupKeysCount () {
+	return groupKeysCount;
 }
 
 /**

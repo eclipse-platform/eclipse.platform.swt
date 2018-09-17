@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.*;
@@ -1662,7 +1664,14 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 			if (event.keyCode == 0) {
 				long [] keyval = new long [1];
 				int [] effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
-				if (OS.gdk_keymap_translate_keyboard_state (GDK.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, display.getLatinKeyGroup(), keyval, effective_group, level, consumed_modifiers)) {
+				/* If current group is not a Latin layout, get the most Latin Layout group from input source. */
+				Map<Integer, Integer> groupLatinKeysCount = display.getGroupKeysCount();
+				int keyLayoutGroup = keyEvent.group;
+				if (!groupLatinKeysCount.containsKey(keyLayoutGroup)) {
+					keyLayoutGroup = display.getLatinKeyGroup();
+				}
+				if (OS.gdk_keymap_translate_keyboard_state (GDK.gdk_keymap_get_default (), keyEvent.hardware_keycode,
+						0, keyLayoutGroup, keyval, effective_group, level, consumed_modifiers)) {
 					event.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				}
 			}
