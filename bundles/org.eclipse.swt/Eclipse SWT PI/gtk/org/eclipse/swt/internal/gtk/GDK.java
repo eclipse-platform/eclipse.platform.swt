@@ -324,16 +324,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_x11_drawable_get_xid(long /*int*/ drawable);
-	public static final long /*int*/ gdk_x11_drawable_get_xid(long /*int*/ drawable) {
-		lock.lock();
-		try {
-			return _gdk_x11_drawable_get_xid(drawable);
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long /*int*/ _gdk_x11_get_default_xdisplay();
 	public static final long /*int*/ gdk_x11_get_default_xdisplay () {
 		lock.lock();
@@ -416,20 +406,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_add_filter(window, function, data);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param function cast=(GdkFilterFunc)
-	 * @param data cast=(gpointer)
-	 */
-	public static final native void _gdk_window_remove_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data);
-	public static final void gdk_window_remove_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data) {
-		lock.lock();
-		try {
-			_gdk_window_remove_filter(window, function, data);
 		} finally {
 			lock.unlock();
 		}
@@ -619,16 +595,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_cursor_new_from_pixbuf(display, pixbuf, x, y);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native void _gdk_display_warp_pointer(long /*int*/ device, long /*int*/ screen, int x, int y);
-	public static final void gdk_display_warp_pointer(long /*int*/ device, long /*int*/ screen, int x, int y) {
-		lock.lock();
-		try {
-			_gdk_display_warp_pointer(device, screen, x, y);
 		} finally {
 			lock.unlock();
 		}
@@ -1006,18 +972,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_error_trap_push();
-	public static final void gdk_error_trap_push() {
-		lock.lock();
-		try {
-			_gdk_error_trap_push();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native void _gdk_x11_display_error_trap_pop_ignored(long /*int*/ display);
@@ -1025,18 +979,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_x11_display_error_trap_pop_ignored(display);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native int _gdk_error_trap_pop();
-	public static final int gdk_error_trap_pop() {
-		lock.lock();
-		try {
-			return _gdk_error_trap_pop();
 		} finally {
 			lock.unlock();
 		}
@@ -2047,20 +1989,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_visual_get_system();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param win_x cast=(gint *)
-	 * @param win_y cast=(gint *)
-	 */
-	public static final native long /*int*/ _gdk_window_at_pointer(int[] win_x, int[] win_y);
-	public static final long /*int*/ gdk_window_at_pointer(int[] win_x, int[] win_y) {
-		lock.lock();
-		try {
-			return _gdk_window_at_pointer(win_x, win_y);
 		} finally {
 			lock.unlock();
 		}

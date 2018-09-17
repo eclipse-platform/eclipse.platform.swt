@@ -5130,20 +5130,6 @@ public class GTK extends OS {
 	                lock.unlock();
 	        }
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param rc_string cast=(const gchar *)
-	 */
-	public static final native void _gtk_rc_parse_string(byte[] rc_string);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_rc_parse_string(byte[] rc_string) {
-		lock.lock();
-		try {
-			_gtk_rc_parse_string(rc_string);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param style cast=(GtkRcStyle *) */
 	public static final native long /*int*/ _gtk_rc_style_get_bg_pixmap_name(long /*int*/ style, int index);
 	public static final long /*int*/ gtk_rc_style_get_bg_pixmap_name(long /*int*/ style, int index) {

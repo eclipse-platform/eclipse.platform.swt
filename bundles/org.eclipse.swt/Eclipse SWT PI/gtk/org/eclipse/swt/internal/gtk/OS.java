@@ -433,19 +433,6 @@ public class OS extends C {
 			lock.unlock();
 		}
 	}
-	/** @method flags=no_gen
-	 * @category custom
-	 */
-	public static final native void _call_get_size (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5, long /*int*/ arg6);
-	public static final void call_get_size (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5, long /*int*/ arg6) {
-		// See also related call_* functions.
-		lock.lock();
-		try {
-			 _call_get_size(function, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-		} finally {
-			lock.unlock();
-		}
-	}
 
 	/** Custom callbacks */
 	/** @method flags=no_gen

@@ -124,8 +124,8 @@ public class Display extends Device {
 	int allocated_nfds;
 	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
-	Callback eventCallback, filterCallback;
-	long /*int*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
+	Callback eventCallback;
+	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
@@ -331,9 +331,9 @@ public class Display extends Device {
 	/* Renderer Subclass */
 	static long /*int*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
 	static long /*int*/ text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
-	static Callback rendererClassInitCallback, rendererRenderCallback, rendererGetSizeCallback;
+	static Callback rendererClassInitCallback, rendererRenderCallback;
 	static Callback rendererGetPreferredWidthCallback;
-	static long /*int*/ rendererClassInitProc, rendererRenderProc, rendererGetSizeProc;
+	static long /*int*/ rendererClassInitProc, rendererRenderProc;
 	static long /*int*/ rendererGetPreferredWidthProc;
 
 	/* Key Mappings */
@@ -1050,22 +1050,14 @@ void createDisplay (DeviceData data) {
 		if (rendererClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (rendererRenderProc == 0) {
-		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", GTK.GTK3 ? 6 : 7); //$NON-NLS-1$
+		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 6); //$NON-NLS-1$
 		rendererRenderProc = rendererRenderCallback.getAddress ();
 		if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	if (GTK.GTK3) {
-		if (rendererGetPreferredWidthProc == 0) {
-			rendererGetPreferredWidthCallback = new Callback (getClass (), "rendererGetPreferredWidthProc", 4); //$NON-NLS-1$
-			rendererGetPreferredWidthProc = rendererGetPreferredWidthCallback.getAddress ();
-			if (rendererGetPreferredWidthProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		}
-	} else {
-		if (rendererGetSizeProc == 0) {
-			rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7); //$NON-NLS-1$
-			rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
-			if (rendererGetSizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		}
+	if (rendererGetPreferredWidthProc == 0) {
+		rendererGetPreferredWidthCallback = new Callback (getClass (), "rendererGetPreferredWidthProc", 4); //$NON-NLS-1$
+		rendererGetPreferredWidthProc = rendererGetPreferredWidthCallback.getAddress ();
+		if (rendererGetPreferredWidthProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (text_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
@@ -1102,10 +1094,6 @@ void createDisplay (DeviceData data) {
 	byte [] buffer = Converter.wcsToMbcs (APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	GDK.gdk_set_program_class (buffer);
-	if (!GTK.GTK3) {
-		byte [] flatStyle = Converter.wcsToMbcs ("style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true); //$NON-NLS-1$
-		GTK.gtk_rc_parse_string (flatStyle);
-	}
 
 	/* Initialize the hidden shell */
 	shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
@@ -1117,10 +1105,6 @@ void createDisplay (DeviceData data) {
 	eventProc = eventCallback.getAddress ();
 	if (eventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	GDK.gdk_event_handler_set (eventProc, 0, 0);
-	filterCallback = new Callback (this, "filterProc", 3); //$NON-NLS-1$
-	filterProc = filterCallback.getAddress ();
-	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	GDK.gdk_window_add_filter  (0, filterProc, 0);
 
 	byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 	long /*int*/ atom = GDK.gdk_atom_intern(atomName, false);
@@ -1454,11 +1438,7 @@ static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ cl
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
 	klass.render = rendererRenderProc;
-	if (GTK.GTK3) {
-		klass.get_preferred_width = rendererGetPreferredWidthProc;
-	} else {
-		klass.get_size = rendererGetSizeProc;
-	}
+	klass.get_preferred_width = rendererGetPreferredWidthProc;
 	OS.memmove (g_class, klass);
 	return 0;
 }
@@ -1467,13 +1447,6 @@ static long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.rendererGetPreferredWidthProc (cell, handle, minimun_size, natural_size);
-	return 0;
-}
-
-static long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
-	Display display = getCurrent ();
-	Widget widget = display.getWidget (handle);
-	if (widget != null) return widget.rendererGetSizeProc (cell, handle, cell_area, x_offset, y_offset, width, height);
 	return 0;
 }
 
@@ -1626,12 +1599,8 @@ public Control getCursorControl () {
 		*/
 		if (!OS.isX11()) return null;
 		long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
-		if (GTK.GTK3) {
-			if (OS.isX11()) {
-				GDK.gdk_x11_display_error_trap_push(gdkDisplay);
-			}
-		} else {
-			GDK.gdk_error_trap_push ();
+		if (OS.isX11()) {
+			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 		}
 		int[] unusedInt = new int[1];
 		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
@@ -1650,12 +1619,8 @@ public Control getCursorControl () {
 				}
 			}
 		} while (xWindow != 0);
-		if (GTK.GTK3) {
-			if (OS.isX11()) {
-				GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
-			}
-		} else {
-			GDK.gdk_error_trap_pop ();
+		if (OS.isX11()) {
+			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		}
 	}
 	if (handle == 0) return null;
@@ -1706,12 +1671,6 @@ boolean filterEvent (Event event) {
 boolean filters (int eventType) {
 	if (filterTable == null) return false;
 	return filterTable.hooks (eventType);
-}
-
-long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*/ data) {
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.filterProc (xEvent, gdkEvent, data);
 }
 
 /**
@@ -3109,7 +3068,7 @@ GdkRGBA copyRGBA (GdkRGBA source) {
 void initializeSystemColors () {
 	long /*int*/ tooltipShellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	byte[] gtk_tooltip = Converter.wcsToMbcs (GTK.GTK3 ? "gtk-tooltip" : "gtk-tooltips", true); //$NON-NLS-1$
+	byte[] gtk_tooltip = Converter.wcsToMbcs ("gtk-tooltip", true); //$NON-NLS-1$
 	GTK.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	GTK.gtk_widget_realize (tooltipShellHandle);
 
@@ -3480,8 +3439,8 @@ void initializeCallbacks () {
 	signalIds [Widget.ENTER_NOTIFY_EVENT] = OS.g_signal_lookup (OS.enter_notify_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT] = OS.g_signal_lookup (OS.event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT_AFTER] = OS.g_signal_lookup (OS.event_after, GTK.GTK_TYPE_WIDGET ());
-	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (GTK.GTK3 ? OS.draw : OS.expose_event, GTK.GTK_TYPE_WIDGET ());
-	signalIds [Widget.EXPOSE_EVENT_INVERSE] = OS.g_signal_lookup (GTK.GTK3 ? OS.draw : OS.expose_event, GTK.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.draw, GTK.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EXPOSE_EVENT_INVERSE] = OS.g_signal_lookup (OS.draw, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS] = OS.g_signal_lookup (OS.focus, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_IN_EVENT] = OS.g_signal_lookup (OS.focus_in_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_OUT_EVENT] = OS.g_signal_lookup (OS.focus_out_event, GTK.GTK_TYPE_WIDGET ());
@@ -3721,32 +3680,30 @@ void initializeSubclasses () {
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
 	OS.g_type_class_unref (pangoLayoutClass);
 
-	if (GTK.GTK3) {
-		long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
-		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
-		OS.g_type_class_unref (imContextClass);
+	long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+	long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+	imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
+	OS.g_type_class_unref (imContextClass);
 
-		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
-		pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
-		OS.g_type_class_unref (pangoFontFamilyClass);
+	long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+	long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+	pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
+	OS.g_type_class_unref (pangoFontFamilyClass);
 
-		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
-		pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
-		OS.g_type_class_unref (pangoFontFaceClass);
+	long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+	long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+	pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
+	OS.g_type_class_unref (pangoFontFaceClass);
 
-		if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
-			long /*int*/ printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
-			long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
-			printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
-			OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
-			OS.g_type_class_unref (printerOptionWidgetClass);
-		}
+	if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
+		long /*int*/ printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
+		long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+		printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
+		OS.g_type_class_unref (printerOptionWidgetClass);
 	}
 }
 
@@ -4225,12 +4182,8 @@ public boolean post (Event event) {
 				// to gdk_test_simulate_button leads to crash.
 				return false;
 			}
-			if (GTK.GTK3) {
-				long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-				GDK.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
-			} else {
-				GDK.gdk_window_get_pointer(gdkWindow, x, y, new int[1]);
-			}
+			long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+			GDK.gdk_window_get_device_position(gdkWindow, gdkPointer, x, y, new int[1]);
 
 			switch (type) {
 				case SWT.KeyDown:
@@ -4475,13 +4428,6 @@ void releaseDisplay () {
 	}
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = windowProc6 = 0;
 
-	/* Dispose xfilter callback */
-	if (filterProc != 0) {
-		GDK.gdk_window_remove_filter(0, filterProc, 0);
-	}
-	filterCallback.dispose(); filterCallback = null;
-	filterProc = 0;
-
 	/* Dispose checkIfEvent callback */
 	checkIfEventCallback.dispose(); checkIfEventCallback = null;
 	checkIfEventProc = 0;
@@ -4609,23 +4555,21 @@ void releaseDisplay () {
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
-	if (GTK.GTK3) {
-		long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
-		OS.g_type_class_unref (imContextClass);
-		imContextNewProc = 0;
-		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
-		OS.g_type_class_unref (pangoFontFamilyClass);
-		pangoFontFamilyNewProc = 0;
-		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
-		OS.g_type_class_unref (pangoFontFaceClass);
-		pangoFontFaceNewProc = 0;
-	}
+	long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+	long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
+	OS.g_type_class_unref (imContextClass);
+	imContextNewProc = 0;
+	long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+	long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
+	OS.g_type_class_unref (pangoFontFamilyClass);
+	pangoFontFamilyNewProc = 0;
+	long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+	long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
+	OS.g_type_class_unref (pangoFontFaceClass);
+	pangoFontFaceNewProc = 0;
 
 	/* Release the sleep resources */
 	max_priority = timeout = null;
@@ -5026,12 +4970,8 @@ public void setCursorLocation (int x, int y) {
 void setCursorLocationInPixels (Point location) {
 	long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
 	long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
-	if (!GTK.GTK3) {
-		GDK.gdk_display_warp_pointer(gdkDisplay, gdkScreen, location.x, location.y);
-	} else {
-		long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
-	}
+	long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+	GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
 }
 
 /**
@@ -5837,29 +5777,21 @@ long /*int*/ windowTimerProc (long /*int*/ handle) {
 }
 
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	if (GTK.GTK3) {
-		long /*int*/ display = 0;
-		if( window != 0) {
-			display = GDK.gdk_window_get_display (window);
-		} else {
-			window = GDK.gdk_get_default_root_window ();
-			display = GDK.gdk_window_get_display (window);
-		}
-		long /*int*/ pointer = GDK.gdk_get_pointer (display);
-		return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
+	long /*int*/ display = 0;
+	if( window != 0) {
+		display = GDK.gdk_window_get_display (window);
 	} else {
-		return GDK.gdk_window_get_pointer (window, x, y, mask);
+		window = GDK.gdk_get_default_root_window ();
+		display = GDK.gdk_window_get_display (window);
 	}
+	long /*int*/ pointer = GDK.gdk_get_pointer (display);
+	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
 long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
-	if (GTK.GTK3) {
-		long /*int*/ display = GDK.gdk_display_get_default ();
-		long /*int*/ device = GDK.gdk_get_pointer(display);
-		return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
-	} else {
-		return GDK.gdk_window_at_pointer (win_x, win_y);
-	}
+	long /*int*/ display = GDK.gdk_display_get_default ();
+	long /*int*/ device = GDK.gdk_get_pointer(display);
+	return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
 }
 
 /**

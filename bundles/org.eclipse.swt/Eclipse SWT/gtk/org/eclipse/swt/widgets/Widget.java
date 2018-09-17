@@ -1292,10 +1292,6 @@ long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ hand
 	return 0;
 }
 
-long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
-	return 0;
-}
-
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	return 0;
 }

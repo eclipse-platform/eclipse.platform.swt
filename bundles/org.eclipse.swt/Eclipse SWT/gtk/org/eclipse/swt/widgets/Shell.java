@@ -522,24 +522,22 @@ void adjustTrim () {
 	} else {
 		trimStyle = Display.TRIM_NONE;
 	}
-	if (GTK.GTK3) {
-		/*
-		 * The workaround for bug 445900 seems to cause problems for some
-		 * users on GTK2, see bug 492695. The fix is to only adjust the
-		 * shell size on GTK3.
-		 */
-		Rectangle bounds = getBoundsInPixels();
-		int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
-		int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
-		if (widthAdjustment == 0 && heightAdjustment == 0) return;
+	/*
+	 * The workaround for bug 445900 seems to cause problems for some
+	 * users on GTK2, see bug 492695. The fix is to only adjust the
+	 * shell size on GTK3.
+	 */
+	Rectangle bounds = getBoundsInPixels();
+	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
+	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
+	if (widthAdjustment == 0 && heightAdjustment == 0) return;
 
-		bounds.width += widthAdjustment;
-		bounds.height += heightAdjustment;
-		oldWidth += widthAdjustment;
-		oldHeight += heightAdjustment;
-		if (!getMaximized()) {
-			resizeBounds (width + widthAdjustment, height + heightAdjustment, false);
-		}
+	bounds.width += widthAdjustment;
+	bounds.height += heightAdjustment;
+	oldWidth += widthAdjustment;
+	oldHeight += heightAdjustment;
+	if (!getMaximized()) {
+		resizeBounds (width + widthAdjustment, height + heightAdjustment, false);
 	}
 	display.trimWidths[trimStyle] = trimWidth;
 	display.trimHeights[trimStyle] = trimHeight;
@@ -583,21 +581,11 @@ void bringToTop (boolean force) {
 		if (OS.isX11()) {
 			long /*int*/ gdkDisplay = GDK.gdk_window_get_display(window);
 			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
-			long /*int*/ xWindow;
-			if (GTK.GTK3) {
-				xWindow = GDK.gdk_x11_window_get_xid (window);
-				GDK.gdk_x11_display_error_trap_push(gdkDisplay);
-			} else {
-				xWindow = GDK.gdk_x11_drawable_get_xid (window);
-				GDK.gdk_error_trap_push ();
-			}
+			long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (window);
+			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 			/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
-			if (GTK.GTK3) {
-				GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
-			} else {
-				GDK.gdk_error_trap_pop ();
-			}
+			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_grab_add(shellHandle);
@@ -903,13 +891,8 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.getClosure (MOVE_FOCUS), false);
-	if (!GTK.GTK3) {
-		long /*int*/ window = gtk_widget_get_window (shellHandle);
-		GDK.gdk_window_add_filter  (window, display.filterProc, shellHandle);
-	} else {
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
-	}
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	if (isCustomResize ()) {
 		int mask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_BUTTON_PRESS_MASK |  GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
 		GTK.gtk_widget_add_events (shellHandle, mask);
@@ -2357,10 +2340,6 @@ public void setRegion (Region region) {
 
 //copied from Region:
 static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
-	if (!GTK.GTK3) {
-		GDK.gdk_region_get_rectangles (region, rectangles, n_rectangles);
-		return;
-	}
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);
@@ -2902,10 +2881,6 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
-	if (!GTK.GTK3) {
-		long /*int*/ window = gtk_widget_get_window (shellHandle);
-		GDK.gdk_window_remove_filter(window, display.filterProc, shellHandle);
-	}
 	lastActive = null;
 	if (regionToDispose != null) {
 		regionToDispose.dispose();

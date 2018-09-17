@@ -2917,16 +2917,6 @@ long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ hand
 }
 
 @Override
-long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
-	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
-	GtkCellRendererClass klass = new GtkCellRendererClass ();
-	OS.memmove (klass, g_class);
-	OS.call_get_size (klass.get_size, cell, handle, cell_area, x_offset, y_offset, width, height);
-	sendMeasureEvent (cell, width, height);
-	return 0;
-}
-
-@Override
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	rendererRender (cell, cr, 0, widget, background_area, cell_area, 0, flags);
 	return 0;
