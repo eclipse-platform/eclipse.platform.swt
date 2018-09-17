@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -275,21 +275,12 @@ void createHandle (int index) {
 	GTK.gtk_widget_set_has_window (fixedHandle, true);
 	switch (style & bits) {
 		case SWT.ARROW:
-			if (GTK.GTK3) {
-				byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
-				if ((style & SWT.UP) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_UP;
-				if ((style & SWT.DOWN) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_DOWN;
-				if ((style & SWT.LEFT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_PREVIOUS;
-				if ((style & SWT.RIGHT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_NEXT;
-				arrowHandle = GTK.gtk_image_new_from_icon_name (arrowType, GTK.GTK_ICON_SIZE_MENU);
-			} else { //GTK2
-				int arrowType = GTK.GTK_ARROW_UP;
-				if ((style & SWT.UP) != 0) arrowType = GTK.GTK_ARROW_UP;
-				if ((style & SWT.DOWN) != 0) arrowType = GTK.GTK_ARROW_DOWN;
-	            if ((style & SWT.LEFT) != 0) arrowType = GTK.GTK_ARROW_LEFT;
-	            if ((style & SWT.RIGHT) != 0) arrowType = GTK.GTK_ARROW_RIGHT;
-	            arrowHandle = GTK.gtk_arrow_new (arrowType, GTK.GTK_SHADOW_OUT);
-			}
+			byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
+			if ((style & SWT.UP) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_UP;
+			if ((style & SWT.DOWN) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_DOWN;
+			if ((style & SWT.LEFT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_PREVIOUS;
+			if ((style & SWT.RIGHT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_NEXT;
+			arrowHandle = GTK.gtk_image_new_from_icon_name (arrowType, GTK.GTK_ICON_SIZE_MENU);
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 			handle = GTK.gtk_button_new ();
@@ -702,25 +693,14 @@ void _setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
-		if (GTK.GTK3) {
-			byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
-			switch (alignment) {
-				case SWT.UP: arrowType = GTK.GTK_NAMED_ICON_GO_UP; break;
-				case SWT.DOWN: arrowType = GTK.GTK_NAMED_ICON_GO_DOWN; break;
-				case SWT.LEFT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS; break;
-				case SWT.RIGHT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_PREVIOUS : GTK.GTK_NAMED_ICON_GO_NEXT; break;
-			}
-			GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU);
-		} else { //GTK2
-			int arrowType = GTK.GTK_ARROW_UP;
-			switch (alignment) {
-				case SWT.UP: arrowType = GTK.GTK_ARROW_UP; break;
-				case SWT.DOWN: arrowType = GTK.GTK_ARROW_DOWN; break;
-				case SWT.LEFT: arrowType = isRTL ? GTK.GTK_ARROW_RIGHT : GTK.GTK_ARROW_LEFT; break;
-				case SWT.RIGHT: arrowType = isRTL ? GTK.GTK_ARROW_LEFT : GTK.GTK_ARROW_RIGHT; break;
-			}
-			GTK.gtk_arrow_set (arrowHandle, arrowType, GTK.GTK_SHADOW_OUT);
+		byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
+		switch (alignment) {
+			case SWT.UP: arrowType = GTK.GTK_NAMED_ICON_GO_UP; break;
+			case SWT.DOWN: arrowType = GTK.GTK_NAMED_ICON_GO_DOWN; break;
+			case SWT.LEFT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS; break;
+			case SWT.RIGHT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_PREVIOUS : GTK.GTK_NAMED_ICON_GO_NEXT; break;
 		}
+		GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
@@ -1051,19 +1031,10 @@ void setOrientation (boolean create) {
 		if (labelHandle != 0) GTK.gtk_widget_set_direction (labelHandle, dir);
 		if (imageHandle != 0) GTK.gtk_widget_set_direction (imageHandle, dir);
 		if (arrowHandle != 0) {
-			if (GTK.GTK3) {
-				byte arrowType [] = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS;
-				switch (style & (SWT.LEFT | SWT.RIGHT)) {
-					case SWT.LEFT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
-					case SWT.RIGHT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
-				}
-			} else { //GTK2
-				int arrowDir = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_ARROW_RIGHT : GTK.GTK_ARROW_LEFT;
-				switch (style & (SWT.LEFT | SWT.RIGHT)) {
-					case SWT.LEFT: GTK.gtk_arrow_set (arrowHandle, arrowDir, GTK.GTK_SHADOW_OUT); break;
-					case SWT.RIGHT: GTK.gtk_arrow_set (arrowHandle, arrowDir, GTK.GTK_SHADOW_OUT); break;
-				}
-
+			byte arrowType [] = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS;
+			switch (style & (SWT.LEFT | SWT.RIGHT)) {
+				case SWT.LEFT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
+				case SWT.RIGHT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
 			}
 		}
 	}

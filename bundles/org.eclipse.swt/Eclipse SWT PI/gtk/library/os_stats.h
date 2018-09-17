@@ -316,8 +316,6 @@ typedef enum {
 	_1gtk_1adjustment_1set_1step_1increment_FUNC,
 	_1gtk_1adjustment_1set_1value_FUNC,
 	_1gtk_1adjustment_1value_1changed_FUNC,
-	_1gtk_1arrow_1new_FUNC,
-	_1gtk_1arrow_1set_FUNC,
 	_1gtk_1bin_1get_1child_FUNC,
 	_1gtk_1border_1free_FUNC,
 	_1gtk_1box_1new_FUNC,

@@ -4019,44 +4019,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1adjustment_1value_1changed)
 }
 #endif
 
-#ifndef NO__1gtk_1arrow_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1arrow_1new)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1arrow_1new_FUNC);
-/*
-	rc = (jintLong)gtk_arrow_new((GtkArrowType)arg0, (GtkShadowType)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_arrow_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkArrowType, GtkShadowType))fp)((GtkArrowType)arg0, (GtkShadowType)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1arrow_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1arrow_1set
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1arrow_1set)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1arrow_1set_FUNC);
-/*
-	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkShadowType)arg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_arrow_set)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkArrow *, GtkArrowType, GtkShadowType))fp)((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkShadowType)arg2);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1arrow_1set_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1bin_1get_1child
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1bin_1get_1child)
 	(JNIEnv *env, jclass that, jintLong arg0)

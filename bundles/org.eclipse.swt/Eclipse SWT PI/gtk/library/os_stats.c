@@ -318,8 +318,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1adjustment_1set_1step_1increment",
 	"_1gtk_1adjustment_1set_1value",
 	"_1gtk_1adjustment_1value_1changed",
-	"_1gtk_1arrow_1new",
-	"_1gtk_1arrow_1set",
 	"_1gtk_1bin_1get_1child",
 	"_1gtk_1border_1free",
 	"_1gtk_1box_1new",

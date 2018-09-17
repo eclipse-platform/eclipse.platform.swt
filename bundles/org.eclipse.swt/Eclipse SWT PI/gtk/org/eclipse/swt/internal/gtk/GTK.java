@@ -23,10 +23,6 @@ public class GTK extends OS {
 
 	/** Constants */
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
-	public static final int GTK_ARROW_DOWN = 0x1; //GtkArrowType Enum. In general, for gtk3 GtkAlign enum is favored.
-	public static final int GTK_ARROW_LEFT = 0x2;
-	public static final int GTK_ARROW_RIGHT = 0x3;
-	public static final int GTK_ARROW_UP = 0x0;
 	public static final int GTK_ALIGN_FILL = 0x0; //Gtk3 GtkAlign Enum
 	public static final int GTK_ALIGN_START = 0x1;
 	public static final int GTK_ALIGN_END = 0x2;
@@ -794,37 +790,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_adjustment_value_changed(adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param arrow_type cast=(GtkArrowType)
-	 * @param shadow_type cast=(GtkShadowType)
-	 */
-	public static final native long /*int*/ _gtk_arrow_new(int arrow_type, int shadow_type);
-	/** [GTK2/GTK3; 3.14 deprecated] */
-	public static final long /*int*/ gtk_arrow_new(int arrow_type, int shadow_type) {
-		lock.lock();
-		try {
-			return _gtk_arrow_new(arrow_type, shadow_type);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param arrow cast=(GtkArrow *)
-	 * @param arrow_type cast=(GtkArrowType)
-	 * @param shadow_type cast=(GtkShadowType)
-	 */
-	public static final native void _gtk_arrow_set(long /*int*/ arrow, int arrow_type, int shadow_type);
-	/** [GTK2/GTK3; 3.14 deprecated] */
-	public static final void gtk_arrow_set(long /*int*/ arrow, int arrow_type, int shadow_type) {
-		lock.lock();
-		try {
-			_gtk_arrow_set(arrow, arrow_type, shadow_type);
 		} finally {
 			lock.unlock();
 		}
