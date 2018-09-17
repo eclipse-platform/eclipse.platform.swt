@@ -1806,17 +1806,8 @@ int gdk_event_get_state (long /*int*/ event) {
 
 
 long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
-	long /*int*/ box = 0;
-	if (GTK.GTK3) {
-		box = GTK.gtk_box_new (orientation, spacing);
-		GTK.gtk_box_set_homogeneous (box, homogeneous);
-	} else {
-		if (orientation == GTK.GTK_ORIENTATION_HORIZONTAL) {
-			box = GTK.gtk_hbox_new (homogeneous, spacing);
-		} else {
-			box = GTK.gtk_vbox_new (homogeneous, spacing);
-		}
-	}
+	long /*int*/ box = GTK.gtk_box_new (orientation, spacing);
+	GTK.gtk_box_set_homogeneous (box, homogeneous);
 	return box;
 }
 

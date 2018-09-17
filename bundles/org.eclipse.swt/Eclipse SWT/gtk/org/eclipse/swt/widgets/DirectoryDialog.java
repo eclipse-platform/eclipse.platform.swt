@@ -129,17 +129,9 @@ String openChooserDialog () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ handle = 0;
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		if (GTK.GTK3) {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
-		} else {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, 0);
-		}
+		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
 	} else {
-		if (GTK.GTK3) {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
-		} else {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, 0);
-		}
+		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	long /*int*/ group = GTK.gtk_window_get_group(0);
@@ -182,13 +174,8 @@ String openChooserDialog () {
 	}
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (message, true);
-		long /*int*/ box = 0;
-		if (GTK.GTK3) {
-			box = GTK.gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, 0);
-			GTK.gtk_box_set_homogeneous (box, false);
-		} else {
-			box = GTK.gtk_hbox_new (false, 0);
-		}
+		long /*int*/ box = GTK.gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+		GTK.gtk_box_set_homogeneous (box, false);
 		if (box == 0) error (SWT.ERROR_NO_HANDLES);
 		long /*int*/ label = GTK.gtk_label_new (buffer);
 		if (label == 0) error (SWT.ERROR_NO_HANDLES);

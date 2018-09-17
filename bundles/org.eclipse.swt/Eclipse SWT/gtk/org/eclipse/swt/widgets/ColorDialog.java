@@ -129,12 +129,7 @@ public RGB[] getRGBs() {
  */
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (title, true);
-	long /*int*/ handle = 0;
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
-		handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
-	} else {
-		handle = GTK.gtk_color_selection_dialog_new (buffer);
-	}
+	long /*int*/ handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	GdkRGBA rgba;
 	rgba = new GdkRGBA ();

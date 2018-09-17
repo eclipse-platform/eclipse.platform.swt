@@ -14,7 +14,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
-
 /**
  * This class contains GTK specific native functions.
  *
@@ -197,7 +196,6 @@ public class GTK extends OS {
 
 	/** Properties */
 	public static final byte[] gtk_alternative_button_order = OS.ascii("gtk-alternative-button-order");
-	public static final byte[] gtk_color_palette = OS.ascii("gtk-color-palette");
 	public static final byte[] gtk_cursor_blink = OS.ascii("gtk-cursor-blink");
 	public static final byte[] gtk_cursor_blink_time = OS.ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = OS.ascii("gtk-double-click-time");
@@ -379,26 +377,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _GTK_IS_PLUG(obj);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=const */
-	public static final native long /*int*/ _GTK_STOCK_CANCEL();
-	public static final long /*int*/ GTK_STOCK_CANCEL() {
-		lock.lock();
-		try {
-			return _GTK_STOCK_CANCEL();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=const */
-	public static final native long /*int*/ _GTK_STOCK_OK();
-	public static final long /*int*/ GTK_STOCK_OK() {
-		lock.lock();
-		try {
-			return _GTK_STOCK_OK();
 		} finally {
 			lock.unlock();
 		}
@@ -1307,20 +1285,6 @@ public class GTK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 * @param title cast=(const gchar *)
-	 */
-	public static final native long /*int*/ _gtk_color_selection_dialog_new(byte[] title);
-	/** [GTK2/GTK3; 3.6 deprecated] */
-	public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
-		lock.lock();
-		try {
-			return _gtk_color_selection_dialog_new(title);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param orientation cast=(GtkOrientation)
 	 * @param colors cast=(GdkRGBA *)
@@ -1374,20 +1338,6 @@ public class GTK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 * @param color_dialog cast=(GtkColorSelectionDialog *)
-	 */
-	public static final native long /*int*/ _gtk_color_selection_dialog_get_color_selection(long /*int*/ color_dialog);
-	/** [GTK2/GTK3; 3.6 deprecated] */
-	public static final long /*int*/ gtk_color_selection_dialog_get_color_selection(long /*int*/ color_dialog) {
-		lock.lock();
-		try {
-			return _gtk_color_selection_dialog_get_color_selection(color_dialog);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
 	 */
 	public static final native void _gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color);
 	public static final void  gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color) {
@@ -1406,28 +1356,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			 _gtk_color_chooser_set_rgba(chooser, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors);
-	/** [GTK2/GTK3; 3.6 deprecated] */
-	public static final long /*int*/ gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors) {
-		lock.lock();
-		try {
-			return _gtk_color_selection_palette_to_string(colors, n_colors);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native void _gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette);
-	/** [GTK2/GTK3; 3.6 deprecated] */
-	public static final void gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette) {
-		lock.lock();
-		try {
-			_gtk_color_selection_set_has_palette(colorsel, has_palette);
 		} finally {
 			lock.unlock();
 		}
@@ -2902,17 +2830,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_font_selection_dialog_get_font_name(long /*int*/ fsd);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_font_selection_dialog_get_font_name(long /*int*/ fsd) {
-		lock.lock();
-		try {
-			return _gtk_font_selection_dialog_get_font_name(fsd);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @method flags=dynamic
 	 * @param title cast=(const gchar *)
@@ -2946,34 +2863,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_font_chooser_set_font(fsd, fontname);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param title cast=(const gchar *)
-	 */
-	public static final native long /*int*/ _gtk_font_selection_dialog_new(byte[] title);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_font_selection_dialog_new(byte[] title) {
-		lock.lock();
-		try {
-			return _gtk_font_selection_dialog_new(title);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param fontname cast=(const gchar *)
-	 */
-	public static final native boolean _gtk_font_selection_dialog_set_font_name(long /*int*/ fsd, byte[] fontname);
-	/** [GTK2/GTK3; 2.x/3.2 deprecated] */
-	public static final boolean gtk_font_selection_dialog_set_font_name(long /*int*/ fsd, byte[] fontname) {
-		lock.lock();
-		try {
-			return _gtk_font_selection_dialog_set_font_name(fsd, fontname);
 		} finally {
 			lock.unlock();
 		}
@@ -3087,21 +2976,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_grab_remove(widget);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param homogeneous cast=(gboolean)
-	 * @param spacing cast=(gint)
-	 */
-	public static final native long /*int*/ _gtk_hbox_new(boolean homogeneous, int spacing);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_hbox_new(boolean homogeneous, int spacing) {
-		lock.lock();
-		try {
-			return _gtk_hbox_new(homogeneous, spacing);
 		} finally {
 			lock.unlock();
 		}
@@ -8097,21 +7971,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_tree_view_convert_bin_window_to_tree_coords(tree_view, bx, by, tx, ty);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param homogeneous cast=(gboolean)
-	 * @param spacing cast=(gint)
-	 */
-	public static final native long /*int*/ _gtk_vbox_new(boolean homogeneous, int spacing);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_vbox_new(boolean homogeneous, int spacing) {
-		lock.lock();
-		try {
-			return _gtk_vbox_new(homogeneous, spacing);
 		} finally {
 			lock.unlock();
 		}

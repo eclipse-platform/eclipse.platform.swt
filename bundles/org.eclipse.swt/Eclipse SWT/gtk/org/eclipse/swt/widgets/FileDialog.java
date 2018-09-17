@@ -312,17 +312,9 @@ String openChooserDialog () {
 	long /*int*/ shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		if (GTK.GTK3) {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
-		} else {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, 0);
-		}
+		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
 	} else {
-		if (GTK.GTK3) {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
-		} else {
-			handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_STOCK_OK (), GTK.GTK_RESPONSE_OK, GTK.GTK_STOCK_CANCEL (), GTK.GTK_RESPONSE_CANCEL, 0);
-		}
+		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_window_set_modal (handle, true);
