@@ -226,7 +226,6 @@ public class GTK extends OS {
 	public static final byte[] GTK_NAMED_LABEL_CANCEL = OS.ascii("_Cancel");
 
 	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_major_version(), GTK.gtk_minor_version(), GTK.gtk_micro_version());
-	public static final boolean GTK3 = GTK_VERSION >= OS.VERSION(3, 0, 0);
 
 	/** SWT Tools translates TYPE_sizeof() into sizeof(TYPE) at native level. os.c will have a binding to functions auto-generated in os_structs.h */
 	public static final native int GtkAllocation_sizeof();

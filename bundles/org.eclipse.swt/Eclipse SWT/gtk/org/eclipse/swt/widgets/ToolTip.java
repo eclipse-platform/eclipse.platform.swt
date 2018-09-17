@@ -263,12 +263,7 @@ void configure () {
 	GTK.gtk_widget_realize(handle);
 	Region region = new Region (display);
 	region.add(DPIUtil.autoScaleDown(polyline));
-	if (GTK.GTK3) {
-		GTK.gtk_widget_shape_combine_region (handle, region.handle);
-	} else {
-		long /*int*/ window = gtk_widget_get_window (handle);
-		GDK.gdk_window_shape_combine_region (window, region.handle, 0, 0);
-	 }
+	GTK.gtk_widget_shape_combine_region (handle, region.handle);
 	region.dispose ();
 }
 

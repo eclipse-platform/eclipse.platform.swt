@@ -539,10 +539,6 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				draw = true;
 			}
 			if (draw) {
-				if (!GTK.GTK3) {
-					drawRectangles (rectsToErase);
-					update ();
-				}
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -666,10 +662,6 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 				draw = true;
 			}
 			if (draw) {
-				if (!GTK.GTK3) {
-					drawRectangles (rectsToErase);
-					update ();
-				}
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -713,10 +705,6 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 				draw = true;
 			}
 			if (draw) {
-				if (!GTK.GTK3) {
-					drawRectangles (rectsToErase);
-					update ();
-				}
 				drawRectangles (rectangles);
 			}
 		}
@@ -763,10 +751,6 @@ public boolean open () {
 	if (window == 0) return false;
 	cancelled = false;
 	tracking = true;
-	if (!GTK.GTK3) {
-		update ();
-		drawRectangles (rectangles);
-	}
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	gdk_window_get_device_position (window, oldX, oldY, state);
 
@@ -803,20 +787,18 @@ public boolean open () {
 	grabbed = grab ();
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
-	if (GTK.GTK3) {
-		cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // In case resolution was changed during run time.
-		overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
-		GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
-		GTK.gtk_window_set_title (overlay, new byte [1]);
-		GTK.gtk_widget_realize (overlay);
-		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
-		GDK.gdk_window_set_override_redirect (overlayWindow, true);
-		setTrackerBackground(true);
-		Rectangle bounds = display.getBoundsInPixels();
-		GTK.gtk_window_move (overlay, bounds.x, bounds.y);
-		GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
-		GTK.gtk_widget_show (overlay);
-	}
+	cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // In case resolution was changed during run time.
+	overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+	GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
+	GTK.gtk_window_set_title (overlay, new byte [1]);
+	GTK.gtk_widget_realize (overlay);
+	long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
+	GDK.gdk_window_set_override_redirect (overlayWindow, true);
+	setTrackerBackground(true);
+	Rectangle bounds = display.getBoundsInPixels();
+	GTK.gtk_window_move (overlay, bounds.x, bounds.y);
+	GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
+	GTK.gtk_widget_show (overlay);
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	Display display = this.display;
@@ -841,12 +823,6 @@ public boolean open () {
 		}
 	} finally {
 		display.tracker = oldTracker;
-	}
-	if (!isDisposed ()) {
-		if (!GTK.GTK3) {
-			update ();
-			drawRectangles (rectangles);
-		}
 	}
 	ungrab ();
 	if (overlay != 0) {
@@ -912,9 +888,7 @@ boolean processEvent (long /*int*/ eventPtr) {
 			break;
 		case GDK.GDK_EXPOSE:
 			update ();
-			if (!GTK.GTK3) drawRectangles (rectangles);
 			GTK.gtk_main_do_event (eventPtr);
-			if (!GTK.GTK3) drawRectangles (rectangles);
 			break;
 		default:
 			return true;

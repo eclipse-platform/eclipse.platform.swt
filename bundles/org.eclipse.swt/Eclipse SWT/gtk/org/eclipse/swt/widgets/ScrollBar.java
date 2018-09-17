@@ -523,9 +523,7 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	if (!dragSent) detail = GTK.GTK_SCROLL_NONE;
 	sendSelectionEvent (SWT.Selection, event, false);
 	parent.updateScrollBarValue (this);
-	if (GTK.GTK3) {
-		GTK.gtk_widget_queue_draw(parent.handle);
-	}
+	GTK.gtk_widget_queue_draw(parent.handle);
 	return 0;
 }
 

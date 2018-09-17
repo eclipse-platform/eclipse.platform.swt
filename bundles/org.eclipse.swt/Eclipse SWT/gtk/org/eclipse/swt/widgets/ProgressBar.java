@@ -101,7 +101,7 @@ void createHandle (int index) {
 
 @Override
 long /*int*/ eventHandle () {
-	return GTK.GTK3 ? fixedHandle : super.eventHandle ();
+	return fixedHandle;
 }
 
 /**
@@ -319,34 +319,18 @@ void updateBar (int selection, int minimum, int maximum) {
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
 	GTK.gtk_progress_bar_set_fraction (handle, fraction);
-	if (!GTK.GTK3) {
-		/*
-		* Feature in GTK.  The progress bar does
-		* not redraw right away when a value is
-		* changed.  This is not strictly incorrect
-		* but unexpected.  The fix is to force all
-		* outstanding redraws to be delivered.
-		*/
-		long /*int*/ window = paintWindow ();
-		GDK.gdk_window_process_updates (window, false);
-		GDK.gdk_flush ();
-	}
 }
 
 void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
-	if (GTK.GTK3) {
-		switch (orientation) {
-			case GTK.GTK_PROGRESS_BOTTOM_TO_TOP:
-				GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_VERTICAL);
-				GTK.gtk_progress_bar_set_inverted(pbar, true);
-				break;
-			case GTK.GTK_PROGRESS_LEFT_TO_RIGHT:
-				GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_HORIZONTAL);
-				GTK.gtk_progress_bar_set_inverted(pbar, false);
-				break;
-		}
-	} else {
-		GTK.gtk_progress_bar_set_orientation(pbar, orientation);
+	switch (orientation) {
+		case GTK.GTK_PROGRESS_BOTTOM_TO_TOP:
+			GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_VERTICAL);
+			GTK.gtk_progress_bar_set_inverted(pbar, true);
+			break;
+		case GTK.GTK_PROGRESS_LEFT_TO_RIGHT:
+			GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_HORIZONTAL);
+			GTK.gtk_progress_bar_set_inverted(pbar, false);
+			break;
 	}
 }
 }
