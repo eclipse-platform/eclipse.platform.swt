@@ -2330,12 +2330,10 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 2, 0)) {
-		if ((style & SWT.SINGLE) != 0) {
-			byte [] buffer = Converter.wcsToMbcs (message, true);
-			GTK.gtk_entry_set_placeholder_text (handle, buffer);
-			return;
-		}
+	if ((style & SWT.SINGLE) != 0) {
+		byte [] buffer = Converter.wcsToMbcs (message, true);
+		GTK.gtk_entry_set_placeholder_text (handle, buffer);
+		return;
 	}
 	redraw (false);
 }
