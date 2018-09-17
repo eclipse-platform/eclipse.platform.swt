@@ -6601,66 +6601,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1grab_1remove)
 }
 #endif
 
-#ifndef NO__1gtk_1hscale_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1hscale_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1hscale_1new_FUNC);
-/*
-	rc = (jintLong)gtk_hscale_new((GtkAdjustment *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_hscale_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1hscale_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1hscrollbar_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1hscrollbar_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1hscrollbar_1new_FUNC);
-/*
-	rc = (jintLong)gtk_hscrollbar_new((GtkAdjustment *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_hscrollbar_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1hscrollbar_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1hseparator_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1hseparator_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1hseparator_1new_FUNC);
-/*
-	rc = (jintLong)gtk_hseparator_new();
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_hseparator_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1hseparator_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1hsv_1to_1rgb
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1hsv_1to_1rgb)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
@@ -11934,66 +11874,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1viewport_1set_1shadow_1type)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1viewport_1set_1shadow_1type_FUNC);
 	gtk_viewport_set_shadow_type((GtkViewport *)arg0, (GtkShadowType)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1viewport_1set_1shadow_1type_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1vscale_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1vscale_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1vscale_1new_FUNC);
-/*
-	rc = (jintLong)gtk_vscale_new((GtkAdjustment *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_vscale_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1vscale_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1vscrollbar_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1vscrollbar_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1vscrollbar_1new_FUNC);
-/*
-	rc = (jintLong)gtk_vscrollbar_new((GtkAdjustment *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_vscrollbar_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1vscrollbar_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1vseparator_1new
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1vseparator_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1vseparator_1new_FUNC);
-/*
-	rc = (jintLong)gtk_vseparator_new();
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_vseparator_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1vseparator_1new_FUNC);
-	return rc;
 }
 #endif
 

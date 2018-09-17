@@ -3083,20 +3083,6 @@ public class GTK extends OS {
 	}
 	/**
 	 *  @method flags=dynamic
-	 *  @param adjustment cast=(GtkAdjustment *)
-	 */
-	public static final native long /*int*/ _gtk_hscale_new(long /*int*/ adjustment);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_hscale_new(long /*int*/ adjustment) {
-		lock.lock();
-		try {
-			return _gtk_hscale_new(adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 *  @method flags=dynamic
 	 *  @param orientation cast=(GtkOrientation)
 	 *  @param adjustment cast=(GtkAdjustment *)
 	 */
@@ -3105,20 +3091,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_scale_new(orientation, adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	* @method flags=dynamic
-	* @param adjustment cast=(GtkAdjustment *)
-	*/
-	public static final native long /*int*/ _gtk_hscrollbar_new(long /*int*/ adjustment);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_hscrollbar_new(long /*int*/ adjustment) {
-		lock.lock();
-		try {
-			return _gtk_hscrollbar_new(adjustment);
 		} finally {
 			lock.unlock();
 		}
@@ -3133,16 +3105,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_scrollbar_new(orientation, adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_hseparator_new();
-	public static final long /*int*/ gtk_hseparator_new() {
-		lock.lock();
-		try {
-			return _gtk_hseparator_new();
 		} finally {
 			lock.unlock();
 		}
@@ -7984,45 +7946,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_viewport_set_shadow_type(viewport, type);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
-	public static final native long /*int*/ _gtk_vscale_new(long /*int*/ adjustment);
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_vscale_new(long /*int*/ adjustment) {
-		lock.lock();
-		try {
-			return _gtk_vscale_new(adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
-	public static final native long /*int*/ _gtk_vscrollbar_new(long /*int*/ adjustment);
-	/**  [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_vscrollbar_new(long /*int*/ adjustment) {
-		lock.lock();
-		try {
-			return _gtk_vscrollbar_new(adjustment);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_vseparator_new();
-	/** [GTK2/GTK3; 3.2 deprecated] */
-	public static final long /*int*/ gtk_vseparator_new() {
-		lock.lock();
-		try {
-			return _gtk_vseparator_new();
 		} finally {
 			lock.unlock();
 		}

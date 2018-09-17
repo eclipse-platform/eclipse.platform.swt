@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -134,9 +134,9 @@ void createHandle (int index) {
 	long /*int*/ hAdjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		handle = gtk_scale_new (GTK.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
+		handle = GTK.gtk_scale_new (GTK.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
 	} else {
-		handle = gtk_scale_new (GTK.GTK_ORIENTATION_VERTICAL, hAdjustment);
+		handle = GTK.gtk_scale_new (GTK.GTK_ORIENTATION_VERTICAL, hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_container_add (fixedHandle, handle);
@@ -368,20 +368,6 @@ public void setSelection (int value) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	GTK.gtk_range_set_value (handle, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-}
-
-long /*int*/ gtk_scale_new (int orientation, long /*int*/ adjustment) {
-	long /*int*/ scale = 0;
-	if (GTK.GTK3)	{
-		scale = GTK.gtk_scale_new (orientation, adjustment);
-	} else {
-		if (orientation == GTK.GTK_ORIENTATION_HORIZONTAL) {
-			scale = GTK.gtk_hscale_new (adjustment);
-		} else {
-			scale = GTK.gtk_vscale_new (adjustment);
-		}
-	}
-	return scale;
 }
 
 @Override

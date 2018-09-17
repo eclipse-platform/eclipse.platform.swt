@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -233,12 +233,12 @@ void createHandle (int index) {
 	GTK.gtk_widget_set_has_window (fixedHandle, true);
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
-			handle = gtk_separator_new (GTK.GTK_ORIENTATION_HORIZONTAL);
+			handle = GTK.gtk_separator_new (GTK.GTK_ORIENTATION_HORIZONTAL);
 			if (handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_widget_set_valign(handle, GTK.GTK_ALIGN_CENTER);
 			}
 		} else {
-			handle = gtk_separator_new (GTK.GTK_ORIENTATION_VERTICAL);
+			handle = GTK.gtk_separator_new (GTK.GTK_ORIENTATION_VERTICAL);
 			if (handle != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_widget_set_halign(handle, GTK.GTK_ALIGN_CENTER);
 			}
@@ -702,20 +702,6 @@ void showWidget () {
 	if (frameHandle != 0) GTK.gtk_widget_show (frameHandle);
 	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
 	if (boxHandle != 0) GTK.gtk_widget_show (boxHandle);
-}
-
-long /*int*/ gtk_separator_new (int orientation) {
-	long /*int*/ separator = 0;
-	if (GTK.GTK3) {
-		separator = GTK.gtk_separator_new (orientation);
-	} else {
-		if (orientation == GTK.GTK_ORIENTATION_HORIZONTAL) {
-			separator = GTK.gtk_hseparator_new ();
-		} else {
-			separator = GTK.gtk_vseparator_new ();
-		}
-	}
-	return separator;
 }
 
 @Override
