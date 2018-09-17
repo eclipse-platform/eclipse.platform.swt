@@ -1285,24 +1285,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param owner_events cast=(gboolean)
-	 * @param event_mask cast=(GdkEventMask)
-	 * @param confine_to cast=(GdkWindow *)
-	 * @param cursor cast=(GdkCursor *)
-	 * @param time cast=(guint32)
-	 */
-	public static final native int _gdk_pointer_grab(long /*int*/ window, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time);
-	public static final int gdk_pointer_grab(long /*int*/ window, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time) {
-		lock.lock();
-		try {
-			return _gdk_pointer_grab(window, owner_events, event_mask, confine_to, cursor, time);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
 	 * @param device cast=(GdkDevice *)
 	 * @param window cast=(GdkWindow *)
 	 * @param owner_events cast=(gboolean)
@@ -1315,19 +1297,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_device_grab(device, window, grab_ownership, owner_events, event_mask, cursor,time_);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 *  @method flags=dynamic
-	 *  @param time cast=(guint32)
-	 */
-	public static final native void _gdk_pointer_ungrab(int time);
-	public static final void gdk_pointer_ungrab(int time) {
-		lock.lock();
-		try {
-			_gdk_pointer_ungrab(time);
 		} finally {
 			lock.unlock();
 		}
@@ -2134,22 +2103,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_window_get_parent(window);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param x cast=(gint *)
-	 * @param y cast=(gint *)
-	 * @param mask cast=(GdkModifierType *)
-	 */
-	public static final native long /*int*/ _gdk_window_get_pointer(long /*int*/ window, int[] x, int[] y, int[] mask);
-	public static final long /*int*/ gdk_window_get_pointer(long /*int*/ window, int[] x, int[] y, int[] mask) {
-		lock.lock();
-		try {
-			return _gdk_window_get_pointer(window, x, y, mask);
 		} finally {
 			lock.unlock();
 		}

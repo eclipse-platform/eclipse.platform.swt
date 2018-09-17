@@ -653,7 +653,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 			int index = imageList.indexOf (hotImage);
 			if (index != -1 && imageHandle != 0) {
 				long /*int*/ pixbuf = imageList.getPixbuf (index);
-				gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+				gtk_image_set_from_gicon(imageHandle, pixbuf);
 			}
 		}
 	}
@@ -701,7 +701,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 				int index = imageList.indexOf (image);
 				if (index != -1 && imageHandle != 0) {
 					long /*int*/ pixbuf = imageList.getPixbuf (index);
-					gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+					gtk_image_set_from_gicon(imageHandle, pixbuf);
 				}
 			}
 		}
@@ -1074,9 +1074,9 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+		gtk_image_set_from_gicon(imageHandle, pixbuf);
 	} else {
-		gtk_image_set_from_pixbuf(imageHandle, 0);
+		gtk_image_set_from_gicon(imageHandle, 0);
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is

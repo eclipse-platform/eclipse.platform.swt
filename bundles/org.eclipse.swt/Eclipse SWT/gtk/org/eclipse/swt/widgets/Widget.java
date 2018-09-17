@@ -1637,13 +1637,9 @@ public void setData (String key, Object value) {
 }
 
 void setFontDescription (long /*int*/ widget, long /*int*/ font) {
-	if (GTK.GTK3) {
-		GTK.gtk_widget_override_font (widget, font);
-		long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
-		GTK.gtk_style_context_invalidate (context);
-	} else {
-		GTK.gtk_widget_modify_font (widget, font);
-	}
+	GTK.gtk_widget_override_font (widget, font);
+	long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
+	GTK.gtk_style_context_invalidate (context);
 }
 
 boolean setInputState (Event event, int state) {
@@ -1765,22 +1761,12 @@ long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int
 }
 
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){
-	if (GTK.GTK3) {
-		GTK.gtk_widget_realize(widget);
-	}
+	GTK.gtk_widget_realize(widget);
 	return GTK.gtk_widget_get_window (widget);
 }
 
 void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
-	if (GTK.GTK3) {
-		GTK.gtk_widget_set_visible (widget,visible);
-	} else {
-		if (visible) {
-			GTK.GTK_WIDGET_SET_FLAGS (widget, GTK.GTK_VISIBLE);
-		} else {
-			GTK.GTK_WIDGET_UNSET_FLAGS (widget, GTK.GTK_VISIBLE);
-		}
-	}
+	GTK.gtk_widget_set_visible (widget, visible);
 }
 
 void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
@@ -1808,29 +1794,21 @@ long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 }
 
 int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
-	if (GTK.GTK3) {
-		long /*int*/ display = 0;
-		if( window != 0) {
-			display = GDK.gdk_window_get_display (window);
-		} else {
-			window = GDK.gdk_get_default_root_window ();
-			display = GDK.gdk_window_get_display (window);
-		}
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
+	long /*int*/ display = 0;
+	if( window != 0) {
+		display = GDK.gdk_window_get_display (window);
 	} else {
-		return GDK.gdk_pointer_grab (window, owner_events, event_mask, confine_to, cursor, time_);
+		window = GDK.gdk_get_default_root_window ();
+		display = GDK.gdk_window_get_display (window);
 	}
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
 }
 
 void gdk_pointer_ungrab (long /*int*/ window, int time_) {
-	if (GTK.GTK3) {
-		long /*int*/ display = GDK.gdk_window_get_display (window);
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		GDK.gdk_device_ungrab (pointer, time_);
-	} else {
-		GDK.gdk_pointer_ungrab (time_);
-	}
+	long /*int*/ display = GDK.gdk_window_get_display (window);
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	GDK.gdk_device_ungrab (pointer, time_);
 }
 
 /**
@@ -1891,17 +1869,8 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			if (GTK.GTK3) {
-				if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0) && GTK.GTK_IS_CONTAINER (handle)) {
-					return gtk_draw (handle, arg0);
-				}
-			} else {
-				GdkEventExpose gdkEvent = new GdkEventExpose ();
-				OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-				long /*int*/ paintWindow = paintWindow ();
-				long /*int*/ window = gdkEvent.window;
-				if (window != paintWindow) return 0;
-				return (state & OBSCURED) != 0 ? 1 : 0;
+			if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0) && GTK.GTK_IS_CONTAINER (handle)) {
+				return gtk_draw (handle, arg0);
 			}
 			return 0;
 		}
@@ -1983,19 +1952,15 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 }
 
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	if (GTK.GTK3) {
-		long /*int*/ display = 0;
-		if( window != 0) {
-			display = GDK.gdk_window_get_display (window);
-		} else {
-			window = GDK.gdk_get_default_root_window ();
-			display = GDK.gdk_window_get_display (window);
-		}
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
+	long /*int*/ display = 0;
+	if( window != 0) {
+		display = GDK.gdk_window_get_display (window);
 	} else {
-		return GDK.gdk_window_get_pointer (window, x, y, mask);
+		window = GDK.gdk_get_default_root_window ();
+		display = GDK.gdk_window_get_display (window);
 	}
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
 void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {
@@ -2009,12 +1974,8 @@ void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisit
 	GTK.gtk_widget_get_preferred_size (widget, requisition, null);
 }
 
-void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
-	if (GTK.GTK3) {
-		GTK.gtk_image_set_from_gicon(imageHandle, pixbuf, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
-	} else {
-		GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
-	}
+void gtk_image_set_from_gicon (long /*int*/ imageHandle, long /*int*/ pixbuf){
+	GTK.gtk_image_set_from_gicon(imageHandle, pixbuf, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 }
 
 }

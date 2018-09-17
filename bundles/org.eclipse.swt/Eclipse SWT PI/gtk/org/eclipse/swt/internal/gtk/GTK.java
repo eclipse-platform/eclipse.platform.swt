@@ -171,7 +171,6 @@ public class GTK extends OS {
 	public static final int GTK_UNIT_POINTS = 1;
 	public static final int GTK_UNIT_INCH = 2;
 	public static final int GTK_UNIT_MM = 3;
-	public static final int GTK_VISIBLE = 0x100;
 	public static final int GTK_WINDOW_POPUP = 0x1;
 	public static final int GTK_WINDOW_TOPLEVEL = 0x0;
 	public static final int GTK_WRAP_NONE = 0;
@@ -442,24 +441,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _GTK_TYPE_WINDOW();
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native void _GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag);
-	public static final void GTK_WIDGET_SET_FLAGS(long /*int*/ wid, int flag) {
-		lock.lock();
-		try {
-			_GTK_WIDGET_SET_FLAGS(wid, flag);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native void _GTK_WIDGET_UNSET_FLAGS(long /*int*/ wid, int flag);
-	public static final void GTK_WIDGET_UNSET_FLAGS(long /*int*/ wid, int flag) {
-		lock.lock();
-		try {
-			_GTK_WIDGET_UNSET_FLAGS(wid, flag);
 		} finally {
 			lock.unlock();
 		}
@@ -8305,21 +8286,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_mnemonic_activate(widget, group_cycling);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param pango_font_descr cast=(PangoFontDescription *)
-	 */
-	public static final native void _gtk_widget_modify_font(long /*int*/ widget, long /*int*/ pango_font_descr);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_widget_modify_font(long /*int*/ widget, long /*int*/ pango_font_descr) {
-		lock.lock();
-		try {
-			_gtk_widget_modify_font(widget, pango_font_descr);
 		} finally {
 			lock.unlock();
 		}

@@ -1001,9 +1001,9 @@ public void setImage (Image image) {
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+		gtk_image_set_from_gicon(imageHandle, pixbuf);
 	} else {
-		gtk_image_set_from_pixbuf (imageHandle, 0);
+		gtk_image_set_from_gicon (imageHandle, 0);
 	}
 	this.image = image;
 	updateWidgetsVisibility();

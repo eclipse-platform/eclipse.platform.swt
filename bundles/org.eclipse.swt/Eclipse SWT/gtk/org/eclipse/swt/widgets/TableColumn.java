@@ -600,10 +600,10 @@ public void setImage (Image image) {
 		int imageIndex = headerImageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
 		long /*int*/ pixbuf = headerImageList.getPixbuf (imageIndex);
-		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+		gtk_image_set_from_gicon (imageHandle, pixbuf);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		gtk_image_set_from_pixbuf (imageHandle, 0);
+		gtk_image_set_from_gicon (imageHandle, 0);
 		GTK.gtk_widget_hide (imageHandle);
 	}
 }
