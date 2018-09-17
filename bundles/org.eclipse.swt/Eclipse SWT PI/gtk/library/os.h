@@ -186,7 +186,6 @@ X#define NO__1XWarpPointer
 #define NO_GdkImage
 #define NO_GTK_1ENTRY_1IM_1CONTEXT
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
-#define NO_GtkAdjustment
 
 #endif
 

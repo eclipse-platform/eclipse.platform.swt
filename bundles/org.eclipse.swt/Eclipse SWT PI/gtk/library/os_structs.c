@@ -1039,52 +1039,6 @@ void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStru
 }
 #endif
 
-#ifndef NO_GtkAdjustment
-typedef struct GtkAdjustment_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID lower, upper, value, step_increment, page_increment, page_size;
-} GtkAdjustment_FID_CACHE;
-
-GtkAdjustment_FID_CACHE GtkAdjustmentFc;
-
-void cacheGtkAdjustmentFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkAdjustmentFc.cached) return;
-	GtkAdjustmentFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkAdjustmentFc.lower = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "lower", "D");
-	GtkAdjustmentFc.upper = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "upper", "D");
-	GtkAdjustmentFc.value = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "value", "D");
-	GtkAdjustmentFc.step_increment = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "step_increment", "D");
-	GtkAdjustmentFc.page_increment = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "page_increment", "D");
-	GtkAdjustmentFc.page_size = (*env)->GetFieldID(env, GtkAdjustmentFc.clazz, "page_size", "D");
-	GtkAdjustmentFc.cached = 1;
-}
-
-GtkAdjustment *getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct)
-{
-	if (!GtkAdjustmentFc.cached) cacheGtkAdjustmentFields(env, lpObject);
-	lpStruct->lower = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.lower);
-	lpStruct->upper = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.upper);
-	lpStruct->value = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.value);
-	lpStruct->step_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.step_increment);
-	lpStruct->page_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.page_increment);
-	lpStruct->page_size = (gdouble)(*env)->GetDoubleField(env, lpObject, GtkAdjustmentFc.page_size);
-	return lpStruct;
-}
-
-void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct)
-{
-	if (!GtkAdjustmentFc.cached) cacheGtkAdjustmentFields(env, lpObject);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.lower, (jdouble)lpStruct->lower);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.upper, (jdouble)lpStruct->upper);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.value, (jdouble)lpStruct->value);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.step_increment, (jdouble)lpStruct->step_increment);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.page_increment, (jdouble)lpStruct->page_increment);
-	(*env)->SetDoubleField(env, lpObject, GtkAdjustmentFc.page_size, (jdouble)lpStruct->page_size);
-}
-#endif
-
 #ifndef NO_GtkAllocation
 typedef struct GtkAllocation_FID_CACHE {
 	int cached;

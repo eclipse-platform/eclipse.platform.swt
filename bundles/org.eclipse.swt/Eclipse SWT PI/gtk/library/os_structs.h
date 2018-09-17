@@ -258,18 +258,6 @@ void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStru
 #define GdkWindowAttr_sizeof() 0
 #endif
 
-#ifndef NO_GtkAdjustment
-void cacheGtkAdjustmentFields(JNIEnv *env, jobject lpObject);
-GtkAdjustment *getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct);
-void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct);
-#define GtkAdjustment_sizeof() sizeof(GtkAdjustment)
-#else
-#define cacheGtkAdjustmentFields(a,b)
-#define getGtkAdjustmentFields(a,b,c) NULL
-#define setGtkAdjustmentFields(a,b,c)
-#define GtkAdjustment_sizeof() 0
-#endif
-
 #ifndef NO_GtkAllocation
 void cacheGtkAllocationFields(JNIEnv *env, jobject lpObject);
 GtkAllocation *getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStruct);
