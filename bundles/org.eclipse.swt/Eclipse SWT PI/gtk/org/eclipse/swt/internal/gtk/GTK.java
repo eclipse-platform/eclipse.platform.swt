@@ -99,10 +99,6 @@ public class GTK extends OS {
 	public static final int GTK_RECEIVES_DEFAULT = 1 << 20;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RELIEF_NORMAL = 0;
-	public static final int GTK_RC_BG = 1 << 1;
-	public static final int GTK_RC_FG = 1 << 0;
-	public static final int GTK_RC_TEXT = 1 << 2;
-	public static final int GTK_RC_BASE = 1 << 3;
 	public static final int GTK_RESPONSE_APPLY = 0xfffffff6;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
@@ -5095,49 +5091,6 @@ public class GTK extends OS {
 	                lock.unlock();
 	        }
 	}
-	/** @param style cast=(GtkRcStyle *) */
-	public static final native long /*int*/ _gtk_rc_style_get_bg_pixmap_name(long /*int*/ style, int index);
-	public static final long /*int*/ gtk_rc_style_get_bg_pixmap_name(long /*int*/ style, int index) {
-		lock.lock();
-		try {
-			return _gtk_rc_style_get_bg_pixmap_name(style, index);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param style cast=(GtkRcStyle *) */
-	public static final native int _gtk_rc_style_get_color_flags(long /*int*/ style, int index);
-	public static final int gtk_rc_style_get_color_flags(long /*int*/ style, int index) {
-		lock.lock();
-		try {
-			return _gtk_rc_style_get_color_flags(style, index);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param style cast=(GtkRcStyle *)
-	 * @param name cast=(char *)
-	 */
-	public static final native void _gtk_rc_style_set_bg_pixmap_name(long /*int*/ style, int index, long /*int*/ name);
-	public static final void gtk_rc_style_set_bg_pixmap_name(long /*int*/ style, int index, long /*int*/ name) {
-		lock.lock();
-		try {
-			_gtk_rc_style_set_bg_pixmap_name(style, index, name);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param style cast=(GtkRcStyle *) */
-	public static final native void _gtk_rc_style_set_color_flags(long /*int*/ style, int index, int flag);
-	public static final void gtk_rc_style_set_color_flags(long /*int*/ style, int index, int flag) {
-		lock.lock();
-		try {
-			_gtk_rc_style_set_color_flags(style, index, flag);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param scale cast=(GtkScale *)
 	 * @param digits cast=(gint)
@@ -8024,17 +7977,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_widget_get_default_style();
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final long /*int*/ gtk_widget_get_default_style() {
-		lock.lock();
-		try {
-			return _gtk_widget_get_default_style();
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param widget cast=(GtkWidget *) */
 	public static final native int _gtk_widget_get_events(long /*int*/ widget);
 	public static final int gtk_widget_get_events(long /*int*/ widget) {
@@ -8051,20 +7993,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_get_window(widget);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native long /*int*/ _gtk_widget_get_modifier_style(long /*int*/ widget);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final long /*int*/ gtk_widget_get_modifier_style(long /*int*/ widget) {
-		lock.lock();
-		try {
-			return _gtk_widget_get_modifier_style(widget);
 		} finally {
 			lock.unlock();
 		}
@@ -8285,21 +8213,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_mnemonic_activate(widget, group_cycling);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param style cast=(GtkRcStyle *)
-	 */
-	public static final native void _gtk_widget_modify_style(long /*int*/ widget, long /*int*/ style);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_widget_modify_style(long /*int*/ widget, long /*int*/ style) {
-		lock.lock();
-		try {
-			_gtk_widget_modify_style(widget, style);
 		} finally {
 			lock.unlock();
 		}
@@ -8618,21 +8531,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_set_size_request(widget, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param state cast=(GtkStateType)
-	 */
-	public static final native void _gtk_widget_set_state(long /*int*/ widget, int state);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_widget_set_state(long /*int*/ widget, int state) {
-		lock.lock();
-		try {
-			_gtk_widget_set_state(widget, state);
 		} finally {
 			lock.unlock();
 		}

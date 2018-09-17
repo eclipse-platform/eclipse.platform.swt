@@ -142,14 +142,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-@Override
-long /*int*/ childStyle () {
-	long /*int*/ rcStyle = GTK.gtk_widget_get_modifier_style (handle);
-	if ((GTK.gtk_rc_style_get_color_flags (rcStyle, 0) & GTK.GTK_RC_BG) != 0) return 0;
-	GTK.gtk_widget_realize (handle);
-	return GTK.gtk_widget_get_style (handle);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending

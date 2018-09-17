@@ -732,10 +732,6 @@ boolean containedInRegion (int x, int y) {
 	return false;
 }
 
-long /*int*/ childStyle () {
-	return parent.childStyle ();
-}
-
 @Override
 void createWidget (int index) {
 	state |= DRAG_DETECT;
@@ -977,17 +973,6 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 
 void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
-}
-
-@Override
-void modifyStyle (long /*int*/ handle, long /*int*/ style) {
-	super.modifyStyle(handle, style);
-	/*
-	* Bug in GTK.  When changing the style of a control that
-	* has had a region set on it, the region is lost.  The
-	* fix is to set the region again.
-	*/
-	if (region != null) GDK.gdk_window_shape_combine_region (gtk_widget_get_window (topHandle ()), region.handle, 0, 0);
 }
 
 void moveHandle (int x, int y) {

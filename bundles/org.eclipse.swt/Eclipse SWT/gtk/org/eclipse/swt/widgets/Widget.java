@@ -1142,10 +1142,6 @@ boolean mnemonicMatch (long /*int*/ mnemonicHandle, char key) {
 	return keyval1 == keyval2;
 }
 
-void modifyStyle (long /*int*/ handle, long /*int*/ style) {
-	GTK.gtk_widget_modify_style (handle, style);
-}
-
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by

@@ -8419,50 +8419,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1range_1set_1value)
 }
 #endif
 
-#ifndef NO__1gtk_1rc_1style_1get_1bg_1pixmap_1name
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1rc_1style_1get_1bg_1pixmap_1name)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1get_1bg_1pixmap_1name_FUNC);
-	rc = (jintLong)gtk_rc_style_get_bg_pixmap_name((GtkRcStyle *)arg0, arg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1get_1bg_1pixmap_1name_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1rc_1style_1get_1color_1flags
-JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1rc_1style_1get_1color_1flags)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1get_1color_1flags_FUNC);
-	rc = (jint)gtk_rc_style_get_color_flags((GtkRcStyle *)arg0, arg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1get_1color_1flags_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1rc_1style_1set_1bg_1pixmap_1name
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1bg_1pixmap_1name)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1bg_1pixmap_1name_FUNC);
-	gtk_rc_style_set_bg_pixmap_name((GtkRcStyle *)arg0, arg1, (char *)arg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1bg_1pixmap_1name_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1rc_1style_1set_1color_1flags
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1rc_1style_1set_1color_1flags)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1color_1flags_FUNC);
-	gtk_rc_style_set_color_flags((GtkRcStyle *)arg0, arg1, arg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1color_1flags_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1render_1background
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1render_1background)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
@@ -11820,26 +11776,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1widget_1get_1default_1style
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1default_1style)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1default_1style_FUNC);
-/*
-	rc = (jintLong)gtk_widget_get_default_style();
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_get_default_style)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1default_1style_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1widget_1get_1events
 JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1widget_1get_1events)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -11872,26 +11808,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1mapped)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1mapped_FUNC);
 	rc = (jboolean)gtk_widget_get_mapped((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1mapped_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1get_1modifier_1style
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1modifier_1style)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1modifier_1style_FUNC);
-/*
-	rc = (jintLong)gtk_widget_get_modifier_style((GtkWidget *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_get_modifier_style)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1modifier_1style_FUNC);
 	return rc;
 }
 #endif
@@ -12329,24 +12245,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1mnemonic_1activate)
 }
 #endif
 
-#ifndef NO__1gtk_1widget_1modify_1style
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1modify_1style)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1style_FUNC);
-/*
-	gtk_widget_modify_style((GtkWidget *)arg0, (GtkRcStyle *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_modify_style)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, GtkRcStyle *))fp)((GtkWidget *)arg0, (GtkRcStyle *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1style_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1widget_1override_1background_1color
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1override_1background_1color)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
@@ -12717,24 +12615,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1size_1request)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1size_1request_FUNC);
 	gtk_widget_set_size_request((GtkWidget *)arg0, (gint)arg1, (gint)arg2);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1size_1request_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1set_1state
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1state)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1state_FUNC);
-/*
-	gtk_widget_set_state((GtkWidget *)arg0, (GtkStateType)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_set_state)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType))fp)((GtkWidget *)arg0, (GtkStateType)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1state_FUNC);
 }
 #endif
 

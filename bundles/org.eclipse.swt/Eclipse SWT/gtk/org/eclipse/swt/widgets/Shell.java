@@ -641,11 +641,6 @@ void checkOpen () {
 	if (!opened) resized = false;
 }
 
-@Override
-long /*int*/ childStyle () {
-	return 0;
-}
-
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on

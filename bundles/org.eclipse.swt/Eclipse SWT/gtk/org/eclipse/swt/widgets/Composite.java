@@ -225,12 +225,6 @@ protected void checkSubclass () {
 }
 
 @Override
-long /*int*/ childStyle () {
-	if (scrolledHandle != 0) return 0;
-	return super.childStyle ();
-}
-
-@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	display.runSkin();
