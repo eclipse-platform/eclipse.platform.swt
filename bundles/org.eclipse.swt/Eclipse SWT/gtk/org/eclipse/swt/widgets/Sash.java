@@ -150,7 +150,7 @@ void createHandle (int index) {
 }
 
 void drawBand (int x, int y, int width, int height) {
-	if ((style & SWT.SMOOTH) != 0 || GTK.GTK3) return;
+	if ((style & SWT.SMOOTH) != 0) return;
 }
 
 @Override

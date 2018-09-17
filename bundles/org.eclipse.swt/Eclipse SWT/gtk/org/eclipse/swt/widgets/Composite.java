@@ -904,11 +904,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		long /*int*/ window = gtk_widget_get_window (paintHandle ());
 		if (window != 0) {
-			if (GTK.GTK3) {
-				GDK.gdk_window_set_background_pattern(window, 0);
-			} else {
-				GDK.gdk_window_set_back_pixmap (window, 0, false);
-			}
+			GDK.gdk_window_set_background_pattern(window, 0);
 		}
 	}
 	if (socketHandle != 0) {
@@ -1414,7 +1410,7 @@ void connectFixedHandleDraw () {
  * @param cairo the cairo context provided by GTK
  */
 void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
-	if (container == fixedHandle && GTK.GTK3) {
+	if (container == fixedHandle) {
 		long /*int*/ list = GTK.gtk_container_get_children (container);
 		long /*int*/ temp = list;
 		while (temp != 0) {

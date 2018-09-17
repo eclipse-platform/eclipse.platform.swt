@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -338,12 +338,7 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	long /*int*/ window = paintWindow ();
-	long /*int*/ visibleRegion;
-	if (GTK.GTK3) {
-		visibleRegion = GDK.gdk_window_get_visible_region (window);
-	} else {
-		visibleRegion = GDK.gdk_drawable_get_visible_region (window);
-	}
+	long /*int*/ visibleRegion = GDK.gdk_window_get_visible_region (window);
 	GdkRectangle srcRect = new GdkRectangle ();
 	srcRect.x = x;
 	srcRect.y = y;

@@ -803,57 +803,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param filled cast=(gint)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 * @param angle1 cast=(gint)
-	 * @param angle2 cast=(gint)
-	 */
-	public static final native void _gdk_draw_arc(long /*int*/ drawable, long /*int*/ gc, int filled, int x, int y, int width, int height, int angle1, int angle2);
-	public static final void gdk_draw_arc(long /*int*/ drawable, long /*int*/ gc, int filled, int x, int y, int width, int height, int angle1, int angle2) {
-		lock.lock();
-		try {
-			_gdk_draw_arc(drawable, gc, filled, x, y, width, height, angle1, angle2);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_draw_image(long /*int*/ drawable, long /*int*/ gc, long /*int*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
-	public static final void gdk_draw_image(long /*int*/ drawable, long /*int*/ gc, long /*int*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height) {
-		lock.lock();
-		try {
-			_gdk_draw_image(drawable, gc, image, xsrc, ysrc, xdest, ydest, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param xsrc cast=(gint)
-	 * @param ysrc cast=(gint)
-	 * @param xdest cast=(gint)
-	 * @param ydest cast=(gint)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 * @param x_dither cast=(gint)
-	 * @param y_dither cast=(gint)
-	 */
-	public static final native void _gdk_draw_pixbuf(long /*int*/ drawable, long /*int*/ gc, long /*int*/ pixbuf, int xsrc, int ysrc, int xdest, int ydest, int width, int height, int dither, int x_dither, int y_dither);
-	public static final void gdk_draw_pixbuf(long /*int*/ drawable, long /*int*/ gc, long /*int*/ pixbuf, int xsrc, int ysrc, int xdest, int ydest, int width, int height, int dither, int x_dither, int y_dither) {
-		lock.lock();
-		try {
-			_gdk_draw_pixbuf(drawable, gc, pixbuf, xsrc, ysrc, xdest, ydest, width, height, dither, x_dither, y_dither);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native int _gdk_drawable_get_depth(long /*int*/ drawable);
 	public static final int gdk_drawable_get_depth(long /*int*/ drawable) {
@@ -891,16 +840,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_drawable_get_image(drawable, x, y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_drawable_get_visible_region(long /*int*/ drawable);
-	public static final long /*int*/ gdk_drawable_get_visible_region(long /*int*/ drawable) {
-		lock.lock();
-		try {
-			return _gdk_drawable_get_visible_region(drawable);
 		} finally {
 			lock.unlock();
 		}

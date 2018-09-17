@@ -901,60 +901,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1drag_1status)
 }
 #endif
 
-#ifndef NO__1gdk_1draw_1arc
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1draw_1arc)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1draw_1arc_FUNC);
-/*
-	gdk_draw_arc(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_draw_arc)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, gint, gint, gint, gint, gint))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1draw_1arc_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1image
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1draw_1image)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1draw_1image_FUNC);
-/*
-	gdk_draw_image(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_draw_image)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jint, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1draw_1image_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1draw_1pixbuf
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1draw_1pixbuf)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1draw_1pixbuf_FUNC);
-/*
-	gdk_draw_pixbuf(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, arg9, (gint)arg10, (gint)arg11);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_draw_pixbuf)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, gint, gint, gint, gint, gint, gint, jint, gint, gint))fp)(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, arg9, (gint)arg10, (gint)arg11);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1draw_1pixbuf_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1drawable_1get_1depth
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1depth)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -991,26 +937,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1image)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1image_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1drawable_1get_1visible_1region
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1visible_1region)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1visible_1region_FUNC);
-/*
-	rc = (jintLong)gdk_drawable_get_visible_region(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drawable_get_visible_region)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1visible_1region_FUNC);
 	return rc;
 }
 #endif

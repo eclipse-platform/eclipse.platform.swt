@@ -1932,12 +1932,8 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case EVENT: return gtk_event (handle, arg0);
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
 		case EXPOSE_EVENT: {
-			if (GTK.GTK3) {
-				if (GTK.GTK_VERSION < OS.VERSION (3, 9, 0) || !GTK.GTK_IS_CONTAINER (handle)) {
-					return gtk_draw (handle, arg0);
-				}
-			} else {
-				return gtk_expose_event (handle, arg0);
+			if (GTK.GTK_VERSION < OS.VERSION (3, 9, 0) || !GTK.GTK_IS_CONTAINER (handle)) {
+				return gtk_draw (handle, arg0);
 			}
 			return 0;
 		}
