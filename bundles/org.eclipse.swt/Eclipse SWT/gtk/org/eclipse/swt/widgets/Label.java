@@ -275,9 +275,7 @@ void createHandle (int index) {
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont ().handle);
-	}
+	setFontDescription(defaultFont ().handle);
 	setAlignment ();
 }
 
@@ -579,13 +577,11 @@ void setFontDescription (long /*int*/ font) {
 
 	// Bug 445801: Work around for computeSize not returning a different value after
 	// changing font, see https://bugzilla.gnome.org/show_bug.cgi?id=753116
-	if (GTK.GTK3) {
-		// This updates the pango context and also clears the size request cache on the GTK side.
-		int originalDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
-		int tempDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_LTR : GTK.GTK_TEXT_DIR_RTL;
-		GTK.gtk_widget_set_direction (labelHandle, tempDirection);
-		GTK.gtk_widget_set_direction (labelHandle, originalDirection);
-	}
+	// This updates the pango context and also clears the size request cache on the GTK side.
+	int originalDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+	int tempDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_LTR : GTK.GTK_TEXT_DIR_RTL;
+	GTK.gtk_widget_set_direction (labelHandle, tempDirection);
+	GTK.gtk_widget_set_direction (labelHandle, originalDirection);
 }
 
 @Override

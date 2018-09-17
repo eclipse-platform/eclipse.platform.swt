@@ -321,14 +321,10 @@ void createHandle (int index) {
 		GTK.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 	}
 	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
-	if (GTK.GTK3) {
-		imContext = OS.imContextLast();
-	}
+	imContext = OS.imContextLast();
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 }
 
 /**

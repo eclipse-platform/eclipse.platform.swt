@@ -253,15 +253,13 @@ void createHandle (int index) {
 		if ((style & SWT.RIGHT) != 0) just = GTK.GTK_JUSTIFY_RIGHT;
 		GTK.gtk_text_view_set_justification (handle, just);
 	}
-	if (GTK.GTK3) {
-		imContext = OS.imContextLast();
-		if ((style & SWT.SINGLE) != 0) {
-			GTK.gtk_entry_set_width_chars(handle, 6);
-		}
-		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
-		// reset to default font to get the usual behavior
-		setFontDescription(defaultFont().handle);
+	imContext = OS.imContextLast();
+	if ((style & SWT.SINGLE) != 0) {
+		GTK.gtk_entry_set_width_chars(handle, 6);
 	}
+	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+	// reset to default font to get the usual behavior
+	setFontDescription(defaultFont().handle);
 }
 
 @Override
@@ -610,52 +608,39 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
-		if (GTK.GTK3) {
-			GtkBorder tmp = new GtkBorder();
-			long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		GtkBorder tmp = new GtkBorder();
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+		} else {
+			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
+		}
+		trim.x -= tmp.left;
+		trim.y -= tmp.top;
+		trim.width += tmp.left + tmp.right;
+		if (tmp.bottom == 0 && tmp.top == 0) {
+			Point widthNative = computeNativeSize(handle, trim.width, SWT.DEFAULT, true);
+			trim.height = widthNative.y;
+		} else {
+			trim.height += tmp.top + tmp.bottom;
+		}
+		if ((style & SWT.BORDER) != 0) {
 			if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-				GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+				GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
 			} else {
-				GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
+				GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(handle), tmp);
 			}
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;
-			if (tmp.bottom == 0 && tmp.top == 0) {
-				Point widthNative = computeNativeSize(handle, trim.width, SWT.DEFAULT, true);
-				trim.height = widthNative.y;
-			} else {
-				trim.height += tmp.top + tmp.bottom;
-			}
-			if ((style & SWT.BORDER) != 0) {
-				if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-					GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-				} else {
-					GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(handle), tmp);
-				}
-				trim.x -= tmp.left;
-				trim.y -= tmp.top;
-				trim.width += tmp.left + tmp.right;
-				trim.height += tmp.top + tmp.bottom;
-			}
-			GdkRectangle icon_area = new GdkRectangle();
-			GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_PRIMARY, icon_area);
-			trim.x -= icon_area.width;
-			trim.width += icon_area.width;
-			GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_SECONDARY, icon_area);
-			trim.width += icon_area.width;
-		} else {
-			if ((style & SWT.BORDER) != 0) {
-				Point thickness = getThickness (handle);
-				xborder += thickness.x;
-				yborder += thickness.y;
-			}
-			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-			trim.x -= innerBorder.left;
-			trim.y -= innerBorder.top;
-			trim.width += innerBorder.left + innerBorder.right;
-			trim.height += innerBorder.top + innerBorder.bottom;
+			trim.height += tmp.top + tmp.bottom;
 		}
+		GdkRectangle icon_area = new GdkRectangle();
+		GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_PRIMARY, icon_area);
+		trim.x -= icon_area.width;
+		trim.width += icon_area.width;
+		GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_SECONDARY, icon_area);
+		trim.width += icon_area.width;
 	} else {
 		int borderWidth = GTK.gtk_container_get_border_width (handle);
 		xborder += borderWidth;
@@ -1393,15 +1378,13 @@ public int getTopIndex () {
 	 * one to see if the user has scrolled/moved the viewport using the GUI.
 	 * If so, we use the old method of fetching the top index.
 	 */
-	if (GTK.GTK3) {
-		long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
-		currentAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
-		if (cachedAdjustment == currentAdjustment) {
-			// If indexMark is 0, fetch topIndex using the old method
-			if (indexMark != 0) {
-				GTK.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, indexMark);
-				return GTK.gtk_text_iter_get_line (position);
-			}
+	long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
+	currentAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
+	if (cachedAdjustment == currentAdjustment) {
+		// If indexMark is 0, fetch topIndex using the old method
+		if (indexMark != 0) {
+			GTK.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, indexMark);
+			return GTK.gtk_text_iter_get_line (position);
 		}
 	}
 	GdkRectangle rect = new GdkRectangle ();
@@ -2709,23 +2692,17 @@ public void setTopIndex (int index) {
 	if ((style & SWT.SINGLE) != 0) return;
 	byte [] position = new byte [ITER_SIZEOF];
 	GTK.gtk_text_buffer_get_iter_at_line (bufferHandle, position, index);
-	if (GTK.GTK3) {
-		/*
-		 * Feature in GTK: create a new GtkTextMark for the purposes of
-		 * keeping track of the top index. In getTopIndex() we can use this
-		 * without worrying about line validation. See bug 487467.
-		 *
-		 * We also cache the current GtkAdjustment value for future comparison
-		 * in getTopIndex().
-		 */
-		byte [] buffer = Converter.wcsToMbcs ("index_mark", true);
-		indexMark = GTK.gtk_text_buffer_create_mark (bufferHandle, buffer, position, true);
-		GTK.gtk_text_view_scroll_to_mark (handle, indexMark, 0, true, 0, 0);
-		long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
-		cachedAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
-	} else {
-		GTK.gtk_text_view_scroll_to_iter (handle, position, 0, true, 0, 0);
-	}
+	/*
+	 * Feature in GTK: create a new GtkTextMark for the purposes of keeping track of the top index. In getTopIndex() we
+	 * can use this without worrying about line validation. See bug 487467.
+	 *
+	 * We also cache the current GtkAdjustment value for future comparison in getTopIndex().
+	 */
+	byte [] buffer = Converter.wcsToMbcs ("index_mark", true);
+	indexMark = GTK.gtk_text_buffer_create_mark (bufferHandle, buffer, position, true);
+	GTK.gtk_text_view_scroll_to_mark (handle, indexMark, 0, true, 0, 0);
+	long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
+	cachedAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 }
 
 /**
