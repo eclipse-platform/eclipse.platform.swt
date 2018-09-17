@@ -3512,27 +3512,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	if (!hooksPaint ()) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
-	Event event = new Event ();
-	event.count = gdkEvent.count;
-	Rectangle eventRect = new Rectangle (gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
-	event.setBounds (DPIUtil.autoScaleDown (eventRect));
-	if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
-	GCData data = new GCData ();
-	data.damageRgn = gdkEvent.region;
-	GC gc = event.gc = GC.gtk_new (this, data);
-	drawWidget (gc);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
-	return 0;
-}
-
-@Override
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	/* Stop GTK traversal for every widget */
 	return 1;

@@ -4308,22 +4308,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param detail cast=(const gchar *)
-	 */
-	public static final native void _gtk_paint_flat_box(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_paint_flat_box(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-		lock.lock();
-		try {
-			_gtk_paint_flat_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	* @method flags=dynamic
 	* @param x cast=(gdouble)
 	* @param y cast=(gdouble)
@@ -4335,22 +4319,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_render_focus(context, cr,  x, y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param detail cast=(const gchar *)
-	 */
-	public static final native void _gtk_paint_box(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final void gtk_paint_box(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-		lock.lock();
-		try {
-			_gtk_paint_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 		} finally {
 			lock.unlock();
 		}
@@ -8075,20 +8043,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_get_style_context(widget);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native long /*int*/ _gtk_widget_get_style(long /*int*/ widget);
-	/** [GTK2/GTK3; 3.0 deprecated] */
-	public static final long /*int*/ gtk_widget_get_style(long /*int*/ widget) {
-		lock.lock();
-		try {
-			return _gtk_widget_get_style(widget);
 		} finally {
 			lock.unlock();
 		}

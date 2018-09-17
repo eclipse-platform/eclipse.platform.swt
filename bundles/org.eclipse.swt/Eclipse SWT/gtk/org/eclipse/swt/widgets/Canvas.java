@@ -236,16 +236,6 @@ private void drawCaret (long /*int*/ widget, long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
-	if ((state & OBSCURED) != 0) return 0;
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	long /*int*/ result = super.gtk_expose_event (widget, event);
-	if (isFocus) caret.setFocus ();
-	return result;
-}
-
-@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	if (caret != null) caret.setFocus ();

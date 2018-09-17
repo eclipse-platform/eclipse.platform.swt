@@ -1380,19 +1380,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
-	 * @param n_rectangles cast=(gint *)
-	 */
-	public static final native void _gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles);
-	public static final void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
-		lock.lock();
-		try {
-			_gdk_region_get_rectangles(region, rectangles, n_rectangles);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	 * @param source1 cast=(GdkRegion *)
 	 * @param source2 cast=(GdkRegion *)
 	 */

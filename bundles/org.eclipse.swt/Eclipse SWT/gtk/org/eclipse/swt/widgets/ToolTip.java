@@ -527,13 +527,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	drawTooltip (0);
-	return 0;
-}
-
-@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	Point point = getLocation ();
 	int x = point.x;

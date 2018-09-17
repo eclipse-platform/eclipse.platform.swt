@@ -811,41 +811,6 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	if ((state & CANVAS) == 0) {
-		return super.gtk_expose_event (widget, eventPtr);
-	}
-	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
-		return super.gtk_expose_event (widget, eventPtr);
-	}
-	if (!hooksPaint ()) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
-	long /*int*/ [] rectangles = new long /*int*/ [1];
-	int [] n_rectangles = new int [1];
-	GDK.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
-	GdkRectangle rect = new GdkRectangle ();
-	for (int i=0; i<n_rectangles[0]; i++) {
-		Event event = new Event ();
-		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
-		event.setBounds (DPIUtil.autoScaleDown (new Rectangle(rect.x, rect.y, rect.width, rect.height)));
-		if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (getClientWidth ()) - event.width - event.x;
-		long /*int*/ damageRgn = GDK.gdk_region_new ();
-		GDK.gdk_region_union_with_rect (damageRgn, rect);
-		GCData data = new GCData ();
-		data.damageRgn = damageRgn;
-		GC gc = event.gc = GC.gtk_new (this, data);
-		sendEvent (SWT.Paint, event);
-		gc.dispose ();
-		GDK.gdk_region_destroy (damageRgn);
-		event.gc = null;
-	}
-	OS.g_free (rectangles [0]);
-	return 0;
-}
-
-@Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;

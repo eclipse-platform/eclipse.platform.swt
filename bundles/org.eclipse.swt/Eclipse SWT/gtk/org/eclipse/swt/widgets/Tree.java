@@ -2222,26 +2222,6 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	switch (GDK.GDK_EVENT_TYPE (gdkEvent)) {
-		case GDK.GDK_EXPOSE: {
-			/*
-			* Bug in GTK. SWT connects the expose-event 'after' the default
-			* handler of the signal. If the tree has no children, then GTK
-			* sends expose signal only 'before' the default signal handler.
-			* The fix is to detect this case in 'event_after' and send the
-			* expose event.
-			*/
-			if (GTK.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
-				gtk_expose_event (widget, gdkEvent);
-			}
-			break;
-		}
-	}
-	return super.gtk_event_after (widget, gdkEvent);
-}
-
-@Override
 long /*int*/ gtk_expand_collapse_cursor_row (long /*int*/ widget, long /*int*/ logical, long /*int*/ expand, long /*int*/ open_all) {
 	// FIXME - this flag is never cleared.  It should be cleared when the expand all operation completes.
 	if (expand != 0 && open_all != 0) expandAll = true;
@@ -2305,13 +2285,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	}
 	drawInheritedBackground	(0, cairo);
 	return super.gtk_draw (widget, cairo);
-}
-
-@Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	drawInheritedBackground	(eventPtr, 0);
-	return super.gtk_expose_event (widget, eventPtr);
 }
 
 @Override

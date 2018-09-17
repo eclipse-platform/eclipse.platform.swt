@@ -781,26 +781,6 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	switch (GDK.GDK_EVENT_TYPE (gdkEvent)) {
-		case GDK.GDK_EXPOSE: {
-			/*
-			* Bug in GTK. SWT connects the expose-event 'after' the default
-			* handler of the signal. If the tree has no children, then GTK
-			* sends expose signal only 'before' the default signal handler.
-			* The fix is to detect this case in 'event_after' and send the
-			* expose event.
-			*/
-			if (GTK.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
-				gtk_expose_event (widget, gdkEvent);
-			}
-			break;
-		}
-	}
-	return super.gtk_event_after (widget, gdkEvent);
-}
-
-@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;

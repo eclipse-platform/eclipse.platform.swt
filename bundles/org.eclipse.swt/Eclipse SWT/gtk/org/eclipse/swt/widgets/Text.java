@@ -1644,13 +1644,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
-	if ((state & OBSCURED) != 0) return 0;
-	long /*int*/ result = super.gtk_expose_event (widget, event);
-	return result;
-}
-
-@Override
 long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);

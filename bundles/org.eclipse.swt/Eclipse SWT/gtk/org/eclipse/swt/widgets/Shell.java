@@ -1378,37 +1378,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
-	if (widget == shellHandle) {
-		if (isCustomResize ()) {
-			GdkEventExpose gdkEventExpose = new GdkEventExpose ();
-			OS.memmove (gdkEventExpose, event, GdkEventExpose.sizeof);
-			long /*int*/ style = GTK.gtk_widget_get_style (widget);
-			long /*int*/ window = gtk_widget_get_window (widget);
-			int [] width = new int [1];
-			int [] height = new int [1];
-			gdk_window_get_size (window, width, height);
-			GdkRectangle area = new GdkRectangle ();
-			area.x = gdkEventExpose.area_x;
-			area.y = gdkEventExpose.area_y;
-			area.width = gdkEventExpose.area_width;
-			area.height = gdkEventExpose.area_height;
-			byte [] detail = Converter.wcsToMbcs ("base", true); //$NON-NLS-1$
-			int border = GTK.gtk_container_get_border_width (widget);
-			int state = display.activeShell == this ? GTK.GTK_STATE_SELECTED : GTK.GTK_STATE_PRELIGHT;
-			GTK.gtk_paint_flat_box (style, window, state, GTK.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
-			GTK.gtk_paint_flat_box (style, window, state, GTK.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
-			GTK.gtk_paint_flat_box (style, window, state, GTK.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
-			GTK.gtk_paint_flat_box (style, window, state, GTK.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
-			GTK.gtk_paint_box (style, window, state, GTK.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
-			return 1;
-		}
-		return 0;
-	}
-	return super.gtk_expose_event (widget, event);
-}
-
-@Override
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	switch ((int)/*64*/directionType) {
 		case GTK.GTK_DIR_TAB_FORWARD:
