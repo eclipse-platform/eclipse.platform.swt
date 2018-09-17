@@ -597,25 +597,21 @@ Rectangle getImageBoundsInPixels (int index) {
 	 * yet to be sized, as per Bug 469277 & 476419. NOTE: this change has been ported to Tables since Tables/Trees both
 	 * use the same underlying GTK structure.
 	 */
-	if (GTK.GTK3) {
-		if (parent.pixbufSizeSet) {
-			if (x [0] > 0) {
-				rect.x += x [0];
-			}
-		} else {
-			/*
-			 * If the size of the pixbufRenderer hasn't been set, we need to take into account the
-			 * position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TableItem's
-			 * text.
-			 */
-			long /*int*/ textRenderer = parent.getTextRenderer (column);
-			if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
-			int [] xText = new int [1], wText = new int [1];
-			gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
-			rect.x += xText [0];
+	if (parent.pixbufSizeSet) {
+		if (x [0] > 0) {
+			rect.x += x [0];
 		}
 	} else {
-		rect.x += x [0];
+		/*
+		 * If the size of the pixbufRenderer hasn't been set, we need to take into account the
+		 * position of the textRenderer, to ensure images/widgets/etc. aren't placed over the TableItem's
+		 * text.
+		 */
+		long /*int*/ textRenderer = parent.getTextRenderer (column);
+		if (textRenderer == 0)  return new Rectangle (0, 0, 0, 0);
+		int [] xText = new int [1], wText = new int [1];
+		gtk_tree_view_column_cell_get_position (column, textRenderer, xText, wText);
+		rect.x += xText [0];
 	}
 	rect.width = w [0];
 	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
@@ -767,22 +763,18 @@ Rectangle getTextBoundsInPixels (int index) {
 	 * NOTE: this change has been ported to Tables since Tables/Trees both use the
 	 * same underlying GTK structure.
 	 */
-	if (GTK.GTK3) {
-		Image image = _getImage(index);
-		int imageWidth = 0;
-		if (image != null) {
-			if (DPIUtil.useCairoAutoScale()) {
-				imageWidth = image.getBounds ().width;
-			} else {
-				imageWidth = image.getBoundsInPixels ().width;
-			}
-
-		}
-		if (x [0] < imageWidth) {
-			rect.x += imageWidth;
+	Image image = _getImage(index);
+	int imageWidth = 0;
+	if (image != null) {
+		if (DPIUtil.useCairoAutoScale()) {
+			imageWidth = image.getBounds ().width;
 		} else {
-			rect.x += x [0];
+			imageWidth = image.getBoundsInPixels ().width;
 		}
+
+	}
+	if (x [0] < imageWidth) {
+		rect.x += imageWidth;
 	} else {
 		rect.x += x [0];
 	}
@@ -1171,95 +1163,61 @@ public void setImage (int index, Image image) {
 	 * change has been ported to Tables since Tables/Trees both use the same
 	 * underlying GTK structure.
 	 */
-	if (GTK.GTK3) {
-		if (DPIUtil.useCairoAutoScale()) {
-			/*
-			 * Bug in GTK the default renderer does scale again on pixbuf.
-			 * Need to scaledown here and no need to scaledown id device scale is 1
-			 */
-			if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
-				Rectangle imgSize = image.getBounds();
-				long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
-				if (scaledPixbuf !=0) {
-					pixbuf = scaledPixbuf;
-				}
+	if (DPIUtil.useCairoAutoScale()) {
+		/*
+		 * Bug in GTK the default renderer does scale again on pixbuf.
+		 * Need to scaledown here and no need to scaledown id device scale is 1
+		 */
+		if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
+			Rectangle imgSize = image.getBounds();
+			long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
+			if (scaledPixbuf !=0) {
+				pixbuf = scaledPixbuf;
 			}
 		}
-		long /*int*/parentHandle = parent.handle;
-		long /*int*/ column = GTK.gtk_tree_view_get_column (parentHandle, index);
-		long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
-		int [] currentWidth = new int [1];
-		int [] currentHeight= new int [1];
-		GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
-		if (!parent.pixbufSizeSet) {
-			if (image != null) {
-				int iWidth, iHeight;
-				if (DPIUtil.useCairoAutoScale()) {
-					iWidth = image.getBounds ().width;
-					iHeight = image.getBounds ().height;
-				} else {
-					iWidth = image.getBoundsInPixels ().width;
-					iHeight = image.getBoundsInPixels ().height;
-				}
-				if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
-					GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
-					parent.pixbufHeight = iHeight;
-					parent.pixbufWidth = iWidth;
-					parent.pixbufSizeSet = true;
-				}
+	}
+	long /*int*/parentHandle = parent.handle;
+	long /*int*/ column = GTK.gtk_tree_view_get_column (parentHandle, index);
+	long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	int [] currentWidth = new int [1];
+	int [] currentHeight= new int [1];
+	GTK.gtk_cell_renderer_get_fixed_size (pixbufRenderer, currentWidth, currentHeight);
+	if (!parent.pixbufSizeSet) {
+		if (image != null) {
+			int iWidth, iHeight;
+			if (DPIUtil.useCairoAutoScale()) {
+				iWidth = image.getBounds ().width;
+				iHeight = image.getBounds ().height;
+			} else {
+				iWidth = image.getBoundsInPixels ().width;
+				iHeight = image.getBoundsInPixels ().height;
 			}
-		} else {
-			/*
-			 * We check to see if the cached value is greater than the size of the pixbufRenderer.
-			 * If it is, then we change the size of the pixbufRenderer accordingly.
-			 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
-			 * which results in icons being set to 0. Fix is to compare only positive sizes.
-			 */
-			if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
-				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
+			if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
+				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
+				parent.pixbufHeight = iHeight;
+				parent.pixbufWidth = iWidth;
+				parent.pixbufSizeSet = true;
 			}
+		}
+	} else {
+		/*
+		 * We check to see if the cached value is greater than the size of the pixbufRenderer.
+		 * If it is, then we change the size of the pixbufRenderer accordingly.
+		 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
+		 * which results in icons being set to 0. Fix is to compare only positive sizes.
+		 */
+		if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
+			GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
 		}
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, pixbuf, -1);
-	/*
-	 * Bug in GTK.  When in fixed height mode, GTK does not recalculate the cell renderer width
-	 * when the image is changed in the model.  The fix is to force it to recalculate the width if
-	 * more space is required.
-	 */
-	if ((parent.style & SWT.VIRTUAL) != 0 && parent.currentItem == null) {
-		if (image != null) {
-			long /*int*/parentHandle = parent.handle;
-			long /*int*/ column = GTK.gtk_tree_view_get_column (parentHandle, index);
-			int [] w = new int [1];
-			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
-			gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
-			int iWidth;
-			if (GTK.GTK3 && DPIUtil.useCairoAutoScale()) {
-				iWidth = image.getBounds ().width;
-			} else {
-				iWidth = image.getBoundsInPixels ().width;
-			}
-			if (w[0] < iWidth) {
-				/*
-				* There is no direct way to clear the cell renderer width so we
-				* are relying on the fact that it is done as part of modifying
-				* the style.
-				*/
-				if (!GTK.GTK3) {
-					long /*int*/ style = GTK.gtk_widget_get_modifier_style (parentHandle);
-					parent.modifyStyle (parentHandle, style);
-				}
-			}
-		}
-	}
 	cached = true;
 	/*
 	 * Bug 465056: single column Tables have a very small initial width.
 	 * Fix: when text or an image is set for a Table, compute its
 	 * width and see if it's larger than the maximum of the previous widths.
 	 */
-	long /*int*/ column;
 	if (parent.columnCount == 0) {
 		column = GTK.gtk_tree_view_get_column (parent.handle, index);
 		parent.maxWidth = Math.max(parent.maxWidth, parent.calculateWidth(column, this.handle));

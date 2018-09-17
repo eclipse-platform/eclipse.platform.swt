@@ -238,25 +238,23 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 Rectangle getClientAreaInPixels () {
 	Rectangle clientRectangle = super.getClientAreaInPixels ();
 
-	if (GTK.GTK3) {
-		/*
-		* Bug 454936 (see also other 454936 references)
-		* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
-		* causes GTK+ to move the clientHandle's SwtFixed down by the size of the labels.
-		* These calls can come up from 'shell' and TabFolder has no control over these calls.
-		*
-		* This is an undesired side-effect. Client handle's x & y positions should never
-		* be incremented as this is an internal sub-container.
-		*
-		* Note: 0 by 0 was chosen as 1 by 1 shifts controls beyond their original pos.
-		* The long term fix would be to not use widget_*_allocation from higher containers,
-		* but this would require removal of swtFixed.
-		*
-		* This is Gtk3-specific for Tabfolder as the architecture is changed in gtk3 only.
-		*/
-		clientRectangle.x = 0;
-		clientRectangle.y = 0;
-	}
+	/*
+	* Bug 454936 (see also other 454936 references)
+	* SWT's calls to gtk_widget_size_allocate and gtk_widget_set_allocation
+	* causes GTK+ to move the clientHandle's SwtFixed down by the size of the labels.
+	* These calls can come up from 'shell' and TabFolder has no control over these calls.
+	*
+	* This is an undesired side-effect. Client handle's x & y positions should never
+	* be incremented as this is an internal sub-container.
+	*
+	* Note: 0 by 0 was chosen as 1 by 1 shifts controls beyond their original pos.
+	* The long term fix would be to not use widget_*_allocation from higher containers,
+	* but this would require removal of swtFixed.
+	*
+	* This is Gtk3-specific for Tabfolder as the architecture is changed in gtk3 only.
+	*/
+	clientRectangle.x = 0;
+	clientRectangle.y = 0;
 	return clientRectangle;
 }
 
@@ -374,44 +372,39 @@ long /*int*/ eventHandle () {
 @Override
 Control[] _getChildren() {
 	Control [] directChildren = super._getChildren ();
-	if (GTK.GTK3) {
-		int directCount = directChildren.length;
-		int count = items == null ? 0 : items.length;
-		Control [] children = new Control [count + directCount];
-		int i = 0;
-		for (int j = 0; j < count; j++) {
-			TabItem tabItem = items[j];
-			if (tabItem != null && !tabItem.isDisposed()) {
-				long /*int*/ parentHandle = tabItem.pageHandle;
-				long /*int*/ list = GTK.gtk_container_get_children (parentHandle);
-				if (list != 0) {
-					long /*int*/ handle = OS.g_list_data (list);
-					if (handle != 0) {
-						Widget widget = display.getWidget (handle);
-						if (widget != null && widget != this) {
-							if (widget instanceof Control) {
-								children [i++] = (Control) widget;
-							}
+	int directCount = directChildren.length;
+	int count = items == null ? 0 : items.length;
+	Control [] children = new Control [count + directCount];
+	int i = 0;
+	for (int j = 0; j < count; j++) {
+		TabItem tabItem = items[j];
+		if (tabItem != null && !tabItem.isDisposed()) {
+			long /*int*/ parentHandle = tabItem.pageHandle;
+			long /*int*/ list = GTK.gtk_container_get_children (parentHandle);
+			if (list != 0) {
+				long /*int*/ handle = OS.g_list_data (list);
+				if (handle != 0) {
+					Widget widget = display.getWidget (handle);
+					if (widget != null && widget != this) {
+						if (widget instanceof Control) {
+							children [i++] = (Control) widget;
 						}
 					}
-					OS.g_list_free (list);
 				}
+				OS.g_list_free (list);
 			}
 		}
-		if (i == count + directCount) return children;
-		Control [] newChildren;
-		if (i == count) {
-			newChildren = children;
-		} else {
-			newChildren = new Control [i + directCount];
-			System.arraycopy (children, 0, newChildren, 0, i);
-		}
-		System.arraycopy (directChildren, 0, newChildren, i, directCount);
-		return newChildren;
-
-	} else {
-		return directChildren;
 	}
+	if (i == count + directCount) return children;
+	Control [] newChildren;
+	if (i == count) {
+		newChildren = children;
+	} else {
+		newChildren = new Control [i + directCount];
+		System.arraycopy (children, 0, newChildren, 0, i);
+	}
+	System.arraycopy (directChildren, 0, newChildren, i, directCount);
+	return newChildren;
 }
 
 /**

@@ -212,9 +212,6 @@ void createHandle (int index) {
 			arrowHandle = OS.g_list_nth_data (list, 1);
 			if (arrowHandle != 0) {
 				GTK.gtk_widget_set_sensitive (arrowHandle, true);
-				if (!GTK.GTK3) {
-					GTK.gtk_widget_set_size_request(GTK.gtk_bin_get_child(arrowHandle), 8, 6);
-				}
 			}
 			break;
 		case SWT.RADIO:
@@ -968,32 +965,6 @@ public void setEnabled (boolean enabled) {
 	long /*int*/ topHandle = topHandle ();
 	if (GTK.gtk_widget_get_sensitive (topHandle) == enabled) return;
 	GTK.gtk_widget_set_sensitive (topHandle, enabled);
-
-	if (!GTK.GTK3) {
-		if (enabled) {
-			/*
-			* Bug in GTK (see Eclipse bug 82169). GtkButton requires an enter notify before it
-			* allows the button to be pressed, but events are dropped when
-			* widgets are insensitive.  The fix is to hide and show the
-			* button if the pointer is within its bounds.
-			*/
-			int [] x = new int [1], y = new int [1];
-			gdk_window_get_device_position (parent.paintWindow (), x, y, null);
-			if (getBoundsInPixels ().contains (x [0], y [0])) {
-				GTK.gtk_widget_hide (handle);
-				GTK.gtk_widget_show (handle);
-			}
-		} else {
-			/*
-			* Bug in GTK. Starting with 2.14, if a button is disabled
-			* through on a button press, the field which keeps track
-			* whether the pointer is currently in the button is never updated.
-			* As a result, when it is re-enabled it automatically enters
-			* a PRELIGHT state. The fix is to set a NORMAL state.
-			*/
-			GTK.gtk_widget_set_state (topHandle, GTK.GTK_STATE_NORMAL);
-		}
-	}
 }
 
 boolean setFocus () {

@@ -136,10 +136,6 @@ void createHandle (int index) {
 	handle = GTK.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_container_add (fixedHandle, handle);
-	if ((style & SWT.FLAT) != 0 && !GTK.GTK3) {
-		byte [] swt_toolbar_flat = Converter.wcsToMbcs ("swt-toolbar-flat", true);
-		GTK.gtk_widget_set_name (handle, swt_toolbar_flat);
-	}
 
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
@@ -151,13 +147,11 @@ void createHandle (int index) {
 	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
 	* when the tool bar item has no image or text.
 	*/
-	GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK3 ? GTK.GTK_ICON_SIZE_SMALL_TOOLBAR : GTK.GTK_ICON_SIZE_LARGE_TOOLBAR);
+	GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	if (GTK.GTK3) {
-		setFontDescription(defaultFont().handle);
-	}
+	setFontDescription(defaultFont().handle);
 }
 
 @Override
@@ -615,9 +609,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 
 @Override
 void setParentBackground () {
-	if (GTK.GTK3) {
-		setBackgroundGdkRGBA (handle, display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA);
-	}
+	setBackgroundGdkRGBA (handle, display.getSystemColor(SWT.COLOR_TRANSPARENT).handleRGBA);
 	super.setParentBackground();
 }
 

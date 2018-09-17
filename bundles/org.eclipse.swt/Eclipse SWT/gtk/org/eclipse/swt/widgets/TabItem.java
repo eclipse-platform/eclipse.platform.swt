@@ -247,12 +247,10 @@ void register () {
 
 @Override
 void release (boolean destroy) {
-	if (GTK.GTK3) {
-		//Since controls are now nested under the tabItem,
-		//tabItem is responsible for it's release.
-		if (control != null && !control.isDisposed ()) {
-			control.release (destroy);
-		}
+	//Since controls are now nested under the tabItem,
+	//tabItem is responsible for it's release.
+	if (control != null && !control.isDisposed ()) {
+		control.release (destroy);
 	}
 	super.release (destroy);
 }
@@ -295,7 +293,7 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 
-	if (control != null && GTK.GTK3) {
+	if (control != null) {
 		// To understand why we reparent, see implementation note about bug 454936 at the start of TabFolder.
 		Control.gtk_widget_reparent (control, pageHandle);
 	}
