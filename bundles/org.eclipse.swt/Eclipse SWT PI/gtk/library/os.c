@@ -16165,36 +16165,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1g_1thread_1init
-JNIEXPORT void JNICALL OS_NATIVE(_1g_1thread_1init)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1g_1thread_1init_FUNC);
-/*
-	g_thread_init(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_thread_init)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1thread_1init_FUNC);
-}
-#endif
-
-#ifndef NO__1g_1thread_1supported
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1thread_1supported)
-	(JNIEnv *env, jclass that)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1thread_1supported_FUNC);
-	rc = (jboolean)g_thread_supported();
-	OS_NATIVE_EXIT(env, that, _1g_1thread_1supported_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1timeout_1add
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1timeout_1add)
 	(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintLong arg2)

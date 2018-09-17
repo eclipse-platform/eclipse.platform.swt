@@ -1377,8 +1377,6 @@ typedef enum {
 	_1g_1string_1free_FUNC,
 	_1g_1string_1new_1len_FUNC,
 	_1g_1strtod_FUNC,
-	_1g_1thread_1init_FUNC,
-	_1g_1thread_1supported_FUNC,
 	_1g_1timeout_1add_FUNC,
 	_1g_1type_1add_1interface_1static_FUNC,
 	_1g_1type_1class_1peek_FUNC,

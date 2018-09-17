@@ -1391,8 +1391,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1string_1free",
 	"_1g_1string_1new_1len",
 	"_1g_1strtod",
-	"_1g_1thread_1init",
-	"_1g_1thread_1supported",
 	"_1g_1timeout_1add",
 	"_1g_1type_1add_1interface_1static",
 	"_1g_1type_1class_1peek",

@@ -1026,12 +1026,6 @@ void checkXimModule () {
 }
 
 void createDisplay (DeviceData data) {
-	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {
-		/* Required for g_main_context_wakeup */
-		if (!OS.g_thread_supported()) {
-			OS.g_thread_init(0);
-		}
-	}
 	if (!GTK.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}

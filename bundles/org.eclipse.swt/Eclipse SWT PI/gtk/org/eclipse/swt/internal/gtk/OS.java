@@ -659,12 +659,9 @@ public class OS extends C {
 	/**
 	 * Gtk has a minimum glib version. (But it's not a 1:1 link, one can have a newer version of glib and older gtk).
 	 *
-	 * Minimum Glib version requirement of gtk (for gtk2/gtk3) can be found in gtk's 'configure.ac' file, see line 'm4_define([glib_required_version],[2.*.*]).
+	 * Minimum Glib version requirement of gtk can be found in gtk's 'configure.ac' file, see line 'm4_define([glib_required_version],[2.*.*]).
 	 *
 	 * For reference:
-	 * Gtk2.24 has min version of glib 2.28
-	 * Gtk3.0  has min version of glib 2.28
-	 * Gtk3.2  has min version of glib 2.29.14
 	 * Gtk3.4  has min version of glib 2.32
 	 * Gtk3.6  has min version of glib 2.33.1
 	 * Gtk3.8  has min version of glib 2.35.3
@@ -677,7 +674,6 @@ public class OS extends C {
 	 * Gtk3.22 has min version of glib 2.49.4
 	 */
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
-	private static final boolean MIN_GLIB_2_32 = OS.GLIB_VERSION >= VERSION(2, 32, 0);
 
 	/*
 	 * New API in GTK3.22 introduced the "popped-up" signal, which provides
@@ -2162,7 +2158,6 @@ public static final void g_object_unref(long /*int*/ object) {
  */
 public static final native long /*int*/ _g_bytes_new (byte [] data, long /*int*/ size);
 public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
-	assert MIN_GLIB_2_32;  // Note Gtk3.4 == glib 2.32
 	lock.lock();
 	try {
 		return _g_bytes_new (data, size);
@@ -2177,7 +2172,6 @@ public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
  */
 public static final native void _g_bytes_unref (long /*int*/ gBytes);
 public static final void g_bytes_unref (long /*int*/ gBytes) {
-	assert MIN_GLIB_2_32;  // Note Gtk3.4 == glib 2.32
 	lock.lock();
 	try {
 		_g_bytes_unref (gBytes);
@@ -2659,29 +2653,6 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 	lock.lock();
 	try {
 		return _g_type_register_static(parent_type, type_name, info, flags);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- */
-public static final native void _g_thread_init(long /*int*/ vtable);
-/** Treat with special care, platform specific behaviour. See os_custom.h */
-public static final void g_thread_init(long /*int*/ vtable) {
-	lock.lock();
-	try {
-		_g_thread_init(vtable);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native boolean _g_thread_supported();
-/** Treat with special care, see os_custom.h */
-public static final boolean g_thread_supported() {
-	lock.lock();
-	try {
-		return _g_thread_supported();
 	} finally {
 		lock.unlock();
 	}

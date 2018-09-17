@@ -64,7 +64,6 @@
 
 /* Libraries for dynamic loaded functions */
 
-#define g_thread_init_LIB LIB_GTHREAD
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 #define g_dbus_proxy_call_LIB LIB_GLIB
@@ -72,10 +71,6 @@
 // GTK3 only
 #define g_bytes_new_LIB LIB_GLIB
 #define g_bytes_unref_LIB LIB_GLIB
-
-#ifndef g_thread_supported
-#define g_thread_supported() 0
-#endif
 
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
