@@ -15,25 +15,31 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2018 Red Hat Inc. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
+package org.eclipse.swt.internal.cairo;
 
-/* Libraries for dynamic loaded functions */
-#ifdef AIX
-#define LIB_CAIRO "libcairo.a(libcairo.so.2)"
-#elif _WIN32
-#define LIB_CAIRO "libcairo-2.dll"
-#else
-#define LIB_CAIRO "libcairo.so.2"
-#endif
+import org.eclipse.swt.internal.gtk.*;
 
-#define cairo_pdf_surface_set_size_LIB LIB_CAIRO
-#define cairo_ps_surface_set_size_LIB LIB_CAIRO
-#define cairo_surface_set_device_scale_LIB LIB_CAIRO
-#define cairo_surface_get_device_scale_LIB LIB_CAIRO
+public class cairo_rectangle_int_t {
+	/** @field cast=(int) */
+	public int x;
+	/** @field cast=(int) */
+	public int y;
+	/** @field cast=(int) */
+	public int width;
+	/** @field cast=(int) */
+	public int height;
+	public static final int sizeof = Cairo.cairo_rectangle_int_t_sizeof();
 
-#ifdef CAIRO_HAS_XLIB_SURFACE
-#define cairo_xlib_surface_get_height_LIB LIB_CAIRO
-#define cairo_xlib_surface_get_width_LIB LIB_CAIRO 
-#endif
+	public void convertFromGdkRectangle(GdkRectangle rect) {
+		if (rect != null) {
+			x = rect.x;
+			y = rect.y;
+			width = rect.width;
+			height = rect.height;
+		}
+		return;
+	}
+}

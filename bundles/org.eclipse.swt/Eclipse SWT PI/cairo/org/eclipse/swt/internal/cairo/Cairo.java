@@ -75,6 +75,9 @@ public class Cairo extends Platform {
     public static final int CAIRO_SURFACE_TYPE_BEOS = 8;
     public static final int CAIRO_SURFACE_TYPE_DIRECTFB = 9;
     public static final int CAIRO_SURFACE_TYPE_SVG = 10;
+    public static final int CAIRO_REGION_OVERLAP_IN = 0;
+    public static final int CAIRO_REGION_OVERLAP_OUT = 1;
+    public static final int CAIRO_REGION_OVERLAP_PART = 2;
 	public static final int CAIRO_FILTER_FAST = 0;
 	public static final int CAIRO_FILTER_GOOD = 1;
 	public static final int CAIRO_FILTER_BEST = 2;
@@ -92,6 +95,7 @@ public class Cairo extends Platform {
 
 /** 64*/
 public static final native int cairo_path_data_t_sizeof ();
+public static final native int cairo_rectangle_int_t_sizeof ();
 public static final native int cairo_path_t_sizeof ();
 
 /** Natives */
@@ -1253,7 +1257,9 @@ public static final int cairo_xlib_surface_get_width(long /*int*/ surface) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param region cast=(cairo_region_t *)
+ */
 public static final native int _cairo_region_num_rectangles(long /*int*/ region);
 public static final int cairo_region_num_rectangles(long /*int*/ region) {
 	lock.lock();
@@ -1263,7 +1269,18 @@ public static final int cairo_region_num_rectangles(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+public static final native long /*int*/ _cairo_region_create();
+public static final long /*int*/ cairo_region_create() {
+	lock.lock();
+	try {
+		return _cairo_region_create();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param region cast=(cairo_region_t *)
+ */
 public static final native long /*int*/ _cairo_region_copy(long /*int*/ region);
 public static final long /*int*/ cairo_region_copy(long /*int*/ region) {
 	lock.lock();
@@ -1273,7 +1290,9 @@ public static final long /*int*/ cairo_region_copy(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param region cast=(cairo_region_t *)
+ */
 public static final native boolean _cairo_region_contains_point(long /*int*/ region, int x, int y);
 public static final boolean cairo_region_contains_point(long /*int*/ region, int x, int y) {
 	lock.lock();
@@ -1283,12 +1302,137 @@ public static final boolean cairo_region_contains_point(long /*int*/ region, int
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param region cast=(cairo_region_t *)
+ * @param rect cast=(cairo_rectangle_int_t *)
+ */
+public static final native long /*int*/ _cairo_region_contains_rectangle(long /*int*/ region, cairo_rectangle_int_t rect);
+public static final long /*int*/ cairo_region_contains_rectangle(long /*int*/ region, cairo_rectangle_int_t rect) {
+	lock.lock();
+	try {
+		return _cairo_region_contains_rectangle(region, rect);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param region cast=(cairo_region_t *) */
+public static final native void _cairo_region_destroy(long /*int*/ region);
+public static final void cairo_region_destroy(long /*int*/ region) {
+	lock.lock();
+	try {
+		_cairo_region_destroy(region);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param region cast=(cairo_region_t *) */
+public static final native boolean _cairo_region_is_empty(long /*int*/ region);
+public static final boolean cairo_region_is_empty(long /*int*/ region) {
+	lock.lock();
+	try {
+		return _cairo_region_is_empty(region);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param region cast=(cairo_region_t *)
+ * @param rectangle cast=(cairo_rectangle_int_t *),flags=no_in
+ */
+public static final native void _cairo_region_get_extents(long /*int*/ region, cairo_rectangle_int_t rectangle);
+public static final void cairo_region_get_extents(long /*int*/ region, cairo_rectangle_int_t rectangle) {
+	lock.lock();
+	try {
+		_cairo_region_get_extents(region, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param region cast=(cairo_region_t *)
+ * @param rectangle cast=(cairo_rectangle_int_t *)
+ */
 public static final native void _cairo_region_get_rectangle(long /*int*/ region, int nth, long /*int*/ rectangle);
 public static final void cairo_region_get_rectangle(long /*int*/ region, int nth, long /*int*/ rectangle) {
 	lock.lock();
 	try {
-		 _cairo_region_get_rectangle(region,nth,rectangle);
+		 _cairo_region_get_rectangle(region, nth, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param source1 cast=(cairo_region_t *)
+ * @param source2 cast=(const cairo_region_t *)
+ */
+public static final native void _cairo_region_intersect(long /*int*/ source1, long /*int*/ source2);
+public static final void cairo_region_intersect(long /*int*/ source1, long /*int*/ source2) {
+	lock.lock();
+	try {
+		_cairo_region_intersect(source1, source2);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param rectangle cast=(const cairo_rectangle_int_t *)
+ */
+public static final native long /*int*/ _cairo_region_create_rectangle(cairo_rectangle_int_t rectangle);
+public static final long /*int*/ cairo_region_create_rectangle(cairo_rectangle_int_t rectangle) {
+	lock.lock();
+	try {
+		return _cairo_region_create_rectangle(rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param source1 cast=(cairo_region_t *)
+ * @param source2 cast=(const cairo_region_t *)
+ */
+public static final native void _cairo_region_subtract(long /*int*/ source1, long /*int*/ source2);
+public static final void cairo_region_subtract(long /*int*/ source1, long /*int*/ source2) {
+	lock.lock();
+	try {
+		_cairo_region_subtract(source1, source2);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param region cast=(cairo_region_t *)
+ */
+public static final native void _cairo_region_translate(long /*int*/ region, int dx, int dy);
+public static final void cairo_region_translate(long /*int*/ region, int dx, int dy) {
+	lock.lock();
+	try {
+		 _cairo_region_translate(region,dx,dy);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param source1 cast=(cairo_region_t *)
+ * @param source2 cast=(const cairo_region_t *)
+ */
+public static final native void _cairo_region_union(long /*int*/ source1, long /*int*/ source2);
+public static final void cairo_region_union(long /*int*/ source1, long /*int*/ source2) {
+	lock.lock();
+	try {
+		_cairo_region_union(source1, source2);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param region cast=(cairo_region_t *)
+ * @param rect cast=(cairo_rectangle_int_t *),flags=no_out
+ */
+public static final native void _cairo_region_union_rectangle(long /*int*/ region, cairo_rectangle_int_t rect);
+public static final void cairo_region_union_rectangle(long /*int*/ region, cairo_rectangle_int_t rect) {
+	lock.lock();
+	try {
+		_cairo_region_union_rectangle(region, rect);
 	} finally {
 		lock.unlock();
 	}
@@ -1305,6 +1449,12 @@ public static final native void memmove(cairo_path_t dest, long /*int*/ src, lon
  * @param size cast=(size_t)
  */
 public static final native void memmove(cairo_path_data_t dest, long /*int*/ src, long /*int*/ size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ * @param size cast=(size_t)
+ */
+public static final native void memmove(cairo_rectangle_int_t dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *)

@@ -2322,11 +2322,11 @@ static Region mirrorRegion (Region region) {
 	long /*int*/ [] rects = new long /*int*/ [1];
 	gdk_region_get_rectangles (rgn, rects, nRects);
 	Rectangle bounds = DPIUtil.autoScaleUp(region.getBounds ());
-	GdkRectangle rect = new GdkRectangle ();
+	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	for (int i = 0; i < nRects [0]; i++) {
-		OS.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+		Cairo.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
 		rect.x = bounds.x + bounds.width - rect.x - rect.width;
-		GDK.gdk_region_union_with_rect (mirrored.handle, rect);
+		Cairo.cairo_region_union_rectangle (mirrored.handle, rect);
 	}
 	if (rects [0] != 0) OS.g_free (rects [0]);
 	return mirrored;

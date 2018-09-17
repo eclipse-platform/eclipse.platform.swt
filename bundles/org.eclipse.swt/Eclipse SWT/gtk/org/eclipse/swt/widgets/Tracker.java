@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -363,8 +364,8 @@ void drawRectangles (Rectangle [] rects) {
 		}
 	}
 
-	long /*int*/ region = GDK.gdk_region_new ();
-	GdkRectangle rect = new GdkRectangle();
+	long /*int*/ region = Cairo.cairo_region_create ();
+	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	if (isOnScreen) {
 		// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
 		for (int i = 0; i < rects.length; i++) {
@@ -374,17 +375,17 @@ void drawRectangles (Rectangle [] rects) {
 			rect.y = r.y;
 			rect.width = r.width + 1;
 			rect.height = 1;
-			GDK.gdk_region_union_with_rect(region, rect); // Top line
+			Cairo.cairo_region_union_rectangle(region, rect); // Top line
 			rect.width = 1;
 			rect.height = r.height + 1;
-			GDK.gdk_region_union_with_rect(region, rect); // Left line.
+			Cairo.cairo_region_union_rectangle(region, rect); // Left line.
 			rect.x = r.x + r.width;
-			GDK.gdk_region_union_with_rect(region, rect); // Right line.
+			Cairo.cairo_region_union_rectangle(region, rect); // Right line.
 			rect.x = r.x;
 			rect.y = r.y + r.height;
 			rect.width = r.width + 1;
 			rect.height = 1;
-			GDK.gdk_region_union_with_rect(region, rect); // Bottom line
+			Cairo.cairo_region_union_rectangle(region, rect); // Bottom line
 		}
 		setTrackerBackground(true);
 	} else { // Offscreen
@@ -393,12 +394,12 @@ void drawRectangles (Rectangle [] rects) {
 		rect.y = 0;
 		rect.height = 1;
 		rect.width = 1;
-		GDK.gdk_region_union_with_rect(region, rect);
+		Cairo.cairo_region_union_rectangle(region, rect);
 		setTrackerBackground(false);
 	}
 
 	GTK.gtk_widget_shape_combine_region (overlay, region);
-	GDK.gdk_region_destroy (region);
+	Cairo.cairo_region_destroy (region);
 	long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 	GDK.gdk_window_hide (overlayWindow);
 	GDK.gdk_window_show (overlayWindow);
@@ -864,10 +865,10 @@ private void setTrackerBackground(boolean opaque) {
 		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 		GTK.gtk_style_context_invalidate (context);
 	}
-	long /*int*/ region = GDK.gdk_region_new ();
+	long /*int*/ region = Cairo.cairo_region_create ();
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	GTK.gtk_widget_input_shape_combine_region (overlay, region);
-	GDK.gdk_region_destroy (region);
+	Cairo.cairo_region_destroy (region);
 }
 
 boolean processEvent (long /*int*/ eventPtr) {

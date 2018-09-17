@@ -97,9 +97,20 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1rectangle",
 	"_1cairo_1reference",
 	"_1cairo_1region_1contains_1point",
+	"_1cairo_1region_1contains_1rectangle",
 	"_1cairo_1region_1copy",
+	"_1cairo_1region_1create",
+	"_1cairo_1region_1create_1rectangle",
+	"_1cairo_1region_1destroy",
+	"_1cairo_1region_1get_1extents",
 	"_1cairo_1region_1get_1rectangle",
+	"_1cairo_1region_1intersect",
+	"_1cairo_1region_1is_1empty",
 	"_1cairo_1region_1num_1rectangles",
+	"_1cairo_1region_1subtract",
+	"_1cairo_1region_1translate",
+	"_1cairo_1region_1union",
+	"_1cairo_1region_1union_1rectangle",
 	"_1cairo_1reset_1clip",
 	"_1cairo_1restore",
 	"_1cairo_1rotate",
@@ -143,6 +154,7 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1xlib_1surface_1get_1width",
 	"cairo_1path_1data_1t_1sizeof",
 	"cairo_1path_1t_1sizeof",
+	"cairo_1rectangle_1int_1t_1sizeof",
 	"cairo_1version",
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II",
@@ -153,6 +165,11 @@ char * Cairo_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ",
 #endif
 #ifndef JNI64
 	"memmove___3DII",

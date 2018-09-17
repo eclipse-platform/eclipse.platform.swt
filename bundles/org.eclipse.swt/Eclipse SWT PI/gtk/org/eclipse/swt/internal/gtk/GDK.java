@@ -190,7 +190,6 @@ public class GDK extends OS {
 	public static final int GDK_NONE = 0;
 	public static final int GDK_NOTIFY_INFERIOR = 2;
 	public static final int GDK_Num_Lock = 0xFF7F;
-	public static final int GDK_OVERLAP_RECTANGLE_OUT = 0x1;
 	public static final int GDK_OWNERSHIP_NONE = 0;
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
@@ -1330,159 +1329,12 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param region cast=(GdkRegion *) */
-	public static final native void _gdk_region_destroy(long /*int*/ region);
-	public static final void gdk_region_destroy(long /*int*/ region) {
-		lock.lock();
-		try {
-			_gdk_region_destroy(region);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param region cast=(GdkRegion *) */
-	public static final native boolean _gdk_region_empty(long /*int*/ region);
-	public static final boolean gdk_region_empty(long /*int*/ region) {
-		lock.lock();
-		try {
-			return _gdk_region_empty(region);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param region cast=(GdkRegion *)
-	 * @param rectangle cast=(GdkRectangle *),flags=no_in
-	 */
-	public static final native void _gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle);
-	public static final void gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle) {
-		lock.lock();
-		try {
-			_gdk_region_get_clipbox(region, rectangle);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param source1 cast=(GdkRegion *)
-	 * @param source2 cast=(GdkRegion *)
-	 */
-	public static final native void _gdk_region_intersect(long /*int*/ source1, long /*int*/ source2);
-	public static final void gdk_region_intersect(long /*int*/ source1, long /*int*/ source2) {
-		lock.lock();
-		try {
-			_gdk_region_intersect(source1, source2);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gdk_cairo_region_create_from_surface(long /*int*/ surface);
 	public static final long /*int*/ gdk_cairo_region_create_from_surface(long /*int*/ surface) {
 		lock.lock();
 		try {
 			return _gdk_cairo_region_create_from_surface(surface);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native long /*int*/ _gdk_region_new();
-	public static final long /*int*/ gdk_region_new() {
-		lock.lock();
-		try {
-			return _gdk_region_new();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param region cast=(GdkRegion *)
-	 * @param dx cast=(gint)
-	 * @param dy cast=(gint)
-	 */
-	public static final native void _gdk_region_offset(long /*int*/ region, int dx, int dy);
-	public static final void gdk_region_offset(long /*int*/ region, int dx, int dy) {
-		lock.lock();
-		try {
-			_gdk_region_offset(region, dx, dy);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param region cast=(GdkRegion *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native boolean _gdk_region_point_in(long /*int*/ region, int x, int y);
-	public static final boolean gdk_region_point_in(long /*int*/ region, int x, int y) {
-		lock.lock();
-		try {
-			return _gdk_region_point_in(region, x, y);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param rectangle flags=no_out
-	 */
-	public static final native long /*int*/ _gdk_region_rectangle(GdkRectangle rectangle);
-	public static final long /*int*/ gdk_region_rectangle(GdkRectangle rectangle) {
-		lock.lock();
-		try {
-			return _gdk_region_rectangle(rectangle);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param region cast=(GdkRegion *)
-	 * @param rect cast=(GdkRectangle *),flags=no_out
-	 */
-	public static final native long /*int*/ _gdk_region_rect_in(long /*int*/ region, GdkRectangle rect);
-	public static final long /*int*/ gdk_region_rect_in(long /*int*/ region, GdkRectangle rect) {
-		lock.lock();
-		try {
-			return _gdk_region_rect_in(region, rect);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param source1 cast=(GdkRegion *)
-	 * @param source2 cast=(GdkRegion *)
-	 */
-	public static final native void _gdk_region_subtract(long /*int*/ source1, long /*int*/ source2);
-	public static final void gdk_region_subtract(long /*int*/ source1, long /*int*/ source2) {
-		lock.lock();
-		try {
-			_gdk_region_subtract(source1, source2);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param source1 cast=(GdkRegion *)
-	 * @param source2 cast=(GdkRegion *)
-	 */
-	public static final native void _gdk_region_union(long /*int*/ source1, long /*int*/ source2);
-	public static final void gdk_region_union(long /*int*/ source1, long /*int*/ source2) {
-		lock.lock();
-		try {
-			_gdk_region_union(source1, source2);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param region cast=(GdkRegion *)
-	 * @param rect cast=(GdkRectangle *),flags=no_out
-	 */
-	public static final native void _gdk_region_union_with_rect(long /*int*/ region, GdkRectangle rect);
-	public static final void gdk_region_union_with_rect(long /*int*/ region, GdkRectangle rect) {
-		lock.lock();
-		try {
-			_gdk_region_union_with_rect(region, rect);
 		} finally {
 			lock.unlock();
 		}

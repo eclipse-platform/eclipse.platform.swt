@@ -595,7 +595,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_set_source_rgba(cairo, bg.red, bg.green, bg.blue, bg.alpha);
 		Cairo.cairo_paint(cairo);
-		GDK.gdk_region_destroy(rgn);
+		Cairo.cairo_region_destroy(rgn);
 	}
 	Cairo.cairo_set_source_rgba(cairo, fg.red, fg.green, fg.blue, fg.alpha);
 	Cairo.cairo_move_to(cairo, x, y);
@@ -630,8 +630,8 @@ void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 			if (rgn != 0) {
 				int[] nRects = new int[1];
 				long /*int*/[] rects = new long /*int*/[1];
-				Region.gdk_region_get_rectangles(rgn, rects, nRects);
-				GdkRectangle rect = new GdkRectangle();
+				Region.cairo_region_get_rectangles(rgn, rects, nRects);
+				cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 				GdkRGBA colorRGBA = null;
 				if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handle;
 				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor;
@@ -656,12 +656,12 @@ void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 					Cairo.cairo_set_dash(cairo, null, 0, 0);
 				}
 				for (int j=0; j<nRects[0]; j++) {
-					OS.memmove(rect, rects[0] + (j * GdkRectangle.sizeof), GdkRectangle.sizeof);
+					Cairo.memmove(rect, rects[0] + (j * cairo_rectangle_int_t.sizeof), cairo_rectangle_int_t.sizeof);
 					Cairo.cairo_rectangle(cairo, rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
 				}
 				Cairo.cairo_stroke(cairo);
 				if (rects[0] != 0) OS.g_free(rects[0]);
-				GDK.gdk_region_destroy(rgn);
+				Cairo.cairo_region_destroy(rgn);
 			}
 		}
 	}
@@ -800,7 +800,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	int[] ranges = new int[]{byteStart, byteEnd};
 	long /*int*/ clipRegion = GDK.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
-	GdkRectangle rect = new GdkRectangle();
+	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 
 	/*
 	* Bug in Pango. The region returned by gdk_pango_layout_get_clip_region()
@@ -810,7 +810,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	PangoRectangle pangoRect = new PangoRectangle();
 	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	long /*int*/ linesRegion = GDK.gdk_region_new();
+	long /*int*/ linesRegion = Cairo.cairo_region_create();
 	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int lineEnd = 0;
 	do {
@@ -825,14 +825,14 @@ Rectangle getBoundsInPixels(int start, int end) {
 		rect.y = OS.PANGO_PIXELS(pangoRect.y);
 		rect.width = OS.PANGO_PIXELS(pangoRect.width);
 		rect.height = OS.PANGO_PIXELS(pangoRect.height);
-		GDK.gdk_region_union_with_rect(linesRegion, rect);
+		Cairo.cairo_region_union_rectangle(linesRegion, rect);
 	} while (lineEnd + 1 <= byteEnd);
-	GDK.gdk_region_intersect(clipRegion, linesRegion);
-	GDK.gdk_region_destroy(linesRegion);
+	Cairo.cairo_region_intersect(clipRegion, linesRegion);
+	Cairo.cairo_region_destroy(linesRegion);
 	OS.pango_layout_iter_free(iter);
 
-	GDK.gdk_region_get_clipbox(clipRegion, rect);
-	GDK.gdk_region_destroy(clipRegion);
+	Cairo.cairo_region_get_extents(clipRegion, rect);
+	Cairo.cairo_region_destroy(clipRegion);
 	rect.x += Math.min (indent, wrapIndent);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }

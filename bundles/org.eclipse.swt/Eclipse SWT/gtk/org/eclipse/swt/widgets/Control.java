@@ -539,7 +539,9 @@ void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, 
 		event.window = OS.g_object_ref (window);
 		event.area_width = rect.width;
 		event.area_height = rect.height;
-		event.region = GDK.gdk_region_rectangle (rect);
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
+		cairoRect.convertFromGdkRectangle(rect);
+		event.region = Cairo.cairo_region_create_rectangle (cairoRect);
 		OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
 		GTK.gtk_widget_send_expose (userData [0], eventPtr);
 		GDK.gdk_event_free (eventPtr);
@@ -3423,8 +3425,8 @@ void cairoCopyRegion (Region region) {
 }
 
 void cairoDisposeRegion () {
-	if (regionHandle != 0) GDK.gdk_region_destroy(regionHandle);
-	if (eventRegion != 0) GDK.gdk_region_destroy(eventRegion);
+	if (regionHandle != 0) Cairo.cairo_region_destroy(regionHandle);
+	if (eventRegion != 0) Cairo.cairo_region_destroy(eventRegion);
 	regionHandle = 0;
 	eventRegion = 0;
 }
@@ -3446,8 +3448,10 @@ void cairoClipRegion (long /*int*/ cairo) {
 	 * These gdk_region_* functions actually map to the proper
 	 * cairo_* functions in os.h.
 	 */
-	long /*int*/ actualRegion = GDK.gdk_region_rectangle(rect);
-	GDK.gdk_region_subtract(actualRegion, regionHandle);
+	cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
+	cairoRect.convertFromGdkRectangle(rect);
+	long /*int*/ actualRegion = Cairo.cairo_region_create_rectangle(cairoRect);
+	Cairo.cairo_region_subtract(actualRegion, regionHandle);
 	// Draw the Shell bg using cairo, only if it's a different color
 	Shell shell = getShell();
 	Color shellBg = shell.getBackground();
