@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -874,7 +874,7 @@ public void test_setForegroundDropDownCombo() {
 public void test_setForegroundAlphaDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (dropDown.getDisplay(), 255, 0, 0, 0);
 	dropDown.setForeground(color);
 	assertEquals(color, dropDown.getForeground());
@@ -912,7 +912,7 @@ public void test_setForegroundSimpleCombo() {
 public void test_setForegroundAlphaSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (simple.getDisplay(), 255, 0, 0, 0);
 	simple.setForeground(color);
 	assertEquals(color, simple.getForeground());

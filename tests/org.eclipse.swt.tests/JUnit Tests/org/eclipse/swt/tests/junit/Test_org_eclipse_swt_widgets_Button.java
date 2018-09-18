@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -301,7 +301,7 @@ public void test_setForegroundCheckButton() {
 public void test_setForegroundAlphaCheckButton() {
 	Button checkButton = new Button(shell, SWT.CHECK);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (checkButton.getDisplay(), 255, 0, 0, 0);
 	checkButton.setForeground(color);
 	assertEquals(color, checkButton.getForeground());
@@ -339,7 +339,7 @@ public void test_setForegroundRadioButton() {
 public void test_setForegroundAlphaRadiokButton() {
 	Button radioButton = new Button(shell, SWT.RADIO);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (radioButton.getDisplay(), 255, 0, 0, 0);
 	radioButton.setForeground(color);
 	assertEquals(color, radioButton.getForeground());

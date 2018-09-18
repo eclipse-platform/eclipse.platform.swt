@@ -745,7 +745,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 @Test
 public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());

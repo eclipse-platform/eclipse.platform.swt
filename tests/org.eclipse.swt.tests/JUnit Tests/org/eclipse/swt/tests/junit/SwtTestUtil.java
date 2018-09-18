@@ -112,20 +112,6 @@ protected static boolean isReparentablePlatform() {
 	return false;
 }
 
-/*
- * Checks if the GTK version is 2 or 3.
- * Only works if OS.java has been initialized.
- */
-public static boolean isGTK3 () {
-	String gtkVersion = System.getProperty("org.eclipse.swt.internal.gtk.version");
-	if (gtkVersion != null) {
-		return Integer.parseInt(gtkVersion.substring(0,1)) == 3 ? true : false;
-	} else if (isGTK && gtkVersion == null) {
-		throw new IllegalStateException ("OS.java has not yet been initialized");
-	}
-	return false;
-}
-
 public static boolean isBidi() {
 	return true;
 }

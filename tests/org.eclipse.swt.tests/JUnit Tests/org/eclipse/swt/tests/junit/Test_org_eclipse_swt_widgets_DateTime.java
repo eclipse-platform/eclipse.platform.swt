@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -439,7 +439,7 @@ public void test_setForegroundCalendarDateTime() {
 public void test_setForegroundAlphaCalendarDateTime() {
 	DateTime calendar = new DateTime(shell, SWT.CALENDAR);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (calendar.getDisplay(), 255, 0, 0, 0);
 	calendar.setForeground(color);
 	assertEquals(color, calendar.getForeground());
@@ -477,7 +477,7 @@ public void test_setForegroundTimeDateTime() {
 public void test_setForegroundAlphaTimeDateTime() {
 	DateTime time = new DateTime(shell, SWT.TIME);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (time.getDisplay(), 255, 0, 0, 0);
 	time.setForeground(color);
 	assertEquals(color, time.getForeground());
@@ -515,7 +515,7 @@ public void test_setForegroundDateDateTime() {
 public void test_setForegroundAlphaDateDateTime() {
 	DateTime date = new DateTime(shell, SWT.DATE);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
-			SwtTestUtil.isCocoa || SwtTestUtil.isGTK3());
+			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (date.getDisplay(), 255, 0, 0, 0);
 	date.setForeground(color);
 	assertEquals(color, date.getForeground());
