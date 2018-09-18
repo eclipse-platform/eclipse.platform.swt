@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -826,7 +826,7 @@ public void setBackground (Color color) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getBackground ().equals (color)) return;
-	GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+	GdkRGBA gdkRGBA = color != null ? color.handle : null;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, gdkRGBA, -1);
 	cached = true;
 }
@@ -858,7 +858,7 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+	GdkRGBA gdkRGBA = color != null ? color.handle : null;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, gdkRGBA, -1);
 	cached = true;
 
@@ -1033,7 +1033,7 @@ public void setForeground (Color color){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getForeground ().equals (color)) return;
-	GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+	GdkRGBA gdkRGBA = color != null ? color.handle : null;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkRGBA, -1);
 	cached = true;
 }
@@ -1065,7 +1065,7 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GdkRGBA gdkRGBA = color != null ? color.handleRGBA : null;
+	GdkRGBA gdkRGBA = color != null ? color.handle : null;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, gdkRGBA, -1);
 	cached = true;
 

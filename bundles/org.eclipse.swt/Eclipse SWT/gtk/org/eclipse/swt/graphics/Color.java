@@ -48,7 +48,7 @@ public final class Color extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public GdkRGBA handleRGBA;
+	public GdkRGBA handle;
 	int alpha = 0;
 
 Color(Device device) {
@@ -210,7 +210,7 @@ public Color(Device device, RGB rgb, int alpha) {
 
 @Override
 void destroy() {
-	handleRGBA = null;
+	handle = null;
 }
 
 /**
@@ -228,11 +228,11 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	GdkRGBA gdkRGBA = color.handleRGBA;
-	if (handleRGBA == gdkRGBA) return true;
-	return device == color.device && Double.compare(handleRGBA.red, gdkRGBA.red) == 0 &&
-			Double.compare(handleRGBA.green, gdkRGBA.green) == 0 && Double.compare(handleRGBA.blue, gdkRGBA.blue) == 0 &&
-			Double.compare(handleRGBA.alpha, gdkRGBA.alpha) == 0;
+	GdkRGBA gdkRGBA = color.handle;
+	if (handle == gdkRGBA) return true;
+	return device == color.device && Double.compare(handle.red, gdkRGBA.red) == 0 &&
+			Double.compare(handle.green, gdkRGBA.green) == 0 && Double.compare(handle.blue, gdkRGBA.blue) == 0 &&
+			Double.compare(handle.alpha, gdkRGBA.alpha) == 0;
 }
 
 /**
@@ -261,7 +261,7 @@ public int getAlpha() {
  */
 public int getBlue() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (int) (handleRGBA.blue * 255) & 0xFF;
+	return (int) (handle.blue * 255) & 0xFF;
 }
 
 /**
@@ -275,7 +275,7 @@ public int getBlue() {
  */
 public int getGreen() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (int) (handleRGBA.green * 255) & 0xFF;
+	return (int) (handle.green * 255) & 0xFF;
 }
 
 /**
@@ -289,7 +289,7 @@ public int getGreen() {
  */
 public int getRed() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (int) (handleRGBA.red * 255) & 0xFF;
+	return (int) (handle.red * 255) & 0xFF;
 }
 
 /**
@@ -305,8 +305,8 @@ public int getRed() {
 @Override
 public int hashCode() {
 	if (isDisposed()) return 0;
-	return Double.hashCode(handleRGBA.red) ^ Double.hashCode(handleRGBA.green) ^ Double.hashCode(handleRGBA.blue)
-			^ Double.hashCode(handleRGBA.alpha);
+	return Double.hashCode(handle.red) ^ Double.hashCode(handle.green) ^ Double.hashCode(handle.blue)
+			^ Double.hashCode(handle.alpha);
 }
 
 /**
@@ -355,7 +355,7 @@ public RGBA getRGBA () {
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
 	Color color = new Color(device);
-	color.handleRGBA = gdkRGBA;
+	color.handle = gdkRGBA;
 	color.alpha = (int) (gdkRGBA.alpha * 255);
 	return color;
 }
@@ -378,7 +378,7 @@ public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
  */
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
 	Color color = new Color(device);
-	color.handleRGBA = gdkRGBA;
+	color.handle = gdkRGBA;
 	color.alpha = alpha;
 	return color;
 }
@@ -412,7 +412,7 @@ void init(int red, int green, int blue, int alpha) {
 	rgba.blue = (double) blue / 255;
 	rgba.alpha = (double) alpha / 255;
 	this.alpha = alpha;
-	handleRGBA = rgba;
+	handle = rgba;
 }
 
 /**
@@ -427,7 +427,7 @@ void init(int red, int green, int blue, int alpha) {
  */
 @Override
 public boolean isDisposed() {
-	return handleRGBA == null;
+	return handle == null;
 }
 
 /**

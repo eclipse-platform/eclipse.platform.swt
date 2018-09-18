@@ -274,7 +274,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
-		GdkRGBA bgRGBA = background.handleRGBA;
+		GdkRGBA bgRGBA = background.handle;
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
 		gtk_css_provider_load_from_css (context, css);
@@ -503,7 +503,7 @@ void drawTooltip (long /*int*/ cr) {
 		x += INSET;
 		int [] w = new int [1], h = new int [1];
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handle);
 		Cairo.cairo_move_to(cairo, x,y );
 		OS.pango_cairo_show_layout(cairo, layoutText);
 		OS.pango_layout_get_pixel_size (layoutText, w, h);
@@ -512,7 +512,7 @@ void drawTooltip (long /*int*/ cr) {
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
 		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handleRGBA);
+		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handle);
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layoutMessage);
 	}

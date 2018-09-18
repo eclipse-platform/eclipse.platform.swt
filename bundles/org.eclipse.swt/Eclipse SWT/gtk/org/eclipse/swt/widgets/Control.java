@@ -168,7 +168,7 @@ Font defaultFont () {
 }
 
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
 }
 
 @Override
@@ -3452,7 +3452,7 @@ void cairoClipRegion (long /*int*/ cairo) {
 	Shell shell = getShell();
 	Color shellBg = shell.getBackground();
 	if (shellBg != this.getBackground()) {
-		GdkRGBA rgba = shellBg.handleRGBA;
+		GdkRGBA rgba = shellBg.handle;
 		Cairo.cairo_set_source_rgba (cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 	} else {
 		Cairo.cairo_set_source_rgba (cairo, 0.0, 0.0, 0.0, 0.0);
@@ -4501,7 +4501,7 @@ private void _setBackground (Color color) {
 	boolean set = false;
 	GdkRGBA rgba = null;
 	if (color != null) {
-		rgba = color.handleRGBA;
+		rgba = color.handle;
 		backgroundAlpha = color.getAlpha();
 	}
 	set = true;
@@ -4517,7 +4517,7 @@ private void _setBackground (Color color) {
 }
 
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
     if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
     	// Form background string
         String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
@@ -4940,7 +4940,7 @@ public void setForeground (Color color) {
 		} else {
 			state |= FOREGROUND;
 		}
-		GdkRGBA rgba = color == null ? null : color.handleRGBA;
+		GdkRGBA rgba = color == null ? null : color.handle;
 		setForegroundGdkRGBA (rgba);
 	}
 }

@@ -3782,8 +3782,8 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.device = this;
 		data.drawable = root;
-		data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
-		data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
+		data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 	}
 	return gc;

@@ -1459,8 +1459,8 @@ public long /*int*/ internal_new_GC (GCData data) {
 		}
 		data.device = device;
 		data.drawable = pixmap;
-		data.foregroundRGBA = device.COLOR_BLACK.handleRGBA;
-		data.backgroundRGBA = device.COLOR_WHITE.handleRGBA;
+		data.foregroundRGBA = device.COLOR_BLACK.handle;
+		data.backgroundRGBA = device.COLOR_WHITE.handle;
 		data.font = device.systemFont;
 		data.image = this;
 	}

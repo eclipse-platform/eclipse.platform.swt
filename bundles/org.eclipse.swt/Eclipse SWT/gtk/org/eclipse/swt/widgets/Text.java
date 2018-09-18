@@ -739,7 +739,7 @@ char [] deprocessText (char [] text, int start, int end) {
 
 @Override
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle;
 }
 
 @Override
@@ -2193,8 +2193,8 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	} else {
 		background = rgba;
 	}
-	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
-	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handleRGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
+	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handle;
 	String css;
 	String properties;
 	String name;

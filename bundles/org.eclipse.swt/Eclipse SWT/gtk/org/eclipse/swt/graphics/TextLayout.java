@@ -221,7 +221,7 @@ void computeRuns () {
 					if (style.foreground == null) {
 						// Bug 497071: use COLOR_LINK_FOREGROUND for StyledText links
 						long /*int*/ attr;
-						GdkRGBA linkRGBA = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handleRGBA;
+						GdkRGBA linkRGBA = device.getSystemColor(SWT.COLOR_LINK_FOREGROUND).handle;
 						// Manual conversion since PangoAttrColor is a special case.
 						// It uses GdkColor style colors but is supported on GTK3.
 						attr = OS.pango_attr_foreground_new((short)(linkRGBA.red * 0xFFFF),
@@ -244,7 +244,7 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.underlineColor != null) {
-				GdkRGBA rgba = style.underlineColor.handleRGBA;
+				GdkRGBA rgba = style.underlineColor.handle;
 				attr = OS.pango_attr_underline_color_new((short)(rgba.red * 0xFFFF),
 						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 				if (attr != 0) {
@@ -266,7 +266,7 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 			OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			if (style.strikeoutColor != null) {
-				GdkRGBA rgba = style.strikeoutColor.handleRGBA;
+				GdkRGBA rgba = style.strikeoutColor.handle;
 				attr = OS.pango_attr_strikethrough_color_new((short)(rgba.red * 0xFFFF),
 						(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 				if (attr != 0) {
@@ -282,7 +282,7 @@ void computeRuns () {
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
 			long /*int*/ attr;
-			GdkRGBA rgba = foreground.handleRGBA;
+			GdkRGBA rgba = foreground.handle;
 			attr = OS.pango_attr_foreground_new((short)(rgba.red * 0xFFFF),
 					(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
@@ -294,7 +294,7 @@ void computeRuns () {
 		Color background = style.background;
 		if (background != null && !background.isDisposed()) {
 			long /*int*/ attr;
-			GdkRGBA rgba = background.handleRGBA;
+			GdkRGBA rgba = background.handle;
 			attr = OS.pango_attr_background_new((short)(rgba.red * 0xFFFF),
 					(short)(rgba.green * 0xFFFF), (short)(rgba.blue * 0xFFFF));
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
@@ -478,7 +478,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		long /*int*/ iter = OS.pango_layout_get_iter(layout);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 		Cairo.cairo_save(cairo);
-		GdkRGBA rgba = selectionBackground.handleRGBA;
+		GdkRGBA rgba = selectionBackground.handle;
 		Cairo.cairo_set_source_rgba(cairo, rgba.red, rgba.green, rgba.blue, rgba.alpha);
 		int lineIndex = 0;
 		do {
@@ -591,11 +591,11 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	if (rgn != 0) {
 		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
-		Cairo.cairo_set_source_rgba(cairo, bg.handleRGBA.red, bg.handleRGBA.green, bg.handleRGBA.blue, bg.handleRGBA.alpha);
+		Cairo.cairo_set_source_rgba(cairo, bg.handle.red, bg.handle.green, bg.handle.blue, bg.handle.alpha);
 		Cairo.cairo_paint(cairo);
 		GDK.gdk_region_destroy(rgn);
 	}
-	Cairo.cairo_set_source_rgba(cairo, fg.handleRGBA.red, fg.handleRGBA.green, fg.handleRGBA.blue, fg.handleRGBA.alpha);
+	Cairo.cairo_set_source_rgba(cairo, fg.handle.red, fg.handle.green, fg.handle.blue, fg.handle.alpha);
 	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_layout_set_attributes(layout, selAttrList);
 	OS.pango_cairo_show_layout(cairo, layout);
@@ -633,9 +633,9 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 				Region.gdk_region_get_rectangles(rgn, rects, nRects);
 				GdkRectangle rect = new GdkRectangle();
 				GdkRGBA colorRGBA = null;
-				if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handleRGBA;
-				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handleRGBA;
-				if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handleRGBA;
+				if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handle;
+				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handle;
+				if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handle;
 				if (colorRGBA == null) colorRGBA = data.foregroundRGBA;
 				int width = 1;
 				float[] dashes = null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -403,8 +403,8 @@ public long /*int*/ internal_new_GC(GCData data) {
 		}
 		data.device = this;
 		data.drawable = drawable;
-		data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handleRGBA;
-		data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handleRGBA;
+		data.backgroundRGBA = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foregroundRGBA = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 		Point dpi = getDPI(), screenDPI = getIndependentDPI();
 		data.width = (int)(GTK.gtk_page_setup_get_paper_width (pageSetup, GTK.GTK_UNIT_POINTS) * dpi.x / screenDPI.x);

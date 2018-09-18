@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -285,7 +285,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 @Override
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle;
 }
 
 @Override

@@ -2800,7 +2800,7 @@ public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.backgroundRGBA = color.handleRGBA;
+	data.backgroundRGBA = color.handle;
 	data.backgroundPattern = null;
 	data.state &= ~(BACKGROUND | BACKGROUND_BG);
 }
@@ -2867,7 +2867,7 @@ static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
-	GdkRGBA rgba = c.handleRGBA;
+	GdkRGBA rgba = c.handle;
 	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, rgba.red, rgba.green, rgba.blue, alpha / 255f);
 }
 
@@ -3197,7 +3197,7 @@ public void setForeground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.foregroundRGBA = color.handleRGBA;
+	data.foregroundRGBA = color.handle;
 	data.foregroundPattern = null;
 	data.state &= ~FOREGROUND;
 }

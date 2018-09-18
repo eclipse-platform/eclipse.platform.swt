@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -565,11 +565,11 @@ public void cut () {
 
 @Override
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle;
 }
 
 GdkRGBA defaultButtonBackground () {
-	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).handle;
 }
 
 @Override
@@ -2036,8 +2036,8 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	css += "background: " + color + ";}\n";
 
 	// Set the selected background color
-	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
-	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handleRGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
+	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handle;
 	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
 	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
 	css += name + selection + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n";

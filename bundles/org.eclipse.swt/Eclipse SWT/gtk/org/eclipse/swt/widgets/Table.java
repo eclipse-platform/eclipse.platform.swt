@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -850,7 +850,7 @@ int applyThemeBackground () {
 
 @Override
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle;
 }
 
 @Override
@@ -2940,7 +2940,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					Cairo.cairo_restore (cr);
 				} else {
 					if (wasSelected) {
-						drawForegroundRGBA = gc.getForeground ().handleRGBA;
+						drawForegroundRGBA = gc.getForeground ().handle;
 					}
 				}
 				gc.dispose();
@@ -3247,7 +3247,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	} else {
 		background = rgba;
 	}
-	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handleRGBA;
+	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
@@ -3387,7 +3387,7 @@ public void setHeaderBackground(Color color) {
 	headerBackground = color;
 	GdkRGBA background;
 	if (headerBackground != null) {
-		background = headerBackground.handleRGBA;
+		background = headerBackground.handle;
 	} else {
 		background = defaultBackground();
 	}
@@ -3440,7 +3440,7 @@ public void setHeaderForeground (Color color) {
 	headerForeground = color;
 	GdkRGBA foreground;
 	if (headerForeground != null) {
-		foreground = headerForeground.handleRGBA;
+		foreground = headerForeground.handle;
 	} else {
 		foreground = display.COLOR_LIST_FOREGROUND_RGBA;
 	}

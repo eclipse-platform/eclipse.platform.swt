@@ -3023,7 +3023,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
-						attr.value = getStringPtr ((color.handleRGBA.red * 255) + "," + (color.handleRGBA.green * 255) + "," + (color.handleRGBA.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
+						attr.value = getStringPtr ((color.handle.red * 255) + "," + (color.handle.green * 255) + "," + (color.handle.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 					}
@@ -3031,7 +3031,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
-						attr.value = getStringPtr ((color.handleRGBA.red * 255) + "," + (color.handleRGBA.green * 255) + "," + (color.handleRGBA.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
+						attr.value = getStringPtr ((color.handle.red * 255) + "," + (color.handle.green * 255) + "," + (color.handle.blue * 255)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 					}

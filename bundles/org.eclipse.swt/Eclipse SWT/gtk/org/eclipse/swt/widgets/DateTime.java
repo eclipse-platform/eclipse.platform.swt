@@ -1839,7 +1839,7 @@ void register () {
 
 @Override
 GdkRGBA defaultBackground () {
-	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handleRGBA;
+	return display.getSystemColor(SWT.COLOR_LIST_BACKGROUND).handle;
 }
 
 @Override
