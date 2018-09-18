@@ -485,22 +485,8 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 			x += pt.x + offsetX;
 			y += pt.y + offsetY;
 			long /*int*/ surface = control.backgroundImage.surface;
-			if (surface == 0) {
-				long /*int*/ drawable = control.backgroundImage.pixmap;
-				int [] w = new int [1], h = new int [1];
-				GDK.gdk_pixmap_get_size (drawable, w, h);
-				if (OS.isX11()) {
-					long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-					long /*int*/ xVisual = GDK.gdk_x11_visual_get_xvisual (GDK.gdk_visual_get_system());
-					long /*int*/ xDrawable = GDK.GDK_PIXMAP_XID (drawable);
-					surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
-				} else {
-					surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, w [0], h [0]);
-				}
-				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
-			} else {
-				Cairo.cairo_surface_reference(surface);
-			}
+			if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+			Cairo.cairo_surface_reference(surface);
 			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
 			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
@@ -882,8 +868,7 @@ long /*int*/ gtk_scroll_child (long /*int*/ widget, long /*int*/ scrollType, lon
 long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	long /*int*/ result = super.gtk_style_set (widget, previousStyle);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
-		long /*int*/ window = gtk_widget_get_window (paintHandle ());
-		if (window != 0) GDK.gdk_window_set_back_pixmap (window, 0, false);
+		//TODO: implement this on GTK3 as pixmaps are gone.
 	}
 	return result;
 }

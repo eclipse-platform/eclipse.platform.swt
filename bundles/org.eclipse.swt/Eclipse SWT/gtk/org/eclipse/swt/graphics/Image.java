@@ -88,20 +88,6 @@ public final class Image extends Resource implements Drawable {
 	public int type;
 
 	/**
-	 * The handle to the OS pixmap resource.
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public long /*int*/ pixmap;
-
-	/**
 	 * The handle to the OS mask resource.
 	 * (Warning: This field is platform dependent)
 	 * <p>
@@ -671,7 +657,7 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	String filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom, found);
 	if (found[0]) {
 		initNative (filename);
-		if (this.pixmap == 0 && this.surface == 0) {
+		if (this.surface == 0) {
 			ImageData data = new ImageData(filename);
 			init(data);
 		}
@@ -745,7 +731,7 @@ boolean refreshImageForZoom () {
 				/* Release current native resources */
 				destroy ();
 				initNative(filename);
-				if (this.pixmap == 0 && this.surface == 0) {
+				if (this.surface == 0) {
 					ImageData data = new ImageData(filename);
 					init(data);
 				}
@@ -938,10 +924,9 @@ void destroyMask() {
 @Override
 void destroy() {
 	if (memGC != null) memGC.dispose();
-	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
-	surface = pixmap = mask = 0;
+	surface = mask = 0;
 	memGC = null;
 }
 
@@ -1032,9 +1017,8 @@ public Rectangle getBoundsInPixels() {
 	if (width != -1 && height != -1) {
 		return new Rectangle(0, 0, width, height);
 	}
-	int[] w = new int[1]; int[] h = new int[1];
-	GDK.gdk_pixmap_get_size(pixmap, w, h);
-	return new Rectangle(0, 0, width = w[0], height = h[0]);
+	// There are no pixmaps on GTK3, so this will just return 0
+	return new Rectangle(0, 0, 0, 0);
 }
 
 /**
@@ -1458,7 +1442,6 @@ public long /*int*/ internal_new_GC (GCData data) {
 			}
 		}
 		data.device = device;
-		data.drawable = pixmap;
 		data.foregroundRGBA = device.COLOR_BLACK.handle;
 		data.backgroundRGBA = device.COLOR_WHITE.handle;
 		data.font = device.systemFont;

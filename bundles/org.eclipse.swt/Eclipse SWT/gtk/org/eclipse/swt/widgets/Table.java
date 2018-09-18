@@ -3266,7 +3266,7 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 }
 
 @Override
-void setBackgroundPixmap (Image image) {
+void setBackgroundSurface (Image image) {
 	ownerDraw = true;
 	recreateRenderers ();
 }

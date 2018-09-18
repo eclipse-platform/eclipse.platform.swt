@@ -520,89 +520,11 @@ void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
 }
 
 void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, int depth, long /*int*/ window, int x, int y) {
-	if (GDK.gdk_drawable_get_depth (window) != depth) return;
-	GdkRectangle rect = new GdkRectangle ();
-	int [] width = new int [1], height = new int [1];
-	gdk_window_get_size (window, width, height);
-	rect.width = width [0];
-	rect.height = height [0];
-	GDK.gdk_window_begin_paint_rect (window, rect);
-	long /*int*/ [] real_drawable = new long /*int*/ [1];
-	int [] x_offset = new int [1], y_offset = new int [1];
-	GDK.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
-	long /*int*/ [] userData = new long /*int*/ [1];
-	GDK.gdk_window_get_user_data (window, userData);
-	if (userData [0] != 0) {
-		long /*int*/ eventPtr = GDK.gdk_event_new (GDK.GDK_EXPOSE);
-		GdkEventExpose event = new GdkEventExpose ();
-		event.type = GDK.GDK_EXPOSE;
-		event.window = OS.g_object_ref (window);
-		event.area_width = rect.width;
-		event.area_height = rect.height;
-		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
-		cairoRect.convertFromGdkRectangle(rect);
-		event.region = Cairo.cairo_region_create_rectangle (cairoRect);
-		OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
-		GTK.gtk_widget_send_expose (userData [0], eventPtr);
-		GDK.gdk_event_free (eventPtr);
-	}
-	int destX = x, destY = y, destWidth = width [0], destHeight = height [0];
-	if (!first) {
-		int [] cX = new int [1], cY = new int [1];
-		GDK.gdk_window_get_position (window, cX, cY);
-		long /*int*/ parentWindow = GDK.gdk_window_get_parent (window);
-		int [] pW = new int [1], pH = new int [1];
-		gdk_window_get_size (parentWindow, pW, pH);
-		destX = x - cX [0];
-		destY = y - cY [0];
-		destWidth = Math.min (cX [0] + width [0], pW [0]);
-		destHeight = Math.min (cY [0] + height [0], pH [0]);
-	}
-	GCData gcData = gc.getGCData();
-	long /*int*/ cairo = gcData.cairo;
-	long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-	long /*int*/ xVisual = GDK.gdk_x11_visual_get_xvisual(GDK.gdk_visual_get_system());
-	long /*int*/ xDrawable = GDK.GDK_PIXMAP_XID(real_drawable [0]);
-	long /*int*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width [0], height [0]);
-	if (surface == 0) error(SWT.ERROR_NO_HANDLES);
-	Cairo.cairo_save(cairo);
-	Cairo.cairo_rectangle(cairo, destX , destY, destWidth, destHeight);
-	Cairo.cairo_clip(cairo);
-	Cairo.cairo_translate(cairo, destX, destY);
-	long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(surface);
-	if (pattern == 0) error(SWT.ERROR_NO_HANDLES);
-	Cairo.cairo_pattern_set_filter(pattern, Cairo.CAIRO_FILTER_BEST);
-	Cairo.cairo_set_source(cairo, pattern);
-	if (gcData.alpha != 0xFF) {
-		Cairo.cairo_paint_with_alpha(cairo, gcData.alpha / (float)0xFF);
-	} else {
-		Cairo.cairo_paint(cairo);
-	}
-	Cairo.cairo_restore(cairo);
-	Cairo.cairo_pattern_destroy(pattern);
-	Cairo.cairo_surface_destroy(surface);
-	GDK.gdk_window_end_paint (window);
-	long /*int*/ children = GDK.gdk_window_get_children (window);
-	if (children != 0) {
-		long /*int*/ windows = children;
-		while (windows != 0) {
-			long /*int*/ child = OS.g_list_data (windows);
-			if (GDK.gdk_window_is_visible (child)) {
-				long /*int*/ [] data = new long /*int*/ [1];
-				GDK.gdk_window_get_user_data (child, data);
-				if (data [0] != 0) {
-					Widget widget = display.findWidget (data [0]);
-					if (widget == null || widget == control) {
-						int [] x_pos = new int [1], y_pos = new int [1];
-						GDK.gdk_window_get_position (child, x_pos, y_pos);
-						printWindow (false, control, gc, drawable, depth, child, x + x_pos [0], y + y_pos [0]);
-					}
-				}
-			}
-			windows = OS.g_list_next (windows);
-		}
-		OS.g_list_free (children);
-	}
+	/*
+	 * TODO: this needs to be re-implemented for GTK3 as it uses GdkDrawable which is gone.
+	 * See: https://developer.gnome.org/gtk3/stable/ch26s02.html#id-1.6.3.4.7
+	 */
+	return;
 }
 
 /**
@@ -3722,7 +3644,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		GTK.gtk_im_context_set_client_window (imHandle, window);
 	}
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage);
+		setBackgroundSurface (backgroundImage);
 	}
 	return 0;
 }
@@ -3768,7 +3690,7 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 @Override
 long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage);
+		setBackgroundSurface (backgroundImage);
 	}
 	return 0;
 }
@@ -4624,7 +4546,7 @@ public void setBackgroundImage (Image image) {
 	backgroundAlpha = 255;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage);
+		setBackgroundSurface (backgroundImage);
 		redrawWidget (0, 0, 0, 0, true, false, false);
 	} else {
 		setWidgetBackground ();
@@ -4632,33 +4554,15 @@ public void setBackgroundImage (Image image) {
 	redrawChildren ();
 }
 
-void setBackgroundPixmap (Image image) {
+void setBackgroundSurface (Image image) {
 	long /*int*/ window = gtk_widget_get_window (paintHandle ());
 	if (window != 0) {
-		if (image.pixmap != 0) {
-			GDK.gdk_window_set_back_pixmap (window, image.pixmap, false);
-		} else if (image.surface != 0) {
+		if (image.surface != 0) {
 			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(image.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REPEAT);
 			GDK.gdk_window_set_background_pattern(window, pattern);
 			Cairo.cairo_pattern_destroy(pattern);
-			/*
-			* TODO This code code is commented because it does not work since the pixmap
-			* created with gdk_pixmap_foreign_new() does not have colormap. Another option
-			* would be to create a pixmap on the fly from the surface.
-			*
-			* For now draw background in windowProc().
-			*/
-//			long /*int*/ surface = image.surface;
-//			int type = Cairo.cairo_surface_get_type(surface);
-//			switch (type) {
-//				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
-//					long /*int*/ pixmap = OS.gdk_pixmap_foreign_new(Cairo.cairo_xlib_surface_get_drawable(surface));
-//					OS.gdk_window_set_back_pixmap (window, pixmap, false);
-//					OS.g_object_unref(pixmap);
-//					break;
-//			}
 		}
 	}
 }

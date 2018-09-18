@@ -281,16 +281,6 @@ public class GDK extends OS {
 	public static final native long /*int*/ GDK_EVENT_WINDOW(long /*int*/ event);
 	/** @param display cast=(GdkDisplay *) */
 	public static final native boolean GDK_IS_X11_DISPLAY(long /*int*/ display);
-	/** @param pixmap cast=(GdkPixmap *) */
-	public static final native long /*int*/ _GDK_PIXMAP_XID(long /*int*/ pixmap);
-	public static final long /*int*/ GDK_PIXMAP_XID(long /*int*/ pixmap) {
-		lock.lock();
-		try {
-			return _GDK_PIXMAP_XID(pixmap);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=const */
 	public static final native long /*int*/ _GDK_TYPE_RGBA();
 	public static final long /*int*/ GDK_TYPE_RGBA() {
@@ -757,21 +747,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_drawable_get_depth(drawable);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param width cast=(gint *),flags=no_in critical
-	 * @param height cast=(gint *),flags=no_in critical
-	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_pixmap_get_size(long /*int*/ pixmap, int[] width, int[] height);
-	public static final void gdk_pixmap_get_size(long /*int*/ pixmap, int[] width, int[] height) {
-		lock.lock();
-		try {
-			_gdk_pixmap_get_size (pixmap,width,height);
 		} finally {
 			lock.unlock();
 		}
@@ -1785,19 +1760,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param rectangle cast=(GdkRectangle *),flags=no_out
-	 */
-	public static final native void _gdk_window_begin_paint_rect(long /*int*/ window, GdkRectangle rectangle);
-	public static final void gdk_window_begin_paint_rect(long /*int*/ window, GdkRectangle rectangle) {
-		lock.lock();
-		try {
-			_gdk_window_begin_paint_rect(window, rectangle);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
 	 */
@@ -1816,16 +1778,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_destroy(window);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param window cast=(GdkWindow *) */
-	public static final native void _gdk_window_end_paint(long /*int*/ window);
-	public static final void gdk_window_end_paint(long /*int*/ window) {
-		lock.lock();
-		try {
-			_gdk_window_end_paint(window);
 		} finally {
 			lock.unlock();
 		}
@@ -1869,21 +1821,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_get_frame_extents(window, rect);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param x_offset cast=(gint *)
-	 * @param y_offset cast=(gint *)
-	 */
-	public static final native void _gdk_window_get_internal_paint_info(long /*int*/ window, long /*int*/ [] real_drawable, int[] x_offset, int[] y_offset);
-	public static final void gdk_window_get_internal_paint_info(long /*int*/ window, long /*int*/ [] real_drawable, int[] x_offset, int[] y_offset) {
-		lock.lock();
-		try {
-			_gdk_window_get_internal_paint_info(window, real_drawable, x_offset, y_offset);
 		} finally {
 			lock.unlock();
 		}
@@ -2128,20 +2065,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_set_background_pattern(window, pattern);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param parent_relative cast=(gboolean)
-	 */
-	public static final native void _gdk_window_set_back_pixmap(long /*int*/ window, long /*int*/ pixmap, boolean parent_relative);
-	public static final void gdk_window_set_back_pixmap(long /*int*/ window, long /*int*/ pixmap, boolean parent_relative) {
-		lock.lock();
-		try {
-			_gdk_window_set_back_pixmap(window, pixmap, parent_relative);
 		} finally {
 			lock.unlock();
 		}
