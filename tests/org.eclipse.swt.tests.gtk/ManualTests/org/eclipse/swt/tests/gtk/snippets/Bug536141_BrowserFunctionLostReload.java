@@ -81,7 +81,6 @@ public class Bug536141_BrowserFunctionLostReload {
 
 
 		// BrowserFunction Code
-		@SuppressWarnings("unused")
 		final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 
 		Button create = new Button (shell, SWT.PUSH);
