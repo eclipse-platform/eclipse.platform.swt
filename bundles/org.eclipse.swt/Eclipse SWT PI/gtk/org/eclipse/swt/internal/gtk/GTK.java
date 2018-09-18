@@ -33,8 +33,6 @@ public class GTK extends OS {
 	public static final int GTK_CALENDAR_NO_MONTH_CHANGE = 1 << 2;
 	public static final int GTK_CALENDAR_SHOW_WEEK_NUMBERS = 1 << 3;
 	public static final int GTK_CALENDAR_WEEK_START_MONDAY = 1 << 4;
-	public static final int GTK_CAN_DEFAULT = 0x2000;
-	public static final int GTK_CAN_FOCUS = 0x800;
 	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
 	public static final int GTK_CELL_RENDERER_SELECTED = 1 << 0;
 	public static final int GTK_CELL_RENDERER_FOCUSED = 1 << 4;
@@ -339,15 +337,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _GTK_IS_CONTAINER(obj);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native boolean _GTK_IS_IMAGE_MENU_ITEM(long /*int*/ obj);
-	public static final boolean GTK_IS_IMAGE_MENU_ITEM(long /*int*/ obj) {
-		lock.lock();
-		try {
-			return _GTK_IS_IMAGE_MENU_ITEM(obj);
 		} finally {
 			lock.unlock();
 		}

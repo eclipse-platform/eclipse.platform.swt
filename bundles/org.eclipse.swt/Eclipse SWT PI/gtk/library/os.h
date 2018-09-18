@@ -103,9 +103,7 @@
 #ifdef GDK_WINDOWING_X11
 
 #include <gdk/gdkx.h>
-#if GTK_CHECK_VERSION(3,0,0)
 #include <gtk/gtkx.h>
-#endif
 #else
 
 #define NO_GDK_1IS_1X11_1DISPLAY
@@ -134,8 +132,6 @@
 #define NO__1XSynchronize
 X#define NO__1XWarpPointer
 #define NO__1GDK_1PIXMAP_1XID
-#define NO__1gdk_x11_atom_to_xatom
-#define NO__1gdk_1x11_1atom_1to_1xatom
 #define NO__1gdk_1x11_1display_1get_1xdisplay
 #define NO__1gdk_1x11_1display_1utf8_1to_1compound_1text
 #define NO__1gdk_1x11_1drawable_1get_1xdisplay
@@ -163,10 +159,6 @@ X#define NO__1XWarpPointer
 #endif
 
 /* Disable access to sealed structs in GTK3 */
-#if GTK_CHECK_VERSION(3,0,0)
-
-#define GTK3 1
-
 #define GdkRegion cairo_region_t
 #define gdk_region_point_in cairo_region_contains_point
 #define gdk_region_new cairo_region_create
@@ -186,8 +178,6 @@ X#define NO__1XWarpPointer
 #define NO_GdkImage
 #define NO_GTK_1ENTRY_1IM_1CONTEXT
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
-
-#endif
 
 #include "os_custom.h"
 

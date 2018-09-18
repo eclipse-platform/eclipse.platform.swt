@@ -316,30 +316,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1atom_1name)
 }
 #endif
 
-#ifndef NO__1gdk_1bitmap_1create_1from_1data
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1bitmap_1create_1from_1data)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2, jint arg3)
-{
-	jbyte *lparg1=NULL;
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1bitmap_1create_1from_1data_FUNC);
-		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gdk_bitmap_create_from_data((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_bitmap_create_from_data)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, const gchar *, gint, gint))fp)((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
-		}
-	}
-fail:
-		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1bitmap_1create_1from_1data_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1cairo_1create
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cairo_1create)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -3394,18 +3370,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1GTK_1IS_1CONTAINER)
 	GTK_NATIVE_ENTER(env, that, _1GTK_1IS_1CONTAINER_FUNC);
 	rc = (jboolean)GTK_IS_CONTAINER(arg0);
 	GTK_NATIVE_EXIT(env, that, _1GTK_1IS_1CONTAINER_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1IS_1IMAGE_1MENU_1ITEM
-JNIEXPORT jboolean JNICALL GTK_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
-	rc = (jboolean)GTK_IS_IMAGE_MENU_ITEM(arg0);
-	GTK_NATIVE_EXIT(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
 	return rc;
 }
 #endif

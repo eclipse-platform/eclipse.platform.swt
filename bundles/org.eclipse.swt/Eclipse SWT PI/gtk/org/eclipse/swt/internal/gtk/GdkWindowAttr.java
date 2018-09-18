@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -25,8 +25,6 @@ public class GdkWindowAttr {
 	public int wclass;
 	/** @field cast=(GdkVisual *) */
 	public long /*int*/ visual;
-	/** @field cast=(GdkColormap *),exclude=#ifndef GTK3 */
-	public long /*int*/ colormap;
 	public int window_type;
 	/** @field cast=(GdkCursor *) */
 	public long /*int*/ cursor;

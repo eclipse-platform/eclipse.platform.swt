@@ -442,22 +442,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param data cast=(const gchar *),flags=no_out critical
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 */
-	public static final native long /*int*/ _gdk_bitmap_create_from_data(long /*int*/ window, byte[] data, int width, int height);
-	public static final long /*int*/ gdk_bitmap_create_from_data(long /*int*/ window, byte[] data, int width, int height) {
-		lock.lock();
-		try {
-			return _gdk_bitmap_create_from_data(window, data, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gdk_cairo_create(long /*int*/ drawable);
 	public static final long /*int*/ gdk_cairo_create(long /*int*/ drawable) {

@@ -969,7 +969,7 @@ void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct
 typedef struct GdkWindowAttr_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID title, event_mask, x, y, width, height, wclass, visual, colormap, window_type, cursor, wmclass_name, wmclass_class, override_redirect;
+	jfieldID title, event_mask, x, y, width, height, wclass, visual, window_type, cursor, wmclass_name, wmclass_class, override_redirect;
 } GdkWindowAttr_FID_CACHE;
 
 GdkWindowAttr_FID_CACHE GdkWindowAttrFc;
@@ -986,7 +986,6 @@ void cacheGdkWindowAttrFields(JNIEnv *env, jobject lpObject)
 	GdkWindowAttrFc.height = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "height", "I");
 	GdkWindowAttrFc.wclass = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wclass", "I");
 	GdkWindowAttrFc.visual = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "visual", I_J);
-	GdkWindowAttrFc.colormap = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "colormap", I_J);
 	GdkWindowAttrFc.window_type = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "window_type", "I");
 	GdkWindowAttrFc.cursor = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "cursor", I_J);
 	GdkWindowAttrFc.wmclass_name = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_name", I_J);
@@ -1006,9 +1005,6 @@ GdkWindowAttr *getGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAt
 	lpStruct->height = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.height);
 	lpStruct->wclass = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wclass);
 	lpStruct->visual = (GdkVisual *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.visual);
-#ifndef GTK3
-	lpStruct->colormap = (GdkColormap *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.colormap);
-#endif
 	lpStruct->window_type = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.window_type);
 	lpStruct->cursor = (GdkCursor *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.cursor);
 	lpStruct->wmclass_name = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_name);
@@ -1028,9 +1024,6 @@ void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStru
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.height, (jint)lpStruct->height);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wclass, (jint)lpStruct->wclass);
 	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.visual, (jintLong)lpStruct->visual);
-#ifndef GTK3
-	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.colormap, (jintLong)lpStruct->colormap);
-#endif
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.window_type, (jint)lpStruct->window_type);
 	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.cursor, (jintLong)lpStruct->cursor);
 	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_name, (jintLong)lpStruct->wmclass_name);
