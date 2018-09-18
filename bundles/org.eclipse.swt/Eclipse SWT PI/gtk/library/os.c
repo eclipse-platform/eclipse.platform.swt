@@ -14083,7 +14083,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1dbus_1proxy_1call)
 	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1call_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	g_dbus_proxy_call((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, arg6, (GError **)lparg7);
+	g_dbus_proxy_call((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, (GAsyncReadyCallback)arg6, (GError **)lparg7);
 fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);

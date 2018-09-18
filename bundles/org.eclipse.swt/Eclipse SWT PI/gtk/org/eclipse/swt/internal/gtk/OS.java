@@ -4195,6 +4195,7 @@ public static final long /*int*/ g_dbus_proxy_call_sync (long /*int*/ proxy, byt
  * @param method_name cast=(const gchar *)
  * @param parameters cast=(GVariant *)
  * @param cancellable cast=(GCancellable *)
+ * @param callback cast=(GAsyncReadyCallback)
  * @param error cast=(GError **)
  * @category gdbus
  */
