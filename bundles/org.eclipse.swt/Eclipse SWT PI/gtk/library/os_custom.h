@@ -48,11 +48,6 @@
 
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
-#define g_dbus_proxy_call_LIB LIB_GLIB
-
-// GTK3 only
-#define g_bytes_new_LIB LIB_GLIB
-#define g_bytes_unref_LIB LIB_GLIB
 
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor

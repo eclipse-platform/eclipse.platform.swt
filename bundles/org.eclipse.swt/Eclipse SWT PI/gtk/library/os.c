@@ -14068,15 +14068,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1bytes_1new)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1bytes_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
 	rc = (jintLong)g_bytes_new((gconstpointer)lparg0, (gsize)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_bytes_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(gconstpointer, gsize))fp)((gconstpointer)lparg0, (gsize)arg1);
-		}
-	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1bytes_1new_FUNC);
@@ -14089,15 +14081,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1bytes_1unref)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1bytes_1unref_FUNC);
-/*
 	g_bytes_unref((GBytes *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_bytes_unref)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GBytes *))fp)((GBytes *)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1g_1bytes_1unref_FUNC);
 }
 #endif
@@ -14254,15 +14238,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1dbus_1proxy_1call)
 	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1call_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
-/*
 	g_dbus_proxy_call((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, arg6, (GError **)lparg7);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_dbus_proxy_call)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GDBusProxy *, const gchar *, GVariant *, jint, jint, GCancellable *, jintLong, GError **))fp)((GDBusProxy *)arg0, (const gchar *)lparg1, (GVariant *)arg2, arg3, arg4, (GCancellable *)arg5, arg6, (GError **)lparg7);
-		}
-	}
 fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);

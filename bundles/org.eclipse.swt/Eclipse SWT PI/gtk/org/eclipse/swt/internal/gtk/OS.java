@@ -2139,7 +2139,6 @@ public static final void g_object_unref(long /*int*/ object) {
 
 
 /**
- * @method flags=dynamic
  * @param data cast=(gconstpointer)
  * @param size cast=(gsize)
  */
@@ -2154,7 +2153,6 @@ public static final long /*int*/ g_bytes_new (byte [] data, long /*int*/ size) {
 }
 
 /**
- * @method flags=dynamic
  * @param gBytes cast=(GBytes *)
  */
 public static final native void _g_bytes_unref (long /*int*/ gBytes);
@@ -4195,7 +4193,6 @@ public static final long /*int*/ g_dbus_proxy_call_sync (long /*int*/ proxy, byt
 }
 
 /**
- * @method flags=dynamic
  * @param proxy cast=(GDBusProxy *)
  * @param method_name cast=(const gchar *)
  * @param parameters cast=(GVariant *)

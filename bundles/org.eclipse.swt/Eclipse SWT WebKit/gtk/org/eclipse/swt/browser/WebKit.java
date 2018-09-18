@@ -2847,8 +2847,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	// Webkit2 doesn't have api to set url with data. (2.18). While we wait for them to implement,
 	// this  workaround uses java to query a server and then manually populate webkit with content.
 	// This should be version guarded and replaced with proper functions once webkit2 has implemented api.
-	if (WEBKIT2 && postData != null
-			&& OS.GLIB_VERSION >= OS.VERSION(2, 32, 0)) {  // OS.g_bytes_new (and unref) introduced in glib 2.32
+	if (WEBKIT2 && postData != null) {
 		final String base_url = url;
 
 		// Use Webkit User-Agent
