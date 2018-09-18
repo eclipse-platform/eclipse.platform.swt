@@ -550,7 +550,8 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				Cairo.cairo_scale(cairo, -1,  1);
 				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
-			drawWithCairo(gc, x, y, 0, C.strlen(ptr), fullSelection, selectionForeground, selectionBackground);
+			drawWithCairo(gc, x, y, 0, C.strlen(ptr), fullSelection, selectionForeground.handle,
+					selectionBackground.handle);
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_restore(cairo);
 			}
@@ -566,7 +567,8 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				Cairo.cairo_scale(cairo, -1,  1);
 				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
-			drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground, selectionBackground);
+			drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground.handle,
+					selectionBackground.handle);
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_restore(cairo);
 			}
@@ -577,7 +579,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 
 // Bug 477950: In order to support GTK2 and GTK3 colors simultaneously, this method's parameters
 // were modified to accept SWT Color objects instead of GdkColor structs.
-void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, Color fg, Color bg) {
+void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
 	GCData data = gc.data;
 	long /*int*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
@@ -591,11 +593,11 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	if (rgn != 0) {
 		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
-		Cairo.cairo_set_source_rgba(cairo, bg.handle.red, bg.handle.green, bg.handle.blue, bg.handle.alpha);
+		Cairo.cairo_set_source_rgba(cairo, bg.red, bg.green, bg.blue, bg.alpha);
 		Cairo.cairo_paint(cairo);
 		GDK.gdk_region_destroy(rgn);
 	}
-	Cairo.cairo_set_source_rgba(cairo, fg.handle.red, fg.handle.green, fg.handle.blue, fg.handle.alpha);
+	Cairo.cairo_set_source_rgba(cairo, fg.red, fg.green, fg.blue, fg.alpha);
 	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_layout_set_attributes(layout, selAttrList);
 	OS.pango_cairo_show_layout(cairo, layout);
@@ -604,9 +606,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	Cairo.cairo_restore(cairo);
 }
 
-//Bug 477950: In order to support GTK2 and GTK3 colors simultaneously, this method's parameters
-//were modified to accept SWT Color objects instead of GdkColor structs.
-void drawBorder(GC gc, int x, int y, Color selectionColor) {
+void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 	GCData data = gc.data;
 	long /*int*/ cairo = data.cairo;
 	long /*int*/ ptr = OS.pango_layout_get_text(layout);
@@ -634,7 +634,7 @@ void drawBorder(GC gc, int x, int y, Color selectionColor) {
 				GdkRectangle rect = new GdkRectangle();
 				GdkRGBA colorRGBA = null;
 				if (colorRGBA == null && style.borderColor != null) colorRGBA = style.borderColor.handle;
-				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor.handle;
+				if (colorRGBA == null && selectionColor != null) colorRGBA = selectionColor;
 				if (colorRGBA == null && style.foreground != null) colorRGBA = style.foreground.handle;
 				if (colorRGBA == null) colorRGBA = data.foregroundRGBA;
 				int width = 1;
