@@ -35,7 +35,6 @@ typedef enum {
 	GDK_1EVENT_1TYPE_FUNC,
 	GDK_1EVENT_1WINDOW_FUNC,
 	GDK_1IS_1X11_1DISPLAY_FUNC,
-	GdkDragContext_1sizeof_FUNC,
 	GdkEventAny_1sizeof_FUNC,
 	GdkEventButton_1sizeof_FUNC,
 	GdkEventCrossing_1sizeof_FUNC,

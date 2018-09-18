@@ -60,18 +60,6 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(GDK_1IS_1X11_1DISPLAY)
 }
 #endif
 
-#ifndef NO_GdkDragContext_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkDragContext_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkDragContext_1sizeof_FUNC);
-	rc = (jint)GdkDragContext_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkDragContext_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkEventAny_1sizeof
 JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventAny_1sizeof)
 	(JNIEnv *env, jclass that)

@@ -25,7 +25,6 @@ char * GDK_nativeFunctionNames[] = {
 	"GDK_1EVENT_1TYPE",
 	"GDK_1EVENT_1WINDOW",
 	"GDK_1IS_1X11_1DISPLAY",
-	"GdkDragContext_1sizeof",
 	"GdkEventAny_1sizeof",
 	"GdkEventButton_1sizeof",
 	"GdkEventCrossing_1sizeof",
