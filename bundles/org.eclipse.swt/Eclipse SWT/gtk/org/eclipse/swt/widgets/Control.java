@@ -704,7 +704,7 @@ void checkForeground () {
 	*
 	* This can be removed on GTK3.16+.
 	*/
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0) && GTK.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		setForegroundGdkRGBA (topHandle (), display.COLOR_WIDGET_FOREGROUND_RGBA);
 	}
 }
