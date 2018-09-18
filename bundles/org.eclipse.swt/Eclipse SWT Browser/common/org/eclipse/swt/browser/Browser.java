@@ -107,13 +107,7 @@ public Browser (Composite parent, int style) {
 	String errMsg = " because no underlying browser available.\n";
 	switch (SWT.getPlatform()) {
 	case "gtk":
-		String gtkVersion = System.getProperty("org.eclipse.swt.internal.gtk.version");
-		boolean isGtk2 = Integer.parseInt(gtkVersion.substring(0,1)) == 2 ? true : false;
-		if (isGtk2) {
-			errMsg = errMsg + "   SWT on GTK 2.x detected. It is reccomended to use SWT on GTK 3.x and Webkit2 API.\n";
-		} else { // Gtk3 & above.
-			errMsg = errMsg + "   Please ensure Webkit with its Gtk 3.x bindings installed. Webkit2 API level preferred.\n";
-		}
+		errMsg = errMsg + "   Please ensure Webkit with its Gtk 3.x bindings installed. Webkit2 API level preferred.\n";
 		break;
 	case "cocoa":
 		errMsg = errMsg + " SWT failed to load webkit library.\n";

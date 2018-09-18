@@ -41,19 +41,14 @@
 	static void *var = NULL; \
 	if (!initialized) { \
 		void* handle = 0; \
-		char *gtk3 = getenv("SWT_GTK3"); \
-		if (gtk3 == NULL || strcmp(gtk3, "1") == 0) { \
-			char *webkit2 = getenv("SWT_WEBKIT2"); \
-			if (webkit2 != NULL && strcmp(webkit2, "0") == 0) { \
-				handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
-			} else { \
-				handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2 */ \
-				if (!handle) { \
-					handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk 3.x  as machine doesn't have webkit2gtk */ \
-				} \
-			} \
+		char *webkit2 = getenv("SWT_WEBKIT2"); \
+		if (webkit2 != NULL && strcmp(webkit2, "0") == 0) { \
+			handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
 		} else { \
-			handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk >= 1.4.x lib */ \
+			handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2 */ \
+			if (!handle) { \
+				handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk 3.x  as machine doesn't have webkit2gtk */ \
+			} \
 		} \
 		if (handle) { \
 			var = dlsym(handle, #name); \
