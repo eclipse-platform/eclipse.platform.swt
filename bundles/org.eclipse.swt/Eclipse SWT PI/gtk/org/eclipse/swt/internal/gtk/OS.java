@@ -2841,7 +2841,6 @@ public static final native void memmove(long /*int*/ dest, GTypeInfo src, int si
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GtkTargetEntry src, long /*int*/ size);
-//NOTE: Call only on GTK3 as this uses GdkRGBA.
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -2905,7 +2904,6 @@ public static final native void memmove(GtkBorder dest, long /*int*/ src, long /
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkKeymapKey dest, long /*int*/ src, long /*int*/ size);
-//NOTE: Call only on GTK3 as this uses GdkRGBA.
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

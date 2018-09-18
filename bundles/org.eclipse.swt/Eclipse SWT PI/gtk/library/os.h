@@ -158,7 +158,6 @@ X#define NO__1XWarpPointer
 
 #endif
 
-/* Disable access to sealed structs in GTK3 */
 #define GdkRegion cairo_region_t
 #define gdk_region_point_in cairo_region_contains_point
 #define gdk_region_new cairo_region_create

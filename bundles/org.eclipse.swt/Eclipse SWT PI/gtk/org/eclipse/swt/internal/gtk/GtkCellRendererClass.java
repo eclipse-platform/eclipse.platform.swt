@@ -18,8 +18,6 @@ package org.eclipse.swt.internal.gtk;
 public class GtkCellRendererClass {
 	/** @field cast=(void(*)()) */
 	public long /*int*/ render;
-	/** @field cast=(void(*)()),exclude=#ifndef GTK3 */
-	public long /*int*/ get_size;
-	/** @field cast=(void(*)()),exclude=#ifdef GTK3 */
+	/** @field cast=(void(*)()) */
 	public long /*int*/ get_preferred_width;
 }

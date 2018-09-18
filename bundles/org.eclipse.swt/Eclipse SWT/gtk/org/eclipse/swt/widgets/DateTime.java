@@ -2103,11 +2103,11 @@ long /*int*/ gtk_output (long /*int*/ widget) {
 	}
 	int arrowType = getArrow(widget);
 	switch (arrowType) {
-	case SWT.ARROW_UP: // Gtk2 arrow up. Gtk3 "+" button.
+	case SWT.ARROW_UP: // Gtk3 "+" button.
 		commitData();
 		incrementField(+1);
 		break;
-	case SWT.ARROW_DOWN: // Gtk2 arrow down. Gtk3 "-" button.
+	case SWT.ARROW_DOWN: // Gtk3 "-" button.
 		commitData();
 		incrementField(-1);
 		break;

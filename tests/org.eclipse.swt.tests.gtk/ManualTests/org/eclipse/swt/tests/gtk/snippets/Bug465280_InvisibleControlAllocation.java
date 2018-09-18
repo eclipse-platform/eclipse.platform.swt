@@ -30,10 +30,6 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Bug465280_InvisibleControlAllocation {
 	public static void main(String[] args) {
-        String property = System.getenv("SWT_GTK3");
-        if (property != null) {
-        	System.err.println("GTK"+(property.equals("1")?"3":"2"));
-        }
         Display display = new Display ();
         Shell shell = new Shell(display);
         shell.setLayout(new FillLayout());

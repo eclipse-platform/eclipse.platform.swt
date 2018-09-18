@@ -50,12 +50,10 @@ import org.eclipse.swt.widgets.*;
  * Versioning for webkit is somewhat confusing because it's trying to incorporate webkit, gtk and (various linux distribution) versions.
  * The way they version webkitGTK is different from webkit.
  *   WebkitGTK:
- *    1.4 - 2013                         (v1 is  webkit1/Gtk2)
  *    2.4 is the last webkit1 version.   [2.0-2.4) is Gtk3.
  *    2.5 is webkit2.                    [2.4-..)  is Gtk3.
  *  Further, linux distributions might refer to webkit1/2 bindings linked against gtk2/3 differently.
  *  E.g on Fedora:
- *     webkitgtk2 = webkit1 / Gtk2
  *     webkitgtk3 = Webkit1 / Gtk3
  *     webkitgtk4 = webkit2 / Gtk3
  *
