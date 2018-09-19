@@ -20,7 +20,7 @@
   </parent>
   <groupId>org.eclipse.swt.tools.feature</groupId>
   <artifactId>org.eclipse.swt.tools.feature</artifactId>
-  <version>3.107.100-SNAPSHOT</version>
+  <version>3.107.200-SNAPSHOT</version>
   <packaging>eclipse-feature</packaging>
   <build>
     <plugins>
