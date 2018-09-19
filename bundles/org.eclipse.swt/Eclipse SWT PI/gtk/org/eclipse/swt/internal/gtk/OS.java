@@ -2975,11 +2975,6 @@ public static final native void memmove(GtkCellRendererClass dest, long /*int*/ 
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
- */
-public static final native void memmove(GdkImage dest, long /*int*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkRectangle dest, long /*int*/ src, long /*int*/ size);

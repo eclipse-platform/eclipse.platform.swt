@@ -198,18 +198,6 @@ void setGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct);
 #define GdkGeometry_sizeof() 0
 #endif
 
-#ifndef NO_GdkImage
-void cacheGdkImageFields(JNIEnv *env, jobject lpObject);
-GdkImage *getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct);
-void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct);
-#define GdkImage_sizeof() sizeof(GdkImage)
-#else
-#define cacheGdkImageFields(a,b)
-#define getGdkImageFields(a,b,c) NULL
-#define setGdkImageFields(a,b,c)
-#define GdkImage_sizeof() 0
-#endif
-
 #ifndef NO_GdkKeymapKey
 void cacheGdkKeymapKeyFields(JNIEnv *env, jobject lpObject);
 GdkKeymapKey *getGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey *lpStruct);

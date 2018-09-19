@@ -855,26 +855,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1depth)
 }
 #endif
 
-#ifndef NO__1gdk_1drawable_1get_1image
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1image)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1image_FUNC);
-/*
-	rc = (jintLong)gdk_drawable_get_image(arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drawable_get_image)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, gint, gint, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1image_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1event_1copy
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1event_1copy)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -18008,27 +17988,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC);
-#endif
-	if (arg0) setGdkImageFields(env, arg0, (GdkImage *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC);
 #endif
 }
 #endif

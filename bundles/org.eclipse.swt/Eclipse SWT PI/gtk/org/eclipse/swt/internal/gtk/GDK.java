@@ -751,22 +751,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 */
-	public static final native long /*int*/ _gdk_drawable_get_image(long /*int*/ drawable, int x, int y, int width, int height);
-	public static final long /*int*/ gdk_drawable_get_image(long /*int*/ drawable, int x, int y, int width, int height) {
-		lock.lock();
-		try {
-			return _gdk_drawable_get_image(drawable, x, y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param event cast=(GdkEvent *) */
 	public static final native long /*int*/ _gdk_event_copy(long /*int*/ event);
 	public static final long /*int*/ gdk_event_copy(long /*int*/ event) {

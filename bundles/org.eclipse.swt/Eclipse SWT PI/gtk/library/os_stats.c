@@ -74,7 +74,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1drag_1context_1list_1targets",
 	"_1gdk_1drag_1status",
 	"_1gdk_1drawable_1get_1depth",
-	"_1gdk_1drawable_1get_1image",
 	"_1gdk_1event_1copy",
 	"_1gdk_1event_1free",
 	"_1gdk_1event_1get",
@@ -1642,11 +1641,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II",

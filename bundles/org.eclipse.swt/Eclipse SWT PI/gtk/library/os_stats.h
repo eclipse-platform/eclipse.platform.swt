@@ -84,7 +84,6 @@ typedef enum {
 	_1gdk_1drag_1context_1list_1targets_FUNC,
 	_1gdk_1drag_1status_FUNC,
 	_1gdk_1drawable_1get_1depth_FUNC,
-	_1gdk_1drawable_1get_1image_FUNC,
 	_1gdk_1event_1copy_FUNC,
 	_1gdk_1event_1free_FUNC,
 	_1gdk_1event_1get_FUNC,
@@ -1628,11 +1627,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II_FUNC,

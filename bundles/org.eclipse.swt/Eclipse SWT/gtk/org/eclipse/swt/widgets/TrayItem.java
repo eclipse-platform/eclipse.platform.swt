@@ -290,38 +290,6 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 
 @Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
-	if (image != null && image.mask != 0) {
-		if (GDK.gdk_drawable_get_depth (image.mask) == 1) {
-			GtkAllocation widgetAllocation = new GtkAllocation ();
-			GTK.gtk_widget_get_allocation (widget, widgetAllocation);
-			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width) * 0.5) + 0.5);
-			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height) * 0.5) + 0.5);
-			Rectangle b = image.getBoundsInPixels();
-			long /*int*/ gdkImagePtr = GDK.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
-			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
-			GdkImage gdkImage = new GdkImage();
-			OS.memmove (gdkImage, gdkImagePtr);
-			byte[] maskData = new byte [gdkImage.bpl * gdkImage.height];
-			C.memmove (maskData, gdkImage.mem, maskData.length);
-			OS.g_object_unref (gdkImagePtr);
-			Region region = new Region (display);
-			for (int y = 0; y < b.height; y++) {
-				for (int x = 0; x < b.width; x++) {
-					int index = (y * gdkImage.bpl) + (x >> 3);
-					int theByte = maskData [index] & 0xFF;
-					int mask = 1 << (x & 0x7);
-					if ((theByte & mask) != 0) {
-						Rectangle rect = DPIUtil.autoScaleDown(new Rectangle(xoffset + x, yoffset + y, 1, 1));
-						region.add(rect.x, rect.y, rect.width, rect.height);
-					}
-				}
-			}
-			GTK.gtk_widget_realize (handle);
-			long /*int*/ window = gtk_widget_get_window (handle);
-			GDK.gdk_window_shape_combine_region (window, region.handle, 0, 0);
-			region.dispose ();
-		}
-	}
 	return 0;
 }
 
