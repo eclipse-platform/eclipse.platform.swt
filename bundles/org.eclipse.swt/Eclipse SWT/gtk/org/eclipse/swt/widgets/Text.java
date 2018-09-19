@@ -1840,10 +1840,7 @@ void hookEvents () {
 
 long /*int*/ imContext () {
 	if (imContext != 0) return imContext;
-	if ((style & SWT.SINGLE) != 0) {
-		return GTK.GTK_ENTRY_IM_CONTEXT (handle);
-	}
-	return GTK.GTK_TEXTVIEW_IM_CONTEXT (handle);
+	return 0;
 }
 
 

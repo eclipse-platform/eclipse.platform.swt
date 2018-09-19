@@ -158,10 +158,6 @@ X#define NO__1XWarpPointer
 
 #endif
 
-// TODO: the following are still called in code even on GTK3.
-#define NO_GTK_1ENTRY_1IM_1CONTEXT
-#define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
-
 #include "os_custom.h"
 
 #endif /* INC_os_H */

@@ -819,7 +819,7 @@ void hookEvents(long /*int*/ [] handles) {
 
 long /*int*/ imContext () {
 	if (imContext != 0) return imContext;
-	return entryHandle != 0 ? GTK.GTK_ENTRY_IM_CONTEXT (entryHandle) : 0;
+	return 0;
 }
 
 /**

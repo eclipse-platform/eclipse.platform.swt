@@ -789,7 +789,7 @@ void hookEvents () {
 
 long /*int*/ imContext () {
 	if (imContext != 0) return imContext;
-	return GTK.GTK_ENTRY_IM_CONTEXT (handle);
+	return 0;
 }
 
 @Override
