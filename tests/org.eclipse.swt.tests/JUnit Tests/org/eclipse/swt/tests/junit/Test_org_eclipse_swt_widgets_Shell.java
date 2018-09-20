@@ -32,7 +32,6 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
-import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -674,7 +673,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
  */
 @Test
 public void test_activateEventSend() {
-	if (SwtTestUtil.isGTK && OS.isX11()) {
+	if (SwtTestUtil.isGTK && SwtTestUtil.isX11) {
 		Shell testShell = new Shell(shell, SWT.SHELL_TRIM);
 		testShell.addListener(SWT.Activate, e -> {
 			listenerCalled = true;
