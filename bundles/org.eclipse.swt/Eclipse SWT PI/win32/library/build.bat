@@ -1,12 +1,12 @@
 @rem ***************************************************************************
 @rem Copyright (c) 2000, 2018 IBM Corporation and others.
-m
-m This program and the accompanying materials
+@rem
+@rem This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License 2.0
 @rem which accompanies this distribution, and is available at
-m https://www.eclipse.org/legal/epl-2.0/
-m
-m SPDX-License-Identifier: EPL-2.0
+@rem https://www.eclipse.org/legal/epl-2.0/
+@rem
+@rem SPDX-License-Identifier: EPL-2.0
 @rem
 @rem Contributors:
 @rem      IBM Corporation - initial API and implementation
