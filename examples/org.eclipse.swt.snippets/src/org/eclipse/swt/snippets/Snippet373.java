@@ -61,6 +61,7 @@ public class Snippet373 {
 		return path;
 	};
 
+	@SuppressWarnings("restriction")
 	public static void main(String[] args) {
 		System.setProperty("swt.autoScale", "quarter");
 		Display display = new Display();
