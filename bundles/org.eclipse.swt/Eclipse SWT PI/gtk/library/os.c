@@ -1105,18 +1105,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1get_1default_1root_1window)
 }
 #endif
 
-#ifndef NO__1gdk_1keymap_1get_1default
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1default)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1keymap_1get_1default_FUNC);
-	rc = (jintLong)gdk_keymap_get_default();
-	GDK_NATIVE_EXIT(env, that, _1gdk_1keymap_1get_1default_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1keymap_1get_1entries_1for_1keyval
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1entries_1for_1keyval)
 	(JNIEnv *env, jclass that, jintLong arg0, jlong arg1, jintLongArray arg2, jintArray arg3)
@@ -1132,6 +1120,18 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1keymap_1get_1entries_1for_1keyval_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1keymap_1get_1for_1display
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1for_1display)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1keymap_1get_1for_1display_FUNC);
+	rc = (jintLong)gdk_keymap_get_for_display((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1keymap_1get_1for_1display_FUNC);
 	return rc;
 }
 #endif

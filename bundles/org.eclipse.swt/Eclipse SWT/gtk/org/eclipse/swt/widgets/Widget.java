@@ -1670,7 +1670,8 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 				if (!groupLatinKeysCount.containsKey(keyLayoutGroup)) {
 					keyLayoutGroup = display.getLatinKeyGroup();
 				}
-				if (OS.gdk_keymap_translate_keyboard_state (GDK.gdk_keymap_get_default (), keyEvent.hardware_keycode,
+				long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
+				if (OS.gdk_keymap_translate_keyboard_state (keymap, keyEvent.hardware_keycode,
 						0, keyLayoutGroup, keyval, effective_group, level, consumed_modifiers)) {
 					event.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				}

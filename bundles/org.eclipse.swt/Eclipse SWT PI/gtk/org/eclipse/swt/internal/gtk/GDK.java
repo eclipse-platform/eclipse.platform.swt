@@ -962,11 +962,14 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	public static final native long /*int*/ _gdk_keymap_get_default();
-	public static final long /*int*/ gdk_keymap_get_default() {
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native long /*int*/ _gdk_keymap_get_for_display(long /*int*/ display);
+	public static final long /*int*/ gdk_keymap_get_for_display(long /*int*/ display) {
 		lock.lock();
 		try {
-			return _gdk_keymap_get_default();
+			return _gdk_keymap_get_for_display(display);
 		} finally {
 			lock.unlock();
 		}

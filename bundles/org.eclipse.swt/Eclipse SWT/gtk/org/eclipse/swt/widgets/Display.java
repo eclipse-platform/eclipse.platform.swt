@@ -1124,7 +1124,8 @@ void createDisplay (DeviceData data) {
 	keysChangedCallback = new Callback (this, "keysChangedProc", 2); //$NON-NLS-1$
 	keysChangedProc = keysChangedCallback.getAddress ();
 	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.g_signal_connect (GDK.gdk_keymap_get_default (), OS.keys_changed, keysChangedProc, 0);
+	long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
+	OS.g_signal_connect (keymap, OS.keys_changed, keysChangedProc, 0);
 }
 
 /**
@@ -1136,7 +1137,7 @@ void createDisplay (DeviceData data) {
 private int findLatinKeyGroup () {
 	int result = 0;
 	groupKeysCount = new HashMap<> ();
-	long /*int*/ keymap = GDK.gdk_keymap_get_default ();
+	long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
 
 	// count all key groups for Latin alphabet
 	for (int keyval = GDK.GDK_KEY_a; keyval <= GDK.GDK_KEY_z; keyval++) {
