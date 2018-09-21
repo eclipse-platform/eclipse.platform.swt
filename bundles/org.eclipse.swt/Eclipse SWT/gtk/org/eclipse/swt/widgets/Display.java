@@ -1540,7 +1540,25 @@ public Rectangle getClientArea () {
 
 Rectangle getBoundsInPixels () {
 	checkDevice ();
-	return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
+	long /*int*/ screen = GDK.gdk_screen_get_default ();
+	int monitorCount = GDK.gdk_screen_get_n_monitors (screen);
+	if (monitorCount > 0 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		Rectangle bounds = new Rectangle(0, 0, 0, 0);
+		GdkRectangle dest = new GdkRectangle ();
+		for (int i = 0; i < monitorCount; i++) {
+			GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
+			if (i == 0) {
+				bounds.width = dest.width;
+				bounds.height = dest.height;
+			} else {
+				bounds.width += dest.x;
+				bounds.height += dest.y;
+			}
+		}
+		return bounds;
+	} else {
+		return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
+	}
 }
 
 /**

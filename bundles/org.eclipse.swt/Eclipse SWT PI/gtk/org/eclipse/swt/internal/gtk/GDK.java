@@ -1552,6 +1552,9 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native int _gdk_screen_height();
 	public static final int gdk_screen_height() {
 		lock.lock();
@@ -1561,6 +1564,9 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native int _gdk_screen_width();
 	public static final int gdk_screen_width() {
 		lock.lock();

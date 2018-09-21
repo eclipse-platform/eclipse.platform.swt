@@ -1818,7 +1818,15 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1height)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1height_FUNC);
+/*
 	rc = (jint)gdk_screen_height();
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_screen_height)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1height_FUNC);
 	return rc;
 }
@@ -1830,7 +1838,15 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1width)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1width_FUNC);
+/*
 	rc = (jint)gdk_screen_width();
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_screen_width)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1width_FUNC);
 	return rc;
 }

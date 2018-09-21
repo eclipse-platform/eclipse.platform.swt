@@ -2102,24 +2102,27 @@ public void setImeInputMode (int mode) {
 
 @Override
 void setInitialBounds () {
-	int width, height;
+	int width = 0, height = 0;
 	if ((state & FOREIGN_HANDLE) != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
 		GTK.gtk_widget_get_allocation (shellHandle, allocation);
 		width = allocation.width;
 		height = allocation.height;
 	} else {
-		width = GDK.gdk_screen_width () * 5 / 8;
-		height = GDK.gdk_screen_height () * 5 / 8;
 		long /*int*/ screen = GDK.gdk_screen_get_default ();
 		if (screen != 0) {
-			if (GDK.gdk_screen_get_n_monitors (screen) > 1) {
+			if (GDK.gdk_screen_get_n_monitors (screen) > 1 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 				int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
 				GdkRectangle dest = new GdkRectangle ();
 				GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 				width = dest.width * 5 / 8;
 				height = dest.height * 5 / 8;
 			}
+		}
+		if (width == 0 && height == 0) {
+			// screen was 0 or we are on GTK3.20-, use gdk_screen_width/height
+			width = GDK.gdk_screen_width () * 5 / 8;
+			height = GDK.gdk_screen_height () * 5 / 8;
 		}
 		if ((style & SWT.RESIZE) != 0) {
 			GTK.gtk_window_resize (shellHandle, width, height);
