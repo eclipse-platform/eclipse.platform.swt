@@ -14,5 +14,5 @@
 
 maj_ver=4
 min_ver=922
-rev=8
-comma_ver=4,922,8,0
+rev=9
+comma_ver=4,922,9,0
