@@ -2493,7 +2493,9 @@ public boolean getHighContrast () {
 @Override
 public int getDepth () {
 	checkDevice ();
-	return GDK.gdk_visual_get_depth(GDK.gdk_visual_get_system());
+	long /*int*/ screen = GDK.gdk_screen_get_default();
+	long /*int*/ visual = GDK.gdk_screen_get_system_visual(screen);
+	return GDK.gdk_visual_get_depth(visual);
 }
 
 /**

@@ -1800,6 +1800,18 @@ JNIEXPORT jdouble JNICALL GDK_NATIVE(_1gdk_1screen_1get_1resolution)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1system_1visual
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1system_1visual)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
+	rc = (jintLong)gdk_screen_get_system_visual((GdkScreen *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1height
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1height)
 	(JNIEnv *env, jclass that)
@@ -2000,18 +2012,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1visual_1get_1depth)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1visual_1get_1depth_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1visual_1get_1system
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1visual_1get_1system)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1visual_1get_1system_FUNC);
-	rc = (jintLong)gdk_visual_get_system();
-	GDK_NATIVE_EXIT(env, that, _1gdk_1visual_1get_1system_FUNC);
 	return rc;
 }
 #endif

@@ -1537,6 +1537,18 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param screen cast=(GdkScreen *)
+	 */
+	public static final native long /*int*/ _gdk_screen_get_system_visual(long /*int*/ screen);
+	public static final long /*int*/ gdk_screen_get_system_visual(long /*int*/ screen) {
+		lock.lock();
+		try {
+			return _gdk_screen_get_system_visual(screen);
+		} finally {
+			lock.unlock();
+		}
+	}
 	public static final native int _gdk_screen_height();
 	public static final int gdk_screen_height() {
 		lock.lock();
@@ -1730,15 +1742,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_visual_get_depth(visual);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native long /*int*/ _gdk_visual_get_system();
-	public static final long /*int*/ gdk_visual_get_system() {
-		lock.lock();
-		try {
-			return _gdk_visual_get_system();
 		} finally {
 			lock.unlock();
 		}
