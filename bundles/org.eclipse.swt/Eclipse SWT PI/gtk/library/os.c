@@ -705,6 +705,66 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1monitor)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1get_1monitor_1at_1point
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1monitor_1at_1point)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1monitor_1at_1point_FUNC);
+/*
+	rc = (jintLong)gdk_display_get_monitor_at_point(arg0, arg1, arg2);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitor_at_point)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1monitor_1at_1point_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1get_1monitor_1at_1window
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1monitor_1at_1window)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1monitor_1at_1window_FUNC);
+/*
+	rc = (jintLong)gdk_display_get_monitor_at_window((GdkDisplay *)arg0, (GdkWindow *)arg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitor_at_window)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDisplay *, GdkWindow *))fp)((GdkDisplay *)arg0, (GdkWindow *)arg1);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1monitor_1at_1window_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1get_1n_1monitors
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1display_1get_1n_1monitors)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1n_1monitors_FUNC);
+/*
+	rc = (jint)gdk_display_get_n_monitors(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_n_monitors)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1n_1monitors_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1get_1primary_1monitor
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1primary_1monitor)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1222,6 +1282,28 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1width_1mm)
 }
 #endif
 
+#ifndef NO__1gdk_1monitor_1get_1workarea
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1workarea)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1monitor_1get_1workarea_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	gdk_monitor_get_workarea(arg0, lparg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_monitor_get_workarea)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1monitor_1get_1workarea_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1pango_1context_1get
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1pango_1context_1get)
 	(JNIEnv *env, jclass that)
@@ -1694,26 +1776,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1get_1monitor_1scale_1factor)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1scale_1factor_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1screen_1get_1monitor_1width_1mm
-JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1get_1monitor_1width_1mm)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1width_1mm_FUNC);
-/*
-	rc = (jint)gdk_screen_get_monitor_width_mm((GdkScreen *)arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_width_mm)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, jint))fp)((GdkScreen *)arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1width_1mm_FUNC);
 	return rc;
 }
 #endif

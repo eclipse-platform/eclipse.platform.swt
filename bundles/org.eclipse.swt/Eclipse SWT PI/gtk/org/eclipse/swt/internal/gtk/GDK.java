@@ -1452,6 +1452,44 @@ public class GDK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
+	public static final native long /*int*/ _gdk_display_get_monitor_at_point(long /*int*/ display, int x, int y);
+	public static final long /*int*/ gdk_display_get_monitor_at_point(long /*int*/ display, int x, int y) {
+		lock.lock();
+		try {
+			return _gdk_display_get_monitor_at_point(display, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 * @param window cast=(GdkWindow *)
+	 */
+	public static final native long /*int*/ _gdk_display_get_monitor_at_window(long /*int*/ display, long /*int*/ window);
+	public static final long /*int*/ gdk_display_get_monitor_at_window(long /*int*/ display, long /*int*/ window) {
+		lock.lock();
+		try {
+			return _gdk_display_get_monitor_at_window(display, window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native int _gdk_display_get_n_monitors(long /*int*/ display);
+	public static final int gdk_display_get_n_monitors(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_n_monitors(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native int _gdk_monitor_get_width_mm(long /*int*/ monitor);
 	public static final int gdk_monitor_get_width_mm(long /*int*/ monitor) {
 		lock.lock();
@@ -1496,6 +1534,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_monitor_get_geometry(monitor, dest);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param dest flags=no_in
+	 */
+	public static final native void _gdk_monitor_get_workarea (long /*int*/ monitor, GdkRectangle dest);
+	public static final void gdk_monitor_get_workarea (long /*int*/ monitor, GdkRectangle dest) {
+		lock.lock();
+		try {
+			_gdk_monitor_get_workarea(monitor, dest);
 		} finally {
 			lock.unlock();
 		}
@@ -1572,19 +1623,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_screen_width();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 */
-	public static final native int _gdk_screen_get_monitor_width_mm(long /*int*/ screen, int monitor_num);
-	public static final int gdk_screen_get_monitor_width_mm(long /*int*/ screen, int monitor_num) {
-		lock.lock();
-		try {
-			return _gdk_screen_get_monitor_width_mm(screen, monitor_num);
 		} finally {
 			lock.unlock();
 		}

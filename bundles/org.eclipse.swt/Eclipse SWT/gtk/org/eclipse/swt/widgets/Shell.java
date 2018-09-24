@@ -2109,18 +2109,28 @@ void setInitialBounds () {
 		width = allocation.width;
 		height = allocation.height;
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
-		if (screen != 0) {
-			if (GDK.gdk_screen_get_n_monitors (screen) > 1 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-				int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-				GdkRectangle dest = new GdkRectangle ();
-				GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+		GdkRectangle dest = new GdkRectangle ();
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			long /*int*/ display = GDK.gdk_display_get_default();
+			if (display != 0) {
+				long /*int*/ monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
+				GDK.gdk_monitor_get_geometry(monitor, dest);
 				width = dest.width * 5 / 8;
 				height = dest.height * 5 / 8;
 			}
+		} else {
+			long /*int*/ screen = GDK.gdk_screen_get_default ();
+			if (screen != 0) {
+				if (GDK.gdk_screen_get_n_monitors (screen) > 1) {
+					int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
+					GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+					width = dest.width * 5 / 8;
+					height = dest.height * 5 / 8;
+				}
+			}
 		}
 		if (width == 0 && height == 0) {
-			// screen was 0 or we are on GTK3.20-, use gdk_screen_width/height
+			// if the above failed, use gdk_screen_height/width as a fallback
 			width = GDK.gdk_screen_width () * 5 / 8;
 			height = GDK.gdk_screen_height () * 5 / 8;
 		}
@@ -2564,21 +2574,27 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 	int [] x = new int [1], y = new int [1];
 	gdk_window_get_device_position (0, x, y, null);
 	y [0] += offset;
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	if (screen != 0) {
-		int monitorNumber = GDK.gdk_screen_get_monitor_at_point (screen, x[0], y[0]);
-		GdkRectangle dest = new GdkRectangle ();
-		GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-		GtkAllocation allocation = new GtkAllocation ();
-		GTK.gtk_widget_get_allocation (handle, allocation);
-		int width = allocation.width;
-		int height = allocation.height;
-		if (x[0] + width > dest.x + dest.width) {
-			x [0] = (dest.x + dest.width) - width;
+	GdkRectangle dest = new GdkRectangle ();
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, x[0], y[0]);
+		GDK.gdk_monitor_get_geometry(monitor, dest);
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		if (screen != 0) {
+			int monitorNumber = GDK.gdk_screen_get_monitor_at_point (screen, x[0], y[0]);
+			GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 		}
-		if (y[0] + height > dest.y + dest.height) {
-			y[0] = (dest.y + dest.height) - height;
-		}
+	}
+	GtkAllocation allocation = new GtkAllocation ();
+	GTK.gtk_widget_get_allocation (handle, allocation);
+	int width = allocation.width;
+	int height = allocation.height;
+	if (x[0] + width > dest.x + dest.width) {
+		x [0] = (dest.x + dest.width) - width;
+	}
+	if (y[0] + height > dest.y + dest.height) {
+		y[0] = (dest.y + dest.height) - height;
 	}
 	GTK.gtk_window_move (handle, x [0], y [0]);
 	return 0;

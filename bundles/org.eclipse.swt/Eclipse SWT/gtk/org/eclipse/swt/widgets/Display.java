@@ -1540,25 +1540,44 @@ public Rectangle getClientArea () {
 
 Rectangle getBoundsInPixels () {
 	checkDevice ();
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	int monitorCount = GDK.gdk_screen_get_n_monitors (screen);
-	if (monitorCount > 0 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		Rectangle bounds = new Rectangle(0, 0, 0, 0);
-		GdkRectangle dest = new GdkRectangle ();
-		for (int i = 0; i < monitorCount; i++) {
-			GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
-			if (i == 0) {
-				bounds.width = dest.width;
-				bounds.height = dest.height;
-			} else {
-				bounds.width += dest.x;
-				bounds.height += dest.y;
+	int monitorCount;
+	Rectangle bounds = new Rectangle(0, 0, 0, 0);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default ();
+		monitorCount = GDK.gdk_display_get_n_monitors (display);
+		if (monitorCount > 0) {
+			GdkRectangle dest = new GdkRectangle ();
+			for (int i = 0; i < monitorCount; i++) {
+				GDK.gdk_monitor_get_geometry (i, dest);
+				if (i == 0) {
+					bounds.width = dest.width;
+					bounds.height = dest.height;
+				} else {
+					bounds.width += dest.x;
+					bounds.height += dest.y;
+				}
 			}
+			return bounds;
 		}
-		return bounds;
 	} else {
-		return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
+		long /*int*/ screen = GDK.gdk_screen_get_default();
+		monitorCount = GDK.gdk_screen_get_n_monitors(screen);
+		if (monitorCount > 0) {
+			GdkRectangle dest = new GdkRectangle ();
+			for (int i = 0; i < monitorCount; i++) {
+				GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
+				if (i == 0) {
+					bounds.width = dest.width;
+					bounds.height = dest.height;
+				} else {
+					bounds.width += dest.x;
+					bounds.height += dest.y;
+				}
+			}
+			return bounds;
+		}
 	}
+	return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
 }
 
 /**
@@ -2612,39 +2631,71 @@ public Monitor [] getMonitors () {
 	checkDevice ();
 	Monitor [] monitors = null;
 	Rectangle workArea = DPIUtil.autoScaleDown (getWorkArea ());
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	if (screen != 0) {
-		int monitorCount = GDK.gdk_screen_get_n_monitors (screen);
-		if (monitorCount > 0) {
-			monitors = new Monitor [monitorCount];
-			GdkRectangle dest = new GdkRectangle ();
-			for (int i = 0; i < monitorCount; i++) {
-				GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
-				Monitor monitor = new Monitor ();
-				monitor.handle = i;
-				monitor.x = DPIUtil.autoScaleDown (dest.x);
-				monitor.y = DPIUtil.autoScaleDown (dest.y);
-				monitor.width = DPIUtil.autoScaleDown (dest.width);
-				monitor.height = DPIUtil.autoScaleDown (dest.height);
-				if (GTK.GTK_VERSION >= OS.VERSION (3, 22, 0) && !OS.isX11()) {
-					int scale_factor = (int) GDK.gdk_monitor_get_scale_factor (
-							GDK.gdk_display_get_monitor (GDK.gdk_display_get_default (),  (int) monitor.handle));
-					monitor.zoom = scale_factor * 100;
-				} else {
-					monitor.zoom = Display._getDeviceZoom(monitor.handle);
-				}
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default ();
+		if (display != 0) {
+			int monitorCount = GDK.gdk_display_get_n_monitors (display);
+			if (monitorCount > 0) {
+				monitors = new Monitor [monitorCount];
+				GdkRectangle dest = new GdkRectangle ();
+				for (int i = 0; i < monitorCount; i++) {
+					long /*int*/ gdkMonitor = GDK.gdk_display_get_monitor(display, i);
+					GDK.gdk_monitor_get_geometry (gdkMonitor, dest);
+					Monitor monitor = new Monitor ();
+					monitor.handle = i;
+					monitor.x = DPIUtil.autoScaleDown (dest.x);
+					monitor.y = DPIUtil.autoScaleDown (dest.y);
+					monitor.width = DPIUtil.autoScaleDown (dest.width);
+					monitor.height = DPIUtil.autoScaleDown (dest.height);
+					if (!OS.isX11()) {
+						int scale_factor = (int) GDK.gdk_monitor_get_scale_factor (
+								GDK.gdk_display_get_monitor (GDK.gdk_display_get_default (),  (int) monitor.handle));
+						monitor.zoom = scale_factor * 100;
+					} else {
+						monitor.zoom = Display._getDeviceZoom(monitor.handle);
+					}
 
-				// workarea was defined in GTK 3.4. If present, it will return the best results
-				// since it takes into account per-monitor trim
-				GDK.gdk_screen_get_monitor_workarea (screen, i, dest);
-				monitor.clientX = DPIUtil.autoScaleDown (dest.x);
-				monitor.clientY = DPIUtil.autoScaleDown (dest.y);
-				monitor.clientWidth = DPIUtil.autoScaleDown (dest.width);
-				monitor.clientHeight = DPIUtil.autoScaleDown (dest.height);
-				monitors [i] = monitor;
+					// workarea was defined in GTK 3.4. If present, it will return the best results
+					// since it takes into account per-monitor trim
+					GDK.gdk_monitor_get_workarea (gdkMonitor, dest);
+					monitor.clientX = DPIUtil.autoScaleDown (dest.x);
+					monitor.clientY = DPIUtil.autoScaleDown (dest.y);
+					monitor.clientWidth = DPIUtil.autoScaleDown (dest.width);
+					monitor.clientHeight = DPIUtil.autoScaleDown (dest.height);
+					monitors [i] = monitor;
+				}
+			}
+		}
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		if (screen != 0) {
+			int monitorCount = GDK.gdk_screen_get_n_monitors (screen);
+			if (monitorCount > 0) {
+				monitors = new Monitor [monitorCount];
+				GdkRectangle dest = new GdkRectangle ();
+				for (int i = 0; i < monitorCount; i++) {
+					GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
+					Monitor monitor = new Monitor ();
+					monitor.handle = i;
+					monitor.x = DPIUtil.autoScaleDown (dest.x);
+					monitor.y = DPIUtil.autoScaleDown (dest.y);
+					monitor.width = DPIUtil.autoScaleDown (dest.width);
+					monitor.height = DPIUtil.autoScaleDown (dest.height);
+					monitor.zoom = Display._getDeviceZoom(monitor.handle);
+
+					// workarea was defined in GTK 3.4. If present, it will return the best results
+					// since it takes into account per-monitor trim
+					GDK.gdk_screen_get_monitor_workarea (screen, i, dest);
+					monitor.clientX = DPIUtil.autoScaleDown (dest.x);
+					monitor.clientY = DPIUtil.autoScaleDown (dest.y);
+					monitor.clientWidth = DPIUtil.autoScaleDown (dest.width);
+					monitor.clientHeight = DPIUtil.autoScaleDown (dest.height);
+					monitors [i] = monitor;
+				}
 			}
 		}
 	}
+
 	if (monitors == null) {
 		/* No multimonitor support detected, default to one monitor */
 		Monitor monitor = new Monitor ();
@@ -2685,10 +2736,22 @@ public Monitor getPrimaryMonitor () {
 	int primaryMonitorIndex = 0;
 
 	//attempt to find actual primary monitor if one is configured:
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	if (screen != 0) {
-		//if no primary monitor is configured by the user, this returns 0.
-		primaryMonitorIndex = GDK.gdk_screen_get_primary_monitor (screen);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ monitor = GDK.gdk_display_get_primary_monitor(display);
+		long /*int*/ toCompare;
+		for (int i = 0; i < monitors.length; i++) {
+			toCompare = GDK.gdk_display_get_monitor(display, i);
+			if (toCompare == monitor) {
+				return monitors[i];
+			}
+		}
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		if (screen != 0) {
+			//if no primary monitor is configured by the user, this returns 0.
+			primaryMonitorIndex = GDK.gdk_screen_get_primary_monitor (screen);
+		}
 	}
 	return monitors [primaryMonitorIndex];
 }
@@ -5821,7 +5884,12 @@ static int _getDeviceZoom (long /*int*/ monitor_num) {
 	long /*int*/ screen = GDK.gdk_screen_get_default ();
 	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
 	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
-	if (GTK.GTK_VERSION > OS.VERSION (3, 9, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+		dpi = dpi * scale;
+	} else if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
 		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, (int) monitor_num);
 		dpi = dpi * scale;
 	}

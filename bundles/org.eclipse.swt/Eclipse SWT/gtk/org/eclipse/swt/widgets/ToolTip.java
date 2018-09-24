@@ -139,7 +139,6 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
 	GTK.gtk_widget_realize (handle);
 	/*
 	 * Feature in GTK: using gdk_screen_get_monitor_at_window() does not accurately get the correct monitor on the machine.
@@ -147,10 +146,20 @@ void configure () {
 	 * the coordinates for where the tooltip should appear on the host.
 	 */
 	Point point = getLocation();
-	boolean multipleMonitors = (GDK.gdk_screen_get_n_monitors(screen) > 1) ? true : false;
-	int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+	boolean multipleMonitors;
+	int monitorNumber;
 	GdkRectangle dest = new GdkRectangle ();
-	GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		multipleMonitors = GDK.gdk_display_get_n_monitors(display) > 1;
+		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, point.x, point.y);
+		GDK.gdk_monitor_get_geometry (monitor, dest);
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		multipleMonitors = GDK.gdk_screen_get_n_monitors(screen) > 1;
+		monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+		GDK.gdk_screen_get_monitor_geometry(screen, monitorNumber, dest);
+	}
 	point = getSize (dest.width / 4);
 	int w = point.x;
 	int h = point.y;
@@ -533,11 +542,17 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	Point point = getLocation ();
 	int x = point.x;
 	int y = point.y;
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
 	GTK.gtk_widget_realize (widget);
-	int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 	GdkRectangle dest = new GdkRectangle ();
-	GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, x, y);
+		GDK.gdk_monitor_get_geometry(monitor, dest);
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+		GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	}
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
 	int w = widgetAllocation.width;

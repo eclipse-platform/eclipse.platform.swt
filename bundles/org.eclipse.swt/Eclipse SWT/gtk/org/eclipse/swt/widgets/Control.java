@@ -2953,13 +2953,26 @@ public Menu getMenu () {
  */
 public Monitor getMonitor () {
 	checkWidget ();
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	if (screen != 0) {
-		int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-		Monitor[] monitors = display.getMonitors ();
-
-		if (monitorNumber >= 0 && monitorNumber < monitors.length) {
-			return monitors [monitorNumber];
+	Monitor[] monitors = display.getMonitors ();
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ display = GDK.gdk_display_get_default ();
+		if (display != 0) {
+			long /*int*/ monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow ());
+			long /*int*/ toCompare;
+			for (int i = 0; i < monitors.length; i++) {
+				toCompare = GDK.gdk_display_get_monitor(display, i);
+				if (toCompare == monitor) {
+					return monitors[i];
+				}
+			}
+		}
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		if (screen != 0) {
+			int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
+			if (monitorNumber >= 0 && monitorNumber < monitors.length) {
+				return monitors [monitorNumber];
+			}
 		}
 	}
 	return display.getPrimaryMonitor ();
