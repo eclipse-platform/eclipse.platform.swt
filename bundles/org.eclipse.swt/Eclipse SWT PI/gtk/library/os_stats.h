@@ -310,6 +310,7 @@ typedef enum {
 	_1gtk_1cell_1renderer_1set_1fixed_1size_FUNC,
 	_1gtk_1cell_1renderer_1text_1new_FUNC,
 	_1gtk_1cell_1renderer_1toggle_1new_FUNC,
+	_1gtk_1cell_1view_1set_1fit_1model_FUNC,
 	_1gtk_1check_1button_1new_FUNC,
 	_1gtk_1check_1menu_1item_1get_1active_FUNC,
 	_1gtk_1check_1menu_1item_1new_FUNC,

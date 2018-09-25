@@ -3850,6 +3850,16 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1cell_1renderer_1toggle_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1view_1set_1fit_1model
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1cell_1view_1set_1fit_1model)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1cell_1view_1set_1fit_1model_FUNC);
+	gtk_cell_view_set_fit_model((GtkCellView *)arg0, (gboolean)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1cell_1view_1set_1fit_1model_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1check_1button_1new
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1check_1button_1new)
 	(JNIEnv *env, jclass that)

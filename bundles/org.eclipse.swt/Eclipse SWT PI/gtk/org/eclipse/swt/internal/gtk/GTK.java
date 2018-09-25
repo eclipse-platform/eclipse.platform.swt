@@ -1082,6 +1082,19 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param cell_view cast=(GtkCellView *)
+	 * @param fit_model cast=(gboolean)
+	 */
+	public static final native void _gtk_cell_view_set_fit_model(long /*int*/ cell_view, boolean fit_model);
+	public static final void gtk_cell_view_set_fit_model(long /*int*/ cell_view, boolean fit_model) {
+		lock.lock();
+		try {
+			_gtk_cell_view_set_fit_model(cell_view, fit_model);
+		} finally {
+			lock.unlock();
+		}
+	}
 	public static final native long /*int*/ _gtk_check_button_new();
 	public static final long /*int*/ gtk_check_button_new() {
 		lock.lock();

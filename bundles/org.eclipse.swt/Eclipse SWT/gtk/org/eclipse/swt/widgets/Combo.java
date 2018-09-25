@@ -61,7 +61,8 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
-	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle, buttonBoxHandle, cellBoxHandle;
+	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle,
+		buttonBoxHandle, cellBoxHandle, arrowHandle;
 	int lastEventTime, visibleCount = 10;
 	long /*int*/ imContext;
 	long /*int*/ gdkEventKey = 0;
@@ -72,6 +73,7 @@ public class Combo extends Composite {
 	String cssButtonBackground, cssButtonForeground = " ";
 	long /*int*/ buttonProvider;
 	boolean firstDraw = true;
+	boolean unselected = true, fitModelToggled = false;
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -539,6 +541,13 @@ void createHandle (int index) {
 	if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
 		GTK.gtk_widget_set_receives_default (buttonHandle, false);
 	}
+	/*
+	 * Find the arrowHandle, which is the handle belonging to the GtkIcon
+	 * drop down arrow. See bug 539367.
+	 */
+	if ((style & SWT.READ_ONLY) != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		if (cellBoxHandle != 0) arrowHandle = findArrowHandle();
+	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
@@ -685,6 +694,31 @@ long /*int*/ findButtonHandle() {
 		}
 		OS.g_list_free (display.allChildren);
 		display.allChildren = 0;
+	}
+	return result;
+}
+
+long /*int*/ findArrowHandle() {
+	long /*int*/ result = 0;
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && cellBoxHandle != 0) {
+		GTK.gtk_container_forall (cellBoxHandle, display.allChildrenProc, 0);
+		if (display.allChildren != 0) {
+			long /*int*/ list = display.allChildren;
+			while (list != 0) {
+				long /*int*/ widget = OS.g_list_data (list);
+				/*
+				 * Feature in GTK: GtkIcon isn't public, so we have to do
+				 * type lookups using gtk_widget_get_name(). See bug 539367.
+				 */
+				String name = display.gtk_widget_get_name(widget);
+				if (name != null && name.contains("GtkIcon")) {
+					result = widget;
+				}
+				list = OS.g_list_next (list);
+			}
+			OS.g_list_free (display.allChildren);
+			display.allChildren = 0;
+		}
 	}
 	return result;
 }
@@ -1267,6 +1301,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
 	if (widget == handle) {
+		unselected = false;
 		if (entryHandle == 0) {
 			sendEvent(SWT.Modify);
 			if (isDisposed ()) return 0;
@@ -1377,6 +1412,39 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 		}
 	}
 	return 0;
+}
+
+@Override
+void adjustChildClipping (long /*int*/ widget) {
+	/*
+	 * When adjusting the GtkCellView's clip, take into account
+	 * the position of the "arrow" icon. We set the clip of the
+	 * GtkCellView to the icon's position, minus the icon's width.
+	 *
+	 * This ensures the text never draws longer than the Combo itself.
+	 * See bug 539367.
+	 */
+	if (widget == cellHandle && (style & SWT.READ_ONLY) != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && !unselected) {
+		/*
+		 * Set "fit-model" mode for READ_ONLY Combos on GTK3.20+ to false.
+		 * This means the GtkCellView rendering the text can be set to
+		 * a size other than the maximum. See bug 539367.
+		 */
+		if (!fitModelToggled) {
+			GTK.gtk_cell_view_set_fit_model(cellHandle, false);
+			fitModelToggled = true;
+		}
+		GtkAllocation iconAllocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(arrowHandle, iconAllocation);
+		GtkAllocation cellViewAllocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(cellHandle, cellViewAllocation);
+
+		cellViewAllocation.width = (iconAllocation.x - iconAllocation.width);
+		GTK.gtk_widget_set_clip(widget, cellViewAllocation);
+		return;
+	} else {
+		super.adjustChildClipping(widget);
+	}
 }
 
 @Override
@@ -1581,6 +1649,7 @@ long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 @Override
 long /*int*/ gtk_selection_done(long /*int*/ menushell) {
 	int index = GTK.gtk_combo_box_get_active (handle);
+	unselected = false;
 	if (indexSelected == -1){
 		indexSelected = index;
 	}
@@ -1973,6 +2042,7 @@ public void select (int index) {
 		*/
 		sendEvent (SWT.Modify);
 	}
+	unselected = false;
 }
 
 void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {

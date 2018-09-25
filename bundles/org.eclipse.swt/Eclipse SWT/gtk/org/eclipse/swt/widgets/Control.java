@@ -1922,6 +1922,15 @@ public void addPaintListener(PaintListener listener) {
 	addListener(SWT.Paint,typedListener);
 }
 
+/**
+ * Allows Controls to adjust the clipping of themselves or
+ * their children.
+ *
+ * @param widget the handle to the widget
+ */
+void adjustChildClipping (long /*int*/ widget) {
+}
+
 void addRelation (Control control) {
 }
 
