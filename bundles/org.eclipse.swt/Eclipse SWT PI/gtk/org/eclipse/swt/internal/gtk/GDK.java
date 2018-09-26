@@ -1527,6 +1527,7 @@ public class GDK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
+	 * @param monitor cast=(GdkMonitor *)
 	 * @param dest flags=no_in
 	 */
 	public static final native void _gdk_monitor_get_geometry (long /*int*/ monitor, GdkRectangle dest);

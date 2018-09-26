@@ -1548,7 +1548,8 @@ Rectangle getBoundsInPixels () {
 		if (monitorCount > 0) {
 			GdkRectangle dest = new GdkRectangle ();
 			for (int i = 0; i < monitorCount; i++) {
-				GDK.gdk_monitor_get_geometry (i, dest);
+				long /*int*/ monitor = GDK.gdk_display_get_monitor(display, i);
+				GDK.gdk_monitor_get_geometry (monitor, dest);
 				if (i == 0) {
 					bounds.width = dest.width;
 					bounds.height = dest.height;
