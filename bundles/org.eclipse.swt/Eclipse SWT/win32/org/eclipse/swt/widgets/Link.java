@@ -78,10 +78,17 @@ public class Link extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		lpWndClass.hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
+		int byteCount = LinkClass.length () * TCHAR.sizeof;
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, LinkClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**

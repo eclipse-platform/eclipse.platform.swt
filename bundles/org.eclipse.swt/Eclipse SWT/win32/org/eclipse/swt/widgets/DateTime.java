@@ -84,10 +84,17 @@ public class DateTime extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		lpWndClass.hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
+		int byteCount = DateTimeClass.length () * TCHAR.sizeof;
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, DateTimeClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -110,10 +117,17 @@ public class DateTime extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		lpWndClass.hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
+		int byteCount = CalendarClass.length () * TCHAR.sizeof;
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, CalendarClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 	static final char SINGLE_QUOTE = '\''; //$NON-NLS-1$ short date format may include quoted text
 	static final char DAY_FORMAT_CONSTANT = 'd'; //$NON-NLS-1$ 1-4 lowercase 'd's represent day
