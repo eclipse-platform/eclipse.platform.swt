@@ -1228,12 +1228,12 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1monitor_1get_1geometry)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1monitor_1get_1geometry_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 /*
-	gdk_monitor_get_geometry((GdkMonitor *)arg0, lparg1);
+	gdk_monitor_get_geometry(arg0, lparg1);
 */
 	{
 		GDK_LOAD_FUNCTION(fp, gdk_monitor_get_geometry)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkMonitor *, GdkRectangle *))fp)((GdkMonitor *)arg0, lparg1);
+			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
 		}
 	}
 fail:
