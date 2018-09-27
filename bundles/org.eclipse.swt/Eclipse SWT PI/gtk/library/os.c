@@ -8556,34 +8556,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1settings_1get_1default)
 }
 #endif
 
-#ifndef NO__1gtk_1settings_1set_1string_1property
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1settings_1set_1string_1property)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3)
-{
-	jbyte *lparg1=NULL;
-	jbyte *lparg2=NULL;
-	jbyte *lparg3=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1settings_1set_1string_1property_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
-	gtk_settings_set_string_property((GtkSettings *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)lparg3);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_settings_set_string_property)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkSettings *, const gchar *, const gchar *, const gchar *))fp)((GtkSettings *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)lparg3);
-		}
-	}
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1settings_1set_1string_1property_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1socket_1get_1id
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1socket_1get_1id)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -11351,15 +11323,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1draw)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1draw_FUNC);
-/*
 	gtk_widget_draw(arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_draw)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1draw_FUNC);
 }
 #endif
@@ -12014,26 +11978,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1reparent)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1reparent_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1send_1expose
-JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1widget_1send_1expose)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1send_1expose_FUNC);
-/*
-	rc = (jint)gtk_widget_send_expose((GtkWidget *)arg0, (GdkEvent *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_send_expose)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GtkWidget *, GdkEvent *))fp)((GtkWidget *)arg0, (GdkEvent *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1send_1expose_FUNC);
-	return rc;
 }
 #endif
 

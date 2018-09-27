@@ -1237,6 +1237,7 @@ public class GDK extends OS {
 	 * @param time_ cast=(guint32)
 	 */
 	public static final native int _gdk_device_grab(long /*int*/ device, long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ cursor, int time_);
+	/**  [GTK3; 3.20 deprecated] */
 	public static final int gdk_device_grab(long /*int*/ device, long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ cursor, int time_) {
 		lock.lock();
 		try {
@@ -1251,6 +1252,7 @@ public class GDK extends OS {
 	 *  @param time_ cast=(guint32)
 	 */
 	public static final native void _gdk_device_ungrab(long /*int*/ device, int time_);
+	/**  [GTK3; 3.20 deprecated] */
 	public static final void  gdk_device_ungrab(long /*int*/ device, int time_) {
 		lock.lock();
 		try {
@@ -2095,6 +2097,7 @@ public class GDK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native void _gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern);
+	/**  [GTK3; 3.22 deprecated] */
 	public static final void gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern) {
 		lock.lock();
 		try {

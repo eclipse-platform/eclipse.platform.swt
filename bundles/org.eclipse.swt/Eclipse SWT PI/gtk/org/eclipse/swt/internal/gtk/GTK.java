@@ -745,7 +745,7 @@ public class GTK extends OS {
 	 * @param adjustment cast=(GtkAdjustment *)
 	 * */
 	public static final native void _gtk_adjustment_value_changed(long /*int*/ adjustment);
-	/**  [GTK2/GTK3; 3.18 deprecated] */
+	/**  [GTK2/GTK3; 3.18 deprecated, replaced] */
 	public static final void gtk_adjustment_value_changed(long /*int*/ adjustment) {
 		lock.lock();
 		try {
@@ -1304,7 +1304,7 @@ public class GTK extends OS {
 	 * @param val cast=(gboolean)
 	 */
 	public static final native void _gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val);
-	/** [GTK2/GTK3; 3.20 deprecated] */
+	/** [GTK2/GTK3; 3.20 deprecated, replaced] */
 	public static final void gtk_combo_box_set_focus_on_click(long /*int*/ combo, boolean val) {
 		lock.lock();
 		try {
@@ -1578,7 +1578,7 @@ public class GTK extends OS {
 	 * @param event cast=(GdkEvent *)
 	 */
 	public static final native long /*int*/ _gtk_drag_begin(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event);
-	/** [GTK2/GTK3; 3.10 deprecated] */
+	/** [GTK2/GTK3; 3.10 deprecated, replaced] */
 	public static final long /*int*/ gtk_drag_begin(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event) {
 		lock.lock();
 		try {
@@ -3061,7 +3061,7 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native void _gtk_icon_info_free(long /*int*/ icon_info);
-	/** [GTK2/GTK3; 3.8 deprecated] */
+	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
 	public static final void gtk_icon_info_free(long /*int*/ icon_info) {
 		lock.lock();
 		try {
@@ -3795,7 +3795,7 @@ public class GTK extends OS {
 	 * @param activate_time cast=(guint32)
 	 */
 	public static final native void _gtk_menu_popup(long /*int*/ menu, long /*int*/ parent_menu_shell, long /*int*/ parent_menu_item, long /*int*/ func, long /*int*/ data, int button, int activate_time);
-	/** [GTK2/GTK3; 3.22 deprecated] */
+	/** [GTK2/GTK3; 3.22 deprecated, replaced] */
 	public static final void gtk_menu_popup(long /*int*/ menu, long /*int*/ parent_menu_shell, long /*int*/ parent_menu_item, long /*int*/ func, long /*int*/ data, int button, int activate_time) {
 		lock.lock();
 		try {
@@ -3902,7 +3902,7 @@ public class GTK extends OS {
 	 * @param yalign cast=(gfloat)
 	 */
 	public static final native void _gtk_misc_set_alignment(long /*int*/ misc, float xalign, float yalign);
-	/** [GTK2/GTK3; 3.14 deprecated] */
+	/** [GTK2/GTK3; 3.14 deprecated, replaced] */
 	public static final void gtk_misc_set_alignment(long /*int*/ misc, float xalign, float yalign) {
 		lock.lock();
 		try {
@@ -5102,7 +5102,7 @@ public class GTK extends OS {
 	 * @param child cast=(GtkWidget *)
 	 */
 	public static final native void _gtk_scrolled_window_add_with_viewport(long /*int*/ scrolled_window, long /*int*/ child);
-	/** [GTK2/GTK3; 3.8 deprecated] */
+	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
 	public static final void gtk_scrolled_window_add_with_viewport(long /*int*/ scrolled_window, long /*int*/ child) {
 		lock.lock();
 		try {
@@ -5237,23 +5237,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_settings_get_default();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param settings cast=(GtkSettings *)
-	 * @param name cast=(const gchar *)
-	 * @param v_string cast=(const gchar *)
-	 * @param origin cast=(const gchar *)
-	 */
-	public static final native void _gtk_settings_set_string_property(long /*int*/ settings, byte[] name, byte[] v_string, byte[] origin);
-	/** [GTK2/GTK3; 3.16 deprecated] */
-	public static final void gtk_settings_set_string_property(long /*int*/ settings, byte[] name, byte[] v_string, byte[] origin) {
-		lock.lock();
-		try {
-			_gtk_settings_set_string_property(settings, name, v_string, origin);
 		} finally {
 			lock.unlock();
 		}
@@ -5595,7 +5578,7 @@ public class GTK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color);
-	/** [GTK3; 3.16 deprecated] */
+	/** [GTK3; 3.16 deprecated, replaced] */
 	public static final void gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color) {
 		lock.lock();
 		try {
@@ -5616,7 +5599,7 @@ public class GTK extends OS {
 	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gtk_style_context_get_font(long /*int*/ context, int state);
-	/** [GTK3; 3.8 deprecated] */
+	/** [GTK3; 3.8 deprecated, replaced] */
 	public static final long /*int*/ gtk_style_context_get_font(long /*int*/ context, int state) {
 		lock.lock();
 		try {
@@ -7860,7 +7843,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic [GTK3; GTK2 deprecated (different signature)] */
 	public static final native void _gtk_widget_draw(long /*int*/ widget, long /*int*/ cr);
 	public static final void gtk_widget_draw(long /*int*/ widget, long /*int*/ cr) {
 		lock.lock();
@@ -8173,7 +8155,7 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native void _gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color);
-	/** [GTK3; 3.16 deprecated]*/
+	/** [GTK3; 3.16 deprecated, replaced]*/
 	public static final void gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color) {
 		lock.lock();
 		try {
@@ -8186,7 +8168,7 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native void _gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color);
-	/** [GTK3; 3.16 deprecated] */
+	/** [GTK3; 3.16 deprecated, replaced] */
 	public static final void gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color) {
 		lock.lock();
 		try {
@@ -8254,21 +8236,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_reparent(widget, new_parent);
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param event cast=(GdkEvent *)
-	 */
-	public static final native int _gtk_widget_send_expose(long /*int*/ widget, long /*int*/ event);
-	public static final int gtk_widget_send_expose(long /*int*/ widget, long /*int*/ event) {
-		lock.lock();
-		try {
-			return _gtk_widget_send_expose(widget, event);
 		} finally {
 			lock.unlock();
 		}
@@ -8656,7 +8623,7 @@ public class GTK extends OS {
 	 * @param window cast=(GtkWindow *)
 	 */
 	public static final native double _gtk_window_get_opacity (long /*int*/ window);
-	/** [GTK2/GTK3; 3.8 deprecated] */
+	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
 	public static final double gtk_window_get_opacity (long /*int*/ window) {
 		lock.lock();
 		try {
@@ -8935,7 +8902,7 @@ public class GTK extends OS {
 	 * @param window cast=(GtkWindow *)
 	 */
 	public static final native void _gtk_window_set_opacity(long /*int*/ window, double opacity);
-	/** [GTK2/GTK3; 3.8 deprecated] */
+	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
 	public static final void gtk_window_set_opacity(long /*int*/ window, double opacity) {
 		lock.lock();
 		try {
