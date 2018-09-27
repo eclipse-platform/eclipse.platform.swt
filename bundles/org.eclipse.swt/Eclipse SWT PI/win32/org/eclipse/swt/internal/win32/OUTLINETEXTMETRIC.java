@@ -15,6 +15,7 @@ package org.eclipse.swt.internal.win32;
 
 public class OUTLINETEXTMETRIC {
 	public int otmSize;
+	public TEXTMETRIC otmTextMetrics = new TEXTMETRIC ();
     public byte otmFiller;
     /** @field accessor=otmPanoseNumber.bFamilyType */
 	public byte otmPanoseNumber_bFamilyType;
@@ -68,5 +69,5 @@ public class OUTLINETEXTMETRIC {
 	public long /*int*/ otmpStyleName;
     /** @field cast=(PSTR) */
 	public long /*int*/ otmpFullName;
-    public static final int sizeof = OS.IsUnicode ? OS.OUTLINETEXTMETRICW_sizeof ():  OS.OUTLINETEXTMETRICA_sizeof ();
+	public static final int sizeof = OS.OUTLINETEXTMETRIC_sizeof ();
 }

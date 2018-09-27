@@ -4605,7 +4605,7 @@ void setCheckboxImageList () {
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	long /*int*/ oldFont = OS.SelectObject (hDC, defaultFont ());
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+	TEXTMETRIC tm = new TEXTMETRIC ();
 	OS.GetTextMetrics (hDC, tm);
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
@@ -5757,8 +5757,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				switch (hdr.code) {
 					case OS.TTN_SHOW:
 					case OS.TTN_POP:
-					case OS.TTN_GETDISPINFOA:
-					case OS.TTN_GETDISPINFOW:
+					case OS.TTN_GETDISPINFO:
 						return OS.SendMessage (handle, msg, wParam, lParam);
 				}
 				break;
@@ -7224,8 +7223,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
-		case OS.TVN_GETDISPINFOA:
-		case OS.TVN_GETDISPINFOW: {
+		case OS.TVN_GETDISPINFO: {
 			NMTVDISPINFO lptvdi = new NMTVDISPINFO ();
 			OS.MoveMemory (lptvdi, lParam, NMTVDISPINFO.sizeof);
 			if ((style & SWT.VIRTUAL) != 0) {
@@ -7411,8 +7409,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 		* changing on all but the item that is supposed to be
 		* selected.
 		*/
-		case OS.TVN_ITEMCHANGINGA:
-		case OS.TVN_ITEMCHANGINGW: {
+		case OS.TVN_ITEMCHANGING: {
 			if ((style & SWT.MULTI) != 0) {
 				if (hSelect != 0) {
 					NMTVITEMCHANGE pnm = new NMTVITEMCHANGE ();
@@ -7423,8 +7420,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.TVN_SELCHANGINGA:
-		case OS.TVN_SELCHANGINGW: {
+		case OS.TVN_SELCHANGING: {
 			if ((style & SWT.MULTI) != 0) {
 				if (lockSelection) {
 					/* Save the old selection state for both items */
@@ -7442,8 +7438,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.TVN_SELCHANGEDA:
-		case OS.TVN_SELCHANGEDW: {
+		case OS.TVN_SELCHANGED: {
 			NMTREEVIEW treeView = null;
 			if ((style & SWT.MULTI) != 0) {
 				if (lockSelection) {
@@ -7486,8 +7481,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			updateScrollBar ();
 			break;
 		}
-		case OS.TVN_ITEMEXPANDINGA:
-		case OS.TVN_ITEMEXPANDINGW: {
+		case OS.TVN_ITEMEXPANDING: {
 			if (itemToolTipHandle != 0) OS.ShowWindow (itemToolTipHandle, OS.SW_HIDE);
 			boolean runExpanded = false;
 			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
@@ -7553,8 +7547,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			if (!runExpanded) break;
 			//FALL THROUGH
 		}
-		case OS.TVN_ITEMEXPANDEDA:
-		case OS.TVN_ITEMEXPANDEDW: {
+		case OS.TVN_ITEMEXPANDED: {
 			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
 			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) style |= SWT.DOUBLE_BUFFERED;
 			if (findImageControl () != null && getDrawing () /*&& OS.IsWindowVisible (handle)*/) {
@@ -7595,12 +7588,10 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			updateScrollBar ();
 			break;
 		}
-		case OS.TVN_BEGINDRAGA:
-		case OS.TVN_BEGINDRAGW:
+		case OS.TVN_BEGINDRAG:
 			if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) break;
 			//FALL THROUGH
-		case OS.TVN_BEGINRDRAGA:
-		case OS.TVN_BEGINRDRAGW: {
+		case OS.TVN_BEGINRDRAG: {
 			dragStarted = true;
 			NMTREEVIEW treeView = new NMTREEVIEW ();
 			OS.MoveMemory (treeView, lParam, NMTREEVIEW.sizeof);
@@ -7634,10 +7625,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	* both.
 	*/
 	switch (hdr.code) {
-		case OS.HDN_BEGINTRACKW:
-		case OS.HDN_BEGINTRACKA:
-		case OS.HDN_DIVIDERDBLCLICKW:
-		case OS.HDN_DIVIDERDBLCLICKA: {
+		case OS.HDN_BEGINTRACK:
+		case OS.HDN_DIVIDERDBLCLICK: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TreeColumn column = columns [phdn.iItem];
@@ -7645,10 +7634,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				return LRESULT.ONE;
 			}
 			ignoreColumnMove = true;
-			switch (hdr.code) {
-				case OS.HDN_DIVIDERDBLCLICKW:
-				case OS.HDN_DIVIDERDBLCLICKA:
-					if (column != null) column.pack ();
+			if (hdr.code == OS.HDN_DIVIDERDBLCLICK) {
+				if (column != null) column.pack ();
 			}
 			break;
 		}
@@ -7854,8 +7841,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMCHANGINGW:
-		case OS.HDN_ITEMCHANGINGA: {
+		case OS.HDN_ITEMCHANGING: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			if (phdn.pitem != 0) {
@@ -7893,8 +7879,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMCHANGEDW:
-		case OS.HDN_ITEMCHANGEDA: {
+		case OS.HDN_ITEMCHANGED: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			if (phdn.pitem != 0) {
@@ -7929,8 +7914,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMCLICKW:
-		case OS.HDN_ITEMCLICKA: {
+		case OS.HDN_ITEMCLICK: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TreeColumn column = columns [phdn.iItem];
@@ -7939,8 +7923,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMDBLCLICKW:
-		case OS.HDN_ITEMDBLCLICKA: {
+		case OS.HDN_ITEMDBLCLICK: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TreeColumn column = columns [phdn.iItem];

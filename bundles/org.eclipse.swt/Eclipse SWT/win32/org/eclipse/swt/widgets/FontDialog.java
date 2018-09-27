@@ -236,7 +236,7 @@ public FontData open () {
 
 	/* Compute the result */
 	if (success) {
-		LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
+		LOGFONT logFont = new LOGFONT ();
 		OS.MoveMemory (logFont, lpLogFont, LOGFONT.sizeof);
 
 		/*
@@ -257,7 +257,7 @@ public FontData open () {
 			 */
 			long /*int*/ hFont = OS.CreateFontIndirect(logFont);
 			long /*int*/ oldFont = OS.SelectObject(hDC, hFont);
-			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			TEXTMETRIC lptm = new TEXTMETRIC ();
 			OS.GetTextMetrics(hDC, lptm);
 			OS.SelectObject(hDC, oldFont);
 			OS.DeleteObject(hFont);

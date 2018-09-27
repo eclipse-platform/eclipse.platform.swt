@@ -133,7 +133,7 @@ public Object nativeToJava(TransferData transferData) {
 		int size = OS.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
 		TCHAR lpszFile = new TCHAR(0, size);
 		// Get file name and append it to string
-		OS.DragQueryFile(stgmedium.unionField, i, lpszFile, size);
+		OS.DragQueryFile(stgmedium.unionField, i, lpszFile.chars, size);
 		fileNames[i] = lpszFile.toString(0, lpszFile.strlen());
 	}
 	OS.DragFinish(stgmedium.unionField); // frees data associated with HDROP data

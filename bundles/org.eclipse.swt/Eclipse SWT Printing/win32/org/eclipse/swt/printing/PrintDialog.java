@@ -388,20 +388,13 @@ public PrinterData open() {
 			pd.hDevMode = hMem;
 		}
 		long /*int*/ ptr = OS.GlobalLock(hMem);
-		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
-		OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
+		DEVMODE devmode = new DEVMODE ();
+		OS.MoveMemory(devmode, ptr, DEVMODE.sizeof);
 		if (printerData.name != null) {
 			/* Copy PRINTDLG DEVNAMES into DEVMODE dmDeviceName (truncate if necessary). */
 			int max = Math.min(printerData.name.length(), OS.CCHDEVICENAME - 1);
-			if (OS.IsUnicode) {
-				for (int i = 0; i < max; i++) {
-					((DEVMODEW) devmode).dmDeviceName[i] = printerData.name.charAt(i);
-				}
-			} else {
-				byte[] bytes = printerData.name.getBytes();
-				for (int i = 0; i < max; i++) {
-					((DEVMODEA) devmode).dmDeviceName[i] = bytes[i];
-				}
+			for (int i = 0; i < max; i++) {
+				devmode.dmDeviceName[i] = printerData.name.charAt(i);
 			}
 		}
 		devmode.dmFields |= OS.DM_ORIENTATION;
@@ -422,7 +415,7 @@ public PrinterData open() {
 				default: devmode.dmDuplex = OS.DMDUP_SIMPLEX;
 			}
 		}
-		OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
+		OS.MoveMemory(ptr, devmode, DEVMODE.sizeof);
 		OS.GlobalUnlock(hMem);
 
 		pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
@@ -512,8 +505,8 @@ public PrinterData open() {
 			OS.MoveMemory(data.otherData, ptr, size);
 
 			/* Set PrinterData fields from DEVMODE */
-			devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
-			OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
+			devmode = new DEVMODE ();
+			OS.MoveMemory(devmode, ptr, DEVMODE.sizeof);
 			if ((devmode.dmFields & OS.DM_ORIENTATION) != 0) {
 				int dmOrientation = devmode.dmOrientation;
 				data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;

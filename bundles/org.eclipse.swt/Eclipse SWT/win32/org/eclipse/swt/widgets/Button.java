@@ -355,7 +355,7 @@ int computeLeftMargin () {
 				long /*int*/ hDC = OS.GetDC (handle);
 				long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+				TEXTMETRIC lptm = new TEXTMETRIC ();
 				OS.GetTextMetrics (hDC, lptm);
 				int length = text.length ();
 				if (length == 0) {

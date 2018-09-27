@@ -1789,14 +1789,7 @@ public Control getFocusControl () {
 }
 
 String getFontName (LOGFONT logFont) {
-	char[] chars;
-	if (OS.IsUnicode) {
-		chars = ((LOGFONTW)logFont).lfFaceName;
-	} else {
-		chars = new char[OS.LF_FACESIZE];
-		byte[] bytes = ((LOGFONTA)logFont).lfFaceName;
-		OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
-	}
+	char[] chars = logFont.lfFaceName;
 	int index = 0;
 	while (index < chars.length) {
 		if (chars [index] == 0) break;
@@ -2366,10 +2359,10 @@ public Font getSystemFont () {
 	checkDevice ();
 	if (systemFont != null) return systemFont;
 	long /*int*/ hFont = 0;
-	NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
 	info.cbSize = NONCLIENTMETRICS.sizeof;
 	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-		LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont;
+		LOGFONT logFont = info.lfMessageFont;
 		hFont = OS.CreateFontIndirect (logFont);
 		lfSystemFont = hFont != 0 ? logFont : null;
 	}
@@ -4070,10 +4063,10 @@ void saveResources () {
 		resources = newResources;
 	}
 	if (systemFont != null) {
-		NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+		NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
 		info.cbSize = NONCLIENTMETRICS.sizeof;
 		if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-			LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont;
+			LOGFONT logFont = info.lfMessageFont;
 			if (lfSystemFont == null ||
 				logFont.lfCharSet != lfSystemFont.lfCharSet ||
 				logFont.lfHeight != lfSystemFont.lfHeight ||

@@ -409,7 +409,7 @@ void computeRuns (GC gc) {
 		if (run.lineBreak || i == allRuns.length - 1) {
 			/* Update the run metrics if the last run is a hard break. */
 			if (lineRunCount == 1 && (i == allRuns.length - 1 || !run.softBreak)) {
-				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+				TEXTMETRIC lptm = new TEXTMETRIC();
 				OS.SelectObject(srcHdc, getItemFont(run));
 				OS.GetTextMetrics(srcHdc, lptm);
 				run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
@@ -1977,7 +1977,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	long /*int*/ hDC = device.internal_new_GC(null);
 	long /*int*/ srcHdc = OS.CreateCompatibleDC(hDC);
-	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	TEXTMETRIC lptm = new TEXTMETRIC();
 	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont.handle);
 	OS.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
@@ -3490,7 +3490,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
 			OS.DeleteEnhMetaFile(metaFile);
 			callback.dispose();
-			newFont = OS.CreateFontIndirectW(emr.elfw.elfLogFont);
+			newFont = OS.CreateFontIndirect(emr.elfw.elfLogFont);
 		} else {
 			/*
 			* The run is composed only by white spaces, this happens when a run is split
@@ -3505,7 +3505,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 						StyleItem pRun = allRuns[index - 1];
 						if (pRun.analysis.eScript == run.analysis.eScript) {
 							long /*int*/ pFont = getItemFont(pRun);
-							LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+							LOGFONT logFont = new LOGFONT ();
 							OS.GetObject(pFont, LOGFONT.sizeof, logFont);
 							newFont = OS.CreateFontIndirect(logFont);
 						}
@@ -3517,7 +3517,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 								OS.SelectObject(hdc, getItemFont(nRun));
 								shape(hdc, nRun);
 								long /*int*/ nFont = getItemFont(nRun);
-								LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+								LOGFONT logFont = new LOGFONT ();
 								OS.GetObject(nFont, LOGFONT.sizeof, logFont);
 								newFont = OS.CreateFontIndirect(logFont);
 							}
@@ -3552,7 +3552,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 				OS.VtblCall(4, mLangFontLink2, chars, chars.length, 0, dwCodePages, cchCodePages);
 				/* MapFont() */
 				if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
-					LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+					LOGFONT logFont = new LOGFONT ();
 					OS.GetObject(hNewFont[0], LOGFONT.sizeof, logFont);
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
@@ -3591,7 +3591,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 	if (style != null) {
 		OUTLINETEXTMETRIC lotm = null;
 		if (style.underline || style.strikeout) {
-			lotm = OS.IsUnicode ? (OUTLINETEXTMETRIC)new OUTLINETEXTMETRICW() : new OUTLINETEXTMETRICA();
+			lotm = new OUTLINETEXTMETRIC();
 			if (OS.GetOutlineTextMetrics(hdc, OUTLINETEXTMETRIC.sizeof, lotm) == 0) {
 				lotm = null;
 			}
@@ -3610,9 +3610,9 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		} else {
 			TEXTMETRIC lptm = null;
 			if (lotm != null) {
-				lptm = OS.IsUnicode ? (TEXTMETRIC)((OUTLINETEXTMETRICW)lotm).otmTextMetrics : ((OUTLINETEXTMETRICA)lotm).otmTextMetrics;
+				lptm = lotm.otmTextMetrics;
 			} else {
-				lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+				lptm = new TEXTMETRIC();
 				OS.GetTextMetrics(hdc, lptm);
 			}
 			run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
@@ -3633,7 +3633,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		run.ascentInPoints += style.rise;
 		run.descentInPoints -= style.rise;
 	} else {
-		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+		TEXTMETRIC lptm = new TEXTMETRIC();
 		OS.GetTextMetrics(hdc, lptm);
 		run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
 		run.descentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmDescent);

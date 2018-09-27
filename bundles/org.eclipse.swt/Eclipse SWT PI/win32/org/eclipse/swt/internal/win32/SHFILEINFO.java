@@ -18,5 +18,7 @@ public class SHFILEINFO {
 	public long /*int*/ hIcon;
 	public int iIcon;
 	public int dwAttributes;
-	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();
+	public char [] szDisplayName = new char [OS.MAX_PATH];
+	public char [] szTypeName = new char [80];
+	public static int sizeof = OS.SHFILEINFO_sizeof ();
 }
