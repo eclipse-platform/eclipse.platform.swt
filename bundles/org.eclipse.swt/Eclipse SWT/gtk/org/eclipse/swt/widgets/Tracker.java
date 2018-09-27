@@ -792,6 +792,7 @@ public boolean open () {
 	overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 	GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
 	GTK.gtk_window_set_title (overlay, new byte [1]);
+	if (parent != null) GTK.gtk_window_set_transient_for(overlay, parent.topHandle());
 	GTK.gtk_widget_realize (overlay);
 	long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
 	GDK.gdk_window_set_override_redirect (overlayWindow, true);

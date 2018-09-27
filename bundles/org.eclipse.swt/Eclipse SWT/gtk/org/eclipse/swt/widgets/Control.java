@@ -1232,13 +1232,20 @@ public void setRegion (Region region) {
 	long /*int*/ shape_region = (region == null) ? 0 : region.handle;
 	this.region = region;
 	long /*int*/ topHandle = topHandle ();
-	/*
-	 * Only call gdk_window_shape_combine_region on GTK3.10-, or if the widget is
-	 * a GtkWindow.
-	 */
+
 	if (GTK.GTK_VERSION < OS.VERSION(3, 10, 0) || OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
-		long /*int*/ window = gtk_widget_get_window (topHandle);
-		GDK.gdk_window_shape_combine_region (window, shape_region, 0, 0);
+		GTK.gtk_widget_shape_combine_region(topHandle, shape_region);
+		/*
+		 * Bug in GTK: on Wayland, pixels in window outside shape_region
+		 * is black instead of transparent when the widget is fully opaque (i.e. opacity == 1.0)
+		 * This is a hack to force the outside pixels to be transparent on Wayland so that
+		 * Part-Drag on Eclipse does not cause black-out. See Bug 535083.
+		 */
+		if (!OS.isX11()) {
+			double alpha = GTK.gtk_widget_get_opacity(topHandle);
+			if (alpha == 1) alpha = 0.99;
+			GTK.gtk_widget_set_opacity(topHandle, alpha);
+		}
 	} else {
 		drawRegion = (this.region != null && this.region.handle != 0);
 		if (drawRegion) {
