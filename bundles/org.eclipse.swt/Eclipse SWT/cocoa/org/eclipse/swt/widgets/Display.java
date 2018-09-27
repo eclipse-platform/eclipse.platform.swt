@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -903,7 +903,20 @@ void createDisplay (DeviceData data) {
 		applicationCallback6 = new Callback(clazz, "applicationProc", 6);
 		long /*int*/ proc6 = applicationCallback6.getAddress();
 		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		cls = OS.objc_allocateClassPair(OS.object_getClass(application.id), className, 0);
+		long superClassID = OS.object_getClass(application.id);
+		if (new NSObject(superClassID).className().getString().equals("NSKVONotifying_NSApplication")) {
+				/*
+				 * Key-value observing has been activated for the application instance. This can
+				 * happen when launching nested eclipse instances on macOS 10.14 with a touch
+				 * bar. Unfortunately, dynamically subclassing KVO classes doesn't work.
+				 * Workaround is to switch back to plain NSApplication as super class. SWT
+				 * currently doesn't support the touch bar anyway, so this shouldn't break
+				 * anything and is better than a crash.
+				 */
+				superClassID = OS.objc_lookUpClass("NSApplication");
+		}
+
+		cls = OS.objc_allocateClassPair(superClassID, className, 0);
 		OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
 		OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
@@ -916,7 +929,6 @@ void createDisplay (DeviceData data) {
 	if (OS.objc_lookUpClass (className) == 0) {
 		long /*int*/ appProc3 = applicationCallback3.getAddress();
 		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		long /*int*/ appProc4 = applicationCallback4.getAddress();
 		if (appProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
