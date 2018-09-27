@@ -2412,12 +2412,27 @@ public static final boolean GetCharWidth (long /*int*/ hdc, int iFirstChar, int 
 }
 
 public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
+	boolean result;
+
 	if (IsUnicode) {
 		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-		return GetClassInfoW (hInstance, lpClassName1, lpWndClass);
+		result = GetClassInfoW (hInstance, lpClassName1, lpWndClass);
 	}
-	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
-	return GetClassInfoA (hInstance, lpClassName1, lpWndClass);
+	else {
+		byte[] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+		result = GetClassInfoA(hInstance, lpClassName1, lpWndClass);
+	}
+
+	/*
+	* WINAPI GetClassInfo copies lpClassName1 pointer to WNDCLASS.lpszClassName.
+	* But because JNI code copies java's TCHAR to temporary native string, temporary pointer gets copied.
+	* Upon return from JNI GetClassInfo, WNDCLASS contains pointer to already freed memory.
+	* Usually the memory stays untouched for a short while, and code seems to work just fine.
+	* To prevent this subtle error, field is zeroed to draw attention.
+	*/
+	lpWndClass.lpszClassName = 0;
+
+	return result;
 }
 
 public static final int GetClassName (long /*int*/ hWnd, TCHAR lpClassName, int nMaxCount) {
@@ -2840,9 +2855,26 @@ public static final int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, TCHAR lpNa
 	return RegEnumKeyExA (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
 }
 
-public static final int RegisterClass (WNDCLASS lpWndClass) {
-	if (IsUnicode) return RegisterClassW (lpWndClass);
-	return RegisterClassA (lpWndClass);
+public static final int RegisterClass (TCHAR lpszClassName, WNDCLASS lpWndClass) {
+	/* Allocate a native string */
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	int byteCount = lpszClassName.length () * TCHAR.sizeof;
+	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpWndClass.lpszClassName, lpszClassName, byteCount);
+
+	int result;
+	if (IsUnicode) {
+		result = RegisterClassW (lpWndClass);
+	}
+	else {
+		result = RegisterClassA (lpWndClass);
+	}
+
+	/* Release and forget native string */
+	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	lpWndClass.lpszClassName = 0;
+
+	return result;
 }
 
 public static final int RegisterClipboardFormat (TCHAR lpszFormat) {

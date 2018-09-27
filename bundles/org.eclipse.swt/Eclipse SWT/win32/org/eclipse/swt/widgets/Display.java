@@ -2633,7 +2633,6 @@ protected void init () {
 	WindowClassCount++;
 
 	/* Register the SWT window class */
-	long /*int*/ hHeap = OS.GetProcessHeap ();
 	long /*int*/ hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
 	lpWndClass.hInstance = hInstance;
@@ -2641,27 +2640,15 @@ protected void init () {
 	lpWndClass.style = OS.CS_DBLCLKS;
 	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
 	lpWndClass.hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
-	int byteCount = windowClass.length () * TCHAR.sizeof;
-	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
-	OS.RegisterClass (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	OS.RegisterClass (windowClass, lpWndClass);
 
 	/* Register the SWT drop shadow window class */
 	lpWndClass.style |= OS.CS_DROPSHADOW;
-	byteCount = windowShadowClass.length () * TCHAR.sizeof;
-	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
-	OS.RegisterClass (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	OS.RegisterClass (windowShadowClass, lpWndClass);
 
 	/* Register the CS_OWNDC window class */
 	lpWndClass.style |= OS.CS_OWNDC;
-	byteCount = windowOwnDCClass.length () * TCHAR.sizeof;
-	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpWndClass.lpszClassName, windowOwnDCClass, byteCount);
-	OS.RegisterClass (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	OS.RegisterClass (windowOwnDCClass, lpWndClass);
 
 	/* Create the message only HWND */
 	hwndMessage = OS.CreateWindowEx (0,

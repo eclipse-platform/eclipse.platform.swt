@@ -87,16 +87,9 @@ public class TabFolder extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		long /*int*/ hInstance = OS.GetModuleHandle (null);
-		long /*int*/ hHeap = OS.GetProcessHeap ();
-		lpWndClass.hInstance = hInstance;
+		lpWndClass.hInstance = OS.GetModuleHandle (null);
 		lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW | OS.CS_GLOBALCLASS);
-		int byteCount = TabFolderClass.length () * TCHAR.sizeof;
-		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
-		lpWndClass.lpszClassName = lpszClassName;
-		OS.RegisterClass (lpWndClass);
-		OS.HeapFree (hHeap, 0, lpszClassName);
+		OS.RegisterClass (TabFolderClass, lpWndClass);
 	}
 
 /**

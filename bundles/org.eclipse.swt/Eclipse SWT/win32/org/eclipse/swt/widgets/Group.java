@@ -63,15 +63,9 @@ public class Group extends Composite {
 		GroupProc = lpWndClass.lpfnWndProc;
 		long /*int*/ hInstance = OS.GetModuleHandle (null);
 		if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
-			long /*int*/ hHeap = OS.GetProcessHeap ();
 			lpWndClass.hInstance = hInstance;
 			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-			int byteCount = GroupClass.length () * TCHAR.sizeof;
-			long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (lpszClassName, GroupClass, byteCount);
-			lpWndClass.lpszClassName = lpszClassName;
-			OS.RegisterClass (lpWndClass);
-			OS.HeapFree (hHeap, 0, lpszClassName);
+			OS.RegisterClass (GroupClass, lpWndClass);
 		}
 	}
 
