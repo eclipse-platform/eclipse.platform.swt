@@ -1894,6 +1894,18 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1height)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1is_1composited
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1screen_1is_1composited)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1is_1composited_FUNC);
+	rc = (jboolean)gdk_screen_is_composited((GdkScreen *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1is_1composited_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1width
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1width)
 	(JNIEnv *env, jclass that)
@@ -11628,6 +11640,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1realized)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1screen
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1screen)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1screen_FUNC);
+	rc = (jintLong)gtk_widget_get_screen((GtkWidget *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1screen_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1sensitive
 JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1sensitive)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -11804,26 +11828,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1input_1shape_1combine_1region)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1input_1shape_1combine_1region_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1is_1composited
-JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1is_1composited)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1is_1composited_FUNC);
-/*
-	rc = (jboolean)gtk_widget_is_composited((GtkWidget *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_is_composited)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1is_1composited_FUNC);
-	return rc;
 }
 #endif
 

@@ -1618,6 +1618,18 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param screen cast=(GdkScreen *)
+	 */
+	public static final native boolean _gdk_screen_is_composited(long /*int*/ screen);
+	public static final boolean gdk_screen_is_composited(long /*int*/ screen) {
+		lock.lock();
+		try {
+			return _gdk_screen_is_composited(screen);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 */
 	public static final native int _gdk_screen_width();

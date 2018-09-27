@@ -461,6 +461,17 @@ public class GTK extends OS {
 	}
 
 	/** @param widget cast=(GtkWidget *) */
+	public static final native long /*int*/ _gtk_widget_get_screen(long /*int*/ widget);
+	public static final long /*int*/ gtk_widget_get_screen(long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_screen(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/** @param widget cast=(GtkWidget *) */
 	public static final native long /*int*/ _gtk_widget_get_name(long /*int*/ widget);
 	public static final long /*int*/ gtk_widget_get_name(long /*int*/ widget) {
 		lock.lock();
@@ -8100,20 +8111,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_input_shape_combine_region(widget, region);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native boolean _gtk_widget_is_composited(long /*int*/ widget);
-	/** [GTK2/GTK3; 3.22 deprecated] */
-	public static final boolean gtk_widget_is_composited(long /*int*/ widget) {
-		lock.lock();
-		try {
-			return _gtk_widget_is_composited(widget);
 		} finally {
 			lock.unlock();
 		}

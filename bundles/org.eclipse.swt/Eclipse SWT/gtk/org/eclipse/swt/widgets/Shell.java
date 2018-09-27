@@ -1029,7 +1029,9 @@ void forceResize (int width, int height) {
  */
 public int getAlpha () {
 	checkWidget ();
-	if (GTK.gtk_widget_is_composited (shellHandle)) {
+	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
+	boolean composited = GDK.gdk_screen_is_composited(screen);
+	if (composited) {
 		/*
 		 * Feature in GTK: gtk_window_get_opacity() is deprecated on GTK3.8
 		 * onward. Use gtk_widget_get_opacity() instead.
@@ -1869,7 +1871,9 @@ void setActiveControl (Control control, int type) {
  */
 public void setAlpha (int alpha) {
 	checkWidget ();
-	if (GTK.gtk_widget_is_composited (shellHandle)) {
+	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
+	boolean composited = GDK.gdk_screen_is_composited(screen);
+	if (composited) {
 		/*
 		 * Feature in GTK: gtk_window_set_opacity() is deprecated on GTK3.8
 		 * onward. Use gtk_widget_set_opacity() instead.
