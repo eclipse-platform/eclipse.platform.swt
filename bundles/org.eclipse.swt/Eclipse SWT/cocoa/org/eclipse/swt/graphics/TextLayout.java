@@ -45,7 +45,7 @@ public final class TextLayout extends Resource {
 	String text;
 	StyleItem[] styles;
 	int stylesCount;
-	int spacing, ascent, descent, indent, wrapIndent;
+	int spacing, ascent, descent, indent, wrapIndent, verticalIndentInPoints;
 	boolean justify;
 	int alignment;
 	int[] tabs;
@@ -455,6 +455,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		computeRuns();
 		int length = translateOffset(text.length());
 		if (length == 0 && flags == 0) return;
+		y += getVerticalIndent();
 		gc.handle.saveGraphicsState();
 		NSPoint pt = new NSPoint();
 		pt.x = x;
@@ -753,7 +754,7 @@ public Rectangle getBounds() {
 			rect.height = layoutManager.defaultLineHeightForFont(nsFont);
 		}
 		rect.height = Math.max(rect.height, ascent + descent) + spacing;
-		return new Rectangle(0, 0, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
+		return new Rectangle(0, 0, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height) + getVerticalIndent());
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -802,7 +803,7 @@ public Rectangle getBounds(int start, int end) {
 			top = Math.min(top, (int)rect.y);
 			bottom = Math.max(bottom, (int)Math.ceil(rect.y + rect.height));
 		}
-		return new Rectangle(left, top, right - left, bottom - top);
+		return new Rectangle(left, top, right - left, bottom - top + getVerticalIndent());
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1110,7 +1111,7 @@ public Point getLocation(int offset, boolean trailing) {
 					point.x += bounds.width;
 				}
 			}
-			return new Point((int)point.x, (int)rect.y);
+			return new Point((int)point.x, (int)rect.y + getVerticalIndent());
 		}
 	} finally {
 		if (pool != null) pool.release();
@@ -1278,7 +1279,7 @@ public int getOffset(int x, int y, int[] trailing) {
 		if (length == 0) return 0;
 		NSPoint pt = new NSPoint();
 		pt.x = x;
-		pt.y = y;
+		pt.y =  y - getVerticalIndent();
 		double /*float*/[] partialFraction = new double /*float*/[1];
 		long /*int*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFraction);
 		long /*int*/ charOffset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
@@ -1455,6 +1456,21 @@ String getSegmentsText() {
 public int getSpacing () {
 	checkLayout();
 	return spacing;
+}
+
+/**
+ * Returns the vertical indent of the receiver.
+ *
+ * @return the vertical indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public int getVerticalIndent () {
+	checkLayout();
+	return verticalIndentInPoints;
 }
 
 /**
@@ -1985,6 +2001,34 @@ public void setSpacing (int spacing) {
 	try {
 		freeRuns();
 		this.spacing = spacing;
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+/**
+ * Sets the vertical indent of the receiver.  The vertical indent
+ * is the space left before the first line.
+ *
+ * @param verticalIndent the new vertical indent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the vertical indent is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public void setVerticalIndent (int verticalIndent) {
+	checkLayout();
+	if (verticalIndent < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.verticalIndentInPoints == verticalIndent) return;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		freeRuns();
+		this.verticalIndentInPoints = verticalIndent;
 	} finally {
 		if (pool != null) pool.release();
 	}

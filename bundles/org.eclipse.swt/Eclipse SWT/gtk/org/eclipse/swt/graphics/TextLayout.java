@@ -62,6 +62,7 @@ public final class TextLayout extends Resource {
 	int stylesCount;
 	long /*int*/ layout, context, attrList, selAttrList;
 	int[] invalidOffsets;
+	int verticalIndentInPoints;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B', ZWNBS = '\uFEFF';
 
 /**
@@ -465,6 +466,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	gc.checkGC(GC.FOREGROUND);
 	int length = text.length();
 	x += Math.min (indent, wrapIndent);
+	y += getScaledVerticalIndent();
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	long /*int*/ cairo = data.cairo;
@@ -739,7 +741,7 @@ public Rectangle getBounds() {
 	checkLayout();
 	Rectangle bounds = DPIUtil.autoScaleDown(getDevice(), getBoundsInPixels());
 	int lineCount = OS.pango_layout_get_line_count(layout);
-	int totalLineheight = 0;
+	int totalLineheight = getScaledVerticalIndent();
 	for (int i = 0; i < lineCount; i++) {
 		totalLineheight += this.getLineBounds(i).height + OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
 	}
@@ -759,7 +761,7 @@ Rectangle getBoundsInPixels() {
 		height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
 	}
 	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
-	return new Rectangle(0, 0, width, height);
+	return new Rectangle(0, 0, width, height + getScaledVerticalIndent());
 }
 
 /**
@@ -834,7 +836,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	Cairo.cairo_region_get_extents(clipRegion, rect);
 	Cairo.cairo_region_destroy(clipRegion);
 	rect.x += Math.min (indent, wrapIndent);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	return new Rectangle(rect.x, rect.y, rect.width, rect.height + getScaledVerticalIndent());
 }
 
 /**
@@ -1151,7 +1153,7 @@ Point getLocationInPixels(int offset, boolean trailing) {
 		x = width() - x;
 	}
 	x += Math.min (indent, wrapIndent);
-	return new Point(x, OS.PANGO_PIXELS(y));
+	return new Point(x, OS.PANGO_PIXELS(y) + getScaledVerticalIndent());
 }
 
 /**
@@ -1500,6 +1502,34 @@ public int getSpacing () {
 
 int getSpacingInPixels () {
 	return OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
+}
+
+/**
+ * Returns the vertical indent of the receiver.
+ *
+ * @return the vertical indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public int getVerticalIndent () {
+	checkLayout();
+	return verticalIndentInPoints;
+}
+
+/**
+ * Returns the scaled vertical indent.
+ *
+ * @return the scaled vertical indent.
+ * @since 3.108
+ */
+private int getScaledVerticalIndent() {
+	if (verticalIndentInPoints == 0) {
+		return verticalIndentInPoints;
+	}
+	return DPIUtil.autoScaleUp(getDevice(), verticalIndentInPoints);
 }
 
 /**
@@ -1869,6 +1899,27 @@ public void setSpacing (int spacing) {
 
 void setSpacingInPixels (int spacing) {
 	OS.pango_layout_set_spacing(layout, spacing * OS.PANGO_SCALE);
+}
+
+/**
+ * Sets the vertical indent of the receiver.  The vertical indent
+ * is the space left before the first line.
+ *
+ * @param verticalIndent the new vertical indent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the vertical indent is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public void setVerticalIndent (int verticalIndent) {
+	checkLayout();
+	if (verticalIndent < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.verticalIndentInPoints == verticalIndent) return;
+	this.verticalIndentInPoints = verticalIndent;
 }
 
 /**

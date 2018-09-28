@@ -61,6 +61,7 @@ public final class TextLayout extends Resource {
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	long /*int*/ mLangFontLink2;
+	int verticalIndentInPoints;
 
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
@@ -181,6 +182,7 @@ public TextLayout (Device device) {
 	super(device);
 	wrapWidth = ascentInPixels = descentInPixels = -1;
 	lineSpacingInPoints = 0;
+	verticalIndentInPoints = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
 	textDirection = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
@@ -648,6 +650,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0 && flags == 0) return;
+	y += getScaledVerticalIndent();
 	long /*int*/ hdc = gc.handle;
 	Rectangle clip = gc.getClippingInPixels();
 	GCData data = gc.data;
@@ -1640,7 +1643,7 @@ public Rectangle getBounds () {
 			width = Math.max(width, lineWidth[line] + getLineIndent(line));
 		}
 	}
-	return new Rectangle (0, 0, DPIUtil.autoScaleDown(getDevice(), width), lineY[lineY.length - 1]);
+	return new Rectangle (0, 0, DPIUtil.autoScaleDown(getDevice(), width), lineY[lineY.length - 1] + getScaledVerticalIndent());
 }
 
 /**
@@ -1744,7 +1747,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 		top = Math.min(top, DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex]));
 		bottom = Math.max(bottom, DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex + 1] - lineSpacingInPoints));
 	}
-	return new Rectangle(left, top, right - left, bottom - top);
+	return new Rectangle(left, top, right - left, bottom - top + getScaledVerticalIndent());
 }
 
 /**
@@ -2107,7 +2110,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 			}
-			return new Point(run.x + width, DPIUtil.autoScaleUp(getDevice(), lineY[line]));
+			return new Point(run.x + width, DPIUtil.autoScaleUp(getDevice(), lineY[line]) + getScaledVerticalIndent());
 		}
 	}
 	return new Point(0, 0);
@@ -2516,6 +2519,34 @@ String getSegmentsText() {
 public int getSpacing () {
 	checkLayout();
 	return lineSpacingInPoints;
+}
+
+/**
+ * Returns the vertical indent of the receiver.
+ *
+ * @return the vertical indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public int getVerticalIndent () {
+	checkLayout();
+	return verticalIndentInPoints;
+}
+
+/**
+ * Returns the scaled vertical indent.
+ *
+ * @return the scaled vertical indent.
+ * @since 3.108
+ */
+private int getScaledVerticalIndent() {
+	if (verticalIndentInPoints == 0) {
+		return verticalIndentInPoints;
+	}
+	return DPIUtil.autoScaleUp(getDevice(), verticalIndentInPoints);
 }
 
 /**
@@ -3133,6 +3164,27 @@ public void setSpacing (int spacing) {
 	if (this.lineSpacingInPoints == spacing) return;
 	freeRuns();
 	this.lineSpacingInPoints = spacing;
+}
+
+/**
+ * Sets the vertical indent of the receiver.  The vertical indent
+ * is the space left before the first line.
+ *
+ * @param verticalIndent the new vertical indent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the vertical indent is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.108
+ */
+public void setVerticalIndent (int verticalIndent) {
+	checkLayout();
+	if (verticalIndent < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.verticalIndentInPoints == verticalIndent) return;
+	this.verticalIndentInPoints = verticalIndent;
 }
 
 /**

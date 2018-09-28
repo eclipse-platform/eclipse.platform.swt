@@ -4150,6 +4150,30 @@ public int getLineIndent(int index) {
 	return isListening(ST.LineGetStyle) ? 0 : renderer.getLineIndent(index, indent);
 }
 /**
+ * Returns the vertical indentation of the line at the given index.
+ *
+ * @param index the index of the line
+ *
+ * @return the line vertical indentation
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ *
+ * @since 3.108
+ */
+public int getLineVerticalIndent(int index) {
+	checkWidget();
+	if (index < 0 || index >= content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return isListening(ST.LineGetStyle) ? 0 : renderer.getLineVerticalIndent(index);
+}
+/**
  * Returns whether the line at the given index is justified.
  *
  * @param index the index of the line
@@ -5544,7 +5568,7 @@ Point getPointAtOffset(int offset) {
 			}
 		}
 	} else {
-		point = new Point(layout.getIndent(), 0);
+		point = new Point(layout.getIndent(), layout.getVerticalIndent());
 	}
 	renderer.disposeTextLayout(layout);
 	point.x += leftMargin - horizontalScrollOffset;
@@ -9314,6 +9338,62 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
 		setCaretLocation();
 	}
 }
+
+/**
+ * Sets the vertical indent of the specified lines.
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the listener
+ * maintains the line attributes.
+ * </p><p>
+ * All line attributes are maintained relative to the line text, not the
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line
+ * attributes that are associated with the lines after the change
+ * will "move" with their respective text. An entire line is defined as
+ * extending from the first character on a line to the last and including the
+ * line delimiter.
+ * </p><p>
+ * When two lines are joined by deleting a line delimiter, the top line
+ * attributes take precedence and the attributes of the bottom line are deleted.
+ * For all other text changes line attributes will remain unchanged.
+ * </p><p>
+ * Setting both line spacing and vertical indent on a line would result in the
+ * spacing and indent add up for the line.
+ * </p>
+ *
+ * @param lineIndex line index the vertical indent is applied to, 0 based
+ * @param verticalLineIndent vertical line indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line index is invalid</li>
+ * </ul>
+ * @since 3.108
+ */
+public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
+	checkWidget();
+	if (isListening(ST.LineGetStyle)) return;
+	if (lineIndex < 0 || lineIndex >= content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (verticalLineIndent == renderer.getLineVerticalIndent(lineIndex)) {
+			return;
+	}
+	setVariableLineHeight();
+	int oldBottom = getLinePixel(lineIndex + 1);
+	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
+	resetCache(lineIndex, 1);
+	int newBottom = getLinePixel(lineIndex + 1);
+	redrawLines(lineIndex, 1, oldBottom != newBottom);
+	int caretLine = getCaretLine();
+	if (lineIndex <= caretLine && caretLine < lineIndex + 1) {
+		setCaretLocation();
+	}
+}
+
 /**
  * Sets the justify of the specified lines.
  * <p>

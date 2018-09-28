@@ -81,6 +81,7 @@ class StyledTextRenderer {
 	final static int TABSTOPS = 1 << 6;
 	final static int WRAP_INDENT = 1 << 7;
 	final static int SEGMENT_CHARS = 1 << 8;
+	final static int VERTICAL_INDENT = 1 << 9;
 
 	static class LineSizeInfo {
 
@@ -157,6 +158,7 @@ class StyledTextRenderer {
 		int[] segments;
 		char[] segmentsChars;
 		int[] tabStops;
+		int verticalIndent;
 
 		public LineInfo() {
 		}
@@ -171,6 +173,7 @@ class StyledTextRenderer {
 				segments = info.segments;
 				segmentsChars = info.segmentsChars;
 				tabStops = info.tabStops;
+				verticalIndent = info.verticalIndent;
 			}
 		}
 	}
@@ -370,7 +373,7 @@ void clearLineStyle(int startLine, int count) {
 	for (int i = startLine; i < startLine + count; i++) {
 		LineInfo info = lines[i];
 		if (info != null) {
-			info.flags &= ~(ALIGNMENT | INDENT | WRAP_INDENT | JUSTIFY | TABSTOPS);
+			info.flags &= ~(ALIGNMENT | INDENT | VERTICAL_INDENT | WRAP_INDENT | JUSTIFY | TABSTOPS);
 			if (info.flags == 0) lines[i] = null;
 		}
 	}
@@ -458,9 +461,14 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
 	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
 	int height = layout.getBounds().height;
+	int verticalIndent = layout.getVerticalIndent();
 	if (lineBackground != null) {
+		if (verticalIndent > 0) {
+			gc.setBackground(widgetBackground);
+			gc.fillRectangle(client.x, paintY, client.width, verticalIndent);
+		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(client.x, paintY, client.width, height);
+		gc.fillRectangle(client.x, paintY + verticalIndent, client.width, height - verticalIndent);
 	} else {
 		gc.setBackground(widgetBackground);
 		styledText.drawBackground(gc, client.x, paintY, client.width, height);
@@ -725,6 +733,14 @@ int getLineIndent(int index, int defaultIndent) {
 	}
 	return defaultIndent;
 }
+int getLineVerticalIndent(int index) {
+	if (lines == null) return 0;
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & VERTICAL_INDENT) != 0) {
+		return info.verticalIndent;
+	}
+	return 0;
+}
 int getLineWrapIndent(int index, int defaultWrapIndent) {
 	if (lines == null) return defaultWrapIndent;
 	LineInfo info = lines[index];
@@ -976,6 +992,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	char[] segmentChars = null;
 	int indent = 0;
 	int wrapIndent = 0;
+	int verticalIndent = 0;
 	int alignment = SWT.LEFT;
 	int textDirection = orientation;
 	boolean justify = false;
@@ -1005,6 +1022,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	}
 	if (event != null) {
 		indent = event.indent;
+		verticalIndent = event.verticalIndent;
 		wrapIndent = event.wrapIndent;
 		alignment = event.alignment;
 		justify = event.justify;
@@ -1039,6 +1057,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			LineInfo info = lines[lineIndex];
 			if (info != null) {
 				if ((info.flags & INDENT) != 0) indent = info.indent;
+				if ((info.flags & VERTICAL_INDENT) != 0) verticalIndent = info.verticalIndent;
 				if ((info.flags & WRAP_INDENT) != 0) wrapIndent = info.wrapIndent;
 				if ((info.flags & ALIGNMENT) != 0) alignment = info.alignment;
 				if ((info.flags & JUSTIFY) != 0) justify = info.justify;
@@ -1085,6 +1104,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setTabs(tabs);
 	layout.setDefaultTabWidth(tabLength);
 	layout.setIndent(indent);
+	layout.setVerticalIndent(verticalIndent);
 	layout.setWrapIndent(wrapIndent);
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);
@@ -1391,6 +1411,15 @@ void setLineIndent(int startLine, int count, int indent) {
 		lines[i].flags |= INDENT;
 		lines[i].indent = indent;
 	}
+}
+void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
+	if (lines == null)
+		lines = new LineInfo[lineCount];
+	if (lines[lineIndex] == null) {
+		lines[lineIndex] = new LineInfo();
+	}
+	lines[lineIndex].flags |= VERTICAL_INDENT;
+	lines[lineIndex].verticalIndent = verticalLineIndent;
 }
 void setLineWrapIndent(int startLine, int count, int wrapIndent) {
 	if (lines == null) lines = new LineInfo[lineCount];
@@ -1851,4 +1880,6 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 		}
 	}
 }
+
+
 }

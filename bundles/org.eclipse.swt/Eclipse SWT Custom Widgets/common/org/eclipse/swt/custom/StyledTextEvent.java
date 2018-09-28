@@ -25,6 +25,7 @@ class StyledTextEvent extends Event {
 	StyleRange[] styles;
 	int alignment;
 	int indent;
+	int verticalIndent;
 	int wrapIndent;
 	boolean justify;
 	Bullet bullet;

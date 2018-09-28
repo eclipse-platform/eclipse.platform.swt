@@ -14,8 +14,8 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.SWTEventListener;
 
 class StyledTextListener extends TypedListener {
 /**
@@ -54,6 +54,7 @@ public void handleEvent(Event e) {
 			((StyledTextEvent) e).styles = lineStyleEvent.styles;
 			((StyledTextEvent) e).alignment = lineStyleEvent.alignment;
 			((StyledTextEvent) e).indent = lineStyleEvent.indent;
+			((StyledTextEvent) e).verticalIndent = lineStyleEvent.verticalIndent;
 			((StyledTextEvent) e).wrapIndent = lineStyleEvent.wrapIndent;
 			((StyledTextEvent) e).justify = lineStyleEvent.justify;
 			((StyledTextEvent) e).bullet = lineStyleEvent.bullet;
