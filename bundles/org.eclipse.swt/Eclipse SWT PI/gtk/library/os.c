@@ -1686,18 +1686,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1screen_1get_1active_1window
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1active_1window)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1active_1window_FUNC);
-	rc = (jintLong)gdk_screen_get_active_window((GdkScreen *)arg0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1active_1window_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1screen_1get_1default
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -1890,6 +1878,18 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1system_1visual)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
 	rc = (jintLong)gdk_screen_get_system_visual((GdkScreen *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1screen_1get_1window_1stack
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1window_1stack)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1window_1stack_FUNC);
+	rc = (jintLong)gdk_screen_get_window_stack((GdkScreen *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1window_1stack_FUNC);
 	return rc;
 }
 #endif
@@ -2346,6 +2346,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1root_1origin_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1get_1state
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1window_1get_1state)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1state_FUNC);
+	rc = (jint)gdk_window_get_state((GdkWindow *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1state_FUNC);
+	return rc;
 }
 #endif
 

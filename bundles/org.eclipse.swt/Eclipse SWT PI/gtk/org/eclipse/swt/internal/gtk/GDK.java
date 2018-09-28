@@ -248,6 +248,7 @@ public class GDK extends OS {
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
 	public static final int GDK_WINDOW_STATE_FULLSCREEN  = 1 << 4;
+	public static final int GDK_WINDOW_STATE_FOCUSED = 1 << 7;
 	public static final int GDK_UNMAP = 15;
 	public static final int GDK_WA_X = 1 << 2;
 	public static final int GDK_WA_Y = 1 << 3;
@@ -466,6 +467,18 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_cairo_set_source_rgba(cairo, rgba);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 */
+	public static final native int _gdk_window_get_state(long /*int*/ window);
+	public static final int gdk_window_get_state(long /*int*/ window) {
+		lock.lock();
+		try {
+			return _gdk_window_get_state(window);
 		} finally {
 			lock.unlock();
 		}
@@ -1375,11 +1388,11 @@ public class GDK extends OS {
 		}
 	}
 	/** @param screen cast=(GdkScreen *) */
-	public static final native long /*int*/ _gdk_screen_get_active_window(long /*int*/ screen);
-	public static final long /*int*/ gdk_screen_get_active_window(long /*int*/ screen) {
+	public static final native long /*int*/ _gdk_screen_get_window_stack(long /*int*/ screen);
+	public static final long /*int*/ gdk_screen_get_window_stack(long /*int*/ screen) {
 		lock.lock();
 		try {
-			return _gdk_screen_get_active_window(screen);
+			return _gdk_screen_get_window_stack(screen);
 		} finally {
 			lock.unlock();
 		}

@@ -4223,7 +4223,22 @@ public boolean post (Event event) {
 
 			long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
 			long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
-			long /*int*/ gdkWindow = GDK.gdk_screen_get_active_window(gdkScreen);
+			long /*int*/ gdkWindow = 0;
+			long /*int*/ window_list = GDK.gdk_screen_get_window_stack(gdkScreen);
+			if (window_list != 0) {
+				long /*int*/ windows = window_list;
+				while (windows != 0) {
+					long /*int*/ curr_window = OS.g_list_data(windows);
+					int state = GDK.gdk_window_get_state(curr_window);
+					if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0) {
+						gdkWindow = curr_window;
+						break;
+					}
+					windows = OS.g_list_next(windows);
+				}
+				OS.g_list_free(window_list);
+			}
+
 			int[] x = new int[1], y = new int[1];
 			if (gdkWindow == 0) {
 				// Under some window managers or wayland gdk can not determine the active window and passing null
