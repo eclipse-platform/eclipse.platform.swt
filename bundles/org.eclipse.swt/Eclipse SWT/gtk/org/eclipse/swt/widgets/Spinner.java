@@ -281,11 +281,6 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	trim.y -= yborder;
 	trim.width += 2 * xborder;
 	trim.height += 2 * yborder;
-	GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-	trim.x -= innerBorder.left;
-	trim.y -= innerBorder.top;
-	trim.width += innerBorder.left + innerBorder.right;
-	trim.height += innerBorder.top + innerBorder.bottom;
 	return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
 

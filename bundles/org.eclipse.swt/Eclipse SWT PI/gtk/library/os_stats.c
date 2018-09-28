@@ -382,7 +382,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1editable_1set_1editable",
 	"_1gtk_1editable_1set_1position",
 	"_1gtk_1entry_1get_1icon_1area",
-	"_1gtk_1entry_1get_1inner_1border",
 	"_1gtk_1entry_1get_1invisible_1char",
 	"_1gtk_1entry_1get_1layout",
 	"_1gtk_1entry_1get_1layout_1offsets",

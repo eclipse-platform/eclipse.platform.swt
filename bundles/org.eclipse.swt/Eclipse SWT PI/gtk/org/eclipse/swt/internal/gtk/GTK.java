@@ -1856,17 +1856,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gtk_entry_get_inner_border (long /*int*/ entry);
-	/** [GTK2/GTK3; 3.4 deprecated] */
-	public static final long /*int*/ gtk_entry_get_inner_border (long /*int*/ entry) {
-		lock.lock();
-		try {
-			return _gtk_entry_get_inner_border(entry);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param self cast=(GtkEntry *)
 	 * @param n_chars cast=(gint)

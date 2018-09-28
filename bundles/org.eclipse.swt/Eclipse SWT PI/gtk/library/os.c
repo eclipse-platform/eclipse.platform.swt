@@ -4845,26 +4845,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1entry_1get_1inner_1border
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1entry_1get_1inner_1border)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
-/*
-	rc = (jintLong)gtk_entry_get_inner_border(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_entry_get_inner_border)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1entry_1get_1invisible_1char
 JNIEXPORT jchar JNICALL GTK_NATIVE(_1gtk_1entry_1get_1invisible_1char)
 	(JNIEnv *env, jclass that, jintLong arg0)

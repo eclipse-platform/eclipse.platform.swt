@@ -380,7 +380,6 @@ typedef enum {
 	_1gtk_1editable_1set_1editable_FUNC,
 	_1gtk_1editable_1set_1position_FUNC,
 	_1gtk_1entry_1get_1icon_1area_FUNC,
-	_1gtk_1entry_1get_1inner_1border_FUNC,
 	_1gtk_1entry_1get_1invisible_1char_FUNC,
 	_1gtk_1entry_1get_1layout_FUNC,
 	_1gtk_1entry_1get_1layout_1offsets_FUNC,
