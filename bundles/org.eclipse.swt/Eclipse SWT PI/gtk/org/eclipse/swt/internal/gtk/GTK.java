@@ -945,7 +945,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param cell cast=(GtkCellRenderer *)
 	 * @param widget cast=(GtkWidget *)
 	 * @param minimum_size cast=(GtkRequisition *)
@@ -975,8 +974,11 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param cell cast=(GtkCellRenderer *)
+	 * @param widget cast=(GtkWidget *)
+	 * @param width cast=(gint)
+	 * @param minimum_height cast=(gint *)
+	 * @param natural_height cast=(gint *)
 	 */
 	public static final native void _gtk_cell_renderer_get_preferred_height_for_width(long /*int*/ cell, long /*int*/ widget, int width, int[] minimum_height, int[] natural_height);
 	public static final void gtk_cell_renderer_get_preferred_height_for_width(long /*int*/ cell, long /*int*/ widget, int width, int[] minimum_height, int[] natural_height) {
@@ -1016,7 +1018,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param minimum_size cast=(GtkRequisition *)
 	 * @param natural_size cast=(GtkRequisition *)
@@ -1031,7 +1032,10 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param width cast=(gint)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size);
 	public static final void gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size) {
@@ -1043,7 +1047,9 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size);
 	public static final void gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size) {
@@ -1055,7 +1061,10 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param height cast=(gint)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size);
 	public static final void gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size) {
@@ -1233,22 +1242,22 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param orientation cast=(GtkOrientation)
+	 * @param colors_per_line cast=(gint)
+	 * @param n_colors cast(gint)
 	 * @param colors cast=(GdkRGBA *)
 	 */
-	public static final native long /*int*/ _gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors);
-	public static final long /*int*/ gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors) {
+	public static final native void _gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors);
+	public static final void gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors) {
 		lock.lock();
 		try {
-			return _gtk_color_chooser_add_palette(chooser, orientation, colors_per_line, n_colors, colors);
+			_gtk_color_chooser_add_palette(chooser, orientation, colors_per_line, n_colors, colors);
 		} finally {
 			lock.unlock();
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
@@ -1262,7 +1271,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param use_alpha cast=(gboolean)
 	 */
 	public static final native void _gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha);
 	public static final void  gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha) {
@@ -1274,7 +1284,7 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param chooser cast=(GtkColorChooser *)
 	 */
 	public static final native boolean _gtk_color_chooser_get_use_alpha (long /*int*/ chooser);
 	public static final boolean  gtk_color_chooser_get_use_alpha (long /*int*/ chooser) {
@@ -1286,7 +1296,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void _gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color);
 	public static final void  gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color) {
@@ -1298,7 +1309,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param chooser cast=(GtkColorChooser *)
+	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void _gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color);
 	public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color) {
@@ -1342,7 +1354,12 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param combo_box cast=(GtkComboBoxText *)
+	 * @param position cast=(gint)
+	 * @param id cast=(const gchar *)
+	 * @param text cast=(const gchar *)
+	 */
 	public static final native void _gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text);
 	/** Do not call directly, instead use Combo.gtk_combo_box_insert(..) */
 	public static final void gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text) {
@@ -1363,7 +1380,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param combo_box cast=(GtkComboBoxText *)
+	 */
 	public static final native void _gtk_combo_box_text_remove_all(long /*int*/ combo_box);
 	/** Do not call directly. Call Combo.gtk_combo_box_text_remove_all(..) instead). */
 	public static final void gtk_combo_box_text_remove_all(long /*int*/ combo_box) {
@@ -1496,7 +1515,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param container cast=(GtkContainer *)
 	 * @param child cast=(GtkWidget *)
 	 * @param cairo cast=(cairo_t *)
@@ -1703,7 +1721,10 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GdkDragContext *)
+	 * @param surface cast=(cairo_surface_t *)
+	 */
 	public static final native void _gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface);
 	public static final void gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface) {
 		lock.lock();
@@ -1917,14 +1938,15 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param entry cast=(GtkEntry *)
+	 * @param icon_pos cast=(gint)
+	 * @param icon_area cast=(GdkRectangle *),flags=no_in
 	 */
-	public static final native int _gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area);
-	public static final int gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area) {
+	public static final native void _gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area);
+	public static final void gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area) {
 		lock.lock();
 		try {
-			return _gtk_entry_get_icon_area(entry, icon_pos, icon_area);
+			_gtk_entry_get_icon_area(entry, icon_pos, icon_area);
 		} finally {
 			lock.unlock();
 		}
@@ -2062,7 +2084,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param entry cast=(GtkEntry *)
 	 * @param text cast=(const gchar *)
 	 */
@@ -2728,10 +2749,9 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
-	 *
-	 */ //Omited enum: @param gtk_align cast=(GtkAlign) as is causes build errors on gtk2 as GtkAlign doesn't exist there.
+	 * @param gtk_align cast=(GtkAlign)
+	 */
 	public static final native void _gtk_widget_set_halign(long /*int*/ widget, int gtk_align);
 	public static final void gtk_widget_set_halign(long /*int*/ widget, int gtk_align) {
 		lock.lock();
@@ -2742,9 +2762,9 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
-	 */ //Omited enum: @param gtk_align cast=(GtkAlign) as is causes build errors on gtk2 as GtkAlign doesn't exist there.
+	 * @param gtk_align cast=(GtkAlign)
+	 */
 	public static final native void _gtk_widget_set_valign(long /*int*/ widget, int gtk_align);
 	public static final void gtk_widget_set_valign(long /*int*/ widget, int gtk_align ) {
 		lock.lock();
@@ -2755,7 +2775,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
@@ -2768,7 +2787,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param fontchooser cast=(GtkFontChooser *)
+	 */
 	public static final native long /*int*/ _gtk_font_chooser_get_font(long /*int*/ fontchooser);
 	public static final long /*int*/ gtk_font_chooser_get_font(long /*int*/ fontchooser) {
 		lock.lock();
@@ -2779,7 +2800,7 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param fsd cast=(GtkFontChooser *)
 	 * @param fontname cast=(const gchar *)
 	 */
 	public static final native void _gtk_font_chooser_set_font(long /*int*/ fsd, byte[] fontname);
@@ -2939,8 +2960,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param orientation cast=(GtkOrientation)
+	 * @param spacing cast=(gint)
 	 */
 	public static final native long /*int*/ _gtk_box_new(int orientation, int spacing);
 	public static final long /*int*/ gtk_box_new(int orientation, int spacing) {
@@ -3006,7 +3027,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 *  @method flags=dynamic
 	 *  @param orientation cast=(GtkOrientation)
 	 *  @param adjustment cast=(GtkAdjustment *)
 	 */
@@ -3020,7 +3040,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param orientation cast=(GtkOrientation)
 	 * @param adjustment cast=(GtkAdjustment *)
 	 * */
@@ -3034,7 +3053,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param orientation cast=(GtkOrientation)
 	 */
 	public static final native long /*int*/ _gtk_separator_new(int orientation);
@@ -3535,7 +3553,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
 	public static final native long /*int*/ _gtk_css_provider_new();
 	public static final long /*int*/gtk_css_provider_new() {
 		lock.lock();
@@ -3545,7 +3562,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param provider cast=(GtkCssProvider *)
+	 */
 	public static final native long /*int*/ _gtk_css_provider_to_string(long /*int*/ provider);
 	public static final long /*int*/ gtk_css_provider_to_string(long /*int*/ provider) {
 		lock.lock();
@@ -3555,7 +3574,7 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic
+	/**
 	 *  @param name cast=(const gchar *)
 	 *  @param variant cast=(const gchar *)
 	 */
@@ -3569,8 +3588,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
+	 * @param provider cast=(GtkStyleProvider *)
 	 * @param priority cast=(guint)
 	 */
 	public static final native void _gtk_style_context_add_provider_for_screen (long /*int*/ screen, long /*int*/ provider, int priority);
@@ -3583,9 +3602,10 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	* @method flags=dynamic
-	* @param priority cast=(guint)
-	*/
+	 * @param context cast=(GtkStyleContext *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
 	public static final native void _gtk_style_context_add_provider (long /*int*/ context, long /*int*/ provider, int priority);
 	public static final void gtk_style_context_add_provider(
 		long /*int*/context, long /*int*/provider, int priority) {
@@ -4274,7 +4294,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
 	 * @param x cast=(gdouble)
 	 * @param y cast=(gdouble)
 	 * @param width cast=(gdouble)
@@ -4290,7 +4311,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
 	 * @param x cast=(gdouble)
 	 * @param y cast=(gdouble)
 	 * @param width cast=(gdouble)
@@ -4306,7 +4328,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	* @method flags=dynamic
+	* @param context cast=(GtkStyleContext *)
+	* @param cr cast=(cairo_t *)
 	* @param x cast=(gdouble)
 	* @param y cast=(gdouble)
 	* @param width cast=(gdouble)
@@ -4927,7 +4950,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param pbar cast=(GtkProgressBar *)
 	 * @param inverted cast=(gboolean)
 	 */
@@ -4936,19 +4958,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_progress_bar_set_inverted(pbar, inverted);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param pbar cast=(GtkProgressBar *)
-	 */
-	public static final native void _gtk_progress_bar_set_orientation(long /*int*/ pbar, int orientation);
-	public static final void gtk_progress_bar_set_orientation(long /*int*/ pbar, int orientation) {
-		lock.lock();
-		try {
-			_gtk_progress_bar_set_orientation(pbar, orientation);
 		} finally {
 			lock.unlock();
 		}
@@ -5084,7 +5093,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param scrollable cast=(GtkScrollable *)
 	 */
 	public static final native long /*int*/ _gtk_scrollable_get_vadjustment(long /*int*/ scrollable);
@@ -5566,7 +5574,10 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param class_name cast=(const gchar *)
+	 */
 	public static final native void _gtk_style_context_add_class(long /*int*/ context, byte[] class_name);
 	public static final void gtk_style_context_add_class(long /*int*/ context, byte[] class_name) {
 		lock.lock();
@@ -5587,7 +5598,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param color cast=(GdkRGBA *)
+	 */
 	public static final native void _gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color);
 	public static final void gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color) {
 		lock.lock();
@@ -5608,7 +5623,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
 	public static final native void _gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding);
 	public static final void gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding) {
 		lock.lock();
@@ -5632,7 +5651,12 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 *
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
 	public static final native void _gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding);
 	public static final void gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding) {
 		lock.lock();
@@ -5653,7 +5677,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param self cast=(GtkStyleContext *)
+	 */
 	public static final native void _gtk_style_context_save(long /*int*/ self);
 	public static final void gtk_style_context_save(long /*int*/ self) {
 		lock.lock();
@@ -5663,7 +5689,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 */
 	public static final native void _gtk_style_context_restore(long /*int*/ context);
 	public static final void gtk_style_context_restore(long /*int*/ context) {
 		lock.lock();
@@ -5673,9 +5701,9 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic
-	 *  @param self cast=(GtkWidget *)
-	 *  */
+	/**
+	 * @param self cast=(GtkWidget *)
+	 */
 	public static final native int _gtk_widget_get_state_flags(long /*int*/ self);
 	public static final int gtk_widget_get_state_flags(long /*int*/ self) {
 		lock.lock();
@@ -5685,7 +5713,10 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
 	public static final native void _gtk_style_context_set_state(long /*int*/ context, long /*int*/ flags);
 	public static final void gtk_style_context_set_state(long /*int*/ context, long /*int*/ flags) {
 		lock.lock();
@@ -7139,7 +7170,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param column cast=(GtkTreeViewColumn *)
 	 */
 	public static final native long /*int*/_gtk_tree_view_column_get_button(long /*int*/ column);
@@ -8003,7 +8033,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
 	 * @param x cast=(gdouble)
 	 * @param y cast=(gdouble)
 	 * @param width cast=(gdouble)
@@ -8019,7 +8050,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native long /*int*/ _gtk_widget_get_style_context(long /*int*/ widget);
@@ -8096,8 +8126,8 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
+	 * @param region cast=(cairo_region_t *)
 	 */
 	public static final native void _gtk_widget_input_shape_combine_region(long /*int*/ widget, long /*int*/ region);
 	public static final void gtk_widget_input_shape_combine_region(long /*int*/ widget, long /*int*/ region) {
@@ -9009,7 +9039,10 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param region cast=(cairo_region_t *)
+	 */
 	public static final native void _gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region);
 	public static final void gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region) {
 		lock.lock();
