@@ -360,8 +360,15 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
 	long /*int*/ pointer = GDK.gdk_get_pointer(display);
 	long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
-	GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
-	GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		long /*int*/ pointer_seat = GDK.gdk_device_get_seat(pointer);
+		long /*int*/ keyboard_seat = GDK.gdk_device_get_seat(keyboard);
+		GDK.gdk_seat_ungrab(pointer_seat);
+		GDK.gdk_seat_ungrab(keyboard_seat);
+	} else {
+		GDK.gdk_device_ungrab(pointer, GDK.GDK_CURRENT_TIME);
+		GDK.gdk_device_ungrab(keyboard, GDK.GDK_CURRENT_TIME);
+	}
 
 	int operation = DND.DROP_NONE;
 	if (context != 0) {

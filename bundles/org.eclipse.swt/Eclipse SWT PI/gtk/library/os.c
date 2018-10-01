@@ -500,6 +500,26 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1associated_1device)
 }
 #endif
 
+#ifndef NO__1gdk_1device_1get_1seat
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1seat)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1get_1seat_FUNC);
+/*
+	rc = (jintLong)gdk_device_get_seat((GdkDevice *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_device_get_seat)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDevice *))fp)((GdkDevice *)arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1get_1seat_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1device_1get_1window_1at_1position
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1window_1at_1position)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)

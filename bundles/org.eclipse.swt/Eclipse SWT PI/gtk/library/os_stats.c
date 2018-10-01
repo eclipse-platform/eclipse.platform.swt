@@ -55,6 +55,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cursor_1new_1from_1name",
 	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1device_1get_1associated_1device",
+	"_1gdk_1device_1get_1seat",
 	"_1gdk_1device_1get_1window_1at_1position",
 	"_1gdk_1device_1grab",
 	"_1gdk_1device_1manager_1get_1client_1pointer",

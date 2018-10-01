@@ -224,6 +224,8 @@ public abstract class Widget {
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 	static final String KEY_GTK_CSS = "org.eclipse.swt.internal.gtk.css"; //$NON-NLS-1$
 
+	static Callback gdkSeatGrabPrepareFunc;
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1803,14 +1805,36 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 		window = GDK.gdk_get_default_root_window ();
 		display = GDK.gdk_window_get_display (window);
 	}
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
-	return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
+		if (gdkSeatGrabPrepareFunc == null) {
+			gdkSeatGrabPrepareFunc = new Callback(Widget.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
+		}
+		long /*int*/ gdkSeatGrabPrepareFuncAddress = gdkSeatGrabPrepareFunc.getAddress();
+		if (gdkSeatGrabPrepareFuncAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		return GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFuncAddress, window);
+	} else {
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
+		return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
+	}
 }
 
 void gdk_pointer_ungrab (long /*int*/ window, int time_) {
 	long /*int*/ display = GDK.gdk_window_get_display (window);
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
-	GDK.gdk_device_ungrab (pointer, time_);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
+		GDK.gdk_seat_ungrab(seat);
+	} else {
+		long /*int*/ pointer = GDK.gdk_get_pointer(display);
+		GDK.gdk_device_ungrab (pointer, time_);
+	}
+}
+
+static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkWindow, long /*int*/ userData_gdkWindow) {
+	if (userData_gdkWindow != 0) {
+		GDK.gdk_window_show(userData_gdkWindow);
+	}
+	return 0;
 }
 
 /**

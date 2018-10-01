@@ -65,6 +65,7 @@ typedef enum {
 	_1gdk_1cursor_1new_1from_1name_FUNC,
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
 	_1gdk_1device_1get_1associated_1device_FUNC,
+	_1gdk_1device_1get_1seat_FUNC,
 	_1gdk_1device_1get_1window_1at_1position_FUNC,
 	_1gdk_1device_1grab_FUNC,
 	_1gdk_1device_1manager_1get_1client_1pointer_FUNC,

@@ -1275,6 +1275,19 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
+	 * @param device cast=(GdkDevice *)
+	 */
+	public static final native long /*int*/ _gdk_device_get_seat(long /*int*/ device);
+	public static final long /*int*/  gdk_device_get_seat(long /*int*/ device) {
+		lock.lock();
+		try {
+			return _gdk_device_get_seat(device);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param property cast=(GdkAtom)
 	 * @param type cast=(GdkAtom)
