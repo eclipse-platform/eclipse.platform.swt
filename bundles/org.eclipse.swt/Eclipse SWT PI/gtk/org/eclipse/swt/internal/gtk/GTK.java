@@ -7843,6 +7843,10 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param cr cast=(cairo_t *)
+	 */
 	public static final native void _gtk_widget_draw(long /*int*/ widget, long /*int*/ cr);
 	public static final void gtk_widget_draw(long /*int*/ widget, long /*int*/ cr) {
 		lock.lock();

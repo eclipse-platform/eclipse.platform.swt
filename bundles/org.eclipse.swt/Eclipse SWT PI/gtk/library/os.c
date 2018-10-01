@@ -11315,7 +11315,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1draw)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1draw_FUNC);
-	gtk_widget_draw(arg0, arg1);
+	gtk_widget_draw((GtkWidget *)arg0, (cairo_t *)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1draw_FUNC);
 }
 #endif
