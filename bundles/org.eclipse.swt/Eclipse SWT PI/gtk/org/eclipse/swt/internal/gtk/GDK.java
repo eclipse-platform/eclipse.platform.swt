@@ -323,7 +323,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 * @param xvisualid cast=(VisualID)
 	 */
@@ -337,7 +336,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native long /*int*/ _gdk_x11_screen_get_window_manager_name(long /*int*/ screen);
@@ -360,7 +358,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	* @method flags=dynamic
 	* @param gdkwindow cast=(GdkWindow *)
 	*/
 	public static final native long /*int*/ _gdk_x11_window_get_xid(long /*int*/ gdkwindow);
@@ -373,8 +370,8 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param gdkdisplay cast=(GdkDisplay *)
+	 * @param xid cast=(Window)
 	 */
 	public static final native long /*int*/ _gdk_x11_window_lookup_for_display(long /*int*/ gdkdisplay, long /*int*/ xid);
 	public static final long /*int*/ gdk_x11_window_lookup_for_display(long /*int*/ gdkdisplay, long /*int*/ xid) {
@@ -431,17 +428,22 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
-	public static final native long /*int*/ _gdk_cairo_create(long /*int*/ drawable);
-	public static final long /*int*/ gdk_cairo_create(long /*int*/ drawable) {
+	/**
+	 * @param window cast=(GdkWindow *)
+	 */
+	public static final native long /*int*/ _gdk_cairo_create(long /*int*/ window);
+	public static final long /*int*/ gdk_cairo_create(long /*int*/ window) {
 		lock.lock();
 		try {
-			return _gdk_cairo_create(drawable);
+			return _gdk_cairo_create(window);
 		} finally {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param cr cast=(cairo_t *)
+	 * @param rect cast=(GdkRectangle *),flags=no_in
+	 */
 	public static final native boolean _gdk_cairo_get_clip_rectangle(long /*int*/ cr, GdkRectangle rect);
 	public static final boolean gdk_cairo_get_clip_rectangle(long /*int*/ cr, GdkRectangle rect) {
 		lock.lock();
@@ -451,7 +453,10 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param cairo cast=(cairo_t *)
+	 * @param region cast=(cairo_region_t *)
+	 */
 	public static final native void _gdk_cairo_region(long /*int*/ cairo, long /*int*/ region);
 	public static final void gdk_cairo_region(long /*int*/ cairo, long /*int*/ region) {
 		lock.lock();
@@ -461,7 +466,10 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param cairo cast=(cairo_t *)
+	 * @param rgba cast=(const GdkRGBA *)
+	 */
 	public static final native void _gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba);
 	public static final void gdk_cairo_set_source_rgba(long /*int*/ cairo, GdkRGBA rgba) {
 		lock.lock();
@@ -485,7 +493,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param window cast=(GdkWindow *)
-	 * @method flags=dynamic
 	 */
 	public static final native int _gdk_window_get_width(long /*int*/ window);
 	public static final int gdk_window_get_width(long /*int*/ window) {
@@ -498,7 +505,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param window cast=(GdkWindow *)
-	 * @method flags=dynamic
 	 */
 	public static final native long /*int*/ _gdk_window_get_visible_region(long /*int*/ window);
 	public static final long /*int*/ gdk_window_get_visible_region(long /*int*/ window) {
@@ -511,7 +517,6 @@ public class GDK extends OS {
 	}
 	/**
 	 *  @param window cast=(GdkWindow *)
-	 *  @method flags=dynamic
 	 */
 	public static final native int _gdk_window_get_height(long /*int*/ window);
 	public static final int gdk_window_get_height(long /*int*/ window) {
@@ -523,8 +528,10 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param cairo cast=(cairo_t *)
 	 * @param pixbuf cast=(const GdkPixbuf *)
+	 * @param pixbuf_x cast=(gdouble)
+	 * @param pixbuf_y cast=(gdouble)
 	 */
 	public static final native void _gdk_cairo_set_source_pixbuf(long /*int*/ cairo, long /*int*/ pixbuf, double pixbuf_x, double pixbuf_y);
 	public static final void gdk_cairo_set_source_pixbuf(long /*int*/ cairo, long /*int*/ pixbuf, double pixbuf_x, double pixbuf_y) {
@@ -537,8 +544,10 @@ public class GDK extends OS {
 	        }
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param cairo cast=(cairo_t *)
 	 * @param window cast=(GdkWindow *)
+	 * @param x cast=(gdouble)
+	 * @param y cast=(gdouble)
 	 */
 	public static final native void _gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y);
 	public static final void gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y) {
@@ -574,7 +583,12 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 * @param pixbuf cast=(GdkPixbuf *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 */
 	public static final native long /*int*/ _gdk_cursor_new_from_pixbuf(long /*int*/ display, long /*int*/ pixbuf, int x, int y);
 	public static final long /*int*/ gdk_cursor_new_from_pixbuf(long /*int*/ display, long /*int*/ pixbuf, int x, int y) {
 		lock.lock();
@@ -584,7 +598,12 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param device cast=(GdkDevice *)
+	 * @param screen cast=(GdkScreen *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 */
 	public static final native void _gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y);
 	public static final void gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y) {
 		lock.lock();
@@ -594,7 +613,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
 	public static final native long /*int*/ _gdk_display_get_default();
 	public static final long /*int*/ gdk_display_get_default() {
 		lock.lock();
@@ -629,7 +647,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 *  @method flags=dynamic
 	 *  @param window cast=(GdkWindow *)
 	 */
 	public static final native long /*int*/ _gdk_window_get_display(long /*int*/ window);
@@ -665,7 +682,7 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param device cast=(GdkDevice *)
 	 * @param win_x cast=(gint *)
 	 * @param win_y cast=(gint *)
 	 */
@@ -678,7 +695,9 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 */
 	public static final native boolean _gdk_display_supports_cursor_color(long /*int*/ display);
 	public static final boolean gdk_display_supports_cursor_color(long /*int*/ display) {
 		lock.lock();
@@ -689,7 +708,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native int _gdk_drag_context_get_actions(long /*int*/ context);
@@ -702,7 +720,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native long /*int*/ _gdk_drag_context_get_dest_window(long /*int*/ context);
@@ -715,7 +732,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native int _gdk_drag_context_get_selected_action(long /*int*/ context);
@@ -728,7 +744,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native long /*int*/ _gdk_drag_context_list_targets(long /*int*/ context);
@@ -750,16 +765,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_drag_status(context, action, time);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native int _gdk_drawable_get_depth(long /*int*/ drawable);
-	public static final int gdk_drawable_get_depth(long /*int*/ drawable) {
-		lock.lock();
-		try {
-			return _gdk_drawable_get_depth(drawable);
 		} finally {
 			lock.unlock();
 		}
@@ -821,8 +826,9 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
-	 * @param event cast=(GdkEvent *)
+	 * @param event cast=(const GdkEvent *)
+	 * @param delta_x cast=(gdouble *)
+	 * @param delta_y cast=(gdouble *)
 	 */
 	public static final native boolean _gdk_event_get_scroll_deltas(long /*int*/ event, double[] delta_x, double[] delta_y);
 	public static final boolean gdk_event_get_scroll_deltas(long /*int*/ event, double[] delta_x, double[] delta_y) {
@@ -912,7 +918,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native void _gdk_x11_display_error_trap_push(long /*int*/ display);
@@ -925,7 +930,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native void _gdk_x11_display_error_trap_pop_ignored(long /*int*/ display);
@@ -942,26 +946,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_flush();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native void _gdk_gc_set_fill(long /*int*/ gc, int fill);
-	public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {
-		lock.lock();
-		try {
-			_gdk_gc_set_fill(gc, fill);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @method flags=dynamic */
-	public static final native void _gdk_gc_set_stipple(long /*int*/ gc, long /*int*/ stipple);
-	public static final void gdk_gc_set_stipple(long /*int*/ gc, long /*int*/ stipple) {
-		lock.lock();
-		try {
-			_gdk_gc_set_stipple(gc, stipple);
 		} finally {
 			lock.unlock();
 		}
@@ -1051,36 +1035,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_pixbuf_copy_area(src_pixbuf, src_x, src_y, width, height, dest_pixbuf, dest_x, dest_y);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param dest cast=(GdkPixbuf *)
-	 */
-	public static final native long /*int*/ _gdk_pixbuf_get_from_drawable(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
-	public static final long /*int*/ gdk_pixbuf_get_from_drawable(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
-		lock.lock();
-		try {
-			return _gdk_pixbuf_get_from_drawable(dest, src, cmap, src_x, src_y, dest_x, dest_y, width, height);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GdkWindow *)
-	 * @param src_x cast=(gint)
-	 * @param src_y cast=(gint)
-	 * @param width cast=(gint)
-	 * @param height cast=(gint)
-	 */
-	public static final native long /*int*/ _gdk_pixbuf_get_from_window(long /*int*/ window, int src_x, int src_y, int width, int height);
-	public static final long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ window, int src_x, int src_y, int width, int height) {
-		lock.lock();
-		try {
-			return _gdk_pixbuf_get_from_window(window, src_x, src_y, width, height);
 		} finally {
 			lock.unlock();
 		}
@@ -1209,7 +1163,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param pixbuf cast=(GdkPixbuf *)
 	 * @param buffer cast=(gchar **)
 	 * @param buffer_size cast=(gsize *)
@@ -1275,7 +1228,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param device cast=(GdkDevice *)
 	 */
 	public static final native long /*int*/ _gdk_device_get_associated_device(long /*int*/ device);
@@ -1318,7 +1270,9 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param surface cast=(cairo_surface_t *)
+	 */
 	public static final native long /*int*/ _gdk_cairo_region_create_from_surface(long /*int*/ surface);
 	public static final long /*int*/ gdk_cairo_region_create_from_surface(long /*int*/ surface) {
 		lock.lock();
@@ -1377,7 +1331,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
 	public static final native long /*int*/ _gdk_screen_get_default();
 	public static final long /*int*/ gdk_screen_get_default() {
 		lock.lock();
@@ -1398,7 +1351,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native double _gdk_screen_get_resolution(long /*int*/ screen);
@@ -1740,7 +1692,11 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param display cast=(GdkDisplay *)
-	 * @method flags=dynamic
+	 * @param str cast=(const gchar*)
+	 * @param encoding cast=(GdkAtom *)
+	 * @param format cast=(gint *)
+	 * @param ctext cast=(guchar **)
+	 * @param length cast=(gint *)
 	 */
 	public static final native boolean _gdk_x11_display_utf8_to_compound_text(long /*int*/ display, byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length);
 	public static final boolean gdk_x11_display_utf8_to_compound_text(long /*int*/ display, byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length) {
@@ -1821,7 +1777,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param visual cast=(GdkVisual *)
 	 */
 	public static final native int _gdk_visual_get_depth(long /*int*/ visual);
@@ -1834,8 +1789,8 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
+	 * @param content cast=(cairo_content_t)
 	 */
 	public static final native long /*int*/ _gdk_window_create_similar_surface(long /*int*/ window, int content, int width, int height);
 	public static final long /*int*/ gdk_window_create_similar_surface(long /*int*/ window, int content, int width, int height) {
@@ -1914,7 +1869,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
 	 * @param device cast=(GdkDevice *)
 	 * @param x cast=(gint *)
@@ -2006,8 +1960,8 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
+	 * @param region cast=(const cairo_region_t *)
 	 * @param invalidate_children cast=(gboolean)
 	 */
 	public static final native void _gdk_window_invalidate_region(long /*int*/ window, long /*int*/ region, boolean invalidate_children);
@@ -2119,7 +2073,6 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
 	 * @param sibling cast=(GdkWindow *)
 	 * @param above cast=(gboolean)
@@ -2220,8 +2173,10 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
+	 * @param shape_region cast=(const cairo_region_t *)
+	 * @param offset_x cast=(gint)
+	 * @param offset_y cast=(gint)
 	 */
 	public static final native void _gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y);
 	public static final void gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y) {

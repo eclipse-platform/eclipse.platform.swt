@@ -298,15 +298,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cairo_1create)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1create_FUNC);
-/*
-	rc = (jintLong)gdk_cairo_create(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_create)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)gdk_cairo_create((GdkWindow *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1create_FUNC);
 	return rc;
 }
@@ -319,16 +311,8 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1cairo_1get_1clip_1rectangle)
 	GdkRectangle _arg1, *lparg1=NULL;
 	jboolean rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1get_1clip_1rectangle_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_cairo_get_clip_rectangle(arg0, lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_get_clip_rectangle)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
-		}
-	}
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	rc = (jboolean)gdk_cairo_get_clip_rectangle((cairo_t *)arg0, (GdkRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1get_1clip_1rectangle_FUNC);
@@ -341,15 +325,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1region_FUNC);
-/*
-	gdk_cairo_region(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_region)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gdk_cairo_region((cairo_t *)arg0, (cairo_region_t *)arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1region_FUNC);
 }
 #endif
@@ -360,15 +336,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cairo_1region_1create_1from_1surfac
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1region_1create_1from_1surface_FUNC);
-/*
-	rc = (jintLong)gdk_cairo_region_create_from_surface(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_region_create_from_surface)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)gdk_cairo_region_create_from_surface((cairo_surface_t *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1region_1create_1from_1surface_FUNC);
 	return rc;
 }
@@ -379,15 +347,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1pixbuf_FUNC);
-/*
-	gdk_cairo_set_source_pixbuf(arg0, (const GdkPixbuf *)arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_set_source_pixbuf)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, const GdkPixbuf *, jdouble, jdouble))fp)(arg0, (const GdkPixbuf *)arg1, arg2, arg3);
-		}
-	}
+	gdk_cairo_set_source_pixbuf((cairo_t *)arg0, (const GdkPixbuf *)arg1, (gdouble)arg2, (gdouble)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1pixbuf_FUNC);
 }
 #endif
@@ -399,15 +359,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1rgba)
 	GdkRGBA _arg1, *lparg1=NULL;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1rgba_FUNC);
 	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_cairo_set_source_rgba(arg0, lparg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_set_source_rgba)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkRGBA *))fp)(arg0, lparg1);
-		}
-	}
+	gdk_cairo_set_source_rgba((cairo_t *)arg0, (const GdkRGBA *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1rgba_FUNC);
@@ -419,15 +371,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1window)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
-/*
-	gdk_cairo_set_source_window(arg0, (GdkWindow *)arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cairo_set_source_window)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3);
-		}
-	}
+	gdk_cairo_set_source_window((cairo_t *)arg0, (GdkWindow *)arg1, (gdouble)arg2, (gdouble)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
 }
 #endif
@@ -466,15 +410,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
-/*
-	rc = (jintLong)gdk_cursor_new_from_pixbuf(arg0, arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_cursor_new_from_pixbuf)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
-		}
-	}
+	rc = (jintLong)gdk_cursor_new_from_pixbuf((GdkDisplay *)arg0, (GdkPixbuf *)arg1, (gint)arg2, (gint)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
 	return rc;
 }
@@ -486,15 +422,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1associated_1device)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
-/*
 	rc = (jintLong)gdk_device_get_associated_device((GdkDevice *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_get_associated_device)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDevice *))fp)((GdkDevice *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
 	return rc;
 }
@@ -530,15 +458,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1window_1at_1position)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1get_1window_1at_1position_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)gdk_device_get_window_at_position(arg0, (gint *)lparg1, (gint *)lparg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_get_window_at_position)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, gint *, gint *))fp)(arg0, (gint *)lparg1, (gint *)lparg2);
-		}
-	}
+	rc = (jintLong)gdk_device_get_window_at_position((GdkDevice *)arg0, (gint *)lparg1, (gint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -610,15 +530,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp_FUNC);
-/*
-	gdk_device_warp(arg0, arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_warp)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
-		}
-	}
+	gdk_device_warp((GdkDevice *)arg0, (GdkScreen *)arg1, (gint)arg2, (gint)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp_FUNC);
 }
 #endif
@@ -639,15 +551,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1default)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1default_FUNC);
-/*
 	rc = (jintLong)gdk_display_get_default();
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_display_get_default)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1default_FUNC);
 	return rc;
 }
@@ -811,15 +715,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 {
 	jboolean rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1supports_1cursor_1color_FUNC);
-/*
-	rc = (jboolean)gdk_display_supports_cursor_color(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_display_supports_cursor_color)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jboolean)gdk_display_supports_cursor_color((GdkDisplay *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1supports_1cursor_1color_FUNC);
 	return rc;
 }
@@ -831,15 +727,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drag_1context_1get_1actions)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
-/*
 	rc = (jint)gdk_drag_context_get_actions((GdkDragContext *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drag_context_get_actions)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
 	return rc;
 }
@@ -851,15 +739,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1drag_1context_1get_1dest_1window)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1dest_1window_FUNC);
-/*
 	rc = (jintLong)gdk_drag_context_get_dest_window((GdkDragContext *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drag_context_get_dest_window)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1dest_1window_FUNC);
 	return rc;
 }
@@ -871,15 +751,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drag_1context_1get_1selected_1action)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
-/*
 	rc = (jint)gdk_drag_context_get_selected_action((GdkDragContext *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drag_context_get_selected_action)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
 	return rc;
 }
@@ -891,15 +763,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1drag_1context_1list_1targets)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1list_1targets_FUNC);
-/*
 	rc = (jintLong)gdk_drag_context_list_targets((GdkDragContext *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drag_context_list_targets)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1list_1targets_FUNC);
 	return rc;
 }
@@ -912,26 +776,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1drag_1status)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1status_FUNC);
 	gdk_drag_status((GdkDragContext *)arg0, (GdkDragAction)arg1, (guint32)arg2);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1status_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1drawable_1get_1depth
-JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drawable_1get_1depth)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1depth_FUNC);
-/*
-	rc = (jint)gdk_drawable_get_depth(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_drawable_get_depth)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1depth_FUNC);
-	return rc;
 }
 #endif
 
@@ -1018,15 +862,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1scroll_1deltas)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1scroll_1deltas_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_event_get_scroll_deltas((GdkEvent *)arg0, lparg1, lparg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_event_get_scroll_deltas)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkEvent *, jdouble *, jdouble *))fp)((GdkEvent *)arg0, lparg1, lparg2);
-		}
-	}
+	rc = (jboolean)gdk_event_get_scroll_deltas((const GdkEvent *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -1134,42 +970,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1flush)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1flush_FUNC);
 	gdk_flush();
 	GDK_NATIVE_EXIT(env, that, _1gdk_1flush_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1fill
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1fill)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1fill_FUNC);
-/*
-	gdk_gc_set_fill(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_set_fill)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1fill_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1gc_1set_1stipple
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1gc_1set_1stipple)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1stipple_FUNC);
-/*
-	gdk_gc_set_stipple(arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_gc_set_stipple)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1stipple_FUNC);
 }
 #endif
 
@@ -1362,46 +1162,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1pixbuf_1copy_1area)
 }
 #endif
 
-#ifndef NO__1gdk_1pixbuf_1get_1from_1drawable
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1from_1drawable)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1from_1drawable_FUNC);
-/*
-	rc = (jintLong)gdk_pixbuf_get_from_drawable((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_drawable)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkPixbuf *, jintLong, jintLong, jint, jint, jint, jint, jint, jint))fp)((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1from_1drawable_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1pixbuf_1get_1from_1window
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1from_1window)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
-/*
-	rc = (jintLong)gdk_pixbuf_get_from_window((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_window)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, gint, gint, gint, gint))fp)((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1pixbuf_1get_1has_1alpha
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1has_1alpha)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1567,15 +1327,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1pixbuf_1save_1to_1bufferv)
 	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-/*
 	rc = (jboolean)gdk_pixbuf_save_to_bufferv((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (char **)lparg4, (char **)lparg5, (GError **)lparg6);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_pixbuf_save_to_bufferv)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkPixbuf *, gchar **, gsize *, const char *, char **, char **, GError **))fp)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (char **)lparg4, (char **)lparg5, (GError **)lparg6);
-		}
-	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntLongArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
@@ -1692,15 +1444,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1default)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1default_FUNC);
-/*
 	rc = (jintLong)gdk_screen_get_default();
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_default)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1default_FUNC);
 	return rc;
 }
@@ -1856,15 +1600,7 @@ JNIEXPORT jdouble JNICALL GDK_NATIVE(_1gdk_1screen_1get_1resolution)
 {
 	jdouble rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1resolution_FUNC);
-/*
 	rc = (jdouble)gdk_screen_get_resolution((GdkScreen *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_resolution)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1resolution_FUNC);
 	return rc;
 }
@@ -2112,15 +1848,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1visual_1get_1depth)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1visual_1get_1depth_FUNC);
-/*
 	rc = (jint)gdk_visual_get_depth((GdkVisual *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_visual_get_depth)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkVisual *))fp)((GdkVisual *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1visual_1get_1depth_FUNC);
 	return rc;
 }
@@ -2142,15 +1870,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1window_1create_1similar_1surface)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
-/*
-	rc = (jintLong)gdk_window_create_similar_surface((GdkWindow *)arg0, arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_create_similar_surface)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, jint, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3);
-		}
-	}
+	rc = (jintLong)gdk_window_create_similar_surface((GdkWindow *)arg0, (cairo_content_t)arg1, arg2, arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
 	return rc;
 }
@@ -2200,15 +1920,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1window_1get_1device_1position)
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
 	rc = (jintLong)gdk_window_get_device_position((GdkWindow *)arg0, (GdkDevice *)arg1, (gint *)lparg2, (gint *)lparg3, (GdkModifierType *)lparg4);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_get_device_position)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, GdkDevice *, gint *, gint *, GdkModifierType *))fp)((GdkWindow *)arg0, (GdkDevice *)arg1, (gint *)lparg2, (gint *)lparg3, (GdkModifierType *)lparg4);
-		}
-	}
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -2224,15 +1936,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1window_1get_1display)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1display_FUNC);
-/*
 	rc = (jintLong)gdk_window_get_display((GdkWindow *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_get_display)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1display_FUNC);
 	return rc;
 }
@@ -2270,15 +1974,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1window_1get_1height)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1height_FUNC);
-/*
 	rc = (jint)gdk_window_get_height((GdkWindow *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_get_height)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1height_FUNC);
 	return rc;
 }
@@ -2381,15 +2077,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1window_1get_1visible_1region)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1visible_1region_FUNC);
-/*
 	rc = (jintLong)gdk_window_get_visible_region((GdkWindow *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_get_visible_region)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1visible_1region_FUNC);
 	return rc;
 }
@@ -2401,15 +2089,7 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1window_1get_1width)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1width_FUNC);
-/*
 	rc = (jint)gdk_window_get_width((GdkWindow *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_get_width)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1width_FUNC);
 	return rc;
 }
@@ -2443,15 +2123,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1invalidate_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1invalidate_1region_FUNC);
-/*
-	gdk_window_invalidate_region((GdkWindow *)arg0, arg1, (gboolean)arg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_invalidate_region)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong, gboolean))fp)((GdkWindow *)arg0, arg1, (gboolean)arg2);
-		}
-	}
+	gdk_window_invalidate_region((GdkWindow *)arg0, (const cairo_region_t *)arg1, (gboolean)arg2);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1invalidate_1region_FUNC);
 }
 #endif
@@ -2574,15 +2246,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1restack)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1restack_FUNC);
-/*
 	gdk_window_restack((GdkWindow *)arg0, (GdkWindow *)arg1, (gboolean)arg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_restack)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkWindow *, GdkWindow *, gboolean))fp)((GdkWindow *)arg0, (GdkWindow *)arg1, (gboolean)arg2);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1restack_FUNC);
 }
 #endif
@@ -2670,15 +2334,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1shape_1combine_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
-/*
-	gdk_window_shape_combine_region((GdkWindow *)arg0, arg1, arg2, arg3);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_shape_combine_region)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3);
-		}
-	}
+	gdk_window_shape_combine_region((GdkWindow *)arg0, (const cairo_region_t *)arg1, (gint)arg2, (gint)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
 }
 #endif
@@ -2708,15 +2364,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1x11_1display_1error_1trap_1pop_1ignored
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1error_1trap_1pop_1ignored_FUNC);
-/*
 	gdk_x11_display_error_trap_pop_ignored((GdkDisplay *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_display_error_trap_pop_ignored)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1error_1trap_1pop_1ignored_FUNC);
 }
 #endif
@@ -2726,15 +2374,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1x11_1display_1error_1trap_1push)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1error_1trap_1push_FUNC);
-/*
 	gdk_x11_display_error_trap_push((GdkDisplay *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_display_error_trap_push)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1error_1trap_1push_FUNC);
 }
 #endif
@@ -2767,15 +2407,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1x11_1display_1utf8_1to_1compound_1t
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gdk_x11_display_utf8_to_compound_text((GdkDisplay *)arg0, lparg1, lparg2, lparg3, lparg4, lparg5);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_display_utf8_to_compound_text)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *, jbyte *, jintLong *, jint *, jintLong *, jint *))fp)((GdkDisplay *)arg0, lparg1, lparg2, lparg3, lparg4, lparg5);
-		}
-	}
+	rc = (jboolean)gdk_x11_display_utf8_to_compound_text((GdkDisplay *)arg0, (const gchar*)lparg1, (GdkAtom *)lparg2, (gint *)lparg3, (guchar **)lparg4, (gint *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
@@ -2805,15 +2437,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1screen_1get_1window_1manager_1
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1screen_1get_1window_1manager_1name_FUNC);
-/*
 	rc = (jintLong)gdk_x11_screen_get_window_manager_name((GdkScreen *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_screen_get_window_manager_name)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1screen_1get_1window_1manager_1name_FUNC);
 	return rc;
 }
@@ -2825,15 +2449,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1screen_1lookup_1visual)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
-/*
 	rc = (jintLong)gdk_x11_screen_lookup_visual((GdkScreen *)arg0, (VisualID)arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_screen_lookup_visual)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkScreen *, VisualID))fp)((GdkScreen *)arg0, (VisualID)arg1);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
 	return rc;
 }
@@ -2857,15 +2473,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1window_1get_1xid)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1window_1get_1xid_FUNC);
-/*
 	rc = (jintLong)gdk_x11_window_get_xid((GdkWindow *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_window_get_xid)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1window_1get_1xid_FUNC);
 	return rc;
 }
@@ -2877,15 +2485,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1window_1lookup_1for_1display)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1window_1lookup_1for_1display_FUNC);
-/*
-	rc = (jintLong)gdk_x11_window_lookup_for_display((GdkDisplay *)arg0, arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_x11_window_lookup_for_display)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDisplay *, jintLong))fp)((GdkDisplay *)arg0, arg1);
-		}
-	}
+	rc = (jintLong)gdk_x11_window_lookup_for_display((GdkDisplay *)arg0, (Window)arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1window_1lookup_1for_1display_FUNC);
 	return rc;
 }
