@@ -712,6 +712,16 @@ void destroyToolTip (ToolTip toolTip) {
 void destroyWidget () {
 	fixActiveShell ();
 	super.destroyWidget ();
+
+	/*
+	* Destroy context only after the controls that used it were destroyed.
+	* Technically, that shouldn't be necessary, because 'Control.releaseWidget'
+	* clears up association by calling 'OS.ImmAssociateContext (handle, 0)'.
+	* However, there's a bug in Windows 10 (see bug 526758), and this is the workaround.
+	*/
+	if (OS.IsDBLocale) {
+		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
+	}
 }
 
 @Override
@@ -1366,9 +1376,6 @@ void releaseWidget () {
 	}
 	lpstrTip = 0;
 	toolTipHandle = balloonTipHandle = menuItemToolTipHandle = 0;
-	if (OS.IsDBLocale) {
-		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
-	}
 	lastActive = null;
 	toolTitle = balloonTitle = null;
 }
