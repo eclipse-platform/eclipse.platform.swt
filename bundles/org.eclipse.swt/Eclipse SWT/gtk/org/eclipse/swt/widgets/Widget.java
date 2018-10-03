@@ -218,7 +218,19 @@ public abstract class Widget {
 	static final int CREATE_MENU_PROXY = 83;
 	static final int ROW_HAS_CHILD_TOGGLED = 84;
 	static final int POPPED_UP = 85;
-	static final int LAST_SIGNAL = 86;
+	static final int FOCUS_IN = 86;
+	static final int FOCUS_OUT = 87;
+	static final int IM_UPDATE = 88;
+	static final int KEY_PRESSED = 89;
+	static final int KEY_RELEASED = 90;
+	static final int DECELERATE = 91;
+	static final int SCROLL = 92;
+	static final int SCROLL_BEGIN = 93;
+	static final int SCROLL_END = 94;
+	static final int ENTER = 95;
+	static final int LEAVE = 96;
+	static final int MOTION = 97;
+	static final int LAST_SIGNAL = 98;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
