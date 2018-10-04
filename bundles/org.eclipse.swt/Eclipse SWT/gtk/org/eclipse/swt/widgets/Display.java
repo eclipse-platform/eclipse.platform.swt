@@ -3847,7 +3847,13 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 public long /*int*/ internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long /*int*/ root = GDK.gdk_get_default_root_window();
-	long /*int*/ gc = GDK.gdk_cairo_create (root);
+	long /*int*/ gc = 0;
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		long /*int*/ surface = GDK.gdk_window_create_similar_surface(root, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		gc = Cairo.cairo_create(surface);
+	} else {
+		gc = GDK.gdk_cairo_create(root);
+	}
 	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 	//TODO how gdk_gc_set_subwindow is done in cairo?
 	if (data != null) {

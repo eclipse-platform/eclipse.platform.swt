@@ -2600,7 +2600,12 @@ void init(Drawable drawable, GCData data, long /*int*/ gdkGC) {
 void initCairo() {
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
-	data.cairo = cairo = GDK.gdk_cairo_create(data.drawable);
+	if (GTK.GTK_VERSION >= 	OS.VERSION(3, 22, 0)) {
+		long /*int*/ surface = GDK.gdk_window_create_similar_surface(data.drawable, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		data.cairo = cairo = Cairo.cairo_create(surface);
+	} else {
+		data.cairo = cairo = GDK.gdk_cairo_create(data.drawable);
+	}
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);

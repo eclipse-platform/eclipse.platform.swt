@@ -396,6 +396,34 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 * @param region cast=(cairo_region_t *)
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region);
+	public static final long /*int*/ gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region) {
+		lock.lock();
+		try {
+			return _gdk_window_begin_draw_frame(window, region);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 * @param context cast=(GdkDrawingContext *)
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context);
+	public static final long /*int*/ gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context) {
+		lock.lock();
+		try {
+			return _gdk_window_end_draw_frame(window, context);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param atom_name cast=(const gchar *),flags=no_out critical */
 	public static final native long /*int*/ _gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
 	public static final long /*int*/ gdk_atom_intern(byte[] atom_name, boolean only_if_exists) {
@@ -430,6 +458,7 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param window cast=(GdkWindow *)
+	 * @method flags=dynamic
 	 */
 	public static final native long /*int*/ _gdk_cairo_create(long /*int*/ window);
 	public static final long /*int*/ gdk_cairo_create(long /*int*/ window) {
@@ -765,6 +794,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_drag_status(context, action, time);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param context cast=(GdkDrawingContext *)
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_drawing_context_get_cairo_context(long /*int*/ context);
+	public static final long /*int*/ gdk_drawing_context_get_cairo_context(long /*int*/ context) {
+		lock.lock();
+		try {
+			return _gdk_drawing_context_get_cairo_context(context);
 		} finally {
 			lock.unlock();
 		}

@@ -184,7 +184,19 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ region, 
 }
 
 void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long /*int*/ region, int x, int y, int width, int height) {
-	long /*int*/ cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
+	long /*int*/ cairo = 0;
+	long /*int*/ context = 0;
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		if (cr == 0) {
+			long /*int*/ cairo_region = region != 0 ? region: GDK.gdk_window_get_visible_region(window);
+			context = GDK.gdk_window_begin_draw_frame(window, cairo_region);
+			cairo = GDK.gdk_drawing_context_get_cairo_context(context);
+		} else {
+			cairo = cr;
+		}
+	} else {
+		cairo = cr != 0 ? cr : GDK.gdk_cairo_create(window);
+	}
 	/*
 	 * It's possible that a client is using an SWT.NO_BACKGROUND Composite with custom painting
 	 * and a region to provide "overlay" functionality. In this case we don't want to paint
@@ -221,7 +233,11 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 	}
 	Cairo.cairo_rectangle (cairo, x, y, width, height);
 	Cairo.cairo_fill (cairo);
-	if (cairo != cr) Cairo.cairo_destroy(cairo);
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		if (cairo != cr && context != 0) GDK.gdk_window_end_draw_frame(window, context);
+	} else {
+		if (cairo != cr) Cairo.cairo_destroy(cairo);
+	}
 }
 
 boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
@@ -3755,7 +3771,12 @@ public long /*int*/ internal_new_GC (GCData data) {
 	if (gc != 0) {
 		Cairo.cairo_reference (gc);
 	} else {
-		gc = GDK.gdk_cairo_create (window);
+		if (GTK.GTK_VERSION >= 	OS.VERSION(3, 22, 0)) {
+			long /*int*/ surface = GDK.gdk_window_create_similar_surface(window, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+			gc = Cairo.cairo_create(surface);
+		} else {
+			gc = GDK.gdk_cairo_create (window);
+		}
 	}
 	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
