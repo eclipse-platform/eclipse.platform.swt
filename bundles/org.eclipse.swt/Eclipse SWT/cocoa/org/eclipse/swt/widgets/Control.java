@@ -2505,7 +2505,7 @@ long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEv
 	event.x = x;
 	event.y = y;
 	NSEvent nsEvent = new NSEvent(theEvent);
-	event.detail = nsEvent.buttonNumber() > 0 ? SWT.MENU_MOUSE : SWT.MENU_KEYBOARD;
+	event.detail = (nsEvent.type() == OS.NSLeftMouseDown || nsEvent.buttonNumber() > 0) ? SWT.MENU_MOUSE : SWT.MENU_KEYBOARD;
 	sendEvent (SWT.MenuDetect, event);
 	//widget could be disposed at this point
 	if (isDisposed ()) return 0;
