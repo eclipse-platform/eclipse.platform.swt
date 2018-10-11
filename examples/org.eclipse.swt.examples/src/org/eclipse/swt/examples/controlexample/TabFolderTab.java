@@ -181,6 +181,6 @@ class TabFolderTab extends Tab {
 		super.setExampleWidgetState ();
 		topButton.setSelection ((tabFolder1.getStyle () & SWT.TOP) != 0);
 		bottomButton.setSelection ((tabFolder1.getStyle () & SWT.BOTTOM) != 0);
-		borderButton.setEnabled(false);
+		borderButton.setSelection ((tabFolder1.getStyle () & SWT.BORDER) != 0);
 	}
 }

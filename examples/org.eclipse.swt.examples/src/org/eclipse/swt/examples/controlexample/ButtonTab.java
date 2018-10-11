@@ -255,6 +255,6 @@ class ButtonTab extends AlignableTab {
 		arrowButton.setSelection ((button1.getStyle () & SWT.ARROW) != 0);
 		flatButton.setSelection ((button1.getStyle () & SWT.FLAT) != 0);
 		wrapButton.setSelection ((button1.getStyle () & SWT.WRAP) != 0);
-		borderButton.setEnabled(false);
+		borderButton.setSelection ((button1.getStyle () & SWT.BORDER) != 0);
 	}
 }

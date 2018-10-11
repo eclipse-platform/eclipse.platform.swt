@@ -160,7 +160,7 @@ abstract class RangeTab extends Tab {
 				horizontalButton.setSelection ((widgets [0].getStyle () & SWT.HORIZONTAL) != 0);
 				verticalButton.setSelection ((widgets [0].getStyle () & SWT.VERTICAL) != 0);
 			}
-			borderButton.setEnabled(false);
+			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
 

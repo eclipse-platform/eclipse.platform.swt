@@ -82,6 +82,7 @@ class GroupTab extends Tab {
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
 		if (shadowOutButton.getSelection ()) style |= SWT.SHADOW_OUT;
 		if (shadowNoneButton.getSelection ()) style |= SWT.SHADOW_NONE;
+		if (borderButton.getSelection ()) style |= SWT.BORDER;
 
 		/* Create the example widgets */
 		group1 = new Group (groupGroup, style);
@@ -158,7 +159,7 @@ class GroupTab extends Tab {
 		shadowInButton.setSelection ((group1.getStyle () & SWT.SHADOW_IN) != 0);
 		shadowOutButton.setSelection ((group1.getStyle () & SWT.SHADOW_OUT) != 0);
 		shadowNoneButton.setSelection ((group1.getStyle () & SWT.SHADOW_NONE) != 0);
-		borderButton.setEnabled(false);
+		borderButton.setSelection ((group1.getStyle () & SWT.BORDER) != 0);
 		if (!instance.startup) setTitleText ();
 	}
 }

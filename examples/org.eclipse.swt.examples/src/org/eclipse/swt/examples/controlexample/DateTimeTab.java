@@ -66,6 +66,7 @@ class DateTimeTab extends Tab {
 		if (mediumButton.getSelection ()) style |= SWT.MEDIUM;
 		if (longButton.getSelection ()) style |= SWT.LONG;
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
+		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (weekNumbersButton.getSelection ()) style |= SWT.CALENDAR_WEEKNUMBERS;
 
 		/* Create the example widgets */
@@ -160,6 +161,6 @@ class DateTimeTab extends Tab {
 			weekNumbersButton.setEnabled(false);
 			weekNumbersButton.setSelection(false);
 		}
-		borderButton.setEnabled(false);
+		borderButton.setSelection ((dateTime1.getStyle () & SWT.BORDER) != 0);
 	}
 }

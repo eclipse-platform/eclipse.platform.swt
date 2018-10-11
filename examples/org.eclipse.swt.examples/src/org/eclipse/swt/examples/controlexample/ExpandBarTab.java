@@ -157,7 +157,7 @@ class ExpandBarTab extends Tab {
 		Widget [] widgets = getExampleWidgets ();
 		if (widgets.length != 0){
 			verticalButton.setSelection ((widgets [0].getStyle () & SWT.V_SCROLL) != 0);
-			borderButton.setEnabled(false);
+			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
 }

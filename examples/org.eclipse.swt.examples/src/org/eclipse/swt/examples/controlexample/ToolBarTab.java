@@ -335,7 +335,7 @@ class ToolBarTab extends Tab {
 		wrapButton.setSelection ((imageToolBar.getStyle () & SWT.WRAP) != 0);
 		shadowOutButton.setSelection ((imageToolBar.getStyle () & SWT.SHADOW_OUT) != 0);
 		rightButton.setSelection ((imageToolBar.getStyle () & SWT.RIGHT) != 0);
-		borderButton.setEnabled(false);
+		borderButton.setSelection ((imageToolBar.getStyle () & SWT.BORDER) != 0);
 	}
 
 	/**
