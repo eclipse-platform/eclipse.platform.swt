@@ -1,0 +1,2 @@
+# To force a version qualifier update add the bug here
+Bug 540097 - Comparator Errors in I20181012-1800 Build
