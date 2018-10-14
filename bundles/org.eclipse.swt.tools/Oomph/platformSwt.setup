@@ -159,18 +159,6 @@
         </predicate>
       </sourceLocator>
     </targlet>
-    <targlet
-        name="Platform"
-        activeRepositoryList="${eclipse.target.platform}">
-      <requirement
-          name="org.eclipse.platform.feature.group"/>
-      <requirement
-          name="org.eclipse.jdt.feature.group"/>
-      <requirement
-          name="org.eclipse.pde.feature.group"/>
-      <requirement
-          name="org.eclipse.equinox.executable.feature.group"/>
-    </targlet>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
