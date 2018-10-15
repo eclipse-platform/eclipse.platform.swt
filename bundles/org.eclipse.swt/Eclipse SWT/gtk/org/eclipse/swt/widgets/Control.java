@@ -3479,13 +3479,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
-	/*
-	 * Bug 540083: Git compare editor arrows does not render when scrolling. This is because GTK
-	 * cannot guarantee what you draw directly on a windowing surface is going to be rendered on
-	 * screen. The fix is to queue draw events to ensure it gets rendered.
-	 * See https://mail.gnome.org/archives/gtk-app-devel-list/2017-January/msg00053.html
-	 */
-	GTK.gtk_widget_queue_draw(widget);
 	return 0;
 }
 
