@@ -760,6 +760,9 @@ public int getTopIndex () {
 	long /*int*/ vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	currentAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);
 	if (cachedAdjustment == currentAdjustment) {
+		if (Device.DEBUG) {
+			System.out.println("Using the cached GtkAdjustment, topIndex is " + topIndex);
+		}
 		return topIndex;
 	} else {
 		long /*int*/ [] path = new long /*int*/ [1];
@@ -770,6 +773,9 @@ public int getTopIndex () {
 		int[] index = new int [1];
 		if (indices != 0) C.memmove (index, indices, 4);
 		GTK.gtk_tree_path_free (path [0]);
+		if (Device.DEBUG) {
+			System.out.println("Fetching the top index from GTK, topIndex is " + index[0]);
+		}
 		return index [0];
 	}
 }
