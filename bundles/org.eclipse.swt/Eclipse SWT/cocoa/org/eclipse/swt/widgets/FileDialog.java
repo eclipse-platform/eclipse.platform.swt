@@ -317,14 +317,15 @@ public String open () {
 			menu.addItem(nsItem);
 			nsItem.release();
 		}
-		widget.selectItemAtIndex(0 <= filterIndex && filterIndex < filterExtensions.length ? filterIndex : 0);
+		int selectionIndex = 0 <= filterIndex && filterIndex < filterExtensions.length ? filterIndex : 0;
+		widget.selectItemAtIndex(selectionIndex);
 		widget.sizeToFit();
 		panel.setAccessoryView(widget);
 		popup = widget;
 
-		setAllowedFileType(filterExtensions[0]);
+		setAllowedFileType(filterExtensions[selectionIndex]);
 		panel.setAllowsOtherFileTypes(true);
-		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[0]));
+		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[selectionIndex]));
 	} else {
 		panel.setTreatsFilePackagesAsDirectories(false);
 	}
