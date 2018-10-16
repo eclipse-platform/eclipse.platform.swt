@@ -3404,6 +3404,21 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	return false;
 }
 
+long /*int*/ createMetafileWithChars(long /*int*/ hdc, long /*int*/ hFont, char[] chars, int charCount) {
+	long /*int*/ hHeap = OS.GetProcessHeap();
+	long /*int*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
+	long /*int*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
+	long /*int*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
+	int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
+	if (OS.ScriptStringAnalyse(metaFileDc, chars, charCount, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+		OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
+		OS.ScriptStringFree(ssa);
+	}
+	OS.HeapFree(hHeap, 0, ssa);
+	OS.SelectObject(metaFileDc, oldMetaFont);
+	return OS.CloseEnhMetaFile(metaFileDc);
+}
+
 /*
  * Generate glyphs for one Run.
  */
@@ -3455,17 +3470,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			}
 		}
 		if (count > 0) {
-			long /*int*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
-			long /*int*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
-			long /*int*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
-			int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
-			if (OS.ScriptStringAnalyse(metaFileDc, sampleChars, count, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
-				OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
-				OS.ScriptStringFree(ssa);
-			}
-			OS.HeapFree(hHeap, 0, ssa);
-			OS.SelectObject(metaFileDc, oldMetaFont);
-			long /*int*/ metaFile = OS.CloseEnhMetaFile(metaFileDc);
+			long /*int*/ metaFile = createMetafileWithChars(hdc, hFont, sampleChars, count);
 			final EMREXTCREATEFONTINDIRECTW emr = new EMREXTCREATEFONTINDIRECTW();
 			class MetaFileEnumProc {
 				long /*int*/ metaFileEnumProc (long /*int*/ hDC, long /*int*/ table, long /*int*/ record, long /*int*/ nObj, long /*int*/ lpData) {
