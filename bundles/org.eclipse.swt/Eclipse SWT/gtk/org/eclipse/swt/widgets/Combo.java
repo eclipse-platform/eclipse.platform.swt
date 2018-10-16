@@ -459,6 +459,15 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
+@Override
+Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
+	int [] xpad = new int[1];
+	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
+	Point nativeSize = super.computeNativeSize(h, wHint, hHint, changed);
+	nativeSize.x += xpad[0] * 2;
+	return nativeSize;
+}
+
 /**
  * Copies the selected text.
  * <p>
