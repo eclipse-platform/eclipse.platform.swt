@@ -180,6 +180,7 @@ public class GTK extends OS {
 	public static final byte[] GTK_STYLE_CLASS_VIEW = OS.ascii("view");
 	public static final byte[] GTK_STYLE_CLASS_CELL = OS.ascii("cell");
 	public static final byte[] GTK_STYLE_CLASS_PANE_SEPARATOR = OS.ascii("pane-separator");
+	public static final byte[] GTK_STYLE_CLASS_SUGGESTED_ACTION = OS.ascii("suggested-action");
 	public static final byte[] GTK_STYLE_CLASS_FRAME = OS.ascii("frame");
 
 	/** Properties */
