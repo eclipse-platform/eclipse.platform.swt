@@ -129,7 +129,7 @@ extern int IS_JNI_1_2;
 		static int initialized = 0; \
 		static FARPROC var = NULL; \
 		if (!initialized) { \
-			HMODULE hm = LoadLibraryA(name##_LIB); \
+			HMODULE hm = LoadLibrary(name##_LIB); \
 			if (hm) var = GetProcAddress(hm, #name); \
 			initialized = 1; \
 		}

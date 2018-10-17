@@ -1852,6 +1852,22 @@ void setToolTipText (long /*int*/ hwnd, String text) {
 	}
 }
 
+void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
+	/*
+	* Ensure that the current position of the mouse
+	* is inside the client area of the shell.  This
+	* prevents tool tips from popping up over the
+	* shell trimmings.
+	*/
+	if (!hasCursor ()) return;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
+	int byteCount = buffer.length;
+	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpstrTip, buffer, byteCount);
+	lpnmtdi.lpszText = lpstrTip;
+}
+
 void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 	/*
 	* Ensure that the current position of the mouse

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,10 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class SHFILEINFO {
-	/** @field cast=(HICON) */
-	public long /*int*/ hIcon;
-	public int iIcon;
-	public int dwAttributes;
-	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();
+public class NOTIFYICONDATAW extends NOTIFYICONDATA {
+	/** @field cast=(TCHAR) */
+	public char szTip[] = new char [128];
+	/** @field cast=(TCHAR) */
+	public char szInfo[] = new char [256];
+	/** @field cast=(TCHAR) */
+	public char szInfoTitle[] = new char [64];
+	public static final int sizeof = OS.NOTIFYICONDATAW_V2_SIZE;
 }

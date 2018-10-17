@@ -362,10 +362,10 @@ public boolean execute (String fileName) {
  */
 public ImageData getImageData () {
 	if (extension != null) {
-		SHFILEINFO shfi = new SHFILEINFO ();
+		SHFILEINFO shfi = OS.IsUnicode ? (SHFILEINFO) new SHFILEINFOW () : new SHFILEINFOA ();
 		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
 		TCHAR pszPath = new TCHAR (0, extension, true);
-		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
+		OS.SHGetFileInfo (pszPath, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
 		if (shfi.hIcon != 0) {
 			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
 			/* Fetch the ImageData at 100% zoom and return */

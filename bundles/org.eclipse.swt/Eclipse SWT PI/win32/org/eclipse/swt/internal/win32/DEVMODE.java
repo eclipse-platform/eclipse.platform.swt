@@ -13,8 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class DEVMODE {
-	public char[] dmDeviceName = new char[OS.CCHDEVICENAME];
+public abstract class DEVMODE {
 	public short dmSpecVersion;
 	public short dmDriverVersion;
 	public short dmSize;
@@ -33,7 +32,6 @@ public class DEVMODE {
 	public short dmYResolution;
 	public short dmTTOption;
 	public short dmCollate;
-	public char[] dmFormName = new char[OS.CCHFORMNAME];
 	public short dmLogPixels;
 	public int dmBitsPerPel;
 	public int dmPelsWidth;
@@ -48,5 +46,5 @@ public class DEVMODE {
 	public int dmReserved2;
 	public int dmPanningWidth;
 	public int dmPanningHeight;
-	public static final int sizeof = OS.DEVMODE_sizeof ();
+	public static final int sizeof = OS.IsUnicode ? OS.DEVMODEW_sizeof () : OS.DEVMODEA_sizeof ();
 }

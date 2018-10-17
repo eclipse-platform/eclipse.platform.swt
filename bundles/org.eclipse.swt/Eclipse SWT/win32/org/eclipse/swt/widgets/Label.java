@@ -167,7 +167,7 @@ static int checkStyle (int style) {
 		long /*int*/ oldFont = OS.SelectObject (hDC, newFont);
 		int length = OS.GetWindowTextLength (handle);
 		if (length == 0) {
-			TEXTMETRIC tm = new TEXTMETRIC ();
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 			OS.GetTextMetrics (hDC, tm);
 			height = Math.max (height, tm.tmHeight);
 		} else {

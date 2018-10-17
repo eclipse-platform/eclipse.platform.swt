@@ -244,7 +244,7 @@ protected void create(DeviceData deviceData) {
 
 	/* Initialize DEVMODE struct fields from the printerData. */
 	if (lpInitData != 0) {
-		DEVMODE devmode = new DEVMODE ();
+		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 		OS.MoveMemory(devmode, lpInitData, DEVMODE.sizeof);
 		devmode.dmFields |= OS.DM_ORIENTATION;
 		devmode.dmOrientation = data.orientation == PrinterData.LANDSCAPE ? OS.DMORIENT_LANDSCAPE : OS.DMORIENT_PORTRAIT;

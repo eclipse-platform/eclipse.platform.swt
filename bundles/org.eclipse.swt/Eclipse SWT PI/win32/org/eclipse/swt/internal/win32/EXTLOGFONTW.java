@@ -14,7 +14,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class EXTLOGFONTW {
-	public LOGFONT elfLogFont = new LOGFONT();
+	public LOGFONTW elfLogFont = new LOGFONTW();
 	public char[] elfFullName = new char[OS.LF_FULLFACESIZE];
 	public char[] elfStyle = new char[OS.LF_FACESIZE];
 	public int elfVersion;

@@ -539,13 +539,20 @@ static long /*int*/ createGdipFont(long /*int*/ hDC, long /*int*/ hFont, long /*
 	long /*int*/ family = 0;
 	if (!Gdip.Font_IsAvailable(font)) {
 		Gdip.Font_delete(font);
-		LOGFONT logFont = new LOGFONT ();
+		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 		OS.GetObject(hFont, LOGFONT.sizeof, logFont);
 		int size = Math.abs(logFont.lfHeight);
 		int style = Gdip.FontStyleRegular;
 		if (logFont.lfWeight == 700) style |= Gdip.FontStyleBold;
 		if (logFont.lfItalic != 0) style |= Gdip.FontStyleItalic;
-		char[] chars = logFont.lfFaceName;
+		char[] chars;
+		if (OS.IsUnicode) {
+			chars = ((LOGFONTW)logFont).lfFaceName;
+		} else {
+			chars = new char[OS.LF_FACESIZE];
+			byte[] bytes = ((LOGFONTA)logFont).lfFaceName;
+			OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
+		}
 		int index = 0;
 		while (index < chars.length) {
 			if (chars [index] == 0) break;
@@ -575,9 +582,9 @@ static long /*int*/ createGdipFont(long /*int*/ hDC, long /*int*/ hFont, long /*
 		}
 		if (outFont != null && font != 0) {
 			long /*int*/ hHeap = OS.GetProcessHeap();
-			long /*int*/ pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
+			long /*int*/ pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONTW.sizeof);
 			Gdip.Font_GetLogFontW(font, graphics, pLogFont);
-			outFont[0] = OS.CreateFontIndirect(pLogFont);
+			outFont[0] = OS.CreateFontIndirectW(pLogFont);
 			OS.HeapFree(hHeap, 0, pLogFont);
 		}
 	}
@@ -2115,7 +2122,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 	if ((data.style & SWT.MIRRORED) != 0) {
 		if (!isTransparent) {
 			size = new SIZE();
-			OS.GetTextExtentPoint32(handle, buffer, length, size);
+			OS.GetTextExtentPoint32W(handle, buffer, length, size);
 			rect = new RECT ();
 			rect.left = x;
 			rect.right = x + size.cx;
@@ -2126,13 +2133,13 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		x--;
 	}
 	if (OS.GetROP2(handle) != OS.R2_XORPEN) {
-		OS.ExtTextOut(handle, x, y, flags, rect, buffer, length, null);
+		OS.ExtTextOutW(handle, x, y, flags, rect, buffer, length, null);
 	} else {
 		int foreground = OS.GetTextColor(handle);
 		if (isTransparent) {
 			if (size == null) {
 				size = new SIZE();
-				OS.GetTextExtentPoint32(handle, buffer, length, size);
+				OS.GetTextExtentPoint32W(handle, buffer, length, size);
 			}
 			int width = size.cx, height = size.cy;
 			long /*int*/ hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
@@ -2143,7 +2150,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 			OS.SetBkMode(memDC, OS.TRANSPARENT);
 			OS.SetTextColor(memDC, foreground);
 			OS.SelectObject(memDC, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-			OS.ExtTextOut(memDC, 0, 0, 0, null, buffer, length, null);
+			OS.ExtTextOutW(memDC, 0, 0, 0, null, buffer, length, null);
 			OS.BitBlt(handle, x, y, width, height, memDC, 0, 0, OS.SRCINVERT);
 			OS.SelectObject(memDC, hOldBitmap);
 			OS.DeleteDC(memDC);
@@ -2151,7 +2158,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		} else {
 			int background = OS.GetBkColor(handle);
 			OS.SetTextColor(handle, foreground ^ background);
-			OS.ExtTextOut(handle, x, y, flags, rect, buffer, length, null);
+			OS.ExtTextOutW(handle, x, y, flags, rect, buffer, length, null);
 			OS.SetTextColor(handle, foreground);
 		}
 	}
@@ -2316,7 +2323,7 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 
 boolean useGDIP (long /*int*/ hdc, char[] buffer) {
 	short[] glyphs = new short[buffer.length];
-	OS.GetGlyphIndices(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
+	OS.GetGlyphIndicesW(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
 	for (int i = 0; i < glyphs.length; i++) {
 		if (glyphs [i] == -1) {
 			switch (buffer[i]) {
@@ -2341,7 +2348,7 @@ void drawText(long /*int*/ gdipGraphics, String string, int x, int y, int flags,
 	if (hFont == 0 && data.font != null) hFont = data.font.handle;
 	long /*int*/ oldFont = 0;
 	if (hFont != 0) oldFont = OS.SelectObject(hdc, hFont);
-	TEXTMETRIC lptm = new TEXTMETRIC();
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics(hdc, lptm);
 	boolean gdip = useGDIP(hdc, chars);
 	if (hFont != 0) OS.SelectObject(hdc, oldFont);
@@ -2437,7 +2444,7 @@ RectF drawText(long /*int*/ gdipGraphics, char[] buffer, int start, int length, 
 		buffer = temp;
 	}
 	if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
-	OS.GetCharacterPlacement(hdc, buffer, length, 0, result, dwFlags);
+	OS.GetCharacterPlacementW(hdc, buffer, length, 0, result, dwFlags);
 	if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) & ~OS.LAYOUT_RTL);
 	if (hFont != 0) OS.SelectObject(hdc, oldFont);
 	Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
@@ -3260,10 +3267,10 @@ public int getCharWidth(char ch) {
 	}
 
 	/* It wasn't a truetype font */
-	TEXTMETRIC lptm = new TEXTMETRIC();
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics(handle, lptm);
 	SIZE size = new SIZE();
-	OS.GetTextExtentPoint32(handle, new char[]{ch}, 1, size);
+	OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
 	return size.cx - lptm.tmOverhang;
 }
 
@@ -3434,7 +3441,7 @@ public Font getFont () {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
-	TEXTMETRIC lptm = new TEXTMETRIC();
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics(handle, lptm);
 	return FontMetrics.win32_new(lptm);
 }
@@ -4895,13 +4902,13 @@ Point stringExtentInPixels (String string) {
 	SIZE size = new SIZE();
 	if (length == 0) {
 //		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
-		OS.GetTextExtentPoint32(handle, new char[]{' '}, 1, size);
+		OS.GetTextExtentPoint32W(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
 //		TCHAR buffer = new TCHAR (getCodePage(), string, false);
 		char[] buffer = new char [length];
 		string.getChars(0, length, buffer, 0);
-		OS.GetTextExtentPoint32(handle, buffer, length, size);
+		OS.GetTextExtentPoint32W(handle, buffer, length, size);
 		return new Point(size.cx, size.cy);
 	}
 }
@@ -4976,7 +4983,8 @@ Point textExtentInPixels(String string, int flags) {
 	}
 	if (string.length () == 0) {
 		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32(handle, new char [] {' '}, 1, size);
+//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
+		OS.GetTextExtentPoint32W(handle, new char [] {' '}, 1, size);
 		return new Point(0, size.cy);
 	}
 	RECT rect = new RECT();

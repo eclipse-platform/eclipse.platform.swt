@@ -111,7 +111,8 @@ long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*in
 				OS.SetWindowText (hwnd, buffer);
 			}
 			break;
-		case OS.BFFM_VALIDATEFAILED:
+		case OS.BFFM_VALIDATEFAILEDA:
+		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
 			int length = OS.wcslen (lParam);
 			TCHAR buffer = new TCHAR (0, length);

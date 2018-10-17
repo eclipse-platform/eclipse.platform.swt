@@ -26,6 +26,7 @@ public class OS extends C {
 	* SWT Windows flags
 	*/
 	public static final boolean IsDBLocale;
+	public static final boolean IsUnicode = true;
 	public static final int WIN32_VERSION;
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
@@ -115,7 +116,9 @@ public class OS extends C {
 	public static final int BDR_SUNKEN = 0x000a;
 	public static final int BFFM_INITIALIZED = 0x1;
 	public static final int BFFM_SETSELECTION = 0x467;
-	public static final int BFFM_VALIDATEFAILED = 0x4;
+	public static final int BFFM_VALIDATEFAILED = IsUnicode ? 0x4 : 0x3;
+	public static final int BFFM_VALIDATEFAILEDW = 0x4;
+	public static final int BFFM_VALIDATEFAILEDA = 0x3;
 	public static final int BF_ADJUST = 0x2000;
 	public static final int BF_LEFT = 0x0001;
 	public static final int BF_TOP = 0x0002;
@@ -612,25 +615,41 @@ public class OS extends C {
 	public static final int HDM_DELETEITEM = HDM_FIRST + 2;
 	public static final int HDM_GETBITMAPMARGIN = HDM_FIRST + 21;
 	public static final int HDM_GETITEMCOUNT = 0x1200;
-	public static final int HDM_GETITEM = HDM_FIRST + 11;
+	public static final int HDM_GETITEMA = HDM_FIRST + 3;
+	public static final int HDM_GETITEMW = HDM_FIRST + 11;
+	public static final int HDM_GETITEM = IsUnicode ? HDM_GETITEMW : HDM_GETITEMA;
 	public static final int HDM_GETITEMRECT = HDM_FIRST + 7;
 	public static final int HDM_GETORDERARRAY = HDM_FIRST + 17;
 	public static final int HDM_HITTEST = HDM_FIRST + 6;
-	public static final int HDM_INSERTITEM = HDM_FIRST + 10;
+	public static final int HDM_INSERTITEMA = HDM_FIRST + 1;
+	public static final int HDM_INSERTITEMW = HDM_FIRST + 10;
+	public static final int HDM_INSERTITEM = IsUnicode ? HDM_INSERTITEMW : HDM_INSERTITEMA;
 	public static final int HDM_LAYOUT = HDM_FIRST + 5;
 	public static final int HDM_ORDERTOINDEX = HDM_FIRST + 15;
 	public static final int HDM_SETIMAGELIST = HDM_FIRST + 8;
-	public static final int HDM_SETITEM = HDM_FIRST + 12;
+	public static final int HDM_SETITEMA = HDM_FIRST + 4;
+	public static final int HDM_SETITEMW = HDM_FIRST + 12;
+	public static final int HDM_SETITEM = IsUnicode ? HDM_SETITEMW : HDM_SETITEMA;
 	public static final int HDM_SETORDERARRAY = HDM_FIRST + 18;
 	public static final int HDN_FIRST = 0xfffffed4;
 	public static final int HDN_BEGINDRAG = HDN_FIRST - 10;
-	public static final int HDN_BEGINTRACK = 0xfffffeba;
-	public static final int HDN_DIVIDERDBLCLICK = HDN_FIRST - 25;
+	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
+	public static final int HDN_BEGINTRACKW = 0xfffffeba;
+	public static final int HDN_BEGINTRACKA = 0xfffffece;
+	public static final int HDN_DIVIDERDBLCLICKA = HDN_FIRST - 5;
+	public static final int HDN_DIVIDERDBLCLICKW = HDN_FIRST - 25;
+	public static final int HDN_DIVIDERDBLCLICK = IsUnicode ? HDN_DIVIDERDBLCLICKW : HDN_DIVIDERDBLCLICKA;
 	public static final int HDN_ENDDRAG = HDN_FIRST - 11;
-	public static final int HDN_ITEMCHANGED = 0xfffffebf;
-	public static final int HDN_ITEMCHANGING = HDN_FIRST - 20;
-	public static final int HDN_ITEMCLICK = HDN_FIRST - 22;
-	public static final int HDN_ITEMDBLCLICK = HDN_FIRST - 23;
+	public static final int HDN_ITEMCHANGED = IsUnicode ? 0xfffffebf : 0xfffffed3;
+	public static final int HDN_ITEMCHANGEDW = 0xfffffebf;
+	public static final int HDN_ITEMCHANGEDA = 0xfffffed3;
+	public static final int HDN_ITEMCHANGINGW = HDN_FIRST - 20;
+	public static final int HDN_ITEMCHANGINGA = HDN_FIRST;
+	public static final int HDN_ITEMCLICKW = HDN_FIRST - 22;
+	public static final int HDN_ITEMCLICKA = HDN_FIRST - 2;
+	public static final int HDN_ITEMDBLCLICKW = HDN_FIRST - 23;
+	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
+	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
 	public static final int HDS_BUTTONS = 0x2;
 	public static final int HDS_CHECKBOXES = 0x400;
 	public static final int HDS_DRAGDROP = 0x0040;
@@ -833,7 +852,9 @@ public class OS extends C {
 	public static final int LVM_GETEXTENDEDLISTVIEWSTYLE = 0x1037;
 	public static final int LVM_GETHEADER = 0x101f;
 	public static final int LVM_GETIMAGELIST = 0x1002;
-	public static final int LVM_GETITEM = 0x104b;
+	public static final int LVM_GETITEM = IsUnicode ? 0x104b : 0x1005;
+	public static final int LVM_GETITEMW = 0x104b;
+	public static final int LVM_GETITEMA = 0x1005;
 	public static final int LVM_GETITEMCOUNT = 0x1004;
 	public static final int LVM_GETITEMRECT = 0x100e;
 	public static final int LVM_GETITEMSTATE = 0x102c;
@@ -873,11 +894,13 @@ public class OS extends C {
 	public static final int LVN_BEGINRDRAG = 0xffffff91;
 	public static final int LVN_COLUMNCLICK = 0xffffff94;
 	public static final int LVN_FIRST = 0xffffff9c;
-	public static final int LVN_GETDISPINFO = LVN_FIRST - 77;
+	public static final int LVN_GETDISPINFOA = LVN_FIRST - 50;
+	public static final int LVN_GETDISPINFOW = LVN_FIRST - 77;
 	public static final int LVN_ITEMACTIVATE = 0xffffff8e;
 	public static final int LVN_ITEMCHANGED = 0xffffff9b;
 	public static final int LVN_MARQUEEBEGIN = 0xffffff64;
-	public static final int LVN_ODFINDITEM = LVN_FIRST - 79;
+	public static final int LVN_ODFINDITEMA = LVN_FIRST - 52;
+	public static final int LVN_ODFINDITEMW = LVN_FIRST - 79;
 	public static final int LVN_ODSTATECHANGED = LVN_FIRST - 15;
 	public static final int LVP_LISTITEM = 1;
 	public static final int LVSCW_AUTOSIZE = 0xffffffff;
@@ -1040,7 +1063,9 @@ public class OS extends C {
 	public static final int NM_RECOGNIZEGESTURE = NM_FIRST - 16;
 	public static final int NM_RELEASEDCAPTURE = NM_FIRST - 16;
 	public static final int NM_RETURN = 0xfffffffc;
-	public static final int NOTIFYICONDATA_V2_SIZE = NOTIFYICONDATA_V2_SIZE ();
+	public static final int NOTIFYICONDATAA_V2_SIZE = NOTIFYICONDATAA_V2_SIZE ();
+	public static final int NOTIFYICONDATAW_V2_SIZE = NOTIFYICONDATAW_V2_SIZE ();
+	public static final int NOTIFYICONDATA_V2_SIZE = IsUnicode ? NOTIFYICONDATAW_V2_SIZE : NOTIFYICONDATAA_V2_SIZE;
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;
 	public static final int NULL_PEN = 0x8;
@@ -1586,7 +1611,9 @@ public class OS extends C {
 	public static final int TTM_ACTIVATE = 0x400 + 1;
 	public static final int TTM_ADDTOOL = 0x432;
 	public static final int TTM_ADJUSTRECT = 0x400 + 31;
-	public static final int TTM_GETCURRENTTOOL = 0x400 + 59;
+	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
+	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
+	public static final int TTM_GETCURRENTTOOL = 0x400 + (IsUnicode ? 59 : 15);
 	public static final int TTM_GETDELAYTIME = 0x400 + 21;
 	public static final int TTM_DELTOOL = 0x433;
 	public static final int TTM_GETTOOLINFO = 0x400 + 53;
@@ -1595,13 +1622,17 @@ public class OS extends C {
 	public static final int TTM_POP = 0x400 + 28;
 	public static final int TTM_SETDELAYTIME = 0x400 + 3;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
-	public static final int TTM_SETTITLE = 0x400 + 33;
+	public static final int TTM_SETTITLEA = 0x400 + 32;
+	public static final int TTM_SETTITLEW = 0x400 + 33;
+	public static final int TTM_SETTITLE = 0x400 + (IsUnicode ? 33 : 32);
 	public static final int TTM_TRACKPOSITION = 1042;
 	public static final int TTM_TRACKACTIVATE = 1041;
 	public static final int TTM_UPDATE = 0x41D;
 	public static final int TTM_UPDATETIPTEXT = 0x400 + 57;
 	public static final int TTN_FIRST = 0xfffffdf8;
-	public static final int TTN_GETDISPINFO = 0xfffffdee;
+	public static final int TTN_GETDISPINFO = IsUnicode ? 0xfffffdee : 0xfffffdf8;
+	public static final int TTN_GETDISPINFOW = 0xfffffdee;
+	public static final int TTN_GETDISPINFOA = 0xfffffdf8;
 	public static final int TTN_POP = TTN_FIRST - 2;
 	public static final int TTN_SHOW = TTN_FIRST - 1;
 	public static final int TTS_ALWAYSTIP = 0x1;
@@ -1678,15 +1709,23 @@ public class OS extends C {
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
 	public static final int TVM_SORTCHILDREN = TV_FIRST + 19;
 	public static final int TVM_SORTCHILDRENCB = TV_FIRST + 21;
-	public static final int TVN_BEGINDRAG = 0xfffffe38;
-	public static final int TVN_BEGINRDRAG = 0xfffffe37;
+	public static final int TVN_BEGINDRAGW = 0xfffffe38;
+	public static final int TVN_BEGINDRAGA = 0xfffffe69;
+	public static final int TVN_BEGINRDRAGW = 0xfffffe37;
+	public static final int TVN_BEGINRDRAGA = 0xfffffe68;
 	public static final int TVN_FIRST = 0xfffffe70;
-	public static final int TVN_GETDISPINFO = TVN_FIRST - 52;
-	public static final int TVN_ITEMCHANGING = TVN_FIRST - 17;
-	public static final int TVN_ITEMEXPANDED = TVN_FIRST - 55;
-	public static final int TVN_ITEMEXPANDING = 0xfffffe3a;
-	public static final int TVN_SELCHANGED = 0xfffffe3d;
-	public static final int TVN_SELCHANGING = 0xfffffe3e;
+	public static final int TVN_GETDISPINFOA = TVN_FIRST - 3;
+	public static final int TVN_GETDISPINFOW = TVN_FIRST - 52;
+	public static final int TVN_ITEMCHANGINGW = TVN_FIRST - 17;
+	public static final int TVN_ITEMCHANGINGA = TVN_FIRST - 16;
+	public static final int TVN_ITEMEXPANDEDA = TVN_FIRST -6;
+	public static final int TVN_ITEMEXPANDEDW = TVN_FIRST - 55;
+	public static final int TVN_ITEMEXPANDINGW = 0xfffffe3a;
+	public static final int TVN_ITEMEXPANDINGA = 0xfffffe6b;
+	public static final int TVN_SELCHANGEDW = 0xfffffe3d;
+	public static final int TVN_SELCHANGEDA = 0xfffffe6e;
+	public static final int TVN_SELCHANGINGW = 0xfffffe3e;
+	public static final int TVN_SELCHANGINGA = 0xfffffe6f;
 	public static final int TVP_GLYPH = 2;
 	public static final int TVP_TREEITEM = 1;
 	public static final int TVSIL_NORMAL = 0x0;
@@ -2006,7 +2045,8 @@ public static final native int CRYPT_ALGORITHM_IDENTIFIER_sizeof ();
 public static final native int CRYPT_BIT_BLOB_sizeof ();
 public static final native int CRYPT_INTEGER_BLOB_sizeof ();
 public static final native int CRYPT_OBJID_BLOB_sizeof ();
-public static final native int DEVMODE_sizeof ();
+public static final native int DEVMODEA_sizeof ();
+public static final native int DEVMODEW_sizeof ();
 public static final native int DIBSECTION_sizeof ();
 public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
@@ -2035,7 +2075,8 @@ public static final native int INPUT_sizeof ();
 public static final native int KEYBDINPUT_sizeof ();
 public static final native int LITEM_sizeof ();
 public static final native int LOGBRUSH_sizeof ();
-public static final native int LOGFONT_sizeof ();
+public static final native int LOGFONTA_sizeof ();
+public static final native int LOGFONTW_sizeof ();
 public static final native int LOGPEN_sizeof ();
 public static final native int LVCOLUMN_sizeof ();
 public static final native int LVHITTESTINFO_sizeof ();
@@ -2065,19 +2106,24 @@ public static final native int NMREBARCHILDSIZE_sizeof ();
 public static final native int NMTBHOTITEM_sizeof ();
 public static final native int NMTREEVIEW_sizeof ();
 public static final native int NMTOOLBAR_sizeof ();
-public static final native int NMTTDISPINFO_sizeof ();
+public static final native int NMTTDISPINFOA_sizeof ();
+public static final native int NMTTDISPINFOW_sizeof ();
 public static final native int NMTTCUSTOMDRAW_sizeof ();
 public static final native int NMTBCUSTOMDRAW_sizeof ();
 public static final native int NMTVCUSTOMDRAW_sizeof ();
 public static final native int NMTVDISPINFO_sizeof ();
 public static final native int NMTVITEMCHANGE_sizeof ();
 public static final native int NMUPDOWN_sizeof ();
-public static final native int NONCLIENTMETRICS_sizeof ();
+public static final native int NONCLIENTMETRICSA_sizeof ();
+public static final native int NONCLIENTMETRICSW_sizeof ();
 /** @method flags=const */
-public static final native int NOTIFYICONDATA_V2_SIZE ();
+public static final native int NOTIFYICONDATAA_V2_SIZE ();
+/** @method flags=const */
+public static final native int NOTIFYICONDATAW_V2_SIZE ();
 public static final native int OFNOTIFY_sizeof ();
 public static final native int OPENFILENAME_sizeof ();
-public static final native int OUTLINETEXTMETRIC_sizeof ();
+public static final native int OUTLINETEXTMETRICA_sizeof ();
+public static final native int OUTLINETEXTMETRICW_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int PANOSE_sizeof ();
 public static final native int POINT_sizeof ();
@@ -2102,7 +2148,8 @@ public static final native int SCROLLBARINFO_sizeof ();
 public static final native int SCROLLINFO_sizeof ();
 public static final native int SHDRAGIMAGE_sizeof();
 public static final native int SHELLEXECUTEINFO_sizeof ();
-public static final native int SHFILEINFO_sizeof ();
+public static final native int SHFILEINFOA_sizeof ();
+public static final native int SHFILEINFOW_sizeof ();
 public static final native int SIZE_sizeof ();
 public static final native int STARTUPINFO_sizeof ();
 public static final native int SYSTEMTIME_sizeof ();
@@ -2110,7 +2157,8 @@ public static final native int TBBUTTON_sizeof ();
 public static final native int TBBUTTONINFO_sizeof ();
 public static final native int TCITEM_sizeof ();
 public static final native int TCHITTESTINFO_sizeof ();
-public static final native int TEXTMETRIC_sizeof ();
+public static final native int TEXTMETRICA_sizeof ();
+public static final native int TEXTMETRICW_sizeof ();
 public static final native int TF_DA_COLOR_sizeof ();
 public static final native int TF_DISPLAYATTRIBUTE_sizeof ();
 public static final native int TOOLINFO_sizeof ();
@@ -2130,65 +2178,250 @@ public static final native int WNDCLASS_sizeof ();
 /** Ansi/Unicode wrappers */
 
 public static final long /*int*/ AddFontResourceEx (TCHAR lpszFilename, int fl, long /*int*/ pdv) {
-	char [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.chars;
-	return AddFontResourceEx (lpszFilename1, fl, pdv);
+	if (IsUnicode) {
+		char [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.chars;
+		return AddFontResourceExW (lpszFilename1, fl, pdv);
+	}
+	byte [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.bytes;
+	return AddFontResourceExA (lpszFilename1, fl, pdv);
 }
 
 public static final int AssocQueryString(int flags, int str, TCHAR pszAssoc, TCHAR pszExtra, TCHAR pszOut, int[] pcchOut) {
-	char [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.chars;
-	char [] pszExtra1 = pszExtra == null ? null : pszExtra.chars;
-	char [] pszOut1 = pszOut == null ? null : pszOut.chars;
-	return AssocQueryString (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
+	if (IsUnicode) {
+		char [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.chars;
+		char [] pszExtra1 = pszExtra == null ? null : pszExtra.chars;
+		char [] pszOut1 = pszOut == null ? null : pszOut.chars;
+		return AssocQueryStringW (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
+	}
+	byte [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.bytes;
+	byte [] pszExtra1 = pszExtra == null ? null : pszExtra.bytes;
+	byte [] pszOut1 = pszOut == null ? null : pszOut.bytes;
+	return AssocQueryStringA (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
+}
+
+public static final long /*int*/ CallWindowProc (long /*int*/ lpPrevWndFunc, long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+}
+
+public static final int CertNameToStr (int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, TCHAR psz, int csz) {
+	if (IsUnicode) {
+		char [] psz1 = psz == null ? null : psz.chars;
+		return CertNameToStrW (dwCertEncodingType, pName, dwStrType, psz1, csz);
+	}
+	byte [] psz1 = psz == null ? null : psz.bytes;
+	return CertNameToStrA (dwCertEncodingType, pName, dwStrType, psz1, csz);
+}
+
+public static final long /*int*/ CharUpper (long /*int*/ ch) {
+	if (IsUnicode) return CharUpperW (ch);
+	return CharUpperA (ch);
+}
+
+public static final long /*int*/ CharLower (long /*int*/ ch) {
+	if (IsUnicode) return CharLowerW (ch);
+	return CharLowerA (ch);
+}
+
+public static final boolean ChooseColor (CHOOSECOLOR lpcc) {
+	if (IsUnicode) return ChooseColorW (lpcc);
+	return ChooseColorA (lpcc);
+}
+
+public static final boolean ChooseFont (CHOOSEFONT chooseFont) {
+	if (IsUnicode) return ChooseFontW (chooseFont);
+	return ChooseFontA (chooseFont);
+}
+
+public static final long /*int*/ CreateActCtx (ACTCTX pActCtx) {
+	if (IsUnicode) return CreateActCtxW (pActCtx);
+	return CreateActCtxA (pActCtx);
+}
+
+public static final long /*int*/ CreateAcceleratorTable (byte [] lpaccl, int cEntries) {
+	if (IsUnicode) return CreateAcceleratorTableW (lpaccl, cEntries);
+	return CreateAcceleratorTableA (lpaccl, cEntries);
 }
 
 public static final long /*int*/ CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData) {
-	char [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.chars;
-	char [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.chars;
-	return CreateDC (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
+	if (IsUnicode) {
+		char [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.chars;
+		char [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.chars;
+		return CreateDCW (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
+	}
+	byte [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.bytes;
+	byte [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.bytes;
+	return CreateDCA (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
+}
+
+public static final long /*int*/ CreateEnhMetaFile (long /*int*/ hdcRef, TCHAR lpFilename, RECT lpRect, TCHAR lpDescription) {
+	if (IsUnicode) {
+		char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
+		char [] lpDescription1 = lpDescription == null ? null : lpDescription.chars;
+		return CreateEnhMetaFileW (hdcRef, lpFilename1, lpRect, lpDescription1);
+	}
+	byte [] lpFilename1 = lpFilename == null ? null : lpFilename.bytes;
+	byte [] lpDescription1 = lpDescription == null ? null : lpDescription.bytes;
+	return CreateEnhMetaFileA (hdcRef, lpFilename1, lpRect, lpDescription1);
+}
+
+public static final long /*int*/ CreateFontIndirect (long /*int*/ lplf) {
+	if (IsUnicode) return CreateFontIndirectW (lplf);
+	return CreateFontIndirectA (lplf);
+}
+
+public static final long /*int*/ CreateFontIndirect (LOGFONT lplf) {
+	if (IsUnicode) return CreateFontIndirectW ((LOGFONTW)lplf);
+	return CreateFontIndirectA ((LOGFONTA)lplf);
+}
+
+public static final boolean CreateProcess (long /*int*/ lpApplicationName, long /*int*/ lpCommandLine, long /*int*/ lpProcessAttributes, long /*int*/ lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long /*int*/ lpEnvironment, long /*int*/ lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation) {
+	if (IsUnicode) return CreateProcessW (lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+	return CreateProcessA (lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
 }
 
 public static final long /*int*/ CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam) {
-	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-	char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
-	return CreateWindowEx (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
+		return CreateWindowExW (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	byte [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.bytes;
+	return CreateWindowExA (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+}
+
+public static final long /*int*/ DefMDIChildProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return DefMDIChildProcW (hWnd, Msg, wParam, lParam);
+	return DefMDIChildProcA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ DefFrameProc (long /*int*/ hWnd, long /*int*/ hWndMDIClient, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return DefFrameProcW (hWnd, hWndMDIClient, Msg, wParam, lParam);
+	return DefFrameProcA (hWnd, hWndMDIClient, Msg, wParam, lParam);
+}
+public static final long /*int*/ DefWindowProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return DefWindowProcW (hWnd, Msg, wParam, lParam);
+	return DefWindowProcA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ DispatchMessage (MSG lpmsg) {
+	if (IsUnicode) return DispatchMessageW (lpmsg);
+	return DispatchMessageA (lpmsg);
 }
 
 public static final int DocumentProperties (long /*int*/ hWnd, long /*int*/ hPrinter, TCHAR pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode) {
-	char [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.chars;
-	return DocumentProperties (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
+	if (IsUnicode) {
+		char [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.chars;
+		return DocumentPropertiesW (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
+	}
+	byte [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.bytes;
+	return DocumentPropertiesA (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
+}
+
+public static final int DragQueryFile (long /*int*/ hDrop, int iFile, TCHAR lpszFile, int cch) {
+	if (IsUnicode) {
+		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+		return DragQueryFileW (hDrop, iFile, lpszFile1, cch);
+	}
+	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
+	return DragQueryFileA (hDrop, iFile, lpszFile1, cch);
 }
 
 public static final int DrawText (long /*int*/ hDC, TCHAR lpString, int nCount, RECT lpRect, int uFormat) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return DrawText (hDC, lpString1, nCount, lpRect, uFormat);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return DrawTextW (hDC, lpString1, nCount, lpRect, uFormat);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return DrawTextA (hDC, lpString1, nCount, lpRect, uFormat);
+}
+
+public static final int EnumFontFamilies (long /*int*/ hdc, TCHAR lpszFamily, long /*int*/ lpEnumFontFamProc, long /*int*/ lParam) {
+	if (IsUnicode) {
+		char [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.chars;
+		return EnumFontFamiliesW (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
+	}
+	byte [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.bytes;
+	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
+}
+
+public static final boolean EnumSystemLocales (long /*int*/ lpLocaleEnumProc, int dwFlags) {
+	if (IsUnicode) return EnumSystemLocalesW (lpLocaleEnumProc, dwFlags);
+	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
+}
+
+public static final boolean EnumSystemLanguageGroups (long /*int*/ pLangGroupEnumProc, int dwFlags, long /*int*/ lParam) {
+	if (IsUnicode) return EnumSystemLanguageGroupsW (pLangGroupEnumProc, dwFlags, lParam);
+	return EnumSystemLanguageGroupsA (pLangGroupEnumProc, dwFlags, lParam);
 }
 
 public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDst, int nSize) {
-	char [] lpSrc1 = lpSrc == null ? null : lpSrc.chars;
-	char [] lpDst1 = lpDst == null ? null : lpDst.chars;
-	return ExpandEnvironmentStrings (lpSrc1, lpDst1, nSize);
+	if (IsUnicode) {
+		char [] lpSrc1 = lpSrc == null ? null : lpSrc.chars;
+		char [] lpDst1 = lpDst == null ? null : lpDst.chars;
+		return ExpandEnvironmentStringsW (lpSrc1, lpDst1, nSize);
+	}
+	byte [] lpSrc1 = lpSrc == null ? null : lpSrc.bytes;
+	byte [] lpDst1 = lpDst == null ? null : lpDst.bytes;
+	return ExpandEnvironmentStringsA (lpSrc1, lpDst1, nSize);
 }
 
 public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons) {
-	char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
-	return ExtractIconEx (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
+	if (IsUnicode) {
+		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+		return ExtractIconExW (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
+	}
+	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
+	return ExtractIconExA (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
 }
 
 public static final boolean ExtTextOut(long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, TCHAR lpString, int cbCount, int[] lpDx) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return ExtTextOut (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return ExtTextOutW (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return ExtTextOutA (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+}
+
+public static final int FormatMessage (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments) {
+	if (IsUnicode) {
+		return FormatMessageW (dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments);
+	}
+	return FormatMessageA (dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments);
+}
+
+public static final boolean GetCharABCWidths (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc) {
+	if (IsUnicode) return GetCharABCWidthsW (hdc,iFirstChar, iLastChar, lpabc);
+	return GetCharABCWidthsA (hdc,iFirstChar, iLastChar, lpabc);
 }
 
 public static final int GetCharacterPlacement (long /*int*/ hdc, TCHAR lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GetCharacterPlacement (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetCharacterPlacementW (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetCharacterPlacementA (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
+}
+
+public static final boolean GetCharWidth (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc) {
+	if (IsUnicode) return GetCharWidthW (hdc,iFirstChar, iLastChar, lpabc);
+	return GetCharWidthA (hdc,iFirstChar, iLastChar, lpabc);
 }
 
 public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
 	boolean result;
 
-	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-	result = GetClassInfo (hInstance, lpClassName1, lpWndClass);
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		result = GetClassInfoW (hInstance, lpClassName1, lpWndClass);
+	}
+	else {
+		byte[] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+		result = GetClassInfoA(hInstance, lpClassName1, lpWndClass);
+	}
 
 	/*
 	* WINAPI GetClassInfo copies lpClassName1 pointer to WNDCLASS.lpszClassName.
@@ -2203,108 +2436,423 @@ public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassN
 }
 
 public static final int GetClassName (long /*int*/ hWnd, TCHAR lpClassName, int nMaxCount) {
-	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-	return GetClassName (hWnd, lpClassName1, nMaxCount);
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		return GetClassNameW (hWnd, lpClassName1, nMaxCount);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	return GetClassNameA (hWnd, lpClassName1, nMaxCount);
 }
 
 public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName, int cchMaxCount) {
-	char [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.chars;
-	return GetClipboardFormatName (format, lpszFormatName1, cchMaxCount);
+	if (IsUnicode) {
+		char [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.chars;
+		return GetClipboardFormatNameW (format, lpszFormatName1, cchMaxCount);
+	}
+	byte [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.bytes;
+	return GetClipboardFormatNameA (format, lpszFormatName1, cchMaxCount);
 }
 
 public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
-	char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
-	return GetLocaleInfo (Locale, LCType, lpLCData1, cchData);
+	if (IsUnicode) {
+		char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
+		return GetLocaleInfoW (Locale, LCType, lpLCData1, cchData);
+	}
+	byte [] lpLCData1 = lpLCData == null ? null : lpLCData.bytes;
+	return GetLocaleInfoA (Locale, LCType, lpLCData1, cchData);
+}
+
+public static final boolean GetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return GetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
+	return GetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static final boolean GetMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax) {
+	if (IsUnicode) return GetMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+	return GetMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
 }
 
 public static final int GetModuleFileName (long /*int*/ hModule, TCHAR lpFilename, int inSize) {
-	char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
-	return GetModuleFileName (hModule, lpFilename1, inSize);
+	if (IsUnicode) {
+		char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
+		return GetModuleFileNameW (hModule, lpFilename1, inSize);
+	}
+	byte [] lpFilename1 = lpFilename == null ? null : lpFilename.bytes;
+	return GetModuleFileNameA (hModule, lpFilename1, inSize);
+}
+
+public static final long /*int*/ GetModuleHandle (TCHAR lpModuleName) {
+	if (IsUnicode) {
+		char [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.chars;
+		return GetModuleHandleW (lpModuleName1);
+	}
+	byte [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.bytes;
+	return GetModuleHandleA (lpModuleName1);
+}
+
+public static final boolean GetMonitorInfo (long /*int*/ hmonitor, MONITORINFO lpmi) {
+	if (IsUnicode) return GetMonitorInfoW (hmonitor, lpmi);
+	return GetMonitorInfoA (hmonitor, lpmi);
+}
+
+public static final int GetObject (long /*int*/ hgdiobj, int cbBuffer, BITMAP lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (long /*int*/ hgdiobj, int cbBuffer, DIBSECTION lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGBRUSH lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGFONT lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, (LOGFONTW)lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, (LOGFONTA)lpvObject);
+}
+
+public static final int GetObject (long /*int*/ hgdiobj, int cbBuffer, long /*int*/ lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final boolean GetOpenFileName (OPENFILENAME lpofn) {
+	if (IsUnicode) return GetOpenFileNameW (lpofn);
+	return GetOpenFileNameA (lpofn);
+}
+
+public static final int GetOutlineTextMetrics (long /*int*/ hdc, int cbData,  OUTLINETEXTMETRIC lpOTM) {
+	if (IsUnicode) return GetOutlineTextMetricsW (hdc, cbData, (OUTLINETEXTMETRICW)lpOTM);
+	return GetOutlineTextMetricsA (hdc, cbData, (OUTLINETEXTMETRICA)lpOTM);
 }
 
 public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHAR lpDefault, TCHAR lpReturnedString, int nSize) {
-	char [] lpAppName1 = lpAppName == null ? null : lpAppName.chars;
-	char [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.chars;
-	char [] lpDefault1 = lpDefault == null ? null : lpDefault.chars;
-	char [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.chars;
-	return GetProfileString (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
+	if (IsUnicode) {
+		char [] lpAppName1 = lpAppName == null ? null : lpAppName.chars;
+		char [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.chars;
+		char [] lpDefault1 = lpDefault == null ? null : lpDefault.chars;
+		char [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.chars;
+		return GetProfileStringW (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
+	}
+	byte [] lpAppName1 = lpAppName == null ? null : lpAppName.bytes;
+	byte [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.bytes;
+	byte [] lpDefault1 = lpDefault == null ? null : lpDefault.bytes;
+	byte [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.bytes;
+	return GetProfileStringA (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
+}
+
+public static long /*int*/ GetProp (long /*int*/ hWnd, long /*int*/ lpString) {
+	if (IsUnicode) return GetPropW (hWnd, lpString);
+	return GetPropA (hWnd, lpString);
+}
+
+public static final boolean GetSaveFileName (OPENFILENAME lpofn) {
+	if (IsUnicode) return GetSaveFileNameW (lpofn);
+	return GetSaveFileNameA (lpofn);
+}
+
+public static final void GetStartupInfo (STARTUPINFO lpStartupInfo) {
+	if (IsUnicode) {
+		GetStartupInfoW (lpStartupInfo);
+	} else {
+		GetStartupInfoA (lpStartupInfo);
+	}
 }
 
 public static final boolean GetTextExtentPoint32 (long /*int*/ hdc, TCHAR lpString, int cbString, SIZE lpSize) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GetTextExtentPoint32 (hdc, lpString1, cbString, lpSize);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetTextExtentPoint32W (hdc, lpString1, cbString, lpSize);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetTextExtentPoint32A (hdc, lpString1, cbString, lpSize);
+}
+
+public static final boolean GetTextMetrics (long /*int*/ hdc, TEXTMETRIC lptm) {
+	if (IsUnicode) return GetTextMetricsW (hdc, (TEXTMETRICW)lptm);
+	return GetTextMetricsA (hdc, (TEXTMETRICA)lptm);
+}
+
+public static final int GetWindowLong (long /*int*/ hWnd, int nIndex) {
+	if (IsUnicode) return GetWindowLongW (hWnd, nIndex);
+	return GetWindowLongA (hWnd, nIndex);
+}
+
+public static final long /*int*/ GetWindowLongPtr (long /*int*/ hWnd, int nIndex) {
+	if (IsUnicode) return GetWindowLongPtrW (hWnd, nIndex);
+	return GetWindowLongPtrA (hWnd, nIndex);
 }
 
 public static final int GetWindowText (long /*int*/ hWnd, TCHAR lpString, int nMaxCount) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GetWindowText (hWnd, lpString1, nMaxCount);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetWindowTextW (hWnd, lpString1, nMaxCount);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetWindowTextA (hWnd, lpString1, nMaxCount);
+}
+
+public static final int GetWindowTextLength (long /*int*/ hWnd) {
+	if (IsUnicode) return GetWindowTextLengthW (hWnd);
+	return GetWindowTextLengthA (hWnd);
 }
 
 public static final int GlobalAddAtom (TCHAR lpString) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GlobalAddAtom (lpString1);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GlobalAddAtomW (lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GlobalAddAtomA (lpString1);
+}
+
+public static final boolean ImmGetCompositionFont (long /*int*/ hIMC, LOGFONT lplf) {
+	if (IsUnicode) return ImmGetCompositionFontW (hIMC, (LOGFONTW)lplf);
+	return ImmGetCompositionFontA (hIMC, (LOGFONTA)lplf);
+}
+
+public static final boolean ImmSetCompositionFont (long /*int*/ hIMC, LOGFONT lplf) {
+	if (IsUnicode) return ImmSetCompositionFontW (hIMC, (LOGFONTW)lplf);
+	return ImmSetCompositionFontA (hIMC, (LOGFONTA)lplf);
+}
+
+public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen) {
+	if (IsUnicode) {
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf, dwBufLen);
+	}
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
 }
 
 public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, TCHAR lpData) {
-	char [] lpData1 = lpData == null ? null : lpData.chars;
-	return ImmEscape (hKL, hIMC, uEscape, lpData1);
+	if (IsUnicode) {
+		char [] lpData1 = lpData == null ? null : lpData.chars;
+		return ImmEscapeW (hKL, hIMC, uEscape, lpData1);
+	}
+	byte [] lpData1 = lpData == null ? null : lpData.bytes;
+	return ImmEscapeA (hKL, hIMC, uEscape, lpData1);
+}
+
+public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen) {
+	if (IsUnicode) {
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf, dwBufLen);
+	}
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
 }
 
 public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
-	char [] lpBuf1 = lpBuf == null ? null : lpBuf.chars;
-	return ImmGetCompositionString (hIMC, dwIndex, lpBuf1, dwBufLen);
+	if (IsUnicode) {
+		char [] lpBuf1 = lpBuf == null ? null : lpBuf.chars;
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf1, dwBufLen);
+	}
+	byte [] lpBuf1 = lpBuf == null ? null : lpBuf.bytes;
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf1, dwBufLen);
 }
 
 public static final boolean InternetGetCookie (TCHAR lpszUrl, TCHAR lpszCookieName, TCHAR lpszCookieData, int[] lpdwSize) {
-	char [] url = lpszUrl == null ? null : lpszUrl.chars;
-	char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
-	char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
-	return InternetGetCookie (url, cookieName, cookieData, lpdwSize);
+	if (IsUnicode) {
+		char [] url = lpszUrl == null ? null : lpszUrl.chars;
+		char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
+		char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
+		return InternetGetCookieW (url, cookieName, cookieData, lpdwSize);
+	}
+	byte [] url = lpszUrl == null ? null : lpszUrl.bytes;
+	byte [] cookieName = lpszCookieName == null ? null : lpszCookieName.bytes;
+	byte [] cookieData = lpszCookieData == null ? null : lpszCookieData.bytes;
+	return InternetGetCookieA (url, cookieName, cookieData, lpdwSize);
 }
 
 public static final boolean InternetSetCookie (TCHAR lpszUrl, TCHAR lpszCookieName, TCHAR lpszCookieData) {
-	char [] url = lpszUrl == null ? null : lpszUrl.chars;
-	char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
-	char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
-	return InternetSetCookie (url, cookieName, cookieData);
+	if (IsUnicode) {
+		char [] url = lpszUrl == null ? null : lpszUrl.chars;
+		char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
+		char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
+		return InternetSetCookieW (url, cookieName, cookieData);
+	}
+	byte [] url = lpszUrl == null ? null : lpszUrl.bytes;
+	byte [] cookieName = lpszCookieName == null ? null : lpszCookieName.bytes;
+	byte [] cookieData = lpszCookieData == null ? null : lpszCookieData.bytes;
+	return InternetSetCookieA (url, cookieName, cookieData);
+}
+
+public static final boolean InsertMenuItem (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return InsertMenuItemW (hMenu, uItem, fByPosition, lpmii);
+	return InsertMenuItemA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static final long /*int*/ LoadBitmap (long /*int*/ hInstance, long /*int*/ lpBitmapName) {
+	if (IsUnicode) return LoadBitmapW (hInstance, lpBitmapName);
+	return LoadBitmapA (hInstance, lpBitmapName);
+}
+
+public static final long /*int*/ LoadCursor (long /*int*/ hInstance, long /*int*/ lpCursorName) {
+	if (IsUnicode) return LoadCursorW (hInstance, lpCursorName);
+	return LoadCursorA (hInstance, lpCursorName);
+}
+
+public static final long /*int*/ LoadIcon (long /*int*/ hInstance, long /*int*/ lpIconName) {
+	if (IsUnicode) return LoadIconW (hInstance, lpIconName);
+	return LoadIconA (hInstance, lpIconName);
+}
+
+public static final long /*int*/ LoadImage (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad) {
+	if (IsUnicode) return LoadImageW (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+	return LoadImageA (hinst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+}
+
+public static final int MapVirtualKey (int uCode, int uMapType) {
+	if (IsUnicode) return MapVirtualKeyW (uCode, uMapType);
+	return MapVirtualKeyA (uCode, uMapType);
 }
 
 public static final int MessageBox (long /*int*/ hWnd, TCHAR lpText, TCHAR lpCaption, int uType) {
-	char [] lpText1 = lpText == null ? null : lpText.chars;
-	char [] lpCaption1 = lpCaption == null ? null : lpCaption.chars;
-	return MessageBox (hWnd, lpText1, lpCaption1, uType);
+	if (IsUnicode) {
+		char [] lpText1 = lpText == null ? null : lpText.chars;
+		char [] lpCaption1 = lpCaption == null ? null : lpCaption.chars;
+		return MessageBoxW (hWnd, lpText1, lpCaption1, uType);
+	}
+	byte [] lpText1 = lpText == null ? null : lpText.bytes;
+	byte [] lpCaption1 = lpCaption == null ? null : lpCaption.bytes;
+	return MessageBoxA (hWnd, lpText1, lpCaption1, uType);
 }
 
 public static final void MoveMemory (long /*int*/ Destination, TCHAR Source, int Length) {
-	char [] Source1 = Source == null ? null : Source.chars;
-	MoveMemory (Destination, Source1, Length);
+	if (IsUnicode) {
+		char [] Source1 = Source == null ? null : Source.chars;
+		MoveMemory (Destination, Source1, Length);
+	} else {
+		byte [] Source1 = Source == null ? null : Source.bytes;
+		MoveMemory (Destination, Source1, Length);
+	}
 }
 
 public static final void MoveMemory (TCHAR Destination, long /*int*/ Source, int Length) {
-	char [] Destination1 = Destination == null ? null : Destination.chars;
-	MoveMemory (Destination1, Source, Length);
+	if (IsUnicode) {
+		char [] Destination1 = Destination == null ? null : Destination.chars;
+		MoveMemory (Destination1, Source, Length);
+	} else {
+		byte [] Destination1 = Destination == null ? null : Destination.bytes;
+		MoveMemory (Destination1, Source, Length);
+	}
+}
+
+public static final void MoveMemory (long /*int*/ Destination, DEVMODE Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory (Destination, (DEVMODEW)Source, Length);
+	} else {
+		MoveMemory (Destination, (DEVMODEA)Source, Length);
+	}
+}
+
+public static final void MoveMemory (DEVMODE Destination, long /*int*/ Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((DEVMODEW)Destination, Source, Length);
+	} else {
+		MoveMemory ((DEVMODEA)Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (long /*int*/ Destination, LOGFONT Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory (Destination, (LOGFONTW)Source, Length);
+	} else {
+		MoveMemory (Destination, (LOGFONTA)Source, Length);
+	}
+}
+
+public static final void MoveMemory (LOGFONT Destination, long /*int*/ Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((LOGFONTW)Destination, Source, Length);
+	} else {
+		MoveMemory ((LOGFONTA)Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (long /*int*/ Destination, NMTTDISPINFO Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory (Destination, (NMTTDISPINFOW)Source, Length);
+	} else {
+		MoveMemory (Destination, (NMTTDISPINFOA)Source, Length);
+	}
+}
+
+public static final void MoveMemory (NMTTDISPINFO Destination, long /*int*/ Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((NMTTDISPINFOW)Destination, Source, Length);
+	} else {
+		MoveMemory ((NMTTDISPINFOA)Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (TEXTMETRIC Destination, long /*int*/ Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((TEXTMETRICW)Destination, Source, Length);
+	} else {
+		MoveMemory ((TEXTMETRICA)Destination, Source, Length);
+	}
 }
 
 public static final boolean OpenPrinter (TCHAR pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault) {
-	char [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.chars;
-	return OpenPrinter (pPrinterName1, phPrinter, pDefault);
+	if (IsUnicode) {
+		char [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.chars;
+		return OpenPrinterW (pPrinterName1, phPrinter, pDefault);
+	}
+	byte [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.bytes;
+	return OpenPrinterA (pPrinterName1, phPrinter, pDefault);
+}
+
+public static final boolean PeekMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg) {
+	if (IsUnicode) return PeekMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+	return PeekMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+}
+
+public static final boolean PostMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return PostMessageW (hWnd, Msg, wParam, lParam);
+	return PostMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final boolean PostThreadMessage (int idThread, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return PostThreadMessageW (idThread, Msg, wParam, lParam);
+	return PostThreadMessageA (idThread, Msg, wParam, lParam);
+}
+
+public static final boolean PrintDlg (PRINTDLG lppd) {
+	if (IsUnicode) return PrintDlgW (lppd);
+	return PrintDlgA (lppd);
 }
 
 public static final int RegCreateKeyEx (long /*int*/ hKey, TCHAR lpSubKey, int Reserved, TCHAR lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition) {
-	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
-	char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
-	return RegCreateKeyEx (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+	if (IsUnicode) {
+		char [] lpClass1 = lpClass == null ? null : lpClass.chars;
+		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
+		return RegCreateKeyExW (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+	}
+	byte [] lpClass1 = lpClass == null ? null : lpClass.bytes;
+	byte [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.bytes;
+	return RegCreateKeyExA (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
 }
 
 public static final int RegDeleteValue (long /*int*/ hKey, TCHAR lpValueName) {
-	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
-	return RegDeleteValue (hKey, lpValueName1);
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegDeleteValueW (hKey, lpValueName1);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegDeleteValueA (hKey, lpValueName1);
 }
 
 public static final int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
-	char [] lpName1 = lpName == null ? null : lpName.chars;
-	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
-	return RegEnumKeyEx (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
+	if (IsUnicode) {
+		char [] lpName1 = lpName == null ? null : lpName.chars;
+		char [] lpClass1 = lpClass == null ? null : lpClass.chars;
+		return RegEnumKeyExW (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
+	}
+	byte [] lpName1 = lpName == null ? null : lpName.bytes;
+	byte [] lpClass1 = lpClass == null ? null : lpClass.bytes;
+	return RegEnumKeyExA (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
 }
 
 public static final int RegisterClass (TCHAR lpszClassName, WNDCLASS lpWndClass) {
@@ -2314,7 +2862,13 @@ public static final int RegisterClass (TCHAR lpszClassName, WNDCLASS lpWndClass)
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, lpszClassName, byteCount);
 
-	int result = RegisterClass (lpWndClass);
+	int result;
+	if (IsUnicode) {
+		result = RegisterClassW (lpWndClass);
+	}
+	else {
+		result = RegisterClassA (lpWndClass);
+	}
 
 	/* Release and forget native string */
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
@@ -2324,65 +2878,369 @@ public static final int RegisterClass (TCHAR lpszClassName, WNDCLASS lpWndClass)
 }
 
 public static final int RegisterClipboardFormat (TCHAR lpszFormat) {
-	char [] lpszFormat1 = lpszFormat == null ? null : lpszFormat.chars;
-	return RegisterClipboardFormat (lpszFormat1);
+	if (IsUnicode) {
+		char [] lpszFormat1 = lpszFormat == null ? null : lpszFormat.chars;
+		return RegisterClipboardFormatW (lpszFormat1);
+	}
+	byte [] lpszFormat1 = lpszFormat == null ? null : lpszFormat.bytes;
+	return RegisterClipboardFormatA (lpszFormat1);
 }
 
 public static final int RegisterWindowMessage (TCHAR lpString) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return RegisterWindowMessage (lpString1);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return RegisterWindowMessageW (lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return RegisterWindowMessageA (lpString1);
 }
 
 public static final int RegOpenKeyEx (long /*int*/ hKey, TCHAR lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult) {
-	char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
-	return RegOpenKeyEx (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
+	if (IsUnicode) {
+		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
+		return RegOpenKeyExW (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
+	}
+	byte [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.bytes;
+	return RegOpenKeyExA (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
 }
 
 public static final int RegQueryValueEx (long /*int*/ hKey, TCHAR lpValueName, long /*int*/ lpReserved, int[] lpType, TCHAR lpData, int[] lpcbData) {
-	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
-	char [] lpData1 = lpData == null ? null : lpData.chars;
-	return RegQueryValueEx (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		char [] lpData1 = lpData == null ? null : lpData.chars;
+		return RegQueryValueExW (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	byte [] lpData1 = lpData == null ? null : lpData.bytes;
+	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
 }
 
 public static final int RegQueryValueEx (long /*int*/ hKey, TCHAR lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData) {
-	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
-	return RegQueryValueEx (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegQueryValueExW (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
 }
 
 public static final int RegSetValueEx (long /*int*/ hKey, TCHAR lpValueName, int Reserved, int dwType, int[] lpData, int cbData) {
-	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
-	return RegSetValueEx (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegSetValueExW (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegSetValueExA (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
+}
+
+public static final long /*int*/ RemoveProp  (long /*int*/ hWnd, long /*int*/ lpString){
+	if (IsUnicode) return RemovePropW (hWnd, lpString);
+	return RemovePropA (hWnd, lpString);
 }
 
 public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHAR lParam) {
-	char [] lParam1 = lParam == null ? null : lParam.chars;
-	return SendMessage (hWnd, Msg, wParam, lParam1);
+	if (IsUnicode) {
+		char [] lParam1 = lParam == null ? null : lParam.chars;
+		return SendMessageW (hWnd, Msg, wParam, lParam1);
+	}
+	byte [] lParam1 = lParam == null ? null : lParam.bytes;
+	return SendMessageA (hWnd, Msg, wParam, lParam1);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, int [] wParam, int [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SIZE lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ [] wParam, long /*int*/ lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, int [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, char [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, short [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVCOLUMN lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVINSERTMARK lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MARGINS lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, POINT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MCHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, REBARBANDINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, RECT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SYSTEMTIME lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SHDRAGIMAGE lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTON lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTONINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TOOLINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVINSERTSTRUCT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVSORTCB lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, UDACCEL lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDLAYOUT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, BUTTON_IMAGELIST lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final boolean SetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
+	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {
-	char [] lpPathName1 = lpPathName == null ? null : lpPathName.chars;
-	return SetDllDirectory (lpPathName1);
+	if (IsUnicode) {
+		char [] lpPathName1 = lpPathName == null ? null : lpPathName.chars;
+		return SetDllDirectoryW (lpPathName1);
+	}
+	byte [] lpPathName1 = lpPathName == null ? null : lpPathName.bytes;
+	return SetDllDirectoryA (lpPathName1);
+}
+
+public static boolean SetProp (long /*int*/ hWnd, long /*int*/ lpString, long /*int*/ hData) {
+	if (IsUnicode) return SetPropW (hWnd, lpString, hData);
+	return SetPropA (hWnd, lpString, hData);
+}
+
+public static final int SetWindowLong (long /*int*/ hWnd, int nIndex, int dwNewLong) {
+	if (IsUnicode) return SetWindowLongW (hWnd, nIndex, dwNewLong);
+	return SetWindowLongA (hWnd, nIndex, dwNewLong);
+}
+
+public static final long /*int*/ SetWindowLongPtr (long /*int*/ hWnd, int nIndex, long /*int*/ dwNewLong) {
+	if (IsUnicode) return SetWindowLongPtrW (hWnd, nIndex, dwNewLong);
+	return SetWindowLongPtrA (hWnd, nIndex, dwNewLong);
+}
+
+public static final long /*int*/ SetWindowsHookEx (int idHook, long /*int*/ lpfn, long /*int*/ hMod, int dwThreadId) {
+	if (IsUnicode) return SetWindowsHookExW (idHook, lpfn, hMod, dwThreadId);
+	return SetWindowsHookExA (idHook, lpfn, hMod, dwThreadId);
 }
 
 public static final boolean SetWindowText (long /*int*/ hWnd, TCHAR lpString) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return SetWindowText (hWnd, lpString1);
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return SetWindowTextW (hWnd, lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return SetWindowTextA (hWnd, lpString1);
+}
+
+public static final long /*int*/ SHBrowseForFolder (BROWSEINFO lpbi) {
+	if (IsUnicode) return SHBrowseForFolderW (lpbi);
+	return SHBrowseForFolderA (lpbi);
+}
+
+public static final boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo) {
+	if (IsUnicode) return ShellExecuteExW (lpExecInfo);
+	return ShellExecuteExA (lpExecInfo);
+}
+
+public static long /*int*/ SHGetFileInfo (TCHAR pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags) {
+	if (IsUnicode) {
+		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
+		return SHGetFileInfoW (pszPath1, dwFileAttributes, (SHFILEINFOW) psfi, cbFileInfo, uFlags);
+	}
+	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
+	return SHGetFileInfoA (pszPath1, dwFileAttributes, (SHFILEINFOA) psfi, cbFileInfo, uFlags);
+}
+
+public static final boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData) {
+	if (IsUnicode) return Shell_NotifyIconW (dwMessage, (NOTIFYICONDATAW)lpData);
+	return Shell_NotifyIconA (dwMessage, (NOTIFYICONDATAA)lpData);
 }
 
 public static final boolean SHGetPathFromIDList (long /*int*/ pidl, TCHAR pszPath) {
-	char [] pszPath1 = pszPath == null ? null : pszPath.chars;
-	return SHGetPathFromIDList (pidl, pszPath1);
+	if (IsUnicode) {
+		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
+		return SHGetPathFromIDListW (pidl, pszPath1);
+	}
+	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
+	return SHGetPathFromIDListA (pidl, pszPath1);
+}
+
+public static final int StartDoc (long /*int*/ hdc, DOCINFO lpdi) {
+	if (IsUnicode) return StartDocW (hdc, lpdi);
+	return StartDocA (hdc, lpdi);
+}
+
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, (NONCLIENTMETRICSW)pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, (NONCLIENTMETRICSA)pvParam, fWinIni);
+}
+
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
+public static final int TranslateAccelerator (long /*int*/ hWnd, long /*int*/ hAccTable, MSG lpMsg) {
+	if (IsUnicode) return TranslateAcceleratorW (hWnd, hAccTable, lpMsg);
+	return TranslateAcceleratorA (hWnd, hAccTable, lpMsg);
 }
 
 public static final boolean UnregisterClass (TCHAR lpClassName, long /*int*/ hInstance) {
-	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-	return UnregisterClass (lpClassName1, hInstance);
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		return UnregisterClassW (lpClassName1, hInstance);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	return UnregisterClassA (lpClassName1, hInstance);
 }
 
 public static final int UrlCreateFromPath (TCHAR pszPath, TCHAR pszURL, int[] pcchUrl, int flags) {
-	char [] path = pszPath == null ? null : pszPath.chars;
-	char [] url = pszURL == null ? null : pszURL.chars;
-	return UrlCreateFromPath (path, url, pcchUrl, flags);
+	if (IsUnicode) {
+		char [] path = pszPath == null ? null : pszPath.chars;
+		char [] url = pszURL == null ? null : pszURL.chars;
+		return UrlCreateFromPathW (path, url, pcchUrl, flags);
+	}
+	byte [] path = pszPath == null ? null : pszPath.bytes;
+	byte [] url = pszURL == null ? null : pszURL.bytes;
+	return UrlCreateFromPathA (path, url, pcchUrl, flags);
+}
+
+public static final short VkKeyScan (short ch) {
+	if (IsUnicode) return VkKeyScanW (ch);
+	return VkKeyScanA (ch);
 }
 
 /** Natives */
@@ -2390,26 +3248,32 @@ public static final int UrlCreateFromPath (TCHAR pszPath, TCHAR pszURL, int[] pc
 /** @param hdc cast=(HDC) */
 public static final native int AbortDoc (long /*int*/ hdc);
 /**
- * @param hActCtx cast=(HANDLE)
+ * @method flags=dynamic
  * @param lpCookie cast=(ULONG_PTR*)
  */
 public static final native boolean ActivateActCtx (long /*int*/ hActCtx, long /*int*/ [] lpCookie);
 /** @param hkl cast=(HKL) */
 public static final native long /*int*/ ActivateKeyboardLayout(long /*int*/ hkl, int Flags);
-/** @param pdv cast=(PVOID) */
-public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long /*int*/ pdv);
+/** @method flags=dynamic */
+public static final native int AddFontResourceExW(char[] lpszFilename, int fl, long /*int*/ pdv);
+/** @method flags=dynamic */
+public static final native int AddFontResourceExA(byte[] lpszFilename, int fl, long /*int*/ pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
+/** @method flags=dynamic */
 public static final native boolean AllowSetForegroundWindow (int dwProcessId);
 /**
- * @param hdcDest cast=(HDC)
- * @param hdcSrc cast=(HDC)
+ * @method flags=dynamic
  * @param blendFunction flags=struct
  */
 public static final native boolean AlphaBlend(long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 /** @param hdc cast=(HDC) */
 public static final native boolean Arc (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
-public static final native int AssocQueryString (int flags, int str, char[] pszAssoc, char[] pszExtra, char[] pszOut, int[] pcchOut);
+/** @method flags=dynamic */
+public static final native int AssocQueryStringA(int flags, int str, byte[] pszAssoc, byte[] pszExtra, byte[] pszOut, int[] pcchOut);
+/** @method flags=dynamic */
+public static final native int AssocQueryStringW(int flags, int str, char[] pszAssoc, char[] pszExtra, char[] pszOut, int[] pcchOut);
 /**
+ * @method flags=dynamic
  * @param hdcTarget cast=(HDC)
  * @param phdc cast=(HDC*)
  */
@@ -2426,7 +3290,9 @@ public static final native boolean BeginPath(long /*int*/ hdc);
 public static final native boolean BitBlt (long /*int*/ hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, long /*int*/ hdcSrc, int nXSrc, int nYSrc, int dwRop);
 /** @param hWnd cast=(HWND) */
 public static final native boolean BringWindowToTop (long /*int*/ hWnd);
+/** @method flags=dynamic */
 public static final native int BufferedPaintInit ();
+/** @method flags=dynamic */
 public static final native int BufferedPaintUnInit ();
 /**
  * @param hhk cast=(HHOOK)
@@ -2438,20 +3304,36 @@ public static final native long /*int*/ CallNextHookEx(long /*int*/ hhk, int nCo
  * @param lpPrevWndFunc cast=(WNDPROC)
  * @param hWnd cast=(HWND)
  */
-public static final native long /*int*/ CallWindowProc (long /*int*/ lpPrevWndFunc, long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long /*int*/ CallWindowProcW (long /*int*/ lpPrevWndFunc, long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param lpPrevWndFunc cast=(WNDPROC)
+ * @param hWnd cast=(HWND)
+ */
+public static final native long /*int*/ CallWindowProcA (long /*int*/ lpPrevWndFunc, long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /**
  * @param pName cast=(PCERT_NAME_BLOB)
  * @param psz cast=(LPWSTR)
  */
-public static final native int CertNameToStr (int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, char[] psz, int csz);
+public static final native int CertNameToStrW(int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, char[] psz, int csz);
+/**
+ * @param pName cast=(PCERT_NAME_BLOB)
+ * @param psz cast=(LPSTR)
+ */
+public static final native int CertNameToStrA(int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, byte[] psz, int csz);
 /** @param ch cast=(LPWSTR) */
-public static final native long /*int*/ CharLower (long /*int*/ ch);
+public static final native long /*int*/ CharLowerW (long /*int*/ ch);
+/** @param ch cast=(LPSTR) */
+public static final native long /*int*/ CharLowerA (long /*int*/ ch);
 /** @param ch cast=(LPWSTR) */
-public static final native long /*int*/ CharUpper (long /*int*/ ch);
+public static final native long /*int*/ CharUpperW (long /*int*/ ch);
+/** @param ch cast=(LPSTR) */
+public static final native long /*int*/ CharUpperA (long /*int*/ ch);
 /** @param lpcc cast=(LPCHOOSECOLORW) */
-public static final native boolean ChooseColor (CHOOSECOLOR lpcc);
+public static final native boolean ChooseColorW (CHOOSECOLOR lpcc);
+public static final native boolean ChooseColorA (CHOOSECOLOR lpcc);
 /** @param chooseFont cast=(LPCHOOSEFONTW) */
-public static final native boolean ChooseFont (CHOOSEFONT chooseFont);
+public static final native boolean ChooseFontW (CHOOSEFONT chooseFont);
+public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ClientToScreen (long /*int*/ hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
@@ -2466,7 +3348,10 @@ public static final native long /*int*/ CloseGestureInfoHandle (long /*int*/ hGe
 public static final native boolean CloseHandle (long /*int*/ hObject);
 /** @param hPrinter cast=(HANDLE) */
 public static final native boolean ClosePrinter (long /*int*/ hPrinter);
-/** @param hTheme cast=(HTHEME) */
+/**
+ * @method flags=dynamic
+ * @param hTheme cast=(HTHEME)
+ */
 public static final native int CloseThemeData (long /*int*/ hTheme);
 /**
  * @method flags=dynamic
@@ -2480,8 +3365,12 @@ public static final native boolean CloseTouchInputHandle(long /*int*/ hTouchInpu
  * @param ppv cast=(LPVOID *)
  */
 public static final native int CoCreateInstance (byte[] rclsid, long /*int*/ pUnkOuter, int dwClsContext, byte[] riid, long /*int*/[] ppv);
+/** @method flags=dynamic */
 public static final native int CoInternetIsFeatureEnabled (int FeatureEntry, int dwFlags);
-/** @param fEnable cast=(BOOL) */
+/**
+ * @method flags=dynamic
+ * @param fEnable cast=(BOOL)
+ */
 public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, int dwFlags, boolean fEnable);
 /**
  * @param hrgnDest cast=(HRGN)
@@ -2497,9 +3386,19 @@ public static final native long /*int*/ CoTaskMemAlloc(int cb);
 /** @param pv cast=(LPVOID) */
 public static final native void CoTaskMemFree(long /*int*/ pv);
 /** @param lpaccl cast=(LPACCEL) */
-public static final native long /*int*/ CreateAcceleratorTable (byte [] lpaccl, int cEntries);
-/** @param pActCtx flags=no_out */
-public static final native long /*int*/ CreateActCtx (ACTCTX pActCtx);
+public static final native long /*int*/ CreateAcceleratorTableW (byte [] lpaccl, int cEntries);
+/** @param lpaccl cast=(LPACCEL) */
+public static final native long /*int*/ CreateAcceleratorTableA (byte [] lpaccl, int cEntries);
+/**
+ * @method flags=dynamic
+ * @param pActCtx flags=no_out
+ */
+public static final native long /*int*/ CreateActCtxW (ACTCTX pActCtx);
+/**
+ * @method flags=dynamic
+ * @param pActCtx flags=no_out
+ */
+public static final native long /*int*/ CreateActCtxA (ACTCTX pActCtx);
 /** @param lpvBits cast=(CONST VOID *),flags=no_out critical */
 public static final native long /*int*/ CreateBitmap (int nWidth, int nHeight, int cPlanes, int cBitsPerPel, byte [] lpvBits);
 /**
@@ -2523,7 +3422,14 @@ public static final native long /*int*/ CreateCursor (long /*int*/ hInst, int xH
  * @param lpszOutput cast=(LPWSTR)
  * @param lpInitData cast=(CONST DEVMODEW *)
  */
-public static final native long /*int*/ CreateDC (char [] lpszDriver, char [] lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData);
+public static final native long /*int*/ CreateDCW (char [] lpszDriver, char [] lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData);
+/**
+ * @param lpszDriver cast=(LPSTR)
+ * @param lpszDevice cast=(LPSTR)
+ * @param lpszOutput cast=(LPSTR)
+ * @param lpInitData cast=(CONST DEVMODE *)
+ */
+public static final native long /*int*/ CreateDCA (byte [] lpszDriver, byte [] lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData);
 /**
  * @param hdc cast=(HDC)
  * @param pbmi cast=(BITMAPINFO *),flags=no_out critical
@@ -2543,11 +3449,21 @@ public static final native long /*int*/ CreateDIBSection(long /*int*/ hdc, long 
  * @param lpFilename cast=(LPCWSTR)
  * @param lpDescription cast=(LPCWSTR)
  */
-public static final native long /*int*/ CreateEnhMetaFile (long /*int*/ hdcRef, char[] lpFilename, RECT lpRect, char[] lpDescription);
+public static final native long /*int*/ CreateEnhMetaFileW(long /*int*/ hdcRef, char[] lpFilename, RECT lpRect, char[] lpDescription);
+/**
+ * @param hdcRef cast=(HDC)
+ * @param lpFilename cast=(LPCSTR)
+ * @param lpDescription cast=(LPCSTR)
+ */
+public static final native long /*int*/ CreateEnhMetaFileA(long /*int*/ hdcRef, byte[] lpFilename, RECT lpRect, byte[] lpDescription);
 /** @param lplf cast=(LPLOGFONTW) */
-public static final native long /*int*/ CreateFontIndirect (long /*int*/ lplf);
+public static final native long /*int*/ CreateFontIndirectW (long /*int*/ lplf);
+/** @param lplf cast=(LPLOGFONTA) */
+public static final native long /*int*/ CreateFontIndirectA (long /*int*/ lplf);
 /** @param lplf flags=no_out */
-public static final native long /*int*/ CreateFontIndirect (LOGFONT lplf);
+public static final native long /*int*/ CreateFontIndirectW (LOGFONTW lplf);
+/** @param lplf flags=no_out */
+public static final native long /*int*/ CreateFontIndirectA (LOGFONTA lplf);
 /** @param lplf flags=no_out */
 public static final native long /*int*/ CreateIconIndirect (ICONINFO lplf);
 public static final native long /*int*/ CreateMenu ();
@@ -2570,7 +3486,18 @@ public static final native long /*int*/ CreatePopupMenu ();
  * @param lpStartupInfo cast=(LPSTARTUPINFOW)
  * @param lpProcessInformation cast=(LPPROCESS_INFORMATION)
  */
-public static final native boolean CreateProcess (long /*int*/ lpApplicationName, long /*int*/ lpCommandLine, long /*int*/ lpProcessAttributes, long /*int*/ lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long /*int*/ lpEnvironment, long /*int*/ lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
+public static final native boolean CreateProcessW (long /*int*/ lpApplicationName, long /*int*/ lpCommandLine, long /*int*/ lpProcessAttributes, long /*int*/ lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long /*int*/ lpEnvironment, long /*int*/ lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
+/**
+ * @param lpApplicationName cast=(LPCSTR)
+ * @param lpCommandLine cast=(LPSTR)
+ * @param lpProcessAttributes cast=(LPSECURITY_ATTRIBUTES)
+ * @param lpThreadAttributes cast=(LPSECURITY_ATTRIBUTES)
+ * @param lpEnvironment cast=(LPVOID)
+ * @param lpCurrentDirectory cast=(LPSTR)
+ * @param lpStartupInfo cast=(LPSTARTUPINFOA)
+ * @param lpProcessInformation cast=(LPPROCESS_INFORMATION)
+ */
+public static final native boolean CreateProcessA (long /*int*/ lpApplicationName, long /*int*/ lpCommandLine, long /*int*/ lpProcessAttributes, long /*int*/ lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long /*int*/ lpEnvironment, long /*int*/ lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
 public static final native long /*int*/ CreateRectRgn (int left, int top, int right, int bottom);
 /** @param colorRef cast=(COLORREF) */
 public static final native long /*int*/ CreateSolidBrush (int colorRef);
@@ -2587,7 +3514,14 @@ public static final native int CreateStreamOnHGlobal(long /*int*/ hGlobal, boole
  * @param hMenu cast=(HMENU)
  * @param hInstance cast=(HINSTANCE)
  */
-public static final native long /*int*/ CreateWindowEx (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam);
+public static final native long /*int*/ CreateWindowExW (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam);
+/**
+ * @param lpClassName cast=(LPSTR)
+ * @param hWndParent cast=(HWND)
+ * @param hMenu cast=(HMENU)
+ * @param hInstance cast=(HINSTANCE)
+ */
+public static final native long /*int*/ CreateWindowExA (int dwExStyle, byte [] lpClassName, byte [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam);
 /**
  * @param hWinPosInfo cast=(HDWP)
  * @param hWnd cast=(HWND)
@@ -2599,20 +3533,39 @@ public static final native long /*int*/ DeferWindowPos (long /*int*/ hWinPosInfo
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefMDIChildProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long /*int*/ DefMDIChildProcW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ DefMDIChildProcA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param hWndMDIClient cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefFrameProc (long /*int*/ hWnd, long /*int*/ hWndMDIClient, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long /*int*/ DefFrameProcW (long /*int*/ hWnd, long /*int*/ hWndMDIClient, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param hWndMDIClient cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ DefFrameProcA (long /*int*/ hWnd, long /*int*/ hWndMDIClient, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefWindowProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long /*int*/ DefWindowProcW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ DefWindowProcA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /** @param hdc cast=(HDC) */
 public static final native boolean DeleteDC (long /*int*/ hdc);
 /** @param hemf cast=(HENHMETAFILE) */
@@ -2632,7 +3585,8 @@ public static final native boolean DestroyIcon (long /*int*/ hIcon);
 public static final native boolean DestroyMenu (long /*int*/ hMenu);
 /** @param hWnd cast=(HWND) */
 public static final native boolean DestroyWindow (long /*int*/ hWnd);
-public static final native long /*int*/ DispatchMessage (MSG lpmsg);
+public static final native long /*int*/ DispatchMessageW (MSG lpmsg);
+public static final native long /*int*/ DispatchMessageA (MSG lpmsg);
 /**
  * @param hWnd cast=(HWND)
  * @param hPrinter cast=(HANDLE)
@@ -2640,7 +3594,15 @@ public static final native long /*int*/ DispatchMessage (MSG lpmsg);
  * @param pDevModeOutput cast=(PDEVMODEW)
  * @param pDevModeInput cast=(PDEVMODEW)
  */
-public static final native int DocumentProperties (long /*int*/ hWnd, long /*int*/ hPrinter, char[] pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode);
+public static final native int DocumentPropertiesW (long /*int*/ hWnd, long /*int*/ hPrinter, char[] pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode);
+/**
+ * @param hWnd cast=(HWND)
+ * @param hPrinter cast=(HANDLE)
+ * @param pDeviceName cast=(LPTSTR)
+ * @param pDevModeOutput cast=(PDEVMODE)
+ * @param pDevModeInput cast=(PDEVMODE)
+ */
+public static final native int DocumentPropertiesA (long /*int*/ hWnd, long /*int*/ hPrinter, byte[] pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode);
 /**
  * @param hwnd cast=(HWND)
  * @param pt flags=struct
@@ -2650,9 +3612,14 @@ public static final native boolean DragDetect (long /*int*/ hwnd, POINT pt);
 public static final native void DragFinish (long /*int*/ hDrop);
 /**
  * @param hDrop cast=(HDROP)
+ * @param lpszFile cast=(LPTSTR)
+ */
+public static final native int DragQueryFileA (long /*int*/ hDrop, int iFile, byte[] lpszFile, int cch);
+/**
+ * @param hDrop cast=(HDROP)
  * @param lpszFile cast=(LPWSTR)
  */
-public static final native int DragQueryFile (long /*int*/ hDrop, int iFile, char[] lpszFile, int cch);
+public static final native int DragQueryFileW (long /*int*/ hDrop, int iFile, char[] lpszFile, int cch);
 /** @param hdc cast=(HDC) */
 public static final native boolean DrawEdge (long /*int*/ hdc, RECT qrc, int edge, int grfFlags);
 /** @param hDC cast=(HDC) */
@@ -2671,18 +3638,21 @@ public static final native boolean DrawMenuBar (long /*int*/ hWnd);
  * @param hDC cast=(HDC)
  * @param lpString cast=(LPWSTR),flags=no_out critical
  */
-public static final native int DrawText (long /*int*/ hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
+public static final native int DrawTextW (long /*int*/ hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
 /**
+ * @param hDC cast=(HDC)
+ * @param lpString cast=(LPSTR),flags=no_out critical
+ */
+public static final native int DrawTextA (long /*int*/ hDC, byte [] lpString, int nCount, RECT lpRect, int uFormat);
+/**
+ * @method flags=dynamic
  * @param hTheme cast=(HTHEME)
  * @param hdc cast=(HDC)
  * @param pRect cast=(const RECT *)
  * @param pClipRect cast=(const RECT *)
  */
 public static final native int DrawThemeBackground (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, RECT pRect, RECT pClipRect);
-/**
- * @param hTheme cast=(HTHEME)
- * @param hdc cast=(HDC)
- */
+/** @method flags=dynamic */
 public static final native int DrawThemeText (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
@@ -2693,15 +3663,27 @@ public static final native boolean EnableScrollBar (long /*int*/ hWnd, int wSBfl
 /** @param hWnd cast=(HWND) */
 public static final native boolean EnableWindow (long /*int*/ hWnd, boolean bEnable);
 /**
+ * @method flags=dynamic
  * @param pLangGroupEnumProc cast=(LANGUAGEGROUP_ENUMPROCW)
  * @param lParam cast=(LONG_PTR)
  */
-public static final native boolean EnumSystemLanguageGroups (long /*int*/ pLangGroupEnumProc, int dwFlags, long /*int*/ lParam);
+public static final native boolean EnumSystemLanguageGroupsW(long /*int*/ pLangGroupEnumProc, int dwFlags, long /*int*/ lParam);
+/**
+ * @method flags=dynamic
+ * @param pLangGroupEnumProc cast=(LANGUAGEGROUP_ENUMPROCA)
+ * @param lParam cast=(LONG_PTR)
+ */
+public static final native boolean EnumSystemLanguageGroupsA(long /*int*/ pLangGroupEnumProc, int dwFlags, long /*int*/ lParam);
 /** @param lpLocaleEnumProc cast=(LOCALE_ENUMPROCW) */
-public static final native boolean EnumSystemLocales (long /*int*/ lpLocaleEnumProc, int dwFlags);
+public static final native boolean EnumSystemLocalesW (long /*int*/ lpLocaleEnumProc, int dwFlags);
+/** @param lpLocaleEnumProc cast=(LOCALE_ENUMPROCA) */
+public static final native boolean EnumSystemLocalesA (long /*int*/ lpLocaleEnumProc, int dwFlags);
 /** @param hWinPosInfo cast=(HDWP) */
 public static final native boolean EndDeferWindowPos (long /*int*/ hWinPosInfo);
-/** @param hBufferedPaint cast=(HPAINTBUFFER) */
+/**
+ * @method flags=dynamic
+ * @param hBufferedPaint cast=(HPAINTBUFFER)
+ */
 public static final native int EndBufferedPaint (long /*int*/ hBufferedPaint, boolean fUpdateTarget);
 /** @param hdc cast=(HDC) */
 public static final native int EndDoc (long /*int*/ hdc);
@@ -2710,6 +3692,7 @@ public static final native int EndPage (long /*int*/ hdc);
 /** @param hWnd cast=(HWND) */
 public static final native int EndPaint (long /*int*/ hWnd, PAINTSTRUCT lpPaint);
 /**
+ * @method flags=dynamic
  * @param hdc cast=(HDC)
  * @param lprcClip cast=(LPCRECT)
  * @param lpfnEnum cast=(MONITORENUMPROC)
@@ -2729,7 +3712,14 @@ public static final native boolean EnumEnhMetaFile(long /*int*/ hdc, long /*int*
  * @param lpEnumFontFamProc cast=(FONTENUMPROCW)
  * @param lParam cast=(LPARAM)
  */
-public static final native int EnumFontFamilies (long /*int*/ hdc, char [] lpszFamily, long /*int*/ lpEnumFontFamProc, long /*int*/ lParam);
+public static final native int EnumFontFamiliesW (long /*int*/ hdc, char [] lpszFamily, long /*int*/ lpEnumFontFamProc, long /*int*/ lParam);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpszFamily cast=(LPSTR)
+ * @param lpEnumFontFamProc cast=(FONTENUMPROC)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native int EnumFontFamiliesA (long /*int*/ hdc, byte [] lpszFamily, long /*int*/ lpEnumFontFamProc, long /*int*/ lParam);
 /**
  * @param lprc1 cast=(CONST RECT *),flags=no_out
  * @param lprc2 cast=(CONST RECT *),flags=no_out
@@ -2737,7 +3727,8 @@ public static final native int EnumFontFamilies (long /*int*/ hdc, char [] lpszF
 public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 /** @param hdc cast=(HDC) */
 public static final native int ExcludeClipRect (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
-public static final native int ExpandEnvironmentStrings (char [] lpSrc, char [] lsDst, int nSize);
+public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
+public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lsDst, int nSize);
 /**
  * @param lplb cast=(CONST LOGBRUSH *)
  * @param lpStyle cast=(CONST DWORD *)
@@ -2754,13 +3745,26 @@ public static final native long /*int*/ ExtCreateRegion (float[] lpXform, int nC
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpDx cast=(CONST INT *),flags=no_out critical
  */
-public static final native boolean ExtTextOut (long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
+public static final native boolean ExtTextOutW (long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
+/**
+ * @param hdc cast=(HDC)
+ * @param lprc flags=no_out
+ * @param lpString cast=(LPSTR),flags=no_out critical
+ * @param lpDx cast=(CONST INT *),flags=no_out critical
+ */
+public static final native boolean ExtTextOutA (long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
 /**
  * @param lpszFile cast=(LPWSTR)
  * @param phiconLarge cast=(HICON FAR *)
  * @param phiconSmall cast=(HICON FAR *)
  */
-public static final native int ExtractIconEx (char [] lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons);
+public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons);
+/**
+ * @param lpszFile cast=(LPSTR)
+ * @param phiconLarge cast=(HICON FAR *)
+ * @param phiconSmall cast=(HICON FAR *)
+ */
+public static final native int ExtractIconExA (byte [] lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons);
 public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SYSTEMTIME lpSystemTime);
 /**
  * @param hDC cast=(HDC)
@@ -2770,10 +3774,16 @@ public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SY
 public static final native int FillRect (long /*int*/ hDC, RECT lprc, long /*int*/ hbr);
 /**
  * @param lpSource cast=(LPCVOID)
+ * @param lpBuffer cast=(LPSTR)
+ * @param Arguments cast=(va_list*)
+ */
+public static final native int FormatMessageA (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments);
+/**
+ * @param lpSource cast=(LPCVOID)
  * @param lpBuffer cast=(LPWSTR)
  * @param Arguments cast=(va_list*)
  */
-public static final native int FormatMessage (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments);
+public static final native int FormatMessageW (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments);
 /** @param dwLimit cast=(DWORD) */
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GET_WHEEL_DELTA_WPARAM(long /*int*/ wParam);
@@ -2789,31 +3799,54 @@ public static final native boolean GetCaretPos (POINT lpPoint);
  * @param hdc cast=(HDC)
  * @param lpabc cast=(LPABC),flags=no_in critical
  */
-public static final native boolean GetCharABCWidths (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc);
+public static final native boolean GetCharABCWidthsA (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpabc cast=(LPABC),flags=no_in critical
+ */
+public static final native boolean GetCharABCWidthsW (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc);
 /**
  * @param hdc cast=(HDC)
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpResults cast=(LPGCP_RESULTSW)
  */
-public static final native int GetCharacterPlacement (long /*int*/ hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+public static final native int GetCharacterPlacementW (long /*int*/ hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpString cast=(LPSTR),flags=no_out critical
+ */
+public static final native int GetCharacterPlacementA (long /*int*/ hdc, byte[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
 /**
  * @param hdc cast=(HDC)
  * @param lpBuffer cast=(LPINT),flags=no_in critical
  */
-public static final native boolean GetCharWidth (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
+public static final native boolean GetCharWidthA (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpBuffer cast=(LPINT),flags=no_in critical
+ */
+public static final native boolean GetCharWidthW (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpClassName cast=(LPWSTR)
  * @param lpWndClass cast=(LPWNDCLASSW)
  */
-public static final native boolean GetClassInfo (long /*int*/ hInstance, char [] lpClassName, WNDCLASS lpWndClass);
+public static final native boolean GetClassInfoW (long /*int*/ hInstance, char [] lpClassName, WNDCLASS lpWndClass);
+/**
+ * @param hInstance cast=(HINSTANCE)
+ * @param lpClassName cast=(LPSTR)
+ */
+public static final native boolean GetClassInfoA (long /*int*/ hInstance, byte [] lpClassName, WNDCLASS lpWndClass);
 /** @param hWnd cast=(HWND) */
-public static final native int GetClassName (long /*int*/ hWnd, char [] lpClassName, int nMaxCount);
+public static final native int GetClassNameW (long /*int*/ hWnd, char [] lpClassName, int nMaxCount);
+/** @param hWnd cast=(HWND) */
+public static final native int GetClassNameA (long /*int*/ hWnd, byte [] lpClassName, int nMaxCount);
 /** @param hWnd cast=(HWND) */
 public static final native boolean GetClientRect (long /*int*/ hWnd, RECT lpRect);
 public static final native long /*int*/ GetClipboardData (int uFormat);
+public static final native int GetClipboardFormatNameA (int format, byte[] lpszFormatName, int cchMaxCount);
 /** @param lpszFormatName cast=(LPWSTR) */
-public static final native int GetClipboardFormatName (int format, char[] lpszFormatName, int cchMaxCount);
+public static final native int GetClipboardFormatNameW (int format, char[] lpszFormatName, int cchMaxCount);
 /** @param hdc cast=(HDC) */
 public static final native int GetClipBox (long /*int*/ hdc, RECT lprc);
 /**
@@ -2821,7 +3854,10 @@ public static final native int GetClipBox (long /*int*/ hdc, RECT lprc);
  * @param hrgn cast=(HRGN)
  */
 public static final native int GetClipRgn (long /*int*/ hdc, long /*int*/ hrgn);
-/** @param hwndCombo cast=(HWND) */
+/**
+ * @method flags=dynamic
+ * @param hwndCombo cast=(HWND)
+ */
 public static final native boolean GetComboBoxInfo (long /*int*/ hwndCombo, COMBOBOXINFO pcbi);
 /** @param hdc cast=(HDC) */
 public static final native long /*int*/ GetCurrentObject (long /*int*/ hdc, int uObjectType);
@@ -2875,7 +3911,7 @@ public static final native int GetGraphicsMode (long /*int*/ hdc);
  * @param hdc cast=(HDC)
  * @param pgi cast=(LPWORD)
  */
-public static final native int GetGlyphIndices (long /*int*/ hdc, char[] lpstr, int c, short[] pgi, int fl);
+public static final native int GetGlyphIndicesW(long /*int*/ hdc, char[] lpstr, int c, short[] pgi, int fl);
 /**
  * @param idThread cast=(DWORD)
  * @param lpgui cast=(LPGUITHREADINFO)
@@ -2895,22 +3931,33 @@ public static final native boolean GetKeyboardState (byte [] lpKeyState);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetLastActivePopup (long /*int*/ hWnd);
 public static final native int GetLastError ();
-/** @param hwnd cast=(HWND) */
+/**
+ * @method flags=dynamic
+ * @param hwnd cast=(HWND)
+ */
 public static final native boolean GetLayeredWindowAttributes (long /*int*/ hwnd, int [] pcrKey, byte [] pbAlpha, int [] pdwFlags);
-/** @param hdc cast=(HDC) */
+/**
+ * @method flags=dynamic
+ * @param hdc cast=(HDC)
+ */
 public static final native int GetLayout (long /*int*/ hdc);
 /* returns the instance handle to the swt library */
 /** @method flags=no_gen */
 public static final native long /*int*/ GetLibraryHandle ();
 /** @param lpLCData cast=(LPWSTR) */
-public static final native int GetLocaleInfo (int Locale, int LCType, char [] lpLCData, int cchData);
+public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);
+/** @param lpLCData cast=(LPSTR) */
+public static final native int GetLocaleInfoA (int Locale, int LCType, byte [] lpLCData, int cchData);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetMenu (long /*int*/ hWnd);
-/** @param hWnd cast=(HWND) */
+/** @method flags=dynamic */
 public static final native boolean GetMenuBarInfo (long /*int*/ hWnd, int idObject, int idItem, MENUBARINFO pmbi);
 /** @param hMenu cast=(HMENU) */
 public static final native int GetMenuDefaultItem (long /*int*/ hMenu, int fByPos, int gmdiFlags);
-/** @param hmenu cast=(HMENU) */
+/**
+ * @method flags=dynamic
+ * @param hmenu cast=(HMENU)
+ */
 public static final native boolean GetMenuInfo (long /*int*/ hmenu, MENUINFO lpcmi);
 /** @param hMenu cast=(HMENU) */
 public static final native int GetMenuItemCount (long /*int*/ hMenu);
@@ -2918,14 +3965,18 @@ public static final native int GetMenuItemCount (long /*int*/ hMenu);
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean GetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean GetMenuItemInfoW (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+/** @param hMenu cast=(HMENU) */
+public static final native boolean GetMenuItemInfoA (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /**
  * @param hWnd cast=(HWND)
  * @param hMenu cast=(HMENU)
  */
 public static final native boolean GetMenuItemRect (long /*int*/ hWnd, long /*int*/ hMenu, int uItem, RECT lprcItem);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax);
+public static final native boolean GetMessageW (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax);
+/** @param hWnd cast=(HWND) */
+public static final native boolean GetMessageA (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax);
 public static final native int GetMessagePos ();
 public static final native int GetMessageTime ();
 /**
@@ -2934,29 +3985,39 @@ public static final native int GetMessageTime ();
  */
 public static final native int GetMetaRgn (long /*int*/ hdc, long /*int*/ hrgn);
 /**
- * @param hTheme cast=(HTHEME)
- * @param hdc cast=(HDC)
+ * @method flags=dynamic
  * @param prc flags=no_out
  * @param psz flags=no_in
  */
 public static final native int GetThemePartSize(long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, RECT prc, int eSize, SIZE psz);
-/**
- * @param hTheme cast=(HTHEME)
- * @param hdc cast=(HDC)
- */
+/** @method flags=dynamic */
 public static final native int GetThemeTextExtent (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 /**
  * @param hModule cast=(HMODULE)
  * @param lpFilename cast=(LPWSTR)
  */
-public static final native int GetModuleFileName (long /*int*/ hModule, char [] lpFilename, int inSize);
-/** @param lpModuleName cast=(LPWSTR) */
-public static final native long /*int*/ GetModuleHandle (char [] lpModuleName);
+public static final native int GetModuleFileNameW (long /*int*/ hModule, char [] lpFilename, int inSize);
 /**
+ * @param hModule cast=(HMODULE)
+ * @param lpFilename cast=(LPSTR)
+ */
+public static final native int GetModuleFileNameA (long /*int*/ hModule, byte [] lpFilename, int inSize);
+/** @param lpModuleName cast=(LPWSTR) */
+public static final native long /*int*/ GetModuleHandleW (char [] lpModuleName);
+/** @param lpModuleName cast=(LPSTR) */
+public static final native long /*int*/ GetModuleHandleA (byte [] lpModuleName);
+/**
+ * @method flags=dynamic
  * @param hmonitor cast=(HMONITOR)
  * @param lpmi cast=(LPMONITORINFO)
  */
-public static final native boolean GetMonitorInfo (long /*int*/ hmonitor, MONITORINFO lpmi);
+public static final native boolean GetMonitorInfoW (long /*int*/ hmonitor, MONITORINFO lpmi);
+/**
+ * @method flags=dynamic
+ * @param hmonitor cast=(HMONITOR)
+ * @param lpmi cast=(LPMONITORINFO)
+ */
+public static final native boolean GetMonitorInfoA (long /*int*/ hmonitor, MONITORINFO lpmi);
 /**
  * @param hPal cast=(HPALETTE)
  * @param crColor cast=(COLORREF)
@@ -2966,31 +4027,59 @@ public static final native int GetNearestPaletteIndex (long /*int*/ hPal, int cr
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, BITMAP lpvObject);
+public static final native int GetObjectA (long /*int*/ hgdiobj, int cbBuffer, BITMAP lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+public static final native int GetObjectW (long /*int*/ hgdiobj, int cbBuffer, BITMAP lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+public static final native int GetObjectA (long /*int*/ hgdiobj, int cbBuffer, DIBSECTION lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGFONT lpvObject);
+public static final native int GetObjectW (long /*int*/ hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+/**
+ * @param hgdiobj cast=(HGDIOBJ)
+ * @param lpvObject flags=no_in
+ */
+public static final native int GetObjectA (long /*int*/ hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+/**
+ * @param hgdiobj cast=(HGDIOBJ)
+ * @param lpvObject flags=no_in
+ */
+public static final native int GetObjectW (long /*int*/ hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+/**
+ * @param hgdiobj cast=(HGDIOBJ)
+ * @param lpvObject flags=no_in
+ */
+public static final native int GetObjectA (long /*int*/ hgdiobj, int cbBuffer, LOGFONTA lpvObject);
+/**
+ * @param hgdiobj cast=(HGDIOBJ)
+ * @param lpvObject flags=no_in
+ */
+public static final native int GetObjectW (long /*int*/ hgdiobj, int cbBuffer, LOGFONTW lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject cast=(LPVOID),flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, long /*int*/ lpvObject);
+public static final native int GetObjectA (long /*int*/ hgdiobj, int cbBuffer, long /*int*/ lpvObject);
+/**
+ * @param hgdiobj cast=(HGDIOBJ)
+ * @param lpvObject cast=(LPVOID),flags=no_in
+ */
+public static final native int GetObjectW (long /*int*/ hgdiobj, int cbBuffer, long /*int*/ lpvObject);
 /** @param lpofn cast=(LPOPENFILENAMEW) */
-public static final native boolean GetOpenFileName (OPENFILENAME lpofn);
+public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
+public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
 /** @param hdc cast=(HDC) */
-public static final native int GetOutlineTextMetrics (long /*int*/ hdc, int cbData, OUTLINETEXTMETRIC lpOTM);
+public static final native int GetOutlineTextMetricsW (long /*int*/ hdc, int cbData, OUTLINETEXTMETRICW lpOTM);
+/** @param hdc cast=(HDC) */
+public static final native int GetOutlineTextMetricsA (long /*int*/ hdc, int cbData, OUTLINETEXTMETRICA lpOTM);
 /**
  * @param hPalette cast=(HPALETTE)
  * @param logPalette cast=(LPPALETTEENTRY),flags=no_in critical
@@ -3007,7 +4096,13 @@ public static final native int GetPolyFillMode (long /*int*/ hdc);
  * @param phPrinter cast=(LPHANDLE)
  * @param pDefault cast=(LPPRINTER_DEFAULTSW)
  */
-public static final native boolean OpenPrinter (char[] pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault);
+public static final native boolean OpenPrinterW (char[] pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault);
+/**
+ * @param pPrinterName cast=(LPTSTR)
+ * @param phPrinter cast=(LPHANDLE)
+ * @param pDefault cast=(LPPRINTER_DEFAULTS)
+ */
+public static final native boolean OpenPrinterA (byte[] pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault);
 public static final native long /*int*/ GetProcessHeap ();
 /**
  * @param lpAppName cast=(LPWSTR)
@@ -3015,12 +4110,24 @@ public static final native long /*int*/ GetProcessHeap ();
  * @param lpDefault cast=(LPWSTR)
  * @param lpReturnedString cast=(LPWSTR)
  */
-public static final native int GetProfileString (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);
+public static final native int GetProfileStringW (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);
+/**
+ * @param lpAppName cast=(LPSTR)
+ * @param lpKeyName cast=(LPSTR)
+ * @param lpDefault cast=(LPSTR)
+ * @param lpReturnedString cast=(LPSTR)
+ */
+public static final native int GetProfileStringA (byte [] lpAppName, byte [] lpKeyName, byte [] lpDefault, byte [] lpReturnedString, int nSize);
 /**
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPCWSTR)
  */
-public static final native long /*int*/ GetProp (long /*int*/ hWnd, long /*int*/ lpString);
+public static final native long /*int*/ GetPropW (long /*int*/ hWnd, long /*int*/ lpString);
+/**
+ * @param hWnd cast=(HWND)
+ * @param lpString cast=(LPCTSTR)
+ */
+public static final native long /*int*/ GetPropA (long /*int*/ hWnd, long /*int*/ lpString);
 /**
  * @param hdc cast=(HDC)
  * @param hrgn cast=(HRGN)
@@ -3039,16 +4146,20 @@ public static final native int GetRgnBox (long /*int*/ hrgn, RECT lprc);
 /** @param hdc cast=(HDC) */
 public static final native int GetROP2 (long /*int*/ hdc);
 /** @param lpofn cast=(LPOPENFILENAMEW) */
-public static final native boolean GetSaveFileName (OPENFILENAME lpofn);
+public static final native boolean GetSaveFileNameW (OPENFILENAME lpofn);
+public static final native boolean GetSaveFileNameA (OPENFILENAME lpofn);
 /** @param hwnd cast=(HWND) */
 public static final native boolean GetScrollBarInfo (long /*int*/ hwnd, int idObject, SCROLLBARINFO psbi);
 /** @param hwnd cast=(HWND) */
 public static final native boolean GetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info);
 /** @param lpStartupInfo cast=(LPSTARTUPINFOW) */
-public static final native void GetStartupInfo (STARTUPINFO lpStartupInfo);
+public static final native void GetStartupInfoW (STARTUPINFO lpStartupInfo);
+/** @param lpStartupInfo cast=(LPSTARTUPINFOA) */
+public static final native void GetStartupInfoA (STARTUPINFO lpStartupInfo);
 public static final native long /*int*/ GetStockObject (int fnObject);
 public static final native int GetSysColor (int nIndex);
 public static final native long /*int*/ GetSysColorBrush (int nIndex);
+/** @method flags=dynamic */
 public static final native short GetSystemDefaultUILanguage ();
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetSystemMenu (long /*int*/ hWnd, boolean bRevert);
@@ -3067,12 +4178,23 @@ public static final native int GetTextColor (long /*int*/ hDC);
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpSize flags=no_in
  */
-public static final native boolean GetTextExtentPoint32 (long /*int*/ hdc, char [] lpString, int cbString, SIZE lpSize);
+public static final native boolean GetTextExtentPoint32W (long /*int*/ hdc, char [] lpString, int cbString, SIZE lpSize);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpString cast=(LPSTR),flags=no_out critical
+ * @param lpSize flags=no_in
+ */
+public static final native boolean GetTextExtentPoint32A (long /*int*/ hdc, byte [] lpString, int cbString, SIZE lpSize);
 /**
  * @param hdc cast=(HDC)
  * @param lptm flags=no_in
  */
-public static final native boolean GetTextMetrics (long /*int*/ hdc, TEXTMETRIC lptm);
+public static final native boolean GetTextMetricsW (long /*int*/ hdc, TEXTMETRICW lptm);
+/**
+ * @param hdc cast=(HDC)
+ * @param lptm flags=no_in
+ */
+public static final native boolean GetTextMetricsA (long /*int*/ hdc, TEXTMETRICA lptm);
 /**
  * @method flags=dynamic
  * @param hTouchInput cast=(HTOUCHINPUT)
@@ -3095,9 +4217,13 @@ public static final native int GetVersion ();
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetWindow (long /*int*/ hWnd, int uCmd);
 /** @param hWnd cast=(HWND) */
-public static final native int GetWindowLong (long /*int*/ hWnd, int nIndex);
+public static final native int GetWindowLongW (long /*int*/ hWnd, int nIndex);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetWindowLongPtr (long /*int*/ hWnd, int nIndex);
+public static final native int GetWindowLongA (long /*int*/ hWnd, int nIndex);
+/** @param hWnd cast=(HWND) */
+public static final native long /*int*/ GetWindowLongPtrW (long /*int*/ hWnd, int nIndex);
+/** @param hWnd cast=(HWND) */
+public static final native long /*int*/ GetWindowLongPtrA (long /*int*/ hWnd, int nIndex);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetWindowDC (long /*int*/ hWnd);
 /** @param hdc cast=(HDC) */
@@ -3115,9 +4241,16 @@ public static final native int GetWindowRgn (long /*int*/ hWnd, long /*int*/ hRg
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPWSTR)
  */
-public static final native int GetWindowText (long /*int*/ hWnd, char [] lpString, int nMaxCount);
+public static final native int GetWindowTextW (long /*int*/ hWnd, char [] lpString, int nMaxCount);
+/**
+ * @param hWnd cast=(HWND)
+ * @param lpString cast=(LPSTR)
+ */
+public static final native int GetWindowTextA (long /*int*/ hWnd, byte [] lpString, int nMaxCount);
 /** @param hWnd cast=(HWND) */
-public static final native int GetWindowTextLength (long /*int*/ hWnd);
+public static final native int GetWindowTextLengthW (long /*int*/ hWnd);
+/** @param hWnd cast=(HWND) */
+public static final native int GetWindowTextLengthA (long /*int*/ hWnd);
 /**
  * @param hWnd cast=(HWND)
  * @param lpdwProcessId cast=(LPDWORD)
@@ -3125,7 +4258,9 @@ public static final native int GetWindowTextLength (long /*int*/ hWnd);
 public static final native int GetWindowThreadProcessId (long /*int*/ hWnd, int [] lpdwProcessId);
 public static final native double GID_ROTATE_ANGLE_FROM_ARGUMENT(long dwArgument);
 /** @param lpString cast=(LPCWSTR) */
-public static final native int GlobalAddAtom (char [] lpString);
+public static final native int GlobalAddAtomW (char [] lpString);
+/** @param lpString cast=(LPCTSTR) */
+public static final native int GlobalAddAtomA (byte [] lpString);
 public static final native long /*int*/ GlobalAlloc (int uFlags, int dwBytes);
 /** @param hMem cast=(HANDLE) */
 public static final native long /*int*/ GlobalFree (long /*int*/ hMem);
@@ -3136,6 +4271,7 @@ public static final native int GlobalSize (long /*int*/ hMem);
 /** @param hMem cast=(HANDLE) */
 public static final native boolean GlobalUnlock (long /*int*/ hMem);
 /**
+ * @method flags=dynamic
  * @param hdc cast=(HDC)
  * @param pVertex cast=(PTRIVERTEX)
  * @param dwNumVertex cast=(ULONG)
@@ -3220,24 +4356,42 @@ public static final native boolean ImmDestroyContext (long /*int*/ hIMC);
  * @param hIMC cast=(HIMC)
  * @param lpData cast=(LPVOID)
  */
-public static final native long /*int*/ ImmEscape (long /*int*/ hKL, long /*int*/ hIMC, int uEscape, char[] lpData);
+public static final native long /*int*/ ImmEscapeW(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, char[] lpData);
+/**
+ * @param hKL cast=(HKL)
+ * @param hIMC cast=(HIMC)
+ * @param lpData cast=(LPVOID)
+ */
+public static final native long /*int*/ ImmEscapeA(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, byte[] lpData);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmGetCompositionFont (long /*int*/ hIMC, LOGFONT lplf);
+public static final native boolean ImmGetCompositionFontW (long /*int*/ hIMC, LOGFONTW lplf);
+/** @param hIMC cast=(HIMC) */
+public static final native boolean ImmGetCompositionFontA (long /*int*/ hIMC, LOGFONTA lplf);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionStringW (long /*int*/ hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
+/**
+ * @param hIMC cast=(HIMC)
+ * @param lpBuf cast=(LPSTR)
+ */
+public static final native int ImmGetCompositionStringA (long /*int*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionStringW (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionStringA (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
+/**
+ * @param hIMC cast=(HIMC)
+ * @param lpBuf cast=(LPWSTR)
+ */
+public static final native int ImmGetCompositionStringW (long /*int*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ ImmGetContext (long /*int*/ hWnd);
 /**
@@ -3258,7 +4412,9 @@ public static final native boolean ImmNotifyIME (long /*int*/ hIMC, int dwAction
  */
 public static final native boolean ImmReleaseContext (long /*int*/ hWnd, long /*int*/ hIMC);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetCompositionFont (long /*int*/ hIMC, LOGFONT lplf);
+public static final native boolean ImmSetCompositionFontW (long /*int*/ hIMC, LOGFONTW lplf);
+/** @param hIMC cast=(HIMC) */
+public static final native boolean ImmSetCompositionFontA (long /*int*/ hIMC, LOGFONTA lplf);
 /** @param hIMC cast=(HIMC) */
 public static final native boolean ImmSetCompositionWindow (long /*int*/ hIMC, COMPOSITIONFORM lpCompForm);
 /** @param hIMC cast=(HIMC) */
@@ -3273,20 +4429,35 @@ public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lp
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean InsertMenuItem (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean InsertMenuItemW (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+/** @param hMenu cast=(HMENU) */
+public static final native boolean InsertMenuItemA (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+/**
+ * @param lpszUrl cast=(LPCTSTR)
+ * @param lpszCookieName cast=(LPCTSTR)
+ * @param lpszCookieData cast=(LPSTR)
+ * @param lpdwSize cast=(LPDWORD)
+ */
+public static final native boolean InternetGetCookieA (byte[] lpszUrl, byte[] lpszCookieName, byte[] lpszCookieData, int[] lpdwSize);
 /**
  * @param lpszUrl cast=(LPCWSTR)
  * @param lpszCookieName cast=(LPCWSTR)
  * @param lpszCookieData cast=(LPWSTR)
  * @param lpdwSize cast=(LPDWORD)
  */
-public static final native boolean InternetGetCookie (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData, int[] lpdwSize);
+public static final native boolean InternetGetCookieW (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData, int[] lpdwSize);
+/**
+ * @param lpszUrl cast=(LPCTSTR)
+ * @param lpszCookieName cast=(LPCTSTR)
+ * @param lpszCookieData cast=(LPCTSTR)
+ */
+public static final native boolean InternetSetCookieA (byte[] lpszUrl, byte[] lpszCookieName, byte[] lpszCookieData);
 /**
  * @param lpszUrl cast=(LPCWSTR)
  * @param lpszCookieName cast=(LPCWSTR)
  * @param lpszCookieData cast=(LPCWSTR)
  */
-public static final native boolean InternetSetCookie (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData);
+public static final native boolean InternetSetCookieW (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData);
 /**
  * @param hInternet cast=(HINTERNET)
  * @param lpBuffer cast=(LPVOID)
@@ -3307,8 +4478,12 @@ public static final native boolean InvalidateRect (long /*int*/ hWnd, RECT lpRec
  * @param hRgn cast=(HRGN)
  */
 public static final native boolean InvalidateRgn (long /*int*/ hWnd, long /*int*/ hRgn, boolean bErase);
+/** @method flags=dynamic */
 public static final native boolean IsAppThemed ();
-/** @param hWnd cast=(HWND) */
+/**
+ * @method flags=dynamic
+ * @param hWnd cast=(HWND)
+ */
 public static final native boolean IsHungAppWindow (long /*int*/ hWnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean IsIconic (long /*int*/ hWnd);
@@ -3332,22 +4507,42 @@ public static final native boolean LineTo (long /*int*/ hdc, int x1, int x2);
  * @param hInstance cast=(HINSTANCE)
  * @param lpBitmapName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadBitmap (long /*int*/ hInstance, long /*int*/ lpBitmapName);
+public static final native long /*int*/ LoadBitmapW (long /*int*/ hInstance, long /*int*/ lpBitmapName);
+/**
+ * @param hInstance cast=(HINSTANCE)
+ * @param lpBitmapName cast=(LPSTR)
+ */
+public static final native long /*int*/ LoadBitmapA (long /*int*/ hInstance, long /*int*/ lpBitmapName);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpCursorName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadCursor (long /*int*/ hInstance, long /*int*/ lpCursorName);
+public static final native long /*int*/ LoadCursorW (long /*int*/ hInstance, long /*int*/ lpCursorName);
+/**
+ * @param hInstance cast=(HINSTANCE)
+ * @param lpCursorName cast=(LPSTR)
+ */
+public static final native long /*int*/ LoadCursorA (long /*int*/ hInstance, long /*int*/ lpCursorName);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpIconName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadIcon (long /*int*/ hInstance, long /*int*/ lpIconName);
+public static final native long /*int*/ LoadIconW (long /*int*/ hInstance, long /*int*/ lpIconName);
+/**
+ * @param hInstance cast=(HINSTANCE)
+ * @param lpIconName cast=(LPSTR)
+ */
+public static final native long /*int*/ LoadIconA (long /*int*/ hInstance, long /*int*/ lpIconName);
 /**
  * @param hinst cast=(HINSTANCE)
  * @param lpszName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadImage (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+public static final native long /*int*/ LoadImageW (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+/**
+ * @param hinst cast=(HINSTANCE)
+ * @param lpszName cast=(LPSTR)
+ */
+public static final native long /*int*/ LoadImageA (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 /** @param hMem cast=(HLOCAL) */
 public static final native long /*int*/ LocalFree (long /*int*/ hMem);
 public static final native int LODWORD (long l);
@@ -3358,7 +4553,8 @@ public static final native int MAKEWORD(int l, int h);
 public static final native long /*int*/ MAKEWPARAM(int l, int h);
 public static final native long /*int*/ MAKELPARAM(int l, int h);
 public static final native long /*int*/ MAKELRESULT(int l, int h);
-public static final native int MapVirtualKey (int uCode, int uMapType);
+public static final native int MapVirtualKeyW (int uCode, int uMapType);
+public static final native int MapVirtualKeyA (int uCode, int uMapType);
 /**
  * @param hWndFrom cast=(HWND)
  * @param hWndTo cast=(HWND)
@@ -3377,13 +4573,19 @@ public static final native boolean MessageBeep (int uType);
  * @param lpText cast=(LPWSTR)
  * @param lpCaption cast=(LPWSTR)
  */
-public static final native int MessageBox (long /*int*/ hWnd, char [] lpText, char [] lpCaption, int uType);
+public static final native int MessageBoxW (long /*int*/ hWnd, char [] lpText, char [] lpCaption, int uType);
+/**
+ * @param hWnd cast=(HWND)
+ * @param lpText cast=(LPSTR)
+ * @param lpCaption cast=(LPSTR)
+ */
+public static final native int MessageBoxA (long /*int*/ hWnd, byte [] lpText, byte [] lpCaption, int uType);
 /**
  * @param hdc cast=(HDC)
  * @param lpXform cast=(XFORM *)
  */
 public static final native boolean ModifyWorldTransform(long /*int*/ hdc, float [] lpXform, int iMode);
-/** @param hwnd cast=(HWND) */
+/** @method flags=dynamic */
 public static final native long /*int*/ MonitorFromWindow (long /*int*/ hwnd, int dwFlags);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
@@ -3454,7 +4656,12 @@ public static final native void MoveMemory (long /*int*/ Destination, long /*int
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, DEVMODE Source, int Length);
+public static final native void MoveMemory (long /*int*/ Destination, DEVMODEW Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (long /*int*/ Destination, DEVMODEA Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
@@ -3469,7 +4676,12 @@ public static final native void MoveMemory (long /*int*/ Destination, GRADIENT_R
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, LOGFONT Source, int Length);
+public static final native void MoveMemory (long /*int*/ Destination, LOGFONTW Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (long /*int*/ Destination, LOGFONTA Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
@@ -3494,7 +4706,12 @@ public static final native void MoveMemory (long /*int*/ Destination, UDACCEL So
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMTTDISPINFO Source, int Length);
+public static final native void MoveMemory (long /*int*/ Destination, NMTTDISPINFOW Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (long /*int*/ Destination, NMTTDISPINFOA Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *)
@@ -3549,7 +4766,12 @@ public static final native void MoveMemory (CERT_INFO Destination, long /*int*/ 
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (DEVMODE Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (DEVMODEW Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (DEVMODEA Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
@@ -3584,7 +4806,12 @@ public static final native void MoveMemory (HELPINFO Destination, long /*int*/ S
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (LOGFONT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (LOGFONTW Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (LOGFONTA Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
@@ -3739,7 +4966,12 @@ public static final native void MoveMemory (NMTTCUSTOMDRAW Destination, long /*i
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTTDISPINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTTDISPINFOW Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (NMTTDISPINFOA Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
@@ -3759,7 +4991,12 @@ public static final native void MoveMemory (long /*int*/ Destination, SHDRAGIMAG
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (TEXTMETRIC Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (TEXTMETRICW Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (TEXTMETRICA Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
@@ -3851,6 +5088,7 @@ public static final native int MultiByteToWideChar (int CodePage, int dwFlags, b
  */
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, long /*int*/ lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 /**
+ * @method flags=dynamic
  * @param event cast=(DWORD)
  * @param hwnd cast=(HWND)
  * @param idObject cast=(LONG)
@@ -3866,6 +5104,7 @@ public static final native void OleUninitialize ();
 /** @param hWndNewOwner cast=(HWND) */
 public static final native boolean OpenClipboard (long /*int*/ hWndNewOwner);
 /**
+ * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param pszClassList cast=(LPCWSTR)
  */
@@ -3875,7 +5114,9 @@ public static final native boolean PatBlt (long /*int*/ hdc, int x1, int x2, int
 /** @param szfile cast=(LPCWSTR) */
 public static final native boolean PathIsExe (long /*int*/ szfile);
 /** @param hWnd cast=(HWND) */
-public static final native boolean PeekMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
+public static final native boolean PeekMessageW (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
+/** @param hWnd cast=(HWND) */
+public static final native boolean PeekMessageA (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 /** @param hdc cast=(HDC) */
 public static final native boolean Pie (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
 /** @param pt flags=struct */
@@ -3895,20 +5136,34 @@ public static final native boolean Polyline (long /*int*/ hdc, int[] points, int
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native boolean PostMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native boolean PostMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native boolean PostMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /**
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native boolean PostThreadMessage (int idThread, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native boolean PostThreadMessageW (int idThread, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native boolean PostThreadMessageA (int idThread, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 public static final native short PRIMARYLANGID (int lgid);
 /** @param lppd cast=(LPPRINTDLGW) */
-public static final native boolean PrintDlg (PRINTDLG lppd);
+public static final native boolean PrintDlgW (PRINTDLG lppd);
+public static final native boolean PrintDlgA (PRINTDLG lppd);
 /**
+ * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param hdcBlt cast=(HDC)
  */
 public static final native boolean PrintWindow (long /*int*/ hwnd, long /*int*/ hdcBlt, int nFlags);
+/** @method flags=dynamic */
 public static final native int PSPropertyKeyFromString (char[] pszString, PROPERTYKEY pkey);
 /**
  * @param rect flags=no_out
@@ -3941,12 +5196,26 @@ public static final native int RegCloseKey (long /*int*/ hKey);
  * @param phkResult cast=(PHKEY)
  * @param lpdwDisposition cast=(LPDWORD)
  */
-public static final native int RegCreateKeyEx (long /*int*/ hKey, char[] lpSubKey, int Reserved, char[] lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition);
+public static final native int RegCreateKeyExW (long /*int*/ hKey, char[] lpSubKey, int Reserved, char[] lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpSubKey cast=(LPSTR)
+ * @param lpClass cast=(LPTSTR)
+ * @param lpSecurityAttributes cast=(LPSECURITY_ATTRIBUTES)
+ * @param phkResult cast=(PHKEY)
+ * @param lpdwDisposition cast=(LPDWORD)
+ */
+public static final native int RegCreateKeyExA (long /*int*/ hKey, byte[] lpSubKey, int Reserved, byte[] lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
  */
-public static final native int RegDeleteValue (long /*int*/ hKey, char[] lpValueName);
+public static final native int RegDeleteValueW (long /*int*/ hKey, char[] lpValueName);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ */
+public static final native int RegDeleteValueA (long /*int*/ hKey, byte[] lpValueName);
 /**
  * @param hKey cast=(HKEY)
  * @param lpName cast=(LPWSTR)
@@ -3955,9 +5224,19 @@ public static final native int RegDeleteValue (long /*int*/ hKey, char[] lpValue
  * @param lpClass cast=(LPWSTR)
  * @param lpcClass cast=(LPDWORD)
  */
-public static final native int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
+public static final native int RegEnumKeyExW (long /*int*/ hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpName cast=(LPSTR)
+ * @param lpcName cast=(LPDWORD)
+ * @param lpReserved cast=(LPDWORD)
+ * @param lpClass cast=(LPSTR)
+ * @param lpcClass cast=(LPDWORD)
+ */
+public static final native int RegEnumKeyExA (long /*int*/ hKey, int dwIndex, byte [] lpName, int [] lpcName, int [] lpReserved, byte [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
 /** @param lpWndClass cast=(LPWNDCLASSW) */
-public static final native int RegisterClass (WNDCLASS lpWndClass);
+public static final native int RegisterClassW (WNDCLASS lpWndClass);
+public static final native int RegisterClassA (WNDCLASS lpWndClass);
 /**
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
@@ -3965,15 +5244,25 @@ public static final native int RegisterClass (WNDCLASS lpWndClass);
  */
 public static final native boolean RegisterTouchWindow(long /*int*/ hWnd, int ulFlags);
 /** @param lpString cast=(LPWSTR) */
-public static final native int RegisterWindowMessage (char [] lpString);
+public static final native int RegisterWindowMessageW (char [] lpString);
+/** @param lpString cast=(LPTSTR) */
+public static final native int RegisterWindowMessageA (byte [] lpString);
+/** @param lpszFormat cast=(LPTSTR) */
+public static final native int RegisterClipboardFormatA (byte[] lpszFormat);
 /** @param lpszFormat cast=(LPWSTR) */
-public static final native int RegisterClipboardFormat (char[] lpszFormat);
+public static final native int RegisterClipboardFormatW (char[] lpszFormat);
 /**
  * @param hKey cast=(HKEY)
  * @param lpSubKey cast=(LPWSTR)
  * @param phkResult cast=(PHKEY)
  */
-public static final native int RegOpenKeyEx (long /*int*/ hKey, char[] lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult);
+public static final native int RegOpenKeyExW (long /*int*/ hKey, char[] lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpSubKey cast=(LPSTR)
+ * @param phkResult cast=(PHKEY)
+ */
+public static final native int RegOpenKeyExA (long /*int*/ hKey, byte[] lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
@@ -3982,7 +5271,7 @@ public static final native int RegOpenKeyEx (long /*int*/ hKey, char[] lpSubKey,
  * @param lpData cast=(LPBYTE)
  * @param lpcbData cast=(LPDWORD)
  */
-public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, char [] lpData, int[] lpcbData);
+public static final native int RegQueryValueExW (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, char [] lpData, int[] lpcbData);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
@@ -3991,13 +5280,37 @@ public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValu
  * @param lpData cast=(LPBYTE)
  * @param lpcbData cast=(LPDWORD)
  */
-public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
+public static final native int RegQueryValueExW (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ * @param lpReserved cast=(LPDWORD)
+ * @param lpType cast=(LPDWORD)
+ * @param lpData cast=(LPBYTE)
+ * @param lpcbData cast=(LPDWORD)
+ */
+public static final native int RegQueryValueExA (long /*int*/ hKey, byte[] lpValueName, long /*int*/ lpReserved, int[] lpType, byte [] lpData, int[] lpcbData);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
  * @param lpData cast=(const BYTE*)
  */
-public static final native int RegSetValueEx (long /*int*/ hKey, char[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
+public static final native int RegSetValueExW (long /*int*/ hKey, char[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ * @param lpData cast=(const BYTE*)
+ */
+public static final native int RegSetValueExA (long /*int*/ hKey, byte[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ * @param lpReserved cast=(LPDWORD)
+ * @param lpType cast=(LPDWORD)
+ * @param lpData cast=(LPBYTE)
+ * @param lpcbData cast=(LPDWORD)
+ */
+public static final native int RegQueryValueExA (long /*int*/ hKey, byte[] lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 public static final native boolean ReleaseCapture ();
 /**
  * @param hWnd cast=(HWND)
@@ -4008,9 +5321,14 @@ public static final native int ReleaseDC (long /*int*/ hWnd, long /*int*/ hDC);
 public static final native boolean RemoveMenu (long /*int*/ hMenu, int uPosition, int uFlags);
 /**
  * @param hWnd cast=(HWND)
+ * @param lpString cast=(LPCTSTR)
+ */
+public static final native long /*int*/ RemovePropA (long /*int*/ hWnd, long /*int*/ lpString);
+/**
+ * @param hWnd cast=(HWND)
  * @param lpString cast=(LPCWSTR)
  */
-public static final native long /*int*/ RemoveProp (long /*int*/ hWnd, long /*int*/ lpString);
+public static final native long /*int*/ RemovePropW (long /*int*/ hWnd, long /*int*/ lpString);
 public static final native boolean ReplyMessage (long /*int*/ lResult);
 /**
  * @param hdc cast=(HDC)
@@ -4185,181 +5503,403 @@ public static final native int SendInput (int nInputs, long /*int*/ pInputs, int
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, int [] wParam, int [] lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, int [] wParam, int [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, char [] lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ [] wParam, long /*int*/ lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, int [] lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, char [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, int [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVCOLUMN lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, short [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVHITTESTINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LITEM lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVCOLUMN lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVITEM lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVINSERTMARK lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MARGINS lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MCHITTESTINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVINSERTMARK lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, REBARBANDINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MARGINS lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, RECT lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MCHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SYSTEMTIME lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, POINT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SHDRAGIMAGE lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, REBARBANDINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTON lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, RECT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTONINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SYSTEMTIME lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCITEM lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SHDRAGIMAGE lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHITTESTINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTON lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TOOLINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTONINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVHITTESTINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVINSERTSTRUCT lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVITEM lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TOOLINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVSORTCB lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, UDACCEL lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVINSERTSTRUCT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDHITTESTINFO lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDITEM lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVSORTCB lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDLAYOUT lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, UDACCEL lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, BUTTON_IMAGELIST lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SIZE lParam);
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDLAYOUT lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, BUTTON_IMAGELIST lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageW (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SIZE lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, int [] wParam, int [] lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ [] wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, byte [] lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, int [] lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, short [] lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, char [] lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVCOLUMN lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVHITTESTINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVINSERTMARK lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MARGINS lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MCHITTESTINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, POINT lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, REBARBANDINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, RECT lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SYSTEMTIME lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SHDRAGIMAGE lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTON lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTONINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHITTESTINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TOOLINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVHITTESTINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVINSERTSTRUCT lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVSORTCB lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, UDACCEL lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDHITTESTINFO lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDLAYOUT lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, BUTTON_IMAGELIST lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native long /*int*/ SendMessageA (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SIZE lParam);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ SetActiveWindow (long /*int*/ hWnd);
 /**
@@ -4387,7 +5927,16 @@ public static final native boolean SetCursorPos (int X, int Y);
  * @param pColors cast=(RGBQUAD *),flags=no_out critical
  */
 public static final native int SetDIBColorTable (long /*int*/ hdc, int uStartIndex, int cEntries, byte[] pColors);
-public static final native boolean SetDllDirectory (char [] lpString);
+/**
+ * @method flags=dynamic
+ * @param lpString cast=(LPSTR)
+ */
+public static final native boolean SetDllDirectoryA (byte [] lpString);
+/**
+ * @method flags=dynamic
+ * @param lpString cast=(LPWSTR)
+ */
+public static final native boolean SetDllDirectoryW (char [] lpString);
 public static final native int SetErrorMode (int uMode);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ SetFocus (long /*int*/ hWnd);
@@ -4401,9 +5950,13 @@ public static final native boolean SetForegroundWindow (long /*int*/ hWnd);
 public static final native boolean SetGestureConfig(long /*int*/ hwnd, int dwReserved, int cIDs, long /*int*/ pGestureConfig, int cbSize);
 /** @param hdc cast=(HDC) */
 public static final native int SetGraphicsMode (long /*int*/ hdc, int iMode);
-/** @param hwnd cast=(HWND) */
+/**
+ * @method flags=dynamic
+ * @param hwnd cast=(HWND)
+ */
 public static final native boolean SetLayeredWindowAttributes(long /*int*/ hwnd, int crKey, byte bAlpha, int dwFlags);
 /**
+ * @method flags=dynamic
  * @param hdc cast=(HDC)
  * @param dwLayout cast=(DWORD)
  */
@@ -4415,13 +5968,18 @@ public static final native int SetLayout (long /*int*/ hdc, int dwLayout);
 public static final native boolean SetMenu (long /*int*/ hWnd, long /*int*/ hMenu);
 /** @param hMenu cast=(HMENU) */
 public static final native boolean SetMenuDefaultItem (long /*int*/ hMenu, int uItem, int fByPos);
-/** @param hmenu cast=(HMENU) */
+/**
+ * @method flags=dynamic
+ * @param hmenu cast=(HMENU)
+ */
 public static final native boolean SetMenuInfo (long /*int*/ hmenu, MENUINFO lpcmi);
 /**
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean SetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean SetMenuItemInfoW (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+/** @param hMenu cast=(HMENU) */
+public static final native boolean SetMenuItemInfoA (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /** @param hdc cast=(HDC) */
 public static final native int SetMetaRgn (long /*int*/ hdc);
 /**
@@ -4438,6 +5996,7 @@ public static final native long /*int*/ SetParent (long /*int*/ hWndChild, long 
 public static final native int SetPixel (long /*int*/ hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long /*int*/ hdc, int iPolyFillMode);
+/** @method flags=dynamic */
 public static final native boolean SetProcessDPIAware ();
 /** @param lprc flags=no_in */
 public static final native boolean SetRect (RECT lprc, int xLeft, int yTop, int xRight, int yBottom);
@@ -4454,7 +6013,13 @@ public static final native int SetStretchBltMode (long /*int*/ hdc, int iStretch
  * @param lpString cast=(LPCWSTR)
  * @param hData cast=(HANDLE)
  */
-public static final native boolean SetProp (long /*int*/ hWnd, long /*int*/ lpString, long /*int*/ hData);
+public static final native boolean SetPropW (long /*int*/ hWnd, long /*int*/ lpString, long /*int*/ hData);
+/**
+ * @param hWnd cast=(HWND)
+ * @param lpString cast=(LPCTSTR)
+ * @param hData cast=(HANDLE)
+ */
+public static final native boolean SetPropA (long /*int*/ hWnd, long /*int*/ lpString, long /*int*/ hData);
 /**
  * @param hdc cast=(HDC)
  * @param colorRef cast=(COLORREF)
@@ -4466,12 +6031,19 @@ public static final native int SetTextColor (long /*int*/ hdc, int colorRef);
  */
 public static final native long /*int*/ SetTimer (long /*int*/ hWnd, long /*int*/ nIDEvent, int Elapse, long /*int*/ lpTimerFunc);
 /** @param hWnd cast=(HWND) */
-public static final native int SetWindowLong (long /*int*/ hWnd, int nIndex, int dwNewLong);
+public static final native int SetWindowLongW (long /*int*/ hWnd, int nIndex, int dwNewLong);
+/** @param hWnd cast=(HWND) */
+public static final native int SetWindowLongA (long /*int*/ hWnd, int nIndex, int dwNewLong);
 /**
  * @param hWnd cast=(HWND)
  * @param dwNewLong cast=(LONG_PTR)
  */
-public static final native long /*int*/ SetWindowLongPtr (long /*int*/ hWnd, int nIndex, long /*int*/ dwNewLong);
+public static final native long /*int*/ SetWindowLongPtrW (long /*int*/ hWnd, int nIndex, long /*int*/ dwNewLong);
+/**
+ * @param hWnd cast=(HWND)
+ * @param dwNewLong cast=(LONG_PTR)
+ */
+public static final native long /*int*/ SetWindowLongPtrA (long /*int*/ hWnd, int nIndex, long /*int*/ dwNewLong);
 /** @param hdc cast=(HDC) */
 public static final native boolean SetWindowOrgEx (long /*int*/ hdc, int X, int Y, POINT lpPoint);
 /** @param hWnd cast=(HWND) */
@@ -4490,8 +6062,14 @@ public static final native int SetWindowRgn (long /*int*/ hWnd, long /*int*/ hRg
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPWSTR)
  */
-public static final native boolean SetWindowText (long /*int*/ hWnd, char [] lpString);
+public static final native boolean SetWindowTextW (long /*int*/ hWnd, char [] lpString);
 /**
+ * @param hWnd cast=(HWND)
+ * @param lpString cast=(LPSTR)
+ */
+public static final native boolean SetWindowTextA (long /*int*/ hWnd, byte [] lpString);
+/**
+ * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param pszSubAppName cast=(LPCWSTR)
  * @param pszSubIdList cast=(LPCWSTR)
@@ -4501,47 +6079,52 @@ public static final native int SetWindowTheme (long /*int*/ hwnd, char [] pszSub
  * @param lpfn cast=(HOOKPROC)
  * @param hMod cast=(HINSTANCE)
  */
-public static final native long /*int*/ SetWindowsHookEx (int idHook, long /*int*/ lpfn,  long /*int*/ hMod,  int dwThreadId);
+public static final native long /*int*/ SetWindowsHookExW (int idHook, long /*int*/ lpfn,  long /*int*/ hMod,  int dwThreadId);
+/**
+ * @param lpfn cast=(HOOKPROC)
+ * @param hMod cast=(HINSTANCE)
+ */
+public static final native long /*int*/ SetWindowsHookExA (int idHook, long /*int*/ lpfn,  long /*int*/ hMod,  int dwThreadId);
 /**
  * @param hdc cast=(HDC)
  * @param lpXform cast=(XFORM *)
  */
 public static final native boolean SetWorldTransform(long /*int*/ hdc, float[] lpXform);
 /** @param lpbi cast=(LPBROWSEINFOW) */
-public static final native long /*int*/ SHBrowseForFolder (BROWSEINFO lpbi);
+public static final native long /*int*/ SHBrowseForFolderW (BROWSEINFO lpbi);
+public static final native long /*int*/ SHBrowseForFolderA (BROWSEINFO lpbi);
 /**
  * @param pszPath cast=(LPCWSTR)
  * @param psfi cast=(SHFILEINFOW *)
  */
-public static final native long /*int*/ SHGetFileInfo (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
+public static final native long /*int*/ SHGetFileInfoW (char [] pszPath, int dwFileAttributes, SHFILEINFOW psfi, int cbFileInfo, int uFlags);
+/**
+ * @param pszPath cast=(LPCSTR)
+ * @param psfi cast=(SHFILEINFOA *)
+ */
+public static final native long /*int*/ SHGetFileInfoA (byte [] pszPath, int dwFileAttributes, SHFILEINFOA psfi, int cbFileInfo, int uFlags);
 /** @param lpExecInfo cast=(LPSHELLEXECUTEINFOW) */
-public static final native boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo);
-public static final native boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData);
+public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
+public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo);
+public static final native boolean Shell_NotifyIconA (int dwMessage, NOTIFYICONDATAA lpData);
+public static final native boolean Shell_NotifyIconW (int dwMessage, NOTIFYICONDATAW lpData);
 /** @param ppMalloc cast=(LPMALLOC *) */
 public static final native int SHGetMalloc (long /*int*/ [] ppMalloc);
 /**
  * @param pidl cast=(LPCITEMIDLIST)
  * @param pszPath cast=(LPWSTR)
  */
-public static final native boolean SHGetPathFromIDList (long /*int*/ pidl, char [] pszPath);
+public static final native boolean SHGetPathFromIDListW (long /*int*/ pidl, char [] pszPath);
 /**
- * @param kfid cast=(REFKNOWNFOLDERID)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
+ * @param pidl cast=(LPCITEMIDLIST)
+ * @param pszPath cast=(LPSTR)
  */
+public static final native boolean SHGetPathFromIDListA (long /*int*/ pidl, byte [] pszPath);
+/** @method flags=dynamic */
 public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, long /*int*/ [] ppv);
-/**
- * @param psiParent cast=(IShellItem *)
- * @param pbc cast=(IBindCtx *)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
- */
+/** @method flags=dynamic */
 public static final native int SHCreateItemFromRelativeName (long /*int*/ psiParent, char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
-/**
- * @param pbc cast=(IBindCtx *)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
- */
+/** @method flags=dynamic */
 public static final native int SHCreateItemFromParsingName (char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ShowCaret (long /*int*/ hWnd);
@@ -4555,7 +6138,9 @@ public static final native boolean ShowWindow (long /*int*/ hWnd, int nCmdShow);
  * @param hdc cast=(HDC)
  * @param lpdi cast=(LPDOCINFOW)
  */
-public static final native int StartDoc (long /*int*/ hdc, DOCINFO lpdi);
+public static final native int StartDocW (long /*int*/ hdc, DOCINFO lpdi);
+/** @param hdc cast=(HDC) */
+public static final native int StartDocA (long /*int*/ hdc, DOCINFO lpdi);
 /** @param hdc cast=(HDC) */
 public static final native int StartPage (long /*int*/ hdc);
 /**
@@ -4563,10 +6148,21 @@ public static final native int StartPage (long /*int*/ hdc);
  * @param hdcSrc cast=(HDC)
  */
 public static final native boolean StretchBlt (long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
-public static final native boolean SystemParametersInfo (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
-public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
-public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
-public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
+/** @param hdc cast=(HDC) */
+public static final native boolean StrokePath (long /*int*/ hdc);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, RECT pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICSW pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, NONCLIENTMETRICSA pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, int [] pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, int [] pvParam, int fWinIni);
+/**
+ * @param lpKeyState cast=(PBYTE)
+ * @param lpChar cast=(LPWORD)
+ */
+public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);
 /**
  * @param lpKeyState cast=(PBYTE)
  * @param pwszBuff cast=(LPWSTR)
@@ -4588,7 +6184,12 @@ public static final native boolean TrackPopupMenu (long /*int*/ hMenu, int uFlag
  * @param hWnd cast=(HWND)
  * @param hAccTable cast=(HACCEL)
  */
-public static final native int TranslateAccelerator (long /*int*/ hWnd, long /*int*/ hAccTable, MSG lpMsg);
+public static final native int TranslateAcceleratorW (long /*int*/ hWnd, long /*int*/ hAccTable, MSG lpMsg);
+/**
+ * @param hWnd cast=(HWND)
+ * @param hAccTable cast=(HACCEL)
+ */
+public static final native int TranslateAcceleratorA (long /*int*/ hWnd, long /*int*/ hAccTable, MSG lpMsg);
 /**
  * @param lpSrc cast=(DWORD *)
  * @param lpCs cast=(LPCHARSETINFO)
@@ -4600,10 +6201,7 @@ public static final native boolean TranslateCharsetInfo (long /*int*/ lpSrc, int
  */
 public static final native boolean TranslateMDISysAccel (long /*int*/ hWndClient, MSG lpMsg);
 public static final native boolean TranslateMessage (MSG lpmsg);
-/**
- * @param hdcDest cast=(HDC)
- * @param hdcSrc cast=(HDC)
- */
+/** @method flags=dynamic */
 public static final native boolean TransparentBlt (long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
 /** @param hhk cast=(HHOOK) */
 public static final native boolean UnhookWindowsHookEx (long /*int*/ hhk);
@@ -4611,7 +6209,12 @@ public static final native boolean UnhookWindowsHookEx (long /*int*/ hhk);
  * @param lpClassName cast=(LPWSTR)
  * @param hInstance cast=(HINSTANCE)
  */
-public static final native boolean UnregisterClass (char [] lpClassName, long /*int*/ hInstance);
+public static final native boolean UnregisterClassW (char [] lpClassName, long /*int*/ hInstance);
+/**
+ * @param lpClassName cast=(LPSTR)
+ * @param hInstance cast=(HINSTANCE)
+ */
+public static final native boolean UnregisterClassA (byte [] lpClassName, long /*int*/ hInstance);
 /**
  * @method flags=dynamic
  * @param hwnd cast=(HWND)
@@ -4620,15 +6223,21 @@ public static final native boolean UnregisterTouchWindow (long /*int*/ hwnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean UpdateWindow (long /*int*/ hWnd);
 /**
+ * @param pszPath cast=(LPCSTR)
+ * @param pszURL cast=(LPSTR)
+ */
+public static final native int UrlCreateFromPathA (byte[] pszPath, byte[] pszURL, int[] pcchUrl, int flags);
+/**
  * @param pszPath cast=(LPCWSTR)
  * @param pszURL cast=(LPWSTR)
  */
-public static final native int UrlCreateFromPath (char[] pszPath, char[] pszURL, int[] pcchUrl, int flags);
+public static final native int UrlCreateFromPathW (char[] pszPath, char[] pszURL, int[] pcchUrl, int flags);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ValidateRect (long /*int*/ hWnd, RECT lpRect);
 /** @param ch cast=(WCHAR) */
-public static final native short VkKeyScan (short ch);
-
+public static final native short VkKeyScanW (short ch);
+/** @param ch cast=(TCHAR) */
+public static final native short VkKeyScanA (short ch);
 /** @method flags=trycatch */
 public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl);
 

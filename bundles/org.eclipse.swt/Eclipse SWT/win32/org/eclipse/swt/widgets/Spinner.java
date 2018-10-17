@@ -298,7 +298,7 @@ long /*int*/ borderHandle () {
 		long /*int*/ hDC = OS.GetDC (hwndText);
 		newFont = OS.SendMessage (hwndText, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		TEXTMETRIC tm = new TEXTMETRIC ();
+		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, tm);
 		height = tm.tmHeight;
 		RECT rect = new RECT ();
