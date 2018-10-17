@@ -4275,7 +4275,7 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	long /*int*/ oldFont = OS.SelectObject (hDC, defaultFont ());
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+	TEXTMETRIC tm = new TEXTMETRIC ();
 	OS.GetTextMetrics (hDC, tm);
 	OS.SelectObject (hDC, oldFont);
 	int itemWidth = Math.min (tm.tmHeight, width);
@@ -5718,8 +5718,7 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 				switch (hdr.code) {
 					case OS.TTN_SHOW:
 					case OS.TTN_POP:
-					case OS.TTN_GETDISPINFOA:
-					case OS.TTN_GETDISPINFOW:
+					case OS.TTN_GETDISPINFO:
 						return OS.SendMessage (handle, msg, wParam, lParam);
 				}
 				break;
@@ -6538,8 +6537,7 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
-		case OS.LVN_ODFINDITEMA:
-		case OS.LVN_ODFINDITEMW: {
+		case OS.LVN_ODFINDITEM: {
 			if ((style & SWT.VIRTUAL) != 0) return new LRESULT (-1);
 			break;
 		}
@@ -6555,8 +6553,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.LVN_GETDISPINFOA:
-		case OS.LVN_GETDISPINFOW: {
+		case OS.LVN_GETDISPINFO: {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
@@ -6875,10 +6872,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	* both.
 	*/
 	switch (hdr.code) {
-		case OS.HDN_BEGINTRACKW:
-		case OS.HDN_BEGINTRACKA:
-		case OS.HDN_DIVIDERDBLCLICKW:
-		case OS.HDN_DIVIDERDBLCLICKA: {
+		case OS.HDN_BEGINTRACK:
+		case OS.HDN_DIVIDERDBLCLICK: {
 			if (columnCount == 0) return LRESULT.ONE;
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
@@ -6887,13 +6882,11 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				return LRESULT.ONE;
 			}
 			ignoreColumnMove = true;
-			switch (hdr.code) {
-				case OS.HDN_DIVIDERDBLCLICKW:
-				case OS.HDN_DIVIDERDBLCLICKA:
-					if (column != null && hooks (SWT.MeasureItem)) {
-						column.pack ();
-						return LRESULT.ONE;
-					}
+			if (hdr.code == OS.HDN_DIVIDERDBLCLICK) {
+				if (column != null && hooks (SWT.MeasureItem)) {
+					column.pack ();
+					return LRESULT.ONE;
+				}
 			}
 			break;
 		}
@@ -7100,8 +7093,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMCHANGEDW:
-		case OS.HDN_ITEMCHANGEDA: {
+		case OS.HDN_ITEMCHANGED: {
 			/*
 			* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
 			* style and the user drags any column over the first column in the
@@ -7157,8 +7149,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.HDN_ITEMDBLCLICKW:
-		case OS.HDN_ITEMDBLCLICKA: {
+		case OS.HDN_ITEMDBLCLICK: {
 			NMHEADER phdn = new NMHEADER ();
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TableColumn column = columns [phdn.iItem];
@@ -7182,8 +7173,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			}
 			break;
 		}
-		case OS.TTN_GETDISPINFOA:
-		case OS.TTN_GETDISPINFOW:
+		case OS.TTN_GETDISPINFO:
 		case OS.TTN_SHOW: {
 			LRESULT result = super.wmNotify (hdr, wParam, lParam);
 			if (result != null) return result;
@@ -7225,21 +7215,11 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							int width = toolRect.right - toolRect.left, height = toolRect.bottom - toolRect.top;
 							OS.SetWindowPos (hwndToolTip, 0, toolRect.left , toolRect.top, width, height, flags);
 						} else {
-							NMTTDISPINFO lpnmtdi = null;
-							if (hdr.code == OS.TTN_GETDISPINFOA) {
-								lpnmtdi = new NMTTDISPINFOA ();
-								OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
-								if (lpnmtdi.lpszText != 0) {
-									OS.MoveMemory (lpnmtdi.lpszText, new byte [1], 1);
-									OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
-								}
-							} else {
-								lpnmtdi = new NMTTDISPINFOW ();
-								OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
-								if (lpnmtdi.lpszText != 0) {
-									OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
-									OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
-								}
+							NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
+							OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
+							if (lpnmtdi.lpszText != 0) {
+								OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
+								OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
 							}
 							RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
 							RECT clientRect = new RECT ();
@@ -7258,15 +7238,8 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 									Shell shell = getShell ();
 									char [] chars = new char [string.length () + 1];
 									string.getChars (0, string.length (), chars, 0);
-									if (hdr.code == OS.TTN_GETDISPINFOA) {
-										byte [] bytes = new byte [chars.length * 2];
-										OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
-										shell.setToolTipText (lpnmtdi, bytes);
-										OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
-									} else {
-										shell.setToolTipText (lpnmtdi, chars);
-										OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
-									}
+									shell.setToolTipText (lpnmtdi, chars);
+									OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
 								}
 							}
 						}

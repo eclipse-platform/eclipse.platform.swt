@@ -151,7 +151,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
 	}
 	// render transparently to avoid overlapping segments. fixes bug 40006
 	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
-	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
+	OS.ExtTextOut(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
 	OS.SetBkMode(gc.handle, oldBkMode);
 }
 /**
@@ -527,18 +527,18 @@ public static int resolveTextDirection (String text) {
 	for (int i = 0; i < length; i++) {
 		char ch = text.charAt(i);
 		rtlProbe[0] = ch;
-		OS.GetCharacterPlacementW(hdc, rtlProbe, rtlProbe.length, 0, result, OS.GCP_REORDER);
+		OS.GetCharacterPlacement(hdc, rtlProbe, rtlProbe.length, 0, result, OS.GCP_REORDER);
 		OS.MoveMemory(order, result.lpOrder, 4);
 		if (order[0] == 2) {
 			textDirection = SWT.RIGHT_TO_LEFT;
 			break;
 		}
 		ltrProbe[2] = ch;
-		OS.GetCharacterPlacementW(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
+		OS.GetCharacterPlacement(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
 		OS.MoveMemory(order, result.lpOrder + 4, 4);
 		if (order[0] == 1) {
 			numberProbe[2] = ch;
-			OS.GetCharacterPlacementW(hdc, numberProbe, numberProbe.length, 0, result, OS.GCP_REORDER);
+			OS.GetCharacterPlacement(hdc, numberProbe, numberProbe.length, 0, result, OS.GCP_REORDER);
 			OS.MoveMemory(order, result.lpOrder, 4);
 			if (order[0] == 0) {
 				textDirection = SWT.LEFT_TO_RIGHT;

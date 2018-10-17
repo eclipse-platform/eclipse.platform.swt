@@ -641,7 +641,7 @@ public void clearSelection () {
 		long /*int*/ hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+		TEXTMETRIC tm = new TEXTMETRIC ();
 		OS.GetTextMetrics (hDC, tm);
 		int count = (style & SWT.SINGLE) != 0 ? 1 : (int)/*64*/OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 		height = count * tm.tmHeight;
@@ -1128,7 +1128,7 @@ int getLineHeightInPixels () {
 	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+	TEXTMETRIC tm = new TEXTMETRIC ();
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
@@ -1839,7 +1839,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 			long /*int*/ hDC = OS.GetDC (handle);
 			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			TEXTMETRIC tm = new TEXTMETRIC ();
 			OS.GetTextMetrics (hDC, tm);
 			if (newFont != 0) OS.SelectObject (hDC, oldFont);
 			OS.ReleaseDC (handle, hDC);

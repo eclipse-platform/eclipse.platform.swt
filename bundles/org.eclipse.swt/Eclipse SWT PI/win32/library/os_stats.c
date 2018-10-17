@@ -26,14 +26,12 @@ char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
 	"ActivateKeyboardLayout",
-	"AddFontResourceExA",
-	"AddFontResourceExW",
+	"AddFontResourceEx",
 	"AdjustWindowRectEx",
 	"AllowSetForegroundWindow",
 	"AlphaBlend",
 	"Arc",
-	"AssocQueryStringA",
-	"AssocQueryStringW",
+	"AssocQueryString",
 	"BITMAPINFOHEADER_1sizeof",
 	"BITMAP_1sizeof",
 	"BLENDFUNCTION_1sizeof",
@@ -63,18 +61,12 @@ char * OS_nativeFunctionNames[] = {
 	"CRYPT_1INTEGER_1BLOB_1sizeof",
 	"CRYPT_1OBJID_1BLOB_1sizeof",
 	"CallNextHookEx",
-	"CallWindowProcA",
-	"CallWindowProcW",
-	"CertNameToStrA",
-	"CertNameToStrW",
-	"CharLowerA",
-	"CharLowerW",
-	"CharUpperA",
-	"CharUpperW",
-	"ChooseColorA",
-	"ChooseColorW",
-	"ChooseFontA",
-	"ChooseFontW",
+	"CallWindowProc",
+	"CertNameToStr",
+	"CharLower",
+	"CharUpper",
+	"ChooseColor",
+	"ChooseFont",
 	"ClientToScreen",
 	"CloseClipboard",
 	"CloseEnhMetaFile",
@@ -91,17 +83,14 @@ char * OS_nativeFunctionNames[] = {
 	"CombineRgn",
 	"CommDlgExtendedError",
 	"CopyImage",
-	"CreateAcceleratorTableA",
-	"CreateAcceleratorTableW",
-	"CreateActCtxA",
-	"CreateActCtxW",
+	"CreateAcceleratorTable",
+	"CreateActCtx",
 	"CreateBitmap",
 	"CreateCaret",
 	"CreateCompatibleBitmap",
 	"CreateCompatibleDC",
 	"CreateCursor",
-	"CreateDCA",
-	"CreateDCW",
+	"CreateDC",
 #ifndef JNI64
 	"CreateDIBSection__III_3III",
 #else
@@ -112,20 +101,13 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"CreateDIBSection__J_3BI_3JJI",
 #endif
-	"CreateEnhMetaFileA",
-	"CreateEnhMetaFileW",
+	"CreateEnhMetaFile",
 #ifndef JNI64
-	"CreateFontIndirectA__I",
+	"CreateFontIndirect__I",
 #else
-	"CreateFontIndirectA__J",
+	"CreateFontIndirect__J",
 #endif
-	"CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2",
-#ifndef JNI64
-	"CreateFontIndirectW__I",
-#else
-	"CreateFontIndirectW__J",
-#endif
-	"CreateFontIndirectW__Lorg_eclipse_swt_internal_win32_LOGFONTW_2",
+	"CreateFontIndirect__Lorg_eclipse_swt_internal_win32_LOGFONT_2",
 	"CreateIconIndirect",
 	"CreateMenu",
 	"CreatePalette",
@@ -133,27 +115,21 @@ char * OS_nativeFunctionNames[] = {
 	"CreatePen",
 	"CreatePolygonRgn",
 	"CreatePopupMenu",
-	"CreateProcessA",
-	"CreateProcessW",
+	"CreateProcess",
 	"CreateRectRgn",
 	"CreateSolidBrush",
 	"CreateStreamOnHGlobal",
-	"CreateWindowExA",
-	"CreateWindowExW",
-	"DEVMODEA_1sizeof",
-	"DEVMODEW_1sizeof",
+	"CreateWindowEx",
+	"DEVMODE_1sizeof",
 	"DIBSECTION_1sizeof",
 	"DOCHOSTUIINFO_1sizeof",
 	"DOCINFO_1sizeof",
 	"DRAWITEMSTRUCT_1sizeof",
 	"DROPFILES_1sizeof",
 	"DTTOPTS_1sizeof",
-	"DefFrameProcA",
-	"DefFrameProcW",
-	"DefMDIChildProcA",
-	"DefMDIChildProcW",
-	"DefWindowProcA",
-	"DefWindowProcW",
+	"DefFrameProc",
+	"DefMDIChildProc",
+	"DefWindowProc",
 	"DeferWindowPos",
 	"DeleteDC",
 	"DeleteEnhMetaFile",
@@ -165,21 +141,17 @@ char * OS_nativeFunctionNames[] = {
 	"DestroyIcon",
 	"DestroyMenu",
 	"DestroyWindow",
-	"DispatchMessageA",
-	"DispatchMessageW",
-	"DocumentPropertiesA",
-	"DocumentPropertiesW",
+	"DispatchMessage",
+	"DocumentProperties",
 	"DragDetect",
 	"DragFinish",
-	"DragQueryFileA",
-	"DragQueryFileW",
+	"DragQueryFile",
 	"DrawEdge",
 	"DrawFocusRect",
 	"DrawFrameControl",
 	"DrawIconEx",
 	"DrawMenuBar",
-	"DrawTextA",
-	"DrawTextW",
+	"DrawText",
 	"DrawThemeBackground",
 	"DrawThemeText",
 	"DuplicateHandle",
@@ -197,29 +169,22 @@ char * OS_nativeFunctionNames[] = {
 	"EndPaint",
 	"EnumDisplayMonitors",
 	"EnumEnhMetaFile",
-	"EnumFontFamiliesA",
-	"EnumFontFamiliesW",
-	"EnumSystemLanguageGroupsA",
-	"EnumSystemLanguageGroupsW",
-	"EnumSystemLocalesA",
-	"EnumSystemLocalesW",
+	"EnumFontFamilies",
+	"EnumSystemLanguageGroups",
+	"EnumSystemLocales",
 	"EqualRect",
 	"ExcludeClipRect",
-	"ExpandEnvironmentStringsA",
-	"ExpandEnvironmentStringsW",
+	"ExpandEnvironmentStrings",
 	"ExtCreatePen",
 	"ExtCreateRegion",
-	"ExtTextOutA",
-	"ExtTextOutW",
-	"ExtractIconExA",
-	"ExtractIconExW",
+	"ExtTextOut",
+	"ExtractIconEx",
 	"FILETIME_1sizeof",
 	"FLICK_1DATA_1sizeof",
 	"FLICK_1POINT_1sizeof",
 	"FileTimeToSystemTime",
 	"FillRect",
-	"FormatMessageA",
-	"FormatMessageW",
+	"FormatMessage",
 	"GCP_1RESULTS_1sizeof",
 	"GESTURECONFIG_1sizeof",
 	"GESTUREINFO_1sizeof",
@@ -235,22 +200,16 @@ char * OS_nativeFunctionNames[] = {
 	"GetBkColor",
 	"GetCapture",
 	"GetCaretPos",
-	"GetCharABCWidthsA",
-	"GetCharABCWidthsW",
-	"GetCharWidthA",
-	"GetCharWidthW",
-	"GetCharacterPlacementA",
-	"GetCharacterPlacementW",
-	"GetClassInfoA",
-	"GetClassInfoW",
-	"GetClassNameA",
-	"GetClassNameW",
+	"GetCharABCWidths",
+	"GetCharWidth",
+	"GetCharacterPlacement",
+	"GetClassInfo",
+	"GetClassName",
 	"GetClientRect",
 	"GetClipBox",
 	"GetClipRgn",
 	"GetClipboardData",
-	"GetClipboardFormatNameA",
-	"GetClipboardFormatNameW",
+	"GetClipboardFormatName",
 	"GetComboBoxInfo",
 	"GetCurrentObject",
 	"GetCurrentProcess",
@@ -274,7 +233,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetForegroundWindow",
 	"GetGUIThreadInfo",
 	"GetGestureInfo",
-	"GetGlyphIndicesW",
+	"GetGlyphIndices",
 	"GetGraphicsMode",
 	"GetIconInfo",
 	"GetKeyState",
@@ -286,101 +245,64 @@ char * OS_nativeFunctionNames[] = {
 	"GetLayeredWindowAttributes",
 	"GetLayout",
 	"GetLibraryHandle",
-	"GetLocaleInfoA",
-	"GetLocaleInfoW",
+	"GetLocaleInfo",
 	"GetMenu",
 	"GetMenuBarInfo",
 	"GetMenuDefaultItem",
 	"GetMenuInfo",
 	"GetMenuItemCount",
-	"GetMenuItemInfoA",
-	"GetMenuItemInfoW",
+	"GetMenuItemInfo",
 	"GetMenuItemRect",
-	"GetMessageA",
+	"GetMessage",
 	"GetMessagePos",
 	"GetMessageTime",
-	"GetMessageW",
 	"GetMetaRgn",
-	"GetModuleFileNameA",
-	"GetModuleFileNameW",
-	"GetModuleHandleA",
-	"GetModuleHandleW",
-	"GetMonitorInfoA",
-	"GetMonitorInfoW",
+	"GetModuleFileName",
+	"GetModuleHandle",
+	"GetMonitorInfo",
 	"GetNearestPaletteIndex",
 #ifndef JNI64
-	"GetObjectA__III",
+	"GetObject__III",
 #else
-	"GetObjectA__JIJ",
+	"GetObject__JIJ",
 #endif
 #ifndef JNI64
-	"GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2",
+	"GetObject__IILorg_eclipse_swt_internal_win32_BITMAP_2",
 #else
-	"GetObjectA__JILorg_eclipse_swt_internal_win32_BITMAP_2",
+	"GetObject__JILorg_eclipse_swt_internal_win32_BITMAP_2",
 #endif
 #ifndef JNI64
-	"GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2",
+	"GetObject__IILorg_eclipse_swt_internal_win32_DIBSECTION_2",
 #else
-	"GetObjectA__JILorg_eclipse_swt_internal_win32_DIBSECTION_2",
+	"GetObject__JILorg_eclipse_swt_internal_win32_DIBSECTION_2",
 #endif
 #ifndef JNI64
-	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
+	"GetObject__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
 #else
-	"GetObjectA__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
+	"GetObject__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
 #endif
 #ifndef JNI64
-	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2",
+	"GetObject__IILorg_eclipse_swt_internal_win32_LOGFONT_2",
 #else
-	"GetObjectA__JILorg_eclipse_swt_internal_win32_LOGFONTA_2",
+	"GetObject__JILorg_eclipse_swt_internal_win32_LOGFONT_2",
 #endif
-#ifndef JNI64
-	"GetObjectW__III",
-#else
-	"GetObjectW__JIJ",
-#endif
-#ifndef JNI64
-	"GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2",
-#else
-	"GetObjectW__JILorg_eclipse_swt_internal_win32_BITMAP_2",
-#endif
-#ifndef JNI64
-	"GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2",
-#else
-	"GetObjectW__JILorg_eclipse_swt_internal_win32_DIBSECTION_2",
-#endif
-#ifndef JNI64
-	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
-#else
-	"GetObjectW__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
-#endif
-#ifndef JNI64
-	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONTW_2",
-#else
-	"GetObjectW__JILorg_eclipse_swt_internal_win32_LOGFONTW_2",
-#endif
-	"GetOpenFileNameA",
-	"GetOpenFileNameW",
-	"GetOutlineTextMetricsA",
-	"GetOutlineTextMetricsW",
+	"GetOpenFileName",
+	"GetOutlineTextMetrics",
 	"GetPaletteEntries",
 	"GetParent",
 	"GetPixel",
 	"GetPolyFillMode",
 	"GetProcessHeap",
-	"GetProfileStringA",
-	"GetProfileStringW",
-	"GetPropA",
-	"GetPropW",
+	"GetProfileString",
+	"GetProp",
 	"GetROP2",
 	"GetRandomRgn",
 	"GetRegionData",
 	"GetRgnBox",
-	"GetSaveFileNameA",
-	"GetSaveFileNameW",
+	"GetSaveFileName",
 	"GetScrollBarInfo",
 	"GetScrollInfo",
-	"GetStartupInfoA",
-	"GetStartupInfoW",
+	"GetStartupInfo",
 	"GetStockObject",
 	"GetSysColor",
 	"GetSysColorBrush",
@@ -389,10 +311,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetSystemMetrics",
 	"GetSystemPaletteEntries",
 	"GetTextColor",
-	"GetTextExtentPoint32A",
-	"GetTextExtentPoint32W",
-	"GetTextMetricsA",
-	"GetTextMetricsW",
+	"GetTextExtentPoint32",
+	"GetTextMetrics",
 	"GetThemePartSize",
 	"GetThemeTextExtent",
 	"GetTouchInputInfo",
@@ -401,21 +321,16 @@ char * OS_nativeFunctionNames[] = {
 	"GetVersion",
 	"GetWindow",
 	"GetWindowDC",
-	"GetWindowLongA",
-	"GetWindowLongPtrA",
-	"GetWindowLongPtrW",
-	"GetWindowLongW",
+	"GetWindowLong",
+	"GetWindowLongPtr",
 	"GetWindowOrgEx",
 	"GetWindowPlacement",
 	"GetWindowRect",
 	"GetWindowRgn",
-	"GetWindowTextA",
-	"GetWindowTextLengthA",
-	"GetWindowTextLengthW",
-	"GetWindowTextW",
+	"GetWindowText",
+	"GetWindowTextLength",
 	"GetWindowThreadProcessId",
-	"GlobalAddAtomA",
-	"GlobalAddAtomW",
+	"GlobalAddAtom",
 	"GlobalAlloc",
 	"GlobalFree",
 	"GlobalLock",
@@ -454,34 +369,22 @@ char * OS_nativeFunctionNames[] = {
 	"ImmAssociateContext",
 	"ImmCreateContext",
 	"ImmDestroyContext",
-	"ImmEscapeA",
-	"ImmEscapeW",
-	"ImmGetCompositionFontA",
-	"ImmGetCompositionFontW",
+	"ImmEscape",
+	"ImmGetCompositionFont",
 #ifndef JNI64
-	"ImmGetCompositionStringA__II_3BI",
+	"ImmGetCompositionString__II_3BI",
 #else
-	"ImmGetCompositionStringA__JI_3BI",
+	"ImmGetCompositionString__JI_3BI",
 #endif
 #ifndef JNI64
-	"ImmGetCompositionStringA__II_3II",
+	"ImmGetCompositionString__II_3CI",
 #else
-	"ImmGetCompositionStringA__JI_3II",
+	"ImmGetCompositionString__JI_3CI",
 #endif
 #ifndef JNI64
-	"ImmGetCompositionStringW__II_3BI",
+	"ImmGetCompositionString__II_3II",
 #else
-	"ImmGetCompositionStringW__JI_3BI",
-#endif
-#ifndef JNI64
-	"ImmGetCompositionStringW__II_3CI",
-#else
-	"ImmGetCompositionStringW__JI_3CI",
-#endif
-#ifndef JNI64
-	"ImmGetCompositionStringW__II_3II",
-#else
-	"ImmGetCompositionStringW__JI_3II",
+	"ImmGetCompositionString__JI_3II",
 #endif
 	"ImmGetContext",
 	"ImmGetConversionStatus",
@@ -490,19 +393,15 @@ char * OS_nativeFunctionNames[] = {
 	"ImmNotifyIME",
 	"ImmReleaseContext",
 	"ImmSetCandidateWindow",
-	"ImmSetCompositionFontA",
-	"ImmSetCompositionFontW",
+	"ImmSetCompositionFont",
 	"ImmSetCompositionWindow",
 	"ImmSetConversionStatus",
 	"ImmSetOpenStatus",
 	"InitCommonControls",
 	"InitCommonControlsEx",
-	"InsertMenuItemA",
-	"InsertMenuItemW",
-	"InternetGetCookieA",
-	"InternetGetCookieW",
-	"InternetSetCookieA",
-	"InternetSetCookieW",
+	"InsertMenuItem",
+	"InternetGetCookie",
+	"InternetSetCookie",
 	"InternetSetOption",
 	"IntersectClipRect",
 	"IntersectRect",
@@ -520,8 +419,7 @@ char * OS_nativeFunctionNames[] = {
 	"LITEM_1sizeof",
 	"LODWORD",
 	"LOGBRUSH_1sizeof",
-	"LOGFONTA_1sizeof",
-	"LOGFONTW_1sizeof",
+	"LOGFONT_1sizeof",
 	"LOGPEN_1sizeof",
 	"LOWORD",
 	"LPtoDP",
@@ -530,14 +428,10 @@ char * OS_nativeFunctionNames[] = {
 	"LVINSERTMARK_1sizeof",
 	"LVITEM_1sizeof",
 	"LineTo",
-	"LoadBitmapA",
-	"LoadBitmapW",
-	"LoadCursorA",
-	"LoadCursorW",
-	"LoadIconA",
-	"LoadIconW",
-	"LoadImageA",
-	"LoadImageW",
+	"LoadBitmap",
+	"LoadCursor",
+	"LoadIcon",
+	"LoadImage",
 	"LocalFree",
 	"MAKELPARAM",
 	"MAKELRESULT",
@@ -554,8 +448,7 @@ char * OS_nativeFunctionNames[] = {
 	"MOUSEINPUT_1sizeof",
 	"MSG_1sizeof",
 	"MapViewOfFile",
-	"MapVirtualKeyA",
-	"MapVirtualKeyW",
+	"MapVirtualKey",
 #ifndef JNI64
 	"MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I",
 #else
@@ -567,8 +460,7 @@ char * OS_nativeFunctionNames[] = {
 	"MapWindowPoints__JJLorg_eclipse_swt_internal_win32_RECT_2I",
 #endif
 	"MessageBeep",
-	"MessageBoxA",
-	"MessageBoxW",
+	"MessageBox",
 	"ModifyWorldTransform",
 	"MonitorFromWindow",
 #ifndef JNI64
@@ -577,14 +469,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JJI",
 #endif
 #ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEA_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODE_2I",
 #else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEA_2I",
-#endif
-#ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEW_2I",
-#else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEW_2I",
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODE_2I",
 #endif
 #ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I",
@@ -612,14 +499,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I",
 #endif
 #ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONT_2I",
 #else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_LOGFONTA_2I",
-#endif
-#ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I",
-#else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_LOGFONTW_2I",
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_LOGFONT_2I",
 #endif
 #ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I",
@@ -657,14 +539,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTBCUSTOMDRAW_2I",
 #endif
 #ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I",
 #else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I",
-#endif
-#ifndef JNI64
-	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I",
-#else
-	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I",
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I",
 #endif
 #ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I",
@@ -763,14 +640,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI",
 #endif
 #ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODE_2II",
 #else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2JI",
-#endif
-#ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2II",
-#else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2JI",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODE_2JI",
 #endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II",
@@ -813,14 +685,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2JI",
 #endif
 #ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONT_2II",
 #else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2JI",
-#endif
-#ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II",
-#else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2JI",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONT_2JI",
 #endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II",
@@ -913,14 +780,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2JI",
 #endif
 #ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II",
 #else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2JI",
-#endif
-#ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II",
-#else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2JI",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2JI",
 #endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II",
@@ -979,14 +841,9 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2JI",
 #endif
 #ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRIC_2II",
 #else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2JI",
-#endif
-#ifndef JNI64
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II",
-#else
-	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2JI",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRIC_2JI",
 #endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II",
@@ -1063,28 +920,23 @@ char * OS_nativeFunctionNames[] = {
 	"NMTOOLBAR_1sizeof",
 	"NMTREEVIEW_1sizeof",
 	"NMTTCUSTOMDRAW_1sizeof",
-	"NMTTDISPINFOA_1sizeof",
-	"NMTTDISPINFOW_1sizeof",
+	"NMTTDISPINFO_1sizeof",
 	"NMTVCUSTOMDRAW_1sizeof",
 	"NMTVDISPINFO_1sizeof",
 	"NMTVITEMCHANGE_1sizeof",
 	"NMUPDOWN_1sizeof",
-	"NONCLIENTMETRICSA_1sizeof",
-	"NONCLIENTMETRICSW_1sizeof",
-	"NOTIFYICONDATAA_1V2_1SIZE",
-	"NOTIFYICONDATAW_1V2_1SIZE",
+	"NONCLIENTMETRICS_1sizeof",
+	"NOTIFYICONDATA_1V2_1SIZE",
 	"NotifyWinEvent",
 	"OFNOTIFY_1sizeof",
 	"OPENFILENAME_1sizeof",
-	"OUTLINETEXTMETRICA_1sizeof",
-	"OUTLINETEXTMETRICW_1sizeof",
+	"OUTLINETEXTMETRIC_1sizeof",
 	"OffsetRect",
 	"OffsetRgn",
 	"OleInitialize",
 	"OleUninitialize",
 	"OpenClipboard",
-	"OpenPrinterA",
-	"OpenPrinterW",
+	"OpenPrinter",
 	"OpenProcess",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",
@@ -1099,17 +951,13 @@ char * OS_nativeFunctionNames[] = {
 	"PSPropertyKeyFromString",
 	"PatBlt",
 	"PathIsExe",
-	"PeekMessageA",
-	"PeekMessageW",
+	"PeekMessage",
 	"Pie",
 	"Polygon",
 	"Polyline",
-	"PostMessageA",
-	"PostMessageW",
-	"PostThreadMessageA",
-	"PostThreadMessageW",
-	"PrintDlgA",
-	"PrintDlgW",
+	"PostMessage",
+	"PostThreadMessage",
+	"PrintDlg",
 	"PrintWindow",
 	"PtInRect",
 	"PtInRegion",
@@ -1120,48 +968,29 @@ char * OS_nativeFunctionNames[] = {
 	"Rectangle",
 	"RedrawWindow",
 	"RegCloseKey",
-	"RegCreateKeyExA",
-	"RegCreateKeyExW",
-	"RegDeleteValueA",
-	"RegDeleteValueW",
-	"RegEnumKeyExA",
-	"RegEnumKeyExW",
-	"RegOpenKeyExA",
-	"RegOpenKeyExW",
+	"RegCreateKeyEx",
+	"RegDeleteValue",
+	"RegEnumKeyEx",
+	"RegOpenKeyEx",
 #ifndef JNI64
-	"RegQueryValueExA__I_3BI_3I_3B_3I",
+	"RegQueryValueEx__I_3CI_3I_3C_3I",
 #else
-	"RegQueryValueExA__J_3BJ_3I_3B_3I",
+	"RegQueryValueEx__J_3CJ_3I_3C_3I",
 #endif
 #ifndef JNI64
-	"RegQueryValueExA__I_3BI_3I_3I_3I",
+	"RegQueryValueEx__I_3CI_3I_3I_3I",
 #else
-	"RegQueryValueExA__J_3BJ_3I_3I_3I",
+	"RegQueryValueEx__J_3CJ_3I_3I_3I",
 #endif
-#ifndef JNI64
-	"RegQueryValueExW__I_3CI_3I_3C_3I",
-#else
-	"RegQueryValueExW__J_3CJ_3I_3C_3I",
-#endif
-#ifndef JNI64
-	"RegQueryValueExW__I_3CI_3I_3I_3I",
-#else
-	"RegQueryValueExW__J_3CJ_3I_3I_3I",
-#endif
-	"RegSetValueExA",
-	"RegSetValueExW",
-	"RegisterClassA",
-	"RegisterClassW",
-	"RegisterClipboardFormatA",
-	"RegisterClipboardFormatW",
+	"RegSetValueEx",
+	"RegisterClass",
+	"RegisterClipboardFormat",
 	"RegisterTouchWindow",
-	"RegisterWindowMessageA",
-	"RegisterWindowMessageW",
+	"RegisterWindowMessage",
 	"ReleaseCapture",
 	"ReleaseDC",
 	"RemoveMenu",
-	"RemovePropA",
-	"RemovePropW",
+	"RemoveProp",
 	"ReplyMessage",
 	"RestoreDC",
 	"RoundRect",
@@ -1178,20 +1007,16 @@ char * OS_nativeFunctionNames[] = {
 	"SCRIPT_1STRING_1ANALYSIS_1sizeof",
 	"SCROLLBARINFO_1sizeof",
 	"SCROLLINFO_1sizeof",
-	"SHBrowseForFolderA",
-	"SHBrowseForFolderW",
+	"SHBrowseForFolder",
 	"SHCreateItemFromParsingName",
 	"SHCreateItemFromRelativeName",
 	"SHCreateItemInKnownFolder",
 	"SHDRAGIMAGE_1sizeof",
 	"SHELLEXECUTEINFO_1sizeof",
-	"SHFILEINFOA_1sizeof",
-	"SHFILEINFOW_1sizeof",
-	"SHGetFileInfoA",
-	"SHGetFileInfoW",
+	"SHFILEINFO_1sizeof",
+	"SHGetFileInfo",
 	"SHGetMalloc",
-	"SHGetPathFromIDListA",
-	"SHGetPathFromIDListW",
+	"SHGetPathFromIDList",
 	"SIZE_1sizeof",
 	"STARTUPINFO_1sizeof",
 	"SYSTEMTIME_1sizeof",
@@ -1223,339 +1048,154 @@ char * OS_nativeFunctionNames[] = {
 	"SelectPalette",
 	"SendInput",
 #ifndef JNI64
-	"SendMessageA__IIII",
+	"SendMessage__IIII",
 #else
-	"SendMessageA__JIJJ",
+	"SendMessage__JIJJ",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDITEM_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_HDITEM_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDLAYOUT_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_LITEM_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LITEM_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_LITEM_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVCOLUMN_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVITEM_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_LVITEM_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_MARGINS_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_MARGINS_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_POINT_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_RECT_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_RECT_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_SIZE_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_SIZE_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TBBUTTON_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TBBUTTON_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TCITEM_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TCITEM_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TOOLINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TOOLINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TVITEM_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_TVSORTCB_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2",
+	"SendMessage__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVSORTCB_2",
+	"SendMessage__JIJLorg_eclipse_swt_internal_win32_UDACCEL_2",
 #endif
 #ifndef JNI64
-	"SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
+	"SendMessage__III_3C",
 #else
-	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_UDACCEL_2",
+	"SendMessage__JIJ_3C",
 #endif
 #ifndef JNI64
-	"SendMessageA__III_3B",
+	"SendMessage__III_3I",
 #else
-	"SendMessageA__JIJ_3B",
+	"SendMessage__JIJ_3I",
 #endif
 #ifndef JNI64
-	"SendMessageA__III_3C",
+	"SendMessage__II_3I_3I",
 #else
-	"SendMessageA__JIJ_3C",
-#endif
-#ifndef JNI64
-	"SendMessageA__III_3I",
-#else
-	"SendMessageA__JIJ_3I",
-#endif
-#ifndef JNI64
-	"SendMessageA__III_3S",
-#else
-	"SendMessageA__JIJ_3S",
-#endif
-#ifndef JNI64
-	"SendMessageA__II_3II",
-#else
-	"SendMessageA__JI_3JJ",
-#endif
-#ifndef JNI64
-	"SendMessageA__II_3I_3I",
-#else
-	"SendMessageA__JI_3I_3I",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIII",
-#else
-	"SendMessageW__JIJJ",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDHITTESTINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDITEM_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDLAYOUT_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LITEM_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVCOLUMN_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVITEM_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_MARGINS_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_POINT_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_RECT_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SIZE_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_SIZE_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TBBUTTON_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TCITEM_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TOOLINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVITEM_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVSORTCB_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
-#else
-	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_UDACCEL_2",
-#endif
-#ifndef JNI64
-	"SendMessageW__III_3C",
-#else
-	"SendMessageW__JIJ_3C",
-#endif
-#ifndef JNI64
-	"SendMessageW__III_3I",
-#else
-	"SendMessageW__JIJ_3I",
-#endif
-#ifndef JNI64
-	"SendMessageW__III_3S",
-#else
-	"SendMessageW__JIJ_3S",
-#endif
-#ifndef JNI64
-	"SendMessageW__II_3II",
-#else
-	"SendMessageW__JI_3JJ",
-#endif
-#ifndef JNI64
-	"SendMessageW__II_3I_3I",
-#else
-	"SendMessageW__JI_3I_3I",
+	"SendMessage__JI_3I_3I",
 #endif
 	"SetActiveWindow",
 	"SetBkColor",
@@ -1567,8 +1207,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetCursor",
 	"SetCursorPos",
 	"SetDIBColorTable",
-	"SetDllDirectoryA",
-	"SetDllDirectoryW",
+	"SetDllDirectory",
 	"SetErrorMode",
 	"SetFocus",
 	"SetForegroundWindow",
@@ -1579,16 +1218,14 @@ char * OS_nativeFunctionNames[] = {
 	"SetMenu",
 	"SetMenuDefaultItem",
 	"SetMenuInfo",
-	"SetMenuItemInfoA",
-	"SetMenuItemInfoW",
+	"SetMenuItemInfo",
 	"SetMetaRgn",
 	"SetPaletteEntries",
 	"SetParent",
 	"SetPixel",
 	"SetPolyFillMode",
 	"SetProcessDPIAware",
-	"SetPropA",
-	"SetPropW",
+	"SetProp",
 	"SetROP2",
 	"SetRect",
 	"SetRectRgn",
@@ -1596,47 +1233,34 @@ char * OS_nativeFunctionNames[] = {
 	"SetStretchBltMode",
 	"SetTextColor",
 	"SetTimer",
-	"SetWindowLongA",
-	"SetWindowLongPtrA",
-	"SetWindowLongPtrW",
-	"SetWindowLongW",
+	"SetWindowLong",
+	"SetWindowLongPtr",
 	"SetWindowOrgEx",
 	"SetWindowPlacement",
 	"SetWindowPos",
 	"SetWindowRgn",
-	"SetWindowTextA",
-	"SetWindowTextW",
+	"SetWindowText",
 	"SetWindowTheme",
-	"SetWindowsHookExA",
-	"SetWindowsHookExW",
+	"SetWindowsHookEx",
 	"SetWorldTransform",
-	"ShellExecuteExA",
-	"ShellExecuteExW",
-	"Shell_1NotifyIconA",
-	"Shell_1NotifyIconW",
+	"ShellExecuteEx",
+	"Shell_1NotifyIcon",
 	"ShowCaret",
 	"ShowOwnedPopups",
 	"ShowScrollBar",
 	"ShowWindow",
-	"StartDocA",
-	"StartDocW",
+	"StartDoc",
 	"StartPage",
 	"StretchBlt",
-	"StrokePath",
-	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I",
-	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I",
-	"SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I",
-	"SystemParametersInfoA__II_3II",
-	"SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I",
-	"SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I",
-	"SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_RECT_2I",
-	"SystemParametersInfoW__II_3II",
+	"SystemParametersInfo__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I",
+	"SystemParametersInfo__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I",
+	"SystemParametersInfo__IILorg_eclipse_swt_internal_win32_RECT_2I",
+	"SystemParametersInfo__II_3II",
 	"TBBUTTONINFO_1sizeof",
 	"TBBUTTON_1sizeof",
 	"TCHITTESTINFO_1sizeof",
 	"TCITEM_1sizeof",
-	"TEXTMETRICA_1sizeof",
-	"TEXTMETRICW_1sizeof",
+	"TEXTMETRIC_1sizeof",
 	"TF_1DA_1COLOR_1sizeof",
 	"TF_1DISPLAYATTRIBUTE_1sizeof",
 	"TOOLINFO_1sizeof",
@@ -1649,12 +1273,10 @@ char * OS_nativeFunctionNames[] = {
 	"TVITEMEX_1sizeof",
 	"TVITEM_1sizeof",
 	"TVSORTCB_1sizeof",
-	"ToAscii",
 	"ToUnicode",
 	"TrackMouseEvent",
 	"TrackPopupMenu",
-	"TranslateAcceleratorA",
-	"TranslateAcceleratorW",
+	"TranslateAccelerator",
 	"TranslateCharsetInfo",
 	"TranslateMDISysAccel",
 	"TranslateMessage",
@@ -1663,15 +1285,12 @@ char * OS_nativeFunctionNames[] = {
 	"UDACCEL_1sizeof",
 	"UnhookWindowsHookEx",
 	"UnmapViewOfFile",
-	"UnregisterClassA",
-	"UnregisterClassW",
+	"UnregisterClass",
 	"UnregisterTouchWindow",
 	"UpdateWindow",
-	"UrlCreateFromPathA",
-	"UrlCreateFromPathW",
+	"UrlCreateFromPath",
 	"ValidateRect",
-	"VkKeyScanA",
-	"VkKeyScanW",
+	"VkKeyScan",
 #ifndef JNI64
 	"VtblCall__II",
 #else

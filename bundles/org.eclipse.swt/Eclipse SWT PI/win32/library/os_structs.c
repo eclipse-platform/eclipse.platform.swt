@@ -1148,7 +1148,7 @@ void setCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *
 typedef struct DEVMODE_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID dmSpecVersion, dmDriverVersion, dmSize, dmDriverExtra, dmFields, dmOrientation, dmPaperSize, dmPaperLength, dmPaperWidth, dmScale, dmCopies, dmDefaultSource, dmPrintQuality, dmColor, dmDuplex, dmYResolution, dmTTOption, dmCollate, dmLogPixels, dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmNup, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
+	jfieldID dmDeviceName, dmSpecVersion, dmDriverVersion, dmSize, dmDriverExtra, dmFields, dmOrientation, dmPaperSize, dmPaperLength, dmPaperWidth, dmScale, dmCopies, dmDefaultSource, dmPrintQuality, dmColor, dmDuplex, dmYResolution, dmTTOption, dmCollate, dmFormName, dmLogPixels, dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmNup, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
 } DEVMODE_FID_CACHE;
 
 DEVMODE_FID_CACHE DEVMODEFc;
@@ -1157,6 +1157,7 @@ void cacheDEVMODEFields(JNIEnv *env, jobject lpObject)
 {
 	if (DEVMODEFc.cached) return;
 	DEVMODEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DEVMODEFc.dmDeviceName = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDeviceName", "[C");
 	DEVMODEFc.dmSpecVersion = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmSpecVersion", "S");
 	DEVMODEFc.dmDriverVersion = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDriverVersion", "S");
 	DEVMODEFc.dmSize = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmSize", "S");
@@ -1175,6 +1176,7 @@ void cacheDEVMODEFields(JNIEnv *env, jobject lpObject)
 	DEVMODEFc.dmYResolution = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmYResolution", "S");
 	DEVMODEFc.dmTTOption = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmTTOption", "S");
 	DEVMODEFc.dmCollate = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmCollate", "S");
+	DEVMODEFc.dmFormName = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmFormName", "[C");
 	DEVMODEFc.dmLogPixels = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmLogPixels", "S");
 	DEVMODEFc.dmBitsPerPel = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmBitsPerPel", "I");
 	DEVMODEFc.dmPelsWidth = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPelsWidth", "I");
@@ -1195,6 +1197,10 @@ void cacheDEVMODEFields(JNIEnv *env, jobject lpObject)
 DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
 {
 	if (!DEVMODEFc.cached) cacheDEVMODEFields(env, lpObject);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEFc.dmDeviceName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName) / sizeof(jchar), (jchar *)lpStruct->dmDeviceName);
+	}
 	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
 	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
 	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
@@ -1213,6 +1219,10 @@ DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
 	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
 	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
 	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEFc.dmFormName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName) / sizeof(jchar), (jchar *)lpStruct->dmFormName);
+	}
 	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
 	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
 	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
@@ -1233,260 +1243,46 @@ DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
 void setDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
 {
 	if (!DEVMODEFc.cached) cacheDEVMODEFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
-}
-#endif
-
-#ifndef NO_DEVMODEA
-typedef struct DEVMODEA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID dmDeviceName, dmFormName;
-} DEVMODEA_FID_CACHE;
-
-DEVMODEA_FID_CACHE DEVMODEAFc;
-
-void cacheDEVMODEAFields(JNIEnv *env, jobject lpObject)
-{
-	if (DEVMODEAFc.cached) return;
-	cacheDEVMODEFields(env, lpObject);
-	DEVMODEAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	DEVMODEAFc.dmDeviceName = (*env)->GetFieldID(env, DEVMODEAFc.clazz, "dmDeviceName", "[B");
-	DEVMODEAFc.dmFormName = (*env)->GetFieldID(env, DEVMODEAFc.clazz, "dmFormName", "[B");
-	DEVMODEAFc.cached = 1;
-}
-
-DEVMODEA *getDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct)
-{
-	if (!DEVMODEAFc.cached) cacheDEVMODEAFields(env, lpObject);
-	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
-	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
-	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
-	lpStruct->dmDriverExtra = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverExtra);
-	lpStruct->dmFields = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmFields);
-	lpStruct->dmOrientation = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmOrientation);
-	lpStruct->dmPaperSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperSize);
-	lpStruct->dmPaperLength = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperLength);
-	lpStruct->dmPaperWidth = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperWidth);
-	lpStruct->dmScale = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmScale);
-	lpStruct->dmCopies = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCopies);
-	lpStruct->dmDefaultSource = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDefaultSource);
-	lpStruct->dmPrintQuality = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPrintQuality);
-	lpStruct->dmColor = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmColor);
-	lpStruct->dmDuplex = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDuplex);
-	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
-	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
-	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
-	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
-	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
-	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
-	lpStruct->dmPelsHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsHeight);
-	lpStruct->dmNup = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmNup);
-	lpStruct->dmDisplayFrequency = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency);
-	lpStruct->dmICMMethod = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMMethod);
-	lpStruct->dmICMIntent = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMIntent);
-	lpStruct->dmMediaType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmMediaType);
-	lpStruct->dmDitherType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDitherType);
-	lpStruct->dmReserved1 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved1);
-	lpStruct->dmReserved2 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved2);
-	lpStruct->dmPanningWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningWidth);
-	lpStruct->dmPanningHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningHeight);
 	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmDeviceName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName), (jbyte *)lpStruct->dmDeviceName);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmFormName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName), (jbyte *)lpStruct->dmFormName);
-	}
-	return lpStruct;
-}
-
-void setDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct)
-{
-	if (!DEVMODEAFc.cached) cacheDEVMODEAFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmDeviceName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName), (jbyte *)lpStruct->dmDeviceName);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmFormName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName), (jbyte *)lpStruct->dmFormName);
-	}
-}
-#endif
-
-#ifndef NO_DEVMODEW
-typedef struct DEVMODEW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID dmDeviceName, dmFormName;
-} DEVMODEW_FID_CACHE;
-
-DEVMODEW_FID_CACHE DEVMODEWFc;
-
-void cacheDEVMODEWFields(JNIEnv *env, jobject lpObject)
-{
-	if (DEVMODEWFc.cached) return;
-	cacheDEVMODEFields(env, lpObject);
-	DEVMODEWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	DEVMODEWFc.dmDeviceName = (*env)->GetFieldID(env, DEVMODEWFc.clazz, "dmDeviceName", "[C");
-	DEVMODEWFc.dmFormName = (*env)->GetFieldID(env, DEVMODEWFc.clazz, "dmFormName", "[C");
-	DEVMODEWFc.cached = 1;
-}
-
-DEVMODEW *getDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct)
-{
-	if (!DEVMODEWFc.cached) cacheDEVMODEWFields(env, lpObject);
-	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
-	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
-	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
-	lpStruct->dmDriverExtra = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverExtra);
-	lpStruct->dmFields = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmFields);
-	lpStruct->dmOrientation = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmOrientation);
-	lpStruct->dmPaperSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperSize);
-	lpStruct->dmPaperLength = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperLength);
-	lpStruct->dmPaperWidth = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperWidth);
-	lpStruct->dmScale = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmScale);
-	lpStruct->dmCopies = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCopies);
-	lpStruct->dmDefaultSource = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDefaultSource);
-	lpStruct->dmPrintQuality = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPrintQuality);
-	lpStruct->dmColor = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmColor);
-	lpStruct->dmDuplex = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDuplex);
-	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
-	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
-	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
-	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
-	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
-	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
-	lpStruct->dmPelsHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsHeight);
-	lpStruct->dmNup = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmNup);
-	lpStruct->dmDisplayFrequency = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency);
-	lpStruct->dmICMMethod = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMMethod);
-	lpStruct->dmICMIntent = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMIntent);
-	lpStruct->dmMediaType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmMediaType);
-	lpStruct->dmDitherType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDitherType);
-	lpStruct->dmReserved1 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved1);
-	lpStruct->dmReserved2 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved2);
-	lpStruct->dmPanningWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningWidth);
-	lpStruct->dmPanningHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningHeight);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmDeviceName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName) / sizeof(jchar), (jchar *)lpStruct->dmDeviceName);
-	}
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmFormName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName) / sizeof(jchar), (jchar *)lpStruct->dmFormName);
-	}
-	return lpStruct;
-}
-
-void setDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct)
-{
-	if (!DEVMODEWFc.cached) cacheDEVMODEWFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
-	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
-	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmDeviceName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEFc.dmDeviceName);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName) / sizeof(jchar), (jchar *)lpStruct->dmDeviceName);
 	}
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
 	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmFormName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEFc.dmFormName);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName) / sizeof(jchar), (jchar *)lpStruct->dmFormName);
 	}
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
 }
 #endif
 
@@ -1937,7 +1733,7 @@ void cacheEXTLOGFONTWFields(JNIEnv *env, jobject lpObject)
 {
 	if (EXTLOGFONTWFc.cached) return;
 	EXTLOGFONTWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	EXTLOGFONTWFc.elfLogFont = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfLogFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
+	EXTLOGFONTWFc.elfLogFont = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfLogFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
 	EXTLOGFONTWFc.elfFullName = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfFullName", "[C");
 	EXTLOGFONTWFc.elfStyle = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfStyle", "[C");
 	EXTLOGFONTWFc.elfVersion = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfVersion", "I");
@@ -1955,7 +1751,7 @@ EXTLOGFONTW *getEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lp
 	if (!EXTLOGFONTWFc.cached) cacheEXTLOGFONTWFields(env, lpObject);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfLogFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->elfLogFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->elfLogFont);
 	}
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfFullName);
@@ -1986,7 +1782,7 @@ void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct)
 	if (!EXTLOGFONTWFc.cached) cacheEXTLOGFONTWFields(env, lpObject);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfLogFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->elfLogFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->elfLogFont);
 	}
 	{
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfFullName);
@@ -2857,7 +2653,7 @@ void setLOGBRUSHFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpStruct)
 typedef struct LOGFONT_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID lfHeight, lfWidth, lfEscapement, lfOrientation, lfWeight, lfItalic, lfUnderline, lfStrikeOut, lfCharSet, lfOutPrecision, lfClipPrecision, lfQuality, lfPitchAndFamily;
+	jfieldID lfHeight, lfWidth, lfEscapement, lfOrientation, lfWeight, lfItalic, lfUnderline, lfStrikeOut, lfCharSet, lfOutPrecision, lfClipPrecision, lfQuality, lfPitchAndFamily, lfFaceName;
 } LOGFONT_FID_CACHE;
 
 LOGFONT_FID_CACHE LOGFONTFc;
@@ -2879,6 +2675,7 @@ void cacheLOGFONTFields(JNIEnv *env, jobject lpObject)
 	LOGFONTFc.lfClipPrecision = (*env)->GetFieldID(env, LOGFONTFc.clazz, "lfClipPrecision", "B");
 	LOGFONTFc.lfQuality = (*env)->GetFieldID(env, LOGFONTFc.clazz, "lfQuality", "B");
 	LOGFONTFc.lfPitchAndFamily = (*env)->GetFieldID(env, LOGFONTFc.clazz, "lfPitchAndFamily", "B");
+	LOGFONTFc.lfFaceName = (*env)->GetFieldID(env, LOGFONTFc.clazz, "lfFaceName", "[C");
 	LOGFONTFc.cached = 1;
 }
 
@@ -2898,6 +2695,10 @@ LOGFONT *getLOGFONTFields(JNIEnv *env, jobject lpObject, LOGFONT *lpStruct)
 	lpStruct->lfClipPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfClipPrecision);
 	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
 	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTFc.lfFaceName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / sizeof(jchar), (jchar *)lpStruct->lfFaceName);
+	}
 	return lpStruct;
 }
 
@@ -2917,132 +2718,8 @@ void setLOGFONTFields(JNIEnv *env, jobject lpObject, LOGFONT *lpStruct)
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfClipPrecision, (jbyte)lpStruct->lfClipPrecision);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
-}
-#endif
-
-#ifndef NO_LOGFONTA
-typedef struct LOGFONTA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID lfFaceName;
-} LOGFONTA_FID_CACHE;
-
-LOGFONTA_FID_CACHE LOGFONTAFc;
-
-void cacheLOGFONTAFields(JNIEnv *env, jobject lpObject)
-{
-	if (LOGFONTAFc.cached) return;
-	cacheLOGFONTFields(env, lpObject);
-	LOGFONTAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	LOGFONTAFc.lfFaceName = (*env)->GetFieldID(env, LOGFONTAFc.clazz, "lfFaceName", "[B");
-	LOGFONTAFc.cached = 1;
-}
-
-LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
-{
-	if (!LOGFONTAFc.cached) cacheLOGFONTAFields(env, lpObject);
-	lpStruct->lfHeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfHeight);
-	lpStruct->lfWidth = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWidth);
-	lpStruct->lfEscapement = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfEscapement);
-	lpStruct->lfOrientation = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfOrientation);
-	lpStruct->lfWeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWeight);
-	lpStruct->lfItalic = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfItalic);
-	lpStruct->lfUnderline = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfUnderline);
-	lpStruct->lfStrikeOut = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfStrikeOut);
-	lpStruct->lfCharSet = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfCharSet);
-	lpStruct->lfOutPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfOutPrecision);
-	lpStruct->lfClipPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfClipPrecision);
-	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
-	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
 	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (jbyte *)lpStruct->lfFaceName);
-	}
-	return lpStruct;
-}
-
-void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
-{
-	if (!LOGFONTAFc.cached) cacheLOGFONTAFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfHeight, (jint)lpStruct->lfHeight);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWidth, (jint)lpStruct->lfWidth);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfEscapement, (jint)lpStruct->lfEscapement);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfOrientation, (jint)lpStruct->lfOrientation);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWeight, (jint)lpStruct->lfWeight);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfItalic, (jbyte)lpStruct->lfItalic);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfUnderline, (jbyte)lpStruct->lfUnderline);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfStrikeOut, (jbyte)lpStruct->lfStrikeOut);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfCharSet, (jbyte)lpStruct->lfCharSet);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfOutPrecision, (jbyte)lpStruct->lfOutPrecision);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfClipPrecision, (jbyte)lpStruct->lfClipPrecision);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (jbyte *)lpStruct->lfFaceName);
-	}
-}
-#endif
-
-#ifndef NO_LOGFONTW
-typedef struct LOGFONTW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID lfFaceName;
-} LOGFONTW_FID_CACHE;
-
-LOGFONTW_FID_CACHE LOGFONTWFc;
-
-void cacheLOGFONTWFields(JNIEnv *env, jobject lpObject)
-{
-	if (LOGFONTWFc.cached) return;
-	cacheLOGFONTFields(env, lpObject);
-	LOGFONTWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	LOGFONTWFc.lfFaceName = (*env)->GetFieldID(env, LOGFONTWFc.clazz, "lfFaceName", "[C");
-	LOGFONTWFc.cached = 1;
-}
-
-LOGFONTW *getLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
-{
-	if (!LOGFONTWFc.cached) cacheLOGFONTWFields(env, lpObject);
-	lpStruct->lfHeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfHeight);
-	lpStruct->lfWidth = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWidth);
-	lpStruct->lfEscapement = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfEscapement);
-	lpStruct->lfOrientation = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfOrientation);
-	lpStruct->lfWeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWeight);
-	lpStruct->lfItalic = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfItalic);
-	lpStruct->lfUnderline = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfUnderline);
-	lpStruct->lfStrikeOut = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfStrikeOut);
-	lpStruct->lfCharSet = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfCharSet);
-	lpStruct->lfOutPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfOutPrecision);
-	lpStruct->lfClipPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfClipPrecision);
-	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
-	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / sizeof(jchar), (jchar *)lpStruct->lfFaceName);
-	}
-	return lpStruct;
-}
-
-void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
-{
-	if (!LOGFONTWFc.cached) cacheLOGFONTWFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfHeight, (jint)lpStruct->lfHeight);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWidth, (jint)lpStruct->lfWidth);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfEscapement, (jint)lpStruct->lfEscapement);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfOrientation, (jint)lpStruct->lfOrientation);
-	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWeight, (jint)lpStruct->lfWeight);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfItalic, (jbyte)lpStruct->lfItalic);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfUnderline, (jbyte)lpStruct->lfUnderline);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfStrikeOut, (jbyte)lpStruct->lfStrikeOut);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfCharSet, (jbyte)lpStruct->lfCharSet);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfOutPrecision, (jbyte)lpStruct->lfOutPrecision);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfClipPrecision, (jbyte)lpStruct->lfClipPrecision);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
-	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LOGFONTFc.lfFaceName);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / sizeof(jchar), (jchar *)lpStruct->lfFaceName);
 	}
 }
@@ -4715,7 +4392,7 @@ void setNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpSt
 typedef struct NMTTDISPINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID lpszText, hinst, uFlags, lParam;
+	jfieldID lpszText, szText, hinst, uFlags, lParam;
 } NMTTDISPINFO_FID_CACHE;
 
 NMTTDISPINFO_FID_CACHE NMTTDISPINFOFc;
@@ -4726,6 +4403,7 @@ void cacheNMTTDISPINFOFields(JNIEnv *env, jobject lpObject)
 	cacheNMHDRFields(env, lpObject);
 	NMTTDISPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	NMTTDISPINFOFc.lpszText = (*env)->GetFieldID(env, NMTTDISPINFOFc.clazz, "lpszText", I_J);
+	NMTTDISPINFOFc.szText = (*env)->GetFieldID(env, NMTTDISPINFOFc.clazz, "szText", "[C");
 	NMTTDISPINFOFc.hinst = (*env)->GetFieldID(env, NMTTDISPINFOFc.clazz, "hinst", I_J);
 	NMTTDISPINFOFc.uFlags = (*env)->GetFieldID(env, NMTTDISPINFOFc.clazz, "uFlags", "I");
 	NMTTDISPINFOFc.lParam = (*env)->GetFieldID(env, NMTTDISPINFOFc.clazz, "lParam", I_J);
@@ -4737,6 +4415,10 @@ NMTTDISPINFO *getNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO 
 	if (!NMTTDISPINFOFc.cached) cacheNMTTDISPINFOFields(env, lpObject);
 	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
 	lpStruct->lpszText = (void *)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOFc.szText);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / sizeof(jchar), (jchar *)lpStruct->szText);
+	}
 	lpStruct->hinst = (HINSTANCE)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst);
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
 	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam);
@@ -4748,105 +4430,13 @@ void setNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpStruct
 	if (!NMTTDISPINFOFc.cached) cacheNMTTDISPINFOFields(env, lpObject);
 	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
 	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText, (jintLong)lpStruct->lpszText);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst, (jintLong)lpStruct->hinst);
-	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam, (jintLong)lpStruct->lParam);
-}
-#endif
-
-#ifndef NO_NMTTDISPINFOA
-typedef struct NMTTDISPINFOA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szText;
-} NMTTDISPINFOA_FID_CACHE;
-
-NMTTDISPINFOA_FID_CACHE NMTTDISPINFOAFc;
-
-void cacheNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject)
-{
-	if (NMTTDISPINFOAFc.cached) return;
-	cacheNMTTDISPINFOFields(env, lpObject);
-	NMTTDISPINFOAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NMTTDISPINFOAFc.szText = (*env)->GetFieldID(env, NMTTDISPINFOAFc.clazz, "szText", "[B");
-	NMTTDISPINFOAFc.cached = 1;
-}
-
-NMTTDISPINFOA *getNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct)
-{
-	if (!NMTTDISPINFOAFc.cached) cacheNMTTDISPINFOAFields(env, lpObject);
-	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	lpStruct->lpszText = (void *)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText);
-	lpStruct->hinst = (HINSTANCE)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
-	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam);
 	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (jbyte *)lpStruct->szText);
-	}
-	return lpStruct;
-}
-
-void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct)
-{
-	if (!NMTTDISPINFOAFc.cached) cacheNMTTDISPINFOAFields(env, lpObject);
-	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText, (jintLong)lpStruct->lpszText);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst, (jintLong)lpStruct->hinst);
-	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam, (jintLong)lpStruct->lParam);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (jbyte *)lpStruct->szText);
-	}
-}
-#endif
-
-#ifndef NO_NMTTDISPINFOW
-typedef struct NMTTDISPINFOW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szText;
-} NMTTDISPINFOW_FID_CACHE;
-
-NMTTDISPINFOW_FID_CACHE NMTTDISPINFOWFc;
-
-void cacheNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject)
-{
-	if (NMTTDISPINFOWFc.cached) return;
-	cacheNMTTDISPINFOFields(env, lpObject);
-	NMTTDISPINFOWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NMTTDISPINFOWFc.szText = (*env)->GetFieldID(env, NMTTDISPINFOWFc.clazz, "szText", "[C");
-	NMTTDISPINFOWFc.cached = 1;
-}
-
-NMTTDISPINFOW *getNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct)
-{
-	if (!NMTTDISPINFOWFc.cached) cacheNMTTDISPINFOWFields(env, lpObject);
-	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	lpStruct->lpszText = (void *)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText);
-	lpStruct->hinst = (HINSTANCE)(*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
-	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / sizeof(jchar), (jchar *)lpStruct->szText);
-	}
-	return lpStruct;
-}
-
-void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct)
-{
-	if (!NMTTDISPINFOWFc.cached) cacheNMTTDISPINFOWFields(env, lpObject);
-	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lpszText, (jintLong)lpStruct->lpszText);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst, (jintLong)lpStruct->hinst);
-	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
-	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam, (jintLong)lpStruct->lParam);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMTTDISPINFOFc.szText);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / sizeof(jchar), (jchar *)lpStruct->szText);
 	}
+	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.hinst, (jintLong)lpStruct->hinst);
+	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
+	(*env)->SetIntLongField(env, lpObject, NMTTDISPINFOFc.lParam, (jintLong)lpStruct->lParam);
 }
 #endif
 
@@ -5038,7 +4628,7 @@ void setNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct)
 typedef struct NONCLIENTMETRICS_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID cbSize, iBorderWidth, iScrollWidth, iScrollHeight, iCaptionWidth, iCaptionHeight, iSmCaptionWidth, iSmCaptionHeight, iMenuWidth, iMenuHeight;
+	jfieldID cbSize, iBorderWidth, iScrollWidth, iScrollHeight, iCaptionWidth, iCaptionHeight, lfCaptionFont, iSmCaptionWidth, iSmCaptionHeight, lfSmCaptionFont, iMenuWidth, iMenuHeight, lfMenuFont, lfStatusFont, lfMessageFont;
 } NONCLIENTMETRICS_FID_CACHE;
 
 NONCLIENTMETRICS_FID_CACHE NONCLIENTMETRICSFc;
@@ -5053,10 +4643,15 @@ void cacheNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject)
 	NONCLIENTMETRICSFc.iScrollHeight = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iScrollHeight", "I");
 	NONCLIENTMETRICSFc.iCaptionWidth = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iCaptionWidth", "I");
 	NONCLIENTMETRICSFc.iCaptionHeight = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iCaptionHeight", "I");
+	NONCLIENTMETRICSFc.lfCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "lfCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
 	NONCLIENTMETRICSFc.iSmCaptionWidth = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iSmCaptionWidth", "I");
 	NONCLIENTMETRICSFc.iSmCaptionHeight = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iSmCaptionHeight", "I");
+	NONCLIENTMETRICSFc.lfSmCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "lfSmCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
 	NONCLIENTMETRICSFc.iMenuWidth = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iMenuWidth", "I");
 	NONCLIENTMETRICSFc.iMenuHeight = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "iMenuHeight", "I");
+	NONCLIENTMETRICSFc.lfMenuFont = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "lfMenuFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	NONCLIENTMETRICSFc.lfStatusFont = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "lfStatusFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
+	NONCLIENTMETRICSFc.lfMessageFont = (*env)->GetFieldID(env, NONCLIENTMETRICSFc.clazz, "lfMessageFont", "Lorg/eclipse/swt/internal/win32/LOGFONT;");
 	NONCLIENTMETRICSFc.cached = 1;
 }
 
@@ -5069,10 +4664,30 @@ NONCLIENTMETRICS *getNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject, NONCL
 	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
 	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
 	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	}
 	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
 	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfSmCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	}
 	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
 	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfMenuFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->lfMenuFont);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfStatusFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->lfStatusFont);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfMessageFont);
+	if (lpObject1 != NULL) getLOGFONTFields(env, lpObject1, &lpStruct->lfMessageFont);
+	}
 	return lpStruct;
 }
 
@@ -5085,197 +4700,29 @@ void setNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICS *
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	}
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
-}
-#endif
-
-#ifndef NO_NONCLIENTMETRICSA
-typedef struct NONCLIENTMETRICSA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID lfCaptionFont, lfSmCaptionFont, lfMenuFont, lfStatusFont, lfMessageFont;
-} NONCLIENTMETRICSA_FID_CACHE;
-
-NONCLIENTMETRICSA_FID_CACHE NONCLIENTMETRICSAFc;
-
-void cacheNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject)
-{
-	if (NONCLIENTMETRICSAFc.cached) return;
-	cacheNONCLIENTMETRICSFields(env, lpObject);
-	NONCLIENTMETRICSAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NONCLIENTMETRICSAFc.lfCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSAFc.clazz, "lfCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONTA;");
-	NONCLIENTMETRICSAFc.lfSmCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSAFc.clazz, "lfSmCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONTA;");
-	NONCLIENTMETRICSAFc.lfMenuFont = (*env)->GetFieldID(env, NONCLIENTMETRICSAFc.clazz, "lfMenuFont", "Lorg/eclipse/swt/internal/win32/LOGFONTA;");
-	NONCLIENTMETRICSAFc.lfStatusFont = (*env)->GetFieldID(env, NONCLIENTMETRICSAFc.clazz, "lfStatusFont", "Lorg/eclipse/swt/internal/win32/LOGFONTA;");
-	NONCLIENTMETRICSAFc.lfMessageFont = (*env)->GetFieldID(env, NONCLIENTMETRICSAFc.clazz, "lfMessageFont", "Lorg/eclipse/swt/internal/win32/LOGFONTA;");
-	NONCLIENTMETRICSAFc.cached = 1;
-}
-
-NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct)
-{
-	if (!NONCLIENTMETRICSAFc.cached) cacheNONCLIENTMETRICSAFields(env, lpObject);
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
-	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
-	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
-	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
-	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
-	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
-	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
-	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
-	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
-	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
-	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfSmCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
 	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfSmCaptionFont);
-	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMenuFont);
-	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfStatusFont);
-	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
-	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
-	}
-	return lpStruct;
-}
-
-void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct)
-{
-	if (!NONCLIENTMETRICSAFc.cached) cacheNONCLIENTMETRICSAFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
-	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfMenuFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->lfMenuFont);
 	}
 	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfSmCaptionFont);
-	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfStatusFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->lfStatusFont);
 	}
 	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMenuFont);
-	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfStatusFont);
-	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
-	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
-	}
-}
-#endif
-
-#ifndef NO_NONCLIENTMETRICSW
-typedef struct NONCLIENTMETRICSW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID lfCaptionFont, lfSmCaptionFont, lfMenuFont, lfStatusFont, lfMessageFont;
-} NONCLIENTMETRICSW_FID_CACHE;
-
-NONCLIENTMETRICSW_FID_CACHE NONCLIENTMETRICSWFc;
-
-void cacheNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject)
-{
-	if (NONCLIENTMETRICSWFc.cached) return;
-	cacheNONCLIENTMETRICSFields(env, lpObject);
-	NONCLIENTMETRICSWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NONCLIENTMETRICSWFc.lfCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSWFc.clazz, "lfCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
-	NONCLIENTMETRICSWFc.lfSmCaptionFont = (*env)->GetFieldID(env, NONCLIENTMETRICSWFc.clazz, "lfSmCaptionFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
-	NONCLIENTMETRICSWFc.lfMenuFont = (*env)->GetFieldID(env, NONCLIENTMETRICSWFc.clazz, "lfMenuFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
-	NONCLIENTMETRICSWFc.lfStatusFont = (*env)->GetFieldID(env, NONCLIENTMETRICSWFc.clazz, "lfStatusFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
-	NONCLIENTMETRICSWFc.lfMessageFont = (*env)->GetFieldID(env, NONCLIENTMETRICSWFc.clazz, "lfMessageFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
-	NONCLIENTMETRICSWFc.cached = 1;
-}
-
-NONCLIENTMETRICSW *getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct)
-{
-	if (!NONCLIENTMETRICSWFc.cached) cacheNONCLIENTMETRICSWFields(env, lpObject);
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
-	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
-	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
-	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
-	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
-	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
-	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
-	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
-	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
-	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfSmCaptionFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMenuFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfStatusFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
-	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
-	}
-	return lpStruct;
-}
-
-void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct)
-{
-	if (!NONCLIENTMETRICSWFc.cached) cacheNONCLIENTMETRICSWFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfSmCaptionFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMenuFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfStatusFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
-	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSFc.lfMessageFont);
+	if (lpObject1 != NULL) setLOGFONTFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
 }
 #endif
@@ -5284,7 +4731,7 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 typedef struct NOTIFYICONDATA_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID cbSize, hWnd, uID, uFlags, uCallbackMessage, hIcon, dwState, dwStateMask, uVersion, dwInfoFlags;
+	jfieldID cbSize, hWnd, uID, uFlags, uCallbackMessage, hIcon, szTip, dwState, dwStateMask, szInfo, szInfoTitle, uVersion, dwInfoFlags;
 } NOTIFYICONDATA_FID_CACHE;
 
 NOTIFYICONDATA_FID_CACHE NOTIFYICONDATAFc;
@@ -5299,8 +4746,11 @@ void cacheNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject)
 	NOTIFYICONDATAFc.uFlags = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uFlags", "I");
 	NOTIFYICONDATAFc.uCallbackMessage = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uCallbackMessage", "I");
 	NOTIFYICONDATAFc.hIcon = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "hIcon", I_J);
+	NOTIFYICONDATAFc.szTip = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "szTip", "[C");
 	NOTIFYICONDATAFc.dwState = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwState", "I");
 	NOTIFYICONDATAFc.dwStateMask = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwStateMask", "I");
+	NOTIFYICONDATAFc.szInfo = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "szInfo", "[C");
+	NOTIFYICONDATAFc.szInfoTitle = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "szInfoTitle", "[C");
 	NOTIFYICONDATAFc.uVersion = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uVersion", "I");
 	NOTIFYICONDATAFc.dwInfoFlags = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwInfoFlags", "I");
 	NOTIFYICONDATAFc.cached = 1;
@@ -5315,8 +4765,20 @@ NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICO
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
 	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
 	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szTip);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / sizeof(jchar), (jchar *)lpStruct->szTip);
+	}
 	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
 	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szInfo);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / sizeof(jchar), (jchar *)lpStruct->szInfo);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szInfoTitle);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / sizeof(jchar), (jchar *)lpStruct->szInfoTitle);
+	}
 	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
 	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
 	return lpStruct;
@@ -5331,162 +4793,22 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
 	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-}
-#endif
-
-#ifndef NO_NOTIFYICONDATAA
-typedef struct NOTIFYICONDATAA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szTip, szInfo, szInfoTitle;
-} NOTIFYICONDATAA_FID_CACHE;
-
-NOTIFYICONDATAA_FID_CACHE NOTIFYICONDATAAFc;
-
-void cacheNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject)
-{
-	if (NOTIFYICONDATAAFc.cached) return;
-	cacheNOTIFYICONDATAFields(env, lpObject);
-	NOTIFYICONDATAAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NOTIFYICONDATAAFc.szTip = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szTip", "[B");
-	NOTIFYICONDATAAFc.szInfo = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szInfo", "[B");
-	NOTIFYICONDATAAFc.szInfoTitle = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szInfoTitle", "[B");
-	NOTIFYICONDATAAFc.cached = 1;
-}
-
-NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct)
-{
-	if (!NOTIFYICONDATAAFc.cached) cacheNOTIFYICONDATAAFields(env, lpObject);
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize);
-	lpStruct->hWnd = (HWND)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hWnd);
-	lpStruct->uID = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uID);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
-	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
-	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
-	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
-	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
-	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
-	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
 	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
-	}
-	return lpStruct;
-}
-
-void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct)
-{
-	if (!NOTIFYICONDATAAFc.cached) cacheNOTIFYICONDATAAFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hWnd, (jintLong)lpStruct->hWnd);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uID, (jint)lpStruct->uID);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
-	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (jbyte *)lpStruct->szTip);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (jbyte *)lpStruct->szInfo);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (jbyte *)lpStruct->szInfoTitle);
-	}
-}
-#endif
-
-#ifndef NO_NOTIFYICONDATAW
-typedef struct NOTIFYICONDATAW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szTip, szInfo, szInfoTitle;
-} NOTIFYICONDATAW_FID_CACHE;
-
-NOTIFYICONDATAW_FID_CACHE NOTIFYICONDATAWFc;
-
-void cacheNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject)
-{
-	if (NOTIFYICONDATAWFc.cached) return;
-	cacheNOTIFYICONDATAFields(env, lpObject);
-	NOTIFYICONDATAWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NOTIFYICONDATAWFc.szTip = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szTip", "[C");
-	NOTIFYICONDATAWFc.szInfo = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szInfo", "[C");
-	NOTIFYICONDATAWFc.szInfoTitle = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szInfoTitle", "[C");
-	NOTIFYICONDATAWFc.cached = 1;
-}
-
-NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct)
-{
-	if (!NOTIFYICONDATAWFc.cached) cacheNOTIFYICONDATAWFields(env, lpObject);
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize);
-	lpStruct->hWnd = (HWND)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hWnd);
-	lpStruct->uID = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uID);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
-	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
-	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon);
-	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
-	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
-	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
-	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / sizeof(jchar), (jchar *)lpStruct->szTip);
-	}
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / sizeof(jchar), (jchar *)lpStruct->szInfo);
-	}
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / sizeof(jchar), (jchar *)lpStruct->szInfoTitle);
-	}
-	return lpStruct;
-}
-
-void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct)
-{
-	if (!NOTIFYICONDATAWFc.cached) cacheNOTIFYICONDATAWFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hWnd, (jintLong)lpStruct->hWnd);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uID, (jint)lpStruct->uID);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
-	(*env)->SetIntLongField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jintLong)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
-	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szTip);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / sizeof(jchar), (jchar *)lpStruct->szTip);
 	}
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
 	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szInfo);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / sizeof(jchar), (jchar *)lpStruct->szInfo);
 	}
 	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NOTIFYICONDATAFc.szInfoTitle);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / sizeof(jchar), (jchar *)lpStruct->szInfoTitle);
 	}
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
 }
 #endif
 
@@ -5628,7 +4950,7 @@ void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct
 typedef struct OUTLINETEXTMETRIC_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID otmSize, otmFiller, otmPanoseNumber_bFamilyType, otmPanoseNumber_bSerifStyle, otmPanoseNumber_bWeight, otmPanoseNumber_bProportion, otmPanoseNumber_bContrast, otmPanoseNumber_bStrokeVariation, otmPanoseNumber_bArmStyle, otmPanoseNumber_bLetterform, otmPanoseNumber_bMidline, otmPanoseNumber_bXHeight, otmfsSelection, otmfsType, otmsCharSlopeRise, otmsCharSlopeRun, otmItalicAngle, otmEMSquare, otmAscent, otmDescent, otmLineGap, otmsCapEmHeight, otmsXHeight, otmrcFontBox, otmMacAscent, otmMacDescent, otmMacLineGap, otmusMinimumPPEM, otmptSubscriptSize, otmptSubscriptOffset, otmptSuperscriptSize, otmptSuperscriptOffset, otmsStrikeoutSize, otmsStrikeoutPosition, otmsUnderscoreSize, otmsUnderscorePosition, otmpFamilyName, otmpFaceName, otmpStyleName, otmpFullName;
+	jfieldID otmSize, otmTextMetrics, otmFiller, otmPanoseNumber_bFamilyType, otmPanoseNumber_bSerifStyle, otmPanoseNumber_bWeight, otmPanoseNumber_bProportion, otmPanoseNumber_bContrast, otmPanoseNumber_bStrokeVariation, otmPanoseNumber_bArmStyle, otmPanoseNumber_bLetterform, otmPanoseNumber_bMidline, otmPanoseNumber_bXHeight, otmfsSelection, otmfsType, otmsCharSlopeRise, otmsCharSlopeRun, otmItalicAngle, otmEMSquare, otmAscent, otmDescent, otmLineGap, otmsCapEmHeight, otmsXHeight, otmrcFontBox, otmMacAscent, otmMacDescent, otmMacLineGap, otmusMinimumPPEM, otmptSubscriptSize, otmptSubscriptOffset, otmptSuperscriptSize, otmptSuperscriptOffset, otmsStrikeoutSize, otmsStrikeoutPosition, otmsUnderscoreSize, otmsUnderscorePosition, otmpFamilyName, otmpFaceName, otmpStyleName, otmpFullName;
 } OUTLINETEXTMETRIC_FID_CACHE;
 
 OUTLINETEXTMETRIC_FID_CACHE OUTLINETEXTMETRICFc;
@@ -5638,6 +4960,7 @@ void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject)
 	if (OUTLINETEXTMETRICFc.cached) return;
 	OUTLINETEXTMETRICFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	OUTLINETEXTMETRICFc.otmSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmSize", "I");
+	OUTLINETEXTMETRICFc.otmTextMetrics = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmTextMetrics", "Lorg/eclipse/swt/internal/win32/TEXTMETRIC;");
 	OUTLINETEXTMETRICFc.otmFiller = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmFiller", "B");
 	OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bFamilyType", "B");
 	OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bSerifStyle", "B");
@@ -5684,6 +5007,10 @@ OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUT
 {
 	if (!OUTLINETEXTMETRICFc.cached) cacheOUTLINETEXTMETRICFields(env, lpObject);
 	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmTextMetrics);
+	if (lpObject1 != NULL) getTEXTMETRICFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
 	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
 	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
 	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
@@ -5745,6 +5072,10 @@ void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC
 {
 	if (!OUTLINETEXTMETRICFc.cached) cacheOUTLINETEXTMETRICFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmTextMetrics);
+	if (lpObject1 != NULL) setTEXTMETRICFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
 	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
 	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
 	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
@@ -5799,302 +5130,6 @@ void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC
 	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jintLong)lpStruct->otmpFaceName);
 	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jintLong)lpStruct->otmpStyleName);
 	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jintLong)lpStruct->otmpFullName);
-}
-#endif
-
-#ifndef NO_OUTLINETEXTMETRICA
-typedef struct OUTLINETEXTMETRICA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID otmTextMetrics;
-} OUTLINETEXTMETRICA_FID_CACHE;
-
-OUTLINETEXTMETRICA_FID_CACHE OUTLINETEXTMETRICAFc;
-
-void cacheOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject)
-{
-	if (OUTLINETEXTMETRICAFc.cached) return;
-	cacheOUTLINETEXTMETRICFields(env, lpObject);
-	OUTLINETEXTMETRICAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	OUTLINETEXTMETRICAFc.otmTextMetrics = (*env)->GetFieldID(env, OUTLINETEXTMETRICAFc.clazz, "otmTextMetrics", "Lorg/eclipse/swt/internal/win32/TEXTMETRICA;");
-	OUTLINETEXTMETRICAFc.cached = 1;
-}
-
-OUTLINETEXTMETRICA *getOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct)
-{
-	if (!OUTLINETEXTMETRICAFc.cached) cacheOUTLINETEXTMETRICAFields(env, lpObject);
-	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
-	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
-	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
-	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
-	lpStruct->otmPanoseNumber.bWeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight);
-	lpStruct->otmPanoseNumber.bProportion = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion);
-	lpStruct->otmPanoseNumber.bContrast = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast);
-	lpStruct->otmPanoseNumber.bStrokeVariation = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation);
-	lpStruct->otmPanoseNumber.bArmStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle);
-	lpStruct->otmPanoseNumber.bLetterform = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform);
-	lpStruct->otmPanoseNumber.bMidline = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline);
-	lpStruct->otmPanoseNumber.bXHeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight);
-	lpStruct->otmfsSelection = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection);
-	lpStruct->otmfsType = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType);
-	lpStruct->otmsCharSlopeRise = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise);
-	lpStruct->otmsCharSlopeRun = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun);
-	lpStruct->otmItalicAngle = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle);
-	lpStruct->otmEMSquare = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare);
-	lpStruct->otmAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent);
-	lpStruct->otmDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent);
-	lpStruct->otmLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap);
-	lpStruct->otmsCapEmHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight);
-	lpStruct->otmsXHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
-	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
-	}
-	lpStruct->otmMacAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent);
-	lpStruct->otmMacDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent);
-	lpStruct->otmMacLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap);
-	lpStruct->otmusMinimumPPEM = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
-	}
-	lpStruct->otmsStrikeoutSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize);
-	lpStruct->otmsStrikeoutPosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition);
-	lpStruct->otmsUnderscoreSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize);
-	lpStruct->otmsUnderscorePosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition);
-	lpStruct->otmpFamilyName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName);
-	lpStruct->otmpFaceName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName);
-	lpStruct->otmpStyleName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName);
-	lpStruct->otmpFullName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICAFc.otmTextMetrics);
-	if (lpObject1 != NULL) getTEXTMETRICAFields(env, lpObject1, &lpStruct->otmTextMetrics);
-	}
-	return lpStruct;
-}
-
-void setOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct)
-{
-	if (!OUTLINETEXTMETRICAFc.cached) cacheOUTLINETEXTMETRICAFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight, (jbyte)lpStruct->otmPanoseNumber.bWeight);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion, (jbyte)lpStruct->otmPanoseNumber.bProportion);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast, (jbyte)lpStruct->otmPanoseNumber.bContrast);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation, (jbyte)lpStruct->otmPanoseNumber.bStrokeVariation);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle, (jbyte)lpStruct->otmPanoseNumber.bArmStyle);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform, (jbyte)lpStruct->otmPanoseNumber.bLetterform);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline, (jbyte)lpStruct->otmPanoseNumber.bMidline);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight, (jbyte)lpStruct->otmPanoseNumber.bXHeight);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection, (jint)lpStruct->otmfsSelection);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType, (jint)lpStruct->otmfsType);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise, (jint)lpStruct->otmsCharSlopeRise);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun, (jint)lpStruct->otmsCharSlopeRun);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle, (jint)lpStruct->otmItalicAngle);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare, (jint)lpStruct->otmEMSquare);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent, (jint)lpStruct->otmAscent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent, (jint)lpStruct->otmDescent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap, (jint)lpStruct->otmLineGap);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight, (jint)lpStruct->otmsCapEmHeight);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight, (jint)lpStruct->otmsXHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
-	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
-	}
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent, (jint)lpStruct->otmMacAscent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent, (jint)lpStruct->otmMacDescent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap, (jint)lpStruct->otmMacLineGap);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM, (jint)lpStruct->otmusMinimumPPEM);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
-	}
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize, (jint)lpStruct->otmsStrikeoutSize);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition, (jint)lpStruct->otmsStrikeoutPosition);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize, (jint)lpStruct->otmsUnderscoreSize);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition, (jint)lpStruct->otmsUnderscorePosition);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName, (jintLong)lpStruct->otmpFamilyName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jintLong)lpStruct->otmpFaceName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jintLong)lpStruct->otmpStyleName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jintLong)lpStruct->otmpFullName);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICAFc.otmTextMetrics);
-	if (lpObject1 != NULL) setTEXTMETRICAFields(env, lpObject1, &lpStruct->otmTextMetrics);
-	}
-}
-#endif
-
-#ifndef NO_OUTLINETEXTMETRICW
-typedef struct OUTLINETEXTMETRICW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID otmTextMetrics;
-} OUTLINETEXTMETRICW_FID_CACHE;
-
-OUTLINETEXTMETRICW_FID_CACHE OUTLINETEXTMETRICWFc;
-
-void cacheOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject)
-{
-	if (OUTLINETEXTMETRICWFc.cached) return;
-	cacheOUTLINETEXTMETRICFields(env, lpObject);
-	OUTLINETEXTMETRICWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	OUTLINETEXTMETRICWFc.otmTextMetrics = (*env)->GetFieldID(env, OUTLINETEXTMETRICWFc.clazz, "otmTextMetrics", "Lorg/eclipse/swt/internal/win32/TEXTMETRICW;");
-	OUTLINETEXTMETRICWFc.cached = 1;
-}
-
-OUTLINETEXTMETRICW *getOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct)
-{
-	if (!OUTLINETEXTMETRICWFc.cached) cacheOUTLINETEXTMETRICWFields(env, lpObject);
-	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
-	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
-	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
-	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
-	lpStruct->otmPanoseNumber.bWeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight);
-	lpStruct->otmPanoseNumber.bProportion = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion);
-	lpStruct->otmPanoseNumber.bContrast = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast);
-	lpStruct->otmPanoseNumber.bStrokeVariation = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation);
-	lpStruct->otmPanoseNumber.bArmStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle);
-	lpStruct->otmPanoseNumber.bLetterform = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform);
-	lpStruct->otmPanoseNumber.bMidline = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline);
-	lpStruct->otmPanoseNumber.bXHeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight);
-	lpStruct->otmfsSelection = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection);
-	lpStruct->otmfsType = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType);
-	lpStruct->otmsCharSlopeRise = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise);
-	lpStruct->otmsCharSlopeRun = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun);
-	lpStruct->otmItalicAngle = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle);
-	lpStruct->otmEMSquare = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare);
-	lpStruct->otmAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent);
-	lpStruct->otmDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent);
-	lpStruct->otmLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap);
-	lpStruct->otmsCapEmHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight);
-	lpStruct->otmsXHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
-	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
-	}
-	lpStruct->otmMacAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent);
-	lpStruct->otmMacDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent);
-	lpStruct->otmMacLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap);
-	lpStruct->otmusMinimumPPEM = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
-	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
-	}
-	lpStruct->otmsStrikeoutSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize);
-	lpStruct->otmsStrikeoutPosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition);
-	lpStruct->otmsUnderscoreSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize);
-	lpStruct->otmsUnderscorePosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition);
-	lpStruct->otmpFamilyName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName);
-	lpStruct->otmpFaceName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName);
-	lpStruct->otmpStyleName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName);
-	lpStruct->otmpFullName = (PSTR)(*env)->GetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICWFc.otmTextMetrics);
-	if (lpObject1 != NULL) getTEXTMETRICWFields(env, lpObject1, &lpStruct->otmTextMetrics);
-	}
-	return lpStruct;
-}
-
-void setOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct)
-{
-	if (!OUTLINETEXTMETRICWFc.cached) cacheOUTLINETEXTMETRICWFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight, (jbyte)lpStruct->otmPanoseNumber.bWeight);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion, (jbyte)lpStruct->otmPanoseNumber.bProportion);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast, (jbyte)lpStruct->otmPanoseNumber.bContrast);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation, (jbyte)lpStruct->otmPanoseNumber.bStrokeVariation);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle, (jbyte)lpStruct->otmPanoseNumber.bArmStyle);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform, (jbyte)lpStruct->otmPanoseNumber.bLetterform);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline, (jbyte)lpStruct->otmPanoseNumber.bMidline);
-	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight, (jbyte)lpStruct->otmPanoseNumber.bXHeight);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection, (jint)lpStruct->otmfsSelection);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType, (jint)lpStruct->otmfsType);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise, (jint)lpStruct->otmsCharSlopeRise);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun, (jint)lpStruct->otmsCharSlopeRun);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle, (jint)lpStruct->otmItalicAngle);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare, (jint)lpStruct->otmEMSquare);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent, (jint)lpStruct->otmAscent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent, (jint)lpStruct->otmDescent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap, (jint)lpStruct->otmLineGap);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight, (jint)lpStruct->otmsCapEmHeight);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight, (jint)lpStruct->otmsXHeight);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
-	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
-	}
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent, (jint)lpStruct->otmMacAscent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent, (jint)lpStruct->otmMacDescent);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap, (jint)lpStruct->otmMacLineGap);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM, (jint)lpStruct->otmusMinimumPPEM);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
-	}
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
-	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
-	}
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize, (jint)lpStruct->otmsStrikeoutSize);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition, (jint)lpStruct->otmsStrikeoutPosition);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize, (jint)lpStruct->otmsUnderscoreSize);
-	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition, (jint)lpStruct->otmsUnderscorePosition);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName, (jintLong)lpStruct->otmpFamilyName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jintLong)lpStruct->otmpFaceName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jintLong)lpStruct->otmpStyleName);
-	(*env)->SetIntLongField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jintLong)lpStruct->otmpFullName);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICWFc.otmTextMetrics);
-	if (lpObject1 != NULL) setTEXTMETRICWFields(env, lpObject1, &lpStruct->otmTextMetrics);
-	}
 }
 #endif
 
@@ -7291,7 +6326,7 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 typedef struct SHFILEINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID hIcon, iIcon, dwAttributes;
+	jfieldID hIcon, iIcon, dwAttributes, szDisplayName, szTypeName;
 } SHFILEINFO_FID_CACHE;
 
 SHFILEINFO_FID_CACHE SHFILEINFOFc;
@@ -7303,6 +6338,8 @@ void cacheSHFILEINFOFields(JNIEnv *env, jobject lpObject)
 	SHFILEINFOFc.hIcon = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "hIcon", I_J);
 	SHFILEINFOFc.iIcon = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "iIcon", "I");
 	SHFILEINFOFc.dwAttributes = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "dwAttributes", "I");
+	SHFILEINFOFc.szDisplayName = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "szDisplayName", "[C");
+	SHFILEINFOFc.szTypeName = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "szTypeName", "[C");
 	SHFILEINFOFc.cached = 1;
 }
 
@@ -7312,6 +6349,14 @@ SHFILEINFO *getSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStr
 	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, SHFILEINFOFc.hIcon);
 	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
 	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOFc.szDisplayName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName) / sizeof(jchar), (jchar *)lpStruct->szDisplayName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOFc.szTypeName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName) / sizeof(jchar), (jchar *)lpStruct->szTypeName);
+	}
 	return lpStruct;
 }
 
@@ -7321,110 +6366,12 @@ void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, SHFILEINFOFc.hIcon, (jintLong)lpStruct->hIcon);
 	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
 	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
-}
-#endif
-
-#ifndef NO_SHFILEINFOA
-typedef struct SHFILEINFOA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szDisplayName, szTypeName;
-} SHFILEINFOA_FID_CACHE;
-
-SHFILEINFOA_FID_CACHE SHFILEINFOAFc;
-
-void cacheSHFILEINFOAFields(JNIEnv *env, jobject lpObject)
-{
-	if (SHFILEINFOAFc.cached) return;
-	cacheSHFILEINFOFields(env, lpObject);
-	SHFILEINFOAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	SHFILEINFOAFc.szDisplayName = (*env)->GetFieldID(env, SHFILEINFOAFc.clazz, "szDisplayName", "[B");
-	SHFILEINFOAFc.szTypeName = (*env)->GetFieldID(env, SHFILEINFOAFc.clazz, "szTypeName", "[B");
-	SHFILEINFOAFc.cached = 1;
-}
-
-SHFILEINFOA *getSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct)
-{
-	if (!SHFILEINFOAFc.cached) cacheSHFILEINFOAFields(env, lpObject);
-	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, SHFILEINFOFc.hIcon);
-	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
-	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
 	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szDisplayName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName), (jbyte *)lpStruct->szDisplayName);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szTypeName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName), (jbyte *)lpStruct->szTypeName);
-	}
-	return lpStruct;
-}
-
-void setSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct)
-{
-	if (!SHFILEINFOAFc.cached) cacheSHFILEINFOAFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, SHFILEINFOFc.hIcon, (jintLong)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
-	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szDisplayName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName), (jbyte *)lpStruct->szDisplayName);
-	}
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szTypeName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName), (jbyte *)lpStruct->szTypeName);
-	}
-}
-#endif
-
-#ifndef NO_SHFILEINFOW
-typedef struct SHFILEINFOW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID szDisplayName, szTypeName;
-} SHFILEINFOW_FID_CACHE;
-
-SHFILEINFOW_FID_CACHE SHFILEINFOWFc;
-
-void cacheSHFILEINFOWFields(JNIEnv *env, jobject lpObject)
-{
-	if (SHFILEINFOWFc.cached) return;
-	cacheSHFILEINFOFields(env, lpObject);
-	SHFILEINFOWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	SHFILEINFOWFc.szDisplayName = (*env)->GetFieldID(env, SHFILEINFOWFc.clazz, "szDisplayName", "[C");
-	SHFILEINFOWFc.szTypeName = (*env)->GetFieldID(env, SHFILEINFOWFc.clazz, "szTypeName", "[C");
-	SHFILEINFOWFc.cached = 1;
-}
-
-SHFILEINFOW *getSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct)
-{
-	if (!SHFILEINFOWFc.cached) cacheSHFILEINFOWFields(env, lpObject);
-	lpStruct->hIcon = (HICON)(*env)->GetIntLongField(env, lpObject, SHFILEINFOFc.hIcon);
-	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
-	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szDisplayName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName) / sizeof(jchar), (jchar *)lpStruct->szDisplayName);
-	}
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szTypeName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName) / sizeof(jchar), (jchar *)lpStruct->szTypeName);
-	}
-	return lpStruct;
-}
-
-void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct)
-{
-	if (!SHFILEINFOWFc.cached) cacheSHFILEINFOWFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, SHFILEINFOFc.hIcon, (jintLong)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
-	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
-	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szDisplayName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOFc.szDisplayName);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName) / sizeof(jchar), (jchar *)lpStruct->szDisplayName);
 	}
 	{
-	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szTypeName);
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOFc.szTypeName);
 	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName) / sizeof(jchar), (jchar *)lpStruct->szTypeName);
 	}
 }
@@ -7792,7 +6739,7 @@ void setTCITEMFields(JNIEnv *env, jobject lpObject, TCITEM *lpStruct)
 typedef struct TEXTMETRIC_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID tmHeight, tmAscent, tmDescent, tmInternalLeading, tmExternalLeading, tmAveCharWidth, tmMaxCharWidth, tmWeight, tmOverhang, tmDigitizedAspectX, tmDigitizedAspectY, tmItalic, tmUnderlined, tmStruckOut, tmPitchAndFamily, tmCharSet;
+	jfieldID tmHeight, tmAscent, tmDescent, tmInternalLeading, tmExternalLeading, tmAveCharWidth, tmMaxCharWidth, tmWeight, tmOverhang, tmDigitizedAspectX, tmDigitizedAspectY, tmFirstChar, tmLastChar, tmDefaultChar, tmBreakChar, tmItalic, tmUnderlined, tmStruckOut, tmPitchAndFamily, tmCharSet;
 } TEXTMETRIC_FID_CACHE;
 
 TEXTMETRIC_FID_CACHE TEXTMETRICFc;
@@ -7812,6 +6759,10 @@ void cacheTEXTMETRICFields(JNIEnv *env, jobject lpObject)
 	TEXTMETRICFc.tmOverhang = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmOverhang", "I");
 	TEXTMETRICFc.tmDigitizedAspectX = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmDigitizedAspectX", "I");
 	TEXTMETRICFc.tmDigitizedAspectY = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmDigitizedAspectY", "I");
+	TEXTMETRICFc.tmFirstChar = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmFirstChar", "C");
+	TEXTMETRICFc.tmLastChar = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmLastChar", "C");
+	TEXTMETRICFc.tmDefaultChar = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmDefaultChar", "C");
+	TEXTMETRICFc.tmBreakChar = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmBreakChar", "C");
 	TEXTMETRICFc.tmItalic = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmItalic", "B");
 	TEXTMETRICFc.tmUnderlined = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmUnderlined", "B");
 	TEXTMETRICFc.tmStruckOut = (*env)->GetFieldID(env, TEXTMETRICFc.clazz, "tmStruckOut", "B");
@@ -7834,6 +6785,10 @@ TEXTMETRIC *getTEXTMETRICFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpStr
 	lpStruct->tmOverhang = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmOverhang);
 	lpStruct->tmDigitizedAspectX = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX);
 	lpStruct->tmDigitizedAspectY = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY);
+	lpStruct->tmFirstChar = (*env)->GetCharField(env, lpObject, TEXTMETRICFc.tmFirstChar);
+	lpStruct->tmLastChar = (*env)->GetCharField(env, lpObject, TEXTMETRICFc.tmLastChar);
+	lpStruct->tmDefaultChar = (*env)->GetCharField(env, lpObject, TEXTMETRICFc.tmDefaultChar);
+	lpStruct->tmBreakChar = (*env)->GetCharField(env, lpObject, TEXTMETRICFc.tmBreakChar);
 	lpStruct->tmItalic = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmItalic);
 	lpStruct->tmUnderlined = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined);
 	lpStruct->tmStruckOut = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut);
@@ -7856,157 +6811,15 @@ void setTEXTMETRICFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpStruct)
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmOverhang, (jint)lpStruct->tmOverhang);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX, (jint)lpStruct->tmDigitizedAspectX);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY, (jint)lpStruct->tmDigitizedAspectY);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICFc.tmFirstChar, (jchar)lpStruct->tmFirstChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICFc.tmLastChar, (jchar)lpStruct->tmLastChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICFc.tmDefaultChar, (jchar)lpStruct->tmDefaultChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICFc.tmBreakChar, (jchar)lpStruct->tmBreakChar);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmItalic, (jbyte)lpStruct->tmItalic);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined, (jbyte)lpStruct->tmUnderlined);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut, (jbyte)lpStruct->tmStruckOut);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily, (jbyte)lpStruct->tmPitchAndFamily);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmCharSet, (jbyte)lpStruct->tmCharSet);
-}
-#endif
-
-#ifndef NO_TEXTMETRICA
-typedef struct TEXTMETRICA_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID tmFirstChar, tmLastChar, tmDefaultChar, tmBreakChar;
-} TEXTMETRICA_FID_CACHE;
-
-TEXTMETRICA_FID_CACHE TEXTMETRICAFc;
-
-void cacheTEXTMETRICAFields(JNIEnv *env, jobject lpObject)
-{
-	if (TEXTMETRICAFc.cached) return;
-	cacheTEXTMETRICFields(env, lpObject);
-	TEXTMETRICAFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TEXTMETRICAFc.tmFirstChar = (*env)->GetFieldID(env, TEXTMETRICAFc.clazz, "tmFirstChar", "B");
-	TEXTMETRICAFc.tmLastChar = (*env)->GetFieldID(env, TEXTMETRICAFc.clazz, "tmLastChar", "B");
-	TEXTMETRICAFc.tmDefaultChar = (*env)->GetFieldID(env, TEXTMETRICAFc.clazz, "tmDefaultChar", "B");
-	TEXTMETRICAFc.tmBreakChar = (*env)->GetFieldID(env, TEXTMETRICAFc.clazz, "tmBreakChar", "B");
-	TEXTMETRICAFc.cached = 1;
-}
-
-TEXTMETRICA *getTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct)
-{
-	if (!TEXTMETRICAFc.cached) cacheTEXTMETRICAFields(env, lpObject);
-	lpStruct->tmHeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmHeight);
-	lpStruct->tmAscent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAscent);
-	lpStruct->tmDescent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDescent);
-	lpStruct->tmInternalLeading = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmInternalLeading);
-	lpStruct->tmExternalLeading = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmExternalLeading);
-	lpStruct->tmAveCharWidth = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAveCharWidth);
-	lpStruct->tmMaxCharWidth = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmMaxCharWidth);
-	lpStruct->tmWeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmWeight);
-	lpStruct->tmOverhang = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmOverhang);
-	lpStruct->tmDigitizedAspectX = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX);
-	lpStruct->tmDigitizedAspectY = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY);
-	lpStruct->tmItalic = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmItalic);
-	lpStruct->tmUnderlined = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined);
-	lpStruct->tmStruckOut = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut);
-	lpStruct->tmPitchAndFamily = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily);
-	lpStruct->tmCharSet = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmCharSet);
-	lpStruct->tmFirstChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar);
-	lpStruct->tmLastChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar);
-	lpStruct->tmDefaultChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar);
-	lpStruct->tmBreakChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar);
-	return lpStruct;
-}
-
-void setTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct)
-{
-	if (!TEXTMETRICAFc.cached) cacheTEXTMETRICAFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmHeight, (jint)lpStruct->tmHeight);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAscent, (jint)lpStruct->tmAscent);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDescent, (jint)lpStruct->tmDescent);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmInternalLeading, (jint)lpStruct->tmInternalLeading);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmExternalLeading, (jint)lpStruct->tmExternalLeading);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAveCharWidth, (jint)lpStruct->tmAveCharWidth);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmMaxCharWidth, (jint)lpStruct->tmMaxCharWidth);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmWeight, (jint)lpStruct->tmWeight);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmOverhang, (jint)lpStruct->tmOverhang);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX, (jint)lpStruct->tmDigitizedAspectX);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY, (jint)lpStruct->tmDigitizedAspectY);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmItalic, (jbyte)lpStruct->tmItalic);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined, (jbyte)lpStruct->tmUnderlined);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut, (jbyte)lpStruct->tmStruckOut);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily, (jbyte)lpStruct->tmPitchAndFamily);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmCharSet, (jbyte)lpStruct->tmCharSet);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar, (jbyte)lpStruct->tmFirstChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar, (jbyte)lpStruct->tmLastChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar, (jbyte)lpStruct->tmDefaultChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar, (jbyte)lpStruct->tmBreakChar);
-}
-#endif
-
-#ifndef NO_TEXTMETRICW
-typedef struct TEXTMETRICW_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID tmFirstChar, tmLastChar, tmDefaultChar, tmBreakChar;
-} TEXTMETRICW_FID_CACHE;
-
-TEXTMETRICW_FID_CACHE TEXTMETRICWFc;
-
-void cacheTEXTMETRICWFields(JNIEnv *env, jobject lpObject)
-{
-	if (TEXTMETRICWFc.cached) return;
-	cacheTEXTMETRICFields(env, lpObject);
-	TEXTMETRICWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TEXTMETRICWFc.tmFirstChar = (*env)->GetFieldID(env, TEXTMETRICWFc.clazz, "tmFirstChar", "C");
-	TEXTMETRICWFc.tmLastChar = (*env)->GetFieldID(env, TEXTMETRICWFc.clazz, "tmLastChar", "C");
-	TEXTMETRICWFc.tmDefaultChar = (*env)->GetFieldID(env, TEXTMETRICWFc.clazz, "tmDefaultChar", "C");
-	TEXTMETRICWFc.tmBreakChar = (*env)->GetFieldID(env, TEXTMETRICWFc.clazz, "tmBreakChar", "C");
-	TEXTMETRICWFc.cached = 1;
-}
-
-TEXTMETRICW *getTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
-{
-	if (!TEXTMETRICWFc.cached) cacheTEXTMETRICWFields(env, lpObject);
-	lpStruct->tmHeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmHeight);
-	lpStruct->tmAscent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAscent);
-	lpStruct->tmDescent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDescent);
-	lpStruct->tmInternalLeading = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmInternalLeading);
-	lpStruct->tmExternalLeading = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmExternalLeading);
-	lpStruct->tmAveCharWidth = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAveCharWidth);
-	lpStruct->tmMaxCharWidth = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmMaxCharWidth);
-	lpStruct->tmWeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmWeight);
-	lpStruct->tmOverhang = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmOverhang);
-	lpStruct->tmDigitizedAspectX = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX);
-	lpStruct->tmDigitizedAspectY = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY);
-	lpStruct->tmItalic = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmItalic);
-	lpStruct->tmUnderlined = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined);
-	lpStruct->tmStruckOut = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut);
-	lpStruct->tmPitchAndFamily = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily);
-	lpStruct->tmCharSet = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmCharSet);
-	lpStruct->tmFirstChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar);
-	lpStruct->tmLastChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar);
-	lpStruct->tmDefaultChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar);
-	lpStruct->tmBreakChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar);
-	return lpStruct;
-}
-
-void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
-{
-	if (!TEXTMETRICWFc.cached) cacheTEXTMETRICWFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmHeight, (jint)lpStruct->tmHeight);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAscent, (jint)lpStruct->tmAscent);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDescent, (jint)lpStruct->tmDescent);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmInternalLeading, (jint)lpStruct->tmInternalLeading);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmExternalLeading, (jint)lpStruct->tmExternalLeading);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAveCharWidth, (jint)lpStruct->tmAveCharWidth);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmMaxCharWidth, (jint)lpStruct->tmMaxCharWidth);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmWeight, (jint)lpStruct->tmWeight);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmOverhang, (jint)lpStruct->tmOverhang);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectX, (jint)lpStruct->tmDigitizedAspectX);
-	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDigitizedAspectY, (jint)lpStruct->tmDigitizedAspectY);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmItalic, (jbyte)lpStruct->tmItalic);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmUnderlined, (jbyte)lpStruct->tmUnderlined);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut, (jbyte)lpStruct->tmStruckOut);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily, (jbyte)lpStruct->tmPitchAndFamily);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmCharSet, (jbyte)lpStruct->tmCharSet);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar, (jchar)lpStruct->tmFirstChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar, (jchar)lpStruct->tmLastChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar, (jchar)lpStruct->tmDefaultChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar, (jchar)lpStruct->tmBreakChar);
 }
 #endif
 

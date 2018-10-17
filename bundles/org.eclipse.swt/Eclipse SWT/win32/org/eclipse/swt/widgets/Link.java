@@ -188,7 +188,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			width = rect.right - rect.left;
 			height = rect.bottom;
 		} else {
-			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW () : new TEXTMETRICA ();
+			TEXTMETRIC lptm = new TEXTMETRIC ();
 			OS.GetTextMetrics (hDC, lptm);
 			width = 0;
 			height = lptm.tmHeight;
