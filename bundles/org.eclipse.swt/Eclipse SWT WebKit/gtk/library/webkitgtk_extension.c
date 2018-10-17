@@ -36,8 +36,8 @@ static const gchar interface[] = "org.eclipse.swt.gdbusInterface";
 
 typedef struct {
     guint64 page_id;
-    const gchar *function;
-    const gchar *url;
+    gchar *function;
+    gchar *url;
 } BrowserFunction;
 
 GSList *function_list = NULL;
@@ -312,7 +312,7 @@ static WebKitFrame *webkitgtk_extension_get_main_frame (const guint64 id) {
 /*
  * Execute the Javascript for the given page and URL.
  */
-static gboolean webkitgtk_extension_execute_script (const guint64 page_id, const gchar* script, const gchar* url) {
+static gboolean webkitgtk_extension_execute_script (const guint64 page_id, gchar* script, gchar* url) {
 	WebKitFrame *main_frame = webkitgtk_extension_get_main_frame (page_id);
 
 	JSStringRef url_string = JSStringCreateWithUTF8CString (url);
@@ -359,20 +359,25 @@ gint find_browser_function (gconstpointer item, gconstpointer target) {
 void add_browser_function(guint64 page_id, const gchar *function, const gchar *url) {
 	BrowserFunction *func = g_slice_new0(BrowserFunction);
 	func->page_id = page_id;
-	func->function = function;
-	func->url = url;
+	func->function = g_strdup(function);
+	func->url = g_strdup(url);
 	function_list = g_slist_append(function_list, func);
 }
 
 void remove_browser_function(guint64 page_id, const gchar *function, const gchar *url) {
 	BrowserFunction *func = g_slice_new0(BrowserFunction);
 	func->page_id = page_id;
-	func->function = function;
-	func->url = url;
+	func->function = g_strdup(function);
+	func->url = g_strdup(url);
 	GSList *to_remove = g_slist_find_custom(function_list, func, find_browser_function);
 	if (to_remove != NULL) {
+		BrowserFunction *delete_func = to_remove->data;
+		g_free(delete_func->function);
+		g_free(delete_func->url);
 		function_list = g_slist_delete_link(function_list, to_remove);
 	}
+	g_free(func->function);
+	g_free(func->url);
 	g_slice_free(BrowserFunction, func);
 }
 
