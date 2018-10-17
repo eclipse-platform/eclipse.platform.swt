@@ -3406,14 +3406,29 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 
 long /*int*/ createMetafileWithChars(long /*int*/ hdc, long /*int*/ hFont, char[] chars, int charCount) {
 	long /*int*/ hHeap = OS.GetProcessHeap();
+
+	/*
+	 * The native string must remain unchanged between ScriptStringAnalyse and ScriptStringOut.
+	 * According to debugging, ScriptStringAnalyse implicitly saves string to SCRIPT_STRING_ANALYSIS.
+	 * Then, ScriptStringOut uses the saved string in internal call to ExtTextOutW.
+	 * I believe this is due to OS.SSA_METAFILE, which is documented as follows:
+	 *     Write items with ExtTextOutW calls, not with glyphs.
+	 * Note: passing Java chars to native function is wrong, because JNI will allocate
+	 * temporary native string which will be deallocated upon return from ScriptStringAnalyse.
+	 */
+	int nativeStringSize = charCount * Character.BYTES;
+	long /*int*/ nativeString = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, nativeStringSize);
+	OS.MoveMemory (nativeString, chars, nativeStringSize);
+
 	long /*int*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
 	long /*int*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
 	long /*int*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
 	int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
-	if (OS.ScriptStringAnalyse(metaFileDc, chars, charCount, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+	if (OS.ScriptStringAnalyse(metaFileDc, nativeString, charCount, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
 		OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
 		OS.ScriptStringFree(ssa);
 	}
+	OS.HeapFree(hHeap, 0, nativeString);
 	OS.HeapFree(hHeap, 0, ssa);
 	OS.SelectObject(metaFileDc, oldMetaFont);
 	return OS.CloseEnhMetaFile(metaFileDc);

@@ -11862,21 +11862,18 @@ fail:
 
 #ifndef NO_ScriptStringAnalyse
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptStringAnalyse)
-	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jobject arg7, jobject arg8, jintLong arg9, jintLong arg10, jintLong arg11, jintLong arg12)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jobject arg7, jobject arg8, jintLong arg9, jintLong arg10, jintLong arg11, jintLong arg12)
 {
-	jchar *lparg1=NULL;
 	SCRIPT_CONTROL _arg7, *lparg7=NULL;
 	SCRIPT_STATE _arg8, *lparg8=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, ScriptStringAnalyse_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getSCRIPT_CONTROLFields(env, arg7, &_arg7)) == NULL) goto fail;
 	if (arg8) if ((lparg8 = getSCRIPT_STATEFields(env, arg8, &_arg8)) == NULL) goto fail;
-	rc = (jint)ScriptStringAnalyse((HDC)arg0, (const void*)lparg1, arg2, arg3, arg4, arg5, arg6, lparg7, lparg8, (const int*)arg9, (SCRIPT_TABDEF*)arg10, (const BYTE*)arg11, (SCRIPT_STRING_ANALYSIS*)arg12);
+	rc = (jint)ScriptStringAnalyse((HDC)arg0, (const void*)arg1, arg2, arg3, arg4, arg5, arg6, lparg7, lparg8, (const int*)arg9, (SCRIPT_TABDEF*)arg10, (const BYTE*)arg11, (SCRIPT_STRING_ANALYSIS*)arg12);
 fail:
 	if (arg8 && lparg8) setSCRIPT_STATEFields(env, arg8, lparg8);
 	if (arg7 && lparg7) setSCRIPT_CONTROLFields(env, arg7, lparg7);
-	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, ScriptStringAnalyse_FUNC);
 	return rc;
 }

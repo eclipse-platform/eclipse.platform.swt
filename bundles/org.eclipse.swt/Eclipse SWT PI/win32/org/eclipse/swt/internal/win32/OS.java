@@ -5450,7 +5450,7 @@ public static final native int ScriptShape (long /*int*/ hdc, long /*int*/ psc, 
  * @param pbInClass cast=(const BYTE*)
  * @param pssa cast=(SCRIPT_STRING_ANALYSIS*)
  */
-public static final native int ScriptStringAnalyse (long /*int*/ hdc, char[] pString, int cString, int cGlyphs, int iCharset, int dwFlags, int iReqWidth, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long /*int*/ piDx, long /*int*/ pTabdef, long /*int*/ pbInClass, long /*int*/ pssa);
+public static final native int ScriptStringAnalyse (long /*int*/ hdc, long /*int*/ pString, int cString, int cGlyphs, int iCharset, int dwFlags, int iReqWidth, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long /*int*/ piDx, long /*int*/ pTabdef, long /*int*/ pbInClass, long /*int*/ pssa);
 /** @param ssa cast=(SCRIPT_STRING_ANALYSIS*),flags=struct */
 public static final native int ScriptStringOut(long /*int*/ ssa, int iX, int iY, int uOptions, RECT prc, int iMinSel, int iMaxSel, boolean fDisabled);
 /** @param pssa cast=(SCRIPT_STRING_ANALYSIS*) */
