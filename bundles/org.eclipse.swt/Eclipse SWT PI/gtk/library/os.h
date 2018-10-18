@@ -130,8 +130,10 @@
 #define NO__1XSetIOErrorHandler
 #define NO__1XSetTransientForHint
 #define NO__1XSynchronize
-X#define NO__1XWarpPointer
+#define NO__1XWarpPointer
 #define NO__1GDK_1PIXMAP_1XID
+#define NO__1gdk_1x11_1display_1error_1trap_1pop_1ignored
+#define NO__1gdk_1x11_1display_1error_1trap_1push
 #define NO__1gdk_1x11_1display_1get_1xdisplay
 #define NO__1gdk_1x11_1display_1utf8_1to_1compound_1text
 #define NO__1gdk_1x11_1drawable_1get_1xdisplay
