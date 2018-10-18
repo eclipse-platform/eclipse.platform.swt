@@ -717,6 +717,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1style_1context_1get_1font",
 	"_1gtk_1style_1context_1get_1padding",
 	"_1gtk_1style_1context_1invalidate",
+	"_1gtk_1style_1context_1remove_1class",
 	"_1gtk_1style_1context_1restore",
 	"_1gtk_1style_1context_1save",
 	"_1gtk_1style_1context_1set_1state",

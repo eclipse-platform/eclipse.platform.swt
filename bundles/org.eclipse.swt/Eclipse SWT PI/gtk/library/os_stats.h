@@ -715,6 +715,7 @@ typedef enum {
 	_1gtk_1style_1context_1get_1font_FUNC,
 	_1gtk_1style_1context_1get_1padding_FUNC,
 	_1gtk_1style_1context_1invalidate_FUNC,
+	_1gtk_1style_1context_1remove_1class_FUNC,
 	_1gtk_1style_1context_1restore_FUNC,
 	_1gtk_1style_1context_1save_FUNC,
 	_1gtk_1style_1context_1set_1state_FUNC,

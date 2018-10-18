@@ -5588,6 +5588,19 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param class_name cast=(const gchar *)
+	 */
+	public static final native void _gtk_style_context_remove_class(long /*int*/ context, byte[] class_name);
+	public static final void gtk_style_context_remove_class(long /*int*/ context, byte[] class_name) {
+		lock.lock();
+		try {
+			_gtk_style_context_remove_class(context, class_name);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @method flags=dynamic */
 	public static final native void _gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color);
 	/** [GTK3; 3.16 deprecated, replaced] */

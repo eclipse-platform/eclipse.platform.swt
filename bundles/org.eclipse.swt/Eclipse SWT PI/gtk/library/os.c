@@ -8373,6 +8373,20 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1invalidate)
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1remove_1class
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1remove_1class)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1remove_1class_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_style_context_remove_class((GtkStyleContext *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1remove_1class_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1restore
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1restore)
 	(JNIEnv *env, jclass that, jintLong arg0)

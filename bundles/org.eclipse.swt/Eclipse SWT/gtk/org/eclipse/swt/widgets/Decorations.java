@@ -557,6 +557,13 @@ boolean restoreFocus () {
 public void setDefaultButton (Button button) {
 	checkWidget();
 	long /*int*/ buttonHandle = 0;
+	if (saveDefault != null && !saveDefault.isDisposed ()  ) {
+		long /*int*/ saveButtonHandle = saveDefault.handle;
+		if (saveButtonHandle != 0) {
+			long /*int*/ context = GTK.gtk_widget_get_style_context (saveButtonHandle);
+			GTK.gtk_style_context_remove_class(context, GTK.GTK_STYLE_CLASS_SUGGESTED_ACTION);
+		}
+	}
 	if (button != null) {
 		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (button.menuShell () != this) error (SWT.ERROR_INVALID_PARENT);
