@@ -3446,7 +3446,8 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	 * makes the widget visible again in setBounds. See Bug 533469, Bug 531120.
 	 */
 	if (GTK.GTK_VERSION > OS.VERSION (3, 18, 0) && (state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
-		if (GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_hide(widget);
+		if (widget != 0 && GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_set_opacity(widget, 0);
+		if (display == null || display.isDisposed()) error (SWT.ERROR_DEVICE_DISPOSED);
 	}
 	/*
 	 * Modify the drawing of the widget with cairo_clip.
