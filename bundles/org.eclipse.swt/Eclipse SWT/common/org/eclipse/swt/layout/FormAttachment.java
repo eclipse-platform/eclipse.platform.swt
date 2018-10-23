@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -95,7 +95,7 @@ public final class FormAttachment {
 	public int denominator = 100;
 
 	/**
-	 * offset specifies the offset, in pixels, of the control side
+	 * offset specifies the offset, in points, of the control side
 	 * from the attachment position.
 	 * If the offset is positive, then the control side is offset
 	 * to the right of or below the attachment position. If it is

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -76,7 +76,7 @@ public final class RowLayout extends Layout {
 	public int type = SWT.HORIZONTAL;
 
 	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
@@ -86,7 +86,7 @@ public final class RowLayout extends Layout {
  	public int marginWidth = 0;
 
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.
@@ -96,7 +96,7 @@ public final class RowLayout extends Layout {
  	public int marginHeight = 0;
 
 	/**
-	 * spacing specifies the number of pixels between the edge of one cell
+	 * spacing specifies the number of points between the edge of one cell
 	 * and the edge of its neighbouring cell.
 	 *
 	 * The default value is 3.
@@ -153,7 +153,7 @@ public final class RowLayout extends Layout {
 	public boolean justify = false;
 
 	/**
-	 * marginLeft specifies the number of pixels of horizontal margin
+	 * marginLeft specifies the number of points of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 3.
@@ -161,7 +161,7 @@ public final class RowLayout extends Layout {
 	public int marginLeft = 3;
 
 	/**
-	 * marginTop specifies the number of pixels of vertical margin
+	 * marginTop specifies the number of points of vertical margin
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 3.
@@ -169,7 +169,7 @@ public final class RowLayout extends Layout {
 	public int marginTop = 3;
 
 	/**
-	 * marginRight specifies the number of pixels of horizontal margin
+	 * marginRight specifies the number of points of horizontal margin
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 3.
@@ -177,7 +177,7 @@ public final class RowLayout extends Layout {
 	public int marginRight = 3;
 
 	/**
-	 * marginBottom specifies the number of pixels of vertical margin
+	 * marginBottom specifies the number of points of vertical margin
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 3.

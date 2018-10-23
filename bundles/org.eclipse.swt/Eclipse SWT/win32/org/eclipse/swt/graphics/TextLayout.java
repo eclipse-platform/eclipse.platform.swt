@@ -2896,7 +2896,7 @@ public void setAlignment (int alignment) {
 }
 
 /**
- * Sets the ascent of the receiver. The ascent is distance in pixels
+ * Sets the ascent of the receiver. The ascent is distance in points
  * from the baseline to the top of the line and it is applied to all
  * lines. The default value is <code>-1</code> which means that the
  * ascent is calculated from the line fonts.
@@ -2923,7 +2923,7 @@ public void setAscent (int ascent) {
 }
 
 /**
- * Sets the descent of the receiver. The descent is distance in pixels
+ * Sets the descent of the receiver. The descent is distance in points
  * from the baseline to the bottom of the line and it is applied to all
  * lines. The default value is <code>-1</code> which means that the
  * descent is calculated from the line fonts.

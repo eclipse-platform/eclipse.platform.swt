@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -322,7 +322,7 @@ public Control getControl () {
  * Returns the minimum size that the cool item can
  * be resized to using the cool item's gripper.
  *
- * @return a point containing the minimum width and height of the cool item, in pixels
+ * @return a point containing the minimum width and height of the cool item, in SWT logical points
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -484,8 +484,8 @@ public void setControl (Control control) {
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the arguments.
  *
- * @param width the minimum width of the cool item, in pixels
- * @param height the minimum height of the cool item, in pixels
+ * @param width the minimum width of the cool item, in points
+ * @param height the minimum height of the cool item, in points
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -504,7 +504,7 @@ public void setMinimumSize (int width, int height) {
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the argument.
  *
- * @param size a point representing the minimum width and height of the cool item, in pixels
+ * @param size a point representing the minimum width and height of the cool item, in SWT logical points
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>

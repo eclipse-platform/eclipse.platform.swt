@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -90,7 +90,7 @@ public boolean equals (Object object) {
  * Returns the ascent of the font described by the receiver. A
  * font's <em>ascent</em> is the distance from the baseline to the
  * top of actual characters, not including any of the leading area,
- * measured in pixels.
+ * measured in points.
  *
  * @return the ascent of the font
  */
@@ -99,7 +99,7 @@ public int getAscent() {
 }
 
 /**
- * Returns the average character width, measured in pixels,
+ * Returns the average character width, measured in points,
  * of the font described by the receiver.
  *
  * @return the average character width of the font
@@ -110,7 +110,7 @@ public double getAverageCharacterWidth() {
 }
 
 /**
- * Returns the average character width, measured in pixels,
+ * Returns the average character width, measured in points,
  * of the font described by the receiver.
  *
  * @return the average character width of the font
@@ -124,7 +124,7 @@ public int getAverageCharWidth() {
  * Returns the descent of the font described by the receiver. A
  * font's <em>descent</em> is the distance from the baseline to the
  * bottom of actual characters, not including any of the leading area,
- * measured in pixels.
+ * measured in points.
  *
  * @return the descent of the font
  */
@@ -134,7 +134,7 @@ public int getDescent() {
 
 /**
  * Returns the height of the font described by the receiver,
- * measured in pixels. A font's <em>height</em> is the sum of
+ * measured in points. A font's <em>height</em> is the sum of
  * its ascent, descent and leading area.
  *
  * @return the height of the font

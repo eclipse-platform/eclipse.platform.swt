@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -58,14 +58,14 @@ import org.eclipse.swt.widgets.*;
 public class CTabFolder extends Composite {
 
 	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the form.
 	 *
 	 * The default value is 0.
 	 */
  	public int marginWidth = 0;
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
@@ -3472,7 +3472,7 @@ int getControlY(Point size, Rectangle[] rects, int borderBottom, int borderTop, 
  * the default height is the height of the text or the image, whichever
  * is greater. Specifying a height of -1 will revert to the default height.
  *
- * @param height the pixel value of the height or -1
+ * @param height the point value of the height or -1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

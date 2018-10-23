@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -183,8 +183,8 @@ public Path (Device device, PathData data) {
  * is (<code>x</code>, <code>y</code>) and whose size is specified by the
  * <code>width</code> and <code>height</code> arguments.
  * </p><p>
- * The resulting arc covers an area <code>width + 1</code> pixels wide
- * by <code>height + 1</code> pixels tall.
+ * The resulting arc covers an area <code>width + 1</code> points wide
+ * by <code>height + 1</code> points tall.
  * </p>
  *
  * @param x the x coordinate of the upper-left corner of the arc

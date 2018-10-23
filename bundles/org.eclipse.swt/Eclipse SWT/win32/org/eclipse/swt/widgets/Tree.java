@@ -2875,9 +2875,9 @@ TreeItem getFocusItem () {
 }
 
 /**
- * Returns the width in pixels of a grid line.
+ * Returns the width in points of a grid line.
  *
- * @return the width of a grid line in pixels
+ * @return the width of a grid line in points
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

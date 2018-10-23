@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -67,7 +67,7 @@ public final class GridLayout extends Layout {
 	public boolean makeColumnsEqualWidth = false;
 
 	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 5.
@@ -75,7 +75,7 @@ public final class GridLayout extends Layout {
  	public int marginWidth = 5;
 
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 5.
@@ -83,7 +83,7 @@ public final class GridLayout extends Layout {
  	public int marginHeight = 5;
 
  	/**
-	 * marginLeft specifies the number of pixels of horizontal margin
+	 * marginLeft specifies the number of points of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 0.
@@ -93,7 +93,7 @@ public final class GridLayout extends Layout {
 	public int marginLeft = 0;
 
 	/**
-	 * marginTop specifies the number of pixels of vertical margin
+	 * marginTop specifies the number of points of vertical margin
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 0.
@@ -103,7 +103,7 @@ public final class GridLayout extends Layout {
 	public int marginTop = 0;
 
 	/**
-	 * marginRight specifies the number of pixels of horizontal margin
+	 * marginRight specifies the number of points of horizontal margin
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 0.
@@ -113,7 +113,7 @@ public final class GridLayout extends Layout {
 	public int marginRight = 0;
 
 	/**
-	 * marginBottom specifies the number of pixels of vertical margin
+	 * marginBottom specifies the number of points of vertical margin
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 0.
@@ -123,7 +123,7 @@ public final class GridLayout extends Layout {
 	public int marginBottom = 0;
 
 	/**
-	 * horizontalSpacing specifies the number of pixels between the right
+	 * horizontalSpacing specifies the number of points between the right
 	 * edge of one cell and the left edge of its neighbouring cell to
 	 * the right.
 	 *
@@ -132,7 +132,7 @@ public final class GridLayout extends Layout {
  	public int horizontalSpacing = 5;
 
 	/**
-	 * verticalSpacing specifies the number of pixels between the bottom
+	 * verticalSpacing specifies the number of points between the bottom
 	 * edge of one cell and the top edge of its neighbouring cell underneath.
 	 *
 	 * The default value is 5.

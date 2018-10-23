@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -72,14 +72,14 @@ import org.eclipse.swt.widgets.*;
 public class StackLayout extends Layout {
 
  	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
 	 */
  	public int marginWidth = 0;
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.

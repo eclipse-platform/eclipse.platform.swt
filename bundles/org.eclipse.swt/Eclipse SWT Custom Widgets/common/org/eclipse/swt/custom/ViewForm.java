@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -44,21 +44,21 @@ import org.eclipse.swt.widgets.*;
 public class ViewForm extends Composite {
 
 	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the form.
 	 *
 	 * The default value is 0.
 	 */
  	public int marginWidth = 0;
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
  	/**
-	 * horizontalSpacing specifies the number of pixels between the right
+	 * horizontalSpacing specifies the number of points between the right
 	 * edge of one cell and the left edge of its neighbouring cell to
 	 * the right.
 	 *
@@ -66,7 +66,7 @@ public class ViewForm extends Composite {
 	 */
  	public int horizontalSpacing = 1;
 	/**
-	 * verticalSpacing specifies the number of pixels between the bottom
+	 * verticalSpacing specifies the number of points between the bottom
 	 * edge of one cell and the top edge of its neighbouring cell underneath.
 	 *
 	 * The default value is 1.

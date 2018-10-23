@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -92,7 +92,7 @@ import org.eclipse.swt.widgets.*;
 public final class FormLayout extends Layout {
 
 	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
+	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
@@ -100,7 +100,7 @@ public final class FormLayout extends Layout {
  	public int marginWidth = 0;
 
 	/**
-	 * marginHeight specifies the number of pixels of vertical margin
+	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.
@@ -109,7 +109,7 @@ public final class FormLayout extends Layout {
 
 
  	/**
-	 * marginLeft specifies the number of pixels of horizontal margin
+	 * marginLeft specifies the number of points of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 0.
@@ -119,7 +119,7 @@ public final class FormLayout extends Layout {
 	public int marginLeft = 0;
 
 	/**
-	 * marginTop specifies the number of pixels of vertical margin
+	 * marginTop specifies the number of points of vertical margin
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 0.
@@ -129,7 +129,7 @@ public final class FormLayout extends Layout {
 	public int marginTop = 0;
 
 	/**
-	 * marginRight specifies the number of pixels of horizontal margin
+	 * marginRight specifies the number of points of horizontal margin
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 0.
@@ -139,7 +139,7 @@ public final class FormLayout extends Layout {
 	public int marginRight = 0;
 
 	/**
-	 * marginBottom specifies the number of pixels of vertical margin
+	 * marginBottom specifies the number of points of vertical margin
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 0.
@@ -149,7 +149,7 @@ public final class FormLayout extends Layout {
 	public int marginBottom = 0;
 
 	/**
-	 * spacing specifies the number of pixels between the edge of one control
+	 * spacing specifies the number of points between the edge of one control
 	 * and the edge of its neighbouring control.
 	 *
 	 * The default value is 0.

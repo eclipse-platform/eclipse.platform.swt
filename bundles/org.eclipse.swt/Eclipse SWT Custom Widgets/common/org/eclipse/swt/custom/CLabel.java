@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -809,7 +809,7 @@ public void setBackground(Image image) {
 
 }
 /**
- * Set the label's bottom margin, in pixels.
+ * Set the label's bottom margin, in points.
  *
  * @param bottomMargin the bottom margin of the label, which must be equal to or greater than zero
  *
@@ -850,7 +850,7 @@ public void setImage(Image image) {
 	}
 }
 /**
- * Set the label's horizontal left margin, in pixels.
+ * Set the label's horizontal left margin, in points.
  *
  * @param leftMargin the left margin of the label, which must be equal to or greater than zero
  *
@@ -868,7 +868,7 @@ public void setLeftMargin(int leftMargin) {
     redraw();
 }
 /**
- * Set the label's margins, in pixels.
+ * Set the label's margins, in points.
  *
  * @param leftMargin the left margin.
  * @param topMargin the top margin.
@@ -890,7 +890,7 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
 	redraw();
 }
 /**
- * Set the label's right margin, in pixels.
+ * Set the label's right margin, in points.
  *
  * @param rightMargin the right margin of the label, which must be equal to or greater than zero
  *
@@ -945,7 +945,7 @@ public void setToolTipText (String string) {
 	appToolTipText = super.getToolTipText();
 }
 /**
- * Set the label's top margin, in pixels.
+ * Set the label's top margin, in points.
  *
  * @param topMargin the top margin of the label, which must be equal to or greater than zero
  *
@@ -970,7 +970,7 @@ public void setTopMargin(int topMargin) {
  *
  * @param gc the gc to use for text measurement
  * @param t the text to shorten
- * @param width the width to shorten the text to, in pixels
+ * @param width the width to shorten the text to, in points
  * @return the shortened text
  */
 protected String shortenText(GC gc, String t, int width) {

@@ -34,7 +34,7 @@ public interface ImageFileNameProvider {
 	 *
 	 * @param zoom
 	 *            The zoom level in % of the standard resolution (which is 1
-	 *            physical monitor pixel == 1 SWT logical pixel). Typically 100,
+	 *            physical monitor pixel == 1 SWT logical point). Typically 100,
 	 *            150, or 200.
 	 * @return the image filePath, or <code>null</code> if
 	 *         <code>zoom != 100</code> and no image is available for the given

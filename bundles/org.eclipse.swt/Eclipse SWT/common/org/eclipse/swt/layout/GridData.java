@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -88,7 +88,7 @@ public final class GridData {
 	public int horizontalAlignment = BEGINNING;
 
 	/**
-	 * widthHint specifies the preferred width in pixels. This value
+	 * widthHint specifies the preferred width in points. This value
 	 * is the wHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
@@ -99,7 +99,7 @@ public final class GridData {
 	public int widthHint = SWT.DEFAULT;
 
 	/**
-	 * heightHint specifies the preferred height in pixels. This value
+	 * heightHint specifies the preferred height in points. This value
 	 * is the hHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
@@ -110,7 +110,7 @@ public final class GridData {
 	public int heightHint = SWT.DEFAULT;
 
 	/**
-	 * horizontalIndent specifies the number of pixels of indentation
+	 * horizontalIndent specifies the number of points of indentation
 	 * that will be placed along the left side of the cell.
 	 *
 	 * The default value is 0.
@@ -118,7 +118,7 @@ public final class GridData {
 	public int horizontalIndent = 0;
 
 	/**
-	 * verticalIndent specifies the number of pixels of indentation
+	 * verticalIndent specifies the number of points of indentation
 	 * that will be placed along the top side of the cell.
 	 *
 	 * The default value is 0.
@@ -206,7 +206,7 @@ public final class GridData {
 	public boolean grabExcessVerticalSpace = false;
 
 	/**
-	 * minimumWidth specifies the minimum width in pixels.  This value
+	 * minimumWidth specifies the minimum width in points.  This value
 	 * applies only if grabExcessHorizontalSpace is true. A value of
 	 * SWT.DEFAULT means that the minimum width will be the result
 	 * of Control.computeSize(int, int, boolean) where wHint is
@@ -221,7 +221,7 @@ public final class GridData {
 	public int minimumWidth = 0;
 
 	/**
-	 * minimumHeight specifies the minimum height in pixels.  This value
+	 * minimumHeight specifies the minimum height in points.  This value
 	 * applies only if grabExcessVerticalSpace is true.  A value of
 	 * SWT.DEFAULT means that the minimum height will be the result
 	 * of Control.computeSize(int, int, boolean) where hHint is

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -38,7 +38,7 @@ import org.eclipse.swt.graphics.*;
  */
 public final class RowData {
 	/**
-	 * width specifies the desired width in pixels. This value
+	 * width specifies the desired width in points. This value
 	 * is the wHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
@@ -48,7 +48,7 @@ public final class RowData {
 	 */
 	public int width = SWT.DEFAULT;
 	/**
-	 * height specifies the preferred height in pixels. This value
+	 * height specifies the preferred height in points. This value
 	 * is the hHint passed into Control.computeSize(int, int, boolean)
 	 * to determine the preferred size of the control.
 	 *
