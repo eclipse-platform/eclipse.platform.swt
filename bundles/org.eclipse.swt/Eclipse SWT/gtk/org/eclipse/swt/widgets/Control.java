@@ -1025,14 +1025,24 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 		/*
 		 * The widget needs to be shown before its size is allocated
-		 * in GTK 3.8 otherwise its allocation return 0
-                 * See org.eclipse.swt.tests.gtk.snippets.Bug497705_setBoundsAfterSetVisible
+		 * in GTK3.8, otherwise its allocation return 0
+		 * 		See org.eclipse.swt.tests.gtk.snippets.Bug497705_setBoundsAfterSetVisible
+		 * Note: gtk_widget_hide sometimes destroy focus on previously focused control,
+		 * this might cause unnecessary focus change events. In case this happens, try remove
+		 * gtk_widget_hide call or avoid setting bounds on invisible widgets.
 		 */
 		if (GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(topHandle))  {
+			Control focusControl = display.getFocusControl();
 			GTK.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
 			GTK.gtk_widget_size_allocate (topHandle, allocation);
 			GTK.gtk_widget_hide(topHandle);
+			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
+			 * Reset focus to original focused control after dealing with allocation.
+			 */
+			if (focusControl != null && display.getFocusControl() != focusControl) {
+				focusControl.setFocus();
+			}
 		} else {
 			GTK.gtk_widget_size_allocate (topHandle, allocation);
 		}
