@@ -39,12 +39,12 @@ import org.eclipse.swt.widgets.*;
  * (from the top). It can be defined using a numerator and denominator,
  * or just a percentage value. If a percentage is used, the denominator
  * is set to 100. The "b" term in the equation represents an offset, in
- * pixels, from the attachment position. For example:
+ * points, from the attachment position. For example:
  * <pre>
  * 		FormAttachment attach = new FormAttachment (20, -5);
  * </pre>
  * specifies that the side to which the <code>FormAttachment</code>
- * object belongs will lie at 20% of the parent composite, minus 5 pixels.
+ * object belongs will lie at 20% of the parent composite, minus 5 points.
  * </p>
  * <p>
  * Control sides can also be attached to another control.
@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * specifies that the side to which the <code>FormAttachment</code>
  * object belongs will lie in the same position as the adjacent side of
- * the <code>button</code> control, plus 10 pixels. The control side can
+ * the <code>button</code> control, plus 10 points. The control side can
  * also be attached to the opposite side of the specified control.
  * For example:
  * <pre>

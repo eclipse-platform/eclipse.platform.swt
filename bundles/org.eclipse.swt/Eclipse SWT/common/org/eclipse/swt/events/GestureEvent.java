@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 IBM Corporation and others.
+ * Copyright (c) 2010, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -84,8 +84,8 @@ public class GestureEvent extends TypedEvent {
 	 * to the right and a negative value indicates a swipe to the left.
 	 *
 	 * If <code>detail</code> is <code>GESTURE_PAN</code> then a positive value indicates a pan to
-	 * the right by this field's count of pixels and a negative value indicates a pan to the left
-	 * by this field's count of pixels.
+	 * the right by this field's count of points and a negative value indicates a pan to the left
+	 * by this field's count of points.
 	 */
 	public int xDirection;
 
@@ -99,8 +99,8 @@ public class GestureEvent extends TypedEvent {
 	 * swipe and a negative value indicates an upward swipe.
 	 *
 	 * If <code>detail</code> is <code>GESTURE_PAN</code> then a positive value indicates a downward
-	 * pan by this field's count of pixels and a negative value indicates an upward pan by this
-	 * field's count of pixels.
+	 * pan by this field's count of points and a negative value indicates an upward pan by this
+	 * field's count of points.
 	 */
 	public int yDirection;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -49,8 +49,8 @@ public final class TouchSource {
  * Constructs a new touch source from the given inputs.
  *
  * @param direct Is the touch source direct or indirect?
- * @param height height of the source in pixels.
- * @param width width of the source in pixels.
+ * @param height height of the source in points.
+ * @param width width of the source in points.
  */
 TouchSource (long /*int*/ handle, boolean direct, Rectangle bounds) {
 	this.handle = handle;
@@ -69,7 +69,7 @@ public boolean isDirect () {
 
 /**
  * Returns the bounding rectangle of the device. For a direct source, this corresponds to the bounds of
- * the display device in pixels. For an indirect source, this contains the size of the device in pixels.
+ * the display device in pixels. For an indirect source, this contains the size of the device in points.
  * <p>
  * Note that the x and y values may not necessarily be 0 if the TouchSource is a direct source.
  *

@@ -3455,7 +3455,7 @@ public Color getBackground() {
 	return background;
 }
 /**
- * Returns the baseline, in pixels.
+ * Returns the baseline, in points.
  *
  * Note: this API should not be used if a StyleRange attribute causes lines to
  * have different heights (i.e. different fonts, rise, etc).
@@ -3474,7 +3474,7 @@ public int getBaseline() {
 	return renderer.getBaseline();
 }
 /**
- * Returns the baseline at the given offset, in pixels.
+ * Returns the baseline at the given offset, in points.
  *
  * @param offset the offset
  *
@@ -3814,7 +3814,7 @@ public int getHorizontalIndex() {
  * Returns the horizontal scroll offset relative to the start of the line.
  *
  * @return the horizontal scroll offset relative to the start of the line,
- * measured in pixel starting at 0, if > 0 the content is scrolled.
+ * measured in SWT logical point starting at 0, if > 0 the content is scrolled.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4079,7 +4079,7 @@ public String getLineDelimiter() {
  * have different heights (i.e. different fonts, rise, etc).
  * </p>
  *
- * @return line height in pixel.
+ * @return line height in points.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4095,7 +4095,7 @@ public int getLineHeight() {
  *
  * @param offset the offset
  *
- * @return line height in pixels
+ * @return line height in points
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4210,14 +4210,14 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 	return sendLineEvent(ST.LineGetStyle, lineOffset, line);
 }
 /**
- * Returns the top pixel, relative to the client area, of a given line.
+ * Returns the top SWT logical point, relative to the client area, of a given line.
  * Clamps out of ranges index.
  *
  * @param lineIndex the line index, the max value is lineCount. If
- * lineIndex == lineCount it returns the bottom pixel of the last line.
- * It means this function can be used to retrieve the bottom pixel of any line.
+ * lineIndex == lineCount it returns the bottom SWT logical point of the last line.
+ * It means this function can be used to retrieve the bottom SWT logical point of any line.
  *
- * @return the top pixel of a given line index
+ * @return the top SWT logical point of a given line index
  *
  * @since 3.2
  */
@@ -4246,9 +4246,9 @@ public int getLinePixel(int lineIndex) {
  * Returns the line index for a y, relative to the client area.
  * The line index returned is always in the range 0..lineCount - 1.
  *
- * @param y the y-coordinate pixel
+ * @param y the y-coordinate point
  *
- * @return the line index for a given y-coordinate pixel
+ * @return the line index for a given y-coordinate point
  *
  * @since 3.2
  */
@@ -5315,16 +5315,16 @@ public int getTopMargin() {
 	return topMargin;
 }
 /**
- * Gets the top pixel.
+ * Gets the top SWT logical point.
  * <p>
- * The top pixel is the pixel position of the line that is
- * currently at the top of the widget. The text widget can be scrolled by pixels
+ * The top point is the SWT logical point position of the line that is
+ * currently at the top of the widget. The text widget can be scrolled by points
  * by dragging the scroll thumb so that a partial line may be displayed at the top
- * the widget.  The top pixel changes when the widget is scrolled.  The top pixel
+ * the widget.  The top point changes when the widget is scrolled.  The top point
  * does not include the widget trimming.
  * </p>
  *
- * @return pixel position of the top line
+ * @return SWT logical point position of the top line
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -8064,7 +8064,7 @@ public void scroll(int destX, int destY, int x, int y, int width, int height, bo
 /**
  * Scrolls the widget horizontally.
  *
- * @param pixels number of pixels to scroll, > 0 = scroll left,
+ * @param pixels number of SWT logical points to scroll, > 0 = scroll left,
  * 	< 0 scroll right
  * @param adjustScrollBar
  * 	true= the scroll thumb will be moved to reflect the new scroll offset.
@@ -8949,14 +8949,14 @@ public void setHorizontalIndex(int offset) {
 	scrollHorizontal(offset - horizontalScrollOffset, true);
 }
 /**
- * Sets the horizontal pixel offset relative to the start of the line.
+ * Sets the horizontal SWT logical point offset relative to the start of the line.
  * Do nothing if there is no text set.
  * <p>
- * <b>NOTE:</b> The horizontal pixel offset is reset to 0 when new text
+ * <b>NOTE:</b> The horizontal SWT logical point offset is reset to 0 when new text
  * is set in the widget.
  * </p>
  *
- * @param pixel horizontal pixel offset relative to the start
+ * @param pixel horizontal SWT logical point offset relative to the start
  * 	of the line.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -8990,7 +8990,7 @@ public void setHorizontalPixel(int pixel) {
 /**
  * Sets the line indentation of the widget.
  * <p>
- * It is the amount of blank space, in pixels, at the beginning of each line.
+ * It is the amount of blank space, in points, at the beginning of each line.
  * When a line wraps in several lines only the first one is indented.
  * </p>
  *
@@ -10284,7 +10284,7 @@ public void setTabs(int tabs) {
 
 /**
  * Sets the receiver's tab list. Each value in the tab list specifies
- * the space in pixels from the origin of the document to the respective
+ * the space in points from the origin of the document to the respective
  * tab stop.  The last tab stop width is repeated continuously.
  *
  * @param tabs the new tab list (or null)
@@ -10482,15 +10482,15 @@ public void setTopMargin (int topMargin) {
 	setMargins(getLeftMargin(), topMargin, rightMargin, bottomMargin);
 }
 /**
- * Sets the top pixel offset. Do nothing if there is no text set.
+ * Sets the top SWT logical point offset. Do nothing if there is no text set.
  * <p>
- * The top pixel offset is the vertical pixel offset of the widget. The
- * widget is scrolled so that the given pixel position is at the top.
+ * The top point offset is the vertical SWT logical point offset of the widget. The
+ * widget is scrolled so that the given SWT logical point position is at the top.
  * The top index is adjusted to the corresponding top line.
- * Note: The top pixel is reset to 0 when new text is set in the widget.
+ * Note: The top point is reset to 0 when new text is set in the widget.
  * </p>
  *
- * @param pixel new top pixel offset. Must be between 0 and
+ * @param pixel new top point offset. Must be between 0 and
  * 	(getLineCount() - visible lines per page) / getLineHeight()). An out
  * 	of range offset will be adjusted accordingly.
  * @exception SWTException <ul>
@@ -10549,7 +10549,7 @@ public void setWordWrap(boolean wrap) {
 /**
  * Sets the wrap line indentation of the widget.
  * <p>
- * It is the amount of blank space, in pixels, at the beginning of each wrapped line.
+ * It is the amount of blank space, in points, at the beginning of each wrapped line.
  * When a line wraps in several lines all the lines but the first one is indented
  * by this amount.
  * </p>
