@@ -108,6 +108,14 @@ long /*int*/ clientHandle () {
 }
 
 @Override
+boolean mustBeVisibleOnInitBounds() {
+	// Bug 540298: if we return false, we will be invisible if the size is
+	// not set, but our layout will not properly work, so that not all children
+	// will be shown properly
+	return true;
+}
+
+@Override
 Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSizeInPixels(wHint, hHint, changed);
 	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
