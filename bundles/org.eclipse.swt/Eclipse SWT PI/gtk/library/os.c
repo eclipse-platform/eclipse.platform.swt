@@ -4854,6 +4854,36 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1file_1chooser_1get_1uris)
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1native_1new
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1file_1chooser_1native_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jbyteArray arg3, jbyteArray arg4)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1native_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gtk_file_chooser_native_new((const gchar *)lparg0, (GtkWindow *)arg1, arg2, (const gchar *)lparg3, (const gchar *)lparg4);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_native_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const gchar *, GtkWindow *, jint, const gchar *, const gchar *))fp)((const gchar *)lparg0, (GtkWindow *)arg1, arg2, (const gchar *)lparg3, (const gchar *)lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, JNI_ABORT);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, JNI_ABORT);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1native_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -6536,6 +6566,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1misc_1set_1alignment)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1misc_1set_1alignment_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1native_1dialog_1run
+JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1native_1dialog_1run)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1native_1dialog_1run_FUNC);
+	rc = (jint)gtk_native_dialog_run((GtkNativeDialog *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1native_1dialog_1run_FUNC);
+	return rc;
 }
 #endif
 

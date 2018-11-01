@@ -100,6 +100,8 @@ public class GTK extends OS {
 	public static final int GTK_RESPONSE_APPLY = 0xfffffff6;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
+	public static final int GTK_RESPONSE_ACCEPT = -3;
+	public static final int GTK_RESPONSE_DELETE_EVENT = -4;
 	public static final int GTK_SCROLL_NONE = 0;
 	public static final int GTK_SCROLL_JUMP = 1;
 	public static final int GTK_SCROLL_STEP_BACKWARD = 2;
@@ -2392,6 +2394,22 @@ public class GTK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
+	 * @param title cast=(const gchar *),flags=no_out
+	 * @param parent cast=(GtkWindow *)
+	 * @param accept_label cast=(const gchar *),flags=no_out
+	 * @param cancel_label cast=(const gchar *),flags=no_out
+	 */
+	public static final native long /*int*/ _gtk_file_chooser_native_new(byte[] title, long /*int*/ parent, int action, byte[] accept_label, byte[] cancel_label);
+	public static final long /*int*/ gtk_file_chooser_native_new(byte[] title, long /*int*/ parent, int action,  byte[] accept_label, byte[] cancel_label) {
+		lock.lock();
+		try {
+			return _gtk_file_chooser_native_new(title, parent, action, accept_label, cancel_label);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 */
 	public static final native void _gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event);
 	public static final void gtk_event_controller_handle_event(long /*int*/ gesture, long /*int*/ event) {
@@ -3928,6 +3946,16 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_misc_set_alignment(misc, xalign, yalign);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/** @param dialog cast=(GtkNativeDialog *) */
+	public static final native int _gtk_native_dialog_run(long /*int*/ dialog);
+	public static final int gtk_native_dialog_run(long /*int*/ dialog) {
+		lock.lock();
+		try {
+			return _gtk_native_dialog_run(dialog);
 		} finally {
 			lock.unlock();
 		}
