@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class LOGFONT {
+public abstract class LOGFONT {
 	public int lfHeight;
 	public int lfWidth;
 	public int lfEscapement;
@@ -27,6 +27,5 @@ public class LOGFONT {
 	public byte lfClipPrecision;
 	public byte lfQuality;
 	public byte lfPitchAndFamily;
-	public char[] lfFaceName = new char[OS.LF_FACESIZE];
-	public static final int sizeof = OS.LOGFONT_sizeof ();
+	public static final int sizeof = OS.IsUnicode ? OS.LOGFONTW_sizeof () : OS.LOGFONTA_sizeof ();
 }

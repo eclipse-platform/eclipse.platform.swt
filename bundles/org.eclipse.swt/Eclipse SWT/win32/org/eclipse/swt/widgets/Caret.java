@@ -497,11 +497,11 @@ void setIMEFont () {
 	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	/* Save the current IME font */
 	if (oldFont == null) {
-		oldFont = new LOGFONT ();
+		oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 		if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
 	}
 	/* Set new IME font */
-	LOGFONT logFont = new LOGFONT ();
+	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
 		OS.ImmSetCompositionFont (hIMC, logFont);
 	}

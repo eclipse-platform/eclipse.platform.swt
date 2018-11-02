@@ -145,10 +145,10 @@ static int checkStyle (int style) {
 				if (hFont != 0) {
 					hCurrentFont = hFont;
 				} else {
-					NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
+					NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 					info.cbSize = NONCLIENTMETRICS.sizeof;
 					if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-						LOGFONT logFont = info.lfCaptionFont;
+						LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
 						hCurrentFont = OS.CreateFontIndirect (logFont);
 					}
 				}
@@ -273,10 +273,10 @@ void drawWidget (GC gc, RECT clipRect) {
 		if (hFont != 0) {
 			hCurrentFont = hFont;
 		} else {
-			NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
+			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 			info.cbSize = NONCLIENTMETRICS.sizeof;
 			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-				LOGFONT logFont = info.lfCaptionFont;
+				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
 				hCurrentFont = OS.CreateFontIndirect (logFont);
 			}
 		}
@@ -314,7 +314,7 @@ Control findThemeControl () {
 int getBandHeight () {
 	long /*int*/ hDC = OS.GetDC (handle);
 	long /*int*/ oldHFont = OS.SelectObject (hDC, hFont == 0 ? defaultFont () : hFont);
-	TEXTMETRIC lptm = new TEXTMETRIC ();
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics (hDC, lptm);
 	OS.SelectObject (hDC, oldHFont);
 	OS.ReleaseDC (handle, hDC);

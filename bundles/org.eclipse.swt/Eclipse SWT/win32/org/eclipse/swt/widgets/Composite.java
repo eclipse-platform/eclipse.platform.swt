@@ -1935,9 +1935,16 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 			display.lockActiveWindow = false;
 			break;
 		}
-		case OS.TTN_GETDISPINFO: {
-			NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-			OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
+		case OS.TTN_GETDISPINFOA:
+		case OS.TTN_GETDISPINFOW: {
+			NMTTDISPINFO lpnmtdi;
+			if (hdr.code == OS.TTN_GETDISPINFOA) {
+				lpnmtdi = new NMTTDISPINFOA ();
+				OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
+			} else {
+				lpnmtdi = new NMTTDISPINFOW ();
+				OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
+			}
 			String string = toolTipText (lpnmtdi);
 			if (string != null) {
 				Shell shell = getShell ();
@@ -1979,8 +1986,16 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
 					}
 				}
-				shell.setToolTipText (lpnmtdi, chars);
-				OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
+
+				if (hdr.code == OS.TTN_GETDISPINFOA) {
+					byte [] bytes = new byte [chars.length * 2];
+					OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
+					shell.setToolTipText (lpnmtdi, bytes);
+					OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
+				} else {
+					shell.setToolTipText (lpnmtdi, chars);
+					OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
+				}
 				return LRESULT.ZERO;
 			}
 			break;

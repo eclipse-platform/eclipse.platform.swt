@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class TEXTMETRIC {
+public abstract class TEXTMETRIC {
 	public int tmHeight;
 	public int tmAscent;
 	public int tmDescent;
@@ -25,14 +25,10 @@ public class TEXTMETRIC {
 	public int tmOverhang;
 	public int tmDigitizedAspectX;
 	public int tmDigitizedAspectY;
-	public char tmFirstChar;
-	public char tmLastChar;
-	public char tmDefaultChar;
-	public char tmBreakChar;
 	public byte tmItalic;
 	public byte tmUnderlined;
 	public byte tmStruckOut;
 	public byte tmPitchAndFamily;
 	public byte tmCharSet;
-	public static final int sizeof = OS.TEXTMETRIC_sizeof ();
+	public static final int sizeof = OS.IsUnicode ? OS.TEXTMETRICW_sizeof():  OS.TEXTMETRICA_sizeof ();
 }

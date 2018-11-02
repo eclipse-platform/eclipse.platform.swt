@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,10 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class SHFILEINFO {
-	/** @field cast=(HICON) */
-	public long /*int*/ hIcon;
-	public int iIcon;
-	public int dwAttributes;
-	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();
+public class NONCLIENTMETRICSW extends NONCLIENTMETRICS {
+	public LOGFONTW lfCaptionFont = new LOGFONTW ();
+	public LOGFONTW lfSmCaptionFont = new LOGFONTW ();
+	public LOGFONTW lfMenuFont = new LOGFONTW ();
+	public LOGFONTW lfStatusFont = new LOGFONTW ();
+	public LOGFONTW lfMessageFont = new LOGFONTW ();
+	public static final int sizeof = OS.NONCLIENTMETRICSW_sizeof ();
 }
+

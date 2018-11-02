@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,10 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class SHFILEINFO {
-	/** @field cast=(HICON) */
-	public long /*int*/ hIcon;
-	public int iIcon;
-	public int dwAttributes;
-	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();
+public class TEXTMETRICW extends TEXTMETRIC {
+	public char tmFirstChar;
+	public char tmLastChar;
+	public char tmDefaultChar;
+	public char tmBreakChar;
+	public static final int sizeof = OS.TEXTMETRICW_sizeof ();
 }

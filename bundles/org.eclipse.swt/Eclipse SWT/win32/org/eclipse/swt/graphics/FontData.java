@@ -82,7 +82,7 @@ public final class FontData {
  * Constructs a new uninitialized font data.
  */
 public FontData() {
-	data = new LOGFONT ();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	// We set the charset field so that
 	// wildcard searching will work properly
 	// out of the box
@@ -159,7 +159,7 @@ public FontData(String string) {
 
 	start = end + 1;
 	end = string.indexOf('|', start);
-	data = new LOGFONT ();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	setName(name);
 	setHeight(height);
@@ -173,7 +173,7 @@ public FontData(String string) {
 	String version2 = string.substring(start, end);
 
 	if (platform.equals("WINDOWS") && version2.equals("1")) {  //$NON-NLS-1$//$NON-NLS-2$
-		LOGFONT newData = new LOGFONT ();
+		LOGFONT newData = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 		try {
 			start = end + 1;
 			end = string.indexOf('|', start);
@@ -234,8 +234,15 @@ public FontData(String string) {
 			setStyle(style);
 			return;
 		}
-		int length = Math.min(newData.lfFaceName.length - 1, string.length() - start);
-		string.getChars(start, start + length, newData.lfFaceName, 0);
+		TCHAR buffer = new TCHAR(0, string.substring(start), false);
+		int length = Math.min(OS.LF_FACESIZE - 1, buffer.length());
+		if (OS.IsUnicode) {
+			char[] lfFaceName = ((LOGFONTW)newData).lfFaceName;
+			System.arraycopy(buffer.chars, 0, lfFaceName, 0, length);
+		} else {
+			byte[] lfFaceName = ((LOGFONTA)newData).lfFaceName;
+			System.arraycopy(buffer.bytes, 0, lfFaceName, 0, length);
+		}
 		data = newData;
 	}
 }
@@ -256,7 +263,7 @@ public FontData(String string) {
  */
 public FontData(String name, int height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	data = new LOGFONT ();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	setName(name);
 	setHeight(height);
 	setStyle(style);
@@ -268,7 +275,7 @@ public FontData(String name, int height, int style) {
 
 /*public*/ FontData(String name, float height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	data = new LOGFONT ();
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	setName(name);
 	setHeight(height);
 	setStyle(style);
@@ -414,7 +421,14 @@ public String getLocale () {
  * @see #setName
  */
 public String getName() {
-	char[] chars = data.lfFaceName;
+	char[] chars;
+	if (OS.IsUnicode) {
+		chars = ((LOGFONTW)data).lfFaceName;
+	} else {
+		chars = new char[OS.LF_FACESIZE];
+		byte[] bytes = ((LOGFONTA)data).lfFaceName;
+		OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
+	}
 	int index = 0;
 	while (index < chars.length) {
 		if (chars [index] == 0) break;
@@ -557,10 +571,17 @@ public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	/* The field lfFaceName must be NULL terminated */
-	char[] lfFaceName = data.lfFaceName;
-	int length = Math.min(lfFaceName.length - 1, name.length());
-	name.getChars (0, length, lfFaceName, 0);
-	for (int i = length; i < lfFaceName.length; i++) lfFaceName[i] = 0;
+	TCHAR buffer = new TCHAR(0, name, true);
+	int length = Math.min(OS.LF_FACESIZE - 1, buffer.length());
+	if (OS.IsUnicode) {
+		char[] lfFaceName = ((LOGFONTW)data).lfFaceName;
+		for (int i = 0; i < lfFaceName.length; i++) lfFaceName[i] = 0;
+		System.arraycopy(buffer.chars, 0, lfFaceName, 0, length);
+	} else {
+		byte[] lfFaceName = ((LOGFONTA)data).lfFaceName;
+		for (int i = 0; i < lfFaceName.length; i++) lfFaceName[i] = 0;
+		System.arraycopy(buffer.bytes, 0, lfFaceName, 0, length);
+	}
 }
 
 /**

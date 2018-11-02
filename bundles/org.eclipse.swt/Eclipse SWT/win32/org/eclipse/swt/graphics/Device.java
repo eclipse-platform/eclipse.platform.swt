@@ -255,7 +255,7 @@ float computePoints(LOGFONT logFont, long /*int*/ hFont) {
 		 * we must subtract the internal leading, which requires a TEXTMETRIC.
 		 */
 		long /*int*/ oldFont = OS.SelectObject(hDC, hFont);
-		TEXTMETRIC lptm = new TEXTMETRIC ();
+		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hDC, lptm);
 		OS.SelectObject(hDC, oldFont);
 		pixels = logFont.lfHeight - lptm.tmInternalLeading;
@@ -337,7 +337,7 @@ long /*int*/ EnumFontFamProc (long /*int*/ lpelfe, long /*int*/ lpntme, long /*i
 			pixels = newPixels;
 		}
 		LOGFONT logFont = logFonts [nFonts];
-		if (logFont == null) logFont = new LOGFONT ();
+		if (logFont == null) logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 		OS.MoveMemory (logFont, lpelfe, LOGFONT.sizeof);
 		logFonts [nFonts] = logFont;
 		if (logFont.lfHeight > 0) {
@@ -514,11 +514,11 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Initialize the instance variables */
-	metrics = new TEXTMETRIC ();
+	metrics = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	pixels = new int[nFonts];
 	logFonts = new LOGFONT [nFonts];
 	for (int i=0; i<logFonts.length; i++) {
-		logFonts [i] = new LOGFONT ();
+		logFonts [i] = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	}
 	nFonts = 0;
 
@@ -537,12 +537,16 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		offset = nFonts;
 		for (int i=0; i<offset; i++) {
 			LOGFONT lf = logFonts [i];
-			OS.EnumFontFamilies (hDC, lf.lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			if (OS.IsUnicode) {
+				OS.EnumFontFamiliesW (hDC, ((LOGFONTW)lf).lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			} else {
+				OS.EnumFontFamiliesA (hDC, ((LOGFONTA)lf).lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
+			}
 		}
 	} else {
 		/* Use the character encoding for the default locale */
 		TCHAR lpFaceName = new TCHAR (0, faceName, true);
-		OS.EnumFontFamilies (hDC, lpFaceName.chars, lpEnumFontFamProc, scalable ? 1 : 0);
+		OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 	}
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
