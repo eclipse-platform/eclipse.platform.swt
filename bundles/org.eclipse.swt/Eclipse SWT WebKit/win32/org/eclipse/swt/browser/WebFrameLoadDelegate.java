@@ -637,12 +637,12 @@ void showCertificate (Shell parent, long /*int*/ certificate) {
 
 	int length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, null, 0);
 	TCHAR tchar = new TCHAR (0, length);
-	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, tchar, length);
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, tchar.chars, length);
 	String issuer = tchar.toString (0, tchar.strlen ());
 
 	length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, null, 0);
 	tchar = new TCHAR (0, length);
-	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, tchar, length);
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, tchar.chars, length);
 	String subject = tchar.toString (0, tchar.strlen ());
 
 	final String SEPARATOR_DATE = "/"; //$NON-NLS-1$

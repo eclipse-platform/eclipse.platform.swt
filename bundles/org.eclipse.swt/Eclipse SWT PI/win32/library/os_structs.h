@@ -293,30 +293,6 @@ void setDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct);
 #define DEVMODE_sizeof() 0
 #endif
 
-#ifndef NO_DEVMODEA
-void cacheDEVMODEAFields(JNIEnv *env, jobject lpObject);
-DEVMODEA *getDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
-void setDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
-#define DEVMODEA_sizeof() sizeof(DEVMODEA)
-#else
-#define cacheDEVMODEAFields(a,b)
-#define getDEVMODEAFields(a,b,c) NULL
-#define setDEVMODEAFields(a,b,c)
-#define DEVMODEA_sizeof() 0
-#endif
-
-#ifndef NO_DEVMODEW
-void cacheDEVMODEWFields(JNIEnv *env, jobject lpObject);
-DEVMODEW *getDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
-void setDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
-#define DEVMODEW_sizeof() sizeof(DEVMODEW)
-#else
-#define cacheDEVMODEWFields(a,b)
-#define getDEVMODEWFields(a,b,c) NULL
-#define setDEVMODEWFields(a,b,c)
-#define DEVMODEW_sizeof() 0
-#endif
-
 #ifndef NO_DIBSECTION
 void cacheDIBSECTIONFields(JNIEnv *env, jobject lpObject);
 DIBSECTION *getDIBSECTIONFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpStruct);
@@ -663,30 +639,6 @@ void setLOGFONTFields(JNIEnv *env, jobject lpObject, LOGFONT *lpStruct);
 #define getLOGFONTFields(a,b,c) NULL
 #define setLOGFONTFields(a,b,c)
 #define LOGFONT_sizeof() 0
-#endif
-
-#ifndef NO_LOGFONTA
-void cacheLOGFONTAFields(JNIEnv *env, jobject lpObject);
-LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct);
-void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct);
-#define LOGFONTA_sizeof() sizeof(LOGFONTA)
-#else
-#define cacheLOGFONTAFields(a,b)
-#define getLOGFONTAFields(a,b,c) NULL
-#define setLOGFONTAFields(a,b,c)
-#define LOGFONTA_sizeof() 0
-#endif
-
-#ifndef NO_LOGFONTW
-void cacheLOGFONTWFields(JNIEnv *env, jobject lpObject);
-LOGFONTW *getLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct);
-void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct);
-#define LOGFONTW_sizeof() sizeof(LOGFONTW)
-#else
-#define cacheLOGFONTWFields(a,b)
-#define getLOGFONTWFields(a,b,c) NULL
-#define setLOGFONTWFields(a,b,c)
-#define LOGFONTW_sizeof() 0
 #endif
 
 #ifndef NO_LOGPEN
@@ -1073,30 +1025,6 @@ void setNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpStruct
 #define NMTTDISPINFO_sizeof() 0
 #endif
 
-#ifndef NO_NMTTDISPINFOA
-void cacheNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject);
-NMTTDISPINFOA *getNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct);
-void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct);
-#define NMTTDISPINFOA_sizeof() sizeof(NMTTDISPINFOA)
-#else
-#define cacheNMTTDISPINFOAFields(a,b)
-#define getNMTTDISPINFOAFields(a,b,c) NULL
-#define setNMTTDISPINFOAFields(a,b,c)
-#define NMTTDISPINFOA_sizeof() 0
-#endif
-
-#ifndef NO_NMTTDISPINFOW
-void cacheNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject);
-NMTTDISPINFOW *getNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct);
-void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct);
-#define NMTTDISPINFOW_sizeof() sizeof(NMTTDISPINFOW)
-#else
-#define cacheNMTTDISPINFOWFields(a,b)
-#define getNMTTDISPINFOWFields(a,b,c) NULL
-#define setNMTTDISPINFOWFields(a,b,c)
-#define NMTTDISPINFOW_sizeof() 0
-#endif
-
 #ifndef NO_NMTVCUSTOMDRAW
 void cacheNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
 NMTVCUSTOMDRAW *getNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct);
@@ -1157,30 +1085,6 @@ void setNONCLIENTMETRICSFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICS *
 #define NONCLIENTMETRICS_sizeof() 0
 #endif
 
-#ifndef NO_NONCLIENTMETRICSA
-void cacheNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject);
-NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct);
-void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct);
-#define NONCLIENTMETRICSA_sizeof() sizeof(NONCLIENTMETRICSA)
-#else
-#define cacheNONCLIENTMETRICSAFields(a,b)
-#define getNONCLIENTMETRICSAFields(a,b,c) NULL
-#define setNONCLIENTMETRICSAFields(a,b,c)
-#define NONCLIENTMETRICSA_sizeof() 0
-#endif
-
-#ifndef NO_NONCLIENTMETRICSW
-void cacheNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject);
-NONCLIENTMETRICSW *getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct);
-void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct);
-#define NONCLIENTMETRICSW_sizeof() sizeof(NONCLIENTMETRICSW)
-#else
-#define cacheNONCLIENTMETRICSWFields(a,b)
-#define getNONCLIENTMETRICSWFields(a,b,c) NULL
-#define setNONCLIENTMETRICSWFields(a,b,c)
-#define NONCLIENTMETRICSW_sizeof() 0
-#endif
-
 #ifndef NO_NOTIFYICONDATA
 void cacheNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject);
 NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpStruct);
@@ -1191,30 +1095,6 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 #define getNOTIFYICONDATAFields(a,b,c) NULL
 #define setNOTIFYICONDATAFields(a,b,c)
 #define NOTIFYICONDATA_sizeof() 0
-#endif
-
-#ifndef NO_NOTIFYICONDATAA
-void cacheNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject);
-NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct);
-void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct);
-#define NOTIFYICONDATAA_sizeof() sizeof(NOTIFYICONDATAA)
-#else
-#define cacheNOTIFYICONDATAAFields(a,b)
-#define getNOTIFYICONDATAAFields(a,b,c) NULL
-#define setNOTIFYICONDATAAFields(a,b,c)
-#define NOTIFYICONDATAA_sizeof() 0
-#endif
-
-#ifndef NO_NOTIFYICONDATAW
-void cacheNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject);
-NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct);
-void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct);
-#define NOTIFYICONDATAW_sizeof() sizeof(NOTIFYICONDATAW)
-#else
-#define cacheNOTIFYICONDATAWFields(a,b)
-#define getNOTIFYICONDATAWFields(a,b,c) NULL
-#define setNOTIFYICONDATAWFields(a,b,c)
-#define NOTIFYICONDATAW_sizeof() 0
 #endif
 
 #ifndef NO_OFNOTIFY
@@ -1251,30 +1131,6 @@ void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC
 #define getOUTLINETEXTMETRICFields(a,b,c) NULL
 #define setOUTLINETEXTMETRICFields(a,b,c)
 #define OUTLINETEXTMETRIC_sizeof() 0
-#endif
-
-#ifndef NO_OUTLINETEXTMETRICA
-void cacheOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject);
-OUTLINETEXTMETRICA *getOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
-void setOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
-#define OUTLINETEXTMETRICA_sizeof() sizeof(OUTLINETEXTMETRICA)
-#else
-#define cacheOUTLINETEXTMETRICAFields(a,b)
-#define getOUTLINETEXTMETRICAFields(a,b,c) NULL
-#define setOUTLINETEXTMETRICAFields(a,b,c)
-#define OUTLINETEXTMETRICA_sizeof() 0
-#endif
-
-#ifndef NO_OUTLINETEXTMETRICW
-void cacheOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject);
-OUTLINETEXTMETRICW *getOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
-void setOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
-#define OUTLINETEXTMETRICW_sizeof() sizeof(OUTLINETEXTMETRICW)
-#else
-#define cacheOUTLINETEXTMETRICWFields(a,b)
-#define getOUTLINETEXTMETRICWFields(a,b,c) NULL
-#define setOUTLINETEXTMETRICWFields(a,b,c)
-#define OUTLINETEXTMETRICW_sizeof() 0
 #endif
 
 #ifndef NO_PAINTSTRUCT
@@ -1553,30 +1409,6 @@ void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
 #define SHFILEINFO_sizeof() 0
 #endif
 
-#ifndef NO_SHFILEINFOA
-void cacheSHFILEINFOAFields(JNIEnv *env, jobject lpObject);
-SHFILEINFOA *getSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
-void setSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
-#define SHFILEINFOA_sizeof() sizeof(SHFILEINFOA)
-#else
-#define cacheSHFILEINFOAFields(a,b)
-#define getSHFILEINFOAFields(a,b,c) NULL
-#define setSHFILEINFOAFields(a,b,c)
-#define SHFILEINFOA_sizeof() 0
-#endif
-
-#ifndef NO_SHFILEINFOW
-void cacheSHFILEINFOWFields(JNIEnv *env, jobject lpObject);
-SHFILEINFOW *getSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
-void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
-#define SHFILEINFOW_sizeof() sizeof(SHFILEINFOW)
-#else
-#define cacheSHFILEINFOWFields(a,b)
-#define getSHFILEINFOWFields(a,b,c) NULL
-#define setSHFILEINFOWFields(a,b,c)
-#define SHFILEINFOW_sizeof() 0
-#endif
-
 #ifndef NO_SIZE
 void cacheSIZEFields(JNIEnv *env, jobject lpObject);
 SIZE *getSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct);
@@ -1671,30 +1503,6 @@ void setTEXTMETRICFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpStruct);
 #define getTEXTMETRICFields(a,b,c) NULL
 #define setTEXTMETRICFields(a,b,c)
 #define TEXTMETRIC_sizeof() 0
-#endif
-
-#ifndef NO_TEXTMETRICA
-void cacheTEXTMETRICAFields(JNIEnv *env, jobject lpObject);
-TEXTMETRICA *getTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct);
-void setTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct);
-#define TEXTMETRICA_sizeof() sizeof(TEXTMETRICA)
-#else
-#define cacheTEXTMETRICAFields(a,b)
-#define getTEXTMETRICAFields(a,b,c) NULL
-#define setTEXTMETRICAFields(a,b,c)
-#define TEXTMETRICA_sizeof() 0
-#endif
-
-#ifndef NO_TEXTMETRICW
-void cacheTEXTMETRICWFields(JNIEnv *env, jobject lpObject);
-TEXTMETRICW *getTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct);
-void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct);
-#define TEXTMETRICW_sizeof() sizeof(TEXTMETRICW)
-#else
-#define cacheTEXTMETRICWFields(a,b)
-#define getTEXTMETRICWFields(a,b,c) NULL
-#define setTEXTMETRICWFields(a,b,c)
-#define TEXTMETRICW_sizeof() 0
 #endif
 
 #ifndef NO_TF_DA_COLOR

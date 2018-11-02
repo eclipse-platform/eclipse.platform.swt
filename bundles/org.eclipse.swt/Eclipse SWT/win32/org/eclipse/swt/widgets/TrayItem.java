@@ -150,7 +150,7 @@ protected void checkSubclass () {
 }
 
 void createUpdateWidget (boolean newIcon) {
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	/*
 	 * As per MSDN article iconData.uID is unique for every TrayItem
@@ -360,7 +360,7 @@ void releaseWidget () {
 	image2 = null;
 	highlightImage = null;
 	toolTipText = null;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
@@ -473,7 +473,7 @@ public void setImage (Image image) {
 				break;
 		}
 	}
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
@@ -531,20 +531,11 @@ public void setToolTip (ToolTip toolTip) {
 public void setToolTipText (String string) {
 	checkWidget ();
 	toolTipText = string;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
-	/*
-	* Note that the size of the szTip field is different in version 5.0 of shell32.dll.
-	*/
-	int length = 128;
-	if (OS.IsUnicode) {
-		char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
-		length = Math.min (length - 1, buffer.length ());
-		System.arraycopy (buffer.chars, 0, szTip, 0, length);
-	} else {
-		byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
-		length = Math.min (length - 1, buffer.length ());
-		System.arraycopy (buffer.bytes, 0, szTip, 0, length);
+	NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
+	if (string != null) {
+		char [] szTip = iconData.szTip;
+		int length = Math.min (szTip.length - 1, string.length ());
+		string.getChars (0, length, szTip, 0);
 	}
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -577,7 +568,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;

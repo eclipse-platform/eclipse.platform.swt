@@ -520,10 +520,10 @@ void updateText () {
 	TCHAR buffer = new TCHAR (shell.getCodePage (), overlayText, false);
 	int length = buffer.length();
 	long /*int*/ hFont = 0, oldHFont = 0;
-	NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
 	info.cbSize = NONCLIENTMETRICS.sizeof;
 	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-		LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont;
+		LOGFONT logFont = info.lfMessageFont;
 		logFont.lfHeight = -10;
 		hFont = OS.CreateFontIndirect (logFont);
 		oldHFont = OS.SelectObject (dstHdc, hFont);

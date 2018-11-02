@@ -558,24 +558,13 @@ public void setVisible (boolean visible) {
 	}
 	if (item != null) {
 		if (visible) {
-			NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-			TCHAR buffer1 = new TCHAR (0, text, true);
-			TCHAR buffer2 = new TCHAR (0, message, true);
-			if (OS.IsUnicode) {
-				char [] szInfoTitle = ((NOTIFYICONDATAW) iconData).szInfoTitle;
-				int length1 = Math.min (szInfoTitle.length - 1, buffer1.length ());
-				System.arraycopy (buffer1.chars, 0, szInfoTitle, 0, length1);
-				char [] szInfo = ((NOTIFYICONDATAW) iconData).szInfo;
-				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
-				System.arraycopy (buffer2.chars, 0, szInfo, 0, length2);
-			} else {
-				byte [] szInfoTitle = ((NOTIFYICONDATAA) iconData).szInfoTitle;
-				int length = Math.min (szInfoTitle.length - 1, buffer1.length ());
-				System.arraycopy (buffer1.bytes, 0, szInfoTitle, 0, length);
-				byte [] szInfo = ((NOTIFYICONDATAA) iconData).szInfo;
-				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
-				System.arraycopy (buffer2.bytes, 0, szInfo, 0, length2);
-			}
+			NOTIFYICONDATA iconData = new NOTIFYICONDATA ();
+			char [] szInfoTitle = iconData.szInfoTitle;
+			int length1 = Math.min (szInfoTitle.length - 1, text.length ());
+			text.getChars (0, length1, szInfoTitle, 0);
+			char [] szInfo = iconData.szInfo;
+			int length2 = Math.min (szInfo.length - 1, message.length ());
+			message.getChars (0, length2, szInfo, 0);
 			Display display = item.getDisplay ();
 			iconData.cbSize = NOTIFYICONDATA.sizeof;
 			iconData.uID = item.id;

@@ -27,7 +27,6 @@ import java.util.Arrays;
  */
 public class TCHAR {
 	public char [] chars;
-	public byte [] bytes;
 
 public final static int sizeof = 2;
 
