@@ -75,7 +75,7 @@
 
 // Hard-link code generated from GTK.java to LIB_GTK
 #define GTK_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GTK, name)
-// Hard-link code generated from GTK.java to LIB_GDK
+// Hard-link code generated from GDK.java to LIB_GDK
 #define GDK_LOAD_FUNCTION(var, name) LOAD_FUNCTION_LIB(var, LIB_GDK, name)
 
 #ifdef _WIN32
@@ -101,9 +101,12 @@
 
 
 #ifdef GDK_WINDOWING_X11
-
+#if GTK_CHECK_VERSION(3,94,0)
+// GTK4 does not need gtkx.h
+#else
 #include <gdk/gdkx.h>
 #include <gtk/gtkx.h>
+#endif
 #else
 
 #define NO_GDK_1IS_1X11_1DISPLAY

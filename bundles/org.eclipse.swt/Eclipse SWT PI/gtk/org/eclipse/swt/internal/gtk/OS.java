@@ -73,7 +73,21 @@ public class OS extends C {
 
 	/** Initialization; load native libraries */
 	static {
-		Library.loadLibrary("swt-pi3");
+		String propertyName = "SWT_GTK4";
+		String gtk4 = getEnvironmentalVariable (propertyName);
+		if (gtk4 != null && gtk4.equals("0")) {
+			try {
+				Library.loadLibrary("swt-pi3");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi4");
+			}
+		} else {
+			try {
+				Library.loadLibrary("swt-pi4");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi3");
+			}
+		}
 		cachejvmptr();
 	}
 

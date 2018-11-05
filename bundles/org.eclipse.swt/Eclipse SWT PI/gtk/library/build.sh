@@ -16,9 +16,18 @@
 #*******************************************************************************
 
 HELP="
+Build GTK4 or GTK3 bindings and (optionally) copy them to binary repository.
 Paramaters (specified in this order):
 clean    - delete *.o and *.so files from current folder. If this is the only paramater, do nothing else.
 			But if other paramaters are given and this is the first one, then continue with other actions.
+
+One of the following 3:
+-gtk3   : Build bindings with GTK3.
+-gtk4   : Build bindings with GTK4.
+-gtk-all : Build bindings with GTK3 as well as GTK4. Note, this flag triggers cleanups before each build
+			because a cleanup is required when building different GTK versions for linking to be done correctly.
+			During active development, if you only want to compile updated files, use -gtk3/-gtk4 flags instead,
+			however do not forget to do a cleanup in between gtk3/gtk4.
 
 install  - copy *.so libraries to binary repository.
 
@@ -27,13 +36,13 @@ install  - copy *.so libraries to binary repository.
 
 -- Examples:
 Most commonly used:
-./build.sh install
-This will clean everything in your repository, build and then copy .so files to binary repository.
+./build.sh -gtk-all install
+This will clean everything in your repository, build GTK3 and GTK4, then copy .so files to binary repository.
 
 Also:
 ./build.sh     	  - only build .so files, do not copy them across. Build according to what GTK_VERSION is set to.
 ./build.sh clean  	  - clean working directory of *.o and *.so files.
-./build.sh install	  - build.so files and copy to binary repository
+./build.sh -gtk4 install	 - build.so files and copy to binary repository
 
 Also note:
 Sometimes you might have to cleanup the binary repository manually as old *.so files are not automatically removed
@@ -283,7 +292,7 @@ if [ "x${1}" = "xclean" ]; then
 	shift
 
 	# if there are no more other parameters, exit.
-	# don't exit if there are more paramaters. Useful for one-liners like: ./build.sh clean install
+	# don't exit if there are more paramaters. Useful for one-liners like: ./build.sh clean -gtk-all install
 	if [ "$1" = "" ]; then
 		exit $?
 	fi
@@ -292,6 +301,28 @@ fi
 
 # Announce our target
 func_echo_plus "Building SWT/GTK+ for Architectures: $SWT_OS $SWT_ARCH"
+
+func_build_gtk4 () {
+	export GTK_VERSION=4.0
+
+	# Dictate Webkit2 Extension only if pkg-config flags exist
+	pkg-config --exists webkit2gtk-web-extension-4.0
+	if [ $? == 0 ]; then
+		export BUILD_WEBKIT2EXTENSION="yes";
+	else
+		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4-0' check failed. Please install webkitgtk4-devel.ARCH on your system."
+	fi
+
+	func_echo_plus "Building GTK4 bindings:"
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT "${@}"
+	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
+	if [ "$RETURN_VALUE" -eq 0 ]; then
+		func_echo_plus "GTK4 Build succeeded"
+	else
+		func_echo_error "GTK4 Build failed, aborting further actions.."
+		exit $RETURN_VALUE
+	fi
+}
 
 func_build_gtk3 () {
 	export GTK_VERSION=3.0
@@ -315,5 +346,22 @@ func_build_gtk3 () {
 	fi
 }
 
-func_build_gtk3 "$@"
-
+if [ "$1" = "-gtk-all" ]; then
+	shift
+	func_echo_plus "Note: When building multiple GTK versions, a cleanup is required (and automatically performed) between them."
+	func_clean_up
+	func_build_gtk4 "$@"
+	func_clean_up
+	func_build_gtk3 "$@"
+elif [ "$1" = "-gtk4" ]; then
+	shift
+	func_build_gtk4 "$@"
+elif [ "$1" = "-gtk3" ]; then
+	shift
+	func_build_gtk3 "$@"
+elif [ "${GTK_VERSION}" = "4.0" ]; then
+	func_build_gtk4 "$@"
+elif [ "${GTK_VERSION}" = "3.0" -o "${GTK_VERSION}" = "" ]; then
+	export GTK_VERSION="3.0"
+	func_build_gtk3 "$@"
+fi

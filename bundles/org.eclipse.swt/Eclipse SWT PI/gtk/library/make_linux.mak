@@ -27,13 +27,17 @@ endif
 include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)r$(rev)
-GTK_VERSION=3.0
+GTK_VERSION?=3.0
 
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
 SWT_PREFIX = swt
 AWT_PREFIX = swt-awt
+ifeq ($(GTK_VERSION), 4.0)
+SWTPI_PREFIX = swt-pi4
+else
 SWTPI_PREFIX = swt-pi3
+endif
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 WEBKIT_PREFIX = swt-webkit
@@ -59,7 +63,11 @@ CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-$(GTK_VERSION) gtk+-unix-print-$(GTK_VERSION)`
+ifeq ($(GTK_VERSION), 4.0)
+GTKLIBS = `pkg-config --libs-only-L gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lgtk-4 -lcairo -lgthread-2.0
+else
 GTKLIBS = `pkg-config --libs-only-L gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lgtk-3 -lgdk-3 -lcairo -lgthread-2.0
+endif
 
 AWT_LFLAGS = -shared ${SWT_LFLAGS} 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt
