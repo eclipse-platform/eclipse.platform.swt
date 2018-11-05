@@ -630,6 +630,17 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 	fg.dispose();
 }
 @Test
+public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	color.dispose();
+	try {
+		control.setBackground(color);
+		fail("setting a disposed color object with Control.setBackground(Color) should throw an exception");
+	} catch (IllegalArgumentException e) {
+		// expected, since the color is disposed
+	}
+}
+@Test
 public void test_setBoundsIIII() {
 	control.setBounds(10, 20, 30, 40);
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
@@ -756,6 +767,17 @@ public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 	bg.dispose();
 }
 
+@Test
+public void test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	color.dispose();
+	try {
+		control.setForeground(color);
+		fail("setting a disposed color object with Control.setForeground(Color) should throw an exception");
+	} catch (IllegalArgumentException e) {
+		// expected, since the color is disposed
+	}
+}
 @Test
 public void test_setLayoutDataLjava_lang_Object() {
 	control.setLayoutData(this);

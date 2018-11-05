@@ -4476,6 +4476,9 @@ public void setBackground (Color color) {
 
 private void _setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
+	if (color != null && color.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	boolean set = false;
 	GdkRGBA rgba = null;
 	if (color != null) {
@@ -4892,6 +4895,9 @@ void setFontDescription (long /*int*/ font) {
 public void setForeground (Color color) {
 	checkWidget();
 	if (((state & FOREGROUND) == 0) && color == null) return;
+	if (color != null && color.isDisposed ()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	boolean set = false;
 	set = !getForeground().equals(color);
 	if (set) {
