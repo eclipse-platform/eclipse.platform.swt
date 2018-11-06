@@ -3450,15 +3450,6 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	GdkRectangle rect = new GdkRectangle ();
 	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
 	/*
-	 * On GTK3.19+, widget are are shown with the default minimum size regardless of the
-	 * size of the fixed container. This causes 0x0 widgets to be visible but cannot be used.
-	 * The fix is to make the widget invisible to the user. Resizing widget later on to a larger size
-	 * makes the widget visible again in setBounds. See Bug 533469, Bug 531120.
-	 */
-	if (GTK.GTK_VERSION > OS.VERSION (3, 18, 0) && (state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
-		if (GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_hide(widget);
-	}
-	/*
 	 * Modify the drawing of the widget with cairo_clip.
 	 * Doesn't modify input handling at this time.
 	 * See bug 529431.
