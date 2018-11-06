@@ -514,6 +514,28 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 }
 
 @Override
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	/*
+	 * On GTK3.19+, widget are are shown with the default minimum size regardless of the
+	 * size of the fixed container. This causes 0x0 widgets to be visible but cannot be used.
+	 * The fix is to make the widget invisible to the user. Resizing widget later on to a larger size
+	 * makes the widget visible again in setBounds. See Bug 533469, Bug 531120.
+	 */
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 20, 0) && (state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
+		if (GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_set_visible(widget, false);
+		// Button and display should not be disposed after hiding widget
+		if (isDisposed() || display == null || display.isDisposed()) error (SWT.ERROR_DEVICE_DISPOSED);
+	}
+	return super.gtk_draw(widget, cairo);
+}
+
+@Override
+boolean mustBeVisibleOnInitBounds() {
+	// Bug 540298: Button needs to be visible in order to gain focus.
+	return true;
+}
+
+@Override
 long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point

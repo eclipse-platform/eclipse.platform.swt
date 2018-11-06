@@ -434,6 +434,15 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return super.gtk_draw(widget, cairo);
 }
 
+
+@Override
+boolean mustBeVisibleOnInitBounds() {
+	// Bug 540298: if we return false, we will be invisible if the size is
+	// not set, but our layout will not properly work, so that not all children
+	// will be shown properly
+	return true;
+}
+
 @Override
 void deregister () {
 	super.deregister ();

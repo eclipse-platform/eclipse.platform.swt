@@ -4965,12 +4965,25 @@ void setInitialBounds () {
 			allocation.x = 0;
 		}
 		allocation.y = 0;
-		GTK.gtk_widget_set_visible(topHandle, true);
-		GTK.gtk_widget_set_allocation(topHandle, allocation);
+		if (mustBeVisibleOnInitBounds ()) {
+			GTK.gtk_widget_set_visible(topHandle, true);
+		}
+		GTK.gtk_widget_size_allocate(topHandle, allocation);
 	} else {
 		resizeHandle (1, 1);
 		forceResize ();
 	}
+}
+
+/**
+ * Widgets with unusual bounds calculation behavior can override this method
+ * to return {@code true} if the widget must be visible during call to
+ * {@link #setInitialBounds()}.
+ *
+ * @return {@code false} by default on modern GTK 3 versions (3.20+).
+ */
+boolean mustBeVisibleOnInitBounds() {
+	return GTK.GTK_VERSION < OS.VERSION(3, 20, 0);
 }
 
 /*
