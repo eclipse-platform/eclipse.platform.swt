@@ -1018,8 +1018,10 @@ void forceResize (int width, int height) {
 		int [] dest_x = new int[1];
 		int [] dest_y = new int[1];
 		GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
-		allocation.x += dest_x[0];
-		allocation.y += dest_y[0];
+		if (dest_x[0] != -1 && dest_y[0] != -1) {
+			allocation.x += dest_x[0];
+			allocation.y += dest_y[0];
+		}
 	}
 
 	GTK.gtk_widget_size_allocate (vboxHandle, allocation);
