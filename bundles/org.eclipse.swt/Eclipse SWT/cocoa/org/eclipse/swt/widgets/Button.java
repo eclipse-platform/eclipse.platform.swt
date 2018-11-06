@@ -53,9 +53,9 @@ public class Button extends Control {
 
 	/**
 	 * On MacOS 10.8 and later Radiobuttons with the same parent view and action are automatically in group,
-	 * so the state of the NSButton cannot be used to detect if a selection event should be sent when a button is deselected.
+	 * which is avoided by wrapping them individually in an extra parent view.
 	 */
-	private boolean lastRadioState;
+	private SWTView radioParent;
 
 	private static final double /*float*/ [] DEFAULT_DISABLED_FOREGROUND = new double /*float*/ [] { 0.6745f, 0.6745f, 0.6745f, 1.0f };
 
@@ -264,6 +264,7 @@ void createHandle () {
 		type = OS.NSSwitchButton;
 	} else if ((style & SWT.RADIO) != 0) {
 		type = OS.NSRadioButton;
+		radioParent = (SWTView) new SWTView().alloc().init();
 	} else if ((style & SWT.TOGGLE) != 0) {
 		type = OS.NSPushOnPushOffButton;
 		if ((style & SWT.FLAT) != 0) {
@@ -304,6 +305,7 @@ NSFont defaultNSFont() {
 void deregister () {
 	super.deregister ();
 	display.removeWidget(((NSControl)view).cell());
+	if (radioParent != null) display.removeWidget(radioParent);
 }
 
 @Override
@@ -706,6 +708,7 @@ long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 void register() {
 	super.register();
 	display.addWidget(((NSControl)view).cell(), this);
+	if (radioParent != null) display.addWidget(radioParent, this);
 }
 
 @Override
@@ -857,6 +860,12 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		}
 	}
 	super.setBounds(x, y, width, height, move, resize);
+	if (radioParent != null && resize) {
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		view.setFrameSize(size);
+	}
 }
 
 @Override
@@ -961,7 +970,7 @@ public void setImage (Image image) {
 @Override
 boolean setRadioSelection (boolean value){
 	if ((style & SWT.RADIO) == 0) return false;
-	if (getSelection() != value || lastRadioState != value) {
+	if (getSelection() != value) {
 		setSelection (value);
 		sendSelectionEvent (SWT.Selection);
 	}
@@ -992,7 +1001,6 @@ public void setSelection (boolean selected) {
 	} else {
 		((NSButton)view).setState (selected ? OS.NSOnState : OS.NSOffState);
 	}
-	lastRadioState = selected;
 }
 
 /**
@@ -1069,4 +1077,15 @@ void updateAlignment () {
 	}
 }
 
+@Override
+NSView topView() {
+	if (radioParent != null) return radioParent;
+	return super.topView();
+}
+
+@Override
+void setZOrder() {
+	super.setZOrder();
+	if (radioParent != null) radioParent.addSubview(view);
+}
 }
