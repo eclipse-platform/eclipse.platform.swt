@@ -583,10 +583,7 @@ protected void init () {
 	this.scaleFactor = getDeviceZoom ();
 	DPIUtil.setDeviceZoom (scaleFactor);
 
-	//TODO: Remove; temporary code only
-	boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;
-
-	if (debug || fixAIX) {
+	if (debug) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
 			Class<?> clazz = getClass ();
@@ -1013,9 +1010,7 @@ static long /*int*/ XErrorProc (long /*int*/ xDisplay, long /*int*/ xErrorEvent)
 			if (DEBUG || device.debug) {
 				new SWTError ().printStackTrace ();
 			}
-			//TODO: Remove; temporary code only
-			boolean fixAIX = OS.IsAIX && C.PTR_SIZEOF == 8;
-			if (!fixAIX) OS.Call (XErrorProc, xDisplay, xErrorEvent);
+			OS.Call (XErrorProc, xDisplay, xErrorEvent);
 		}
 	} else {
 		if (DEBUG) new SWTError ().printStackTrace ();

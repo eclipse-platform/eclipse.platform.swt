@@ -70,7 +70,6 @@ public class SwtTestUtil {
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
 	public final static boolean isWindowsOS = System.getProperty("os.name").startsWith("Windows");
 	public final static boolean isLinux = System.getProperty("os.name").equals("Linux");
-	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 
 
 	/** Useful if you want some tests not to run on Jenkins with user "genie.platform" */

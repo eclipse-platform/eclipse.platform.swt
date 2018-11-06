@@ -535,13 +535,11 @@ public void test_isVisible() {
 	control.setVisible(false);
 	assertFalse(control.isVisible());
 
-	if (!SwtTestUtil.isAIX) {
-		control.setVisible(true);
-		shell.setVisible(true);
-		assertTrue("Window should be visible", control.isVisible());
-		shell.setVisible(false);
-		assertFalse("Window should not be visible", control.isVisible());
-	}
+	control.setVisible(true);
+	shell.setVisible(true);
+	assertTrue("Window should be visible", control.isVisible());
+	shell.setVisible(false);
+	assertFalse("Window should not be visible", control.isVisible());
 }
 @Test
 public void test_moveAboveLorg_eclipse_swt_widgets_Control() {

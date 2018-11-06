@@ -53,16 +53,15 @@ import org.eclipse.swt.internal.*;
  */
 public class OS extends C {
 	/** OS Constants */
-	public static final boolean IsAIX, IsLinux, IsWin32, BIG_ENDIAN;
+	public static final boolean IsLinux, IsWin32, BIG_ENDIAN;
 	static {
 
 		/* Initialize the OS flags and locale constants */
 		String osName = System.getProperty ("os.name");
-		boolean isAIX = false, isLinux = false, isWin32 = false;
+		boolean isLinux = false, isWin32 = false;
 		if (osName.equals ("Linux")) isLinux = true;
-		if (osName.equals ("AIX")) isAIX = true;
 		if (osName.startsWith("Windows")) isWin32 = true;
-		IsAIX = isAIX;  IsLinux = isLinux;  IsWin32 = isWin32;
+		IsLinux = isLinux;  IsWin32 = isWin32;
 
 		byte[] buffer = new byte[4];
 		long /*int*/ ptr = C.malloc(4);

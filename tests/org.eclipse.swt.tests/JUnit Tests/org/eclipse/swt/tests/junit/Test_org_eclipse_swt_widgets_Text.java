@@ -489,10 +489,8 @@ public void test_getCharCount() {
 	}
 	text.setText("");
 	assertEquals(0, text.getCharCount());
-	if (!SwtTestUtil.isAIX) {
-		text.setText("01234\t567890");
-		assertEquals(12, text.getCharCount());
-	}
+	text.setText("01234\t567890");
+	assertEquals(12, text.getCharCount());
 }
 
 @Test
@@ -970,13 +968,11 @@ public void test_isVisible() {
 	control.setVisible(false);
 	assertTrue(!control.isVisible());
 
-	if (!SwtTestUtil.isAIX) {
-		control.setVisible(true);
-		shell.setVisible(true);
-		assertTrue("Window should be visible", control.isVisible());
-		shell.setVisible(false);
-		assertFalse("Window should not be visible", control.isVisible());
-	}
+	control.setVisible(true);
+	shell.setVisible(true);
+	assertTrue("Window should be visible", control.isVisible());
+	shell.setVisible(false);
+	assertFalse("Window should not be visible", control.isVisible());
 }
 
 @Test

@@ -135,11 +135,7 @@ extern int IS_JNI_1_2;
 		}
 #else
 #define CALLING_CONVENTION
-#ifdef AIX
-#define LOAD_FLAGS RTLD_LAZY | RTLD_MEMBER
-#else
 #define LOAD_FLAGS RTLD_LAZY
-#endif 
 #define LOAD_FUNCTION(var, name) \
 		static int initialized = 0; \
 		static void *var = NULL; \

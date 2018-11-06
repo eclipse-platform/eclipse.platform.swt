@@ -54,7 +54,6 @@ public class FileDialog extends Dialog {
 	static final char SEPARATOR = File.separatorChar;
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
-	private static final int PATH_MAX = 1024;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -441,21 +440,10 @@ void presetChooserDialog () {
 				 * to be true canonical path. So using realpath to convert the path to
 				 * true canonical path.
 				 */
-				if (OS.IsAIX) {
-					byte [] outputBuffer = new byte [PATH_MAX];
-					long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
-					if (ptr != 0) {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-					}
-					/* We are not doing free here because realpath returns the address of outputBuffer
-					 * which is created in this code and we let the garbage collector to take care of this
-					 */
-				} else {
-					long /*int*/ ptr = OS.realpath (buffer, null);
-					if (ptr != 0) {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-						OS.g_free (ptr);
-					}
+				long /*int*/ ptr = OS.realpath (buffer, null);
+				if (ptr != 0) {
+					GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+					OS.g_free (ptr);
 				}
 			}
 		}
@@ -510,29 +498,14 @@ void presetChooserDialog () {
 			 * to be true canonical path. So using realpath to convert the path to
 			 * true canonical path.
 			 */
-			if (OS.IsAIX) {
-				byte [] outputBuffer = new byte [PATH_MAX];
-				long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
-				if (ptr != 0) {
-					if (fileName.length() > 0) {
-						GTK.gtk_file_chooser_set_filename (handle, ptr);
-					} else {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-					}
-					/* We are not doing free here because realpath returns the address of outputBuffer
-					 * which is created in this code and we let the garbage collector to take care of this
-					 */
+			long /*int*/ ptr = OS.realpath (buffer, null);
+			if (ptr != 0) {
+				if (fileName.length() > 0) {
+					GTK.gtk_file_chooser_set_filename (handle, ptr);
+				} else {
+					GTK.gtk_file_chooser_set_current_folder (handle, ptr);
 				}
-			} else {
-				long /*int*/ ptr = OS.realpath (buffer, null);
-				if (ptr != 0) {
-					if (fileName.length() > 0) {
-						GTK.gtk_file_chooser_set_filename (handle, ptr);
-					} else {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-					}
-					OS.g_free (ptr);
-				}
+				OS.g_free (ptr);
 			}
 		}
 	}

@@ -20,9 +20,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /* Libraries for dynamic loaded functions */
-#ifdef AIX
-#define LIB_CAIRO "libcairo.a(libcairo.so.2)"
-#elif _WIN32
+#ifdef _WIN32
 #define LIB_CAIRO "libcairo-2.dll"
 #else
 #define LIB_CAIRO "libcairo.so.2"

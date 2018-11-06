@@ -41,7 +41,6 @@ import org.eclipse.swt.internal.gtk.*;
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
 	static final String SEPARATOR = File.separator;
-	private static final int PATH_MAX = 1024;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -156,21 +155,10 @@ String openNativeChooserDialog () {
 		 * to be true canonical path. So using realpath to convert the path to
 		 * true canonical path.
 		 */
-		if (OS.IsAIX) {
-			byte [] outputBuffer = new byte [PATH_MAX];
-			long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
-			if (ptr != 0) {
-				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-			}
-			/* We are not doing free here because realpath returns the address of outputBuffer
-			 * which is created in this code and we let the garbage collector to take care of this
-			 */
-		} else {
-			long /*int*/ ptr = OS.realpath (buffer, null);
-			if (ptr != 0) {
-				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-				OS.g_free (ptr);
-			}
+		long /*int*/ ptr = OS.realpath (buffer, null);
+		if (ptr != 0) {
+			GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+			OS.g_free (ptr);
 		}
 	}
 	if (message.length () > 0) {
@@ -263,21 +251,10 @@ String openChooserDialog () {
 		 * to be true canonical path. So using realpath to convert the path to
 		 * true canonical path.
 		 */
-		if (OS.IsAIX) {
-			byte [] outputBuffer = new byte [PATH_MAX];
-			long /*int*/ ptr = OS.realpath (buffer, outputBuffer);
-			if (ptr != 0) {
-				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-			}
-			/* We are not doing free here because realpath returns the address of outputBuffer
-			 * which is created in this code and we let the garbage collector to take care of this
-			 */
-		} else {
-			long /*int*/ ptr = OS.realpath (buffer, null);
-			if (ptr != 0) {
-				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
-				OS.g_free (ptr);
-			}
+		long /*int*/ ptr = OS.realpath (buffer, null);
+		if (ptr != 0) {
+			GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+			OS.g_free (ptr);
 		}
 	}
 	if (message.length () > 0) {
