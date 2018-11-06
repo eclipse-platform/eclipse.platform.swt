@@ -67,6 +67,7 @@ public class Combo extends Composite {
 	String [] items = new String [0];
 	int[] segments;
 	int clearSegmentsCount = 0;
+	boolean stateFlagsUsable;
 
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
@@ -105,7 +106,11 @@ public class Combo extends Composite {
 		ComboProc = lpWndClass.lpfnWndProc;
 	}
 
-/**
+	/* Undocumented values. Remained the same at least between Win7 and Win10 */
+	static final int stateFlagsOffset = (C.PTR_SIZEOF == 8) ? 0x68 : 0x54;
+	static final int stateFlagsFirstPaint = 0x02000000;
+
+	/**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
  * <p>
@@ -730,6 +735,8 @@ void createHandle () {
 		cbtCallback.dispose ();
 	}
 	state &= ~(CANVAS | THEME_BACKGROUND);
+
+	stateFlagsUsable = stateFlagsTest();
 
 	/* Get the text and list window procs */
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1517,6 +1524,37 @@ public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
+}
+
+void stateFlagsAdd(int flags) {
+	final long /*int*/ tagCBoxPtr = OS.GetWindowLongPtr(handle, 0);
+	final long /*int*/ stateFlagsPtr = tagCBoxPtr + stateFlagsOffset;
+
+	int stateFlags[] = new int[1];
+	OS.MoveMemory(stateFlags, stateFlagsPtr, 4);
+	stateFlags[0] |= flags;
+	OS.MoveMemory(stateFlagsPtr, stateFlags, 4);
+}
+
+/*
+ * Verify that undocumented internal data is in expected location.
+ * The test is performed at creation time, when the value of state flags is predictable.
+ * For simplicity, only SWT.READ_ONLY combos are handled.
+ */
+boolean stateFlagsTest() {
+	final long /*int*/ tagCBoxPtr = OS.GetWindowLongPtr(handle, 0);
+	final long /*int*/ stateFlagsPtr = tagCBoxPtr + stateFlagsOffset;
+
+	int stateFlags[] = new int[1];
+	OS.MoveMemory(stateFlags, stateFlagsPtr, 4);
+
+	/*
+	 * 0x00000002 is unknown
+	 * 0x00002000 is set in WM_NCCREATE
+	 * 0x00004000 means CBS_DROPDOWNLIST (SWT.READ_ONLY)
+	 * 0x02000000 is set in WM_NCCREATE and reset after first WM_PAINT
+	 */
+	return (stateFlags[0] == 0x02006002);
 }
 
 @Override
@@ -2767,6 +2805,36 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 		}
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
+}
+
+@Override
+LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
+	LRESULT result = super.wmColorChild(wParam, lParam);
+
+	/*
+	 * CBS_DROPDOWNLIST (SWT.READ_ONLY) comboboxes ignore results of WM_CTLCOLORxxx.
+	 * This prevents SWT from setting custom background / text color.
+	 * In Windows function 'comctl32!ComboBox_InternalUpdateEditWindow' there are two main branches:
+	 * 'DrawThemeText' branch
+	 *   Ignores any SetTextColor / SetBkColor.
+	 *   Ignores brush returned from WM_CTLCOLORxxx.
+	 *   Keeps any background that was painted during WM_CTLCOLORxxx.
+	 * 'ExtTextOut' branch
+	 *   Uses pre-selected SetTextColor / SetBkColor.
+	 *   Ignores brush returned from WM_CTLCOLORxxx.
+	 *   Overwrites background with color in SetBkColor.
+	 * This undocumented hack forces combobox to use 'ExtTextOut' branch.
+	 * The flag is reset after every WM_PAINT, so it's set in every WM_CTLCOLORxxx.
+	 * Since 'ExtTextOut' always paints background, hack is not activated if not needed
+	 * to avoid changes in visual appearance of comboboxes with default colors.
+	 */
+	final boolean isReadonly = ((style & SWT.READ_ONLY) != 0);
+	final boolean isCustomColors = (result != null);
+	if (isReadonly && isCustomColors && stateFlagsUsable) {
+		stateFlagsAdd(stateFlagsFirstPaint);
+	}
+
+	return result;
 }
 
 @Override
