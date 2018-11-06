@@ -525,7 +525,7 @@ public void test_isFocusControl() {
 }
 @Test
 public void test_isReparentable() {
-	assertEquals ("isReparentable", control.isReparentable(), SwtTestUtil.isReparentablePlatform());
+	assertTrue ("isReparentable", control.isReparentable());
 }
 @Test
 public void test_isVisible() {

@@ -60,9 +60,6 @@ public class SwtTestUtil {
 	public static String[] invalidImageFilenames = new String[] {"corrupt", "corruptBadBitDepth.png"};
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 
-	// specify reparentable platforms
-	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "cocoa"};
-
 	public static final String testFontName;
 	// isWindows refers to windows platform, i.e. win32 windowing system; see also isWindowsOS
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
@@ -101,14 +98,6 @@ public static void assertSWTProblem(String message, int expectedCode, Throwable 
 			}
 		}
 	}
-}
-
-protected static boolean isReparentablePlatform() {
-	String platform = SWT.getPlatform();
-	for (int i=0; i<reparentablePlatforms.length; i++) {
-		if (reparentablePlatforms[i].equals(platform)) return true;
-	}
-	return false;
 }
 
 public static boolean isBidi() {
