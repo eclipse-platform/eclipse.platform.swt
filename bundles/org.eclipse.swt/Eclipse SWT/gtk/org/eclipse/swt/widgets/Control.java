@@ -3449,7 +3449,15 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	GdkRectangle rect = new GdkRectangle ();
 	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
-
+	/*
+	 * On GTK3.19+, widget are are shown with the default minimum size regardless of the
+	 * size of the fixed container. This causes 0x0 widgets to be visible but cannot be used.
+	 * The fix is to make the widget invisible to the user. Resizing widget later on to a larger size
+	 * makes the widget visible again in setBounds. See Bug 533469, Bug 531120.
+	 */
+	if (GTK.GTK_VERSION > OS.VERSION (3, 18, 0) && (state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
+		if (GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_hide(widget);
+	}
 	/*
 	 * Modify the drawing of the widget with cairo_clip.
 	 * Doesn't modify input handling at this time.
@@ -4952,19 +4960,13 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 
 void setInitialBounds () {
 	if ((state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
-		long /*int*/ topHandle = topHandle ();
-		if(GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-			if(mustBeVisibleOnInitBounds()) {
-				GTK.gtk_widget_set_visible(topHandle, true);
-			}
-			return;
-		}
 		/*
 		* Feature in GTK.  On creation, each widget's allocation is
 		* initialized to a position of (-1, -1) until the widget is
 		* first sized.  The fix is to set the value to (0, 0) as
 		* expected by SWT.
 		*/
+		long /*int*/ topHandle = topHandle ();
 		GtkAllocation allocation = new GtkAllocation();
 		if ((parent.style & SWT.MIRRORED) != 0) {
 			allocation.x = parent.getClientWidth ();
@@ -4978,17 +4980,6 @@ void setInitialBounds () {
 		resizeHandle (1, 1);
 		forceResize ();
 	}
-}
-
-/**
- * Widgets with unusual bounds calculation behavior can override this method
- * to return {@code true} if the widged must be visible during call to
- * {@link #setInitialBounds()}.
- *
- * @return {@code false} by default on modern GTK 3 versions (3.20+).
- */
-boolean mustBeVisibleOnInitBounds() {
-	return GTK.GTK_VERSION < OS.VERSION(3, 20, 0);
 }
 
 /*
