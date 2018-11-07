@@ -287,9 +287,27 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1bin_1get_1child",
 	"_1gtk_1border_1free",
 	"_1gtk_1box_1new",
-	"_1gtk_1box_1pack_1end",
+#ifndef JNI64
+	"_1gtk_1box_1pack_1end__II",
+#else
+	"_1gtk_1box_1pack_1end__JJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1box_1pack_1end__IIZZI",
+#else
+	"_1gtk_1box_1pack_1end__JJZZI",
+#endif
 	"_1gtk_1box_1reorder_1child",
-	"_1gtk_1box_1set_1child_1packing",
+#ifndef JNI64
+	"_1gtk_1box_1set_1child_1packing__III",
+#else
+	"_1gtk_1box_1set_1child_1packing__JJI",
+#endif
+#ifndef JNI64
+	"_1gtk_1box_1set_1child_1packing__IIZZII",
+#else
+	"_1gtk_1box_1set_1child_1packing__JJZZII",
+#endif
 	"_1gtk_1box_1set_1homogeneous",
 	"_1gtk_1box_1set_1spacing",
 	"_1gtk_1button_1clicked",
@@ -359,13 +377,31 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1dialog_1add_1button",
 	"_1gtk_1dialog_1run",
 	"_1gtk_1drag_1begin",
-	"_1gtk_1drag_1begin_1with_1coordinates",
+#ifndef JNI64
+	"_1gtk_1drag_1begin_1with_1coordinates__IIIIII",
+#else
+	"_1gtk_1drag_1begin_1with_1coordinates__JJJIII",
+#endif
+#ifndef JNI64
+	"_1gtk_1drag_1begin_1with_1coordinates__IIIIIII",
+#else
+	"_1gtk_1drag_1begin_1with_1coordinates__JJIIJII",
+#endif
 	"_1gtk_1drag_1check_1threshold",
 	"_1gtk_1drag_1dest_1find_1target",
 	"_1gtk_1drag_1dest_1set",
 	"_1gtk_1drag_1dest_1unset",
 	"_1gtk_1drag_1finish",
-	"_1gtk_1drag_1get_1data",
+#ifndef JNI64
+	"_1gtk_1drag_1get_1data__III",
+#else
+	"_1gtk_1drag_1get_1data__JJJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1drag_1get_1data__IIII",
+#else
+	"_1gtk_1drag_1get_1data__JJJI",
+#endif
 	"_1gtk_1drag_1set_1icon_1surface",
 	"_1gtk_1editable_1copy_1clipboard",
 	"_1gtk_1editable_1cut_1clipboard",
@@ -467,6 +503,9 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1get_1current_1event_1state",
 	"_1gtk_1get_1default_1language",
 	"_1gtk_1get_1event_1widget",
+	"_1gtk_1get_1major_1version",
+	"_1gtk_1get_1micro_1version",
+	"_1gtk_1get_1minor_1version",
 	"_1gtk_1grab_1add",
 	"_1gtk_1grab_1get_1current",
 	"_1gtk_1grab_1remove",
@@ -487,13 +526,37 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1im_1multicontext_1append_1menuitems",
 	"_1gtk_1im_1multicontext_1new",
 	"_1gtk_1image_1new",
-	"_1gtk_1image_1new_1from_1icon_1name",
+	"_1gtk_1image_1new_1from_1icon_1name___3B",
+	"_1gtk_1image_1new_1from_1icon_1name___3BI",
 	"_1gtk_1image_1new_1from_1pixbuf",
-	"_1gtk_1image_1set_1from_1gicon",
-	"_1gtk_1image_1set_1from_1icon_1name",
+#ifndef JNI64
+	"_1gtk_1image_1set_1from_1gicon__II",
+#else
+	"_1gtk_1image_1set_1from_1gicon__JJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1image_1set_1from_1gicon__III",
+#else
+	"_1gtk_1image_1set_1from_1gicon__JJI",
+#endif
+#ifndef JNI64
+	"_1gtk_1image_1set_1from_1icon_1name__I_3B",
+#else
+	"_1gtk_1image_1set_1from_1icon_1name__J_3B",
+#endif
+#ifndef JNI64
+	"_1gtk_1image_1set_1from_1icon_1name__I_3BI",
+#else
+	"_1gtk_1image_1set_1from_1icon_1name__J_3BI",
+#endif
 	"_1gtk_1image_1set_1from_1pixbuf",
 	"_1gtk_1image_1set_1pixel_1size",
-	"_1gtk_1init_1check",
+	"_1gtk_1init_1check__",
+#ifndef JNI64
+	"_1gtk_1init_1check___3I_3I",
+#else
+	"_1gtk_1init_1check___3J_3J",
+#endif
 	"_1gtk_1label_1get_1layout",
 	"_1gtk_1label_1get_1mnemonic_1keyval",
 	"_1gtk_1label_1new",
@@ -547,7 +610,6 @@ char * GTK_nativeFunctionNames[] = {
 #endif
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
-	"_1gtk_1major_1version",
 	"_1gtk_1menu_1bar_1new",
 	"_1gtk_1menu_1item_1get_1submenu",
 	"_1gtk_1menu_1item_1new",
@@ -562,8 +624,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1menu_1shell_1set_1take_1focus",
 	"_1gtk_1menu_1tool_1button_1new",
 	"_1gtk_1message_1dialog_1new",
-	"_1gtk_1micro_1version",
-	"_1gtk_1minor_1version",
 	"_1gtk_1misc_1set_1alignment",
 	"_1gtk_1native_1dialog_1run",
 	"_1gtk_1notebook_1get_1current_1page",
@@ -721,9 +781,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1style_1context_1restore",
 	"_1gtk_1style_1context_1save",
 	"_1gtk_1style_1context_1set_1state",
-	"_1gtk_1style_1get_1font_1desc",
-	"_1gtk_1style_1get_1xthickness",
-	"_1gtk_1style_1get_1ythickness",
 	"_1gtk_1target_1list_1new",
 	"_1gtk_1target_1list_1unref",
 	"_1gtk_1text_1buffer_1copy_1clipboard",
@@ -756,6 +813,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1text_1buffer_1set_1text",
 	"_1gtk_1text_1iter_1get_1line",
 	"_1gtk_1text_1iter_1get_1offset",
+	"_1gtk_1text_1view_1buffer_1to_1surface_1coords",
 	"_1gtk_1text_1view_1buffer_1to_1window_1coords",
 	"_1gtk_1text_1view_1get_1buffer",
 	"_1gtk_1text_1view_1get_1editable",
@@ -950,12 +1008,14 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1child_1visible",
 	"_1gtk_1widget_1get_1clip",
 	"_1gtk_1widget_1get_1events",
+	"_1gtk_1widget_1get_1has_1surface",
 	"_1gtk_1widget_1get_1has_1window",
 	"_1gtk_1widget_1get_1mapped",
 	"_1gtk_1widget_1get_1name",
 	"_1gtk_1widget_1get_1opacity",
 	"_1gtk_1widget_1get_1pango_1context",
 	"_1gtk_1widget_1get_1parent",
+	"_1gtk_1widget_1get_1parent_1surface",
 	"_1gtk_1widget_1get_1parent_1window",
 	"_1gtk_1widget_1get_1preferred_1height",
 	"_1gtk_1widget_1get_1preferred_1height_1for_1width",
@@ -967,6 +1027,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1size_1request",
 	"_1gtk_1widget_1get_1state_1flags",
 	"_1gtk_1widget_1get_1style_1context",
+	"_1gtk_1widget_1get_1surface",
 	"_1gtk_1widget_1get_1tooltip_1text",
 	"_1gtk_1widget_1get_1toplevel",
 	"_1gtk_1widget_1get_1visible",
@@ -988,7 +1049,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1remove_1accelerator",
 	"_1gtk_1widget_1reparent",
 	"_1gtk_1widget_1set_1allocation",
-	"_1gtk_1widget_1set_1app_1paintable",
 	"_1gtk_1widget_1set_1can_1default",
 	"_1gtk_1widget_1set_1can_1focus",
 	"_1gtk_1widget_1set_1clip",
@@ -997,10 +1057,11 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1double_1buffered",
 	"_1gtk_1widget_1set_1focus_1on_1click",
 	"_1gtk_1widget_1set_1halign",
+	"_1gtk_1widget_1set_1has_1surface",
 	"_1gtk_1widget_1set_1has_1window",
-	"_1gtk_1widget_1set_1mapped",
 	"_1gtk_1widget_1set_1name",
 	"_1gtk_1widget_1set_1opacity",
+	"_1gtk_1widget_1set_1parent_1surface",
 	"_1gtk_1widget_1set_1parent_1window",
 	"_1gtk_1widget_1set_1receives_1default",
 	"_1gtk_1widget_1set_1redraw_1on_1allocate",

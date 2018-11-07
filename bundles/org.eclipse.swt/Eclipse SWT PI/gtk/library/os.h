@@ -100,13 +100,9 @@
 #endif
 
 
-#ifdef GDK_WINDOWING_X11
-#if GTK_CHECK_VERSION(3,94,0)
-// GTK4 does not need gtkx.h
-#else
+#if defined(GDK_WINDOWING_X11) && !GTK_CHECK_VERSION(3,94,0)
 #include <gdk/gdkx.h>
 #include <gtk/gtkx.h>
-#endif
 #else
 
 #define NO_GDK_1IS_1X11_1DISPLAY
@@ -161,6 +157,116 @@
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II
 
+#endif
+
+#if GTK_CHECK_VERSION(3,94,0)
+#define GTK4 1
+
+// Structs which do not exist on GTK4
+#define NO_GtkTargetEntry
+
+// Memmoves for those structs which were removed in GTK4
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J
+
+// No GtkClipboard on GTK4
+#define NO__1gtk_1clipboard_1clear
+#define NO__1gtk_1clipboard_1get
+#define NO__1gtk_1clipboard_1set_1can_1store
+#define NO__1gtk_1clipboard_1set_1with_1owner
+#define NO__1gtk_1clipboard_1store
+#define NO__1gtk_1clipboard_1wait_1for_1contents
+
+// No GtkStatusIcon on GTK4
+#define NO__1gtk_1status_1icon_1get_1geometry
+#define NO__1gtk_1status_1icon_1get_1visible
+#define NO__1gtk_1status_1icon_1new
+#define NO__1gtk_1status_1icon_1position_1menu_1func
+#define NO__1gtk_1status_1icon_1set_1from_1pixbuf
+#define NO__1gtk_1status_1icon_1set_1tooltip_1text
+#define NO__1gtk_1status_1icon_1set_1visible
+
+// No GtkTargetList on GTK4
+#define NO__1gtk_1target_1list_1new
+#define NO__1gtk_1target_1list_1unref
+
+// No GdkScreen on GTK4
+#define NO__1gtk_1widget_1get_1screen
+#define NO__1gtk_1style_1context_1add_1provider_1for_1screen
+
+// Miscellaneous functions removed from GTK4
+#define NO__1gtk_1button_1set_1image
+#define NO__1gtk_1misc_1set_1alignment
+#define NO__1gtk_1toggle_1button_1set_1inconsistent
+#define NO__1gtk_1toggle_1button_1set_1mode
+#define NO__1gtk_1toolbar_1set_1icon_1size
+
+// Some drawing functions have been removed on GTK4
+#define NO__1gtk_1widget_1draw
+#define NO__1gtk_1widget_1set_1redraw_1on_1allocate
+#define NO__1gtk_1widget_1shape_1combine_1region
+
+// Some GtkContainer functions don't exist on GTK4
+#define NO__1gtk_1container_1propagate_1draw
+#define NO__1gtk_1container_1set_1border_1width
+#define NO__1gtk_1container_1get_1border_1width
+
+/**
+ * Some gtk_drag_* functions exist on both versions,
+ * but with different signatures. Define them in both GTK4
+ * and GTK3.
+ */
+#define NO__1gtk_1drag_1begin_1with_1coordinates__IIIIIII
+#define NO__1gtk_1drag_1begin_1with_1coordinates__JJIIJII
+#define NO__1gtk_1drag_1get_1data__IIII
+#define NO__1gtk_1drag_1get_1data__JJJI
+
+// Some gtk_drag_* functions were removed in GTK4
+#define NO__1gtk_1drag_1begin
+#define NO__1gtk_1drag_1dest_1set
+#define NO__1gtk_1drag_1dest_1find_1target
+#define NO__1gtk_1drag_1finish
+#define NO__1gtk_1drag_1set_1icon_1surface
+
+// Some sizing functions are not available on GTK4
+#define NO__1gtk_1widget_1get_1preferred_1height
+#define NO__1gtk_1widget_1get_1preferred_1height_1for_1width
+#define NO__1gtk_1widget_1get_1preferred_1width_1for_1height
+#define NO__1gtk_1widget_1size_1allocate
+#define NO__1gtk_1widget_1set_1allocation
+#define NO__1gtk_1window_1set_1geometry_1hints
+
+// No GdkWindow on GTK4
+#define NO__1gtk_1widget_1set_1has_1window
+#define NO__1gtk_1widget_1get_1has_1window
+#define NO__1gtk_1im_1context_1set_1client_1window
+#define NO__1gtk_1widget_1set_1parent_1window
+
+// Some widgets have removed access to their GdkWindows in GTK4
+#define NO__1gtk_1text_1view_1get_1window
+#define NO__1gtk_1tree_1view_1get_1bin_1window
+
+// Event related functions removed in GTK4
+#define NO__1gtk_1event_1box_1new
+#define NO__1gtk_1widget_1add_1events
+#define NO__1gtk_1widget_1get_1events
+
+#else
+
+/**
+ * Some gtk_drag_* functions exist on both versions,
+ * but with different signatures. Define them in both GTK4
+ * and GTK3.
+ */
+#define NO__1gtk_1drag_1begin_1with_1coordinates__IIIIII
+#define NO__1gtk_1drag_1begin_1with_1coordinates__JJJIII
+#define NO__1gtk_1drag_1get_1data__III
+#define NO__1gtk_1drag_1get_1data__JJJ
+
+// No GdkSurface on GTK3
+#define NO__1gtk_1widget_1set_1has_1surface
+#define NO__1gtk_1widget_1get_1has_1surface
+#define NO__1gtk_1widget_1set_1parent_1surface
 #endif
 
 #include "os_custom.h"

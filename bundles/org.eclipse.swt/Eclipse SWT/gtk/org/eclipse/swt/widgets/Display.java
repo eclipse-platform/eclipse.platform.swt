@@ -1043,7 +1043,7 @@ void createDisplay (DeviceData data) {
 		C.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (buffer))); //$NON-NLS-1$
 		System.out.println ("***WARNING: SWT requires GTK " + GTK3_MAJOR+ "." + GTK3_MINOR + "." + GTK3_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		int major = GTK.gtk_major_version(), minor = GTK.gtk_minor_version (), micro = GTK.gtk_micro_version ();
+		int major = GTK.gtk_get_major_version(), minor = GTK.gtk_get_minor_version (), micro = GTK.gtk_get_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	fixed_type = OS.swt_fixed_get_type();

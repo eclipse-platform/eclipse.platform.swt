@@ -285,9 +285,27 @@ typedef enum {
 	_1gtk_1bin_1get_1child_FUNC,
 	_1gtk_1border_1free_FUNC,
 	_1gtk_1box_1new_FUNC,
-	_1gtk_1box_1pack_1end_FUNC,
+#ifndef JNI64
+	_1gtk_1box_1pack_1end__II_FUNC,
+#else
+	_1gtk_1box_1pack_1end__JJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1box_1pack_1end__IIZZI_FUNC,
+#else
+	_1gtk_1box_1pack_1end__JJZZI_FUNC,
+#endif
 	_1gtk_1box_1reorder_1child_FUNC,
-	_1gtk_1box_1set_1child_1packing_FUNC,
+#ifndef JNI64
+	_1gtk_1box_1set_1child_1packing__III_FUNC,
+#else
+	_1gtk_1box_1set_1child_1packing__JJI_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1box_1set_1child_1packing__IIZZII_FUNC,
+#else
+	_1gtk_1box_1set_1child_1packing__JJZZII_FUNC,
+#endif
 	_1gtk_1box_1set_1homogeneous_FUNC,
 	_1gtk_1box_1set_1spacing_FUNC,
 	_1gtk_1button_1clicked_FUNC,
@@ -357,13 +375,31 @@ typedef enum {
 	_1gtk_1dialog_1add_1button_FUNC,
 	_1gtk_1dialog_1run_FUNC,
 	_1gtk_1drag_1begin_FUNC,
-	_1gtk_1drag_1begin_1with_1coordinates_FUNC,
+#ifndef JNI64
+	_1gtk_1drag_1begin_1with_1coordinates__IIIIII_FUNC,
+#else
+	_1gtk_1drag_1begin_1with_1coordinates__JJJIII_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1drag_1begin_1with_1coordinates__IIIIIII_FUNC,
+#else
+	_1gtk_1drag_1begin_1with_1coordinates__JJIIJII_FUNC,
+#endif
 	_1gtk_1drag_1check_1threshold_FUNC,
 	_1gtk_1drag_1dest_1find_1target_FUNC,
 	_1gtk_1drag_1dest_1set_FUNC,
 	_1gtk_1drag_1dest_1unset_FUNC,
 	_1gtk_1drag_1finish_FUNC,
-	_1gtk_1drag_1get_1data_FUNC,
+#ifndef JNI64
+	_1gtk_1drag_1get_1data__III_FUNC,
+#else
+	_1gtk_1drag_1get_1data__JJJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1drag_1get_1data__IIII_FUNC,
+#else
+	_1gtk_1drag_1get_1data__JJJI_FUNC,
+#endif
 	_1gtk_1drag_1set_1icon_1surface_FUNC,
 	_1gtk_1editable_1copy_1clipboard_FUNC,
 	_1gtk_1editable_1cut_1clipboard_FUNC,
@@ -465,6 +501,9 @@ typedef enum {
 	_1gtk_1get_1current_1event_1state_FUNC,
 	_1gtk_1get_1default_1language_FUNC,
 	_1gtk_1get_1event_1widget_FUNC,
+	_1gtk_1get_1major_1version_FUNC,
+	_1gtk_1get_1micro_1version_FUNC,
+	_1gtk_1get_1minor_1version_FUNC,
 	_1gtk_1grab_1add_FUNC,
 	_1gtk_1grab_1get_1current_FUNC,
 	_1gtk_1grab_1remove_FUNC,
@@ -485,13 +524,37 @@ typedef enum {
 	_1gtk_1im_1multicontext_1append_1menuitems_FUNC,
 	_1gtk_1im_1multicontext_1new_FUNC,
 	_1gtk_1image_1new_FUNC,
-	_1gtk_1image_1new_1from_1icon_1name_FUNC,
+	_1gtk_1image_1new_1from_1icon_1name___3B_FUNC,
+	_1gtk_1image_1new_1from_1icon_1name___3BI_FUNC,
 	_1gtk_1image_1new_1from_1pixbuf_FUNC,
-	_1gtk_1image_1set_1from_1gicon_FUNC,
-	_1gtk_1image_1set_1from_1icon_1name_FUNC,
+#ifndef JNI64
+	_1gtk_1image_1set_1from_1gicon__II_FUNC,
+#else
+	_1gtk_1image_1set_1from_1gicon__JJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1image_1set_1from_1gicon__III_FUNC,
+#else
+	_1gtk_1image_1set_1from_1gicon__JJI_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1image_1set_1from_1icon_1name__I_3B_FUNC,
+#else
+	_1gtk_1image_1set_1from_1icon_1name__J_3B_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1image_1set_1from_1icon_1name__I_3BI_FUNC,
+#else
+	_1gtk_1image_1set_1from_1icon_1name__J_3BI_FUNC,
+#endif
 	_1gtk_1image_1set_1from_1pixbuf_FUNC,
 	_1gtk_1image_1set_1pixel_1size_FUNC,
-	_1gtk_1init_1check_FUNC,
+	_1gtk_1init_1check___FUNC,
+#ifndef JNI64
+	_1gtk_1init_1check___3I_3I_FUNC,
+#else
+	_1gtk_1init_1check___3J_3J_FUNC,
+#endif
 	_1gtk_1label_1get_1layout_FUNC,
 	_1gtk_1label_1get_1mnemonic_1keyval_FUNC,
 	_1gtk_1label_1new_FUNC,
@@ -545,7 +608,6 @@ typedef enum {
 #endif
 	_1gtk_1main_FUNC,
 	_1gtk_1main_1do_1event_FUNC,
-	_1gtk_1major_1version_FUNC,
 	_1gtk_1menu_1bar_1new_FUNC,
 	_1gtk_1menu_1item_1get_1submenu_FUNC,
 	_1gtk_1menu_1item_1new_FUNC,
@@ -560,8 +622,6 @@ typedef enum {
 	_1gtk_1menu_1shell_1set_1take_1focus_FUNC,
 	_1gtk_1menu_1tool_1button_1new_FUNC,
 	_1gtk_1message_1dialog_1new_FUNC,
-	_1gtk_1micro_1version_FUNC,
-	_1gtk_1minor_1version_FUNC,
 	_1gtk_1misc_1set_1alignment_FUNC,
 	_1gtk_1native_1dialog_1run_FUNC,
 	_1gtk_1notebook_1get_1current_1page_FUNC,
@@ -719,9 +779,6 @@ typedef enum {
 	_1gtk_1style_1context_1restore_FUNC,
 	_1gtk_1style_1context_1save_FUNC,
 	_1gtk_1style_1context_1set_1state_FUNC,
-	_1gtk_1style_1get_1font_1desc_FUNC,
-	_1gtk_1style_1get_1xthickness_FUNC,
-	_1gtk_1style_1get_1ythickness_FUNC,
 	_1gtk_1target_1list_1new_FUNC,
 	_1gtk_1target_1list_1unref_FUNC,
 	_1gtk_1text_1buffer_1copy_1clipboard_FUNC,
@@ -754,6 +811,7 @@ typedef enum {
 	_1gtk_1text_1buffer_1set_1text_FUNC,
 	_1gtk_1text_1iter_1get_1line_FUNC,
 	_1gtk_1text_1iter_1get_1offset_FUNC,
+	_1gtk_1text_1view_1buffer_1to_1surface_1coords_FUNC,
 	_1gtk_1text_1view_1buffer_1to_1window_1coords_FUNC,
 	_1gtk_1text_1view_1get_1buffer_FUNC,
 	_1gtk_1text_1view_1get_1editable_FUNC,
@@ -948,12 +1006,14 @@ typedef enum {
 	_1gtk_1widget_1get_1child_1visible_FUNC,
 	_1gtk_1widget_1get_1clip_FUNC,
 	_1gtk_1widget_1get_1events_FUNC,
+	_1gtk_1widget_1get_1has_1surface_FUNC,
 	_1gtk_1widget_1get_1has_1window_FUNC,
 	_1gtk_1widget_1get_1mapped_FUNC,
 	_1gtk_1widget_1get_1name_FUNC,
 	_1gtk_1widget_1get_1opacity_FUNC,
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,
+	_1gtk_1widget_1get_1parent_1surface_FUNC,
 	_1gtk_1widget_1get_1parent_1window_FUNC,
 	_1gtk_1widget_1get_1preferred_1height_FUNC,
 	_1gtk_1widget_1get_1preferred_1height_1for_1width_FUNC,
@@ -965,6 +1025,7 @@ typedef enum {
 	_1gtk_1widget_1get_1size_1request_FUNC,
 	_1gtk_1widget_1get_1state_1flags_FUNC,
 	_1gtk_1widget_1get_1style_1context_FUNC,
+	_1gtk_1widget_1get_1surface_FUNC,
 	_1gtk_1widget_1get_1tooltip_1text_FUNC,
 	_1gtk_1widget_1get_1toplevel_FUNC,
 	_1gtk_1widget_1get_1visible_FUNC,
@@ -986,7 +1047,6 @@ typedef enum {
 	_1gtk_1widget_1remove_1accelerator_FUNC,
 	_1gtk_1widget_1reparent_FUNC,
 	_1gtk_1widget_1set_1allocation_FUNC,
-	_1gtk_1widget_1set_1app_1paintable_FUNC,
 	_1gtk_1widget_1set_1can_1default_FUNC,
 	_1gtk_1widget_1set_1can_1focus_FUNC,
 	_1gtk_1widget_1set_1clip_FUNC,
@@ -995,10 +1055,11 @@ typedef enum {
 	_1gtk_1widget_1set_1double_1buffered_FUNC,
 	_1gtk_1widget_1set_1focus_1on_1click_FUNC,
 	_1gtk_1widget_1set_1halign_FUNC,
+	_1gtk_1widget_1set_1has_1surface_FUNC,
 	_1gtk_1widget_1set_1has_1window_FUNC,
-	_1gtk_1widget_1set_1mapped_FUNC,
 	_1gtk_1widget_1set_1name_FUNC,
 	_1gtk_1widget_1set_1opacity_FUNC,
+	_1gtk_1widget_1set_1parent_1surface_FUNC,
 	_1gtk_1widget_1set_1parent_1window_FUNC,
 	_1gtk_1widget_1set_1receives_1default_FUNC,
 	_1gtk_1widget_1set_1redraw_1on_1allocate_FUNC,

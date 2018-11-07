@@ -222,7 +222,8 @@ public class GTK extends OS {
 	public static final byte[] GTK_NAMED_LABEL_OK = OS.ascii("_OK");
 	public static final byte[] GTK_NAMED_LABEL_CANCEL = OS.ascii("_Cancel");
 
-	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_major_version(), GTK.gtk_minor_version(), GTK.gtk_micro_version());
+	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_get_major_version(), GTK.gtk_get_minor_version(), GTK.gtk_get_micro_version());
+	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 94, 0);
 
 	/** SWT Tools translates TYPE_sizeof() into sizeof(TYPE) at native level. os.c will have a binding to functions auto-generated in os_structs.h */
 	public static final native int GtkAllocation_sizeof();
@@ -455,8 +456,11 @@ public class GTK extends OS {
 		}
 	}
 
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native long /*int*/ _gtk_widget_get_screen(long /*int*/ widget);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_widget_get_screen(long /*int*/ widget) {
 		lock.lock();
 		try {
@@ -516,6 +520,7 @@ public class GTK extends OS {
 	 * @param image cast=(GtkWidget *)
 	 */
 	public static final native void /*int*/ _gtk_button_set_image(long /*int*/ button, long /*int*/ image);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void /*int*/ gtk_button_set_image(long /*int*/ button, long /*int*/ image) {
 		lock.lock();
 		try {
@@ -791,14 +796,31 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param box cast=(GtkBox *)
 	 * @param child cast=(GtkWidget *)
 	 */
 	public static final native void _gtk_box_set_child_packing(long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding, int pack_type);
+	/** [GTK3 only] */
 	public static final void gtk_box_set_child_packing(long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding, int pack_type) {
 		lock.lock();
 		try {
 			_gtk_box_set_child_packing(box, child, expand, fill, padding, pack_type);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void _gtk_box_set_child_packing(long /*int*/ box, long /*int*/ child, int pack_type);
+	/** [GTK4 only] */
+	public static final void gtk_box_set_child_packing(long /*int*/ box, long /*int*/ child, int pack_type) {
+		lock.lock();
+		try {
+			_gtk_box_set_child_packing(box, child, pack_type);
 		} finally {
 			lock.unlock();
 		}
@@ -1033,6 +1055,7 @@ public class GTK extends OS {
 	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size) {
 		lock.lock();
 		try {
@@ -1047,6 +1070,7 @@ public class GTK extends OS {
 	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_get_preferred_height(long /*int*/ widget, int[] minimum_size, int[] natural_size) {
 		lock.lock();
 		try {
@@ -1062,6 +1086,7 @@ public class GTK extends OS {
 	 * @param natural_size cast=(gint *)
 	 */
 	public static final native void _gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size) {
 		lock.lock();
 		try {
@@ -1162,6 +1187,7 @@ public class GTK extends OS {
 	}
 	/** @param clipboard cast=(GtkClipboard *) */
 	public static final native void _gtk_clipboard_clear(long /*int*/ clipboard);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_clipboard_clear(long /*int*/ clipboard) {
 		lock.lock();
 		try {
@@ -1172,6 +1198,7 @@ public class GTK extends OS {
 	}
 	/** @param selection cast=(GdkAtom) */
 	public static final native long /*int*/ _gtk_clipboard_get(long /*int*/ selection);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_clipboard_get(long /*int*/ selection) {
 		lock.lock();
 		try {
@@ -1189,6 +1216,7 @@ public class GTK extends OS {
 	 * @param user_data cast=(GObject *)
 	 */
 	public static final native boolean _gtk_clipboard_set_with_owner(long /*int*/ clipboard, long /*int*/ target, int n_targets, long /*int*/ get_func, long /*int*/ clear_func, long /*int*/ user_data);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gtk_clipboard_set_with_owner(long /*int*/ clipboard, long /*int*/ target, int n_targets, long /*int*/ get_func, long /*int*/ clear_func, long /*int*/ user_data) {
 		lock.lock();
 		try {
@@ -1203,6 +1231,7 @@ public class GTK extends OS {
 	 * @param n_targets cast=(gint)
 	 */
 	public static final native void _gtk_clipboard_set_can_store(long /*int*/ clipboard, long /*int*/ targets, int n_targets);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_clipboard_set_can_store(long /*int*/ clipboard, long /*int*/ targets, int n_targets) {
 		lock.lock();
 		try {
@@ -1215,6 +1244,7 @@ public class GTK extends OS {
 	 * @param clipboard cast=(GtkClipboard *)
 	 */
 	public static final native void _gtk_clipboard_store(long /*int*/ clipboard);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_clipboard_store(long /*int*/ clipboard) {
 		lock.lock();
 		try {
@@ -1228,6 +1258,7 @@ public class GTK extends OS {
 	 * @param target cast=(GdkAtom)
 	 */
 	public static final native long /*int*/ _gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*/ target);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*/ target) {
 		lock.lock();
 		try {
@@ -1515,6 +1546,7 @@ public class GTK extends OS {
 	 * @param cairo cast=(cairo_t *)
 	 */
 	public static final native void _gtk_container_propagate_draw(long /*int*/ container, long /*int*/ child, long /*int*/ cairo);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_container_propagate_draw(long /*int*/ container, long /*int*/ child, long /*int*/ cairo) {
 		lock.lock();
 		try {
@@ -1523,8 +1555,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param container cast=(GtkContainer *) */
+	/**
+	 * @param container cast=(GtkContainer *)
+	 */
 	public static final native int _gtk_container_get_border_width(long /*int*/ container);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gtk_container_get_border_width(long /*int*/ container) {
 		lock.lock();
 		try {
@@ -1561,6 +1596,7 @@ public class GTK extends OS {
 	 * @param border_width cast=(guint)
 	 */
 	public static final native void _gtk_container_set_border_width(long /*int*/ container, int border_width);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_container_set_border_width(long /*int*/ container, int border_width) {
 		lock.lock();
 		try {
@@ -1622,10 +1658,29 @@ public class GTK extends OS {
 	 * @param y cast=(gint)
 	 */
 	public static final native long /*int*/ _gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event, int x, int y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event, int x, int y) {
 		lock.lock();
 		try {
 			return _gtk_drag_begin_with_coordinates(widget, targets, actions, button, event, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param device cast=(GdkDevice *)
+	 * @param targets cast=(GdkContentFormats *)
+	 * @param actions cast=(GdkDragAction)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 */
+	public static final native long /*int*/ _gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ device, long /*int*/ targets, int actions, int x, int y);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_drag_begin_with_coordinates(long /*int*/ widget, long /*int*/ device, long /*int*/ targets, int actions, int x, int y) {
+		lock.lock();
+		try {
+			return _gtk_drag_begin_with_coordinates(widget, device, targets, actions, x, y);
 		} finally {
 			lock.unlock();
 		}
@@ -1652,6 +1707,7 @@ public class GTK extends OS {
 	 * @param target_list cast=(GtkTargetList *)
 	 */
 	public static final native long /*int*/ _gtk_drag_dest_find_target(long /*int*/ widget, long /*int*/ context, long /*int*/ target_list);
+	/** [GTK3/GTK4: TODO_ericwill both have identical signatures but accept differing parameters at the native level] */
 	public static final long /*int*/ gtk_drag_dest_find_target(long /*int*/ widget, long /*int*/ context, long /*int*/ target_list) {
 		lock.lock();
 		try {
@@ -1668,6 +1724,7 @@ public class GTK extends OS {
 	 * @param actions cast=(GdkDragAction)
 	 */
 	public static final native void _gtk_drag_dest_set(long /*int*/ widget, int flags, long /*int*/ targets, int n_targets, int actions);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_drag_dest_set(long /*int*/ widget, int flags, long /*int*/ targets, int n_targets, int actions) {
 		lock.lock();
 		try {
@@ -1693,6 +1750,7 @@ public class GTK extends OS {
 	 * @param time cast=(guint32)
 	 */
 	public static final native void _gtk_drag_finish(long /*int*/ context, boolean success, boolean delete, int time);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_drag_finish(long /*int*/ context, boolean success, boolean delete, int time) {
 		lock.lock();
 		try {
@@ -1708,6 +1766,7 @@ public class GTK extends OS {
 	 * @param time cast=(guint32)
 	 */
 	public static final native void _gtk_drag_get_data(long /*int*/ widget, long /*int*/ context, long /*int*/ target, int time);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_drag_get_data(long /*int*/ widget, long /*int*/ context, long /*int*/ target, int time) {
 		lock.lock();
 		try {
@@ -1717,10 +1776,26 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param drop cast=(GdkDrop *)
+	 * @param target cast=(GdkAtom)
+	 */
+	public static final native void _gtk_drag_get_data(long /*int*/ widget, long /*int*/ drop, long /*int*/ target);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_drag_get_data(long /*int*/ widget, long /*int*/ drop, long /*int*/ target) {
+		lock.lock();
+		try {
+			_gtk_drag_get_data(widget, drop, target);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param context cast=(GdkDragContext *)
 	 * @param surface cast=(cairo_surface_t *)
 	 */
 	public static final native void _gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface) {
 		lock.lock();
 		try {
@@ -2719,6 +2794,7 @@ public class GTK extends OS {
 	 * @param has_window cast=(gboolean)
 	 */
 	public static final native void _gtk_widget_set_has_window(long /*int*/ widget, boolean has_window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean has_window) {
 		lock.lock();
 		try {
@@ -2727,6 +2803,21 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param has_surface cast=(gboolean)
+	 */
+	public static final native void _gtk_widget_set_has_surface(long /*int*/ widget, boolean has_surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_set_has_surface(long /*int*/ widget, boolean has_surface) {
+		lock.lock();
+		try {
+			_gtk_widget_set_has_surface(widget, has_surface);
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
 	/**
 	 * @method flags=dynamic
@@ -2984,6 +3075,7 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param box cast=(GtkBox *)
 	 * @param widget cast=(GtkWidget *)
 	 * @param expand cast=(gboolean)
@@ -2992,11 +3084,27 @@ public class GTK extends OS {
 	 */
 	public static final native void /*int*/ _gtk_box_pack_end(long /*int*/ box, long /*int*/ widget,
 			boolean expand, boolean fill, int padding);
+	/** [GTK3 only] */
 	public static final void /*int*/ gtk_box_pack_end(long /*int*/ box, long /*int*/ widget,
 			boolean expand, boolean fill, int padding) {
 		lock.lock();
 		try {
 			_gtk_box_pack_end(box, widget, expand, fill, padding);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void /*int*/ _gtk_box_pack_end(long /*int*/ box, long /*int*/ child);
+	/** [GTK4 only] */
+	public static final void /*int*/ gtk_box_pack_end(long /*int*/ box, long /*int*/ child) {
+		lock.lock();
+		try {
+			_gtk_box_pack_end(box, child);
 		} finally {
 			lock.unlock();
 		}
@@ -3315,11 +3423,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
 	 * @param gicon cast=(GIcon *)
 	 * @param size cast=(GtkIconSize)
 	 */
 	public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size);
+	/** [GTK3 only] */
 	public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size) {
 		lock.lock();
 		try {
@@ -3329,10 +3439,27 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
+	 * @param image cast=(GtkImage *)
+	 * @param gicon cast=(GIcon *)
+	 */
+	public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon);
+	/** [GTK4 only] */
+	public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon) {
+		lock.lock();
+		try {
+			_gtk_image_set_from_gicon(image, gicon);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(GtkIconSize)
 	 */
 	public static final native long /*int*/ _gtk_image_new_from_icon_name (byte[] icon_name, int size);
+	/** [GTK3 only] */
 	public static final long /*int*/ gtk_image_new_from_icon_name (byte[] icon_name, int size) {
 		lock.lock();
 		try {
@@ -3342,11 +3469,27 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
+	 * @param icon_name cast=(const gchar *)
+	 */
+	public static final native long /*int*/ _gtk_image_new_from_icon_name (byte[] icon_name);
+	/** [GTK4 only] */
+	public static final long /*int*/ gtk_image_new_from_icon_name (byte[] icon_name) {
+		lock.lock();
+		try {
+			return _gtk_image_new_from_icon_name (icon_name);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(GtkIconSize)
 	 */
 	public static final native void _gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name, int size);
+	/** [GTK3 only] */
 	public static final void gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name, int size) {
 		lock.lock();
 		try {
@@ -3356,14 +3499,44 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
+	 * @param image cast=(GtkImage *)
+	 * @param icon_name cast=(const gchar *)
+	 */
+	public static final native void _gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name);
+	/** [GTK4 only] */
+	public static final void gtk_image_set_from_icon_name (long /*int*/ image, byte[] icon_name) {
+		lock.lock();
+		try {
+			_gtk_image_set_from_icon_name (image, icon_name);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
 	 * @param argc cast=(int *)
 	 * @param argv cast=(char ***)
 	 */
 	public static final native boolean _gtk_init_check(long /*int*/[] argc, long /*int*/[] argv);
+	/** [GTK3 only] */
 	public static final boolean gtk_init_check(long /*int*/[] argc, long /*int*/[] argv) {
 		lock.lock();
 		try {
 			return _gtk_init_check(argc, argv);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native boolean _gtk_init_check();
+	/** [GTK4 only] */
+	public static final boolean gtk_init_check() {
+		lock.lock();
+		try {
+			return _gtk_init_check();
 		} finally {
 			lock.unlock();
 		}
@@ -3604,6 +3777,7 @@ public class GTK extends OS {
 	 * @param priority cast=(guint)
 	 */
 	public static final native void _gtk_style_context_add_provider_for_screen (long /*int*/ screen, long /*int*/ provider, int priority);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_style_context_add_provider_for_screen(long /*int*/ screen, long /*int*/ provider, int priority) {
 		lock.lock();
 		try {
@@ -3706,32 +3880,29 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=const */
-	public static final native int _gtk_major_version();
-	public static final int gtk_major_version() {
+	public static final native int _gtk_get_major_version();
+	public static final int gtk_get_major_version() {
 		lock.lock();
 		try {
-			return _gtk_major_version();
+			return _gtk_get_major_version();
 		} finally {
 			lock.unlock();
 		}
 	}
-	/** @method flags=const */
-	public static final native int _gtk_minor_version();
-	public static final int gtk_minor_version() {
+	public static final native int _gtk_get_minor_version();
+	public static final int gtk_get_minor_version() {
 		lock.lock();
 		try {
-			return _gtk_minor_version();
+			return _gtk_get_minor_version();
 		} finally {
 			lock.unlock();
 		}
 	}
-	/** @method flags=const */
-	public static final native int _gtk_micro_version();
-	public static final int gtk_micro_version() {
+	public static final native int _gtk_get_micro_version();
+	public static final int gtk_get_micro_version() {
 		lock.lock();
 		try {
-			return _gtk_micro_version();
+			return _gtk_get_micro_version();
 		} finally {
 			lock.unlock();
 		}
@@ -3933,7 +4104,7 @@ public class GTK extends OS {
 	 * @param yalign cast=(gfloat)
 	 */
 	public static final native void _gtk_misc_set_alignment(long /*int*/ misc, float xalign, float yalign);
-	/** [GTK2/GTK3; 3.14 deprecated, replaced] */
+	/** [GTK3 only, if-def'd in os.h; 3.14 deprecated, replaced] */
 	public static final void gtk_misc_set_alignment(long /*int*/ misc, float xalign, float yalign) {
 		lock.lock();
 		try {
@@ -5529,6 +5700,7 @@ public class GTK extends OS {
 	 * @param orientation cast=(GtkOrientation*)
 	 */
 	public static final native boolean _gtk_status_icon_get_geometry(long /*int*/ handle, long /*int*/ screen, GdkRectangle area, long /*int*/ orientation);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gtk_status_icon_get_geometry(long /*int*/ handle, long /*int*/ screen, GdkRectangle area, long /*int*/ orientation) {
 		lock.lock();
 		try {
@@ -5539,6 +5711,7 @@ public class GTK extends OS {
 	}
 	/** @param handle cast=(GtkStatusIcon*) */
 	public static final native boolean _gtk_status_icon_get_visible(long /*int*/ handle);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gtk_status_icon_get_visible(long /*int*/ handle) {
 		lock.lock();
 		try {
@@ -5548,6 +5721,7 @@ public class GTK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gtk_status_icon_new();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_status_icon_new() {
 		lock.lock();
 		try {
@@ -5561,6 +5735,7 @@ public class GTK extends OS {
 	 * @param pixbuf cast=(GdkPixbuf*)
 	 */
 	public static final native void _gtk_status_icon_set_from_pixbuf(long /*int*/ handle, long /*int*/ pixbuf);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_status_icon_set_from_pixbuf(long /*int*/ handle, long /*int*/ pixbuf) {
 		lock.lock();
 		try {
@@ -5574,6 +5749,7 @@ public class GTK extends OS {
 	 * @param visible cast=(gboolean)
 	 */
 	public static final native void _gtk_status_icon_set_visible(long /*int*/ handle, boolean visible);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_status_icon_set_visible(long /*int*/ handle, boolean visible) {
 		lock.lock();
 		try {
@@ -5587,6 +5763,7 @@ public class GTK extends OS {
 	 * @param tip_text cast=(const gchar *)
 	 */
 	public static final native void _gtk_status_icon_set_tooltip_text(long /*int*/ handle, byte[] tip_text);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_status_icon_set_tooltip_text(long /*int*/ handle, byte[] tip_text) {
 		lock.lock();
 		try {
@@ -5633,11 +5810,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 * @param state cast=(GtkStateFlags)
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void _gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color);
+	/** [GTK3 only] */
 	public static final void gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color) {
 		lock.lock();
 		try {
@@ -5658,11 +5837,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 * @param state cast=(GtkStateFlags)
 	 * @param padding cast=(GtkBorder *),flags=no_in
 	 */
 	public static final native void _gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding);
+	/** [GTK3 only] */
 	public static final void gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding) {
 		lock.lock();
 		try {
@@ -5686,12 +5867,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 *
+	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 * @param state cast=(GtkStateFlags)
 	 * @param padding cast=(GtkBorder *),flags=no_in
 	 */
 	public static final native void _gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding);
+	/** [GTK3 only] */
 	public static final void gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding) {
 		lock.lock();
 		try {
@@ -5760,41 +5942,12 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param style cast=(GtkStyle *) */
-	public static final native long /*int*/ _gtk_style_get_font_desc(long /*int*/ style);
-	public static final long /*int*/ gtk_style_get_font_desc(long /*int*/ style) {
-		lock.lock();
-		try {
-			return _gtk_style_get_font_desc(style);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param style cast=(GtkStyle *) */
-	public static final native int _gtk_style_get_xthickness(long /*int*/ style);
-	public static final int gtk_style_get_xthickness(long /*int*/ style) {
-		lock.lock();
-		try {
-			return _gtk_style_get_xthickness(style);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/** @param style cast=(GtkStyle *) */
-	public static final native int _gtk_style_get_ythickness(long /*int*/ style);
-	public static final int gtk_style_get_ythickness(long /*int*/ style) {
-		lock.lock();
-		try {
-			return _gtk_style_get_ythickness(style);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param targets cast=(const GtkTargetEntry *)
 	 * @param ntargets cast=(guint)
 	 */
 	public static final native long /*int*/ _gtk_target_list_new(long /*int*/ targets, int ntargets);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_target_list_new(long /*int*/ targets, int ntargets) {
 		lock.lock();
 		try {
@@ -5805,6 +5958,7 @@ public class GTK extends OS {
 	}
 	/** @param list cast=(GtkTargetList *) */
 	public static final native void _gtk_target_list_unref(long /*int*/ list);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_target_list_unref(long /*int*/ list) {
 		lock.lock();
 		try {
@@ -5814,10 +5968,11 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param buffer cast=(GtkTextBuffer *)
-	 * @param clipboard cast=(GtkClipboard *)
 	 */
 	public static final native void _gtk_text_buffer_copy_clipboard(long /*int*/ buffer, long /*int*/ clipboard);
+	/** [GTK3/GTK4, GTK3 uses GtkClipboard but GTK4 uses GdkClipboard -- method signature otherwise identical] */
 	public static final void gtk_text_buffer_copy_clipboard(long /*int*/ buffer, long /*int*/ clipboard) {
 		lock.lock();
 		try {
@@ -5842,11 +5997,12 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param buffer cast=(GtkTextBuffer *)
-	 * @param clipboard cast=(GtkClipboard *)
 	 * @param default_editable cast=(gboolean)
 	 */
 	public static final native void _gtk_text_buffer_cut_clipboard(long /*int*/ buffer, long /*int*/ clipboard, boolean default_editable);
+	/** [GTK3/GTK4, GTK3 uses GtkClipboard but GTK4 uses GdkClipboard -- method signature otherwise identical] */
 	public static final void gtk_text_buffer_cut_clipboard(long /*int*/ buffer, long /*int*/ clipboard, boolean default_editable) {
 		lock.lock();
 		try {
@@ -6042,12 +6198,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param buffer cast=(GtkTextBuffer *)
-	 * @param clipboard cast=(GtkClipboard *)
 	 * @param override_location cast=(GtkTextIter *)
 	 * @param default_editable cast=(gboolean)
 	 */
 	public static final native void _gtk_text_buffer_paste_clipboard(long /*int*/ buffer, long /*int*/ clipboard, byte[] override_location, boolean default_editable);
+	/** [GTK3/GTK4, GTK3 uses GtkClipboard but GTK4 uses GdkClipboard -- method signature otherwise identical] */
 	public static final void gtk_text_buffer_paste_clipboard(long /*int*/ buffer, long /*int*/ clipboard, byte[] override_location, boolean default_editable) {
 		lock.lock();
 		try {
@@ -6104,6 +6261,7 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param text_view cast=(GtkTextView *)
 	 * @param win cast=(GtkTextWindowType)
 	 * @param buffer_x cast=(gint)
@@ -6112,10 +6270,30 @@ public class GTK extends OS {
 	 * @param window_y cast=(gint *)
 	 */
 	public static final native void _gtk_text_view_buffer_to_window_coords(long /*int*/ text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y);
+	/** [GTK3 only] */
 	public static final void gtk_text_view_buffer_to_window_coords(long /*int*/ text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y) {
 		lock.lock();
 		try {
 			_gtk_text_view_buffer_to_window_coords(text_view, win, buffer_x, buffer_y, window_x, window_y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param text_view cast=(GtkTextView *)
+	 * @param win cast=(GtkTextWindowType)
+	 * @param buffer_x cast=(gint)
+	 * @param buffer_y cast=(gint)
+	 * @param window_x cast=(gint *)
+	 * @param window_y cast=(gint *)
+	 */
+	public static final native void _gtk_text_view_buffer_to_surface_coords(long /*int*/ text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y);
+	/** [GTK4 only] */
+	public static final void gtk_text_view_buffer_to_surface_coords(long /*int*/ text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y) {
+		lock.lock();
+		try {
+			_gtk_text_view_buffer_to_surface_coords(text_view, win, buffer_x, buffer_y, window_x, window_y);
 		} finally {
 			lock.unlock();
 		}
@@ -6217,6 +6395,7 @@ public class GTK extends OS {
 	 * @param win cast=(GtkTextWindowType)
 	 */
 	public static final native long /*int*/ _gtk_text_view_get_window(long /*int*/ text_view, int win);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_text_view_get_window(long /*int*/ text_view, int win) {
 		lock.lock();
 		try {
@@ -6351,6 +6530,7 @@ public class GTK extends OS {
 	 * @param setting cast=(gboolean)
 	 */
 	public static final native void _gtk_toggle_button_set_inconsistent(long /*int*/ toggle_button, boolean setting);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_toggle_button_set_inconsistent(long /*int*/ toggle_button, boolean setting) {
 		lock.lock();
 		try {
@@ -6364,6 +6544,7 @@ public class GTK extends OS {
 	 * @param draw_indicator cast=(gboolean)
 	 */
 	public static final native void _gtk_toggle_button_set_mode(long /*int*/ toggle_button, boolean draw_indicator);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_toggle_button_set_mode(long /*int*/ toggle_button, boolean draw_indicator) {
 		lock.lock();
 		try {
@@ -6566,9 +6747,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param toolbar cast=(GtkToolbar *)
+	/**
+	 * @param toolbar cast=(GtkToolbar *)
 	 */
 	public static final native void _gtk_toolbar_set_icon_size(long /*int*/ toolbar, int size);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_toolbar_set_icon_size(long /*int*/ toolbar, int size) {
 		lock.lock();
 		try {
@@ -7497,8 +7680,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param tree_view cast=(GtkTreeView *) */
+	/**
+	 * @param tree_view cast=(GtkTreeView *)
+	 */
 	public static final native long /*int*/ _gtk_tree_view_get_bin_window(long /*int*/ tree_view);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_tree_view_get_bin_window(long /*int*/ tree_view) {
 		lock.lock();
 		try {
@@ -7853,6 +8039,7 @@ public class GTK extends OS {
 	 * @param events cast=(gint)
 	 */
 	public static final native void _gtk_widget_add_events(long /*int*/ widget, int events);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_add_events(long /*int*/ widget, int events) {
 		lock.lock();
 		try {
@@ -7912,6 +8099,7 @@ public class GTK extends OS {
 	 * @param cr cast=(cairo_t *)
 	 */
 	public static final native void _gtk_widget_draw(long /*int*/ widget, long /*int*/ cr);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_draw(long /*int*/ widget, long /*int*/ cr) {
 		lock.lock();
 		try {
@@ -7963,12 +8151,28 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native boolean _gtk_widget_get_has_window (long /*int*/ widget);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gtk_widget_get_has_window (long /*int*/ widget) {
 		lock.lock();
 		try {
 			return _gtk_widget_get_has_window(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native boolean _gtk_widget_get_has_surface (long /*int*/ widget);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gtk_widget_get_has_surface (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_has_surface(widget);
 		} finally {
 			lock.unlock();
 		}
@@ -7993,8 +8197,11 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native int _gtk_widget_get_events(long /*int*/ widget);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gtk_widget_get_events(long /*int*/ widget) {
 		lock.lock();
 		try {
@@ -8003,12 +8210,30 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native long /*int*/ _gtk_widget_get_window (long /*int*/ widget);
+	/** [GTK3 only] */
 	public static final long /*int*/ gtk_widget_get_window (long /*int*/ widget) {
 		lock.lock();
 		try {
 			return _gtk_widget_get_window(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long /*int*/ _gtk_widget_get_surface (long /*int*/ widget);
+	/** [GTK4 only] */
+	public static final long /*int*/ gtk_widget_get_surface (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_surface(widget);
 		} finally {
 			lock.unlock();
 		}
@@ -8043,12 +8268,28 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native long /*int*/ _gtk_widget_get_parent_window(long /*int*/ widget);
 	public static final long /*int*/ gtk_widget_get_parent_window(long /*int*/ widget) {
 		lock.lock();
 		try {
 			return _gtk_widget_get_parent_window(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long /*int*/ _gtk_widget_get_parent_surface(long /*int*/ widget);
+	public static final long /*int*/ gtk_widget_get_parent_surface(long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_parent_surface(widget);
 		} finally {
 			lock.unlock();
 		}
@@ -8294,16 +8535,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void _gtk_widget_set_app_paintable(long /*int*/ widget, boolean app_paintable);
-	public static final void gtk_widget_set_app_paintable(long /*int*/ widget, boolean app_paintable) {
-		lock.lock();
-		try {
-			_gtk_widget_set_app_paintable(widget, app_paintable);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/** @param dir cast=(GtkTextDirection) */
 	public static final native void _gtk_widget_set_default_direction(int dir);
 	public static final void gtk_widget_set_default_direction(int dir) {
@@ -8352,19 +8583,6 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param widget cast=(GtkWidget *)
-	 * @param mapped cast=(gboolean)
-	 */
-	public static final native void _gtk_widget_set_mapped(long /*int*/ widget, boolean mapped);
-	public static final void gtk_widget_set_mapped(long /*int*/ widget, boolean mapped) {
-		lock.lock();
-		try {
-			_gtk_widget_set_mapped(widget,mapped);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param widget cast=(GtkWidget *)
 	 * @param visible cast=(gboolean)
 	 */
 	public static final native void _gtk_widget_set_visible(long /*int*/ widget, boolean visible);
@@ -8403,10 +8621,12 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param double_buffered cast=(gboolean)
 	 */
 	public static final native void _gtk_widget_set_double_buffered(long /*int*/ widget, boolean double_buffered);
+	/** [GTK3 only; 3.14 deprecated] */
 	public static final void gtk_widget_set_double_buffered(long /*int*/ widget, boolean double_buffered) {
 		lock.lock();
 		try {
@@ -8473,6 +8693,7 @@ public class GTK extends OS {
 	 * @param redraw cast=(gboolean)
 	 */
 	public static final native void _gtk_widget_set_redraw_on_allocate(long /*int*/ widget, boolean redraw);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_set_redraw_on_allocate(long /*int*/ widget, boolean redraw) {
 		lock.lock();
 		try {
@@ -8523,6 +8744,7 @@ public class GTK extends OS {
 	 * @param allocation cast=(GtkAllocation *),flags=no_out
 	 */
 	public static final native void _gtk_widget_size_allocate(long /*int*/ widget, GtkAllocation allocation);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_size_allocate(long /*int*/ widget, GtkAllocation allocation) {
 		lock.lock();
 		try {
@@ -8536,6 +8758,7 @@ public class GTK extends OS {
 	 * @param allocation cast=(GtkAllocation *),flags=no_out
 	 */
 	public static final native void _gtk_widget_set_allocation(long /*int*/ widget, GtkAllocation allocation);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_set_allocation(long /*int*/ widget, GtkAllocation allocation) {
 		lock.lock();
 		try {
@@ -8545,11 +8768,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void _gtk_widget_style_get(long /*int*/ widget, byte[] property_name, int[] value, long /*int*/ terminator);
+	/** [GTK3 only] */
 	public static final void gtk_widget_style_get(long /*int*/ widget, byte[] property_name, int[] value, long /*int*/ terminator) {
 		lock.lock();
 		try {
@@ -8559,11 +8784,13 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void _gtk_widget_style_get(long /*int*/ widget, byte[] property_name, long[] value, long /*int*/ terminator);
+	/** [GTK3 only] */
 	public static final void gtk_widget_style_get(long /*int*/ widget, byte[] property_name, long[] value, long /*int*/ terminator) {
 		lock.lock();
 		try {
@@ -8677,7 +8904,7 @@ public class GTK extends OS {
 	 * @param window cast=(GtkWindow *)
 	 */
 	public static final native double _gtk_window_get_opacity (long /*int*/ window);
-	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
+	/** [GTK3; 3.8 deprecated, replaced] */
 	public static final double gtk_window_get_opacity (long /*int*/ window) {
 		lock.lock();
 		try {
@@ -8904,6 +9131,7 @@ public class GTK extends OS {
 	 * @param geometry flags=no_out
 	 */
 	public static final native void _gtk_window_set_geometry_hints(long /*int*/ window, long /*int*/ geometry_widget, GdkGeometry geometry, int geom_mask);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_window_set_geometry_hints(long /*int*/ window, long /*int*/ geometry_widget, GdkGeometry geometry, int geom_mask) {
 		lock.lock();
 		try {
@@ -8983,10 +9211,25 @@ public class GTK extends OS {
 	 * @param parent_window cast=(GdkWindow *)
 	 */
 	public static final native void _gtk_widget_set_parent_window(long /*int*/ widget, long /*int*/ parent_window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_set_parent_window(long /*int*/ widget, long /*int*/ parent_window) {
 		lock.lock();
 		try {
 			_gtk_widget_set_parent_window(widget, parent_window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param parent_surface cast=(GdkSurface *)
+	 */
+	public static final native void _gtk_widget_set_parent_surface(long /*int*/ widget, long /*int*/ parent_surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_set_parent_surface(long /*int*/ widget, long /*int*/ parent_surface) {
+		lock.lock();
+		try {
+			_gtk_widget_set_parent_window(widget, parent_surface);
 		} finally {
 			lock.unlock();
 		}
@@ -9078,6 +9321,7 @@ public class GTK extends OS {
 	 * @param region cast=(cairo_region_t *)
 	 */
 	public static final native void _gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region) {
 		lock.lock();
 		try {

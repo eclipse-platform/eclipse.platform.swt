@@ -106,7 +106,7 @@ public class OS extends C {
 	static {
 		String swt_lib_versions = getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {
-			System.out.print("SWT_LIB_Gtk:"+GTK.gtk_major_version()+"."+GTK.gtk_minor_version()+"."+GTK.gtk_micro_version());
+			System.out.print("SWT_LIB_Gtk:"+GTK.gtk_get_major_version()+"."+GTK.gtk_get_minor_version()+"."+GTK.gtk_get_micro_version());
 			System.out.print(" (Dynamic gdbus)");
 			System.out.println("");
 		}
