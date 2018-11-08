@@ -22,12 +22,13 @@ import org.junit.runners.Suite;
  * Suite for testing all of the widget test cases.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ Test_org_eclipse_swt_widgets_ExpandItem.class, Test_org_eclipse_swt_widgets_MenuItem.class,
+@Suite.SuiteClasses({ Test_org_eclipse_swt_widgets_Shell.class,
+		Test_org_eclipse_swt_widgets_ExpandItem.class, Test_org_eclipse_swt_widgets_MenuItem.class,
 		Test_org_eclipse_swt_widgets_ToolItem.class, Test_org_eclipse_swt_widgets_TabItem.class,
 		Test_org_eclipse_swt_widgets_TableItem.class, Test_org_eclipse_swt_widgets_TableColumn.class,
 		Test_org_eclipse_swt_widgets_TreeItem.class, Test_org_eclipse_swt_widgets_Caret.class,
 		Test_org_eclipse_swt_widgets_Event.class, Test_org_eclipse_swt_widgets_Menu.class,
-		Test_org_eclipse_swt_widgets_Shell.class, Test_org_eclipse_swt_widgets_Label.class,
+		Test_org_eclipse_swt_widgets_Label.class,
 		Test_org_eclipse_swt_widgets_Button.class, Test_org_eclipse_swt_widgets_ExpandBar.class,
 		Test_org_eclipse_swt_widgets_List.class, Test_org_eclipse_swt_widgets_Text.class,
 		Test_org_eclipse_swt_widgets_ScrollBar.class, Test_org_eclipse_swt_widgets_Sash.class,
