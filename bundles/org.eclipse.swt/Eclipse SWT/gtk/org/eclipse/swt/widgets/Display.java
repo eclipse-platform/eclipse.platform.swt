@@ -4311,7 +4311,7 @@ public boolean post (Event event) {
 						case 5: button = 7;	break;
 						default: return false;
 					}
-					GDK.gdk_test_simulate_button(gdkWindow, x[0], y[0], button, 0, type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS: GDK.GDK_BUTTON_RELEASE);
+					GDK.gdk_test_simulate_button(gdkWindow, x[0], y[0], button, cachedModifier, type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS: GDK.GDK_BUTTON_RELEASE);
 					return true;
 				}
 				/*
