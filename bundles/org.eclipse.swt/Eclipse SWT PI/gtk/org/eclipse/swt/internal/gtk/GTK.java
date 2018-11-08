@@ -248,14 +248,6 @@ public class GTK extends OS {
 
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long /*int*/ GTK_WIDGET_GET_CLASS(long /*int*/ widget);
-
-	/**
-	 * @param acce_label cast=(GtkAccelLabel *)
-	 * @param string cast=(gchar *)
-	 */
-	public static final native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(long /*int*/ acce_label, long /*int*/ string);
-	/** @param acce_label cast=(GtkAccelLabel *) */
-	public static final native long /*int*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(long /*int*/ acce_label);
 	/** @method flags=const */
 	public static final native long /*int*/ GTK_TYPE_TEXT_VIEW_ACCESSIBLE ();
 	public static final native long /*int*/ _GTK_ACCESSIBLE (long /*int*/ handle);

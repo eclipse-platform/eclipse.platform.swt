@@ -1049,29 +1049,16 @@ public void setText (String string) {
 	if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
 		GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 		if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 6, 0)) {
-				MaskKeysym maskKeysym = getMaskKeysym();
-				if (maskKeysym != null) {
-					GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
-					GTK.gtk_accel_label_set_accel (labelHandle,
-							maskKeysym.keysym, maskKeysym.mask);
-				}
-			} else {
-				setAccelLabel (labelHandle, accelString);
+			MaskKeysym maskKeysym = getMaskKeysym();
+			if (maskKeysym != null) {
+				GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
+				GTK.gtk_accel_label_set_accel (labelHandle,
+						maskKeysym.keysym, maskKeysym.mask);
 			}
 			// A workaround for Ubuntu Unity global menu
 			OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
 		}
 	}
-}
-
-private void setAccelLabel(long /*int*/ label, String accelString) {
-	byte[] buffer = Converter.wcsToMbcs (accelString, true);
-	long /*int*/ ptr = OS.g_malloc (buffer.length);
-	C.memmove (ptr, buffer, buffer.length);
-	long /*int*/ oldPtr = GTK.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
-	GTK.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
-	if (oldPtr != 0) OS.g_free (oldPtr);
 }
 
 /**
