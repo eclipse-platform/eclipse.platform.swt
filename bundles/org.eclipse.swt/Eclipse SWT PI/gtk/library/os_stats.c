@@ -1107,6 +1107,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1window_1new",
 	"_1gtk_1window_1remove_1accel_1group",
 	"_1gtk_1window_1resize",
+	"_1gtk_1window_1set_1attached_1to",
 	"_1gtk_1window_1set_1decorated",
 	"_1gtk_1window_1set_1default",
 	"_1gtk_1window_1set_1destroy_1with_1parent",

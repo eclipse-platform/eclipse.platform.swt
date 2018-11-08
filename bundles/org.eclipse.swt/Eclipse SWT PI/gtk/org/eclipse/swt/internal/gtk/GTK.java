@@ -9088,6 +9088,19 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param window cast=(GtkWindow *)
+	 * @param attach_widget cast=(GtkWidget *)
+	 */
+	public static final native void _gtk_window_set_attached_to(long /*int*/ window, long /*int*/ attach_widget);
+	public static final void gtk_window_set_attached_to(long /*int*/ window, long /*int*/ attach_widget) {
+		lock.lock();
+		try {
+			_gtk_window_set_attached_to(window, attach_widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GtkWindow *)
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native void _gtk_window_set_default(long /*int*/ window, long /*int*/ widget);

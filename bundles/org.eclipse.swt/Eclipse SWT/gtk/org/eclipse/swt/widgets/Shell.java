@@ -134,7 +134,7 @@ public class Shell extends Decorations {
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
 
-	static Callback gdkSeatGrabCallback; // Wayland only.
+	static Callback gdkSeatGrabCallback, parentDestroyedCallback; // Wayland only.
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -704,16 +704,38 @@ void createHandle (int index) {
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (parent != null) {
 			/*
-			 * Bug 530138: On Wayland, GTK_WINDOW_POPUP attached to a GTK_WINDOW_POPUP parent
+			 * Problems with GTK_WINDOW_POPUP attached to another GTK_WINDOW_POPUP parent
+			 * 1) Bug 530138: GTK_WINDOW_POPUP attached to a GTK_WINDOW_POPUP parent
 			 * gets positioned relatively to the GTK_WINDOW_POPUP. We want to position it
-			 * relatively to the GTK_WINDOW_TOPLEVEL surface.
+			 * relatively to the GTK_WINDOW_TOPLEVEL surface. Fix is to set the child popup's transient
+			 * parent to the top level window.
+			 *
+			 * 2) Bug 540166: When a parent popup is destroyed, the child popup sometimes does not
+			 * get destroyed and is stuck until its transient top level parent gets destroyed.
+			 * Fix is to implement a similar gtk_window_set_destroy_with_parent with its *logical*
+			 * parent by connecting a "destroy" signal.
 			 */
 			if (!OS.isX11()) {
 				Composite topLevelParent = parent;
 				while (topLevelParent != null && (topLevelParent.style & SWT.ON_TOP) != 0) {
 					topLevelParent = parent.getParent();
 				}
-				GTK.gtk_window_set_transient_for(shellHandle, topLevelParent.topHandle());
+				// transient parent must be the a toplevel window to position correctly
+				if (topLevelParent != null) {
+					GTK.gtk_window_set_transient_for(shellHandle, topLevelParent.topHandle());
+				} else {
+					GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle());
+				}
+				// this marks the logical parent
+				GTK.gtk_window_set_attached_to (shellHandle, parent.topHandle());
+				// implements the gtk_window_set_destroy_with_parent for the *logical* parent
+				if (parent != topLevelParent && isMappedToPopup()) {
+					if (parentDestroyedCallback == null) {
+						parentDestroyedCallback = new Callback(Shell.class, "ParentDestroyedCallbackFunc", 2);
+					}
+					long /*int*/ parentDestroyedFunc = parentDestroyedCallback.getAddress();
+					OS.g_signal_connect(parent.topHandle(), OS.destroy, parentDestroyedFunc, shellHandle);
+				}
 			} else {
 				GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 			}
@@ -1018,7 +1040,7 @@ void forceResize (int width, int height) {
 		int [] dest_x = new int[1];
 		int [] dest_y = new int[1];
 		GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
-		if (dest_x[0] != -1 && dest_y[0] != -1) {
+		if (dest_x[0] != -1 && dest_y[0] != -1 && !isMappedToPopup()) {
 			allocation.x += dest_x[0];
 			allocation.y += dest_y[0];
 		}
@@ -2916,6 +2938,13 @@ Point getWindowOrigin () {
 		return getLocationInPixels ();
 	}
 	return super.getWindowOrigin( );
+}
+
+static long /*int*/ ParentDestroyedCallbackFunc (long /*int*/ parent, long /*int*/ child) {
+	if (child != 0 && GTK.GTK_IS_WINDOW(child)) {
+		GTK.gtk_widget_destroy(child);
+	}
+	return 0;
 }
 
 static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkWindow, long /*int*/ userData_shellHandle) {

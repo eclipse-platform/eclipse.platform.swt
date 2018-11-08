@@ -284,6 +284,7 @@ public class OS extends C {
 	public static final byte[] copy_clipboard = ascii("copy-clipboard");
 	public static final byte[] cut_clipboard = ascii("cut-clipboard");
 	public static final byte[] create_menu_proxy = ascii("create-menu-proxy");
+	public static final byte[] destroy = ascii("destroy");
 	public static final byte[] delete_event = ascii("delete-event");
 	public static final byte[] delete_from_cursor = ascii("delete-from-cursor");
 	public static final byte[] day_selected = ascii("day-selected");
