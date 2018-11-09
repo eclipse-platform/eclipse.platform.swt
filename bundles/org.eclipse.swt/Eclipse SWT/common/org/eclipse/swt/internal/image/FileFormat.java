@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.internal.image;
 
 
 import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -35,7 +36,7 @@ public abstract class FileFormat {
 
 static FileFormat getFileFormat (LEDataInputStream stream, String format) throws Exception {
 	Class<?> clazz = Class.forName(FORMAT_PACKAGE + '.' + format + FORMAT_SUFFIX);
-	FileFormat fileFormat = (FileFormat) clazz.newInstance();
+	FileFormat fileFormat = (FileFormat) clazz.getDeclaredConstructor().newInstance();
 	if (fileFormat.isFileFormat(stream)) return fileFormat;
 	return null;
 }
@@ -102,7 +103,7 @@ public static void save(OutputStream os, int format, ImageLoader loader) {
 	FileFormat fileFormat = null;
 	try {
 		Class<?> clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[format] + FORMAT_SUFFIX);
-		fileFormat = (FileFormat) clazz.newInstance();
+		fileFormat = (FileFormat) clazz.getDeclaredConstructor().newInstance();
 	} catch (Exception e) {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
