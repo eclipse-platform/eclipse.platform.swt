@@ -1037,11 +1037,8 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (text.equals (string)) return;
 	super.setText (string);
-	String accelString = "";
 	int index = string.indexOf ('\t');
 	if (index != -1) {
-		boolean isRTL = (parent.style & SWT.RIGHT_TO_LEFT) != 0;
-		accelString = (isRTL? "" : "  ") + string.substring (index+1, string.length()) + (isRTL? "  " : "");
 		string = string.substring (0, index);
 	}
 	char [] chars = fixMnemonic (string);
