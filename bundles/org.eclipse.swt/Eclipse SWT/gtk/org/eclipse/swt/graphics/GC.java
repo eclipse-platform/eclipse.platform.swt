@@ -2922,8 +2922,15 @@ private void limitClipping(long /*int*/ gcClipping) {
 		double[] invertedCurrentTransform = currentTransform.clone();
 		Cairo.cairo_matrix_invert(invertedCurrentTransform);
 		int[] clippingWithoutUserTransform = transformRectangle(invertedCurrentTransform, clipping);
-		clippingRegion.add(clippingWithoutUserTransform);
-		Cairo.cairo_region_intersect(gcClipping, clippingRegion.handle);
+		/* Bug 540908: limiting clipping is very slow if client uses a transformation
+		 * Check if client transformation has no rotation, then use Region.add(Rectangle) as its much faster than Region.add(int[])
+		 */
+		if (hasNoRotation(invertedCurrentTransform)) {
+			Rectangle rectangle = getTransformedClippingRectangle(clippingWithoutUserTransform);
+			clippingRegion.add(rectangle);
+		} else {
+			clippingRegion.add(clippingWithoutUserTransform);
+		}
 	} else {
 		clippingRegion.add(clipping);
 	}
@@ -2962,6 +2969,38 @@ private static int[] transformPoints(double[] transformation, Point[] points) {
 		transformedPoints[(i * 2) + 1] = (int) Math.round(py[0]);
 	}
 	return transformedPoints;
+}
+
+private static boolean hasNoRotation(double[] matrix) {
+	/* Indices in the matrix are:                     (m11 m12 d1)
+	 * 0: m11, 1: m12, 2: m21, 3: m22, 4: d1, 5: d2   (m21 m22 d2)
+	 */
+	double m12 = matrix[1];
+	double m21 = matrix[2];
+	return m12 == 0.0 && m21 == 0.0;
+}
+
+/* input must be ordered the ordered points of a rectangle:
+ * pointsArray = {x1, y1, x2, y2, x3, y3, x4, y4}
+ * with lines (x1,y1) to (x2,y2), (x2,y2) to (x3,y3), (x3,y3) to (x4,y4), (x4,y4) to (x1,y1)
+ * the lines must be parallel or orthogonal to the x resp. y axis
+ */
+private static Rectangle getTransformedClippingRectangle(int[] pointsArray) {
+	int x1 = pointsArray[0];
+	int y1 = pointsArray[1];
+	int x2 = pointsArray[2];
+	int y2 = pointsArray[3];
+	int x3 = pointsArray[4];
+	int y3 = pointsArray[5];
+	int x4 = pointsArray[6];
+	int y4 = pointsArray[7];
+	// (x,y) is bottom left corner, so we need minimum x and y coordinates
+	int x = Math.min(Math.min(x1, x2), Math.min(x3, x4));
+	int y = Math.min(Math.min(y1, y2), Math.min(y3, y4));
+	int width = Math.abs(x1 - x2);
+	int height = Math.abs(y1 - y4);
+	Rectangle r = new Rectangle(x, y, width, height);
+	return r;
 }
 
 void setClipping(long /*int*/ clipRgn) {
