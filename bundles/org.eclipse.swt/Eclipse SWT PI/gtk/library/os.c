@@ -396,18 +396,56 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1for_1display)
 }
 #endif
 
-#ifndef NO__1gdk_1cursor_1new_1from_1name
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+#if (!defined(NO__1gdk_1cursor_1new_1from_1name__I_3B) && !defined(JNI64)) || (!defined(NO__1gdk_1cursor_1new_1from_1name__J_3B) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name__I_3B)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+#else
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name__J_3B)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+#endif
 {
 	jbyte *lparg1=NULL;
 	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name_FUNC);
+#ifndef JNI64
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name__I_3B_FUNC);
+#else
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name__J_3B_FUNC);
+#endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jintLong)gdk_cursor_new_from_name((GdkDisplay *)arg0, (const gchar *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name_FUNC);
+#ifndef JNI64
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name__I_3B_FUNC);
+#else
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name__J_3B_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1gdk_1cursor_1new_1from_1name___3BI) && !defined(JNI64)) || (!defined(NO__1gdk_1cursor_1new_1from_1name___3BJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name___3BI)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
+#else
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name___3BJ)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1)
+#endif
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name___3BI_FUNC);
+#else
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1name___3BJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)gdk_cursor_new_from_name((const gchar *)lparg0, (GdkCursor *)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+#ifndef JNI64
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name___3BI_FUNC);
+#else
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1name___3BJ_FUNC);
+#endif
 	return rc;
 }
 #endif
@@ -452,6 +490,25 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1seat)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1get_1seat_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1device_1get_1surface_1at_1position
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1device_1get_1surface_1at_1position)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1get_1surface_1at_1position_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)gdk_device_get_surface_at_position((GdkDevice *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1get_1surface_1at_1position_FUNC);
 	return rc;
 }
 #endif
@@ -533,13 +590,45 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1ungrab)
 }
 #endif
 
-#ifndef NO__1gdk_1device_1warp
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#if (!defined(NO__1gdk_1device_1warp__III) && !defined(JNI64)) || (!defined(NO__1gdk_1device_1warp__JII) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp__III)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp__JII)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+#endif
 {
-	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp_FUNC);
+#ifndef JNI64
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp__III_FUNC);
+#else
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp__JII_FUNC);
+#endif
+	gdk_device_warp((GdkDevice *)arg0, (gint)arg1, (gint)arg2);
+#ifndef JNI64
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp__III_FUNC);
+#else
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp__JII_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gdk_1device_1warp__IIII) && !defined(JNI64)) || (!defined(NO__1gdk_1device_1warp__JJII) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp__IIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#else
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1device_1warp__JJII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#endif
+{
+#ifndef JNI64
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp__IIII_FUNC);
+#else
+	GDK_NATIVE_ENTER(env, that, _1gdk_1device_1warp__JJII_FUNC);
+#endif
 	gdk_device_warp((GdkDevice *)arg0, (GdkScreen *)arg1, (gint)arg2, (gint)arg3);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp_FUNC);
+#ifndef JNI64
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp__IIII_FUNC);
+#else
+	GDK_NATIVE_EXIT(env, that, _1gdk_1device_1warp__JJII_FUNC);
+#endif
 }
 #endif
 
@@ -1799,6 +1888,38 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1set_1program_1class)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1set_1program_1class_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1create_1similar_1surface
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1surface_1create_1similar_1surface)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1create_1similar_1surface_FUNC);
+	rc = (jintLong)gdk_surface_create_similar_surface((GdkSurface *)arg0, (cairo_content_t)arg1, arg2, arg3);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1create_1similar_1surface_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1destroy
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1destroy)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1destroy_FUNC);
+	gdk_surface_destroy((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1destroy_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1focus
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1focus)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1focus_FUNC);
+	gdk_surface_focus((GdkSurface *)arg0, arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1focus_FUNC);
 }
 #endif
 

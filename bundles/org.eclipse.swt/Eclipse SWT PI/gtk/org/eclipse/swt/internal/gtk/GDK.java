@@ -388,6 +388,7 @@ public class GDK extends OS {
 	 * @param data cast=(gpointer)
 	 */
 	public static final native void _gdk_window_add_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_add_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data) {
 		lock.lock();
 		try {
@@ -402,6 +403,7 @@ public class GDK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native long /*int*/ _gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region) {
 		lock.lock();
 		try {
@@ -416,6 +418,7 @@ public class GDK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native long /*int*/ _gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context) {
 		lock.lock();
 		try {
@@ -426,6 +429,7 @@ public class GDK extends OS {
 	}
 	/** @param atom_name cast=(const gchar *),flags=no_out critical */
 	public static final native long /*int*/ _gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_atom_intern(byte[] atom_name, boolean only_if_exists) {
 		lock.lock();
 		try {
@@ -436,6 +440,7 @@ public class GDK extends OS {
 	}
 	/** @param atom cast=(GdkAtom) */
 	public static final native long /*int*/ _gdk_atom_name(long /*int*/ atom);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_atom_name(long /*int*/ atom) {
 		lock.lock();
 		try {
@@ -457,10 +462,11 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param window cast=(GdkWindow *)
 	 * @method flags=dynamic
+	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native long /*int*/ _gdk_cairo_create(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final long /*int*/ gdk_cairo_create(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -512,6 +518,7 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native int _gdk_window_get_state(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_state(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -524,6 +531,7 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native int _gdk_window_get_width(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_width(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -536,6 +544,7 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native long /*int*/ _gdk_window_get_visible_region(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_get_visible_region(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -548,6 +557,7 @@ public class GDK extends OS {
 	 *  @param window cast=(GdkWindow *)
 	 */
 	public static final native int _gdk_window_get_height(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_height(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -579,6 +589,7 @@ public class GDK extends OS {
 	 * @param y cast=(gdouble)
 	 */
 	public static final native void _gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_cairo_set_source_window(long /*int*/ cairo, long /*int*/ window, int x, int y) {
 	        lock.lock();
 	        try {
@@ -592,6 +603,7 @@ public class GDK extends OS {
 	 *  @param cursor_type cast=(GdkCursorType)
 	 */
 	public static final native long /*int*/ _gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type) {
 		lock.lock();
 		try {
@@ -600,14 +612,30 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param display cast=(GdkDisplay *)
-	 *  @param cursor_name cast=(const gchar *)
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 * @param cursor_name cast=(const gchar *)
 	 */
 	public static final native long /*int*/ _gdk_cursor_new_from_name(long /*int*/ display, byte[] cursor_name);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_cursor_new_from_name(long /*int*/ display, byte[] cursor_name) {
 		lock.lock();
 		try {
 			return _gdk_cursor_new_from_name(display, cursor_name);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param cursor_name cast=(const gchar *)
+	 * @param fallback cast=(GdkCursor *)
+	 */
+	public static final native long /*int*/ _gdk_cursor_new_from_name(byte[] cursor_name, long /*int*/ fallback);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_cursor_new_from_name(byte[] cursor_name, long /*int*/ fallback) {
+		lock.lock();
+		try {
+			return _gdk_cursor_new_from_name(cursor_name, fallback);
 		} finally {
 			lock.unlock();
 		}
@@ -619,6 +647,7 @@ public class GDK extends OS {
 	 * @param y cast=(gint)
 	 */
 	public static final native long /*int*/ _gdk_cursor_new_from_pixbuf(long /*int*/ display, long /*int*/ pixbuf, int x, int y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_cursor_new_from_pixbuf(long /*int*/ display, long /*int*/ pixbuf, int x, int y) {
 		lock.lock();
 		try {
@@ -634,10 +663,26 @@ public class GDK extends OS {
 	 * @param y cast=(gint)
 	 */
 	public static final native void _gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_device_warp(long /*int*/ device, long /*int*/ screen, int x, int y) {
 		lock.lock();
 		try {
 			_gdk_device_warp(device, screen, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param device cast=(GdkDevice *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 */
+	public static final native void _gdk_device_warp(long /*int*/ device, int x, int y);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_device_warp(long /*int*/ device, int x, int y) {
+		lock.lock();
+		try {
+			_gdk_device_warp(device, x, y);
 		} finally {
 			lock.unlock();
 		}
@@ -679,6 +724,7 @@ public class GDK extends OS {
 	 *  @param window cast=(GdkWindow *)
 	 */
 	public static final native long /*int*/ _gdk_window_get_display(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_get_display(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -716,7 +762,23 @@ public class GDK extends OS {
 	 * @param win_y cast=(gint *)
 	 */
 	public static final native long /*int*/ _gdk_device_get_window_at_position(long /*int*/ device, int[] win_x, int[] win_y);
+	/** [GTK3 only] */
 	public static final long /*int*/ gdk_device_get_window_at_position(long /*int*/ device, int[] win_x, int[] win_y) {
+		lock.lock();
+		try {
+			return _gdk_device_get_window_at_position(device, win_x, win_y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param device cast=(GdkDevice *)
+	 * @param win_x cast=(gint *)
+	 * @param win_y cast=(gint *)
+	 */
+	public static final native long /*int*/ _gdk_device_get_surface_at_position(long /*int*/ device, int[] win_x, int[] win_y);
+	/** [GTK4 only] */
+	public static final long /*int*/ gdk_device_get_surface_at_position(long /*int*/ device, int[] win_x, int[] win_y) {
 		lock.lock();
 		try {
 			return _gdk_device_get_window_at_position(device, win_x, win_y);
@@ -728,6 +790,7 @@ public class GDK extends OS {
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native boolean _gdk_display_supports_cursor_color(long /*int*/ display);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gdk_display_supports_cursor_color(long /*int*/ display) {
 		lock.lock();
 		try {
@@ -752,6 +815,7 @@ public class GDK extends OS {
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native long /*int*/ _gdk_drag_context_get_dest_window(long /*int*/ context);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_drag_context_get_dest_window(long /*int*/ context) {
 		lock.lock();
 		try {
@@ -776,6 +840,7 @@ public class GDK extends OS {
 	 * @param context cast=(GdkDragContext *)
 	 */
 	public static final native long /*int*/ _gdk_drag_context_list_targets(long /*int*/ context);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_drag_context_list_targets(long /*int*/ context) {
 		lock.lock();
 		try {
@@ -790,6 +855,7 @@ public class GDK extends OS {
 	 * @param time cast=(guint32)
 	 */
 	public static final native void _gdk_drag_status(long /*int*/ context, int action, int time);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_drag_status(long /*int*/ context, int action, int time) {
 		lock.lock();
 		try {
@@ -823,6 +889,7 @@ public class GDK extends OS {
 	}
 	/** @param event cast=(GdkEvent *) */
 	public static final native void _gdk_event_free(long /*int*/ event);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_event_free(long /*int*/ event) {
 		lock.lock();
 		try {
@@ -832,6 +899,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gdk_event_get();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_event_get() {
 		lock.lock();
 		try {
@@ -941,6 +1009,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gdk_event_peek();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_event_peek() {
 		lock.lock();
 		try {
@@ -951,6 +1020,7 @@ public class GDK extends OS {
 	}
 	/** @param event cast=(GdkEvent *) */
 	public static final native void _gdk_event_put(long /*int*/ event);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_event_put(long /*int*/ event) {
 		lock.lock();
 		try {
@@ -984,6 +1054,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native void _gdk_flush();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_flush() {
 		lock.lock();
 		try {
@@ -993,6 +1064,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gdk_get_default_root_window();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_get_default_root_window() {
 		lock.lock();
 		try {
@@ -1005,6 +1077,7 @@ public class GDK extends OS {
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native long /*int*/ _gdk_keymap_get_for_display(long /*int*/ display);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_keymap_get_for_display(long /*int*/ display) {
 		lock.lock();
 		try {
@@ -1047,6 +1120,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gdk_pango_context_get();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_pango_context_get() {
 		lock.lock();
 		try {
@@ -1245,7 +1319,7 @@ public class GDK extends OS {
 	 * @param time_ cast=(guint32)
 	 */
 	public static final native int _gdk_device_grab(long /*int*/ device, long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ cursor, int time_);
-	/**  [GTK3; 3.20 deprecated] */
+	/**  [GTK3 only, if-def'd in os.h; 3.20 deprecated, replaced] */
 	public static final int gdk_device_grab(long /*int*/ device, long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ cursor, int time_) {
 		lock.lock();
 		try {
@@ -1304,6 +1378,7 @@ public class GDK extends OS {
 	 * @param data cast=(guchar **)
 	 */
 	public static final native boolean _gdk_property_get(long /*int*/ window, long /*int*/ property, long /*int*/ type, long /*int*/ offset, long /*int*/ length, int pdelete, long /*int*/[] actual_property_type, int[] actual_format, int[] actual_length, long /*int*/[] data);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gdk_property_get(long /*int*/ window, long /*int*/ property, long /*int*/ type, long /*int*/ offset, long /*int*/ length, int pdelete, long /*int*/[] actual_property_type, int[] actual_format, int[] actual_length, long /*int*/[] data) {
 		lock.lock();
 		try {
@@ -1374,6 +1449,7 @@ public class GDK extends OS {
 		}
 	}
 	public static final native long /*int*/ _gdk_screen_get_default();
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_screen_get_default() {
 		lock.lock();
 		try {
@@ -1384,6 +1460,7 @@ public class GDK extends OS {
 	}
 	/** @param screen cast=(GdkScreen *) */
 	public static final native long /*int*/ _gdk_screen_get_window_stack(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_screen_get_window_stack(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1396,6 +1473,7 @@ public class GDK extends OS {
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native double _gdk_screen_get_resolution(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final double gdk_screen_get_resolution(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1410,6 +1488,7 @@ public class GDK extends OS {
 	 * @param monitor_num cast=(gint)
 	 */
 	public static final native int _gdk_screen_get_monitor_scale_factor(long /*int*/ screen, int monitor_num);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final int gdk_screen_get_monitor_scale_factor(long /*int*/ screen, int monitor_num) {
 		lock.lock();
 		try {
@@ -1437,6 +1516,7 @@ public class GDK extends OS {
 	 * @param y cast=(gint)
 	 */
 	public static final native int _gdk_screen_get_monitor_at_point (long /*int*/ screen, int x, int y);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final int gdk_screen_get_monitor_at_point (long /*int*/ screen, int x, int y) {
 		lock.lock();
 		try {
@@ -1451,6 +1531,7 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native int _gdk_screen_get_monitor_at_window(long /*int*/ screen, long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final int gdk_screen_get_monitor_at_window(long /*int*/ screen, long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1489,6 +1570,7 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native long /*int*/ _gdk_display_get_monitor_at_window(long /*int*/ display, long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_display_get_monitor_at_window(long /*int*/ display, long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1539,6 +1621,7 @@ public class GDK extends OS {
 	 * @param dest flags=no_in
 	 */
 	public static final native void _gdk_screen_get_monitor_geometry (long /*int*/ screen, int monitor_num, GdkRectangle dest);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final void gdk_screen_get_monitor_geometry (long /*int*/ screen, int monitor_num, GdkRectangle dest) {
 		lock.lock();
 		try {
@@ -1579,6 +1662,7 @@ public class GDK extends OS {
 	 * @param dest flags=no_in
 	 */
 	public static final native void _gdk_screen_get_monitor_workarea (long /*int*/ screen, int monitor_num, GdkRectangle dest);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final void gdk_screen_get_monitor_workarea (long /*int*/ screen, int monitor_num, GdkRectangle dest) {
 		lock.lock();
 		try {
@@ -1592,6 +1676,7 @@ public class GDK extends OS {
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native int _gdk_screen_get_n_monitors(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final int gdk_screen_get_n_monitors(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1605,6 +1690,7 @@ public class GDK extends OS {
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native int _gdk_screen_get_primary_monitor(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final int gdk_screen_get_primary_monitor(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1617,6 +1703,7 @@ public class GDK extends OS {
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native long /*int*/ _gdk_screen_get_system_visual(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_screen_get_system_visual(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1641,6 +1728,7 @@ public class GDK extends OS {
 	 * @param screen cast=(GdkScreen *)
 	 */
 	public static final native boolean _gdk_screen_is_composited(long /*int*/ screen);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gdk_screen_is_composited(long /*int*/ screen) {
 		lock.lock();
 		try {
@@ -1699,6 +1787,7 @@ public class GDK extends OS {
 	}
 	/** @param program_class cast=(const char *) */
 	public static final native void _gdk_set_program_class(byte[] program_class);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_set_program_class(byte[] program_class) {
 		lock.lock();
 		try {
@@ -1709,6 +1798,7 @@ public class GDK extends OS {
 	}
 	/** @param atom cast=(GdkAtom) */
 	public static final native void _gdk_selection_owner_get(long /*int*/ atom);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_selection_owner_get(long /*int*/ atom) {
 		lock.lock();
 		try {
@@ -1724,6 +1814,7 @@ public class GDK extends OS {
 	 * @param send_event cast=(gboolean)
 	 */
 	public static final native void _gdk_selection_owner_set(long /*int*/ owner, long /*int*/ atom, int time, boolean send_event);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_selection_owner_set(long /*int*/ owner, long /*int*/ atom, int time, boolean send_event) {
 		lock.lock();
 		try {
@@ -1785,6 +1876,7 @@ public class GDK extends OS {
 	 * @param key_pressrelease cast=(GdkEventType)
 	 */
 	public static final native boolean _gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease) {
 		lock.lock();
 		try {
@@ -1822,6 +1914,7 @@ public class GDK extends OS {
 	 * @param visual cast=(GdkVisual *)
 	 */
 	public static final native int _gdk_visual_get_depth(long /*int*/ visual);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_visual_get_depth(long /*int*/ visual) {
 		lock.lock();
 		try {
@@ -1835,7 +1928,22 @@ public class GDK extends OS {
 	 * @param content cast=(cairo_content_t)
 	 */
 	public static final native long /*int*/ _gdk_window_create_similar_surface(long /*int*/ window, int content, int width, int height);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_create_similar_surface(long /*int*/ window, int content, int width, int height) {
+		lock.lock();
+		try {
+			return _gdk_window_create_similar_surface(window, content, width, height);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkSurface *)
+	 * @param content cast=(cairo_content_t)
+	 */
+	public static final native long /*int*/ _gdk_surface_create_similar_surface(long /*int*/ window, int content, int width, int height);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_surface_create_similar_surface(long /*int*/ window, int content, int width, int height) {
 		lock.lock();
 		try {
 			return _gdk_window_create_similar_surface(window, content, width, height);
@@ -1845,7 +1953,19 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_destroy(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_destroy(long /*int*/ window) {
+		lock.lock();
+		try {
+			_gdk_window_destroy(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/** @param window cast=(GdkSurface *) */
+	public static final native void _gdk_surface_destroy(long /*int*/ window);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_destroy(long /*int*/ window) {
 		lock.lock();
 		try {
 			_gdk_window_destroy(window);
@@ -1855,6 +1975,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native long /*int*/ _gdk_window_get_children(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_get_children(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1865,6 +1986,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native int _gdk_window_get_events(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_events(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1875,10 +1997,22 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_focus(long /*int*/ window, int timestamp);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_focus(long /*int*/ window, int timestamp) {
 		lock.lock();
 		try {
 			_gdk_window_focus(window, timestamp);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_focus(long /*int*/ surface, int timestamp);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_focus(long /*int*/ surface, int timestamp) {
+		lock.lock();
+		try {
+			_gdk_window_focus(surface, timestamp);
 		} finally {
 			lock.unlock();
 		}
@@ -1888,6 +2022,7 @@ public class GDK extends OS {
 	 * @param rect cast=(GdkRectangle *),flags=no_in
 	 */
 	public static final native void _gdk_window_get_frame_extents(long /*int*/ window, GdkRectangle rect);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_get_frame_extents(long /*int*/ window, GdkRectangle rect) {
 		lock.lock();
 		try {
@@ -1902,6 +2037,7 @@ public class GDK extends OS {
 	 * @param y cast=(gint *)
 	 */
 	public static final native int _gdk_window_get_origin(long /*int*/ window, int[] x, int[] y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_origin(long /*int*/ window, int[] x, int[] y) {
 		lock.lock();
 		try {
@@ -1918,6 +2054,7 @@ public class GDK extends OS {
 	 * @param mask cast=(GdkModifierType *)
 	 */
 	public static final native long /*int*/ _gdk_window_get_device_position(long /*int*/ window, long /*int*/ device, int[] x, int[] y, int[] mask);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_get_device_position(long /*int*/ window, long /*int*/ device, int[] x, int[] y, int[] mask) {
 		lock.lock();
 		try {
@@ -1928,6 +2065,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native long /*int*/ _gdk_window_get_parent(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_get_parent(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1942,6 +2080,7 @@ public class GDK extends OS {
 	 * @param y cast=(gint *)
 	 */
 	public static final native void _gdk_window_get_position(long /*int*/ window, int[] x, int[] y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_get_position(long /*int*/ window, int[] x, int[] y) {
 		lock.lock();
 		try {
@@ -1956,6 +2095,7 @@ public class GDK extends OS {
 	 * @param y cast=(gint *)
 	 */
 	public static final native void _gdk_window_get_root_origin(long /*int*/ window, int[] x, int[] y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_get_root_origin(long /*int*/ window, int[] x, int[] y) {
 		lock.lock();
 		try {
@@ -1969,6 +2109,7 @@ public class GDK extends OS {
 	 * @param data cast=(gpointer *)
 	 */
 	public static final native void _gdk_window_get_user_data(long /*int*/ window, long /*int*/[] data);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_get_user_data(long /*int*/ window, long /*int*/[] data) {
 		lock.lock();
 		try {
@@ -1979,6 +2120,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_hide(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_hide(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -1993,6 +2135,7 @@ public class GDK extends OS {
 	 * @param invalidate_children cast=(gboolean)
 	 */
 	public static final native void _gdk_window_invalidate_rect(long /*int*/ window, GdkRectangle rectangle, boolean invalidate_children);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_invalidate_rect(long /*int*/ window, GdkRectangle rectangle, boolean invalidate_children) {
 		lock.lock();
 		try {
@@ -2007,6 +2150,7 @@ public class GDK extends OS {
 	 * @param invalidate_children cast=(gboolean)
 	 */
 	public static final native void _gdk_window_invalidate_region(long /*int*/ window, long /*int*/ region, boolean invalidate_children);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_invalidate_region(long /*int*/ window, long /*int*/ region, boolean invalidate_children) {
 		lock.lock();
 		try {
@@ -2017,6 +2161,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native boolean _gdk_window_is_visible(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gdk_window_is_visible(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -2027,6 +2172,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_move(long /*int*/ window, int x, int y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_move(long /*int*/ window, int x, int y) {
 		lock.lock();
 		try {
@@ -2037,6 +2183,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_move_resize(long /*int*/ window, int x, int y, int width, int height);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_move_resize(long /*int*/ window, int x, int y, int width, int height) {
 		lock.lock();
 		try {
@@ -2050,6 +2197,7 @@ public class GDK extends OS {
 	 * @param attributes flags=no_out
 	 */
 	public static final native long /*int*/ _gdk_window_new(long /*int*/ parent, GdkWindowAttr attributes, int attributes_mask);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_window_new(long /*int*/ parent, GdkWindowAttr attributes, int attributes_mask) {
 		lock.lock();
 		try {
@@ -2060,6 +2208,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_lower(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_lower(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -2072,6 +2221,7 @@ public class GDK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native void _gdk_window_process_all_updates();
+	/** [GTK3 only; 3.16 deprecated, replaced] */
 	public static final void gdk_window_process_all_updates() {
 		lock.lock();
 		try {
@@ -2086,6 +2236,7 @@ public class GDK extends OS {
 	 * @param update_children cast=(gboolean)
 	 */
 	public static final native void _gdk_window_process_updates(long /*int*/ window, boolean update_children);
+	/** [GTK3 only, if-def'd in os.h; 3.16 deprecated, replaced] */
 	public static final void gdk_window_process_updates(long /*int*/ window, boolean update_children) {
 		lock.lock();
 		try {
@@ -2096,6 +2247,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_raise(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_raise(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -2106,6 +2258,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_resize(long /*int*/ window, int width, int height);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_resize(long /*int*/ window, int width, int height) {
 		lock.lock();
 		try {
@@ -2120,6 +2273,7 @@ public class GDK extends OS {
 	 * @param above cast=(gboolean)
 	 */
 	public static final native void _gdk_window_restack(long /*int*/ window, long /*int*/ sibling, boolean above);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_restack(long /*int*/ window, long /*int*/ sibling, boolean above) {
 		lock.lock();
 		try {
@@ -2144,6 +2298,7 @@ public class GDK extends OS {
 	 * @param cursor cast=(GdkCursor *)
 	 */
 	public static final native void _gdk_window_set_cursor(long /*int*/ window, long /*int*/ cursor);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_cursor(long /*int*/ window, long /*int*/ cursor) {
 		lock.lock();
 		try {
@@ -2157,6 +2312,7 @@ public class GDK extends OS {
 	 * @param decorations cast=(GdkWMDecoration)
 	 */
 	public static final native void _gdk_window_set_decorations(long /*int*/ window, int decorations);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_decorations(long /*int*/ window, int decorations) {
 		lock.lock();
 		try {
@@ -2170,6 +2326,7 @@ public class GDK extends OS {
 	 * @param functions cast=(GdkWMFunction)
 	 */
 	public static final native void _gdk_window_set_functions(long /*int*/ window, int functions);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_functions(long /*int*/ window, int functions) {
 		lock.lock();
 		try {
@@ -2180,6 +2337,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_set_events(long /*int*/ window, int event_mask);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_events(long /*int*/ window, int event_mask) {
 		lock.lock();
 		try {
@@ -2193,6 +2351,7 @@ public class GDK extends OS {
 	 * @param override_redirect cast=(gboolean)
 	 */
 	public static final native void _gdk_window_set_override_redirect(long /*int*/ window, boolean override_redirect);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_override_redirect(long /*int*/ window, boolean override_redirect) {
 		lock.lock();
 		try {
@@ -2206,6 +2365,7 @@ public class GDK extends OS {
 	 * @param user_data cast=(gpointer)
 	 */
 	public static final native void _gdk_window_set_user_data(long /*int*/ window, long /*int*/ user_data);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_set_user_data(long /*int*/ window, long /*int*/ user_data) {
 		lock.lock();
 		try {
@@ -2221,6 +2381,7 @@ public class GDK extends OS {
 	 * @param offset_y cast=(gint)
 	 */
 	public static final native void _gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y) {
 		lock.lock();
 		try {
@@ -2231,6 +2392,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_show(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_show(long /*int*/ window) {
 		lock.lock();
 		try {
@@ -2241,6 +2403,7 @@ public class GDK extends OS {
 	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_show_unraised(long /*int*/ window);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_window_show_unraised(long /*int*/ window) {
 		lock.lock();
 		try {

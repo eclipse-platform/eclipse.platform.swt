@@ -62,15 +62,34 @@ typedef enum {
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
 	_1gdk_1cursor_1new_1for_1display_FUNC,
-	_1gdk_1cursor_1new_1from_1name_FUNC,
+#ifndef JNI64
+	_1gdk_1cursor_1new_1from_1name__I_3B_FUNC,
+#else
+	_1gdk_1cursor_1new_1from_1name__J_3B_FUNC,
+#endif
+#ifndef JNI64
+	_1gdk_1cursor_1new_1from_1name___3BI_FUNC,
+#else
+	_1gdk_1cursor_1new_1from_1name___3BJ_FUNC,
+#endif
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
 	_1gdk_1device_1get_1associated_1device_FUNC,
 	_1gdk_1device_1get_1seat_FUNC,
+	_1gdk_1device_1get_1surface_1at_1position_FUNC,
 	_1gdk_1device_1get_1window_1at_1position_FUNC,
 	_1gdk_1device_1grab_FUNC,
 	_1gdk_1device_1manager_1get_1client_1pointer_FUNC,
 	_1gdk_1device_1ungrab_FUNC,
-	_1gdk_1device_1warp_FUNC,
+#ifndef JNI64
+	_1gdk_1device_1warp__III_FUNC,
+#else
+	_1gdk_1device_1warp__JII_FUNC,
+#endif
+#ifndef JNI64
+	_1gdk_1device_1warp__IIII_FUNC,
+#else
+	_1gdk_1device_1warp__JJII_FUNC,
+#endif
 	_1gdk_1display_1beep_FUNC,
 	_1gdk_1display_1get_1default_FUNC,
 	_1gdk_1display_1get_1default_1group_FUNC,
@@ -152,6 +171,9 @@ typedef enum {
 	_1gdk_1selection_1owner_1get_FUNC,
 	_1gdk_1selection_1owner_1set_FUNC,
 	_1gdk_1set_1program_1class_FUNC,
+	_1gdk_1surface_1create_1similar_1surface_FUNC,
+	_1gdk_1surface_1destroy_FUNC,
+	_1gdk_1surface_1focus_FUNC,
 	_1gdk_1test_1simulate_1button_FUNC,
 	_1gdk_1test_1simulate_1key_FUNC,
 	_1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,

@@ -164,10 +164,63 @@
 
 // Structs which do not exist on GTK4
 #define NO_GtkTargetEntry
+#define NO_GdkEventWindowState
+#define NO_GdkWindowAttr
+#define NO_GdkEvent
+#define NO_GdkEventAny
+#define NO_GdkEventButton
+#define NO_GdkEventCrossing
+#define NO_GdkEventExpose
+#define NO_GdkEventFocus
+#define NO_GdkEventKey
+#define NO_GdkEventMotion
+#define NO_GdkEventScroll
 
 // Memmoves for those structs which were removed in GTK4
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J
+#define NO_memmove__LLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2II
+#define NO_memmove__LLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEvent_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEvent_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventAny_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventAny_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventCrossing_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventCrossing_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventFocus_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventFocus_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventKey_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventScroll_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventScroll_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventWindowState_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventWindowState_2J
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ
 
 // No GtkClipboard on GTK4
 #define NO__1gtk_1clipboard_1clear
@@ -190,9 +243,23 @@
 #define NO__1gtk_1target_1list_1new
 #define NO__1gtk_1target_1list_1unref
 
-// No GdkScreen on GTK4
+// No GdkScreen on GTK4, including parameter casts
 #define NO__1gtk_1widget_1get_1screen
 #define NO__1gtk_1style_1context_1add_1provider_1for_1screen
+#define NO__1gdk_1device_1warp__IIII
+#define NO__1gdk_1device_1warp__JJII
+#define NO__1gdk_1screen_1get_1default
+#define NO__1gdk_1screen_1get_1monitor_1at_1point
+#define NO__1gdk_1screen_1get_1monitor_1at_1window
+#define NO__1gdk_1screen_1get_1monitor_1geometry
+#define NO__1gdk_1screen_1get_1monitor_1scale_1factor
+#define NO__1gdk_1screen_1get_1monitor_1workarea
+#define NO__1gdk_1screen_1get_1n_1monitors
+#define NO__1gdk_1screen_1get_1primary_1monitor
+#define NO__1gdk_1screen_1get_1resolution
+#define NO__1gdk_1screen_1get_1system_1visual
+#define NO__1gdk_1screen_1get_1window_1stack
+#define NO__1gdk_1screen_1is_1composited
 
 // Miscellaneous functions removed from GTK4
 #define NO__1gtk_1button_1set_1image
@@ -200,6 +267,19 @@
 #define NO__1gtk_1toggle_1button_1set_1inconsistent
 #define NO__1gtk_1toggle_1button_1set_1mode
 #define NO__1gtk_1toolbar_1set_1icon_1size
+#define NO__1gdk_1flush
+#define NO__1gdk_1keymap_1get_1for_1display
+#define NO__1gdk_1pango_1context_1get
+#define NO__1gdk_1set_1program_1class
+#define NO__1gdk_1test_1simulate_1button
+#define NO__1gdk_1test_1simulate_1key
+#define NO__1gdk_1atom_1intern
+#define NO__1gdk_1atom_1name
+#define NO__1gdk_1cairo_1create
+#define NO_gdk_1threads_1leave
+#define NO__1gdk_1selection_1owner_1set
+#define NO__1gdk_1selection_1owner_1get
+#define NO__1gdk_1visual_1get_1depth
 
 // Some drawing functions have been removed on GTK4
 #define NO__1gtk_1widget_1draw
@@ -236,11 +316,64 @@
 #define NO__1gtk_1widget_1set_1allocation
 #define NO__1gtk_1window_1set_1geometry_1hints
 
-// No GdkWindow on GTK4
+// No GdkWindow on GTK4, this includes parameter casting
 #define NO__1gtk_1widget_1set_1has_1window
 #define NO__1gtk_1widget_1get_1has_1window
 #define NO__1gtk_1im_1context_1set_1client_1window
 #define NO__1gtk_1widget_1set_1parent_1window
+#define NO__1gdk_1cairo_1set_1source_1window
+#define NO__1gdk_1device_1grab
+#define NO__1gdk_1display_1get_1monitor_1at_1window
+#define NO__1gdk_1get_1default_1root_1window
+#define NO__1gdk_1property_1get
+#define NO__1gdk_1window_1add_1filter
+#define NO__1gdk_1window_1begin_1draw_1frame
+#define NO__1gdk_1window_1create_1similar_1surface
+#define NO__1gdk_1window_1destroy
+#define NO__1gdk_1window_1end_1draw_1frame
+#define NO__1gdk_1window_1focus
+#define NO__1gdk_1window_1get_1children
+#define NO__1gdk_1window_1get_1device_1position
+#define NO__1gdk_1window_1get_1display
+#define NO__1gdk_1window_1set_1events
+#define NO__1gdk_1window_1get_1events
+#define NO__1gdk_1window_1get_1frame_1extents
+#define NO__1gdk_1window_1get_1height
+#define NO__1gdk_1window_1get_1width
+#define NO__1gdk_1window_1get_1origin
+#define NO__1gdk_1window_1get_1parent
+#define NO__1gdk_1window_1get_1position
+#define NO__1gdk_1window_1get_1root_1origin
+#define NO__1gdk_1window_1get_1state
+#define NO__1gdk_1window_1get_1user_1data
+#define NO__1gdk_1window_1get_1visible_1region
+#define NO__1gdk_1window_1show
+#define NO__1gdk_1window_1hide
+#define NO__1gdk_1window_1invalidate_1rect
+#define NO__1gdk_1window_1invalidate_1region
+#define NO__1gdk_1window_1is_1visible
+#define NO__1gdk_1window_1raise
+#define NO__1gdk_1window_1lower
+#define NO__1gdk_1window_1move
+#define NO__1gdk_1window_1move_1resize
+#define NO__1gdk_1window_1new
+#define NO__1gdk_1window_1process_1updates
+#define NO__1gdk_1window_1resize
+#define NO__1gdk_1window_1restack
+#define NO__1gdk_1window_1set_1cursor
+#define NO__1gdk_1window_1set_1decorations
+#define NO__1gdk_1window_1set_1events
+#define NO__1gdk_1window_1set_1functions
+#define NO__1gdk_1window_1set_1override_1redirect
+#define NO__1gdk_1window_1set_1user_1data
+#define NO__1gdk_1window_1shape_1combine_1region
+#define NO__1gdk_1window_1show_1unraised
+#define NO__1gdk_1device_1get_1window_1at_1position
+
+// GdkDragContext removals
+#define NO__1gdk_1drag_1context_1get_1dest_1window
+#define NO__1gdk_1drag_1context_1list_1targets
+#define NO__1gdk_1drag_1status
 
 // Some widgets have removed access to their GdkWindows in GTK4
 #define NO__1gtk_1text_1view_1get_1window
@@ -250,6 +383,19 @@
 #define NO__1gtk_1event_1box_1new
 #define NO__1gtk_1widget_1add_1events
 #define NO__1gtk_1widget_1get_1events
+#define NO__1gdk_1event_1free
+#define NO__1gdk_1event_1get
+#define NO__1gdk_1event_1peek
+#define NO__1gdk_1event_1put
+#define NO_GDK_1EVENT_1TYPE
+#define NO_GDK_1EVENT_1WINDOW
+
+// GdkCursor removals
+#define NO__1gdk_1cursor_1new_1for_1display
+#define NO__1gdk_1cursor_1new_1from_1pixbuf
+#define NO__1gdk_1display_1supports_1cursor_1color
+#define NO__1gdk_1cursor_1new_1from_1name__I_3B
+#define NO__1gdk_1cursor_1new_1from_1name__J_3B
 
 #else
 
@@ -267,6 +413,17 @@
 #define NO__1gtk_1widget_1set_1has_1surface
 #define NO__1gtk_1widget_1get_1has_1surface
 #define NO__1gtk_1widget_1set_1parent_1surface
+#define NO__1gdk_1surface_1create_1similar_1surface
+#define NO__1gdk_1surface_1destroy
+#define NO__1gdk_1surface_1focus
+#define NO__1gdk_1device_1get_1surface_1at_1position
+
+// Miscellaneous functions not present on GTK3
+#define NO__1gdk_1device_1warp__III
+#define NO__1gdk_1device_1warp__JII
+#define NO__1gdk_1cursor_1new_1from_1name___3BI
+#define NO__1gdk_1cursor_1new_1from_1name___3BJ
+
 #endif
 
 #include "os_custom.h"

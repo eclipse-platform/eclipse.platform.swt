@@ -52,15 +52,34 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1set_1source_1rgba",
 	"_1gdk_1cairo_1set_1source_1window",
 	"_1gdk_1cursor_1new_1for_1display",
-	"_1gdk_1cursor_1new_1from_1name",
+#ifndef JNI64
+	"_1gdk_1cursor_1new_1from_1name__I_3B",
+#else
+	"_1gdk_1cursor_1new_1from_1name__J_3B",
+#endif
+#ifndef JNI64
+	"_1gdk_1cursor_1new_1from_1name___3BI",
+#else
+	"_1gdk_1cursor_1new_1from_1name___3BJ",
+#endif
 	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1device_1get_1associated_1device",
 	"_1gdk_1device_1get_1seat",
+	"_1gdk_1device_1get_1surface_1at_1position",
 	"_1gdk_1device_1get_1window_1at_1position",
 	"_1gdk_1device_1grab",
 	"_1gdk_1device_1manager_1get_1client_1pointer",
 	"_1gdk_1device_1ungrab",
-	"_1gdk_1device_1warp",
+#ifndef JNI64
+	"_1gdk_1device_1warp__III",
+#else
+	"_1gdk_1device_1warp__JII",
+#endif
+#ifndef JNI64
+	"_1gdk_1device_1warp__IIII",
+#else
+	"_1gdk_1device_1warp__JJII",
+#endif
 	"_1gdk_1display_1beep",
 	"_1gdk_1display_1get_1default",
 	"_1gdk_1display_1get_1default_1group",
@@ -142,6 +161,9 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1selection_1owner_1get",
 	"_1gdk_1selection_1owner_1set",
 	"_1gdk_1set_1program_1class",
+	"_1gdk_1surface_1create_1similar_1surface",
+	"_1gdk_1surface_1destroy",
+	"_1gdk_1surface_1focus",
 	"_1gdk_1test_1simulate_1button",
 	"_1gdk_1test_1simulate_1key",
 	"_1gdk_1text_1property_1to_1utf8_1list_1for_1display",
