@@ -1645,9 +1645,8 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		// bits specified as a parameter will be removed from the window
 		GDK.gdk_window_set_functions (window, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
 	}
-	if ((style & SWT.ON_TOP) != 0) {
-		GDK.gdk_window_set_override_redirect (window, true);
-	}
+
+	if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
 	return result;
 }
 
