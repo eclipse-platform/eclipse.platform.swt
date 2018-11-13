@@ -294,7 +294,7 @@ fail:
 }
 #endif
 
-#ifndef NO_SwtFixed
+#if !GTK_CHECK_VERSION(3,94,0)
 
 struct _SwtFixedPrivate {
   GtkAdjustment *hadjustment;
