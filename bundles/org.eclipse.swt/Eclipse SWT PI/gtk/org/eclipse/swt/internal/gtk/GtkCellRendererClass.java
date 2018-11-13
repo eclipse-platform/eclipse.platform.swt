@@ -16,8 +16,10 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkCellRendererClass {
-	/** @field cast=(void(*)()) */
+	/** @field cast=(void(*)()),exclude=#ifndef GTK4 */
 	public long /*int*/ render;
+	/** @field cast=(void(*)()),exclude=#ifdef GTK4 */
+	public long /*int*/ snapshot;
 	/** @field cast=(void(*)()) */
 	public long /*int*/ get_preferred_width;
 }

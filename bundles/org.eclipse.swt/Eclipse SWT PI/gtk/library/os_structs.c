@@ -1052,7 +1052,7 @@ void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct)
 typedef struct GtkCellRendererClass_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID render, get_preferred_width;
+	jfieldID render, snapshot, get_preferred_width;
 } GtkCellRendererClass_FID_CACHE;
 
 GtkCellRendererClass_FID_CACHE GtkCellRendererClassFc;
@@ -1062,6 +1062,7 @@ void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject)
 	if (GtkCellRendererClassFc.cached) return;
 	GtkCellRendererClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GtkCellRendererClassFc.render = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "render", I_J);
+	GtkCellRendererClassFc.snapshot = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "snapshot", I_J);
 	GtkCellRendererClassFc.get_preferred_width = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_preferred_width", I_J);
 	GtkCellRendererClassFc.cached = 1;
 }
@@ -1069,7 +1070,12 @@ void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject)
 GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
+#ifndef GTK4
 	lpStruct->render = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.render);
+#endif
+#ifdef GTK4
+	lpStruct->snapshot = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.snapshot);
+#endif
 	lpStruct->get_preferred_width = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.get_preferred_width);
 	return lpStruct;
 }
@@ -1077,7 +1083,12 @@ GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObjec
 void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
+#ifndef GTK4
 	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.render, (jintLong)lpStruct->render);
+#endif
+#ifdef GTK4
+	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.snapshot, (jintLong)lpStruct->snapshot);
+#endif
 	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.get_preferred_width, (jintLong)lpStruct->get_preferred_width);
 }
 #endif
