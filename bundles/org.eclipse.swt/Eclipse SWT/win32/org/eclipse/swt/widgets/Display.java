@@ -2019,7 +2019,13 @@ MenuItem getMenuItem (int id) {
 }
 
 int getMessageCount () {
-	return synchronizer.getMessageCount ();
+	/*
+	 * On Windows10 (update 18272), an NPE is seen in below code which leads to a
+	 * possible crash, adding a null check for synchronizer instance. For more
+	 * details refer bug 540762
+	 */
+	if (synchronizer != null) return synchronizer.getMessageCount ();
+	return 0;
 }
 
 
