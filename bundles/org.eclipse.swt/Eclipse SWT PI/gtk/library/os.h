@@ -100,9 +100,21 @@
 #endif
 
 
-#if defined(GDK_WINDOWING_X11) && !GTK_CHECK_VERSION(3,94,0)
-#include <gdk/gdkx.h>
+#if defined(GDK_WINDOWING_X11)
+#if !GTK_CHECK_VERSION(3,94,0)
 #include <gtk/gtkx.h>
+#define NO__1gdk_1x11_1surface_1get_1xid
+#define NO__1gdk_1x11_1surface_1lookup_1for_1display
+#else
+#define NO__1gdk_1x11_1get_1default_1xdisplay
+#define NO__1gdk_1x11_1window_1get_1xid
+#define NO__1gdk_1x11_1window_1lookup_1for_1display
+#define NO__1GTK_1IS_1PLUG
+#define NO__1gtk_1plug_1new
+#define NO__1gtk_1socket_1get_1id
+#define NO__1gtk_1socket_1new
+#endif
+#include <gdk/gdkx.h>
 #else
 
 #define NO_GDK_1IS_1X11_1DISPLAY

@@ -2626,7 +2626,15 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1screen_1get_1window_1manager_1
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1screen_1get_1window_1manager_1name_FUNC);
-	rc = (jintLong)gdk_x11_screen_get_window_manager_name((GdkScreen *)arg0);
+/*
+	rc = (jintLong)gdk_x11_screen_get_window_manager_name(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_screen_get_window_manager_name)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1screen_1get_1window_1manager_1name_FUNC);
 	return rc;
 }
@@ -2638,8 +2646,40 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1screen_1lookup_1visual)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
-	rc = (jintLong)gdk_x11_screen_lookup_visual((GdkScreen *)arg0, (VisualID)arg1);
+/*
+	rc = (jintLong)gdk_x11_screen_lookup_visual(arg0, (VisualID)arg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_screen_lookup_visual)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, VisualID))fp)(arg0, (VisualID)arg1);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1surface_1get_1xid
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1surface_1get_1xid)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1surface_1get_1xid_FUNC);
+	rc = (jintLong)gdk_x11_surface_get_xid((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1surface_1get_1xid_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1surface_1lookup_1for_1display
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1surface_1lookup_1for_1display)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1surface_1lookup_1for_1display_FUNC);
+	rc = (jintLong)gdk_x11_surface_lookup_for_display((GdkDisplay *)arg0, (Window)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1surface_1lookup_1for_1display_FUNC);
 	return rc;
 }
 #endif
@@ -2650,7 +2690,15 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1x11_1visual_1get_1xvisual)
 {
 	jintLong rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1x11_1visual_1get_1xvisual_FUNC);
-	rc = (jintLong)gdk_x11_visual_get_xvisual((GdkVisual *)arg0);
+/*
+	rc = (jintLong)gdk_x11_visual_get_xvisual(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_visual_get_xvisual)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1x11_1visual_1get_1xvisual_FUNC);
 	return rc;
 }

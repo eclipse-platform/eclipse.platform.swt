@@ -9242,7 +9242,7 @@ public class GTK extends OS {
 	public static final void gtk_widget_set_parent_surface(long /*int*/ widget, long /*int*/ parent_surface) {
 		lock.lock();
 		try {
-			_gtk_widget_set_parent_window(widget, parent_surface);
+			_gtk_widget_set_parent_surface(widget, parent_surface);
 		} finally {
 			lock.unlock();
 		}
