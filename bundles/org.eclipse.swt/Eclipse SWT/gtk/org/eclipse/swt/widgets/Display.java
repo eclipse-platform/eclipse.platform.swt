@@ -1029,13 +1029,14 @@ void checkXimModule () {
 }
 
 void createDisplay (DeviceData data) {
-	if (!GTK.gtk_init_check (new long /*int*/ [] {0}, null)) {
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
-	}
+	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long /*int*/ [] {0}, null);
+	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	checkXimModule();
 	//set GTK+ Theme name as property for introspection purposes
 	System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
-	if (OS.isX11()) xDisplay = GDK.gdk_x11_get_default_xdisplay();
+	if (OS.isX11()) {
+		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
+	}
 	long /*int*/ ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
 	if (ptr != 0) {
 		int length = C.strlen (ptr);
@@ -1096,7 +1097,9 @@ void createDisplay (DeviceData data) {
 	GTK.gtk_widget_set_default_direction (GTK.GTK_TEXT_DIR_LTR);
 	byte [] buffer = Converter.wcsToMbcs (APP_NAME, true);
 	OS.g_set_prgname (buffer);
-	GDK.gdk_set_program_class (buffer);
+	if (OS.isX11() && !GTK.GTK4) {
+		GDK.gdk_set_program_class (buffer);
+	}
 
 	/* Initialize the hidden shell */
 	shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
@@ -1109,22 +1112,32 @@ void createDisplay (DeviceData data) {
 	if (eventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	GDK.gdk_event_handler_set (eventProc, 0, 0);
 
-	byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
-	long /*int*/ atom = GDK.gdk_atom_intern(atomName, false);
-	GDK.gdk_selection_owner_set(GTK.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
-	GDK.gdk_selection_owner_get(atom);
-
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
 	signalProc = signalCallback.getAddress ();
 	if (signalProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	GTK.gtk_widget_add_events (shellHandle, GDK.GDK_PROPERTY_CHANGE_MASK);
-	OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
+
+	if (!GTK.GTK4) {
+		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
+		long /*int*/ atom = GDK.gdk_atom_intern(atomName, false);
+		GDK.gdk_selection_owner_set(GTK.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
+		GDK.gdk_selection_owner_get(atom);
+
+		// No GdkWindow on GTK4
+		GTK.gtk_widget_add_events (shellHandle, GDK.GDK_PROPERTY_CHANGE_MASK);
+		OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
+	}
 
 	latinKeyGroup = findLatinKeyGroup ();
 	keysChangedCallback = new Callback (this, "keysChangedProc", 2); //$NON-NLS-1$
 	keysChangedProc = keysChangedCallback.getAddress ();
 	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
+	long /*int*/ keymap;
+	long /*int*/ display = GDK.gdk_display_get_default();
+	if (GTK.GTK4) {
+		keymap = GDK.gdk_display_get_keymap(display);
+	} else {
+		keymap = GDK.gdk_keymap_get_for_display(display);
+	}
 	OS.g_signal_connect (keymap, OS.keys_changed, keysChangedProc, 0);
 }
 
@@ -1137,7 +1150,13 @@ void createDisplay (DeviceData data) {
 private int findLatinKeyGroup () {
 	int result = 0;
 	groupKeysCount = new HashMap<> ();
-	long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
+	long /*int*/ keymap;
+	long /*int*/ display = GDK.gdk_display_get_default();
+	if (GTK.GTK4) {
+		keymap = GDK.gdk_display_get_keymap(display);
+	} else {
+		keymap = GDK.gdk_keymap_get_for_display(display);
+	}
 
 	// count all key groups for Latin alphabet
 	for (int keyval = GDK.GDK_KEY_a; keyval <= GDK.GDK_KEY_z; keyval++) {
@@ -1339,7 +1358,7 @@ long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
 	int time = GDK.gdk_event_get_time (event);
 	if (time != 0) lastEventTime = time;
 
-	int eventType = GDK.GDK_EVENT_TYPE (event);
+	int eventType = GTK.GTK4 ? GDK.gdk_event_get_event_type(event) : GDK.GDK_EVENT_TYPE (event);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS:
 		case GDK.GDK_KEY_PRESS:
@@ -1477,8 +1496,10 @@ static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, 
 }
 
 void flushExposes (long /*int*/ window, boolean all) {
-	GDK.gdk_flush ();
-	GDK.gdk_flush ();
+	if (!GTK.GTK4) {
+		GDK.gdk_flush ();
+		GDK.gdk_flush ();
+	}
 	if (OS.isX11()) {
 		this.flushWindow = window;
 		this.flushAll = all;
@@ -3722,41 +3743,43 @@ void initializeColorList() {
 }
 
 void initializeSubclasses () {
-	long /*int*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-	long /*int*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-	pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
-	OS.g_type_class_unref (pangoLayoutClass);
+	if (!GTK.GTK4) {
+		long /*int*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+		long /*int*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+		pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
+		OS.g_type_class_unref (pangoLayoutClass);
 
-	long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-	long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
-	imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
-	OS.g_type_class_unref (imContextClass);
+		long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
+		OS.g_type_class_unref (imContextClass);
 
-	long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-	long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
-	pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
-	OS.g_type_class_unref (pangoFontFamilyClass);
+		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+		pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
+		OS.g_type_class_unref (pangoFontFamilyClass);
 
-	long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-	long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
-	pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
-	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
-	OS.g_type_class_unref (pangoFontFaceClass);
+		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+		pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
+		OS.g_type_class_unref (pangoFontFaceClass);
 
-	if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
-		long /*int*/ printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
-		long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
-		printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
-		OS.g_type_class_unref (printerOptionWidgetClass);
+		if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
+			long /*int*/ printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
+			long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+			printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
+			OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
+			OS.g_type_class_unref (printerOptionWidgetClass);
+		}
 	}
 }
 
 void initializeSystemSettings () {
-	OS.g_signal_connect (shellHandle, OS.style_set, signalProc, STYLE_SET);
+	if (!GTK.GTK4) OS.g_signal_connect (shellHandle, OS.style_set, signalProc, STYLE_SET);
 
 	/*
 	* Feature in GTK.  Despite the fact that the
@@ -4430,7 +4453,7 @@ public boolean readAndDispatch () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock before calling the function below.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	events |= OS.g_main_context_iteration (0, false);
 	if (events) {
 		runDeferredEvents ();
@@ -5905,15 +5928,20 @@ protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, l
 }
 
 static int _getDeviceZoom (long /*int*/ monitor_num) {
-	long /*int*/ screen = GDK.gdk_screen_get_default ();
-	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
-	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
+	/*
+	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1
+	 * if gdk_screen_set_resolution has not been called.
+	 */
+	int dpi = 96;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long /*int*/ display = GDK.gdk_display_get_default();
 		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
 	} else if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		dpi = (int) GDK.gdk_screen_get_resolution (screen);
+		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
 		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, (int) monitor_num);
 		dpi = dpi * scale;
 	}

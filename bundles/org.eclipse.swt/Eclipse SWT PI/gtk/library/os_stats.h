@@ -95,8 +95,10 @@ typedef enum {
 	_1gdk_1display_1get_1default_1group_FUNC,
 	_1gdk_1display_1get_1default_1seat_FUNC,
 	_1gdk_1display_1get_1device_1manager_FUNC,
+	_1gdk_1display_1get_1keymap_FUNC,
 	_1gdk_1display_1get_1monitor_FUNC,
 	_1gdk_1display_1get_1monitor_1at_1point_FUNC,
+	_1gdk_1display_1get_1monitor_1at_1surface_FUNC,
 	_1gdk_1display_1get_1monitor_1at_1window_FUNC,
 	_1gdk_1display_1get_1n_1monitors_FUNC,
 	_1gdk_1display_1get_1primary_1monitor_FUNC,
@@ -177,6 +179,7 @@ typedef enum {
 	_1gdk_1surface_1create_1similar_1surface_FUNC,
 	_1gdk_1surface_1destroy_FUNC,
 	_1gdk_1surface_1focus_FUNC,
+	_1gdk_1surface_1get_1frame_1extents_FUNC,
 	_1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,
 	_1gdk_1unicode_1to_1keyval_FUNC,
 	_1gdk_1utf8_1to_1string_1target_FUNC,
@@ -792,8 +795,18 @@ typedef enum {
 	_1gtk_1status_1icon_1set_1visible_FUNC,
 	_1gtk_1style_1context_1add_1class_FUNC,
 	_1gtk_1style_1context_1add_1provider_FUNC,
+	_1gtk_1style_1context_1add_1provider_1for_1display_FUNC,
 	_1gtk_1style_1context_1add_1provider_1for_1screen_FUNC,
-	_1gtk_1style_1context_1get_FUNC,
+#ifndef JNI64
+	_1gtk_1style_1context_1get__II_3B_3II_FUNC,
+#else
+	_1gtk_1style_1context_1get__JI_3B_3JJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1style_1context_1get__I_3B_3II_FUNC,
+#else
+	_1gtk_1style_1context_1get__J_3B_3JJ_FUNC,
+#endif
 	_1gtk_1style_1context_1get_1background_1color_FUNC,
 	_1gtk_1style_1context_1get_1border_FUNC,
 	_1gtk_1style_1context_1get_1color_FUNC,
@@ -1095,7 +1108,16 @@ typedef enum {
 	_1gtk_1widget_1set_1visible_FUNC,
 	_1gtk_1widget_1shape_1combine_1region_FUNC,
 	_1gtk_1widget_1show_FUNC,
-	_1gtk_1widget_1size_1allocate_FUNC,
+#ifndef JNI64
+	_1gtk_1widget_1size_1allocate__ILorg_eclipse_swt_internal_gtk_GtkAllocation_2_FUNC,
+#else
+	_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1widget_1size_1allocate__ILorg_eclipse_swt_internal_gtk_GtkAllocation_2I_FUNC,
+#else
+	_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2I_FUNC,
+#endif
 #ifndef JNI64
 	_1gtk_1widget_1style_1get__I_3B_3II_FUNC,
 #else

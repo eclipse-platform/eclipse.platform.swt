@@ -85,8 +85,10 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1display_1get_1default_1group",
 	"_1gdk_1display_1get_1default_1seat",
 	"_1gdk_1display_1get_1device_1manager",
+	"_1gdk_1display_1get_1keymap",
 	"_1gdk_1display_1get_1monitor",
 	"_1gdk_1display_1get_1monitor_1at_1point",
+	"_1gdk_1display_1get_1monitor_1at_1surface",
 	"_1gdk_1display_1get_1monitor_1at_1window",
 	"_1gdk_1display_1get_1n_1monitors",
 	"_1gdk_1display_1get_1primary_1monitor",
@@ -167,6 +169,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1surface_1create_1similar_1surface",
 	"_1gdk_1surface_1destroy",
 	"_1gdk_1surface_1focus",
+	"_1gdk_1surface_1get_1frame_1extents",
 	"_1gdk_1text_1property_1to_1utf8_1list_1for_1display",
 	"_1gdk_1unicode_1to_1keyval",
 	"_1gdk_1utf8_1to_1string_1target",
@@ -794,8 +797,18 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1status_1icon_1set_1visible",
 	"_1gtk_1style_1context_1add_1class",
 	"_1gtk_1style_1context_1add_1provider",
+	"_1gtk_1style_1context_1add_1provider_1for_1display",
 	"_1gtk_1style_1context_1add_1provider_1for_1screen",
-	"_1gtk_1style_1context_1get",
+#ifndef JNI64
+	"_1gtk_1style_1context_1get__II_3B_3II",
+#else
+	"_1gtk_1style_1context_1get__JI_3B_3JJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1style_1context_1get__I_3B_3II",
+#else
+	"_1gtk_1style_1context_1get__J_3B_3JJ",
+#endif
 	"_1gtk_1style_1context_1get_1background_1color",
 	"_1gtk_1style_1context_1get_1border",
 	"_1gtk_1style_1context_1get_1color",
@@ -1097,7 +1110,16 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1visible",
 	"_1gtk_1widget_1shape_1combine_1region",
 	"_1gtk_1widget_1show",
-	"_1gtk_1widget_1size_1allocate",
+#ifndef JNI64
+	"_1gtk_1widget_1size_1allocate__ILorg_eclipse_swt_internal_gtk_GtkAllocation_2",
+#else
+	"_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2",
+#endif
+#ifndef JNI64
+	"_1gtk_1widget_1size_1allocate__ILorg_eclipse_swt_internal_gtk_GtkAllocation_2I",
+#else
+	"_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2I",
+#endif
 #ifndef JNI64
 	"_1gtk_1widget_1style_1get__I_3B_3II",
 #else

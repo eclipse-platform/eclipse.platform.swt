@@ -462,9 +462,12 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param atom_name cast=(const gchar *),flags=no_out critical */
+	/**
+	 * @method flags=dynamic
+	 * @param atom_name cast=(const gchar *),flags=no_out critical
+	 */
 	public static final native long /*int*/ _gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
-	/** [GTK3 only, if-def'd in os.h] */
+	/** [GTK3 only] */
 	public static final long /*int*/ gdk_atom_intern(byte[] atom_name, boolean only_if_exists) {
 		lock.lock();
 		try {
@@ -1101,8 +1104,11 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native void _gdk_flush();
-	/** [GTK3 only, if-def'd in os.h] */
+	/** [GTK3 only] */
 	public static final void gdk_flush() {
 		lock.lock();
 		try {
@@ -1122,14 +1128,28 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native long /*int*/ _gdk_keymap_get_for_display(long /*int*/ display);
-	/** [GTK3 only, if-def'd in os.h] */
+	/** [GTK3 only] */
 	public static final long /*int*/ gdk_keymap_get_for_display(long /*int*/ display) {
 		lock.lock();
 		try {
 			return _gdk_keymap_get_for_display(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native long /*int*/ _gdk_display_get_keymap(long /*int*/ display);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_display_get_keymap(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_keymap(display);
 		} finally {
 			lock.unlock();
 		}
@@ -1186,8 +1206,11 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 */
 	public static final native long /*int*/ _gdk_pango_context_get();
-	/** [GTK3 only, if-def'd in os.h] */
+	/** [GTK3 only] */
 	public static final long /*int*/ gdk_pango_context_get() {
 		lock.lock();
 		try {
@@ -1647,6 +1670,20 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param display cast=(GdkDisplay *)
+	 * @param surface cast=(GdkSurface *)
+	 */
+	public static final native long /*int*/ _gdk_display_get_monitor_at_surface(long /*int*/ display, long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_display_get_monitor_at_surface(long /*int*/ display, long /*int*/ surface) {
+		lock.lock();
+		try {
+			return _gdk_display_get_monitor_at_surface(display, surface);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 */
 	public static final native int _gdk_display_get_n_monitors(long /*int*/ display);
@@ -1864,9 +1901,12 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param program_class cast=(const char *) */
+	/**
+	 * @method flags=dynamic
+	 * @param program_class cast=(const char *)
+	 */
 	public static final native void _gdk_set_program_class(byte[] program_class);
-	/** [GTK3 only, if-def'd in os.h] */
+	/** [GTK3 only] */
 	public static final void gdk_set_program_class(byte[] program_class) {
 		lock.lock();
 		try {
@@ -2071,6 +2111,20 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_get_frame_extents(window, rect);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param rect cast=(GdkRectangle *),flags=no_in
+	 */
+	public static final native void _gdk_surface_get_frame_extents(long /*int*/ surface, GdkRectangle rect);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_get_frame_extents(long /*int*/ surface, GdkRectangle rect) {
+		lock.lock();
+		try {
+			_gdk_surface_get_frame_extents(surface, rect);
 		} finally {
 			lock.unlock();
 		}

@@ -274,29 +274,15 @@
 #define NO__1gdk_1screen_1is_1composited
 
 // Miscellaneous functions removed from GTK4
-#define NO__1gtk_1button_1set_1image
 #define NO__1gtk_1misc_1set_1alignment
-#define NO__1gtk_1toggle_1button_1set_1inconsistent
-#define NO__1gtk_1toggle_1button_1set_1mode
-#define NO__1gtk_1toolbar_1set_1icon_1size
-#define NO__1gdk_1flush
-#define NO__1gdk_1keymap_1get_1for_1display
-#define NO__1gdk_1pango_1context_1get
-#define NO__1gdk_1set_1program_1class
 #define NO__1gdk_1test_1simulate_1button
 #define NO__1gdk_1test_1simulate_1key
-#define NO__1gdk_1atom_1intern
 #define NO__1gdk_1atom_1name
 #define NO__1gdk_1cairo_1create
 #define NO_gdk_1threads_1leave
 #define NO__1gdk_1selection_1owner_1set
 #define NO__1gdk_1selection_1owner_1get
 #define NO__1gdk_1visual_1get_1depth
-
-// Some drawing functions have been removed on GTK4
-#define NO__1gtk_1widget_1draw
-#define NO__1gtk_1widget_1set_1redraw_1on_1allocate
-#define NO__1gtk_1widget_1shape_1combine_1region
 
 // Some GtkContainer functions don't exist on GTK4
 #define NO__1gtk_1container_1propagate_1draw
@@ -321,11 +307,6 @@
 #define NO__1gtk_1drag_1set_1icon_1surface
 
 // Some sizing functions are not available on GTK4
-#define NO__1gtk_1widget_1get_1preferred_1height
-#define NO__1gtk_1widget_1get_1preferred_1height_1for_1width
-#define NO__1gtk_1widget_1get_1preferred_1width_1for_1height
-#define NO__1gtk_1widget_1size_1allocate
-#define NO__1gtk_1widget_1set_1allocation
 #define NO__1gtk_1window_1set_1geometry_1hints
 
 // No GdkWindow on GTK4, this includes parameter casting
@@ -392,9 +373,6 @@
 #define NO__1gtk_1tree_1view_1get_1bin_1window
 
 // Event related functions removed in GTK4
-#define NO__1gtk_1event_1box_1new
-#define NO__1gtk_1widget_1add_1events
-#define NO__1gtk_1widget_1get_1events
 #define NO__1gdk_1event_1free
 #define NO__1gdk_1event_1get
 #define NO__1gdk_1event_1peek
@@ -429,13 +407,16 @@
 #define NO__1gdk_1surface_1destroy
 #define NO__1gdk_1surface_1focus
 #define NO__1gdk_1device_1get_1surface_1at_1position
+#define NO__1gdk_1display_1get_1monitor_1at_1surface
+#define NO__1gdk_1surface_1get_1frame_1extents
 
 // Miscellaneous functions not present on GTK3
 #define NO__1gdk_1device_1warp__III
 #define NO__1gdk_1device_1warp__JII
 #define NO__1gdk_1cursor_1new_1from_1name___3BI
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
-
+#define NO__1gdk_1display_1get_1keymap
+#define NO__1gtk_1style_1context_1add_1provider_1for_1display
 #endif
 
 #include "os_custom.h"

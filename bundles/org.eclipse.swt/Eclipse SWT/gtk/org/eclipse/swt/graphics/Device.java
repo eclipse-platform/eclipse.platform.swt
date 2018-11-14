@@ -652,11 +652,19 @@ protected void init () {
 	GTK.gtk_widget_realize(shellHandle);
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ surface = GDK.gdk_window_create_similar_surface(GDK.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, 10, 10);
 		double sx[] = new double[1];
 		double sy[] = new double[1];
+		long /*int*/ gdkResource;
+		long /*int*/ surface;
+		if (GTK.GTK4) {
+			GTK.gtk_widget_realize(shellHandle);
+			gdkResource = GTK.gtk_widget_get_surface(shellHandle);
+			surface = GDK.gdk_surface_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
+		} else {
+			gdkResource = GDK.gdk_get_default_root_window();
+			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
+		}
 		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
-
 		DPIUtil.setUseCairoAutoScale((sx[0]*100) == scaleFactor);
 	}
 
@@ -669,7 +677,11 @@ protected void init () {
 	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
-		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, defaultFontArray, 0);
+		} else {
+			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+		}
 		GTK.gtk_style_context_restore(context);
 		defaultFont = defaultFontArray [0];
 	} else {
@@ -704,12 +716,7 @@ protected void init () {
  * Note that much of eclipse 'dark theme' is done by platform.ui's CSS engine, not by SWT.
  */
 private void overrideThemeValues () {
-	long /*int*/ screen = GDK.gdk_screen_get_default();
 	long /*int*/ provider = GTK.gtk_css_provider_new();
-	if (screen == 0 || provider == 0) {
-		System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire screen or provider.");
-		return;
-	}
 
 	BiFunction <String, Boolean, String> load = (path, isResource) -> {
 		try  {
@@ -760,7 +767,21 @@ private void overrideThemeValues () {
 		combinedCSS.append(load.apply(additionalCSSPath, false));
 	}
 
-	GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	if (GTK.GTK4) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		if (display == 0 || provider == 0) {
+			System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire display or provider.");
+			return;
+		}
+		GTK.gtk_style_context_add_provider_for_display (display, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default();
+		if (screen == 0 || provider == 0) {
+			System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire screen or provider.");
+			return;
+		}
+		GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
 	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1, null);
 }
 
@@ -1050,15 +1071,20 @@ int _getDPIx () {
  * @since 3.105
  */
 protected int getDeviceZoom() {
-	long /*int*/ screen = GDK.gdk_screen_get_default();
-	int dpi = (int) GDK.gdk_screen_get_resolution (screen);
-	if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
+	/*
+	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1
+	 * if gdk_screen_set_resolution has not been called.
+	 */
+	int dpi = 96;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long /*int*/ display = GDK.gdk_display_get_default();
 		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
 	} else if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+		long /*int*/ screen = GDK.gdk_screen_get_default();
+		dpi = (int) GDK.gdk_screen_get_resolution (screen);
+		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
 		int monitor_num = GDK.gdk_screen_get_monitor_at_point (screen, 0, 0);
 		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
 		dpi = dpi * scale;

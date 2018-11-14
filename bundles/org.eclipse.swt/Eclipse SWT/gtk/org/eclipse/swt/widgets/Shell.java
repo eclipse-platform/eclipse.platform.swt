@@ -483,9 +483,14 @@ void adjustTrim () {
 	GTK.gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
-	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	GdkRectangle rect = new GdkRectangle ();
-	GDK.gdk_window_get_frame_extents (window, rect);
+	if (GTK.GTK4) {
+		long /*int*/ surface = gtk_widget_get_surface(shellHandle);
+		GDK.gdk_surface_get_frame_extents (surface, rect);
+	} else {
+		long /*int*/ window = gtk_widget_get_window (shellHandle);
+		GDK.gdk_window_get_frame_extents (window, rect);
+	}
 	int trimWidth = Math.max (0, rect.width - width);
 	int trimHeight = Math.max (0, rect.height - height);
 	/*
@@ -912,7 +917,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	if (isCustomResize ()) {
 		int mask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_BUTTON_PRESS_MASK |  GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-		GTK.gtk_widget_add_events (shellHandle, mask);
+		if (!GTK.GTK4) GTK.gtk_widget_add_events (shellHandle, mask);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
@@ -1034,7 +1039,7 @@ void forceResize (int width, int height) {
 	int clientWidth = 0;
 	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 	GtkAllocation allocation = new GtkAllocation ();
-	int border = GTK.gtk_container_get_border_width (shellHandle);
+	int border = GTK.GTK4 ? 0 : GTK.gtk_container_get_border_width (shellHandle);
 	allocation.x = border;
 	allocation.y = border;
 	allocation.width = width;
@@ -1059,8 +1064,11 @@ void forceResize (int width, int height) {
 			allocation.y += dest_y[0];
 		}
 	}
-
-	GTK.gtk_widget_size_allocate (vboxHandle, allocation);
+	if (GTK.GTK4) {
+		GTK.gtk_widget_size_allocate (vboxHandle, allocation, -1);
+	} else {
+		GTK.gtk_widget_size_allocate (vboxHandle, allocation);
+	}
 	if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
 }
 
@@ -1497,6 +1505,15 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
+long /*int*/ gtk_map (long /*int*/ widget) {
+	// No "map-event" signal on GTK4, set mapped here instead
+	if (GTK.GTK4) {
+		mapped = true;
+	}
+	return super.gtk_map(widget);
+}
+
+@Override
 long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ directionType) {
 	Control control = display.getFocusControl ();
 	if (control != null) {
@@ -1637,7 +1654,12 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 @Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
-	long /*int*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ gdkResource;
+	if (GTK.GTK4) {
+		gdkResource = gtk_widget_get_surface (shellHandle);
+	} else {
+		gdkResource = gtk_widget_get_window (shellHandle);
+	}
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		int decorations = 0;
 		int functions = 0;
@@ -1667,7 +1689,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 			if ((style & SWT.RESIZE) != 0) decorations |= GDK.GDK_DECOR_BORDER;
 			if ((style & SWT.NO_MOVE) == 0) functions |=  GDK.GDK_FUNC_MOVE;
 		}
-		GDK.gdk_window_set_decorations (window, decorations);
+		GDK.gdk_window_set_decorations (gdkResource, decorations);
 
 		/*
 		* For systems running Metacity, this call forces the style hints to
@@ -1675,11 +1697,11 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		* set by the function gdk_window_set_decorations (window,
 		* decorations) are ignored by the window manager.
 		*/
-		GDK.gdk_window_set_functions(window, functions);
+		GDK.gdk_window_set_functions(gdkResource, functions);
 	} else if ((style & SWT.NO_MOVE) != 0) {
 		// if the GDK_FUNC_ALL bit is present, all the other style
 		// bits specified as a parameter will be removed from the window
-		GDK.gdk_window_set_functions (window, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
+		GDK.gdk_window_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
 	}
 
 	if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
@@ -1936,7 +1958,8 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (enableWindow != 0) {
 		GDK.gdk_window_resize (enableWindow, width, height);
 	}
-	int border = GTK.gtk_container_get_border_width (shellHandle);
+	int border = 0;
+	if (!GTK.GTK4) border = GTK.gtk_container_get_border_width (shellHandle);
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
 	if ((style & SWT.RESIZE) == 0) {
@@ -2159,7 +2182,12 @@ void setInitialBounds () {
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 			long /*int*/ display = GDK.gdk_display_get_default();
 			if (display != 0) {
-				long /*int*/ monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
+				long /*int*/ monitor;
+				if (GTK.GTK4) {
+					monitor = GDK.gdk_display_get_monitor_at_surface(display, paintWindow());
+				} else {
+					monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
+				}
 				GDK.gdk_monitor_get_geometry(monitor, dest);
 				width = dest.width * 5 / 8;
 				height = dest.height * 5 / 8;
@@ -2513,7 +2541,7 @@ public void setVisible (boolean visible) {
 				* code outside of SWT (i.e AWT, etc). It ensures that the current
 				* thread leaves the GTK lock before calling the function below.
 				*/
-				GDK.gdk_threads_leave();
+				if (!GTK.GTK4) GDK.gdk_threads_leave();
 				OS.g_main_context_iteration (0, false);
 				if (isDisposed ()) break;
 				iconic = minimized || (shell != null && shell.minimized);

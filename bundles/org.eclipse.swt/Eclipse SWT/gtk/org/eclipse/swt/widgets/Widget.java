@@ -1781,6 +1781,27 @@ long /*int*/ gtk_widget_get_window (long /*int*/ widget){
 	return GTK.gtk_widget_get_window (widget);
 }
 
+long /*int*/ gtk_widget_get_surface (long /*int*/ widget){
+	GTK.gtk_widget_realize(widget);
+	return GTK.gtk_widget_get_surface (widget);
+}
+
+void gtk_widget_set_has_surface_or_window (long /*int*/ widget, boolean has) {
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_has_surface(widget, has);
+	} else {
+		GTK.gtk_widget_set_has_window(widget, has);
+	}
+}
+
+boolean gtk_widget_get_has_surface_or_window (long /*int*/ widget) {
+	if (GTK.GTK4) {
+		return GTK.gtk_widget_get_has_surface(widget);
+	} else {
+		return GTK.gtk_widget_get_has_window(widget);
+	}
+}
+
 void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 	GTK.gtk_widget_set_visible (widget, visible);
 }

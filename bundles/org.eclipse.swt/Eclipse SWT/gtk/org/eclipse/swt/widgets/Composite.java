@@ -297,7 +297,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (handle, true);
+	gtk_widget_set_has_surface_or_window (handle, true);
 	GTK.gtk_widget_set_can_focus (handle, true);
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0) {
@@ -406,7 +406,11 @@ void adjustChildClipping (long /*int*/ widget) {
 			// Call gtk_widget_get_preferred_size() to prevent warnings
 			GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
 			// Allocate and queue a resize event
-			GTK.gtk_widget_size_allocate(widget, allocation);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_size_allocate(widget, allocation, -1);
+			} else {
+				GTK.gtk_widget_size_allocate(widget, allocation);
+			}
 			GTK.gtk_widget_queue_resize(widget);
 		}
 	}
@@ -895,7 +899,7 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-		GTK.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
+		if (!GTK.GTK4) GTK.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child, display.getClosure (SCROLL_CHILD), false);
 		}
@@ -1281,7 +1285,11 @@ void moveChildren(int oldWidth) {
 		gtk_widget_get_preferred_size (topHandle, requisition);
 		allocation.x = x;
 		allocation.y = y;
-		GTK.gtk_widget_size_allocate (topHandle, allocation);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+		} else {
+			GTK.gtk_widget_size_allocate (topHandle, allocation);
+		}
 		Control control = child.findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {
 			if (child.isVisible ()) child.redrawWidget (0, 0, 0, 0, true, true, true);

@@ -156,7 +156,7 @@ public Control (Composite parent, int style) {
 void connectPaint () {
 	long /*int*/ paintHandle = paintHandle ();
 	int paintMask = GDK.GDK_EXPOSURE_MASK;
-	GTK.gtk_widget_add_events (paintHandle, paintMask);
+	if (!GTK.GTK4) GTK.gtk_widget_add_events (paintHandle, paintMask);
 
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 
@@ -368,7 +368,7 @@ void hookEvents () {
 	/* Connect the keyboard signals */
 	long /*int*/ focusHandle = focusHandle ();
 	int focusMask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK;
-	GTK.gtk_widget_add_events (focusHandle, focusMask);
+	if (!GTK.GTK4) GTK.gtk_widget_add_events (focusHandle, focusMask);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [POPUP_MENU], 0, display.getClosure (POPUP_MENU), false);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
@@ -380,7 +380,7 @@ void hookEvents () {
 	/* Connect the mouse signals */
 	long /*int*/ eventHandle = eventHandle ();
 	int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
-	GTK.gtk_widget_add_events (eventHandle, eventMask);
+	if (!GTK.GTK4) GTK.gtk_widget_add_events (eventHandle, eventMask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
@@ -389,7 +389,7 @@ void hookEvents () {
 	/* Connect enter/exit signals */
 	long /*int*/ enterExitHandle = enterExitHandle ();
 	int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-	GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
+	if (!GTK.GTK4) GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
 	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 
@@ -473,7 +473,7 @@ long /*int*/ paintHandle () {
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ paintHandle = handle;
 	while (paintHandle != topHandle) {
-		if (GTK.gtk_widget_get_has_window (paintHandle)) break;
+		if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
 		paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;
@@ -483,7 +483,11 @@ long /*int*/ paintHandle () {
 long /*int*/ paintWindow () {
 	long /*int*/ paintHandle = paintHandle ();
 	GTK.gtk_widget_realize (paintHandle);
-	return gtk_widget_get_window (paintHandle);
+	if (GTK.GTK4) {
+		return gtk_widget_get_surface (paintHandle);
+	} else {
+		return gtk_widget_get_window (paintHandle);
+	}
 }
 
 /**
@@ -770,7 +774,11 @@ void forceResize () {
 	gtk_widget_get_preferred_size (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
-	GTK.gtk_widget_size_allocate (topHandle, allocation);
+	if (GTK.GTK4) {
+		GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+	} else {
+		GTK.gtk_widget_size_allocate (topHandle, allocation);
+	}
 }
 
 /**
@@ -1035,7 +1043,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			Control focusControl = display.getFocusControl();
 			GTK.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
-			GTK.gtk_widget_size_allocate (topHandle, allocation);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+			} else {
+				GTK.gtk_widget_size_allocate (topHandle, allocation);
+			}
 			GTK.gtk_widget_hide(topHandle);
 			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
 			 * Reset focus to original focused control after dealing with allocation.
@@ -1044,7 +1056,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				focusControl.setFocus();
 			}
 		} else {
-			GTK.gtk_widget_size_allocate (topHandle, allocation);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+			} else {
+				GTK.gtk_widget_size_allocate (topHandle, allocation);
+			}
 		}
 	}
 	/*
@@ -3684,10 +3700,12 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 
 @Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
-	long /*int*/ imHandle = imHandle ();
-	if (imHandle != 0) {
-		long /*int*/ window = gtk_widget_get_window (paintHandle ());
-		GTK.gtk_im_context_set_client_window (imHandle, window);
+	if (!GTK.GTK4) {
+		long /*int*/ imHandle = imHandle ();
+		if (imHandle != 0) {
+			long /*int*/ window = gtk_widget_get_window (paintHandle ());
+			GTK.gtk_im_context_set_client_window (imHandle, window);
+		}
 	}
 	if (backgroundImage != null) {
 		setBackgroundSurface (backgroundImage);
@@ -3743,8 +3761,10 @@ long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 
 @Override
 long /*int*/ gtk_unrealize (long /*int*/ widget) {
-	long /*int*/ imHandle = imHandle ();
-	if (imHandle != 0) GTK.gtk_im_context_set_client_window (imHandle, 0);
+	if (!GTK.GTK4) {
+		long /*int*/ imHandle = imHandle ();
+		if (imHandle != 0) GTK.gtk_im_context_set_client_window (imHandle, 0);
+	}
 	return 0;
 }
 
@@ -4968,7 +4988,11 @@ void setInitialBounds () {
 		if (mustBeVisibleOnInitBounds ()) {
 			GTK.gtk_widget_set_visible(topHandle, true);
 		}
-		GTK.gtk_widget_size_allocate(topHandle, allocation);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+		} else {
+			GTK.gtk_widget_size_allocate (topHandle, allocation);
+		}
 	} else {
 		resizeHandle (1, 1);
 		forceResize ();
@@ -5245,7 +5269,11 @@ public boolean setParent (Composite parent) {
 	allocation.y = y;
 	allocation.width = width;
 	allocation.height = height;
-	GTK.gtk_widget_size_allocate (topHandle, allocation);
+	if (GTK.GTK4) {
+		GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+	} else {
+		GTK.gtk_widget_size_allocate (topHandle, allocation);
+	}
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);
@@ -6096,7 +6124,7 @@ void update (boolean all, boolean flush) {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 16, 0)) {
 		GDK.gdk_window_process_updates (window, all);
 	}
-	GDK.gdk_flush ();
+	if (!GTK.GTK4) GDK.gdk_flush ();
 }
 
 void updateBackgroundMode () {
