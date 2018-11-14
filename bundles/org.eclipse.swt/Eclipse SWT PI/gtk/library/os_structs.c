@@ -501,7 +501,7 @@ void setGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFocus *lpStru
 typedef struct GdkEventKey_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID window, send_event, time, state, keyval, length, string, hardware_keycode, group;
+	jfieldID window, send_event, time, state, keyval, length, string, hardware_keycode, group, is_modifier;
 } GdkEventKey_FID_CACHE;
 
 GdkEventKey_FID_CACHE GdkEventKeyFc;
@@ -520,6 +520,7 @@ void cacheGdkEventKeyFields(JNIEnv *env, jobject lpObject)
 	GdkEventKeyFc.string = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "string", I_J);
 	GdkEventKeyFc.hardware_keycode = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "hardware_keycode", "S");
 	GdkEventKeyFc.group = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "group", "B");
+	GdkEventKeyFc.is_modifier = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "is_modifier", "I");
 	GdkEventKeyFc.cached = 1;
 }
 
@@ -536,6 +537,7 @@ GdkEventKey *getGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lp
 	lpStruct->string = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkEventKeyFc.string);
 	lpStruct->hardware_keycode = (guint16)(*env)->GetShortField(env, lpObject, GdkEventKeyFc.hardware_keycode);
 	lpStruct->group = (guint8)(*env)->GetByteField(env, lpObject, GdkEventKeyFc.group);
+	lpStruct->is_modifier = (guint)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.is_modifier);
 	return lpStruct;
 }
 
@@ -552,6 +554,7 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, GdkEventKeyFc.string, (jintLong)lpStruct->string);
 	(*env)->SetShortField(env, lpObject, GdkEventKeyFc.hardware_keycode, (jshort)lpStruct->hardware_keycode);
 	(*env)->SetByteField(env, lpObject, GdkEventKeyFc.group, (jbyte)lpStruct->group);
+	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.is_modifier, (jint)lpStruct->is_modifier);
 }
 #endif
 
@@ -797,7 +800,7 @@ void cacheGdkKeymapKeyFields(JNIEnv *env, jobject lpObject)
 {
 	if (GdkKeymapKeyFc.cached) return;
 	GdkKeymapKeyFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkKeymapKeyFc.keycode = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "keycode", "J");
+	GdkKeymapKeyFc.keycode = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "keycode", "I");
 	GdkKeymapKeyFc.group = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "group", "I");
 	GdkKeymapKeyFc.level = (*env)->GetFieldID(env, GdkKeymapKeyFc.clazz, "level", "I");
 	GdkKeymapKeyFc.cached = 1;
@@ -806,7 +809,7 @@ void cacheGdkKeymapKeyFields(JNIEnv *env, jobject lpObject)
 GdkKeymapKey *getGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey *lpStruct)
 {
 	if (!GdkKeymapKeyFc.cached) cacheGdkKeymapKeyFields(env, lpObject);
-	lpStruct->keycode = (guint)(*env)->GetLongField(env, lpObject, GdkKeymapKeyFc.keycode);
+	lpStruct->keycode = (guint)(*env)->GetIntField(env, lpObject, GdkKeymapKeyFc.keycode);
 	lpStruct->group = (gint)(*env)->GetIntField(env, lpObject, GdkKeymapKeyFc.group);
 	lpStruct->level = (gint)(*env)->GetIntField(env, lpObject, GdkKeymapKeyFc.level);
 	return lpStruct;
@@ -815,7 +818,7 @@ GdkKeymapKey *getGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey 
 void setGdkKeymapKeyFields(JNIEnv *env, jobject lpObject, GdkKeymapKey *lpStruct)
 {
 	if (!GdkKeymapKeyFc.cached) cacheGdkKeymapKeyFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, GdkKeymapKeyFc.keycode, (jlong)lpStruct->keycode);
+	(*env)->SetIntField(env, lpObject, GdkKeymapKeyFc.keycode, (jint)lpStruct->keycode);
 	(*env)->SetIntField(env, lpObject, GdkKeymapKeyFc.group, (jint)lpStruct->group);
 	(*env)->SetIntField(env, lpObject, GdkKeymapKeyFc.level, (jint)lpStruct->level);
 }

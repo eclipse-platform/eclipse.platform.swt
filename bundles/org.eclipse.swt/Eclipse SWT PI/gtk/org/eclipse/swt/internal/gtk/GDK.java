@@ -1053,6 +1053,19 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param device cast=(GdkDevice *)
+	 */
+	public static final native void _gdk_event_set_device(long /*int*/ event, long /*int*/ device);
+	public static final void gdk_event_set_device(long /*int*/ event, long /*int*/ device) {
+		lock.lock();
+		try {
+			_gdk_event_set_device(event, device);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param event cast=(GdkEvent *) */
 	public static final native void _gdk_event_put(long /*int*/ event);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -1122,13 +1135,32 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param keymap cast=(GdkKeymap *)
+	 * @param hardware_keycode cast=(guint)
+	 * @param state cast=(GdkModifierType)
+	 * @param group cast=(gint)
+	 * @param keyval cast=(guint *)
+	 * @param effective_group cast=(gint *)
+	 * @param level cast=(gint *)
+	 * @param consumed_modifiers cast=(GdkModifierType *)
+	 */
+	public static final native boolean _gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
+	public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers) {
+		lock.lock();
+		try {
+			return _gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, group, keyval, effective_group, level, consumed_modifiers);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param keymap cast=(GdkKeymap*)
 	 * @param keyval cast=(guint)
 	 * @param keys cast=(GdkKeymapKey**)
 	 * @param n_keys cast=(gint*)
 	 */
-	public static final native boolean _gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, long keyval, long /*int*/[] keys, int[] n_keys);
-	public static final boolean gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, long keyval, long /*int*/[] keys, int[] n_keys) {
+	public static final native boolean _gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, int keyval, long /*int*/ [] keys, int[] n_keys);
+	public static final boolean gdk_keymap_get_entries_for_keyval (long /*int*/ keymap, int keyval, long /*int*/ [] keys, int[] n_keys) {
 		lock.lock();
 		try {
 			return _gdk_keymap_get_entries_for_keyval(keymap, keyval, keys, n_keys);
@@ -1820,6 +1852,18 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gdk_seat_get_keyboard(long /*int*/ seat);
+	public static final long /*int*/ gdk_seat_get_keyboard(long /*int*/ seat) {
+		lock.lock();
+		try {
+			return _gdk_seat_get_keyboard(seat);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param program_class cast=(const char *) */
 	public static final native void _gdk_set_program_class(byte[] program_class);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -1881,41 +1925,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_utf8_to_string_target(str);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 * @param button cast=(guint)
-	 * @param modifiers cast=(GdkModifierType)
-	 * @param button_pressrelease cast=(GdkEventType)
-	 */
-	public static final native boolean _gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers, int button_pressrelease);
-	public static final boolean gdk_test_simulate_button(long /*int*/ window, int x, int y, int button, int modifiers, int button_pressrelease) {
-		lock.lock();
-		try {
-			return _gdk_test_simulate_button(window, x, y, button, modifiers, button_pressrelease);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 * @param keyval cast=(guint)
-	 * @param modifiers cast=(GdkModifierType)
-	 * @param key_pressrelease cast=(GdkEventType)
-	 */
-	public static final native boolean _gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final boolean gdk_test_simulate_key(long /*int*/ window, int x, int y, int keyval, int modifiers, int key_pressrelease) {
-		lock.lock();
-		try {
-			return _gdk_test_simulate_key(window, x, y, keyval, modifiers, key_pressrelease);
 		} finally {
 			lock.unlock();
 		}

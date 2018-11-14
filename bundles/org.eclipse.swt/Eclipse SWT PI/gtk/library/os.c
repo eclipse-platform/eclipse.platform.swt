@@ -1080,6 +1080,16 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1event_1put)
 }
 #endif
 
+#ifndef NO__1gdk_1event_1set_1device
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1event_1set_1device)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1set_1device_FUNC);
+	gdk_event_set_device((GdkEvent *)arg0, (GdkDevice *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1set_1device_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1flush
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1flush)
 	(JNIEnv *env, jclass that)
@@ -1104,7 +1114,7 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1get_1default_1root_1window)
 
 #ifndef NO__1gdk_1keymap_1get_1entries_1for_1keyval
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1entries_1for_1keyval)
-	(JNIEnv *env, jclass that, jintLong arg0, jlong arg1, jintLongArray arg2, jintArray arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLongArray arg2, jintArray arg3)
 {
 	jintLong *lparg2=NULL;
 	jint *lparg3=NULL;
@@ -1129,6 +1139,31 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1keymap_1get_1for_1display)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1keymap_1get_1for_1display_FUNC);
 	rc = (jintLong)gdk_keymap_get_for_display((GdkDisplay *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1keymap_1get_1for_1display_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1keymap_1translate_1keyboard_1state
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1keymap_1translate_1keyboard_1state)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap *)arg0, (guint)arg1, (GdkModifierType)arg2, (gint)arg3, (guint *)lparg4, (gint *)lparg5, (gint *)lparg6, (GdkModifierType *)lparg7);
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1keymap_1translate_1keyboard_1state_FUNC);
 	return rc;
 }
 #endif
@@ -1799,6 +1834,26 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1screen_1width)
 }
 #endif
 
+#ifndef NO__1gdk_1seat_1get_1keyboard
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1seat_1get_1keyboard)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1seat_1get_1keyboard_FUNC);
+/*
+	rc = (jintLong)gdk_seat_get_keyboard(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_seat_get_keyboard)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1seat_1get_1keyboard_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1seat_1get_1pointer
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1seat_1get_1pointer)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1920,30 +1975,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1focus)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1focus_FUNC);
 	gdk_surface_focus((GdkSurface *)arg0, arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1focus_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1test_1simulate_1button
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1test_1simulate_1button)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
-{
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1test_1simulate_1button_FUNC);
-	rc = (jboolean)gdk_test_simulate_button((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (guint)arg3, (GdkModifierType)arg4, (GdkEventType)arg5);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1test_1simulate_1button_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1test_1simulate_1key
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1test_1simulate_1key)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
-{
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1test_1simulate_1key_FUNC);
-	rc = (jboolean)gdk_test_simulate_key((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (guint)arg3, (GdkModifierType)arg4, (GdkEventType)arg5);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1test_1simulate_1key_FUNC);
-	return rc;
 }
 #endif
 

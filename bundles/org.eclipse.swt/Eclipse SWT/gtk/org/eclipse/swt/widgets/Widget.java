@@ -1676,7 +1676,7 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		case GDK.GDK_ISO_Left_Tab: 	event.character = SWT.TAB; break;
 		default: {
 			if (event.keyCode == 0) {
-				long [] keyval = new long [1];
+				int [] keyval = new int [1];
 				int [] effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
 				/* If current group is not a Latin layout, get the most Latin Layout group from input source. */
 				Map<Integer, Integer> groupLatinKeysCount = display.getGroupKeysCount();
@@ -1685,7 +1685,7 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 					keyLayoutGroup = display.getLatinKeyGroup();
 				}
 				long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
-				if (OS.gdk_keymap_translate_keyboard_state (keymap, keyEvent.hardware_keycode,
+				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyEvent.hardware_keycode,
 						0, keyLayoutGroup, keyval, effective_group, level, consumed_modifiers)) {
 					event.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				}

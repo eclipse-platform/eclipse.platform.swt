@@ -445,21 +445,6 @@ public class OS extends C {
 	 * @category custom
 	 */
 	public static final native boolean GDK_WINDOWING_WAYLAND();
-	/**
-	 * Can't be auto-generated because of mapping guint to long for keyval
-	 * @method flags=no_gen
-	 * @category custom
-	 */
-	public static final native boolean _gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
-	public static final boolean gdk_keymap_translate_keyboard_state (long /*int*/ keymap, int hardware_keycode, int state, int group, long[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers) {
-		lock.lock();
-		try {
-			return _gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, group, keyval, effective_group, level, consumed_modifiers);
-		} finally {
-			lock.unlock();
-		}
-	}
-
 	/** Custom callbacks */
 	/** @method flags=no_gen
 	 * @category custom
