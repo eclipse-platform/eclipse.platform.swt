@@ -129,6 +129,7 @@ public class Shell extends Decorations {
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut, ignoreFocusIn;
+	boolean ignoreFocusOutAfterGrab;
 	Region originalRegion;
 
 	static final int MAXIMUM_TRIM = 128;
@@ -594,19 +595,30 @@ void bringToTop (boolean force) {
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_grab_add(shellHandle);
-				/*
-				 * On Wayland, calling gdk_seat_grab on visible window causes caret to get stuck in Eclipse
-				 * after closing Javadoc/completion popup. Workaround is to hide the immediate popup mapped
-				 * to a top level window before grabbing, and show it using gdkSeatGrabPrepareFunc callback.
-				 */
-				if (gdkSeatGrabCallback == null) {
-					gdkSeatGrabCallback = new Callback(Shell.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
-				}
-				long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
-				if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
-				if (GTK.gtk_widget_get_visible(shellHandle) && !isMappedToPopup()) GTK.gtk_widget_hide(shellHandle);
-				GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
+				/*
+				 * NOTE: Using gdk_seat_grab to get the keyboard focus needs to be handled differently
+				 * for cases with a single popup, and for cases with multiple popup
+				 * 1) For normal popups without a child popup (i.e. F2 Javadoc), showing GdkWindow and
+				 * grabbing focus does the job
+				 * 2) For popups with a child popup attached to it (i.e. auto-completion), using (1)
+				 * makes pressing Tab close the popup instead of changing focus.
+				 * Current best workaround is to hide the immediate popup mapped to a top level window
+				 * before grabbing, and show it using gdkSeatGrabPrepareFunc callback.
+				 */
+				if (!hasPopupChild) {
+					GDK.gdk_window_show(window);
+					GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, 0, 0);
+				} else {
+					if (gdkSeatGrabCallback == null) {
+						gdkSeatGrabCallback = new Callback(Shell.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
+					}
+					long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
+					if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+					if (GTK.gtk_widget_get_visible(shellHandle) && !isMappedToPopup()) GTK.gtk_widget_hide(shellHandle);
+					GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
+				}
+				ignoreFocusOutAfterGrab = true;
 			}
 		}
 	} else {
@@ -740,6 +752,7 @@ void createHandle (int index) {
 					}
 					long /*int*/ parentDestroyedFunc = parentDestroyedCallback.getAddress();
 					OS.g_signal_connect(parent.topHandle(), OS.destroy, parentDestroyedFunc, shellHandle);
+					parent.hasPopupChild = true;
 				}
 			} else {
 				GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
@@ -1476,7 +1489,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	Display display = this.display;
-	if (!ignoreFocusOut) {
+	if (!ignoreFocusOut && !ignoreFocusOutAfterGrab) {
 		sendEvent (SWT.Deactivate);
 		setActiveControl (null);
 	}

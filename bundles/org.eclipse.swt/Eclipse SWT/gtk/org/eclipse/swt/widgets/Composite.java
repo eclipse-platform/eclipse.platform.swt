@@ -89,6 +89,8 @@ public class Composite extends Scrollable {
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
+	boolean hasPopupChild; // Wayland only, see Shell#bringToTop()
+
 Composite () {
 	/* Do nothing */
 }
