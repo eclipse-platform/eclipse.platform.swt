@@ -874,6 +874,8 @@ static void swt_fixed_init (SwtFixed *widget) {
 	priv->children = NULL;
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
+
+	gtk_widget_set_has_surface(GTK_WIDGET(widget), TRUE);
 }
 
 static void swt_fixed_finalize (GObject *object) {
@@ -958,6 +960,7 @@ static void swt_fixed_realize (GtkWidget *widget) {
 	surface = gdk_surface_new_child (gtk_widget_get_parent_surface (widget), &allocation);
 	gtk_widget_set_surface(widget, surface);
 	gdk_surface_set_user_data (surface, widget);
+	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->realize (widget);
 }
 
 static void swt_fixed_map (GtkWidget *widget) {
@@ -984,6 +987,7 @@ static void swt_fixed_map (GtkWidget *widget) {
 		//cases.
 		gdk_surface_show_unraised (gtk_widget_get_surface (widget));
 	}
+	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->map (widget);
 }
 
 /* Accessibility */
