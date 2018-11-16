@@ -36,6 +36,11 @@ public static void main(String[] args) {
 	new Thread(){
 		@Override
 		public void run(){
+			// wait for shell to be opened
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+
 			String string = "Love the method.";
 			for (int i = 0; i < string.length(); i++) {
 				char ch = string.charAt(i);
