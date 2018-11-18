@@ -2173,6 +2173,18 @@ public long /*int*/ internal_new_GC (GCData data) {
 			window.setAlphaValue(alpha);
 		}
 		graphicsContext = NSGraphicsContext.graphicsContextWithWindow (window);
+		if (graphicsContext == null) {
+			// create a bitmap based context, which will still work e.g. for text size computations
+			// it is unclear if the bitmap needs to be larger than the text to be measured.
+			// the following values should be big enough in any case.
+			int width = 1920;
+			int height = 256;
+			NSBitmapImageRep rep = (NSBitmapImageRep) new NSBitmapImageRep().alloc();
+			rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace,
+					OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+			graphicsContext = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
+			rep.release();
+		}
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
 		graphicsContext = flippedContext;
 		if (data != null) {
@@ -5105,6 +5117,17 @@ public void update () {
 }
 
 void update (boolean all) {
+	if(NSGraphicsContext.currentContext() == null) {
+		/*
+		 * If linked against macOS 10.14 SDK, or when native dark mode support is
+		 * enabled via Info.plist, views are displayed using Core Animation and drawing
+		 * is only possible, when cocoa invokes drawRect of a dirty view (which it does
+		 * by a run loop observer invoked during calls of
+		 * NSApplication#nextEventMatchingMask, only after more than approx. 10ms have
+		 * passed since the last redraw).
+		 */
+		return;
+ 	}
 //	checkWidget();
 	NSArray isPainting = display.isPainting;
 	if (isPainting.containsObject(view)) return;
