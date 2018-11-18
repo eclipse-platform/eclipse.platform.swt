@@ -3147,6 +3147,18 @@ public long internal_new_GC (GCData data) {
 		screenWindow = window;
 	}
 	NSGraphicsContext context = screenWindow.graphicsContext();
+	if (context == null) {
+		// create a bitmap based context, which will still work e.g. for text size computations
+		// it is unclear if the bitmap needs to be larger than the text to be measured.
+		// the following values should be big enough in any case.
+		int width = 1920;
+		int height = 256;
+		NSBitmapImageRep rep = (NSBitmapImageRep) new NSBitmapImageRep().alloc();
+		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace,
+				OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+		context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
+		rep.release();
+	}
 //	NSAffineTransform transform = NSAffineTransform.transform();
 //	NSSize size = handle.size();
 //	transform.translateXBy(0, size.height);
