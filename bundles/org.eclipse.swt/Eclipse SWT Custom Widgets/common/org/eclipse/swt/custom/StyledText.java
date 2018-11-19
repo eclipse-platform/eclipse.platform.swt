@@ -4164,7 +4164,7 @@ public int getLineIndent(int index) {
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
  *
- * @since 3.108
+ * @since 3.109
  */
 public int getLineVerticalIndent(int index) {
 	checkWidget();
@@ -9371,7 +9371,7 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_ARGUMENT when the specified line index is invalid</li>
  * </ul>
- * @since 3.108
+ * @since 3.109
  */
 public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	checkWidget();

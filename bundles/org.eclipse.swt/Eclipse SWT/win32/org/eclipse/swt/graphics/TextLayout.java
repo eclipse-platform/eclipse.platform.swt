@@ -2529,7 +2529,7 @@ public int getSpacing () {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * @since 3.108
+ * @since 3.109
  */
 public int getVerticalIndent () {
 	checkLayout();
@@ -2540,7 +2540,7 @@ public int getVerticalIndent () {
  * Returns the scaled vertical indent.
  *
  * @return the scaled vertical indent.
- * @since 3.108
+ * @since 3.109
  */
 private int getScaledVerticalIndent() {
 	if (verticalIndentInPoints == 0) {
@@ -3178,7 +3178,7 @@ public void setSpacing (int spacing) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * @since 3.108
+ * @since 3.109
  */
 public void setVerticalIndent (int verticalIndent) {
 	checkLayout();
