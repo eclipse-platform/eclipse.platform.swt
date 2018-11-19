@@ -1013,6 +1013,20 @@ void fixStyle (long /*int*/ handle) {
 void forceResize () {
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);
+	if (!OS.isX11()) {
+		/*
+		 * Bug 540163: We sometimes are getting the container's allocation
+		 * before Shell is fully opened, which gets an incorrect allocation.
+		 * Fix is to use the calculated box width/height if bounds have been set.
+		 */
+		int border = GTK.gtk_container_get_border_width (shellHandle);
+		int boxWidth = oldWidth - 2*border;
+		int boxHeight = oldHeight - 2*border;
+		if (boxWidth != allocation.width || boxHeight != allocation.height) {
+			allocation.width = Math.max(boxWidth, allocation.width);
+			allocation.height = Math.max(boxHeight, allocation.height);
+		}
+	}
 	forceResize (allocation.width, allocation.height);
 }
 
