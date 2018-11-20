@@ -1875,8 +1875,18 @@ double /*float*/ [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: color = NSColor.secondarySelectedControlColor(); break;
 		case SWT.COLOR_WIDGET_DARK_SHADOW: color = NSColor.controlDarkShadowColor(); break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW: color = NSColor.controlShadowColor(); break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: color = NSColor.controlHighlightColor(); break;
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:
+			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0)) {
+				return new double /*float*/ [] {159/255f, 159/255f, 159/255f, 1};
+			}
+			color = NSColor.controlShadowColor();
+			break;
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW:
+			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0)) {
+				return new double /*float*/ [] {232/255f, 232/255f, 232/255f, 1};
+			}
+			color = NSColor.controlHighlightColor();
+			break;
 		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: color = NSColor.controlLightHighlightColor(); break;
 		case SWT.COLOR_WIDGET_BACKGROUND:
 			color = OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0) ? NSColor.windowBackgroundColor()
