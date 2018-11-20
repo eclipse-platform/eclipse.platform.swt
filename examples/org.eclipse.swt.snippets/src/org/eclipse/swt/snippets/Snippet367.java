@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 IBM Corporation and others.
+ * Copyright (c) 2015, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -38,22 +38,26 @@ public class Snippet367 {
 	public static void main (String [] args) {
 		final ImageFileNameProvider filenameProvider = zoom -> {
 			switch (zoom) {
+			case 100:
+				return IMAGE_PATH_100;
 			case 150:
 				return IMAGE_PATH_150;
 			case 200:
 				return IMAGE_PATH_200;
 			default:
-				return IMAGE_PATH_100;
+				return null;
 			}
 		};
 		final ImageDataProvider imageDataProvider = zoom -> {
 			switch (zoom) {
+			case 100:
+				return new ImageData (IMAGE_PATH_100);
 			case 150:
 				return new ImageData (IMAGE_PATH_150);
 			case 200:
 				return new ImageData (IMAGE_PATH_200);
 			default:
-				return new ImageData (IMAGE_PATH_100);
+				return null;
 			}
 		};
 
