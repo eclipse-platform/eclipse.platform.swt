@@ -5099,6 +5099,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1entry_1set_1has_1frame)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1icon_1activatable
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1entry_1set_1icon_1activatable)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1icon_1activatable_FUNC);
+	gtk_entry_set_icon_activatable((GtkEntry *)arg0, (GtkEntryIconPosition)arg1, (gboolean)arg2);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1icon_1activatable_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1set_1icon_1from_1icon_1name
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1entry_1set_1icon_1from_1icon_1name)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2)
@@ -8651,6 +8661,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1scrolled_1window_1set_1shadow_1type)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
 	gtk_scrolled_window_set_shadow_type((GtkScrolledWindow *)arg0, (GtkShadowType)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1search_1entry_1new
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1search_1entry_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1search_1entry_1new_FUNC);
+	rc = (jintLong)gtk_search_entry_new();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1search_1entry_1new_FUNC);
+	return rc;
 }
 #endif
 

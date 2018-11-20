@@ -213,8 +213,6 @@ public class GTK extends OS {
 	 * Icon preview tool: gtk3-icon-browser
 	 * Snippets often demonstrate usage of these. E.x 309, 258.
 	 * */
-	public static final byte[] GTK_NAMED_ICON_FIND = OS.ascii("system-search-symbolic");  //Replacement of GTK_STOCK_FIND
-	public static final byte[] GTK_NAMED_ICON_CLEAR = OS.ascii("edit-clear-symbolic"); //Replacement of GTK_STOCK_CLEAR
 	public static final byte[] GTK_NAMED_ICON_GO_UP = OS.ascii ("go-up-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_DOWN = OS.ascii ("go-down-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_NEXT = OS.ascii ("go-next-symbolic");
@@ -2107,6 +2105,20 @@ public class GTK extends OS {
 	/**
 	 * @param entry cast=(GtkEntry *)
 	 * @param icon_pos cast=(GtkEntryIconPosition)
+	 * @param activatable cast=(gboolean)
+	 */
+	public static final native void _gtk_entry_set_icon_activatable(long /*int*/ entry, int icon_pos, boolean activatable);
+	public static final void gtk_entry_set_icon_activatable(long /*int*/ entry, int icon_pos, boolean activatable) {
+		lock.lock();
+		try {
+			_gtk_entry_set_icon_activatable(entry, icon_pos, activatable);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param icon_pos cast=(GtkEntryIconPosition)
 	 * @param sensitive cast=(gboolean)
 	 */
 	public static final native void _gtk_entry_set_icon_sensitive(long /*int*/ entry, int icon_pos, boolean sensitive);
@@ -3175,6 +3187,15 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_scrollbar_new(orientation, adjustment);
+		} finally {
+			lock.unlock();
+		}
+	}
+	public static final native long /*int*/ _gtk_search_entry_new();
+	public static final long /*int*/ gtk_search_entry_new() {
+		lock.lock();
+		try {
+			return _gtk_search_entry_new();
 		} finally {
 			lock.unlock();
 		}

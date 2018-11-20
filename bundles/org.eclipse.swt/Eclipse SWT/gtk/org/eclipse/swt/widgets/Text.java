@@ -150,20 +150,28 @@ public Text (Composite parent, int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		/*
 		 * Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
-		 * NOTE: ICON_CANCEL has the same value as H_SCROLL and
-		 * ICON_SEARCH has the same value as V_SCROLL so it is
-		 * necessary to first clear these bits to avoid a scroll
-		 * bar and then reset the bit using the original style
-		 * supplied by the programmer.
+		 * NOTE: ICON_CANCEL has the same value as H_SCROLL and CON_SEARCH has the same value as V_SCROLL
+		 * so it is necessary to first clear these bits to avoid a scroll bar and then reset the
+		 * bit using the original style upplied by the programmer.
+		 *
+		 * NOTE2: Default GtkSearchEntry shows both "find" icon and "clear" icon.
+		 * "find" icon can be manually removed here while "clear" icon must be removed depending on text.
+		 * See gtk_changed.
 		 */
-		if ((style & SWT.ICON_CANCEL) != 0) {
-			this.style |= SWT.ICON_CANCEL;
-			GTK.gtk_entry_set_icon_from_icon_name (handle, GTK.GTK_ENTRY_ICON_SECONDARY, GTK.GTK_NAMED_ICON_CLEAR);
-			GTK.gtk_entry_set_icon_sensitive (handle, GTK.GTK_ENTRY_ICON_SECONDARY, false);
+		this.style |= SWT.ICON_SEARCH | SWT.ICON_CANCEL;
+
+		if ((style & SWT.ICON_SEARCH) == 0) {
+			this.style &= ~SWT.ICON_SEARCH;
+			GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_PRIMARY, null);
+		} else {
+			// Default GtkSearchEntry always shows inactive "find" icon
+			// make it active and sensitive to be consistent with other platforms
+			GTK.gtk_entry_set_icon_activatable(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
+			GTK.gtk_entry_set_icon_sensitive(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
 		}
-		if ((style & SWT.ICON_SEARCH) != 0) {
-			this.style |= SWT.ICON_SEARCH;
-			GTK.gtk_entry_set_icon_from_icon_name (handle, GTK.GTK_ENTRY_ICON_PRIMARY, GTK.GTK_NAMED_ICON_FIND);
+
+		if ((style & SWT.ICON_CANCEL) == 0) {
+			this.style &= ~SWT.ICON_CANCEL;
 		}
 	}
 }
@@ -205,7 +213,11 @@ void createHandle (int index) {
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	if ((style & SWT.SINGLE) != 0) {
-		handle = GTK.gtk_entry_new ();
+		if ((style & SWT.SEARCH) != 0) {
+			handle = GTK.gtk_search_entry_new();
+		} else {
+			handle = GTK.gtk_entry_new ();
+		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_container_add (fixedHandle, handle);
 		GTK.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
@@ -1479,9 +1491,10 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 		sendEvent (SWT.Modify);
 	}
 	if ((style & SWT.SEARCH) != 0) {
-		if ((style & SWT.ICON_CANCEL) != 0) {
-			long /*int*/ ptr = GTK.gtk_entry_get_text (handle);
-			GTK.gtk_entry_set_icon_sensitive (handle, GTK.GTK_ENTRY_ICON_SECONDARY, OS.g_utf16_strlen (ptr, -1) > 0);
+		if ((style & SWT.ICON_CANCEL) == 0) {
+			// Default GtkSearchEntry shows "clear" icon when there is text, manually revert this
+			// when "cancel" icon style is not set
+			GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_SECONDARY, null);
 		}
 	}
 	return 0;
@@ -1673,7 +1686,6 @@ long /*int*/ gtk_icon_release (long /*int*/ widget, long /*int*/ icon_pos, long 
 		e.detail = SWT.ICON_SEARCH;
 	} else {
 		e.detail = SWT.ICON_CANCEL;
-		GTK.gtk_editable_delete_text (handle, 0, -1);
 	}
 	sendSelectionEvent (SWT.DefaultSelection, e, false);
 	return 0;
@@ -2647,8 +2659,8 @@ void setText (char [] text) {
 	}
 	sendEvent (SWT.Modify);
 	if ((style & SWT.SEARCH) != 0) {
-		if ((style & SWT.ICON_CANCEL) != 0) {
-			GTK.gtk_entry_set_icon_sensitive (handle, GTK.GTK_ENTRY_ICON_SECONDARY, true);
+		if ((style & SWT.ICON_CANCEL) == 0) {
+			GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_SECONDARY, null);
 		}
 	}
 	applySegments ();
