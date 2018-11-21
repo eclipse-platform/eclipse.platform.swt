@@ -613,7 +613,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	long /*int*/ [] types = getColumnTypes (1);
@@ -1135,6 +1135,11 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 @Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
+}
+
+@Override
+long /*int*/ eventSurface () {
+	return paintSurface ();
 }
 
 boolean fixAccessibility () {
@@ -2417,6 +2422,7 @@ boolean mnemonicMatch (char key) {
 @Override
 long /*int*/ paintWindow () {
 	GTK.gtk_widget_realize (handle);
+	// TODO: this function has been removed on GTK4
 	return GTK.gtk_tree_view_get_bin_window (handle);
 }
 

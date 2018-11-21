@@ -203,7 +203,7 @@ void createHandle (int index) {
 	}
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	if ((style & SWT.SINGLE) != 0) {
 		handle = GTK.gtk_entry_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2006,7 +2006,30 @@ long /*int*/ paintWindow () {
 		return window;
 	}
 	GTK.gtk_widget_realize (handle);
+	// TODO: this function has been removed on GTK4
 	return GTK.gtk_text_view_get_window (handle, GTK.GTK_TEXT_WINDOW_TEXT);
+}
+
+@Override
+long /*int*/ paintSurface () {
+	if ((style & SWT.SINGLE) != 0) {
+		long /*int*/ surface = super.paintSurface ();
+		long /*int*/ children = GDK.gdk_surface_get_children (surface);
+		if (children != 0) {
+			/*
+			* When search or cancel icons are added to Text, those
+			* icon window(s) are added to the beginning of the list.
+			* In order to always return the correct window for Text,
+			* browse to the end of the list.
+			*/
+			do {
+				surface = OS.g_list_data (children);
+			} while ((children = OS.g_list_next (children)) != 0);
+		}
+		OS.g_list_free (children);
+		return surface;
+	}
+	return 0;
 }
 
 /**

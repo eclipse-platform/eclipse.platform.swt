@@ -424,7 +424,6 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	if (!trim) return;
 	long /*int*/ topHandle = topHandle (), paintHandle = paintHandle ();
 	if (topHandle == paintHandle) return;
-	long /*int*/ window = gtk_widget_get_window (topHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
 		GtkAllocation allocation = new GtkAllocation ();
@@ -439,7 +438,13 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		rect.width = Math.max (0, width);
 		rect.height = Math.max (0, height);
 	}
-	GDK.gdk_window_invalidate_rect (window, rect, all);
+	if (GTK.GTK4) {
+		long /*int*/ surface = gtk_widget_get_surface (topHandle);
+		GDK.gdk_surface_invalidate_rect (surface, rect);
+	} else {
+		long /*int*/ window = gtk_widget_get_window (topHandle);
+		GDK.gdk_window_invalidate_rect (window, rect, all);
+	}
 }
 
 @Override

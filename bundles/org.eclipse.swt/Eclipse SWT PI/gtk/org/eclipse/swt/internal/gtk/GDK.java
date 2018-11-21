@@ -419,21 +419,6 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param window cast=(GdkWindow *)
-	 * @param function cast=(GdkFilterFunc)
-	 * @param data cast=(gpointer)
-	 */
-	public static final native void _gdk_window_add_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final void gdk_window_add_filter(long /*int*/ window, long /*int*/ function, long /*int*/ data) {
-		lock.lock();
-		try {
-			_gdk_window_add_filter(window, function, data);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
 	 * @param region cast=(cairo_region_t *)
 	 * @method flags=dynamic
 	 */
@@ -767,6 +752,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_window_get_display(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 *  @param surface cast=(GdkSurface *)
+	 */
+	public static final native long /*int*/ _gdk_surface_get_display(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_surface_get_display(long /*int*/ surface) {
+		lock.lock();
+		try {
+			return _gdk_surface_get_display(surface);
 		} finally {
 			lock.unlock();
 		}
@@ -2068,6 +2066,17 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native long /*int*/ _gdk_surface_get_children(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_surface_get_children(long /*int*/ surface) {
+		lock.lock();
+		try {
+			return _gdk_surface_get_children(surface);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native int _gdk_window_get_events(long /*int*/ window);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -2145,6 +2154,21 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param x cast=(gint *)
+	 * @param y cast=(gint *)
+	 */
+	public static final native int _gdk_surface_get_origin(long /*int*/ surface, int[] x, int[] y);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final int gdk_surface_get_origin(long /*int*/ surface, int[] x, int[] y) {
+		lock.lock();
+		try {
+			return _gdk_surface_get_origin(surface, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param device cast=(GdkDevice *)
 	 * @param x cast=(gint *)
@@ -2157,6 +2181,23 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_window_get_device_position(window, device, x, y, mask);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param device cast=(GdkDevice *)
+	 * @param x cast=(gint *)
+	 * @param y cast=(gint *)
+	 * @param mask cast=(GdkModifierType *)
+	 */
+	public static final native long /*int*/ _gdk_surface_get_device_position(long /*int*/ surface, long /*int*/ device, int[] x, int[] y, int[] mask);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_surface_get_device_position(long /*int*/ surface, long /*int*/ device, int[] x, int[] y, int[] mask) {
+		lock.lock();
+		try {
+			return _gdk_surface_get_device_position(surface, device, x, y, mask);
 		} finally {
 			lock.unlock();
 		}
@@ -2216,6 +2257,20 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param data cast=(gpointer *)
+	 */
+	public static final native void _gdk_surface_get_user_data(long /*int*/ surface, long /*int*/[] data);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_get_user_data(long /*int*/ surface, long /*int*/[] data) {
+		lock.lock();
+		try {
+			_gdk_surface_get_user_data(surface, data);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_hide(long /*int*/ window);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -2238,6 +2293,20 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_invalidate_rect(window, rectangle, invalidate_children);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param rectangle cast=(GdkRectangle *),flags=no_out
+	 */
+	public static final native void _gdk_surface_invalidate_rect(long /*int*/ surface, GdkRectangle rectangle);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_invalidate_rect(long /*int*/ surface, GdkRectangle rectangle) {
+		lock.lock();
+		try {
+			_gdk_surface_invalidate_rect(surface, rectangle);
 		} finally {
 			lock.unlock();
 		}
@@ -2304,6 +2373,20 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param rect flags=no_out
+	 */
+	public static final native long /*int*/ _gdk_surface_new_child(long /*int*/ surface, GdkRectangle rect);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_surface_new_child(long /*int*/ surface, GdkRectangle rect) {
+		lock.lock();
+		try {
+			return _gdk_surface_new_child(surface, rect);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_lower(long /*int*/ window);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -2311,6 +2394,17 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_lower(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_lower(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_lower(long /*int*/ surface) {
+		lock.lock();
+		try {
+			_gdk_surface_lower(surface);
 		} finally {
 			lock.unlock();
 		}
@@ -2354,6 +2448,17 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_raise(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_raise(long /*int*/ surface) {
+		lock.lock();
+		try {
+			_gdk_surface_raise(surface);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_resize(long /*int*/ window, int width, int height);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -2380,9 +2485,27 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @method flags=dynamic */
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param sibling cast=(GdkSurface *)
+	 * @param above cast=(gboolean)
+	 */
+	public static final native void _gdk_surface_restack(long /*int*/ surface, long /*int*/ sibling, boolean above);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_restack(long /*int*/ surface, long /*int*/ sibling, boolean above) {
+		lock.lock();
+		try {
+			_gdk_surface_restack(surface, sibling, above);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 * @param pattern cast=(cairo_pattern_t *)
+	 */
 	public static final native void _gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern);
-	/**  [GTK3; 3.22 deprecated] */
+	/**  [GTK3 only; 3.22 deprecated] */
 	public static final void gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern) {
 		lock.lock();
 		try {
@@ -2401,6 +2524,20 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_set_cursor(window, cursor);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param cursor cast=(GdkCursor *)
+	 */
+	public static final native void _gdk_surface_set_cursor(long /*int*/ surface, long /*int*/ cursor);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_set_cursor(long /*int*/ surface, long /*int*/ cursor) {
+		lock.lock();
+		try {
+			_gdk_surface_set_cursor(surface, cursor);
 		} finally {
 			lock.unlock();
 		}
@@ -2473,6 +2610,20 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param user_data cast=(gpointer)
+	 */
+	public static final native void _gdk_surface_set_user_data(long /*int*/ surface, long /*int*/ user_data);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_set_user_data(long /*int*/ surface, long /*int*/ user_data) {
+		lock.lock();
+		try {
+			_gdk_surface_set_user_data(surface, user_data);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param shape_region cast=(const cairo_region_t *)
 	 * @param offset_x cast=(gint)
@@ -2499,6 +2650,17 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_show(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_show(long /*int*/ surface) {
+		lock.lock();
+		try {
+			_gdk_surface_show(surface);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param window cast=(GdkWindow *) */
 	public static final native void _gdk_window_show_unraised(long /*int*/ window);
 	/** [GTK3 only, if-def'd in os.h] */
@@ -2506,6 +2668,18 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			_gdk_window_show_unraised(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_show_unraised(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_show_unraised(long /*int*/ surface) {
+		lock.lock();
+		try {
+			_gdk_surface_show_unraised(surface);
 		} finally {
 			lock.unlock();
 		}

@@ -286,7 +286,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (fixed) {
 			fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 			if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_widget_set_has_window (fixedHandle, true);
+			gtk_widget_set_has_surface_or_window (fixedHandle, true);
 		}
 		long /*int*/ vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
@@ -616,23 +616,44 @@ void fixTabList (Control control) {
 void fixZOrder () {
 	if ((state & CANVAS) != 0) return;
 	long /*int*/ parentHandle = parentingHandle ();
-	long /*int*/ parentWindow = gtk_widget_get_window (parentHandle);
-	if (parentWindow == 0) return;
-	long /*int*/ [] userData = new long /*int*/ [1];
-	long /*int*/ windowList = GDK.gdk_window_get_children (parentWindow);
-	if (windowList != 0) {
-		long /*int*/ windows = windowList;
-		while (windows != 0) {
-			long /*int*/ window = OS.g_list_data (windows);
-			if (window != redrawWindow) {
-				GDK.gdk_window_get_user_data (window, userData);
-				if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
-					GDK.gdk_window_lower (window);
+	if (GTK.GTK4) {
+		long /*int*/ parentSurface = gtk_widget_get_surface (parentHandle);
+		if (parentSurface == 0) return;
+		long /*int*/ [] userData = new long /*int*/ [1];
+		long /*int*/ surfaceList = GDK.gdk_surface_get_children (parentSurface);
+		if (surfaceList != 0) {
+			long /*int*/ surfaces = surfaceList;
+			while (surfaces != 0) {
+				long /*int*/ surface = OS.g_list_data (surfaces);
+				if (surface != redrawSurface) {
+					GDK.gdk_surface_get_user_data (surface, userData);
+					if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
+						GDK.gdk_surface_lower (surface);
+					}
 				}
+				surfaces = OS.g_list_next (surfaces);
 			}
-			windows = OS.g_list_next (windows);
+			OS.g_list_free (surfaceList);
 		}
-		OS.g_list_free (windowList);
+	} else {
+		long /*int*/ parentWindow = gtk_widget_get_window (parentHandle);
+		if (parentWindow == 0) return;
+		long /*int*/ [] userData = new long /*int*/ [1];
+		long /*int*/ windowList = GDK.gdk_window_get_children (parentWindow);
+		if (windowList != 0) {
+			long /*int*/ windows = windowList;
+			while (windows != 0) {
+				long /*int*/ window = OS.g_list_data (windows);
+				if (window != redrawWindow) {
+					GDK.gdk_window_get_user_data (window, userData);
+					if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
+						GDK.gdk_window_lower (window);
+					}
+				}
+				windows = OS.g_list_next (windows);
+			}
+			OS.g_list_free (windowList);
+		}
 	}
 }
 
@@ -864,9 +885,13 @@ long /*int*/ gtk_map (long /*int*/ widget) {
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
-		long /*int*/ window = gtk_widget_get_window (paintHandle ());
-		if (window != 0) {
-			GDK.gdk_window_set_background_pattern(window, 0);
+		if (GTK.GTK4) {
+			// TODO: no gdk_surface_set_background_pattern() on GTK4.
+		} else {
+			long /*int*/ window = gtk_widget_get_window (paintHandle ());
+			if (window != 0) {
+				GDK.gdk_window_set_background_pattern(window, 0);
+			}
 		}
 	}
 	if (socketHandle != 0) {

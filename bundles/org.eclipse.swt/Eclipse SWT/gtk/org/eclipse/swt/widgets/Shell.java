@@ -2075,36 +2075,61 @@ public void setEnabled (boolean enabled) {
 	}
 	enableWidget (enabled);
 	if (isDisposed ()) return;
-	if (enabled) {
-		if (enableWindow != 0) {
-			cleanupEnableWindow();
+	if (GTK.GTK4) {
+		if (enabled) {
+			if (enableSurface != 0) {
+				cleanupEnableSurface();
+			}
+		} else {
+			long /*int*/ parentHandle = shellHandle;
+			GTK.gtk_widget_realize (parentHandle);
+			long /*int*/ surface = gtk_widget_get_surface (parentHandle);
+			Rectangle rect = getBoundsInPixels ();
+			GdkRectangle gdkRectangle = new GdkRectangle ();
+			GdkWindowAttr attributes = new GdkWindowAttr ();
+			gdkRectangle.width = rect.width;
+			gdkRectangle.height = rect.height;
+			enableSurface = GDK.gdk_surface_new_child (surface, gdkRectangle);
+			if (enableSurface != 0) {
+				if (cursor != null) {
+					GDK.gdk_surface_set_cursor (enableSurface, cursor.handle);
+				}
+				GDK.gdk_surface_set_user_data (enableSurface, parentHandle);
+				GDK.gdk_surface_show (enableSurface);
+			}
 		}
 	} else {
-		long /*int*/ parentHandle = shellHandle;
-		GTK.gtk_widget_realize (parentHandle);
-		long /*int*/ window = gtk_widget_get_window (parentHandle);
-		Rectangle rect = getBoundsInPixels ();
-		GdkWindowAttr attributes = new GdkWindowAttr ();
-		attributes.width = rect.width;
-		attributes.height = rect.height;
-		attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
-		attributes.wclass = GDK.GDK_INPUT_ONLY;
-		attributes.window_type = GDK.GDK_WINDOW_CHILD;
-		enableWindow = GDK.gdk_window_new (window, attributes, 0);
-		if (enableWindow != 0) {
-			if (cursor != null) {
-				GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
-				GDK.gdk_flush ();
+		if (enabled) {
+			if (enableWindow != 0) {
+				cleanupEnableWindow();
 			}
-			/* 427776: we need to listen to all enter-notify-event signals to
-			 * see if this new GdkWindow has been added to a widget's internal
-			 * hash table, so when the GdkWindow is destroyed we can also remove
-			 * that reference. */
-			if (enterNotifyEventFunc != null)
-				enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
+		} else {
+			long /*int*/ parentHandle = shellHandle;
+			GTK.gtk_widget_realize (parentHandle);
+			long /*int*/ window = gtk_widget_get_window (parentHandle);
+			Rectangle rect = getBoundsInPixels ();
+			GdkWindowAttr attributes = new GdkWindowAttr ();
+			attributes.width = rect.width;
+			attributes.height = rect.height;
+			attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
+			attributes.wclass = GDK.GDK_INPUT_ONLY;
+			attributes.window_type = GDK.GDK_WINDOW_CHILD;
+			enableWindow = GDK.gdk_window_new (window, attributes, 0);
+			if (enableWindow != 0) {
+				if (cursor != null) {
+					GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
+					GDK.gdk_flush ();
+				}
+				/* 427776: we need to listen to all enter-notify-event signals to
+				 * see if this new GdkWindow has been added to a widget's internal
+				 * hash table, so when the GdkWindow is destroyed we can also remove
+				 * that reference. */
+				if (enterNotifyEventFunc != null)
+					enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
 
-			GDK.gdk_window_set_user_data (enableWindow, parentHandle);
-			GDK.gdk_window_show (enableWindow);
+				GDK.gdk_window_set_user_data (enableWindow, parentHandle);
+				GDK.gdk_window_show (enableWindow);
+			}
 		}
 	}
 	if (fixFocus) fixFocus (control);
@@ -2586,8 +2611,14 @@ public void setVisible (boolean visible) {
 		// the hidden widget and can never be returned.
 		if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
-				long /*int*/ window = gtk_widget_get_window (shellHandle);
-				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+				long /*int*/ seat;
+				if (GTK.GTK4) {
+					long /*int*/ surface = gtk_widget_get_surface (shellHandle);
+					seat = GDK.gdk_display_get_default_seat(GDK.gdk_surface_get_display(surface));
+				} else {
+					long /*int*/ window = gtk_widget_get_window (shellHandle);
+					seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+				}
 				GDK.gdk_seat_ungrab(seat);
 				GTK.gtk_grab_remove(shellHandle);
 			}
@@ -2980,6 +3011,14 @@ Point getWindowOrigin () {
 		return getLocationInPixels ();
 	}
 	return super.getWindowOrigin( );
+}
+
+@Override
+Point getSurfaceOrigin () {
+	if (!mapped) {
+		return getLocationInPixels ();
+	}
+	return super.getSurfaceOrigin( );
 }
 
 static long /*int*/ ParentDestroyedCallbackFunc (long /*int*/ parent, long /*int*/ child) {

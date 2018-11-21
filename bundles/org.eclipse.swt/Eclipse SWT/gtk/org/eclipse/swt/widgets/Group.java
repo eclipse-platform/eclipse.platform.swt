@@ -184,7 +184,7 @@ void createHandle(int index) {
 
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 
 	handle = GTK.gtk_frame_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -201,7 +201,7 @@ void createHandle(int index) {
 	 * it can listen to events (clicking/tooltip etc.) and so that
 	 * background can be drawn on it.
 	 */
-	GTK.gtk_widget_set_has_window (clientHandle, true);
+	gtk_widget_set_has_surface_or_window (clientHandle, true);
 
 	GTK.gtk_container_add (fixedHandle, handle);
 	GTK.gtk_container_add (handle, clientHandle);
@@ -468,6 +468,13 @@ long /*int*/ paintWindow () {
 	long /*int*/ paintHandle = clientHandle;
 	GTK.gtk_widget_realize (paintHandle);
 	return gtk_widget_get_window (paintHandle);
+}
+
+@Override
+long /*int*/ paintSurface () {
+	long /*int*/ paintHandle = clientHandle;
+	GTK.gtk_widget_realize (paintHandle);
+	return gtk_widget_get_surface (paintHandle);
 }
 
 }

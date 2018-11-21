@@ -345,6 +345,10 @@ long /*int*/ paintWindow () {
 	return 0;
 }
 
+long /*int*/ paintSurface () {
+	return 0;
+}
+
 long /*int*/ cssHandle() {
 	return handle;
 }
@@ -2020,6 +2024,15 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 	}
 	long /*int*/ pointer = GDK.gdk_get_pointer(display);
 	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
+}
+
+long /*int*/ gdk_surface_get_device_position (long /*int*/ surface, int[] x, int[] y, int[] mask) {
+	long /*int*/ display = 0;
+	if (surface != 0) {
+		display = GDK.gdk_surface_get_display (surface);
+	}
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	return GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
 }
 
 void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {

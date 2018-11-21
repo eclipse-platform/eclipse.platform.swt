@@ -491,7 +491,7 @@ void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	long /*int*/ oldList = GTK.gtk_window_list_toplevels ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		handle = GTK.gtk_combo_box_text_new ();
@@ -935,6 +935,11 @@ long /*int*/ enterExitHandle () {
 @Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
+}
+
+@Override
+long /*int*/ eventSurface () {
+	return paintSurface ();
 }
 
 /**
@@ -1756,6 +1761,31 @@ long /*int*/ paintWindow () {
 	OS.g_list_free (children);
 
 	return window;
+}
+
+@Override
+long /*int*/ paintSurface () {
+	long /*int*/ childHandle =  entryHandle != 0 ? entryHandle : handle;
+	GTK.gtk_widget_realize (childHandle);
+	long /*int*/ surface = gtk_widget_get_surface (childHandle);
+	if ((style & SWT.READ_ONLY) != 0) return surface;
+	long /*int*/ children = GDK.gdk_surface_get_children (surface);
+	if (children != 0) {
+		/*
+		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
+		 * have to be traversed to get to the entry one.
+		 */
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				do {
+					surface = OS.g_list_data (children);
+				} while ((children = OS.g_list_next (children)) != 0);
+		} else {
+			surface = OS.g_list_data (children);
+		}
+	}
+	OS.g_list_free (children);
+
+	return surface;
 }
 
 /**

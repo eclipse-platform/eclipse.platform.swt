@@ -362,14 +362,25 @@ Rectangle getThumbBoundsInPixels () {
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
-	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	rect.x += origin_x [0];
-	rect.y += origin_y [0];
-	window = gtk_widget_get_window (parent.handle);
-	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	rect.x -= origin_x [0];
-	rect.y -= origin_y [0];
+	if (GTK.GTK4) {
+		long /*int*/ surface = gtk_widget_get_surface (parent.scrolledHandle);
+		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		rect.x += origin_x [0];
+		rect.y += origin_y [0];
+		surface = gtk_widget_get_surface (parent.handle);
+		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		rect.x -= origin_x [0];
+		rect.y -= origin_y [0];
+	} else {
+		long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
+		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x += origin_x [0];
+		rect.y += origin_y [0];
+		window = gtk_widget_get_window (parent.handle);
+		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x -= origin_x [0];
+		rect.y -= origin_y [0];
+	}
 	return rect;
 }
 
@@ -439,14 +450,25 @@ Rectangle getThumbTrackBoundsInPixels () {
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
-	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	rect.x += origin_x [0];
-	rect.y += origin_y [0];
-	window = gtk_widget_get_window (parent.handle);
-	if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	rect.x -= origin_x [0];
-	rect.y -= origin_y [0];
+	if (GTK.GTK4) {
+		long /*int*/ surface = gtk_widget_get_surface (parent.scrolledHandle);
+		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		rect.x += origin_x [0];
+		rect.y += origin_y [0];
+		surface = gtk_widget_get_surface (parent.handle);
+		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		rect.x -= origin_x [0];
+		rect.y -= origin_y [0];
+	} else {
+		long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
+		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x += origin_x [0];
+		rect.y += origin_y [0];
+		window = gtk_widget_get_window (parent.handle);
+		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x -= origin_x [0];
+		rect.y -= origin_y [0];
+	}
 	return rect;
 }
 

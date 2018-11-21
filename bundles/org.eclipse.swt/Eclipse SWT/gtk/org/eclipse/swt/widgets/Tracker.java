@@ -325,11 +325,12 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * @param rects
  */
 void drawRectangles (Rectangle [] rects) {
-	long /*int*/ window = GDK.gdk_get_default_root_window();
+	long /*int*/ gdkResource = GDK.gdk_get_default_root_window();
 	if (parent != null) {
-		window = gtk_widget_get_window (parent.paintHandle());
+		long /*int*/ paintHandle = parent.paintHandle();
+		gdkResource = GTK.GTK4 ? gtk_widget_get_surface(paintHandle) : gtk_widget_get_window (paintHandle);
 	}
-	if (window == 0) return;
+	if (gdkResource == 0) return;
 
 	if (overlay == 0) return;
 	GTK.gtk_widget_shape_combine_region (overlay, 0);

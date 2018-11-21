@@ -3982,13 +3982,13 @@ public Point map (Control from, Control to, int x, int y) {
 	Point point = new Point (x, y);
 	if (from == to) return point;
 	if (from != null) {
-		Point origin = DPIUtil.autoScaleDown (from.getWindowOrigin ());
+		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ());
 		if ((from.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - point.x;
 		point.x += origin.x;
 		point.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = DPIUtil.autoScaleDown (to.getWindowOrigin ());
+		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ());
 		point.x -= origin.x;
 		point.y -= origin.y;
 		if ((to.style & SWT.MIRRORED) != 0) point.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - point.x;
@@ -4003,13 +4003,13 @@ Point mapInPixels (Control from, Control to, int x, int y) {
 	Point point = new Point (x, y);
 	if (from == to) return point;
 	if (from != null) {
-		Point origin = from.getWindowOrigin ();
+		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
 		if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth () - point.x;
 		point.x += origin.x;
 		point.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = to.getWindowOrigin ();
+		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
 		point.x -= origin.x;
 		point.y -= origin.y;
 		if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
@@ -4111,13 +4111,13 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from == to) return rect;
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
-		Point origin = DPIUtil.autoScaleDown (from.getWindowOrigin ());
+		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? from.getSurfaceOrigin () : from.getWindowOrigin ());
 		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (from.getClientWidth ()) - rect.x;
 		rect.x += origin.x;
 		rect.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = DPIUtil.autoScaleDown (to.getWindowOrigin ());
+		Point origin = DPIUtil.autoScaleDown (GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ());
 		rect.x -= origin.x;
 		rect.y -= origin.y;
 		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = DPIUtil.autoScaleDown (to.getClientWidth ()) - rect.x;
@@ -4135,13 +4135,13 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	if (from == to) return rect;
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
-		Point origin = from.getWindowOrigin ();
+		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
 		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth () - rect.x;
 		rect.x += origin.x;
 		rect.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = to.getWindowOrigin ();
+		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
 		rect.x -= origin.x;
 		rect.y -= origin.y;
 		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;

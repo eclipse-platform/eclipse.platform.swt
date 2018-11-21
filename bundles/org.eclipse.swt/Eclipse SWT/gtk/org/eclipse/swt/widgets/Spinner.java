@@ -305,7 +305,7 @@ void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_widget_set_has_window (fixedHandle, true);
+	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	long /*int*/ adjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = GTK.gtk_spin_button_new (adjustment, climbRate, 0);
@@ -354,6 +354,11 @@ void deregister () {
 @Override
 long /*int*/ eventWindow () {
 	return paintWindow ();
+}
+
+@Override
+long /*int*/ eventSurface () {
+	return paintSurface ();
 }
 
 @Override
@@ -794,6 +799,15 @@ long /*int*/ paintWindow () {
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
 	return window;
+}
+
+@Override
+long /*int*/ paintSurface () {
+	long /*int*/ surface = super.paintSurface ();
+	long /*int*/ children = GDK.gdk_surface_get_children (surface);
+	if (children != 0) surface = OS.g_list_data (children);
+	OS.g_list_free (children);
+	return surface;
 }
 
 /**

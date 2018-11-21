@@ -362,6 +362,7 @@
 #define NO__1gdk_1window_1shape_1combine_1region
 #define NO__1gdk_1window_1show_1unraised
 #define NO__1gdk_1device_1get_1window_1at_1position
+#define NO__1gdk_1window_1set_1background_1pattern
 
 // GdkDragContext removals
 #define NO__1gdk_1drag_1context_1get_1dest_1window
@@ -407,6 +408,20 @@
 #define NO__1gdk_1surface_1destroy
 #define NO__1gdk_1surface_1focus
 #define NO__1gdk_1device_1get_1surface_1at_1position
+#define NO__1gdk_1surface_1lower
+#define NO__1gdk_1surface_1raise
+#define NO__1gdk_1surface_1get_1children
+#define NO__1gdk_1surface_1get_1user_1data
+#define NO__1gdk_1surface_1get_1origin
+#define NO__1gdk_1surface_1invalidate_1rect
+#define NO__1gdk_1surface_1get_1display
+#define NO__1gdk_1surface_1set_1cursor
+#define NO__1gdk_1surface_1new_1child
+#define NO__1gdk_1surface_1set_1user_1data
+#define NO__1gdk_1surface_1restack
+#define NO__1gdk_1surface_1show_1unraised
+#define NO__1gdk_1surface_1show
+#define NO__1gdk_1surface_1get_1device_1position
 #define NO__1gdk_1display_1get_1monitor_1at_1surface
 #define NO__1gdk_1surface_1get_1frame_1extents
 
