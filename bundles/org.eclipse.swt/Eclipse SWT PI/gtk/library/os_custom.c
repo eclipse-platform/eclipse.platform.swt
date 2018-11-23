@@ -2284,8 +2284,10 @@ jintLong call_accessible_object_function (const char *method_name, const char *m
 	return result;
 }
 
+#if !defined(GTK4)
 //Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
-// env variable. Please see Eclipse bug 471477
+// env variable. Please see Eclipse bug 471477.
+// PLEASE NOTE: this functionality is only available on GTK3.
 void swt_debug_on_fatal_warnings() {
 	  // NOTE: gtk_parse_args() must be called before gtk_init() to take effect.
 	  int argcount = 2;
@@ -2293,3 +2295,4 @@ void swt_debug_on_fatal_warnings() {
 	  char **arg2 = (char **) &argument;
 	  gtk_parse_args(&argcount, &arg2);
 }
+#endif

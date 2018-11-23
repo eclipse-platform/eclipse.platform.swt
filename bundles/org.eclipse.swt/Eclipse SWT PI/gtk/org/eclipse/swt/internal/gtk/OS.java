@@ -98,7 +98,13 @@ public class OS extends C {
 		String swt_fatal_warnings = getEnvironmentalVariable (propertyName);
 
 		if (swt_fatal_warnings != null && swt_fatal_warnings.equals("1")) {
-			OS.swt_debug_on_fatal_warnings ();
+			String gtk4PropertyName = "SWT_GTK4";
+			String gtk4 = getEnvironmentalVariable (gtk4PropertyName);
+			if (gtk4 != null && gtk4.equals("1")) {
+				System.err.println("SWT warning: SWT_FATAL_WARNINGS only available on GTK3.");
+			} else {
+				OS.swt_debug_on_fatal_warnings ();
+			}
 		}
 	}
 
