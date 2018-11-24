@@ -2086,7 +2086,6 @@ public void setEnabled (boolean enabled) {
 			long /*int*/ surface = gtk_widget_get_surface (parentHandle);
 			Rectangle rect = getBoundsInPixels ();
 			GdkRectangle gdkRectangle = new GdkRectangle ();
-			GdkWindowAttr attributes = new GdkWindowAttr ();
 			gdkRectangle.width = rect.width;
 			gdkRectangle.height = rect.height;
 			enableSurface = GDK.gdk_surface_new_child (surface, gdkRectangle);
