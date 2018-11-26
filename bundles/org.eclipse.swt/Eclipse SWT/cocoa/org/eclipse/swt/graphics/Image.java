@@ -1324,24 +1324,61 @@ public ImageData getImageData(int zoom) {
 		boolean hasImageProvider = imageFileNameProvider != null || imageDataProvider != null;
 		if (zoom == 100) {
 			NSBitmapImageRep imageRep;
-			imageRep = hasImageProvider ? getRepresentation_100() : getRepresentation();
-			return _getImageData(imageRep, alphaInfo_100);
+			if (hasImageProvider) {
+				imageRep = getRepresentation_100();
+				return _getImageData(imageRep, alphaInfo_100);
+			} else {
+				imageRep = getRepresentation();
+				if (imageRep.pixelsHigh() == this.height) {
+					return _getImageData(imageRep, alphaInfo_100);
+				} else {
+					if (alphaInfo_200 == null) {
+						initAlpha_200(imageRep);
+					}
+
+					NSArray reps = handle.representations();
+					long /*int*/ count = reps.count();
+					for (int i = 0; i < count; i++) {
+						handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
+					}
+					handle.addRepresentation(imageRep);
+
+					NSSize size = handle.size();
+					imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+					imageRep = imageRep.initWithBitmapDataPlanes(0, (int) size.width, (int) size.height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, (int) size.width * 4, 32);
+					C.memset(imageRep.bitmapData(), 0xFF, (int) size.width * (int)size.height * 4);
+					NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+					NSGraphicsContext.static_saveGraphicsState();
+					context.setImageInterpolation(OS.NSImageInterpolationDefault);
+					NSGraphicsContext.setCurrentContext(context);
+					NSRect target = new NSRect();
+					target.width = size.width;
+					target.height = size.height;
+					NSRect sourceRect = new NSRect();
+					sourceRect.width = 0;
+					sourceRect.height = 0;
+					handle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 1);
+					NSGraphicsContext.static_restoreGraphicsState();
+					return _getImageData(imageRep, alphaInfo_100);
+				}
+			}
 		}
 		if (zoom == 200) {
-			if (hasImageProvider) {
-				NSBitmapImageRep imageRep200 = getRepresentation_200();
-				if (imageRep200 != null) {
-					if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
-						if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
-					}
-					return _getImageData(imageRep200, alphaInfo_200);
+			NSBitmapImageRep imageRep200 = getRepresentation_200();
+			if (imageRep200 != null) {
+				if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+					if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
 				}
+				if (alphaInfo_200 == null) {
+					initAlpha_200(imageRep200);
+				}
+				return _getImageData(imageRep200, alphaInfo_200);
 			}
 		}
 	} finally {
 		if (pool != null) pool.release();
 	}
-	return DPIUtil.autoScaleImageData (device, getImageData(), zoom, 100);
+	return DPIUtil.autoScaleImageData (device, getImageData(100), zoom, 100);
 }
 
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
