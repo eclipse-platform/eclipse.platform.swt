@@ -606,6 +606,17 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		OS.g_object_unref (layout);
 		width = Math.max (width, w [0]);
 	}
+	if ((style & SWT.SEARCH) != 0) {
+		// GtkSearchEntry have more padding than GtkEntry
+		GtkBorder tmp = new GtkBorder();
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
+			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
+		} else {
+			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
+		}
+		width += tmp.left + tmp.right;
+	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
