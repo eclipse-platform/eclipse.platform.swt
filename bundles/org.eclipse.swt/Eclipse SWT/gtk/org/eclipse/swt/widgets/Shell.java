@@ -1493,6 +1493,7 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 		sendEvent (SWT.Deactivate);
 		setActiveControl (null);
 	}
+	ignoreFocusOutAfterGrab = false;
 	if (display.activeShell == this && !ignoreFocusOut) {
 		display.activeShell = null;
 		display.activePending = false;
