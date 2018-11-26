@@ -424,7 +424,13 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	int[] n_families = new int[1];
 	long /*int*/[] faces = new long /*int*/[1];
 	int[] n_faces = new int[1];
-	long /*int*/ context = GDK.gdk_pango_context_get();
+	long /*int*/ context;
+	if (GTK.GTK4) {
+		long /*int*/ fontMap = OS.pango_cairo_font_map_get_default ();
+		context = OS.pango_font_map_create_context (fontMap);
+	} else {
+		context = GDK.gdk_pango_context_get();
+	}
 	OS.pango_context_list_families(context, families, n_families);
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];

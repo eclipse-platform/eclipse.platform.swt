@@ -562,7 +562,11 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 			long /*int*/ invalidateRegion = Cairo.cairo_region_create_rectangle (srcRect);
 			Cairo.cairo_region_subtract (invalidateRegion, visibleRegion);
 			Cairo.cairo_region_translate (invalidateRegion, deltaX, deltaY);
-			GDK.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+			if (GTK.GTK4) {
+				GDK.gdk_surface_invalidate_region(drawable, invalidateRegion);
+			} else {
+				GDK.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+			}
 			Cairo.cairo_region_destroy (visibleRegion);
 			Cairo.cairo_region_destroy (copyRegion);
 			Cairo.cairo_region_destroy (invalidateRegion);
@@ -604,7 +608,13 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 }
 
 void createLayout() {
-	long /*int*/ context = GDK.gdk_pango_context_get();
+	long /*int*/ context;
+	if (GTK.GTK4) {
+		long /*int*/ fontMap = OS.pango_cairo_font_map_get_default ();
+		context = OS.pango_font_map_create_context (fontMap);
+	} else {
+		context = GDK.gdk_pango_context_get();
+	}
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.context = context;
 	long /*int*/ layout = OS.pango_layout_new(context);
@@ -2410,8 +2420,13 @@ void getSize(int[] width, int[] height) {
 		return;
 	}
 	if (data.drawable != 0) {
-		width[0] = GDK.gdk_window_get_width(data.drawable);
-		height[0] = GDK.gdk_window_get_height(data.drawable);
+		if (GTK.GTK4) {
+			width[0] = GDK.gdk_surface_get_width(data.drawable);
+			height[0] = GDK.gdk_surface_get_height(data.drawable);
+		} else {
+			width[0] = GDK.gdk_window_get_width(data.drawable);
+			height[0] = GDK.gdk_window_get_height(data.drawable);
+		}
 		return;
 	}
 	long /*int*/ surface = Cairo.cairo_get_target(handle);
@@ -2601,7 +2616,12 @@ void initCairo() {
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
 	if (GTK.GTK_VERSION >= 	OS.VERSION(3, 22, 0)) {
-		long /*int*/ surface = GDK.gdk_window_create_similar_surface(data.drawable, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		long /*int*/ surface;
+		if (GTK.GTK4) {
+			surface = GDK.gdk_surface_create_similar_surface(data.drawable, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		} else {
+			surface = GDK.gdk_window_create_similar_surface(data.drawable, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		}
 		data.cairo = cairo = Cairo.cairo_create(surface);
 	} else {
 		data.cairo = cairo = GDK.gdk_cairo_create(data.drawable);

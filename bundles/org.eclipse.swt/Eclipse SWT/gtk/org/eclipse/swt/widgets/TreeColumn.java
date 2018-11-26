@@ -731,22 +731,43 @@ void setWidthInPixels (int width) {
 	 */
 	if (width != 0) {
 		if (buttonHandle != 0) {
-			long /*int*/ window = GTK.gtk_widget_get_parent_window (buttonHandle);
-			if (window != 0) {
-				long /*int*/ windowList = GDK.gdk_window_get_children (window);
-				if (windowList != 0) {
-					long /*int*/ windows = windowList;
-					long /*int*/ [] userData = new long /*int*/ [1];
-					while (windows != 0) {
-						long /*int*/ child = OS.g_list_data (windows);
-						GDK.gdk_window_get_user_data (child, userData);
-						if (userData[0] == buttonHandle) {
-							GDK.gdk_window_lower (child);
-							break;
+			if (GTK.GTK4) {
+				long /*int*/ surface = GTK.gtk_widget_get_parent_surface (buttonHandle);
+				if (surface != 0) {
+					long /*int*/ surfaceList = GDK.gdk_surface_get_children (surface);
+					if (surfaceList != 0) {
+						long /*int*/ surfaces = surfaceList;
+						long /*int*/ [] userData = new long /*int*/ [1];
+						while (surfaces != 0) {
+							long /*int*/ child = OS.g_list_data (surfaces);
+							GDK.gdk_surface_get_user_data (child, userData);
+							if (userData[0] == buttonHandle) {
+								GDK.gdk_surface_lower (child);
+								break;
+							}
+							surfaces = OS.g_list_next (surfaces);
 						}
-						windows = OS.g_list_next (windows);
+						OS.g_list_free (surfaceList);
 					}
-					OS.g_list_free (windowList);
+				}
+			} else {
+				long /*int*/ window = GTK.gtk_widget_get_parent_window (buttonHandle);
+				if (window != 0) {
+					long /*int*/ windowList = GDK.gdk_window_get_children (window);
+					if (windowList != 0) {
+						long /*int*/ windows = windowList;
+						long /*int*/ [] userData = new long /*int*/ [1];
+						while (windows != 0) {
+							long /*int*/ child = OS.g_list_data (windows);
+							GDK.gdk_window_get_user_data (child, userData);
+							if (userData[0] == buttonHandle) {
+								GDK.gdk_window_lower (child);
+								break;
+							}
+							windows = OS.g_list_next (windows);
+						}
+						OS.g_list_free (windowList);
+					}
 				}
 			}
 		}

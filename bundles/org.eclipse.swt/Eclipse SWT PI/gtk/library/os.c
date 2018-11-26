@@ -2102,6 +2102,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1get_1height
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1surface_1get_1height)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1get_1height_FUNC);
+	rc = (jint)gdk_surface_get_height((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1get_1origin
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1surface_1get_1origin)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
@@ -2121,6 +2133,23 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1get_1root_1origin
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1get_1root_1origin)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1get_1root_1origin_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gdk_surface_get_root_origin((GdSurface *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1get_1root_1origin_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1get_1user_1data
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1get_1user_1data)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
@@ -2132,6 +2161,28 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1get_1user_1data)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1get_1user_1data_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1get_1width
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1surface_1get_1width)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1get_1width_FUNC);
+	rc = (jint)gdk_surface_get_width((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1get_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1hide
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1hide)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1hide_FUNC);
+	gdk_surface_hide((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1hide_FUNC);
 }
 #endif
 
@@ -2148,6 +2199,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1invalidate_1region
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1invalidate_1region)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1invalidate_1region_FUNC);
+	gdk_surface_invalidate_region((Gdksurface *)arg0, (const cairo_region_t *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1invalidate_1region_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1lower
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1lower)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2155,6 +2216,16 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1lower)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1lower_FUNC);
 	gdk_surface_lower((GdkSurface *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1lower_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1move
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1move)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1move_FUNC);
+	gdk_surface_move((GdkSurface *)arg0, arg1, arg2);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1move_FUNC);
 }
 #endif
 
@@ -2183,6 +2254,16 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1raise)
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1resize
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1resize)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1resize_FUNC);
+	gdk_surface_resize((GdkSurface *)arg0, arg1, arg2);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1resize_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1restack
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1restack)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
@@ -2200,6 +2281,26 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1set_1cursor)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1set_1cursor_FUNC);
 	gdk_surface_set_cursor((GdkSurface *)arg0, (GdkCursor *)arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1set_1cursor_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1set_1decorations
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1set_1decorations)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1set_1decorations_FUNC);
+	gdk_surface_set_decorations((GdkSurface *)arg0, (GdkWMDecoration)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1set_1decorations_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1surface_1set_1functions
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1set_1functions)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1set_1functions_FUNC);
+	gdk_surface_set_functions((GdkSurface *)arg0, (GdkWMFunction)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1set_1functions_FUNC);
 }
 #endif
 
@@ -2476,23 +2577,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1window_1get_1parent)
 }
 #endif
 
-#ifndef NO__1gdk_1window_1get_1position
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1get_1position)
-	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
-{
-	jint *lparg1=NULL;
-	jint *lparg2=NULL;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1get_1position_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gdk_window_get_position((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1get_1position_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1window_1get_1root_1origin
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1get_1root_1origin)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
@@ -2590,18 +2674,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1invalidate_1region)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1invalidate_1region_FUNC);
 	gdk_window_invalidate_region((GdkWindow *)arg0, (const cairo_region_t *)arg1, (gboolean)arg2);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1invalidate_1region_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1window_1is_1visible
-JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1window_1is_1visible)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1is_1visible_FUNC);
-	rc = (jboolean)gdk_window_is_visible((GdkWindow *)arg0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1is_1visible_FUNC);
-	return rc;
 }
 #endif
 
@@ -2783,16 +2855,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1set_1user_1data)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1set_1user_1data_FUNC);
 	gdk_window_set_user_data((GdkWindow *)arg0, (gpointer)arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1set_1user_1data_FUNC);
-}
-#endif
-
-#ifndef NO__1gdk_1window_1shape_1combine_1region
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1shape_1combine_1region)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
-	gdk_window_shape_combine_region((GdkWindow *)arg0, (const cairo_region_t *)arg1, (gint)arg2, (gint)arg3);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
 }
 #endif
 
@@ -16657,6 +16719,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 }
 #endif
 
+#ifndef NO__1pango_1cairo_1font_1map_1get_1default
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
+	rc = (jintLong)pango_cairo_font_map_get_default();
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1cairo_1layout_1path
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1layout_1path)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -16997,6 +17071,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1font_1get_1metrics)
 	OS_NATIVE_ENTER(env, that, _1pango_1font_1get_1metrics_FUNC);
 	rc = (jintLong)pango_font_get_metrics((PangoFont *)arg0, (PangoLanguage *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1font_1get_1metrics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1font_1map_1create_1context
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1font_1map_1create_1context)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1map_1create_1context_FUNC);
+	rc = (jintLong)pango_font_map_create_context((PangoFontMap *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1map_1create_1context_FUNC);
 	return rc;
 }
 #endif

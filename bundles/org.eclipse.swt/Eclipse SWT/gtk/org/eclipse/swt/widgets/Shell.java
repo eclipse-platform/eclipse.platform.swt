@@ -580,12 +580,17 @@ void bringToTop (boolean force) {
 	* window.  The fix is to use XSetInputFocus() to force
 	* the focus, or gtk_grab_add() for GTK > 3.20.
 	*/
-	long /*int*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ gdkResource;
+	if (GTK.GTK4) {
+		gdkResource = gtk_widget_get_surface (shellHandle);
+	} else {
+		gdkResource = gtk_widget_get_window (shellHandle);
+	}
 	if ((xFocus || (style & SWT.ON_TOP) != 0)) {
 		if (OS.isX11()) {
-			long /*int*/ gdkDisplay = GDK.gdk_window_get_display(window);
+			long /*int*/ gdkDisplay = GDK.gdk_window_get_display(gdkResource);
 			long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
-			long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (window);
+			long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (gdkResource);
 			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 			/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
@@ -593,9 +598,19 @@ void bringToTop (boolean force) {
 		} else {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_grab_add(shellHandle);
-				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
-				GDK.gdk_window_show(window);
-				GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
+				long /*int*/ gdkDisplay;
+				if (GTK.GTK4) {
+					gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
+				} else {
+					gdkDisplay = GDK.gdk_window_get_display(gdkResource);
+				}
+				long /*int*/ seat = GDK.gdk_display_get_default_seat(gdkDisplay);
+				if (GTK.GTK4) {
+					GDK.gdk_surface_show(gdkResource);
+				} else {
+					GDK.gdk_window_show(gdkResource);
+				}
+				GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 				/*
 				 * Bug 541185: Hover over to open Javadoc popup will make the popup
 				 * close instead of gaining focus due to an extra focus out signal sent
@@ -607,7 +622,11 @@ void bringToTop (boolean force) {
 			}
 		}
 	} else {
-		GDK.gdk_window_focus (window, GDK.GDK_CURRENT_TIME);
+		if (GTK.GTK4) {
+			GDK.gdk_surface_focus (gdkResource, GDK.GDK_CURRENT_TIME);
+		} else {
+			GDK.gdk_window_focus (gdkResource, GDK.GDK_CURRENT_TIME);
+		}
 	}
 	display.activeShell = this;
 	display.activePending = true;
@@ -1686,19 +1705,27 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 			if ((style & SWT.RESIZE) != 0) decorations |= GDK.GDK_DECOR_BORDER;
 			if ((style & SWT.NO_MOVE) == 0) functions |=  GDK.GDK_FUNC_MOVE;
 		}
-		GDK.gdk_window_set_decorations (gdkResource, decorations);
-
-		/*
-		* For systems running Metacity, this call forces the style hints to
-		* be displayed in a window's titlebar. Otherwise, the decorations
-		* set by the function gdk_window_set_decorations (window,
-		* decorations) are ignored by the window manager.
-		*/
-		GDK.gdk_window_set_functions(gdkResource, functions);
+		if (GTK.GTK4) {
+			GDK.gdk_surface_set_decorations (gdkResource, decorations);
+			GDK.gdk_surface_set_functions(gdkResource, functions);
+		} else {
+			GDK.gdk_window_set_decorations (gdkResource, decorations);
+			/*
+			* For systems running Metacity, this call forces the style hints to
+			* be displayed in a window's titlebar. Otherwise, the decorations
+			* set by the function gdk_window_set_decorations (window,
+			* decorations) are ignored by the window manager.
+			*/
+			GDK.gdk_window_set_functions(gdkResource, functions);
+		}
 	} else if ((style & SWT.NO_MOVE) != 0) {
 		// if the GDK_FUNC_ALL bit is present, all the other style
 		// bits specified as a parameter will be removed from the window
-		GDK.gdk_window_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
+		if (GTK.GTK4) {
+			GDK.gdk_surface_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
+		} else {
+			GDK.gdk_window_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
+		}
 	}
 
 	if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
@@ -1940,14 +1967,23 @@ public void setAlpha (int alpha) {
 }
 
 void resizeBounds (int width, int height, boolean notify) {
-	if (redrawWindow != 0) {
-		GDK.gdk_window_resize (redrawWindow, width, height);
-	}
-	if (enableWindow != 0) {
-		GDK.gdk_window_resize (enableWindow, width, height);
-	}
 	int border = 0;
-	if (!GTK.GTK4) border = GTK.gtk_container_get_border_width (shellHandle);
+	if (GTK.GTK4) {
+		if (redrawSurface != 0) {
+			GDK.gdk_surface_resize (redrawSurface, width, height);
+		}
+		if (redrawSurface != 0) {
+			GDK.gdk_surface_resize (redrawSurface, width, height);
+		}
+	} else {
+		if (redrawWindow != 0) {
+			GDK.gdk_window_resize (redrawWindow, width, height);
+		}
+		if (enableWindow != 0) {
+			GDK.gdk_window_resize (enableWindow, width, height);
+		}
+		border = GTK.gtk_container_get_border_width (shellHandle);
+	}
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
 	if ((style & SWT.RESIZE) == 0) {
@@ -2036,9 +2072,15 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setCursor (long /*int*/ cursor) {
-	if (enableWindow != 0) {
-		GDK.gdk_window_set_cursor (enableWindow, cursor);
-		GDK.gdk_flush ();
+	if (GTK.GTK4) {
+		if (enableSurface != 0) {
+			GDK.gdk_surface_set_cursor (enableSurface, cursor);
+		}
+	} else {
+		if (enableWindow != 0) {
+			GDK.gdk_window_set_cursor (enableWindow, cursor);
+			GDK.gdk_flush ();
+		}
 	}
 	super.setCursor (cursor);
 }
@@ -2530,7 +2572,11 @@ public void setVisible (boolean visible) {
 		 *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
 		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
 		 */
-		if (enableWindow != 0) GDK.gdk_window_raise (enableWindow);
+		if (GTK.GTK4) {
+			if (enableSurface != 0) GDK.gdk_surface_raise (enableSurface);
+		} else {
+			if (enableWindow != 0) GDK.gdk_window_raise (enableWindow);
+		}
 		if (isDisposed ()) return;
 		if (!(OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
 			display.dispatchEvents = new int [] {
@@ -2649,7 +2695,15 @@ void showWidget () {
 long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	int offset = 16;
 	int [] x = new int [1], y = new int [1];
-	gdk_window_get_device_position (0, x, y, null);
+	if (GTK.GTK4) {
+		/*
+		 * TODO: calling gdk_window_get_device_position() with a 0
+		 * for the GdkWindow uses gdk_get_default_root_window(),
+		 * which doesn't exist on GTK4.
+		 */
+	} else {
+		display.gdk_window_get_device_position (0, x, y, null);
+	}
 	y [0] += offset;
 	GdkRectangle dest = new GdkRectangle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
@@ -2924,7 +2978,11 @@ Rectangle getBoundsInPixels () {
 	if ((state & Widget.DISPOSE_SENT) == 0) {
 		GTK.gtk_window_get_position (shellHandle, x, y);
 	} else {
-		GDK.gdk_window_get_root_origin(GTK.gtk_widget_get_window(shellHandle), x, y);
+		if (GTK.GTK4) {
+			GDK.gdk_surface_get_root_origin(GTK.gtk_widget_get_surface(shellHandle), x, y);
+		} else {
+			GDK.gdk_window_get_root_origin(GTK.gtk_widget_get_window(shellHandle), x, y);
+		}
 	}
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);

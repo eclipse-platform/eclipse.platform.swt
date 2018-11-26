@@ -1173,27 +1173,43 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 Rectangle getClientAreaInPixels () {
 	checkWidget ();
 	forceResize ();
-	GTK.gtk_widget_realize (handle);
-	long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
-	long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
-	int [] binX = new int [1], binY = new int [1];
-	GDK.gdk_window_get_origin (binWindow, binX, binY);
-	int [] fixedX = new int [1], fixedY = new int [1];
-	GDK.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
 	long /*int*/ clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (clientHandle, allocation);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
-	Rectangle rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
+	Rectangle rect;
+	if (GTK.GTK4) {
+		long /*int*/ fixedSurface = gtk_widget_get_surface (fixedHandle);
+		long /*int*/ surface = gtk_widget_get_surface (clientHandle);
+		int [] surfaceX = new int [1], surfaceY = new int [1];
+		GDK.gdk_surface_get_origin (surface, surfaceX, surfaceY);
+		int [] fixedX = new int [1], fixedY = new int [1];
+		GDK.gdk_surface_get_origin (fixedSurface, fixedX, fixedY);
+		rect = new Rectangle (fixedX [0] - surfaceX [0], fixedY [0] - surfaceY [0], width, height);
+	} else {
+		GTK.gtk_widget_realize (handle);
+		long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
+		long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
+		int [] binX = new int [1], binY = new int [1];
+		GDK.gdk_window_get_origin (binWindow, binX, binY);
+		int [] fixedX = new int [1], fixedY = new int [1];
+		GDK.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
+		rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
+	}
 	return rect;
 }
 
 @Override
 int getClientWidth () {
 	int [] w = new int [1], h = new int [1];
-	GTK.gtk_widget_realize (handle);
-	gdk_window_get_size(GTK.gtk_tree_view_get_bin_window(handle), w, h);
+	if (GTK.GTK4) {
+		long /*int*/ surface = gtk_widget_get_surface(handle);
+		gdk_surface_get_size(surface, w, h);
+	} else {
+		GTK.gtk_widget_realize (handle);
+		gdk_window_get_size(GTK.gtk_tree_view_get_bin_window(handle), w, h);
+	}
 	return w[0];
 }
 
@@ -1483,14 +1499,24 @@ int getHeaderHeightInPixels () {
 		}
 		return height;
 	}
-	GTK.gtk_widget_realize (handle);
-	long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
-	long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
-	int [] binY = new int [1];
-	GDK.gdk_window_get_origin (binWindow, null, binY);
-	int [] fixedY = new int [1];
-	GDK.gdk_window_get_origin (fixedWindow, null, fixedY);
-	return binY [0] - fixedY [0];
+	if (GTK.GTK4) {
+		long /*int*/ fixedSurface = gtk_widget_get_surface (fixedHandle);
+		long /*int*/ surface = gtk_widget_get_surface (handle);
+		int [] surfaceY = new int [1];
+		GDK.gdk_surface_get_origin (surface, null, surfaceY);
+		int [] fixedY = new int [1];
+		GDK.gdk_surface_get_origin (fixedSurface, null, fixedY);
+		return surfaceY [0] - fixedY [0];
+	} else {
+		GTK.gtk_widget_realize (handle);
+		long /*int*/ fixedWindow = gtk_widget_get_window (fixedHandle);
+		long /*int*/ binWindow = GTK.gtk_tree_view_get_bin_window (handle);
+		int [] binY = new int [1];
+		GDK.gdk_window_get_origin (binWindow, null, binY);
+		int [] fixedY = new int [1];
+		GDK.gdk_window_get_origin (fixedWindow, null, fixedY);
+		return binY [0] - fixedY [0];
+	}
 }
 
 /**
@@ -3587,9 +3613,7 @@ void setParentBackground () {
 }
 
 @Override
-void setParentGdkWindow (Control child) {
-	long /*int*/ parentGdkWindow = eventWindow ();
-	GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
+void setParentGdkResource (Control child) {
 	/*
 	 * Feature in GTK3: non-native GdkWindows are not drawn implicitly
 	 * as of GTK3.10+. It is the client's responsibility to propagate draw
@@ -3600,8 +3624,18 @@ void setParentGdkWindow (Control child) {
 	 * Table's fixedHandle to the draw signal, and propagate the draw
 	 * signal using gtk_container_propagate_draw(). See bug 531928.
 	 */
-	hasChildren = true;
-	connectFixedHandleDraw();
+	if (GTK.GTK4) {
+		long /*int*/ parentGdkSurface = eventSurface ();
+		GTK.gtk_widget_set_parent_surface (child.topHandle(), parentGdkSurface);
+		// TODO: implement connectFixedHandleDraw with the "snapshot" signal
+	} else {
+		long /*int*/ parentGdkWindow = eventWindow ();
+		GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
+			hasChildren = true;
+			connectFixedHandleDraw();
+		}
+	}
 }
 
 @Override

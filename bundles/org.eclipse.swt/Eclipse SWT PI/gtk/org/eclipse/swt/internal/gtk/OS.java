@@ -3244,6 +3244,15 @@ public static final long /*int*/ pango_cairo_create_layout(long /*int*/ cairo) {
 		lock.unlock();
 	}
 }
+public static final native long /*int*/ _pango_cairo_font_map_get_default();
+public static final long /*int*/ pango_cairo_font_map_get_default() {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_get_default();
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param context cast=(PangoContext *)
  */
@@ -3596,6 +3605,18 @@ public static final long /*int*/ pango_font_get_metrics(long /*int*/ font, long 
 	lock.lock();
 	try {
 		return _pango_font_get_metrics(font, language);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param fontMap cast=(PangoFontMap *)
+ */
+public static final native long /*int*/ _pango_font_map_create_context(long /*int*/ fontMap);
+public static final long /*int*/ pango_font_map_create_context(long /*int*/ fontMap) {
+	lock.lock();
+	try {
+		return _pango_font_map_create_context(fontMap);
 	} finally {
 		lock.unlock();
 	}

@@ -569,7 +569,14 @@ int getOperationFromKeyState() {
 	int[] state = new int[1];
 	long /*int*/ root = GDK.gdk_get_default_root_window ();
 	long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_window_get_display (root));
-	GDK.gdk_window_get_device_position(root, pointer, null, null, state);
+	if (GTK.GTK4) {
+		/*
+		 * TODO: calling gdk_window_get_device_position() here
+		 * uses gdk_get_default_root_window(), which doesn't exist on GTK4.
+		 */
+	} else {
+		GDK.gdk_window_get_device_position(root, pointer, null, null, state);
+	}
 	boolean ctrl = (state[0] & GDK.GDK_CONTROL_MASK) != 0;
 	boolean shift = (state[0] & GDK.GDK_SHIFT_MASK) != 0;
 	if (ctrl && shift) return DND.DROP_LINK;
@@ -769,9 +776,14 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 		targets = OS.g_list_next (targets);
 	}
 	if (dataTypes.length == 0) return false;
-	long /*int*/ window = GTK.gtk_widget_get_window (control.handle);
 	int [] origin_x = new int[1], origin_y = new int[1];
-	GDK.gdk_window_get_origin(window, origin_x, origin_y);
+	if (GTK.GTK4) {
+		long /*int*/ surface = GTK.gtk_widget_get_surface (control.handle);
+		GDK.gdk_surface_get_origin(surface, origin_x, origin_y);
+	} else {
+		long /*int*/ window = GTK.gtk_widget_get_window (control.handle);
+		GDK.gdk_window_get_origin(window, origin_x, origin_y);
+	}
 	Point coordinates = DPIUtil.autoScaleDown(new Point(origin_x[0] + x, origin_y[0] + y));
 
 	event.widget = this;

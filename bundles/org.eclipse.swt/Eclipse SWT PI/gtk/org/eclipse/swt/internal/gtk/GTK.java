@@ -1690,7 +1690,7 @@ public class GTK extends OS {
 	 * @param target_list cast=(GtkTargetList *)
 	 */
 	public static final native long /*int*/ _gtk_drag_dest_find_target(long /*int*/ widget, long /*int*/ context, long /*int*/ target_list);
-	/** [GTK3/GTK4: TODO_ericwill both have identical signatures but accept differing parameters at the native level] */
+	/** [GTK3/GTK4: both have identical signatures but accept differing parameters at the native level] */
 	public static final long /*int*/ gtk_drag_dest_find_target(long /*int*/ widget, long /*int*/ context, long /*int*/ target_list) {
 		lock.lock();
 		try {

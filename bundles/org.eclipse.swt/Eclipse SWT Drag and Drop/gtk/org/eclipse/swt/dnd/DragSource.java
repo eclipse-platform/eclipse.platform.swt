@@ -353,7 +353,12 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * NOTE: We believe that it is never an error to ungrab when
 	 * a drag is finished.
 	 */
-	long /*int*/ display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
+	long /*int*/ display;
+	if (GTK.GTK4) {
+		display = GDK.gdk_surface_get_display(GTK.gtk_widget_get_surface(widget));
+	} else {
+		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
+	}
 	long /*int*/ pointer = GDK.gdk_get_pointer(display);
 	long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {

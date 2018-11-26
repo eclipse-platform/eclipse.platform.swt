@@ -357,7 +357,15 @@ Point getLocation () {
 	}
 	if (x == -1 || y == -1) {
 		int [] px = new int [1], py = new int [1];
-		gdk_window_get_device_position (0, px, py, null);
+		if (GTK.GTK4) {
+			/*
+			 * TODO: calling gdk_window_get_device_position() with a 0
+			 * for the GdkWindow uses gdk_get_default_root_window(),
+			 * which doesn't exist on GTK4.
+			 */
+		} else {
+			display.gdk_window_get_device_position (0, px, py, null);
+		}
 		x = px [0];
 		y = py [0];
 	}

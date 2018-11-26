@@ -319,7 +319,6 @@
 #define NO__1gdk_1display_1get_1monitor_1at_1window
 #define NO__1gdk_1get_1default_1root_1window
 #define NO__1gdk_1property_1get
-#define NO__1gdk_1window_1add_1filter
 #define NO__1gdk_1window_1begin_1draw_1frame
 #define NO__1gdk_1window_1create_1similar_1surface
 #define NO__1gdk_1window_1destroy
@@ -335,7 +334,6 @@
 #define NO__1gdk_1window_1get_1width
 #define NO__1gdk_1window_1get_1origin
 #define NO__1gdk_1window_1get_1parent
-#define NO__1gdk_1window_1get_1position
 #define NO__1gdk_1window_1get_1root_1origin
 #define NO__1gdk_1window_1get_1state
 #define NO__1gdk_1window_1get_1user_1data
@@ -344,7 +342,6 @@
 #define NO__1gdk_1window_1hide
 #define NO__1gdk_1window_1invalidate_1rect
 #define NO__1gdk_1window_1invalidate_1region
-#define NO__1gdk_1window_1is_1visible
 #define NO__1gdk_1window_1raise
 #define NO__1gdk_1window_1lower
 #define NO__1gdk_1window_1move
@@ -355,11 +352,9 @@
 #define NO__1gdk_1window_1restack
 #define NO__1gdk_1window_1set_1cursor
 #define NO__1gdk_1window_1set_1decorations
-#define NO__1gdk_1window_1set_1events
 #define NO__1gdk_1window_1set_1functions
 #define NO__1gdk_1window_1set_1override_1redirect
 #define NO__1gdk_1window_1set_1user_1data
-#define NO__1gdk_1window_1shape_1combine_1region
 #define NO__1gdk_1window_1show_1unraised
 #define NO__1gdk_1device_1get_1window_1at_1position
 #define NO__1gdk_1window_1set_1background_1pattern
@@ -424,6 +419,15 @@
 #define NO__1gdk_1surface_1get_1device_1position
 #define NO__1gdk_1display_1get_1monitor_1at_1surface
 #define NO__1gdk_1surface_1get_1frame_1extents
+#define NO__1gdk_1surface_1get_1width
+#define NO__1gdk_1surface_1get_1height
+#define NO__1gdk_1surface_1resize
+#define NO__1gdk_1surface_1move
+#define NO__1gdk_1surface_1hide
+#define NO__1gdk_1surface_1set_1decorations
+#define NO__1gdk_1surface_1set_1functions
+#define NO__1gdk_1surface_1get_1root_1origin
+#define NO__1gdk_1surface_1invalidate_1region
 
 // Miscellaneous functions not present on GTK3
 #define NO__1gdk_1device_1warp__III

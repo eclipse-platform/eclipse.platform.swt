@@ -265,22 +265,32 @@ void _setVisible (boolean visible) {
 					// Create the rectangle relative to the parent (in this case, global) GdkWindow
 					GdkRectangle rect = new GdkRectangle();
 					if (OS.isX11()) {
-						// Get and (add reference to) the global GdkWindow
+						// Get and (add reference to) the global GdkWindow/GdkSurface
 						event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
 						OS.g_object_ref(event.window);
 						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 						/*
-						 * Get the origin of the global GdkWindow to calculate the size of any offsets
+						 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
 						 * such as client side decorations, or the system tray.
 						 */
 						int [] globalWindowOriginY = new int [1];
 						int [] globalWindowOriginX = new int [1];
-						GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+						if (GTK.GTK4) {
+							GDK.gdk_surface_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+						} else {
+							GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+						}
 						rect.x = this.x - globalWindowOriginX[0];
 						rect.y = this.y - globalWindowOriginY[0];
 					} else {
-						// On Wayland, get the relative GdkWindow from the parent shell
-						event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().topHandle()));
+						// On Wayland, get the relative GdkWindow from the parent shell.
+						long /*int*/ gdkResource;
+						if (GTK.GTK4) {
+							gdkResource = GTK.gtk_widget_get_surface (getShell().topHandle());
+						} else {
+							gdkResource = GTK.gtk_widget_get_window (getShell().topHandle());
+						}
+						event.window = OS.g_object_ref(gdkResource);
 						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
 						// final_rect.y popup menu position is off by 1 compared to this.x and this.y
@@ -1197,20 +1207,25 @@ void adjustParentWindowWayland (long /*int*/ eventPtr) {
 	if (!OS.isX11()) {
 		long /*int*/ display = GDK.gdk_display_get_default ();
 		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		long /*int*/ deviceWindow = GDK.gdk_device_get_window_at_position(pointer, null, null);
-		OS.g_object_ref(deviceWindow);
+		long /*int*/ deviceResource;
+		if (GTK.GTK4) {
+			deviceResource = GDK.gdk_device_get_surface_at_position(pointer, null, null);
+		} else {
+			deviceResource = GDK.gdk_device_get_window_at_position(pointer, null, null);
+		}
+		OS.g_object_ref(deviceResource);
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		switch (eventType) {
 			case GDK.GDK_BUTTON_PRESS:
 				GdkEventButton eventButton = new GdkEventButton();
 				OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
-				eventButton.window = deviceWindow;
+				eventButton.window = deviceResource;
 				OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
 				break;
 			case GDK.GDK_KEY_PRESS:
 				GdkEventKey eventKey = new GdkEventKey();
 				OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
-				eventKey.window = deviceWindow;
+				eventKey.window = deviceResource;
 				OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
 				break;
 		}
@@ -1252,9 +1267,16 @@ void verifyMenuPosition (int itemCount) {
 			GTK.gtk_widget_get_preferred_height(handle, null, naturalHeight);
 			if (naturalHeight[0] > 0) {
 				long /*int*/ topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
-				long /*int*/ topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
-				int width = GDK.gdk_window_get_width(topLevelWindow);
-				GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);
+				int width;
+				if (GTK.GTK4) {
+					long /*int*/ topLevelSurface = GTK.gtk_widget_get_surface(topLevelWidget);
+					width = GDK.gdk_surface_get_width(topLevelSurface);
+					GDK.gdk_surface_resize(topLevelSurface, width, naturalHeight[0]);
+				} else {
+					long /*int*/ topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
+					width = GDK.gdk_window_get_width(topLevelWindow);
+					GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);
+				}
 			}
 		}
 	}

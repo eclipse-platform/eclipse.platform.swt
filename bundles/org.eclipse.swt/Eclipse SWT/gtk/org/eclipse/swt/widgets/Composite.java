@@ -568,11 +568,11 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 }
 
 @Override
-void fixParentGdkWindow() {
+void fixParentGdkResource() {
 	// Changes to this method should be verified via
 	// org.eclipse.swt.tests.gtk/*/Bug510803_TabFolder_TreeEditor_Regression.java (part two)
 	for (Control child : _getChildren()) {
-		child.fixParentGdkWindow();
+		child.fixParentGdkResource();
 	}
 }
 
@@ -1299,8 +1299,14 @@ void moveChildren(int oldWidth) {
 		if (oldWidth > 0) x = oldWidth - controlWidth - x;
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
-		if (child.enableWindow != 0) {
-			GDK.gdk_window_move (child.enableWindow, x, y);
+		if (GTK.GTK4) {
+			if (child.enableSurface != 0) {
+				GDK.gdk_surface_move (child.enableSurface, x, y);
+			}
+		} else {
+			if (child.enableWindow != 0) {
+				GDK.gdk_window_move (child.enableWindow, x, y);
+			}
 		}
 		child.moveHandle (x, y);
 		/*

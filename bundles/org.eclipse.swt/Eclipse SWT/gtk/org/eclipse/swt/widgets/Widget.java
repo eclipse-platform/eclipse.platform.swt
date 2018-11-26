@@ -1816,9 +1816,15 @@ void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
 }
 
 void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
-		width[0] = GDK.gdk_window_get_width (drawable);
-		height[0] = GDK.gdk_window_get_height (drawable);
+	width[0] = GDK.gdk_window_get_width (drawable);
+	height[0] = GDK.gdk_window_get_height (drawable);
 }
+
+void gdk_surface_get_size (long /*int*/ surface, int[] width, int[] height) {
+	width[0] = GDK.gdk_surface_get_width (surface);
+	height[0] = GDK.gdk_surface_get_height (surface);
+}
+
 
 /**
  * Wrapper function for gdk_event_get_state()
@@ -1839,13 +1845,19 @@ long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 	return box;
 }
 
-int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
+int gdk_pointer_grab (long /*int*/ gdkResource, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
 	long /*int*/ display = 0;
-	if( window != 0) {
-		display = GDK.gdk_window_get_display (window);
+	if (GTK.GTK4) {
+		if( gdkResource != 0) {
+			display = GDK.gdk_surface_get_display (gdkResource);
+		}
 	} else {
-		window = GDK.gdk_get_default_root_window ();
-		display = GDK.gdk_window_get_display (window);
+		if( gdkResource != 0) {
+			display = GDK.gdk_window_get_display (gdkResource);
+		} else {
+			gdkResource = GDK.gdk_get_default_root_window ();
+			display = GDK.gdk_window_get_display (gdkResource);
+		}
 	}
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
@@ -1854,15 +1866,15 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 		}
 		long /*int*/ gdkSeatGrabPrepareFuncAddress = gdkSeatGrabPrepareFunc.getAddress();
 		if (gdkSeatGrabPrepareFuncAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		return GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFuncAddress, window);
+		return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFuncAddress, gdkResource);
 	} else {
 		long /*int*/ pointer = GDK.gdk_get_pointer(display);
-		return GDK.gdk_device_grab (pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
+		return GDK.gdk_device_grab (pointer, gdkResource, grab_ownership, owner_events, event_mask, cursor, time_);
 	}
 }
 
-void gdk_pointer_ungrab (long /*int*/ window, int time_) {
-	long /*int*/ display = GDK.gdk_window_get_display (window);
+void gdk_pointer_ungrab (long /*int*/ gdkResource, int time_) {
+	long /*int*/ display = GTK.GTK4? GDK.gdk_surface_get_display(gdkResource) : GDK.gdk_window_get_display (gdkResource);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
 		GDK.gdk_seat_ungrab(seat);
@@ -1872,9 +1884,13 @@ void gdk_pointer_ungrab (long /*int*/ window, int time_) {
 	}
 }
 
-static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkWindow, long /*int*/ userData_gdkWindow) {
-	if (userData_gdkWindow != 0) {
-		GDK.gdk_window_show(userData_gdkWindow);
+static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkResource, long /*int*/ userData_gdkResource) {
+	if (userData_gdkResource != 0) {
+		if (GTK.GTK4) {
+			GDK.gdk_surface_show(userData_gdkResource);
+		} else {
+			GDK.gdk_window_show(userData_gdkResource);
+		}
 	}
 	return 0;
 }
@@ -2018,27 +2034,6 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 		case POPPED_UP: return gtk_menu_popped_up (handle, arg0, arg1, arg2, arg3);
 		default: return 0;
 	}
-}
-
-long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	long /*int*/ display = 0;
-	if( window != 0) {
-		display = GDK.gdk_window_get_display (window);
-	} else {
-		window = GDK.gdk_get_default_root_window ();
-		display = GDK.gdk_window_get_display (window);
-	}
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
-	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
-}
-
-long /*int*/ gdk_surface_get_device_position (long /*int*/ surface, int[] x, int[] y, int[] mask) {
-	long /*int*/ display = 0;
-	if (surface != 0) {
-		display = GDK.gdk_surface_get_display (surface);
-	}
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
-	return GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
 }
 
 void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {

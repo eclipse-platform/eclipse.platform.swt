@@ -48,6 +48,7 @@ public class Tracker extends Widget {
 	Composite parent;
 	Cursor cursor;
 	long /*int*/ lastCursor, window, overlay;
+	long /*int*/ surface;
 	boolean tracking, cancelled, grabbed, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
@@ -208,13 +209,12 @@ Point adjustMoveCursor () {
 	Point point = display.mapInPixels (parent, null, newX, newY);
 	display.setCursorLocation (point);
 
-	/*
-	 * The call to XWarpPointer does not always place the pointer on the
-	 * exact location that is specified, so do a query (below) to get the
-	 * actual location of the pointer after it has been moved.
-	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
-	gdk_window_get_device_position (window, actualX, actualY, state);
+	if (GTK.GTK4) {
+		display.gdk_surface_get_device_position (surface, actualX, actualY, state);
+	} else {
+		display.gdk_window_get_device_position (window, actualX, actualY, state);
+	}
 	return new Point (actualX [0], actualY [0]);
 }
 
@@ -247,7 +247,11 @@ Point adjustResizeCursor () {
 	 * actual location of the pointer after it has been moved.
 	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
-	gdk_window_get_device_position (window, actualX, actualY, state);
+	if (GTK.GTK4) {
+		display.gdk_surface_get_device_position (surface, actualX, actualY, state);
+	} else {
+		display.gdk_window_get_device_position (window, actualX, actualY, state);
+	}
 	return new Point (actualX [0], actualY [0]);
 }
 
@@ -401,9 +405,15 @@ void drawRectangles (Rectangle [] rects) {
 
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
-	long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
-	GDK.gdk_window_hide (overlayWindow);
-	GDK.gdk_window_show (overlayWindow);
+	if (GTK.GTK4) {
+		long /*int*/ overlaySurface = GTK.gtk_widget_get_surface (overlay);
+		GDK.gdk_surface_hide (overlaySurface);
+		GDK.gdk_surface_show (overlaySurface);
+	} else {
+		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
+		GDK.gdk_window_hide (overlayWindow);
+		GDK.gdk_window_show (overlayWindow);
+	}
 }
 
 /**
@@ -455,7 +465,8 @@ public boolean getStippled () {
 
 boolean grab () {
 	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
-	int result = gdk_pointer_grab (window, GDK.GDK_OWNERSHIP_NONE, false, GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK, 0, cursor, GDK.GDK_CURRENT_TIME);
+	int result = gdk_pointer_grab (GTK.GTK4 ? surface : window, GDK.GDK_OWNERSHIP_NONE, false,
+			GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK, 0, cursor, GDK.GDK_CURRENT_TIME);
 	return result == GDK.GDK_GRAB_SUCCESS;
 }
 
@@ -611,7 +622,11 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 
 long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
-	gdk_window_get_device_position (window, newX, newY, null);
+	if (GTK.GTK4) {
+		display.gdk_surface_get_device_position (surface, newX, newY, null);
+	} else {
+		display.gdk_window_get_device_position (window, newX, newY, null);
+	}
 	if (oldX != newX [0] || oldY != newY [0]) {
 		Rectangle [] oldRectangles = rectangles;
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
@@ -754,7 +769,11 @@ public boolean open () {
 	cancelled = false;
 	tracking = true;
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
-	gdk_window_get_device_position (window, oldX, oldY, state);
+	if (GTK.GTK4) {
+		display.gdk_surface_get_device_position (surface, oldX, oldY, state);
+	} else {
+		display.gdk_window_get_device_position (window, oldX, oldY, state);
+	}
 
 	/*
 	* if exactly one of UP/DOWN is specified as a style then set the cursor

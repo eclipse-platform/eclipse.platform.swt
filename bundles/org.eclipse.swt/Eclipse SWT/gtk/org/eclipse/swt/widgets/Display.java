@@ -1671,9 +1671,18 @@ public Control getCursorControl () {
 	int[] x = new int[1], y = new int[1];
 	long /*int*/ handle = 0;
 	long /*int*/ [] user_data = new long /*int*/ [1];
-	long /*int*/ window = gdk_device_get_window_at_position (x,y);
-	if (window != 0) {
-		GDK.gdk_window_get_user_data (window, user_data);
+	long /*int*/ gdkResource;
+	if (GTK.GTK4) {
+		gdkResource = gdk_device_get_surface_at_position (x,y);
+	} else {
+		gdkResource = gdk_device_get_window_at_position (x,y);
+	}
+	if (gdkResource != 0) {
+		if (GTK.GTK4) {
+			GDK.gdk_surface_get_user_data (gdkResource, user_data);
+		} else {
+			GDK.gdk_window_get_user_data (gdkResource, user_data);
+		}
 		handle = user_data [0];
 	} else {
 		/*
@@ -1754,7 +1763,15 @@ public Point getCursorLocation () {
 Point getCursorLocationInPixels () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
-	gdk_window_get_device_position (0, x, y, null);
+	if (GTK.GTK4) {
+		/*
+		 * TODO: calling gdk_window_get_device_position() with a 0
+		 * for the GdkWindow uses gdk_get_default_root_window(),
+		 * which doesn't exist on GTK4.
+		 */
+	} else {
+		gdk_window_get_device_position (0, x, y, null);
+	}
 	/*
 	 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
 	 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
@@ -5917,10 +5934,25 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
+long /*int*/ gdk_surface_get_device_position (long /*int*/ surface, int[] x, int[] y, int[] mask) {
+	long /*int*/ display = 0;
+	if (surface != 0) {
+		display = GDK.gdk_surface_get_display (surface);
+	}
+	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	return GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
+}
+
 long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
 	long /*int*/ display = GDK.gdk_display_get_default ();
 	long /*int*/ device = GDK.gdk_get_pointer(display);
 	return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
+}
+
+long /*int*/ gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
+	long /*int*/ display = GDK.gdk_display_get_default ();
+	long /*int*/ device = GDK.gdk_get_pointer(display);
+	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);
 }
 
 /**

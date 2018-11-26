@@ -302,10 +302,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			if (newX == lastX && newY == lastY) return result;
 
 			/* Ensure that the pointer image does not change */
-			long /*int*/ window = gtk_widget_get_window (handle);
+			long /*int*/ gdkResource = GTK.GTK4? gtk_widget_get_surface (handle) : gtk_widget_get_window (handle);
 			int grabMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
 			long /*int*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
-			int ptrGrabResult = gdk_pointer_grab (window, GDK.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, GDK.GDK_CURRENT_TIME);
+			int ptrGrabResult = gdk_pointer_grab (gdkResource, GDK.GDK_OWNERSHIP_NONE, false, grabMask, gdkResource, gdkCursor, GDK.GDK_CURRENT_TIME);
 
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
@@ -314,7 +314,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 			if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - event.x;
 			sendSelectionEvent (SWT.Selection, event, true);
-			if (ptrGrabResult == GDK.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (window, GDK.GDK_CURRENT_TIME);
+			if (ptrGrabResult == GDK.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (gdkResource, GDK.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
 
 			if (event.doit) {
@@ -350,7 +350,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	int eventX, eventY, eventState;
 	if (gdkEvent.is_hint != 0) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		gdk_window_get_device_position (gdkEvent.window, pointer_x, pointer_y, mask);
+		display.gdk_window_get_device_position (gdkEvent.window, pointer_x, pointer_y, mask);
 		eventX = pointer_x [0];
 		eventY = pointer_y [0];
 		eventState = mask [0];

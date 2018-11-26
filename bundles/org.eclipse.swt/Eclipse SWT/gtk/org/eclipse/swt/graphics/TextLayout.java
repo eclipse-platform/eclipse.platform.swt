@@ -82,7 +82,12 @@ public final class TextLayout extends Resource {
 public TextLayout (Device device) {
 	super(device);
 	device = this.device;
-	context = GDK.gdk_pango_context_get();
+	if (GTK.GTK4) {
+		long /*int*/ fontMap = OS.pango_cairo_font_map_get_default ();
+		context = OS.pango_font_map_create_context (fontMap);
+	} else {
+		context = GDK.gdk_pango_context_get();
+	}
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, GTK.gtk_get_default_language());
 	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
