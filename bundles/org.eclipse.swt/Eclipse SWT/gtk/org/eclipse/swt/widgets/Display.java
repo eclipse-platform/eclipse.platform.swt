@@ -3566,6 +3566,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.ACTIVATE_INVERSE] = windowProc2;
 	closuresProc [Widget.CHANGED] = windowProc2;
 	closuresProc [Widget.CLICKED] = windowProc2;
+	closuresProc [Widget.CLOSE_REQUEST] = windowProc2;
 	closuresProc [Widget.CREATE_MENU_PROXY] = windowProc2;
 	closuresProc [Widget.DAY_SELECTED] = windowProc2;
 	closuresProc [Widget.DAY_SELECTED_DOUBLE_CLICK] = windowProc2;

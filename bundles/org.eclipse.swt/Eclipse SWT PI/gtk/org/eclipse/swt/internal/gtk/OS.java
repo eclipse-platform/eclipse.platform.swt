@@ -285,6 +285,7 @@ public class OS extends C {
 	public static final byte[] change_current_page = ascii("change-current-page");
 	public static final byte[] change_value = ascii("change-value");
 	public static final byte[] clicked = ascii("clicked");
+	public static final byte[] close_request = ascii("close-request");
 	public static final byte[] commit = ascii("commit");
 	public static final byte[] configure_event = ascii("configure-event");
 	public static final byte[] copy_clipboard = ascii("copy-clipboard");

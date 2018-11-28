@@ -230,7 +230,8 @@ public abstract class Widget {
 	static final int ENTER = 95;
 	static final int LEAVE = 96;
 	static final int MOTION = 97;
-	static final int LAST_SIGNAL = 98;
+	static final int CLOSE_REQUEST = 98;
+	static final int LAST_SIGNAL = 99;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -710,6 +711,10 @@ long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*
 }
 
 long /*int*/ gtk_clicked (long /*int*/ widget) {
+	return 0;
+}
+
+long /*int*/ gtk_close_request (long /*int*/ widget) {
 	return 0;
 }
 
@@ -1907,6 +1912,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
+		case CLOSE_REQUEST: return gtk_close_request (handle);
 		case CREATE_MENU_PROXY: return gtk_create_menu_proxy (handle);
 		case DAY_SELECTED: return gtk_day_selected (handle);
 		case DAY_SELECTED_DOUBLE_CLICK: return gtk_day_selected_double_click (handle);

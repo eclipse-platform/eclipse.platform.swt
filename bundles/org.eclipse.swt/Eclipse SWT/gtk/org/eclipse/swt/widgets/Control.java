@@ -4187,17 +4187,26 @@ void releaseWidget () {
 	if (hadFocus) fixFocus (this);
 	if (display.currentControl == this) display.currentControl = null;
 	display.removeMouseHoverTimeout (handle);
-	long /*int*/ imHandle = imHandle ();
-	if (imHandle != 0) {
-		GTK.gtk_im_context_reset (imHandle);
-		GTK.gtk_im_context_set_client_window (imHandle, 0);
+	if (GTK.GTK4) {
+		if (enableSurface != 0) {
+			GDK.gdk_surface_set_user_data (enableSurface, 0);
+			GDK.gdk_surface_destroy (enableSurface);
+			enableSurface = 0;
+		}
+		redrawSurface = 0;
+	} else {
+		long /*int*/ imHandle = imHandle ();
+		if (imHandle != 0) {
+			GTK.gtk_im_context_reset (imHandle);
+			GTK.gtk_im_context_set_client_window (imHandle, 0);
+		}
+		if (enableWindow != 0) {
+			GDK.gdk_window_set_user_data (enableWindow, 0);
+			GDK.gdk_window_destroy (enableWindow);
+			enableWindow = 0;
+		}
+		redrawWindow = 0;
 	}
-	if (enableWindow != 0) {
-		GDK.gdk_window_set_user_data (enableWindow, 0);
-		GDK.gdk_window_destroy (enableWindow);
-		enableWindow = 0;
-	}
-	redrawWindow = 0;
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
