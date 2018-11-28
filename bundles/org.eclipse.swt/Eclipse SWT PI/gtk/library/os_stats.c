@@ -828,10 +828,37 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1style_1context_1get__J_3B_3JJ",
 #endif
 	"_1gtk_1style_1context_1get_1background_1color",
-	"_1gtk_1style_1context_1get_1border",
-	"_1gtk_1style_1context_1get_1color",
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1border__IILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#else
+	"_1gtk_1style_1context_1get_1border__JILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#endif
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1border__ILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#else
+	"_1gtk_1style_1context_1get_1border__JLorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#endif
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1color__IILorg_eclipse_swt_internal_gtk_GdkRGBA_2",
+#else
+	"_1gtk_1style_1context_1get_1color__JILorg_eclipse_swt_internal_gtk_GdkRGBA_2",
+#endif
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1color__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2",
+#else
+	"_1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2",
+#endif
 	"_1gtk_1style_1context_1get_1font",
-	"_1gtk_1style_1context_1get_1padding",
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#else
+	"_1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#endif
+#ifndef JNI64
+	"_1gtk_1style_1context_1get_1padding__ILorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#else
+	"_1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2",
+#endif
 	"_1gtk_1style_1context_1invalidate",
 	"_1gtk_1style_1context_1remove_1class",
 	"_1gtk_1style_1context_1restore",

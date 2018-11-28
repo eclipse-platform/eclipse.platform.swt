@@ -5879,6 +5879,21 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param color cast=(GdkRGBA *)
+	 */
+	public static final native void _gtk_style_context_get_color(long /*int*/ context, GdkRGBA color);
+	/** [GTK4 only] */
+	public static final void gtk_style_context_get_color(long /*int*/ context, GdkRGBA color) {
+		lock.lock();
+		try {
+			_gtk_style_context_get_color(context, color);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @method flags=dynamic */
 	public static final native long /*int*/ _gtk_style_context_get_font(long /*int*/ context, int state);
 	/** [GTK3; 3.8 deprecated, replaced] */
@@ -5902,6 +5917,21 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_style_context_get_padding(context, state, padding);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void _gtk_style_context_get_padding(long /*int*/ context, GtkBorder padding);
+	/** [GTK4 only] */
+	public static final void gtk_style_context_get_padding(long /*int*/ context, GtkBorder padding) {
+		lock.lock();
+		try {
+			_gtk_style_context_get_padding(context, padding);
 		} finally {
 			lock.unlock();
 		}
@@ -5946,6 +5976,21 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_style_context_get_border(context, state, padding);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param context cast=(GtkStyleContext *)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void _gtk_style_context_get_border(long /*int*/ context, GtkBorder padding);
+	/** [GTK4 only] */
+	public static final void gtk_style_context_get_border(long /*int*/ context, GtkBorder padding) {
+		lock.lock();
+		try {
+			_gtk_style_context_get_border(context, padding);
 		} finally {
 			lock.unlock();
 		}

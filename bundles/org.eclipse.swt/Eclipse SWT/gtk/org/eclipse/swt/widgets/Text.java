@@ -610,11 +610,8 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		// GtkSearchEntry have more padding than GtkEntry
 		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
-		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-		} else {
-			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
-		}
+		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+		gtk_style_context_get_padding(context, state_flag, tmp);
 		width += tmp.left + tmp.right;
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
@@ -633,11 +630,8 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	if ((style & SWT.SINGLE) != 0) {
 		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
-		if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-			GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-		} else {
-			GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(handle), tmp);
-		}
+		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
 		trim.width += tmp.left + tmp.right;
@@ -648,11 +642,8 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			trim.height += tmp.top + tmp.bottom;
 		}
 		if ((style & SWT.BORDER) != 0) {
-			if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-				GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-			} else {
-				GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(handle), tmp);
-			}
+			int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+			gtk_style_context_get_border(context, state, tmp);
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
 			trim.width += tmp.left + tmp.right;

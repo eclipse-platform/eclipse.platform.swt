@@ -3403,7 +3403,9 @@ GdkRGBA styleContextGetColor(long /*int*/ context, int flag) {
 	* Reference: https://blogs.gnome.org/mclasen/2015/11/20/a-gtk-update/
 	*/
 	GdkRGBA rgba = new GdkRGBA ();
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+	if (GTK.GTK4) {
+		GTK.gtk_style_context_get_color(context, rgba);
+	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, flag);
 		GTK.gtk_style_context_get_color (context, flag, rgba);

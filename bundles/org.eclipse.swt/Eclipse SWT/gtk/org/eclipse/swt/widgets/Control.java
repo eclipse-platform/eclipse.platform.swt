@@ -2984,6 +2984,9 @@ long /*int*/ getFontDescription () {
 	long /*int*/ context = GTK.gtk_widget_get_style_context (fontHandle);
 	if ("ppc64le".equals(System.getProperty("os.arch"))) {
 		return GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
+	} else if (GTK.GTK4) {
+		GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, fontDesc, 0);
+		return fontDesc [0];
 	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
@@ -3243,25 +3246,34 @@ Point getThickness (long /*int*/ widget) {
 	int xthickness = 0, ythickness = 0;
 	GtkBorder tmp = new GtkBorder();
 	long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
-
-	if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-		GTK.gtk_style_context_get_padding (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-	} else {
-		GTK.gtk_style_context_get_padding (context, GTK.gtk_widget_get_state_flags(widget), tmp);
-	}
+	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(widget);
+	gtk_style_context_get_padding(context, state_flag, tmp);
 	GTK.gtk_style_context_save (context);
 	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_FRAME);
 	xthickness += tmp.left;
 	ythickness += tmp.top;
-	if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0)) {
-		GTK.gtk_style_context_get_border (context, GTK.GTK_STATE_FLAG_NORMAL, tmp);
-	} else {
-		GTK.gtk_style_context_get_border (context, GTK.gtk_widget_get_state_flags(widget), tmp);
-	}
+	int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(widget);
+	gtk_style_context_get_border (context, state, tmp);
 	xthickness += tmp.left;
 	ythickness += tmp.top;
 	GTK.gtk_style_context_restore (context);
 	return new Point (xthickness, ythickness);
+}
+
+void gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding) {
+	if (GTK.GTK4) {
+		GTK.gtk_style_context_get_padding(context, padding);
+	} else {
+		GTK.gtk_style_context_get_padding(context, state, padding);
+	}
+}
+
+void gtk_style_context_get_border (long /*int*/ context, int state, GtkBorder padding) {
+	if (GTK.GTK4) {
+		GTK.gtk_style_context_get_border(context, padding);
+	} else {
+		GTK.gtk_style_context_get_border(context, state, padding);
+	}
 }
 
 @Override

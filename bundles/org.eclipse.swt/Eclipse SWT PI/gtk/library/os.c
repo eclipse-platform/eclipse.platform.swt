@@ -9192,12 +9192,19 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1style_1context_1get_1border
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#if (!defined(NO__1gtk_1style_1context_1get_1border__IILorg_eclipse_swt_internal_gtk_GtkBorder_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1border__JILorg_eclipse_swt_internal_gtk_GtkBorder_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border__IILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border__JILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#endif
 {
 	GtkBorder _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border__IILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border__JILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
 	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 /*
 	gtk_style_context_get_border((GtkStyleContext *)arg0, (GtkStateFlags)arg1, (GtkBorder *)lparg2);
@@ -9210,16 +9217,60 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border)
 	}
 fail:
 	if (arg2 && lparg2) setGtkBorderFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border__IILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border__JILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
 }
 #endif
 
-#ifndef NO__1gtk_1style_1context_1get_1color
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#if (!defined(NO__1gtk_1style_1context_1get_1border__ILorg_eclipse_swt_internal_gtk_GtkBorder_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1border__JLorg_eclipse_swt_internal_gtk_GtkBorder_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border__ILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1border__JLorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#endif
+{
+	GtkBorder _arg1, *lparg1=NULL;
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border__ILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border__JLorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	gtk_style_context_get_border((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_style_context_get_border)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStyleContext *, GtkBorder *))fp)((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border__ILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border__JLorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gtk_1style_1context_1get_1color__IILorg_eclipse_swt_internal_gtk_GdkRGBA_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1color__JILorg_eclipse_swt_internal_gtk_GdkRGBA_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color__IILorg_eclipse_swt_internal_gtk_GdkRGBA_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color__JILorg_eclipse_swt_internal_gtk_GdkRGBA_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#endif
 {
 	GdkRGBA _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color__IILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color__JILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#endif
 	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
 /*
 	gtk_style_context_get_color((GtkStyleContext *)arg0, (GtkStateFlags)arg1, (GdkRGBA *)lparg2);
@@ -9232,7 +9283,44 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color)
 	}
 fail:
 	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color__IILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color__JILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gtk_1style_1context_1get_1color__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#endif
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gtk_style_context_get_color((GtkStyleContext *)arg0, (GdkRGBA *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_style_context_get_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStyleContext *, GdkRGBA *))fp)((GtkStyleContext *)arg0, (GdkRGBA *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC);
+#endif
 }
 #endif
 
@@ -9256,12 +9344,19 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1font)
 }
 #endif
 
-#ifndef NO__1gtk_1style_1context_1get_1padding
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#if (!defined(NO__1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+#endif
 {
 	GtkBorder _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
 	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 /*
 	gtk_style_context_get_padding((GtkStyleContext *)arg0, (GtkStateFlags)arg1, (GtkBorder *)lparg2);
@@ -9274,7 +9369,44 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding)
 	}
 fail:
 	if (arg2 && lparg2) setGtkBorderFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gtk_1style_1context_1get_1padding__ILorg_eclipse_swt_internal_gtk_GtkBorder_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding__ILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#endif
+{
+	GtkBorder _arg1, *lparg1=NULL;
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding__ILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	gtk_style_context_get_padding((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_style_context_get_padding)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStyleContext *, GtkBorder *))fp)((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding__ILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC);
+#endif
 }
 #endif
 
