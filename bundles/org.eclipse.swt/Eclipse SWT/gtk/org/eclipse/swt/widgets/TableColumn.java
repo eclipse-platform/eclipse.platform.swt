@@ -443,10 +443,13 @@ public void pack () {
 	checkWidget();
 	int width = 0;
 	if (buttonHandle != 0) {
+		boolean hideHeader = !GTK.gtk_widget_get_visible(buttonHandle);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_show(buttonHandle);
 		gtk_widget_get_preferred_size (buttonHandle, requisition);
-		GTK.gtk_widget_hide(buttonHandle);
+		if (hideHeader) {
+			GTK.gtk_widget_hide(buttonHandle);
+		}
 		width = requisition.width;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {
