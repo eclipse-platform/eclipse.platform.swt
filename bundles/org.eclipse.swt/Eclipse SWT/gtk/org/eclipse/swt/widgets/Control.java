@@ -1053,7 +1053,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		 * this might cause unnecessary focus change events. In case this happens, try remove
 		 * gtk_widget_hide call or avoid setting bounds on invisible widgets.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(topHandle))  {
+		if (!GTK.gtk_widget_get_visible(topHandle))  {
 			Control focusControl = display.getFocusControl();
 			GTK.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
@@ -1289,7 +1289,7 @@ public void setRegion (Region region) {
 	this.region = region;
 	long /*int*/ topHandle = topHandle ();
 
-	if (GTK.GTK_VERSION < OS.VERSION(3, 10, 0) || OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
+	if (OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
 		GTK.gtk_widget_shape_combine_region(topHandle, shape_region);
 		/*
 		 * Bug in GTK: on Wayland, pixels in window outside shape_region
@@ -2943,7 +2943,7 @@ long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
 	long /*int*/ [] fontDesc = new long /*int*/ [1];
 	long /*int*/ context = GTK.gtk_widget_get_style_context (fontHandle);
-	if ((GTK.GTK_VERSION < OS.VERSION(3, 8, 0) || ("ppc64le".equals(System.getProperty("os.arch"))))) {
+	if ("ppc64le".equals(System.getProperty("os.arch"))) {
 		return GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
 	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		GTK.gtk_style_context_save(context);
@@ -3515,7 +3515,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	 */
 	if (drawRegion) data.regionSet = eventRegion;
 //	data.damageRgn = gdkEvent.region;
-	if (GTK.GTK_VERSION <= OS.VERSION (3, 9, 0) || GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
 		data.cairo = cairo;
 	}
 	GC gc = event.gc = GC.gtk_new (this, data);
@@ -6299,7 +6299,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			break;
 		}
 		case DRAW: {
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && paintHandle() == handle && drawRegion) {
+			if (paintHandle() == handle && drawRegion) {
 				return gtk_draw(handle, arg0);
 			}
 		}

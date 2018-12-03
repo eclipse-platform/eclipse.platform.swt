@@ -672,7 +672,7 @@ protected void init () {
 	long /*int*/ [] defaultFontArray = new long /*int*/ [1];
 	long /*int*/ defaultFont;
 	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
-	if ((GTK.GTK_VERSION < OS.VERSION(3, 8, 0))|| ("ppc64le".equals(System.getProperty("os.arch")))) {
+	if ("ppc64le".equals(System.getProperty("os.arch"))) {
 		defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
 	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		GTK.gtk_style_context_save(context);
@@ -1081,7 +1081,7 @@ protected int getDeviceZoom() {
 		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
-	} else if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+	} else {
 		long /*int*/ screen = GDK.gdk_screen_get_default();
 		dpi = (int) GDK.gdk_screen_get_resolution (screen);
 		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error

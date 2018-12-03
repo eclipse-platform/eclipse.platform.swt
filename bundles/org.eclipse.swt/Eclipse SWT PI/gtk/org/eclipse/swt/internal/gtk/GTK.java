@@ -191,7 +191,6 @@ public class GTK extends OS {
 	public static final byte[] gtk_cursor_blink_time = OS.ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = OS.ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = OS.ascii("gtk-entry-select-on-focus");
-	public static final byte[] gtk_show_input_method_menu = OS.ascii("gtk-show-input-method-menu");
 	public static final byte[] gtk_style_property_font = OS.ascii("font");
 	public static final byte[] gtk_menu_bar_accel = OS.ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_menu_images = OS.ascii("gtk-menu-images");
@@ -1627,24 +1626,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_dialog_run(dialog);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param targets cast=(GtkTargetList *)
-	 * @param actions cast=(GdkDragAction)
-	 * @param button cast=(gint)
-	 * @param event cast=(GdkEvent *)
-	 */
-	public static final native long /*int*/ _gtk_drag_begin(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event);
-	/** [GTK2/GTK3; 3.10 deprecated, replaced] */
-	public static final long /*int*/ gtk_drag_begin(long /*int*/ widget, long /*int*/ targets, int actions, int button, long /*int*/ event) {
-		lock.lock();
-		try {
-			return _gtk_drag_begin(widget, targets, actions, button, event);
 		} finally {
 			lock.unlock();
 		}
@@ -3219,19 +3200,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_status_icon_position_menu_func();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gtk_icon_info_free(long /*int*/ icon_info);
-	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
-	public static final void gtk_icon_info_free(long /*int*/ icon_info) {
-		lock.lock();
-		try {
-			_gtk_icon_info_free(icon_info);
 		} finally {
 			lock.unlock();
 		}
@@ -5337,21 +5305,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_scrollable_get_vadjustment(scrollable);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void _gtk_scrolled_window_add_with_viewport(long /*int*/ scrolled_window, long /*int*/ child);
-	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
-	public static final void gtk_scrolled_window_add_with_viewport(long /*int*/ scrolled_window, long /*int*/ child) {
-		lock.lock();
-		try {
-			_gtk_scrolled_window_add_with_viewport(scrolled_window, child);
 		} finally {
 			lock.unlock();
 		}
@@ -8983,20 +8936,6 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GtkWindow *)
-	 */
-	public static final native double _gtk_window_get_opacity (long /*int*/ window);
-	/** [GTK3; 3.8 deprecated, replaced] */
-	public static final double gtk_window_get_opacity (long /*int*/ window) {
-		lock.lock();
-		try {
-			return _gtk_window_get_opacity (window);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
 	 * @param handle cast=(GtkWindow *)
 	 * @param x cast=(gint *)
 	 * @param y cast=(gint *)
@@ -9271,20 +9210,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_window_set_modal(window, modal);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param window cast=(GtkWindow *)
-	 */
-	public static final native void _gtk_window_set_opacity(long /*int*/ window, double opacity);
-	/** [GTK2/GTK3; 3.8 deprecated, replaced] */
-	public static final void gtk_window_set_opacity(long /*int*/ window, double opacity) {
-		lock.lock();
-		try {
-			 _gtk_window_set_opacity(window, opacity);
 		} finally {
 			lock.unlock();
 		}

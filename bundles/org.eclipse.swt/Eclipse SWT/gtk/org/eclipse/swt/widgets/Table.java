@@ -1471,7 +1471,7 @@ int getHeaderHeightInPixels () {
 		for (int i=0; i<columnCount; i++) {
 			long /*int*/ buttonHandle = columns [i].buttonHandle;
 			if (buttonHandle != 0) {
-				if (GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(buttonHandle))  {
+				if (!GTK.gtk_widget_get_visible(buttonHandle))  {
 					GTK.gtk_widget_show(buttonHandle);
 					gtk_widget_get_preferred_size (buttonHandle, requisition);
 					GTK.gtk_widget_hide(buttonHandle);
@@ -2858,7 +2858,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 			GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			GTK.gtk_tree_path_free (path);
 			// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-			if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+			if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 				GdkRectangle r2 = new GdkRectangle ();
 				GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 				rect.x = r2.x;
@@ -2905,7 +2905,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				}
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && cr != 0) {
+				if (cr != 0) {
 					GdkRectangle r = new GdkRectangle();
 					GDK.gdk_cairo_get_clip_rectangle(cr, r);
 					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height));
@@ -2979,7 +2979,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
 				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					GdkRectangle r2 = new GdkRectangle ();
 					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 					rect.x = r2.x;
@@ -3001,9 +3001,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 					}
 					imageWidth = bounds.width;
 				}
-				// On gtk >3.9 and <3.14.8 the clip rectangle does not have image area into clip rectangle
+				// On gtk < 3.14.8 the clip rectangle does not have image area into clip rectangle
 				// need to adjust clip rectangle with image width
-				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					rect.x -= imageWidth;
 					rect.width +=imageWidth;
 				}
@@ -3600,10 +3600,8 @@ void setParentGdkWindow (Control child) {
 	 * Table's fixedHandle to the draw signal, and propagate the draw
 	 * signal using gtk_container_propagate_draw(). See bug 531928.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
-		hasChildren = true;
-		connectFixedHandleDraw();
-	}
+	hasChildren = true;
+	connectFixedHandleDraw();
 }
 
 @Override
@@ -4016,7 +4014,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			 * If this Table has any child widgets, propagate the draw signal
 			 * to them using gtk_container_propagate_draw(). See bug 531928.
 			 */
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && hasChildren) {
+			if (hasChildren) {
 				propagateDraw(handle, arg0);
 			}
 			break;

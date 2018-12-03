@@ -133,7 +133,7 @@ public Composite (Composite parent, int style) {
 	 * Cache the NO_BACKGROUND flag for use in the Cairo setRegion()
 	 * implementation. Only relevant to GTK3.10+, see bug 475784.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && (style & SWT.NO_BACKGROUND) != 0) {
+	if ((style & SWT.NO_BACKGROUND) != 0) {
 		cachedNoBackground = true;
 	}
 }
@@ -1533,8 +1533,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	 * consider moving this fix higher into Control's setBound(...) method instead.
 	 */
 	long /*int*/ topHandle = topHandle ();
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 8, 0)
-			&& fixedHandle != 0 && handle != 0
+	if (fixedHandle != 0 && handle != 0
 			&& getVisible() && !GTK.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
 			&& topHandle == fixedHandle && width > 0 && height > 0 && resize) {
 		GTK.gtk_widget_show(topHandle);

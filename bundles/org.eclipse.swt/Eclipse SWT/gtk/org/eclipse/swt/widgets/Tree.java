@@ -3049,7 +3049,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
 				// Use the x and width information from the Cairo context. See bug 535124 and 465309.
-				if (cr != 0 && GTK.GTK_VERSION > OS.VERSION(3, 9, 0) && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
+				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
 					GdkRectangle r2 = new GdkRectangle ();
 					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
 					rect.x = r2.x;
@@ -3624,10 +3624,8 @@ void setParentGdkWindow (Control child) {
 	 * Tree's fixedHandle to the draw signal, and propagate the draw
 	 * signal using gtk_container_propagate_draw(). See bug 531928.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
-		hasChildren = true;
-		connectFixedHandleDraw();
-	}
+	hasChildren = true;
+	connectFixedHandleDraw();
 }
 
 void setScrollWidth (long /*int*/ column, TreeItem item) {
@@ -3964,7 +3962,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			 * If this Tree has any child widgets, propagate the draw signal
 			 * to them using gtk_container_propagate_draw(). See bug 531928.
 			 */
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && hasChildren) {
+			if (hasChildren) {
 				propagateDraw(handle, arg0);
 			}
 			break;

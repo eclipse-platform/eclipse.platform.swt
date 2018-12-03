@@ -4656,26 +4656,6 @@ JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1dialog_1run)
 }
 #endif
 
-#ifndef NO__1gtk_1drag_1begin
-JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1drag_1begin)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
-{
-	jintLong rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1drag_1begin_FUNC);
-/*
-	rc = (jintLong)gtk_drag_begin((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_drag_begin)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *, GtkTargetList *, GdkDragAction, gint, GdkEvent *))fp)((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1drag_1begin_FUNC);
-	return rc;
-}
-#endif
-
 #if (!defined(NO__1gtk_1drag_1begin_1with_1coordinates__IIIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1drag_1begin_1with_1coordinates__JJJIII) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1drag_1begin_1with_1coordinates__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5)
@@ -6276,24 +6256,6 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1hsv_1to_1rgb_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1icon_1info_1free
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1icon_1info_1free)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1icon_1info_1free_FUNC);
-/*
-	gtk_icon_info_free(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_icon_info_free)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1icon_1info_1free_FUNC);
 }
 #endif
 
@@ -8514,24 +8476,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1scrollbar_1new)
 	rc = (jintLong)gtk_scrollbar_new((GtkOrientation)arg0, (GtkAdjustment *)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1scrollbar_1new_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1scrolled_1window_1add_1with_1viewport
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1scrolled_1window_1add_1with_1viewport)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
-/*
-	gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_scrolled_window_add_with_viewport)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkScrolledWindow *, GtkWidget *))fp)((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
 }
 #endif
 
@@ -12927,26 +12871,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1window_1get_1modal)
 }
 #endif
 
-#ifndef NO__1gtk_1window_1get_1opacity
-JNIEXPORT jdouble JNICALL GTK_NATIVE(_1gtk_1window_1get_1opacity)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jdouble rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1window_1get_1opacity_FUNC);
-/*
-	rc = (jdouble)gtk_window_get_opacity((GtkWindow *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_window_get_opacity)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(GtkWindow *))fp)((GtkWindow *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1window_1get_1opacity_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1window_1get_1position
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1get_1position)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
@@ -13179,24 +13103,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1set_1modal)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1window_1set_1modal_FUNC);
 	gtk_window_set_modal((GtkWindow *)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1window_1set_1modal_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1window_1set_1opacity
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1set_1opacity)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1window_1set_1opacity_FUNC);
-/*
-	gtk_window_set_opacity((GtkWindow *)arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_window_set_opacity)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWindow *, jdouble))fp)((GtkWindow *)arg0, arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1window_1set_1opacity_FUNC);
 }
 #endif
 

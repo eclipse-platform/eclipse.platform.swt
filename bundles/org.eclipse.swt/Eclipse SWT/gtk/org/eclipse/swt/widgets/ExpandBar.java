@@ -144,11 +144,7 @@ void createHandle (int index) {
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, GTK.GTK_POLICY_AUTOMATIC);
 		GTK.gtk_container_add (fixedHandle, scrolledHandle);
-		if (GTK.GTK_VERSION < OS.VERSION(3, 8, 0)) {
-			GTK.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
-		} else {
-			GTK.gtk_container_add(scrolledHandle, handle);
-		}
+		GTK.gtk_container_add(scrolledHandle, handle);
 		long /*int*/ viewport = GTK.gtk_bin_get_child (scrolledHandle);
 		GTK.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
 	} else {

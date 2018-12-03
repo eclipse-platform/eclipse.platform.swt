@@ -710,7 +710,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	 */
 	switch ((int)/*64*/user_data) {
 		case DRAW: {
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && paintHandle() == handle) {
+			if (paintHandle() == handle) {
 				return gtk_draw(handle, arg0);
 			}
 		}

@@ -468,7 +468,7 @@ public class Display extends Device {
 
 	/* GTK Version */
 	static final int GTK3_MAJOR = 3;
-	static final int GTK3_MINOR = 8;
+	static final int GTK3_MINOR = 10;
 	static final int GTK3_MICRO = 0;
 
 	/* Display Data */
@@ -5952,7 +5952,7 @@ static int _getDeviceZoom (long /*int*/ monitor_num) {
 		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
-	} else if (GTK.GTK_VERSION > OS.VERSION(3, 9, 0)) {
+	} else {
 		long /*int*/ screen = GDK.gdk_screen_get_default ();
 		dpi = (int) GDK.gdk_screen_get_resolution (screen);
 		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error

@@ -402,14 +402,7 @@ void createHandle (int index) {
 }
 
 void createIMMenu (long /*int*/ imHandle) {
-	boolean showInputMethod = false;
-	long /*int*/ settings = GTK.gtk_settings_get_default ();
-	if (settings != 0 && GTK.GTK_VERSION < OS.VERSION (3, 10, 0)) {
-		int [] buffer = new int [1];
-		OS.g_object_get (settings, GTK.gtk_show_input_method_menu, buffer, 0);
-		showInputMethod = buffer[0] != 0;
-	}
-	if (imHandle == 0 || !showInputMethod) {
+	if (imHandle == 0) {
 		this.imHandle = 0;
 		if (imItem != 0) {
 			GTK.gtk_widget_destroy (imItem);

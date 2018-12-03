@@ -313,11 +313,7 @@ void drag(Event dragEvent) {
 	int actions = opToOsOp(getStyle());
 	Image image = event.image;
 	long /*int*/ context;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
-		context = GTK.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
-	} else {
-		context = GTK.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
-	}
+	context = GTK.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
 	if (context != 0 && image != null) {
 		GTK.gtk_drag_set_icon_surface(context, image.surface);
 	}

@@ -1087,11 +1087,7 @@ public int getAlpha () {
 	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
 	boolean composited = GDK.gdk_screen_is_composited(screen);
 	if (composited) {
-		/*
-		 * Feature in GTK: gtk_window_get_opacity() is deprecated on GTK3.8
-		 * onward. Use gtk_widget_get_opacity() instead.
-		 */
-		return (int) (GTK.GTK_VERSION > OS.VERSION (3, 8, 0) ? GTK.gtk_widget_get_opacity(shellHandle) * 255 : GTK.gtk_window_get_opacity (shellHandle) * 255);
+		return (int) (GTK.gtk_widget_get_opacity(shellHandle) * 255);
 	}
 	return 255;
 }
@@ -1939,16 +1935,7 @@ public void setAlpha (int alpha) {
 	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
 	boolean composited = GDK.gdk_screen_is_composited(screen);
 	if (composited) {
-		/*
-		 * Feature in GTK: gtk_window_set_opacity() is deprecated on GTK3.8
-		 * onward. Use gtk_widget_set_opacity() instead.
-		 */
-		if (GTK.GTK_VERSION > OS.VERSION (3, 8, 0)) {
-			GTK.gtk_widget_set_opacity (shellHandle, (double) alpha / 255);
-		} else {
-			alpha &= 0xFF;
-			GTK.gtk_window_set_opacity (shellHandle, alpha / 255f);
-		}
+		GTK.gtk_widget_set_opacity (shellHandle, (double) alpha / 255);
 	}
 }
 
@@ -2284,7 +2271,7 @@ public void setMinimized (boolean minimized) {
 	checkWidget();
 	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
-	if(GTK.GTK_VERSION >= OS.VERSION (3, 8, 0) && !GTK.gtk_widget_get_visible(shellHandle)) {
+	if(!GTK.gtk_widget_get_visible(shellHandle)) {
 		GTK.gtk_widget_show(shellHandle);
 	}
 	if (minimized) {

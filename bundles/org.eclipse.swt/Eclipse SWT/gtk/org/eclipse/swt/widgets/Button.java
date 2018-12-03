@@ -800,12 +800,6 @@ void _setAlignment (int alignment) {
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	background = rgba;
-	//Pre GTK 3.10 doesn't handle CSS background color very well for GTK Check/Radio button.
-	// 3.10.3 as it was the latest to affect theming in button.
-	if (GTK.GTK_VERSION < OS.VERSION(3, 10, 3) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		super.setBackgroundGdkRGBA (context, handle, rgba);
-		return;
-	}
 	// Form background CSS string
 	String css ="* {background : ";
 	String color = display.gtk_rgba_to_css_string (rgba);
@@ -919,8 +913,7 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 	 * Giving them a border color that matches the text color ensures consistent visibility
 	 * across most themes. See bug 463733.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0) && GTK.GTK_VERSION < OS.VERSION (3, 16, 0) &&
-			(style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	if (GTK.GTK_VERSION < OS.VERSION (3, 16, 0) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		gtk_swt_set_border_color (rgba);
 	}
 }
@@ -1177,7 +1170,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	 */
 	switch ((int)/*64*/user_data) {
 		case DRAW: {
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && paintHandle() == handle) {
+			if (paintHandle() == handle) {
 				return gtk_draw(handle, arg0);
 			}
 		}

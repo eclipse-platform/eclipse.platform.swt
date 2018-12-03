@@ -1938,7 +1938,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			if (GTK.GTK_VERSION >= OS.VERSION (3, 9, 0) && GTK.GTK_IS_CONTAINER (handle)) {
+			if (GTK.GTK_IS_CONTAINER (handle)) {
 				return gtk_draw (handle, arg0);
 			}
 			return 0;
@@ -1957,7 +1957,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case EVENT: return gtk_event (handle, arg0);
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
 		case EXPOSE_EVENT: {
-			if (GTK.GTK_VERSION < OS.VERSION (3, 9, 0) || !GTK.GTK_IS_CONTAINER (handle)) {
+			if (!GTK.GTK_IS_CONTAINER (handle)) {
 				return gtk_draw (handle, arg0);
 			}
 			return 0;

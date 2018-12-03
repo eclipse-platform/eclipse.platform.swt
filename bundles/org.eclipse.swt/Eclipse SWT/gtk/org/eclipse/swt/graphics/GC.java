@@ -3121,7 +3121,7 @@ public void setClipping(Rectangle rect) {
 	setClippingInPixels(DPIUtil.autoScaleUp(drawable, rect));
 }
 void setClippingInPixels(Rectangle rect) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 9, 0) && (drawable instanceof Tree || drawable instanceof Table)) {
+	if (drawable instanceof Tree || drawable instanceof Table) {
 		return; //FIXME: This is an atrocious hack for bug 446075
 	}
 	if (rect == null) {
