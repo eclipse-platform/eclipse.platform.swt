@@ -75,17 +75,17 @@ public class OS extends C {
 	static {
 		String propertyName = "SWT_GTK4";
 		String gtk4 = getEnvironmentalVariable (propertyName);
-		if (gtk4 != null && gtk4.equals("0")) {
+		if (gtk4 != null && gtk4.equals("1")) {
 			try {
-				Library.loadLibrary("swt-pi3");
-			} catch (Throwable e) {
 				Library.loadLibrary("swt-pi4");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi3");
 			}
 		} else {
 			try {
-				Library.loadLibrary("swt-pi4");
-			} catch (Throwable e) {
 				Library.loadLibrary("swt-pi3");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi4");
 			}
 		}
 		cachejvmptr();
