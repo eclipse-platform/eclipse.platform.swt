@@ -513,7 +513,7 @@ void setScrollbar () {
 }
 
 /**
- * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around
+ * Sets the receiver's spacing. Spacing specifies the number of points allocated around
  * each item.
  *
  * @param spacing the spacing around each item

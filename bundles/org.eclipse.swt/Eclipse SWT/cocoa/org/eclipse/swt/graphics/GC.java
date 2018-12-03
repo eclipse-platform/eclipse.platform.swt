@@ -941,8 +941,8 @@ void destroy() {
  * is (<code>x</code>, <code>y</code>) and whose size is specified by the
  * <code>width</code> and <code>height</code> arguments.
  * </p><p>
- * The resulting arc covers an area <code>width + 1</code> pixels wide
- * by <code>height + 1</code> pixels tall.
+ * The resulting arc covers an area <code>width + 1</code> points wide
+ * by <code>height + 1</code> points tall.
  * </p>
  *
  * @param x the x coordinate of the upper-left corner of the arc to be drawn
@@ -1191,7 +1191,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  * <code>width</code>, and <code>height</code> arguments.
  * </p><p>
  * The oval covers an area that is <code>width + 1</code>
- * pixels wide and <code>height + 1</code> pixels tall.
+ * points wide and <code>height + 1</code> points tall.
  * </p>
  *
  * @param x the x coordinate of the upper left corner of the oval to be drawn
@@ -1285,7 +1285,7 @@ public void drawPath(Path path) {
 }
 
 /**
- * Draws a pixel, using the foreground color, at the specified
+ * Draws an SWT logical point, using the foreground color, at the specified
  * point (<code>x</code>, <code>y</code>).
  * <p>
  * Note that the receiver's line attributes do not affect this
@@ -1747,8 +1747,8 @@ public boolean equals(Object object) {
  * is (<code>x</code>, <code>y</code>) and whose size is specified by the
  * <code>width</code> and <code>height</code> arguments.
  * </p><p>
- * The resulting arc covers an area <code>width + 1</code> pixels wide
- * by <code>height + 1</code> pixels tall.
+ * The resulting arc covers an area <code>width + 1</code> points wide
+ * by <code>height + 1</code> points tall.
  * </p>
  *
  * @param x the x coordinate of the upper-left corner of the arc to be filled

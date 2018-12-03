@@ -1133,7 +1133,7 @@ public ImageData getImageDataAtCurrentZoom () {
  *
  * @param zoom
  *            The zoom level in % of the standard resolution (which is 1
- *            physical monitor pixel == 1 SWT logical pixel). Typically 100,
+ *            physical monitor pixel == 1 SWT logical point). Typically 100,
  *            150, or 200.
  * @return an <code>ImageData</code> containing the image's data and
  *         attributes at the given zoom level

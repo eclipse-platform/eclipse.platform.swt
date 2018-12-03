@@ -484,8 +484,8 @@ public void setControl (Control control) {
  * Sets the minimum size that the cool item can be resized to
  * using the cool item's gripper, to the point specified by the arguments.
  *
- * @param width the minimum width of the cool item, in points
- * @param height the minimum height of the cool item, in points
+ * @param width the minimum width of the cool item, in SWT logical points
+ * @param height the minimum height of the cool item, in SWT logical points
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

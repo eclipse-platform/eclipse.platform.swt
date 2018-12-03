@@ -1545,6 +1545,19 @@ public Rectangle getBounds () {
 	return DPIUtil.autoScaleDown (getBoundsInPixels ());
 }
 
+/**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data.
+ *
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getBounds
+ */
 @Override
 public Rectangle getClientArea () {
 	if (OS.isX11()) {

@@ -1369,19 +1369,19 @@ public int getTopIndex () {
 }
 
 /**
- * Returns the top pixel.
+ * Returns the top SWT logical point.
  * <p>
- * The top pixel is the pixel position of the line
+ * The top point is the SWT logical point position of the line
  * that is currently at the top of the widget.  On
  * some platforms, a text widget can be scrolled by
- * pixels instead of lines so that a partial line
+ * points instead of lines so that a partial line
  * is displayed at the top of the widget.
  * </p><p>
- * The top pixel changes when the widget is scrolled.
- * The top pixel does not include the widget trimming.
+ * The top SWT logical point changes when the widget is scrolled.
+ * The top SWT logical point does not include the widget trimming.
  * </p>
  *
- * @return the pixel position of the top line
+ * @return the SWT logical point position of the top line
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
