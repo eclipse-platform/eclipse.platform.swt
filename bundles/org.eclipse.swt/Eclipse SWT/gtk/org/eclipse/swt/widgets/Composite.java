@@ -88,8 +88,23 @@ public class Composite extends Scrollable {
 	Map<Control, long /*int*/ []> fixClipMap = new HashMap<> ();
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
-
 	Shell popupChild;
+	/**
+	 * A Rectangle which, if specified, denotes an area where child widgets
+	 * should not be drawn. Only relevant if such child widgets are being
+	 * drawn via propagateDraw(), such as Tree/Table editing widgets.
+	 *
+	 * See bug 535978.
+	 */
+	Rectangle noChildDrawing = null;
+	/**
+	 * A HashMap of child widgets that keeps track of which child has had their
+	 * GdkWindow lowered/raised. Only relevant if such child widgets are being
+	 * drawn via propagateDraw(), such as Tree/Table editing widgets.
+	 *
+	 * See bug 535978.
+	 */
+	HashMap<Widget, Boolean> childrenLowered = new HashMap<>();
 
 Composite () {
 	/* Do nothing */
@@ -1416,12 +1431,42 @@ void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
 			if (child != 0) {
 				Widget widget = display.getWidget (child);
 				if (widget != this) {
-					GTK.gtk_container_propagate_draw(container, child, cairo);
+					if (noChildDrawing != null) {
+						Boolean childLowered = childrenLowered.get(widget);
+						if (childLowered == null) {
+							childrenLowered.put(widget, false);
+							childLowered = false;
+						}
+						GtkAllocation allocation = new GtkAllocation ();
+						GTK.gtk_widget_get_allocation(child, allocation);
+						if ((allocation.y + allocation.height) < noChildDrawing.height) {
+							if (!childLowered) {
+								long /*int*/ window = gtk_widget_get_window(child);
+								GDK.gdk_window_lower(window);
+								childrenLowered.put(widget, true);
+							}
+						} else {
+							if (childLowered) {
+								long /*int*/ window = gtk_widget_get_window(child);
+								GDK.gdk_window_raise(window);
+								childrenLowered.put(widget, false);
+							}
+							GTK.gtk_container_propagate_draw(container, child, cairo);
+						}
+					} else {
+						GTK.gtk_container_propagate_draw(container, child, cairo);
+					}
 				}
 			}
 			temp = OS.g_list_next (temp);
 		}
 		OS.g_list_free (list);
+		/*
+		 * Sometimes the sibling widget needs a draw event to remove any mis-drawn
+		 * widgets still remaining -- usually only happens when scrolling with the mouse
+		 * wheel. See bug 535978.
+		 */
+		if (noChildDrawing != null) GTK.gtk_widget_queue_draw(handle);
 	}
 }
 

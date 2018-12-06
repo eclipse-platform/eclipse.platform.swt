@@ -94,7 +94,8 @@ public class Tree extends Composite {
 	int drawState, drawFlags;
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
-	int pixbufHeight, pixbufWidth;
+	int pixbufHeight, pixbufWidth, headerHeight;
+	boolean headerVisible;
 	TreeItem topItem;
 	double cachedAdjustment, currentAdjustment;
 	Color headerBackground, headerForeground;
@@ -3577,6 +3578,8 @@ public void setHeaderForeground (Color color) {
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	GTK.gtk_tree_view_set_headers_visible (handle, show);
+	this.headerHeight = this.getHeaderHeight();
+	this.headerVisible = show;
 }
 
 /**
@@ -3997,6 +4000,17 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			 * to them using gtk_container_propagate_draw(). See bug 531928.
 			 */
 			if (hasChildren) {
+				/*
+				 * If headers are visible, set noChildDrawing to their
+				 * dimensions -- this will prevent any child widgets from drawing
+				 * over the header buttons. See bug 535978.
+				 */
+				if (headerVisible) {
+					GdkRectangle rect = new GdkRectangle ();
+					GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
+					// -1's is for the 1px of padding between the fixedHandle and handle
+					noChildDrawing = new Rectangle(0, 0, rect.width - 1, this.headerHeight - 1);
+				}
 				propagateDraw(handle, arg0);
 			}
 			break;
