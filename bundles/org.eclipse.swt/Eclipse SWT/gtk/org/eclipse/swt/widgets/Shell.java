@@ -129,11 +129,13 @@ public class Shell extends Decorations {
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut, ignoreFocusIn;
-	boolean ignoreFocusOutAfterGrab, grabbedFocus;
+	boolean ignoreFocusOutAfterGrab;
 	Region originalRegion;
 
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
+
+	static Callback gdkSeatGrabCallback, parentDestroyedCallback; // Wayland only.
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -594,15 +596,28 @@ void bringToTop (boolean force) {
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 				GTK.gtk_grab_add(shellHandle);
 				long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
-				GDK.gdk_window_show(window);
-				GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
 				/*
-				 * Bug 541185: Hover over to open Javadoc popup will make the popup
-				 * close instead of gaining focus due to an extra focus out signal sent
-				 * after grabbing focus. This triggers SWT.Deactivate handler which closes the shell.
-				 * Workaround is to ignore this focus out.
+				 * NOTE: Using gdk_seat_grab to get the keyboard focus needs to be handled differently
+				 * for cases with a single popup, and for cases with multiple popup
+				 * 1) For normal popups without a child popup (i.e. F2 Javadoc), showing GdkWindow and
+				 * grabbing focus does the job
+				 * 2) For popups with a child popup attached to it (i.e. auto-completion), using (1)
+				 * makes pressing Tab close the popup instead of changing focus.
+				 * Current best workaround is to hide the immediate popup mapped to a top level window
+				 * before grabbing, and show it using gdkSeatGrabPrepareFunc callback.
 				 */
-				grabbedFocus = true;
+				if (!hasPopupChild) {
+					GDK.gdk_window_show(window);
+					GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, 0, 0);
+				} else {
+					if (gdkSeatGrabCallback == null) {
+						gdkSeatGrabCallback = new Callback(Shell.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
+					}
+					long /*int*/ gdkSeatGrabPrepareFunc = gdkSeatGrabCallback.getAddress();
+					if (gdkSeatGrabPrepareFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+					if (GTK.gtk_widget_get_visible(shellHandle) && !isMappedToPopup()) GTK.gtk_widget_hide(shellHandle);
+					GDK.gdk_seat_grab(seat, window, GDK.GDK_SEAT_CAPABILITY_KEYBOARD, true, 0, 0, gdkSeatGrabPrepareFunc, shellHandle);
+				}
 				ignoreFocusOutAfterGrab = true;
 			}
 		}
@@ -732,7 +747,12 @@ void createHandle (int index) {
 				GTK.gtk_window_set_attached_to (shellHandle, parent.topHandle());
 				// implements the gtk_window_set_destroy_with_parent for the *logical* parent
 				if (parent != topLevelParent && isMappedToPopup()) {
-					parent.popupChild = this;
+					if (parentDestroyedCallback == null) {
+						parentDestroyedCallback = new Callback(Shell.class, "ParentDestroyedCallbackFunc", 2);
+					}
+					long /*int*/ parentDestroyedFunc = parentDestroyedCallback.getAddress();
+					OS.g_signal_connect(parent.topHandle(), OS.destroy, parentDestroyedFunc, shellHandle);
+					parent.hasPopupChild = true;
 				}
 			} else {
 				GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
@@ -1359,10 +1379,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		 *  Feature in GTK: This handles ungrabbing the keyboard focus from a SWT.ON_TOP window
 		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
 		 */
-		if (requiresUngrab()) {
-			long /*int*/ seat = GDK.gdk_event_get_seat(event);
-			GDK.gdk_seat_ungrab(seat);
-			GTK.gtk_grab_remove(shellHandle);
+		if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				long /*int*/ seat = GDK.gdk_event_get_seat(event);
+				GDK.gdk_seat_ungrab(seat);
+				GTK.gtk_grab_remove(shellHandle);
+				GTK.gtk_widget_hide(shellHandle);
+			}
 		}
 		return 0;
 	}
@@ -2597,7 +2620,22 @@ public void setVisible (boolean visible) {
 		}
 	} else {
 		fixActiveShell ();
-		checkAndUnrabFocus();
+		// Feature in Wayland: If the shell item is ON_TOP, remove its grab before hiding it, otherwise focus is locked to
+		// the hidden widget and can never be returned.
+		if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				long /*int*/ seat;
+				if (GTK.GTK4) {
+					long /*int*/ surface = gtk_widget_get_surface (shellHandle);
+					seat = GDK.gdk_display_get_default_seat(GDK.gdk_surface_get_display(surface));
+				} else {
+					long /*int*/ window = gtk_widget_get_window (shellHandle);
+					seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+				}
+				GDK.gdk_seat_ungrab(seat);
+				GTK.gtk_grab_remove(shellHandle);
+			}
+		}
 		GTK.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
@@ -2839,41 +2877,6 @@ void deregister () {
 	}
 }
 
-boolean requiresUngrab () {
-	return !OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0;
-}
-
-/**
- * SWT.ON_TOP shells on Wayland requires gdk_seat_grab to grab keyboard/input focus,
- * the grabbed focus need to be removed when Shell is disposed/hidden.
- */
-void checkAndUnrabFocus () {
-	/*
-	 * Bug 515773, 542104: Wayland POPUP window limitations
-	 * In bringToTop(), we grabbed keyboard/pointer focus to popup shell, which needs to
-	 * be ungrabbed when the Shell is disposed. There are two cases here:
-	 *
-	 * 1) If the popup shell is a regular popup window attached to a toplevel window,
-	 * like Javadoc popup, we can just ungrab the window.
-	 *
-	 * 2) If the popup shell is attached to another popup, like auto-completion details,
-	 * ungrabbing the focus will also remove the grab for its parent. (To see this,
-	 * focus on the completion details page using Tab and hit Esc makes the parent
-	 * completion list disposed as well.) To deal with this, we should not ungrab focus
-	 * for child popup shells so that focus is restored to the parent popup when the child
-	 * is disposed.
-	 * **NOTE**: Not ungrabbing focus for child popup restores focus to parent popup
-	 * assumes that GdkSeat are the same for parent and child, which seems to be the case.
-	 */
-	if (requiresUngrab() && !isMappedToPopup() && grabbedFocus) {
-		long /*int*/ window = gtk_widget_get_window (shellHandle);
-		long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
-		GDK.gdk_seat_ungrab(seat);
-		GTK.gtk_grab_remove(shellHandle);
-		grabbedFocus = false;
-	}
-}
-
 @Override
 public void dispose () {
 	/*
@@ -2882,13 +2885,13 @@ public void dispose () {
 	*/
 	if (isDisposed()) return;
 	fixActiveShell ();
-	checkAndUnrabFocus();
-	/*
-	 * Bug 540166: Dispose the popup child if any when the parent is disposed so that
-	 * it does not remain open forever.
-	 */
-	if (popupChild != null && popupChild.shellHandle != 0 && !popupChild.isDisposed()) {
-		popupChild.dispose();
+	if (!OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+		if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			long /*int*/ window = gtk_widget_get_window (shellHandle);
+			long /*int*/ seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+			GDK.gdk_seat_ungrab(seat);
+			GTK.gtk_grab_remove(shellHandle);
+		}
 	}
 	GTK.gtk_widget_hide (shellHandle);
 	super.dispose ();
@@ -3031,4 +3034,17 @@ Point getSurfaceOrigin () {
 	return super.getSurfaceOrigin( );
 }
 
+static long /*int*/ ParentDestroyedCallbackFunc (long /*int*/ parent, long /*int*/ child) {
+	if (child != 0 && GTK.GTK_IS_WINDOW(child)) {
+		GTK.gtk_widget_destroy(child);
+	}
+	return 0;
+}
+
+static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkWindow, long /*int*/ userData_shellHandle) {
+	if (userData_shellHandle != 0) {
+		GTK.gtk_widget_show(userData_shellHandle);
+	}
+	return 0;
+}
 }
