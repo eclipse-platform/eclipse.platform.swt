@@ -196,6 +196,24 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
 }
 
+/**
+ * Bug 532074: setLocation method is limited on Wayland since Wayland
+ * has no global coordinates and we cannot use gdk_popup_at_rect if GdkWindow of
+ * getShell is not mapped. In this case, we can only pop the menu at the pointer.
+ *
+ * This happens for example when Problems view is a fast view on Eclipse start,
+ * the drop down menu takes PartRenderingEngine's limbo shell
+ * (see PartRenderingEngine#safeCreateGui) which is off the screen.
+ *
+ * @return true iff the location of menu is set and can be used successfully
+ */
+boolean ableToSetLocation() {
+	if (!OS.isX11() && !getShell().getVisible()) {
+		return false;
+	}
+	return hasLocation;
+}
+
 void _setVisible (boolean visible) {
 	if (visible == GTK.gtk_widget_get_mapped (handle)) return;
 	if (visible) {
@@ -235,7 +253,7 @@ void _setVisible (boolean visible) {
 				GTK.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
 			} else {
 				long /*int*/ eventPtr = 0;
-				if (hasLocation) {
+				if (ableToSetLocation()) {
 					// Create the GdkEvent manually as we need to control
 					// certain fields like the event window
 					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
@@ -261,7 +279,7 @@ void _setVisible (boolean visible) {
 						rect.x = this.x - globalWindowOriginX[0];
 						rect.y = this.y - globalWindowOriginY[0];
 					} else {
-						// On Wayland, get the relative GdkWindow from the parent shell.
+						// On Wayland, get the relative GdkWindow from the parent shell
 						event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().topHandle()));
 						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
