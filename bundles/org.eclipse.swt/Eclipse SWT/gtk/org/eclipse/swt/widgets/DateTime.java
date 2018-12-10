@@ -1851,18 +1851,28 @@ void deregister () {
 }
 
 int getArrow(long /*int*/ widget) {
+	updateControl();
 	int adj_value = (int) GTK.gtk_adjustment_get_value(GTK.gtk_spin_button_get_adjustment(widget));
 	int new_value = 0;
 	if (isDate()) {
-		if ((style & SWT.LONG) != 0) {
-			if (adj_value == 0) {
-				return 0;
-			} else {
-				return adj_value > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
+		FieldPosition firstField = getNextField(null);
+		int firstFieldConstant = getCalendarField(firstField);
+		new_value = calendar.get(getCalendarField(firstField));
+		if (firstFieldConstant == Calendar.MONTH) {
+			if ((style & SWT.SHORT) != 0) {
+				// adj_value returns the month as a number between 1-12
+				// new_value gets the month as a number between 0-11
+				// shift the adj_value by offset so that we get the correct arrow direction
+				adj_value--;
+			} else if ((style & SWT.MEDIUM) != 0 || (style & SWT.LONG) != 0 ) {
+				// adj_value is either +1, 0, -1 when month is displayed as string
+				if (adj_value == 0) {
+					return 0;
+				} else {
+					return adj_value > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
+				}
 			}
 		}
-		FieldPosition firstField = getNextField(null);
-		new_value = calendar.get(getCalendarField(firstField));
 	} else if (isTime()) {
 		new_value = getHours();
 		if (hasAmPm()) {
