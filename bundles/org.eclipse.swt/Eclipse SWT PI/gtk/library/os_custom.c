@@ -308,7 +308,9 @@ static void swt_fixed_add (GtkContainer *container, GtkWidget *widget);
 static void swt_fixed_remove (GtkContainer *container, GtkWidget *widget);
 static void swt_fixed_forall (GtkContainer *container, gboolean include_internals, GtkCallback callback, gpointer callback_data);
 
-G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_CONTAINER, G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL))
+G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_CONTAINER,
+		G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL)
+		G_ADD_PRIVATE (SwtFixed))
 
 static void swt_fixed_class_init (SwtFixedClass *class) {
 	GObjectClass *gobject_class = (GObjectClass*) class;
@@ -341,7 +343,6 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	container_class->remove = swt_fixed_remove;
 	container_class->forall = swt_fixed_forall;
 
-	g_type_class_add_private (class, sizeof (SwtFixedPrivate));
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
@@ -394,7 +395,7 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 static void swt_fixed_init (SwtFixed *widget) {
 	SwtFixedPrivate *priv;
 
-	priv = widget->priv = G_TYPE_INSTANCE_GET_PRIVATE (widget, SWT_TYPE_FIXED, SwtFixedPrivate);
+	priv = widget->priv = swt_fixed_get_instance_private (widget);
 	priv->children = NULL;
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
@@ -758,7 +759,9 @@ static void swt_fixed_add (GtkContainer *container, GtkWidget *widget);
 static void swt_fixed_remove (GtkContainer *container, GtkWidget *widget);
 static void swt_fixed_forall (GtkContainer *container,  GtkCallback callback, gpointer callback_data);
 
-G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_CONTAINER, G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL))
+G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_CONTAINER,
+		G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL)
+		G_ADD_PRIVATE (SwtFixed))
 
 static void swt_fixed_class_init (SwtFixedClass *class) {
 	GObjectClass *gobject_class = (GObjectClass*) class;
@@ -790,7 +793,6 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	container_class->remove = swt_fixed_remove;
 	container_class->forall = swt_fixed_forall;
 
-	g_type_class_add_private (class, sizeof (SwtFixedPrivate));
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
@@ -843,7 +845,7 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 static void swt_fixed_init (SwtFixed *widget) {
 	SwtFixedPrivate *priv;
 
-	priv = widget->priv = G_TYPE_INSTANCE_GET_PRIVATE (widget, SWT_TYPE_FIXED, SwtFixedPrivate);
+	priv = widget->priv = swt_fixed_get_instance_private (widget);
 	priv->children = NULL;
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
@@ -1168,16 +1170,6 @@ static void swt_fixed_accessible_table_iface_init (AtkTableIface *iface);
 static void swt_fixed_accessible_text_iface_init (AtkTextIface *iface);
 static void swt_fixed_accessible_value_iface_init (AtkValueIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE, swt_fixed_accessible_table_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
-			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init))
-
 struct _SwtFixedAccessiblePrivate {
 	// A boolean flag which is set to TRUE when an Accessible Java
 	// object has been created for this SwtFixedAccessible instance
@@ -1187,12 +1179,23 @@ struct _SwtFixedAccessiblePrivate {
 	GtkWidget *widget;
 };
 
+G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE, swt_fixed_accessible_table_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
+			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init)
+			 G_ADD_PRIVATE (SwtFixedAccessible))
+
 // Fully qualified Java class name for the Java implementation of ATK functions
 const char *ACCESSIBILITY_CLASS_NAME = "org/eclipse/swt/accessibility/AccessibleObject";
 
 static void swt_fixed_accessible_init (SwtFixedAccessible *accessible) {
 	// Initialize the SwtFixedAccessiblePrivate struct
-	accessible->priv = G_TYPE_INSTANCE_GET_PRIVATE (accessible, SWT_TYPE_FIXED_ACCESSIBLE, SwtFixedAccessiblePrivate);
+	accessible->priv = swt_fixed_accessible_get_instance_private (accessible);
 }
 
 static void swt_fixed_accessible_class_init (SwtFixedAccessibleClass *klass) {
@@ -1214,7 +1217,6 @@ static void swt_fixed_accessible_class_init (SwtFixedAccessibleClass *klass) {
 	atk_class->ref_child = swt_fixed_accessible_ref_child;
 	atk_class->ref_state_set = swt_fixed_accesssible_ref_state_set;
 
-	g_type_class_add_private (klass, sizeof (SwtFixedAccessiblePrivate));
 }
 
 AtkObject *swt_fixed_accessible_new (GtkWidget *widget) {
