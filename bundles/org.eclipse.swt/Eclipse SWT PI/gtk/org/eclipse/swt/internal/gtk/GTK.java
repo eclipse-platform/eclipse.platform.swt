@@ -8320,7 +8320,7 @@ public class GTK extends OS {
 	public static final int gtk_widget_get_margin_start (long /*int*/ widget) {
 		lock.lock();
 		try {
-			return gtk_widget_get_margin_start(widget);
+			return _gtk_widget_get_margin_start(widget);
 		} finally {
 			lock.unlock();
 		}
@@ -8333,7 +8333,7 @@ public class GTK extends OS {
 	public static final int gtk_widget_get_margin_end (long /*int*/ widget) {
 		lock.lock();
 		try {
-			return gtk_widget_get_margin_end(widget);
+			return _gtk_widget_get_margin_end(widget);
 		} finally {
 			lock.unlock();
 		}
