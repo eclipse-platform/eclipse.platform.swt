@@ -25,7 +25,7 @@
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
     <test>AllTests</test>
-    <surefire.version>2.22.0</surefire.version>
+    <surefire.version>2.22.1</surefire.version>
   </properties>
   <build>
     <plugins>
