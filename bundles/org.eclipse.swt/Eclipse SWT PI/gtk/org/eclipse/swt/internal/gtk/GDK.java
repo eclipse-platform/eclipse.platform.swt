@@ -2255,7 +2255,7 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param surface cast=(GdSurface *)
+	 * @param surface cast=(GdkSurface *)
 	 * @param x cast=(gint *)
 	 * @param y cast=(gint *)
 	 */
@@ -2364,7 +2364,7 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param surface cast=(Gdksurface *)
+	 * @param surface cast=(GdkSurface *)
 	 * @param region cast=(const cairo_region_t *)
 	 */
 	public static final native void _gdk_surface_invalidate_region(long /*int*/ surface, long /*int*/ region);

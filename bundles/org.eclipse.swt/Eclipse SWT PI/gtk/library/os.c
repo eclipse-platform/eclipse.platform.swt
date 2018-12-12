@@ -2142,7 +2142,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1get_1root_1origin)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1get_1root_1origin_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gdk_surface_get_root_origin((GdSurface *)arg0, (gint *)lparg1, (gint *)lparg2);
+	gdk_surface_get_root_origin((GdkSurface *)arg0, (gint *)lparg1, (gint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -2204,7 +2204,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1invalidate_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1invalidate_1region_FUNC);
-	gdk_surface_invalidate_region((Gdksurface *)arg0, (const cairo_region_t *)arg1);
+	gdk_surface_invalidate_region((GdkSurface *)arg0, (const cairo_region_t *)arg1);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1invalidate_1region_FUNC);
 }
 #endif
