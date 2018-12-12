@@ -665,7 +665,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_SECONDARY, icon_area);
 		trim.width += icon_area.width;
 	} else {
-		int borderWidth = GTK.gtk_container_get_border_width (handle);
+		int borderWidth = gtk_container_get_border_width_or_margin (handle);
 		xborder += borderWidth;
 		yborder += borderWidth;
 	}

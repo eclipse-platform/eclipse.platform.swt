@@ -2874,6 +2874,62 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param margin cast=(gint)
+	 */
+	public static final native void _gtk_widget_set_margin_start (long /*int*/ widget, int margin);
+	public static final void gtk_widget_set_margin_start (long /*int*/ widget, int margin) {
+		lock.lock();
+		try {
+			 _gtk_widget_set_margin_start(widget, margin);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param margin cast=(gint)
+	 */
+	public static final native void _gtk_widget_set_margin_end (long /*int*/ widget, int margin);
+	public static final void gtk_widget_set_margin_end (long /*int*/ widget, int margin) {
+		lock.lock();
+		try {
+			 _gtk_widget_set_margin_end(widget, margin);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param margin cast=(gint)
+	 */
+	public static final native void _gtk_widget_set_margin_top (long /*int*/ widget, int margin);
+	public static final void gtk_widget_set_margin_top (long /*int*/ widget, int margin) {
+		lock.lock();
+		try {
+			 _gtk_widget_set_margin_top(widget, margin);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param margin cast=(gint)
+	 */
+	public static final native void _gtk_widget_set_margin_bottom (long /*int*/ widget, int margin);
+	public static final void gtk_widget_set_margin_bottom (long /*int*/ widget, int margin) {
+		lock.lock();
+		try {
+			 _gtk_widget_set_margin_bottom(widget, margin);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
@@ -8252,6 +8308,58 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			return _gtk_widget_get_surface(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int _gtk_widget_get_margin_start (long /*int*/ widget);
+	public static final int gtk_widget_get_margin_start (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return gtk_widget_get_margin_start(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int _gtk_widget_get_margin_end (long /*int*/ widget);
+	public static final int gtk_widget_get_margin_end (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return gtk_widget_get_margin_end(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int _gtk_widget_get_margin_top (long /*int*/ widget);
+	public static final int gtk_widget_get_margin_top (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_margin_top(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int _gtk_widget_get_margin_bottom (long /*int*/ widget);
+	public static final int gtk_widget_get_margin_bottom (long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_margin_bottom(widget);
 		} finally {
 			lock.unlock();
 		}

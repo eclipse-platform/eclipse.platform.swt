@@ -125,7 +125,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	int border = GTK.gtk_container_get_border_width (handle);
+	int border = gtk_container_get_border_width_or_margin (handle);
 	size.x += 2 * border;
 	size.y += 2 * border;
 	return size;
@@ -150,7 +150,7 @@ void createHandle (int index) {
 	} else {
 		GTK.gtk_container_add (fixedHandle, handle);
 	}
-	GTK.gtk_container_set_border_width (handle, 0);
+	gtk_container_set_border_width (handle, 0);
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
@@ -530,7 +530,7 @@ void setSpacingInPixels (int spacing) {
 	if (spacing == this.spacing) return;
 	this.spacing = spacing;
 	GTK.gtk_box_set_spacing (handle, spacing);
-	GTK.gtk_container_set_border_width (handle, spacing);
+	gtk_container_set_border_width (handle, spacing);
 }
 
 void showItem (ExpandItem item) {

@@ -118,8 +118,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	checkWidget();
 	int border = 0;
-	if (fixedHandle != 0) border += GTK.gtk_container_get_border_width (fixedHandle);
-	if (scrolledHandle != 0) border += GTK.gtk_container_get_border_width (scrolledHandle);
+	if (fixedHandle != 0) border += gtk_container_get_border_width_or_margin (fixedHandle);
+	if (scrolledHandle != 0) border += gtk_container_get_border_width_or_margin (scrolledHandle);
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
 	trimHeight += hScrollBarWidth ();
@@ -202,9 +202,9 @@ void destroyScrollBar (ScrollBar bar) {
 int getBorderWidthInPixels () {
 	checkWidget();
 	int border = 0;
-	if (fixedHandle != 0) border += GTK.gtk_container_get_border_width (fixedHandle);
+	if (fixedHandle != 0) border += gtk_container_get_border_width_or_margin (fixedHandle);
 	if (scrolledHandle != 0) {
-		border += GTK.gtk_container_get_border_width (scrolledHandle);
+		border += gtk_container_get_border_width_or_margin (scrolledHandle);
 		if (GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE) {
 			border += getThickness (scrolledHandle).x;
 		}

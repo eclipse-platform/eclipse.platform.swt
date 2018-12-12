@@ -693,7 +693,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int border = 0;
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
-		border = GTK.gtk_container_get_border_width (shellHandle);
+		border = gtk_container_get_border_width_or_margin (shellHandle);
 	}
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	trim.x -= (trimWidth / 2) + border;
@@ -789,7 +789,7 @@ void createHandle (int index) {
 		}
 		GTK.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
-			GTK.gtk_container_set_border_width (shellHandle, 1);
+			gtk_container_set_border_width (shellHandle, 1);
 			if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 				GTK.gtk_widget_override_background_color (shellHandle, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 			}
@@ -809,7 +809,7 @@ void createHandle (int index) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
 		}
 		if (isCustomResize ()) {
-			GTK.gtk_container_set_border_width (shellHandle, BORDER);
+			gtk_container_set_border_width (shellHandle, BORDER);
 		}
 	}
 	vboxHandle = gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, false, 0);
@@ -1040,7 +1040,7 @@ void forceResize () {
 		 * before Shell is fully opened, which gets an incorrect allocation.
 		 * Fix is to use the calculated box width/height if bounds have been set.
 		 */
-		int border = GTK.gtk_container_get_border_width (shellHandle);
+		int border = gtk_container_get_border_width_or_margin (shellHandle);
 		int boxWidth = oldWidth - 2*border;
 		int boxHeight = oldHeight - 2*border;
 		if (boxWidth != allocation.width || boxHeight != allocation.height) {
@@ -1055,7 +1055,7 @@ void forceResize (int width, int height) {
 	int clientWidth = 0;
 	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 	GtkAllocation allocation = new GtkAllocation ();
-	int border = GTK.GTK4 ? 0 : GTK.gtk_container_get_border_width (shellHandle);
+	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	allocation.x = border;
 	allocation.y = border;
 	allocation.width = width;
@@ -1116,7 +1116,7 @@ int getResizeMode (double x, double y) {
 	GTK.gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
-	int border = GTK.gtk_container_get_border_width (shellHandle);
+	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	int mode = 0;
 	if (y >= height - border) {
 		mode = GDK.GDK_BOTTOM_SIDE ;
@@ -1257,7 +1257,7 @@ Point getSizeInPixels () {
 	int height = allocation.height;
 	int border = 0;
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
-		border = GTK.gtk_container_get_border_width (shellHandle);
+		border = gtk_container_get_border_width_or_margin (shellHandle);
 	}
 	return new Point (width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }
@@ -1435,7 +1435,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 			int [] height = new int [1];
 			long /*int*/ window = gtk_widget_get_window (widget);
 			gdk_window_get_size (window, width, height);
-			int border = GTK.gtk_container_get_border_width (widget);
+			int border = gtk_container_get_border_width_or_margin (widget);
 			long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
 			//TODO draw shell frame on GTK3
 			GTK.gtk_style_context_save (context);
@@ -1547,7 +1547,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 			GdkEventMotion gdkEvent = new GdkEventMotion ();
 			OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 			if ((gdkEvent.state & GDK.GDK_BUTTON1_MASK) != 0) {
-				int border = GTK.gtk_container_get_border_width (shellHandle);
+				int border = gtk_container_get_border_width_or_margin (shellHandle);
 				int dx = (int)(gdkEvent.x_root - display.resizeLocationX);
 				int dy = (int)(gdkEvent.y_root - display.resizeLocationY);
 				int x = display.resizeBoundsX;
@@ -1982,7 +1982,7 @@ void resizeBounds (int width, int height, boolean notify) {
 		if (enableWindow != 0) {
 			GDK.gdk_window_resize (enableWindow, width, height);
 		}
-		border = GTK.gtk_container_get_border_width (shellHandle);
+		border = gtk_container_get_border_width_or_margin (shellHandle);
 	}
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
@@ -2990,7 +2990,7 @@ Rectangle getBoundsInPixels () {
 	int height = allocation.height;
 	int border = 0;
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
-		border = GTK.gtk_container_get_border_width (shellHandle);
+		border = gtk_container_get_border_width_or_margin (shellHandle);
 	}
 	return new Rectangle (x [0], y [0], width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }

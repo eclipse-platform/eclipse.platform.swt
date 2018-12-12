@@ -199,7 +199,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size;
 	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && GTK.gtk_widget_get_visible (labelHandle);
 	if (wrap) {
-		int borderWidth = GTK.gtk_container_get_border_width (handle);
+		int borderWidth = gtk_container_get_border_width_or_margin (handle);
 		int[] focusWidth = new int[1];
 		GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
 		int[] focusPadding = new int[1];

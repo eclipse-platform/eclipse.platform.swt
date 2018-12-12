@@ -218,7 +218,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		fontHeight += bufferBottom [0] + bufferTop [0];
 		if (frameHandle != 0) {
 			fontHeight += 2 * getThickness (frameHandle).y;
-			fontHeight += 2 * GTK.gtk_container_get_border_width (frameHandle);
+			fontHeight += 2 * gtk_container_get_border_width_or_margin (frameHandle);
 		}
 		size.y = Math.max (size.y, fontHeight);
 	}

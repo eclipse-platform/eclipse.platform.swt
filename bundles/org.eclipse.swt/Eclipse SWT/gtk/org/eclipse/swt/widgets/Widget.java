@@ -2050,5 +2050,38 @@ void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisit
 void gtk_image_set_from_gicon (long /*int*/ imageHandle, long /*int*/ pixbuf){
 	GTK.gtk_image_set_from_gicon(imageHandle, pixbuf, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 }
+/**
+ * Retrieves the amount of space around the outside of the container.
+ * On GTK3: this is done using gtk_container_get_border_width.
+ * On GTK4: this is done by returning the max margin on any side.
+ * @param handle
+ * @return amount of space around the outside of the container.
+ */
+int gtk_container_get_border_width_or_margin (long /*int*/ handle) {
+	if (GTK.GTK4) {
+		int marginTop = GTK.gtk_widget_get_margin_top(handle);
+		int marginBottom = GTK.gtk_widget_get_margin_bottom(handle);
+		int marginStart = GTK.gtk_widget_get_margin_start(handle);
+		int marginEnd = GTK.gtk_widget_get_margin_end(handle);
+		return Math.max(Math.max(marginTop, marginBottom), Math.max(marginStart, marginEnd));
+	} else {
+		return GTK.gtk_container_get_border_width(handle);
+	}
+}
+/**
+ * Sets the border width of the container to all sides of the container.
+ * @param handle
+ * @param border_width
+ */
+void gtk_container_set_border_width (long /*int*/ handle, int border_width) {
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_margin_top(handle, border_width);
+		GTK.gtk_widget_set_margin_bottom(handle, border_width);
+		GTK.gtk_widget_set_margin_start(handle, border_width);
+		GTK.gtk_widget_set_margin_end(handle, border_width);
+	} else {
+		GTK.gtk_container_set_border_width (handle, border_width);
+	}
+}
 
 }
