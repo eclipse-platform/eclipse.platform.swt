@@ -249,14 +249,6 @@
 		</antcall>
 		
 		<antcall target="check_preprocessing"/>
-		
-		<!-- 32 bit -->
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_gtk"/>
-		</antcall>
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_win32"/>
-		</antcall>
 	</target>
 	
 	<target name="update_sha1_file">
