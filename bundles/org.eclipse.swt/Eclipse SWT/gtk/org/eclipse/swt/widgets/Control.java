@@ -114,6 +114,12 @@ public abstract class Control extends Widget implements Drawable {
 				long.class, long.class, long.class}); //$NON-NLS-1$
 		if (gestureEnd.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
+	/**
+	 * Bug 541635, 515396: GTK Wayland only flag to keep track whether mouse
+	 * is currently pressed or released for DND.
+	 */
+	public static boolean mouseDown;
+	boolean dragBegun;
 
 Control () {
 }
@@ -2587,9 +2593,18 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		} else {
 			return false;
 		}
+		// Block until mouse was released or drag was detected, see Bug 515396.
+		while (true) {
+			if (!mouseDown) {
+				return false;
+			}
+			if (dragBegun) {
+				return true;
+			}
+		}
 	} else {
 		boolean quit = false;
-		//428852 DND workaround for GTk3.
+		//428852 DND workaround for GTK3.
 		//Gtk3 no longer sends motion events on the same control during thread sleep
 		//before a drag started. This is due to underlying gdk changes.
 		//Thus for gtk3 we check mouse coords manually
@@ -3282,6 +3297,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, boolean sendMouseDown) {
+	mouseDown = true;
+	dragBegun = false;
+
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	lastInput.x = (int) gdkEvent.x;
@@ -3364,6 +3382,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	mouseDown = false;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	lastInput.x = (int) gdkEvent.x;
@@ -3709,6 +3728,9 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 
 @Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
+	if (mouseDown) {
+		dragBegun = true;
+	}
 	int result;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
@@ -4558,7 +4580,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 					break;
 				case SWT.MouseUp:
 					// Case where mouse up was released before DnD threshold was hit.
-
+					mouseDown = false;
 					// Decide if we should send or post the queued up MouseDown and MouseMovement events.
 					// If mouseUp is send, then send all. If mouseUp is post, then decide based on previous
 					// send flag.

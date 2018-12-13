@@ -472,6 +472,7 @@ boolean grab () {
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	Control.mouseDown = false;
 	return gtk_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
