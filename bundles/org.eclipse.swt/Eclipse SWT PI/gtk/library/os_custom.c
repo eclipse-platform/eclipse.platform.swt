@@ -749,7 +749,6 @@ enum {
 static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void swt_fixed_finalize (GObject *object);
-static void swt_fixed_realize (GtkWidget *widget);
 static void swt_fixed_map (GtkWidget *widget);
 static AtkObject *swt_fixed_get_accessible (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
@@ -920,6 +919,7 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
     }
 }
 
+/*
 static void swt_fixed_realize (GtkWidget *widget) {
 	GtkAllocation allocation;
 	GdkSurface *surface;
@@ -935,7 +935,7 @@ static void swt_fixed_realize (GtkWidget *widget) {
 	gtk_widget_set_surface(widget, surface);
 	gdk_surface_set_user_data (surface, widget);
 	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->realize (widget);
-}
+}*/
 
 static void swt_fixed_map (GtkWidget *widget) {
 	SwtFixed *fixed = SWT_FIXED (widget);

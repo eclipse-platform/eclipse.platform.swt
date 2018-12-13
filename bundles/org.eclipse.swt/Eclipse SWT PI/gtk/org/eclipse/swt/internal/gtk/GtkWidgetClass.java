@@ -20,4 +20,6 @@ public class GtkWidgetClass extends GObjectClass {
 	public long /*int*/ map;
 	/** @field cast=(void(*)()) */
 	public long /*int*/ size_allocate;
+	/** @field cast=(void(*)()),exclude=#ifdef GTK4 */
+	public long /*int*/ snapshot;
 }

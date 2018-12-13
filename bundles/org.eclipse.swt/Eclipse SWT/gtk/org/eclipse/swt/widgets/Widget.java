@@ -1197,6 +1197,19 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
+void propagateSnapshot (long /*int*/ widget, long /*int*/ snapshot) {
+	long /*int*/ list = GTK.gtk_container_get_children (widget);
+	long /*int*/ temp = list;
+	while (temp != 0) {
+		long /*int*/ child = OS.g_list_data (temp);
+		if (child != 0) {
+			GTK.gtk_widget_snapshot_child(widget, child, snapshot);
+		}
+		temp = OS.g_list_next (temp);
+	}
+	OS.g_list_free (list);
+}
+
 void register () {
 	if (handle == 0) return;
 	if ((state & HANDLE) != 0) display.addWidget (handle, this);
@@ -1783,6 +1796,29 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 
 long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	return 0;
+}
+
+/**
+ * Converts an incoming snapshot into a gtk_draw() call, complete with
+ * a Cairo context.
+ *
+ * @param handle the widget receiving the snapshot
+ * @param snapshot the actual GtkSnapshot
+ */
+void snapshotToDraw (long /*int*/ handle, long /*int*/ snapshot) {
+	GtkAllocation allocation = new GtkAllocation ();
+	GTK.gtk_widget_get_allocation(handle, allocation);
+	long /*int*/ rect = Graphene.graphene_rect_alloc();
+	Graphene.graphene_rect_init(rect, 0, 0, allocation.width, allocation.height);
+	long /*int*/ cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	gtk_draw(handle, cairo);
+	Graphene.graphene_rect_free(rect);
+	// Propagates the snapshot down the widget hierarchy so that other widgets
+	// will draw.
+	if (GTK.GTK_IS_CONTAINER(handle)) {
+		propagateSnapshot(handle, snapshot);
+	}
+	return;
 }
 
 long /*int*/ gtk_widget_get_window (long /*int*/ widget){

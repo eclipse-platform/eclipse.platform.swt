@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -793,6 +793,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1separator_1tool_1item_1new",
 	"_1gtk_1separator_1tool_1item_1set_1draw",
 	"_1gtk_1settings_1get_1default",
+	"_1gtk_1snapshot_1append_1cairo",
 	"_1gtk_1socket_1get_1id",
 	"_1gtk_1socket_1new",
 	"_1gtk_1spin_1button_1configure",
@@ -1173,6 +1174,7 @@ char * GTK_nativeFunctionNames[] = {
 #else
 	"_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2I",
 #endif
+	"_1gtk_1widget_1snapshot_1child",
 #ifndef JNI64
 	"_1gtk_1widget_1style_1get__I_3B_3II",
 #else
@@ -1244,6 +1246,38 @@ JNIEXPORT jint JNICALL STATS_NATIVE(GTK_1GetFunctionCallCount)
 	(JNIEnv *env, jclass that, jint index)
 {
 	return GTK_nativeFunctionCallCount[index];
+}
+
+#endif
+#ifdef NATIVE_STATS
+
+char * Graphene_nativeFunctionNames[] = {
+	"_1graphene_1rect_1alloc",
+	"_1graphene_1rect_1free",
+	"_1graphene_1rect_1init",
+};
+#define NATIVE_FUNCTION_COUNT sizeof(Graphene_nativeFunctionNames) / sizeof(char*)
+int Graphene_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int Graphene_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(Graphene_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return Graphene_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(Graphene_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, Graphene_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(Graphene_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return Graphene_nativeFunctionCallCount[index];
 }
 
 #endif

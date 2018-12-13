@@ -163,11 +163,18 @@ public Control (Composite parent, int style) {
 void connectPaint () {
 	long /*int*/ paintHandle = paintHandle ();
 	int paintMask = GDK.GDK_EXPOSURE_MASK;
-	if (!GTK.GTK4) GTK.gtk_widget_add_events (paintHandle, paintMask);
+	if (GTK.GTK4 && (hooksPaint() || drawRegion)) {
+		long /*int*/ widgetClass = GTK.GTK_WIDGET_GET_CLASS(paintHandle);
+		GtkWidgetClass widgetClassStruct = new GtkWidgetClass ();
+		OS.memmove(widgetClassStruct, widgetClass);
+		widgetClassStruct.snapshot = display.snapshotDrawProc;
+		OS.memmove(widgetClass, widgetClassStruct);
+	} else {
+		GTK.gtk_widget_add_events (paintHandle, paintMask);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
-
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+	}
 }
 
 Font defaultFont () {

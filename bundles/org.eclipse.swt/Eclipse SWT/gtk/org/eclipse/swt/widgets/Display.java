@@ -126,7 +126,9 @@ public class Display extends Device {
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
 	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
+	long /*int*/ snapshotDrawProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
+	Callback snapshotDraw;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -1471,6 +1473,13 @@ static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ cl
 	klass.render = rendererRenderProc;
 	klass.get_preferred_width = rendererGetPreferredWidthProc;
 	OS.memmove (g_class, klass);
+	return 0;
+}
+
+static long /*int*/ snapshotDrawProc (long /*int*/ handle, long /*int*/ snapshot) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	widget.snapshotToDraw(handle, snapshot);
 	return 0;
 }
 
@@ -3576,6 +3585,12 @@ void initializeCallbacks () {
 	signalIds [Widget.UNMAP_EVENT] = OS.g_signal_lookup (OS.unmap_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, GTK.GTK_TYPE_WIDGET ());
+
+	if (GTK.GTK4) {
+		snapshotDraw = new Callback (getClass (), "snapshotDrawProc", 2); //$NON-NLS-1$
+		snapshotDrawProc = snapshotDraw.getAddress ();
+		if (snapshotDrawProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
 	windowProc2 = windowCallback2.getAddress ();

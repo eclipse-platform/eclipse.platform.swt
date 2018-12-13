@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -8820,6 +8820,18 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1settings_1get_1default)
 }
 #endif
 
+#ifndef NO__1gtk_1snapshot_1append_1cairo
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1snapshot_1append_1cairo)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1snapshot_1append_1cairo_FUNC);
+	rc = (jintLong)gtk_snapshot_append_cairo((GtkSnapshot *)arg0, (const graphene_rect_t *)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1snapshot_1append_1cairo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1socket_1get_1id
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1socket_1get_1id)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -13024,6 +13036,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1snapshot_1child
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1snapshot_1child)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1snapshot_1child_FUNC);
+	gtk_widget_snapshot_child((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkSnapshot *)arg2);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1snapshot_1child_FUNC);
+}
+#endif
+
 #if (!defined(NO__1gtk_1widget_1style_1get__I_3B_3II) && !defined(JNI64)) || (!defined(NO__1gtk_1widget_1style_1get__J_3B_3IJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1style_1get__I_3B_3II)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintLong arg3)
@@ -13523,6 +13545,44 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1window_1unmaximize)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1window_1unmaximize_FUNC);
 	gtk_window_unmaximize((GtkWindow *)arg0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1window_1unmaximize_FUNC);
+}
+#endif
+
+#ifndef Graphene_NATIVE
+#define Graphene_NATIVE(func) Java_org_eclipse_swt_internal_gtk_Graphene_##func
+#endif
+
+#ifndef NO__1graphene_1rect_1alloc
+JNIEXPORT jintLong JNICALL Graphene_NATIVE(_1graphene_1rect_1alloc)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	Graphene_NATIVE_ENTER(env, that, _1graphene_1rect_1alloc_FUNC);
+	rc = (jintLong)graphene_rect_alloc();
+	Graphene_NATIVE_EXIT(env, that, _1graphene_1rect_1alloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1graphene_1rect_1free
+JNIEXPORT void JNICALL Graphene_NATIVE(_1graphene_1rect_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Graphene_NATIVE_ENTER(env, that, _1graphene_1rect_1free_FUNC);
+	graphene_rect_free((graphene_rect_t *)arg0);
+	Graphene_NATIVE_EXIT(env, that, _1graphene_1rect_1free_FUNC);
+}
+#endif
+
+#ifndef NO__1graphene_1rect_1init
+JNIEXPORT jintLong JNICALL Graphene_NATIVE(_1graphene_1rect_1init)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4)
+{
+	jintLong rc = 0;
+	Graphene_NATIVE_ENTER(env, that, _1graphene_1rect_1init_FUNC);
+	rc = (jintLong)graphene_rect_init((graphene_rect_t *)arg0, arg1, arg2, arg3, arg4);
+	Graphene_NATIVE_EXIT(env, that, _1graphene_1rect_1init_FUNC);
+	return rc;
 }
 #endif
 

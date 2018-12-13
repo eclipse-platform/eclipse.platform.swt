@@ -1171,7 +1171,7 @@ void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpSt
 typedef struct GtkWidgetClass_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID map, size_allocate;
+	jfieldID map, size_allocate, snapshot;
 } GtkWidgetClass_FID_CACHE;
 
 GtkWidgetClass_FID_CACHE GtkWidgetClassFc;
@@ -1183,6 +1183,7 @@ void cacheGtkWidgetClassFields(JNIEnv *env, jobject lpObject)
 	GtkWidgetClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GtkWidgetClassFc.map = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map", I_J);
 	GtkWidgetClassFc.size_allocate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_allocate", I_J);
+	GtkWidgetClassFc.snapshot = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "snapshot", I_J);
 	GtkWidgetClassFc.cached = 1;
 }
 
@@ -1192,6 +1193,9 @@ GtkWidgetClass *getGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidget
 	getGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
 	lpStruct->map = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.map);
 	lpStruct->size_allocate = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.size_allocate);
+#ifdef GTK4
+	lpStruct->snapshot = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.snapshot);
+#endif
 	return lpStruct;
 }
 
@@ -1201,6 +1205,9 @@ void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpSt
 	setGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
 	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.map, (jintLong)lpStruct->map);
 	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.size_allocate, (jintLong)lpStruct->size_allocate);
+#ifdef GTK4
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.snapshot, (jintLong)lpStruct->snapshot);
+#endif
 }
 #endif
 

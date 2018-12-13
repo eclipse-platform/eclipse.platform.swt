@@ -5748,6 +5748,20 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @param snapshot cast=(GtkSnapshot *)
+	 * @param rect cast=(const graphene_rect_t *)
+	 */
+	public static final native long /*int*/ _gtk_snapshot_append_cairo(long /*int*/ snapshot, long /*int*/ rect);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_snapshot_append_cairo(long /*int*/ snapshot, long /*int*/ rect) {
+		lock.lock();
+		try {
+			 return _gtk_snapshot_append_cairo(snapshot, rect);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @param handle cast=(GtkStatusIcon*)
 	 * @param screen cast=(GdkScreen**)
 	 * @param area cast=(GdkRectangle*)
@@ -9501,6 +9515,21 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_shape_combine_region(widget,region);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param child cast=(GtkWidget *)
+	 * @param snapshot cast=(GtkSnapshot *)
+	 */
+	public static final native void _gtk_widget_snapshot_child(long /*int*/ widget, long /*int*/ child, long /*int*/ snapshot);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_snapshot_child(long /*int*/ widget, long /*int*/ child, long /*int*/ snapshot) {
+		lock.lock();
+		try {
+			_gtk_widget_snapshot_child(widget,child,snapshot);
 		} finally {
 			lock.unlock();
 		}

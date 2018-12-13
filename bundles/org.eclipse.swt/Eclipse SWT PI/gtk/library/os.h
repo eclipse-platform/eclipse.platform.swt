@@ -429,6 +429,15 @@
 #define NO__1gdk_1surface_1get_1root_1origin
 #define NO__1gdk_1surface_1invalidate_1region
 
+// No GtkSnapshot on GTK3
+#define NO__1gtk_1snapshot_1append_1cairo
+#define NO__1gtk_1widget_1snapshot_1child
+
+// No Graphene library on GTK3
+#define NO__1graphene_1rect_1alloc
+#define NO__1graphene_1rect_1free
+#define NO__1graphene_1rect_1init
+
 // Miscellaneous functions not present on GTK3
 #define NO__1gdk_1device_1warp__III
 #define NO__1gdk_1device_1warp__JII

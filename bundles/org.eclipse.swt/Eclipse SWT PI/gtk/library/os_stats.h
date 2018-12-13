@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -791,6 +791,7 @@ typedef enum {
 	_1gtk_1separator_1tool_1item_1new_FUNC,
 	_1gtk_1separator_1tool_1item_1set_1draw_FUNC,
 	_1gtk_1settings_1get_1default_FUNC,
+	_1gtk_1snapshot_1append_1cairo_FUNC,
 	_1gtk_1socket_1get_1id_FUNC,
 	_1gtk_1socket_1new_FUNC,
 	_1gtk_1spin_1button_1configure_FUNC,
@@ -1171,6 +1172,7 @@ typedef enum {
 #else
 	_1gtk_1widget_1size_1allocate__JLorg_eclipse_swt_internal_gtk_GtkAllocation_2I_FUNC,
 #endif
+	_1gtk_1widget_1snapshot_1child_FUNC,
 #ifndef JNI64
 	_1gtk_1widget_1style_1get__I_3B_3II_FUNC,
 #else
@@ -1220,6 +1222,26 @@ typedef enum {
 	_1gtk_1window_1unfullscreen_FUNC,
 	_1gtk_1window_1unmaximize_FUNC,
 } GTK_FUNCS;
+#ifdef NATIVE_STATS
+extern int Graphene_nativeFunctionCount;
+extern int Graphene_nativeFunctionCallCount[];
+extern char* Graphene_nativeFunctionNames[];
+#define Graphene_NATIVE_ENTER(env, that, func) Graphene_nativeFunctionCallCount[func]++;
+#define Graphene_NATIVE_EXIT(env, that, func) 
+#else
+#ifndef Graphene_NATIVE_ENTER
+#define Graphene_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef Graphene_NATIVE_EXIT
+#define Graphene_NATIVE_EXIT(env, that, func) 
+#endif
+#endif
+
+typedef enum {
+	_1graphene_1rect_1alloc_FUNC,
+	_1graphene_1rect_1free_FUNC,
+	_1graphene_1rect_1init_FUNC,
+} Graphene_FUNCS;
 #ifdef NATIVE_STATS
 extern int OS_nativeFunctionCount;
 extern int OS_nativeFunctionCallCount[];
