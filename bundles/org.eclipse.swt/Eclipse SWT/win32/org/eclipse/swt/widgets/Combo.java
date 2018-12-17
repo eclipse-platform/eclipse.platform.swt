@@ -2948,6 +2948,29 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	* the combo box has been resized.
 	*/
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (scrollWidth);
+
+	/*
+	* When setting selection, Combo automatically scrolls selection's end into view.
+	* We force it to do such scrolling after every resize to achieve multiple goals:
+	* 1) Text is no longer partially shown when there's free space after resizing
+	*    Without workaround, this happens when all of these are true:
+	*    a) Combo has focus
+	*    b) Combo can't fit all text
+	*    c) Caret is not at position 0
+	*    d) Combo is resized bigger.
+	* 2) Text is no longer partially shown after .setSelection() before its size was calculated
+	*    This is just another form of problem 1.
+	* 3) Caret no longer goes out of view when shrinking control.
+	*/
+	if ((style & SWT.READ_ONLY) == 0) {
+		Point oldSelection = this.getSelection();
+		Point tmpSelection = new Point(0, 0);
+		if (!oldSelection.equals(tmpSelection)) {
+			this.setSelection(tmpSelection);
+			this.setSelection(oldSelection);
+		}
+	}
+
 	return result;
 }
 
