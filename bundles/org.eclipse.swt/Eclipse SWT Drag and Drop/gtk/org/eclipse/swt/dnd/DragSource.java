@@ -229,7 +229,6 @@ static long /*int*/ DragDataDelete(long /*int*/ widget, long /*int*/ context){
 }
 
 static long /*int*/ DragEnd(long /*int*/ widget, long /*int*/ context){
-	Control.mouseDown = false;
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragEnd(widget, context);

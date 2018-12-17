@@ -118,7 +118,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * Bug 541635, 515396: GTK Wayland only flag to keep track whether mouse
 	 * is currently pressed or released for DND.
 	 */
-	public static boolean mouseDown;
+	static boolean mouseDown;
 	boolean dragBegun;
 
 Control () {
