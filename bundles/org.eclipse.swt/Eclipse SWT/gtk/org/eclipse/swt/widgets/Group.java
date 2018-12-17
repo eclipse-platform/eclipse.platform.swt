@@ -452,6 +452,7 @@ long /*int*/ paintHandle() {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		return super.paintHandle();
 	} else {
+		if (GTK.GTK4) return clientHandle;
 		long /*int*/ topHandle = topHandle ();
 		/* we draw all our children on the clientHandle*/
 		long /*int*/ paintHandle = clientHandle;

@@ -780,7 +780,6 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	g_object_class_override_property (gobject_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 
 	/* Widget implementation */
-	widget_class->realize = swt_fixed_realize;
 	widget_class->map = swt_fixed_map;
 	widget_class->measure = swt_fixed_measure;
 	widget_class->size_allocate = swt_fixed_size_allocate;
@@ -850,7 +849,7 @@ static void swt_fixed_init (SwtFixed *widget) {
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
 
-	gtk_widget_set_has_surface(GTK_WIDGET(widget), TRUE);
+	gtk_widget_set_has_surface(GTK_WIDGET(widget), FALSE);
 }
 
 static void swt_fixed_finalize (GObject *object) {

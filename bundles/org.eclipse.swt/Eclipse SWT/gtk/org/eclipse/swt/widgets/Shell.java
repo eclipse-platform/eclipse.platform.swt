@@ -816,7 +816,11 @@ void createHandle (int index) {
 	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	createHandle (index, false, true);
 	GTK.gtk_container_add (vboxHandle, scrolledHandle);
-	GTK.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
+	if (GTK.GTK4) {
+		GTK.gtk_box_set_child_packing(vboxHandle, scrolledHandle, GTK.GTK_PACK_END);
+	} else {
+		GTK.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
+	}
 	group = GTK.gtk_window_group_new ();
 	if (group == 0) error (SWT.ERROR_NO_HANDLES);
 	/*

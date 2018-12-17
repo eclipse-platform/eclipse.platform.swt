@@ -492,6 +492,7 @@ long /*int*/ topHandle() {
 
 long /*int*/ paintHandle () {
 	long /*int*/ topHandle = topHandle ();
+	if (GTK.GTK4) return topHandle;
 	long /*int*/ paintHandle = handle;
 	while (paintHandle != topHandle) {
 		if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
