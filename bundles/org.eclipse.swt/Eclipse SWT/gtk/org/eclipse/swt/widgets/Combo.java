@@ -2255,6 +2255,34 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 	super.setForegroundGdkRGBA(rgba);
 }
 
+@Override
+void setInitialBounds () {
+	if ((state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
+		/*
+		* Feature in GTK.  On creation, each widget's allocation is
+		* initialized to a position of (-1, -1) until the widget is
+		* first sized.  The fix is to set the value to (0, 0) as
+		* expected by SWT.
+		*/
+		long /*int*/ topHandle = topHandle ();
+		GtkAllocation allocation = new GtkAllocation();
+		if ((parent.style & SWT.MIRRORED) != 0) {
+			allocation.x = parent.getClientWidth ();
+		} else {
+			allocation.x = 0;
+		}
+		allocation.y = 0;
+		GTK.gtk_widget_set_visible(topHandle, true);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+		} else {
+			GTK.gtk_widget_set_allocation(topHandle, allocation);
+		}
+	} else {
+		super.setInitialBounds();
+	}
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument.
