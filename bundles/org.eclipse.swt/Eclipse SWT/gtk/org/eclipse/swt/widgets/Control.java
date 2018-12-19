@@ -4801,12 +4801,15 @@ public void setBackgroundImage (Image image) {
 
 void setBackgroundSurface (Image image) {
 	long /*int*/ window = gtk_widget_get_window (paintHandle ());
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		// gdk_window_set_background_pattern() deprecated in GTK3.22+
+		return;
+	}
 	if (window != 0) {
 		if (image.surface != 0) {
 			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(image.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REPEAT);
-			// TODO: no gdk_surface_set_background_pattern() on GTK4.
 			GDK.gdk_window_set_background_pattern(window, pattern);
 			Cairo.cairo_pattern_destroy(pattern);
 		}
@@ -5571,8 +5574,10 @@ public void setRedraw (boolean redraw) {
 							GDK.GDK_BUTTON_MOTION_MASK | GDK.GDK_BUTTON1_MOTION_MASK |
 							GDK.GDK_BUTTON2_MOTION_MASK | GDK.GDK_BUTTON3_MOTION_MASK;
 						GDK.gdk_window_set_events (window, GDK.gdk_window_get_events (window) & ~mouseMask);
-						// TODO: no gdk_surface_set_background_pattern() on GTK4.
-						GDK.gdk_window_set_background_pattern(redrawWindow, 0);
+						// No gdk_surface_set_background_pattern() on GTK4.
+						if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
+							GDK.gdk_window_set_background_pattern(redrawWindow, 0);
+						}
 						GDK.gdk_window_show (redrawWindow);
 					}
 				}

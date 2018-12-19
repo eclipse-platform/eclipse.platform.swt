@@ -902,9 +902,8 @@ long /*int*/ gtk_map (long /*int*/ widget) {
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
-		if (GTK.GTK4) {
-			// TODO: no gdk_surface_set_background_pattern() on GTK4.
-		} else {
+		// No gdk_surface_set_background_pattern() on GTK4.
+		if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 			long /*int*/ window = gtk_widget_get_window (paintHandle ());
 			if (window != 0) {
 				GDK.gdk_window_set_background_pattern(window, 0);
