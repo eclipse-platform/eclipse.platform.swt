@@ -461,10 +461,18 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 
 @Override
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
+	// Set fit-model property when computing size, if it was previously disabled
+	if (fitModelToggled) {
+		GTK.gtk_cell_view_set_fit_model(cellHandle, true);
+	}
 	int [] xpad = new int[1];
 	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
 	Point nativeSize = super.computeNativeSize(h, wHint, hHint, changed);
 	nativeSize.x += xpad[0] * 2;
+	// Re-set fit-model to false as it was before
+	if (fitModelToggled) {
+		GTK.gtk_cell_view_set_fit_model(cellHandle, false);
+	}
 	return nativeSize;
 }
 
