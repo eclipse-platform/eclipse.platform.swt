@@ -1797,6 +1797,9 @@ long /*int*/ gtk_widget_get_surface (long /*int*/ widget){
 
 void gtk_widget_set_has_surface_or_window (long /*int*/ widget, boolean has) {
 	if (GTK.GTK4) {
+		if (has && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
+			return;
+		}
 		GTK.gtk_widget_set_has_surface(widget, has);
 	} else {
 		GTK.gtk_widget_set_has_window(widget, has);
