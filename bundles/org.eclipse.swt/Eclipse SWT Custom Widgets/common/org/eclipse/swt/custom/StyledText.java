@@ -172,6 +172,7 @@ public class StyledText extends Canvas {
 	AccessibleEditableTextListener accEditableTextListener;
 	AccessibleTextExtendedAdapter accTextExtendedAdapter;
 	AccessibleAdapter accAdapter;
+	MouseNavigator mouseNavigator;
 
 	//block selection
 	boolean blockSelection;
@@ -4400,6 +4401,24 @@ public Point getLocationAtOffset(int offset) {
 	return getPointAtOffset(offset);
 }
 /**
+ * Returns <code>true</code> if the mouse navigator is enabled.
+ * When mouse navigator is enabled, the user can navigate through the widget by pressing the middle button and moving the cursor
+ *
+ * @return the mouse navigator's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getEnabled
+ * @since 3.110
+ */
+public boolean getMouseNavigatorEnabled () {
+	checkWidget ();
+	return mouseNavigator != null;
+}
+/**
  * Returns the character offset of the first character of the given line.
  *
  * @param lineIndex index of the line, 0 based relative to the first
@@ -6118,7 +6137,8 @@ void handleMouseDown(Event event) {
 	if (dragDetect && checkDragDetect(event)) return;
 
 	//paste clipboard selection
-	if (event.button == 2) {
+	boolean mouseNavigationRunning = mouseNavigator != null && mouseNavigator.navigationActivated;
+	if (event.button == 2 && !mouseNavigationRunning) {
 		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
 		if (text != null && text.length() > 0) {
 			// position cursor
@@ -9665,6 +9685,29 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
 	setCaretLocation();
 	setAlignment();
 	super.redraw();
+}
+/**
+ * Sets the enabled state of the mouse navigator. When the mouse navigator is enabled, the user can navigate through the widget
+ * by pressing the middle button and moving the cursor.
+ *
+ * @param enabled if true, the mouse navigator is enabled, if false the mouse navigator is deactivated
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.110
+ */
+public void setMouseNavigatorEnabled(boolean enabled) {
+	checkWidget();
+	if ((enabled && mouseNavigator != null) || (!enabled && mouseNavigator == null)) {
+		return;
+	}
+	if (enabled) {
+		mouseNavigator = new MouseNavigator(this);
+	} else {
+		mouseNavigator.dispose();
+		mouseNavigator = null;
+	}
 }
 /**
  * Flips selection anchor based on word selection direction.
