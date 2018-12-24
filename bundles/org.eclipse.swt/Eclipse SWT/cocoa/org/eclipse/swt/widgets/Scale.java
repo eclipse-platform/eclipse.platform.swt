@@ -14,11 +14,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -140,6 +139,7 @@ void createHandle () {
 	widget.setMaxValue(100);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
+	if ((style & SWT.VERTICAL) != 0) widget.setBoundsRotation(-90);
 	view = widget;
 }
 
