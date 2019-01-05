@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -188,7 +188,7 @@ public static Frame new_Frame (final Composite parent) {
 					Shell shell = parent.getShell();
 					long /*int*/ awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
-					long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (shell.handle));
+					long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
 					OS.XSetTransientForHint(GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default()), awtHandle, xWindow);
 				});
 			}
