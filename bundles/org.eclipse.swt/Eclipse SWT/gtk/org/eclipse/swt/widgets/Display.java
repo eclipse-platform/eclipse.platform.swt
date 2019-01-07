@@ -3152,9 +3152,9 @@ GdkRGBA getBackgroundColor (long /*int*/ context, int state) {
 	Cairo.cairo_surface_flush (surface);
 	byte[] buffer = new byte[3];
 	C.memmove (buffer, Cairo.cairo_image_surface_get_data(surface), buffer.length);
-	rgba.red = buffer[2] / 255f;
-	rgba.green = buffer[1] / 255f;
-	rgba.blue = buffer[0] / 255f;
+	rgba.red = Byte.toUnsignedInt(buffer[2]) / 255f;
+	rgba.green = Byte.toUnsignedInt(buffer[1]) / 255f;
+	rgba.blue = Byte.toUnsignedInt(buffer[0]) / 255f;
 	rgba.alpha = 1.0;
 	Cairo.cairo_surface_destroy (surface);
 	Cairo.cairo_destroy (cairo);
