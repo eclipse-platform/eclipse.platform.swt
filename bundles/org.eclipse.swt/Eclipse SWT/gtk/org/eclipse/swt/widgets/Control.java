@@ -162,14 +162,14 @@ public Control (Composite parent, int style) {
 
 void connectPaint () {
 	long /*int*/ paintHandle = paintHandle ();
-	int paintMask = GDK.GDK_EXPOSURE_MASK;
-	if (GTK.GTK4 && (hooksPaint() || drawRegion)) {
+	if (GTK.GTK4 && hooksPaint()) {
 		long /*int*/ widgetClass = GTK.GTK_WIDGET_GET_CLASS(paintHandle);
 		GtkWidgetClass widgetClassStruct = new GtkWidgetClass ();
 		OS.memmove(widgetClassStruct, widgetClass);
 		widgetClassStruct.snapshot = display.snapshotDrawProc;
 		OS.memmove(widgetClass, widgetClassStruct);
-	} else {
+	} else if (!GTK.GTK4) {
+		int paintMask = GDK.GDK_EXPOSURE_MASK;
 		GTK.gtk_widget_add_events (paintHandle, paintMask);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 
@@ -2097,6 +2097,7 @@ public void addPaintListener(PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.Paint,typedListener);
+	if (GTK.GTK4) connectPaint();
 }
 
 /**

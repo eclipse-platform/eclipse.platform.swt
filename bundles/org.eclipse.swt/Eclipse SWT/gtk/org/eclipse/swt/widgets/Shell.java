@@ -1025,6 +1025,15 @@ long /*int*/ topHandle () {
 	return shellHandle;
 }
 
+@Override
+long /*int*/ paintHandle () {
+	if (GTK.GTK4) {
+		return handle;
+	} else {
+		return super.paintHandle();
+	}
+}
+
 void fixActiveShell () {
 	if (display.activeShell == this) {
 		Shell shell = null;
@@ -1475,6 +1484,9 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 			GTK.gtk_render_frame (context, cairo, 0 + 10, 0 + 10, width [0] - 20, height [0] - 20);
 			GTK.gtk_style_context_restore (context);
 			return 1;
+		}
+		if (GTK.GTK4) {
+			super.gtk_draw(widget, cairo);
 		}
 		return 0;
 	}

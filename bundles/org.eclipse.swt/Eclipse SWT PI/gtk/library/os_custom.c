@@ -976,10 +976,10 @@ static AtkObject *swt_fixed_get_accessible (GtkWidget *widget) {
 
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline) {
-	natural = 0;
-	natural_baseline = 0;
-	minimum = 0;
-	minimum_baseline = 0;
+	if (minimum) *minimum = 0;
+	if (natural) *natural = 0;
+	if (minimum_baseline) *minimum_baseline = -1;
+	if (natural_baseline) *natural_baseline = -1;
 	return;
 }
 
