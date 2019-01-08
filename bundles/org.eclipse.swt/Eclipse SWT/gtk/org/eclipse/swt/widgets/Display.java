@@ -1035,7 +1035,12 @@ void createDisplay (DeviceData data) {
 	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	checkXimModule();
 	//set GTK+ Theme name as property for introspection purposes
-	System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
+	if (OS.GTK_THEME_SET) {
+		String themeName = OS.GTK_THEME_NAME + (OS.GTK_THEME_DARK ? ":dark" : "");
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName);
+	} else {
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
+	}
 	if (OS.isX11()) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
 	}
