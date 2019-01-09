@@ -3308,12 +3308,24 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	mouseDown = true;
 	dragBegun = false;
 
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	// Event fields
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int eventType = GDK.gdk_event_get_event_type(event);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventTime = GDK.gdk_event_get_time(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
+	if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
 
 	/*
 	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
@@ -3326,15 +3338,16 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		shell.forceActive();
 	}
 	long /*int*/ result = 0;
-	if (gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
+	if (eventType == GDK.GDK_BUTTON_PRESS) {
 		boolean dragging = false;
 		display.clickCount = 1;
-		long /*int*/ nextEvent = GDK.gdk_event_peek ();
+		long /*int*/ defaultDisplay = GDK.gdk_display_get_default();
+		long /*int*/ nextEvent = GTK.GTK4 ? GDK.gdk_display_peek_event(defaultDisplay) : GDK.gdk_event_peek ();
 		if (nextEvent != 0) {
-			int eventType = GDK.GDK_EVENT_TYPE (nextEvent);
-			if (eventType == GDK.GDK_2BUTTON_PRESS) display.clickCount = 2;
-			if (eventType == GDK.GDK_3BUTTON_PRESS) display.clickCount = 3;
-			GDK.gdk_event_free (nextEvent);
+			int peekedEventType = GDK.GDK_EVENT_TYPE (nextEvent);
+			if (peekedEventType == GDK.GDK_2BUTTON_PRESS) display.clickCount = 2;
+			if (peekedEventType == GDK.GDK_3BUTTON_PRESS) display.clickCount = 3;
+			gdk_event_free (nextEvent);
 		}
 		/*
 		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
@@ -3342,9 +3355,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		 */
 		if (OS.isX11()) { // Wayland
 			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-				if (gdkEvent.button == 1) {
+				if (eventButton[0] == 1) {
 					boolean [] consume = new boolean [1];
-					if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
+					if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
 						dragging = true;
 						if (consume [0]) result = 1;
 					}
@@ -3352,7 +3365,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 				}
 			}
 		}
-		if (sendMouseDown && !sendMouseEvent (SWT.MouseDown, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state)) {
+		if (sendMouseDown && !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
 			result = 1;
 		}
 		if (isDisposed ()) return 1;
@@ -3362,8 +3375,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		 */
 		if (OS.isX11()) { // Wayland
 			if (dragging) {
-				Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)gdkEvent.x, (int) gdkEvent.y));
-				sendDragEvent (gdkEvent.button, gdkEvent.state, scaledEvent.x, scaledEvent.y, false);
+				Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
+				sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false);
 				if (isDisposed ()) return 1;
 			}
 		}
@@ -3373,15 +3386,15 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		* operating system from displaying the menu if necessary.
 		*/
 		if ((state & MENU) != 0) {
-			if (gdkEvent.button == 3) {
-				if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
+			if (eventButton[0] == 3) {
+				if (showMenu ((int)eventRX[0], (int)eventRY[0])) {
 					result = 1;
 				}
 			}
 		}
 	} else {
 		display.clickCount = 2;
-		result = sendMouseEvent (SWT.MouseDoubleClick, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+		result = sendMouseEvent (SWT.MouseDoubleClick, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0],eventRY[0], false, eventState[0]) ? 0 : 1;
 		if (isDisposed ()) return 1;
 	}
 	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
@@ -3391,12 +3404,23 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	mouseDown = false;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	// Event fields
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventTime = GDK.gdk_event_get_time(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	return sendMouseEvent (SWT.MouseUp, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+	return sendMouseEvent (SWT.MouseUp, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
 }
 
 @Override
@@ -3460,9 +3484,8 @@ boolean checkSubwindow () {
 
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-	switch (event.type) {
+	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			if (widget != eventHandle ()) break;
 			/*
@@ -3471,18 +3494,27 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 			* such as GtkTreeView to select items before a menu is shown.
 			*/
 			if ((state & MENU) == 0) {
-				GdkEventButton gdkEventButton = new GdkEventButton ();
-				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-				if (gdkEventButton.button == 3) {
-					showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+				double [] eventRX = new double [1];
+				double [] eventRY = new double [1];
+				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+				int [] eventButton = new int [1];
+				GDK.gdk_event_get_button(gdkEvent, eventButton);
+				if (eventButton[0] == 3) {
+					showMenu ((int) eventRX[0], (int) eventRY[0]);
 				}
 			}
 			break;
 		}
 		case GDK.GDK_FOCUS_CHANGE: {
 			if (!isFocusHandle (widget)) break;
-			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			boolean [] focusIn = new boolean [1];
+			if (GTK.GTK4) {
+				GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+			} else {
+				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+				focusIn[0] = gdkEventFocus.in != 0;
+			}
 
 			/*
 			 * Feature in GTK. The GTK combo box popup under some window managers
@@ -3494,7 +3526,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 			 * NOTE: This code runs for all menus.
 			 */
 			Display display = this.display;
-			if (gdkEventFocus.in != 0) {
+			if (focusIn[0]) {
 				if (display.ignoreFocus) {
 					display.ignoreFocus = false;
 					break;
@@ -3510,7 +3542,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 				}
 			}
 
-			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
+			sendFocusEvent (focusIn[0] ? SWT.FocusIn : SWT.FocusOut);
 			break;
 		}
 	}
@@ -3729,7 +3761,7 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 			}
 			result = 1;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	return result;
 }
@@ -3762,11 +3794,17 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		}
 		if (dragging) {
 			GTK.gtk_event_controller_handle_event(dragGesture,event);
-			GdkEventButton gdkEvent1 = new GdkEventButton ();
-			OS.memmove (gdkEvent1, event, GdkEventButton.sizeof);
-			if (gdkEvent1.type == GDK.GDK_3BUTTON_PRESS) return 0;
-			Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)gdkEvent1.x, (int) gdkEvent1.y));
-			if (sendDragEvent (gdkEvent1.button, gdkEvent1.state, scaledEvent.x, scaledEvent.y, false)){
+			int eventType = GDK.gdk_event_get_event_type(event);
+			if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
+			double [] eventX = new double [1];
+			double [] eventY = new double [1];
+			GDK.gdk_event_get_coords(event, eventX, eventY);
+			Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(event, eventButton);
+			int [] eventState = new int [1];
+			GDK.gdk_event_get_state(event, eventState);
+			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)){
 				return 1;
 		}
 	}

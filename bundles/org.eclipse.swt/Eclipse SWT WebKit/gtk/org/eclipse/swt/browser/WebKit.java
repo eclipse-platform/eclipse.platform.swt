@@ -2083,7 +2083,11 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 				keyEventState = gdkEvent.state;
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		if (GTK.GTK4) {
+			OS.g_object_unref(eventPtr);
+		} else {
+			GDK.gdk_event_free (eventPtr);
+		}
 	}
 	int keyCode = (int)WebKitGTK.webkit_dom_ui_event_get_key_code (event);
 	int charCode = (int)WebKitGTK.webkit_dom_ui_event_get_char_code (event);

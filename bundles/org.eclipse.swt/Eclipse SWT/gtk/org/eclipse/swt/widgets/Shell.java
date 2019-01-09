@@ -1359,11 +1359,14 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 			if (OS.isX11() && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
 				forceActive ();
 			}
-			GdkEventButton gdkEvent = new GdkEventButton ();
-			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-			if (gdkEvent.button == 1) {
-				display.resizeLocationX = gdkEvent.x_root;
-				display.resizeLocationY = gdkEvent.y_root;
+			double [] eventRX = new double [1];
+			double [] eventRY = new double [1];
+			GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(event, eventButton);
+			if (eventButton[0] == 1) {
+				display.resizeLocationX = eventRX[0];
+				display.resizeLocationY = eventRY[0];
 				int [] x = new int [1], y = new int [1];
 				GTK.gtk_window_get_position (shellHandle, x, y);
 				display.resizeBoundsX = x [0];

@@ -1498,7 +1498,7 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
 		* the key by returning null.
 		*/
 		if (isDisposed ()) {
-			if (ptr != 0) GDK.gdk_event_free (ptr);
+			if (ptr != 0) gdk_event_free (ptr);
 			return null;
 		}
 		if (event.doit) chars [count++] = chars [index];
@@ -1525,9 +1525,8 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 	if (event == null) event = new Event ();
 	long /*int*/ ptr = GTK.gtk_get_current_event ();
 	if (ptr != 0) {
-		GdkEvent gdkEvent = new GdkEvent ();
-		OS.memmove (gdkEvent, ptr, GdkEvent.sizeof);
-		switch (gdkEvent.type) {
+		int currentEventType = GDK.gdk_event_get_event_type(ptr);
+		switch (currentEventType) {
 			case GDK.GDK_KEY_PRESS:
 			case GDK.GDK_KEY_RELEASE:
 			case GDK.GDK_BUTTON_PRESS:
@@ -1539,7 +1538,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 				break;
 			}
 		}
-		GDK.gdk_event_free (ptr);
+		gdk_event_free (ptr);
 	}
 	sendEvent (eventType, event, send);
 }
@@ -1864,6 +1863,19 @@ void gdk_surface_get_size (long /*int*/ surface, int[] width, int[] height) {
 	height[0] = GDK.gdk_surface_get_height (surface);
 }
 
+/**
+ * GTK4 does not hand out copies of events anymore, only references.
+ * Call gdk_event_free() on GTK3 and g_object_unref() on GTK4.
+ *
+ * @param event the event to be freed
+ */
+void gdk_event_free (long /*int*/ event) {
+	if (GTK.GTK4) {
+		OS.g_object_unref(event);
+	} else {
+		GDK.gdk_event_free(event);
+	}
+}
 
 /**
  * Wrapper function for gdk_event_get_state()

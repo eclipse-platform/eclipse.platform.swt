@@ -894,10 +894,9 @@ private void setTrackerBackground(boolean opaque) {
 }
 
 boolean processEvent (long /*int*/ eventPtr) {
-	GdkEvent gdkEvent = new GdkEvent();
-	OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
+	int eventType = GDK.gdk_event_get_event_type(eventPtr);
 	long /*int*/ widget = GTK.gtk_get_event_widget (eventPtr);
-	switch (gdkEvent.type) {
+	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
 		case GDK.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;

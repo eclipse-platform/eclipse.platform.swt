@@ -2877,18 +2877,6 @@ public static final native void memmove(long /*int*/ dest, GdkEventButton src, l
  * @param size cast=(size_t)
  */
 public static final native void memmove(long /*int*/ dest, GdkEventKey src, long /*int*/ size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long /*int*/ dest, GdkEventExpose src, long /*int*/ size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long /*int*/ dest, GdkEventMotion src, long /*int*/ size);
 /** @param src flags=no_out */
 public static final native void memmove(long /*int*/ dest, GtkWidgetClass src);
 /**
@@ -2928,18 +2916,6 @@ public static final native void memmove(GdkKeymapKey dest, long /*int*/ src, lon
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkRGBA dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEvent dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventAny dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

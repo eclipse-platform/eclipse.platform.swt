@@ -986,6 +986,47 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param event cast=(GdkEvent *)
+	 * @param button cast=(guint *)
+	 */
+	public static final native boolean _gdk_event_get_button(long /*int*/ event, int[] button);
+	public static final boolean gdk_event_get_button(long /*int*/ event, int[] button) {
+		lock.lock();
+		try {
+			return _gdk_event_get_button(event, button);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param in cast=(gboolean *)
+	 */
+	public static final native boolean _gdk_event_get_focus_in(long /*int*/ event, boolean [] in);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gdk_event_get_focus_in(long /*int*/ event, boolean [] in) {
+		lock.lock();
+		try {
+			return _gdk_event_get_focus_in(event, in);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param x cast=(gdouble *)
+	 * @param y cast=(gdouble *)
+	 */
+	public static final native boolean _gdk_event_get_root_coords(long /*int*/ event, double[] x, double[] y);
+	public static final boolean gdk_event_get_root_coords(long /*int*/ event, double[] x, double[] y) {
+		lock.lock();
+		try {
+			return _gdk_event_get_root_coords(event, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
 	 * @param pmod cast=(GdkModifierType *)
 	 */
 	public static final native boolean _gdk_event_get_state(long /*int*/ event, int[] pmod);
@@ -1019,6 +1060,32 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_event_get_seat(event);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 */
+	public static final native long /*int*/ _gdk_event_get_surface(long /*int*/ event);
+	/** [GTK4 only, if-def'd in os.h] **/
+	public static final long /*int*/ gdk_event_get_surface(long /*int*/ event) {
+		lock.lock();
+		try {
+			return _gdk_event_get_surface(event);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 */
+	public static final native long /*int*/ _gdk_event_get_window(long /*int*/ event);
+	/** [GTK3 only, if-def'd in os.h] **/
+	public static final long /*int*/ gdk_event_get_window(long /*int*/ event) {
+		lock.lock();
+		try {
+			return _gdk_event_get_window(event);
 		} finally {
 			lock.unlock();
 		}
@@ -1739,6 +1806,16 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_display_get_primary_monitor(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/** @param display cast=(GdkDisplay *) */
+	public static final native long /*int*/ _gdk_display_peek_event(long /*int*/ display);
+	public static final long /*int*/ gdk_display_peek_event(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_peek_event(display);
 		} finally {
 			lock.unlock();
 		}

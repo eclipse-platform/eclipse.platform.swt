@@ -261,7 +261,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 		int currEventType = 0;
 		if (currEvent != 0) {
 			currEventType = GDK.GDK_EVENT_TYPE (currEvent);
-			GDK.gdk_event_free (currEvent);
+			gdk_event_free(currEvent);
 		}
 		GDK.gdk_event_free (nextEvent);
 		if (currEventType == GDK.GDK_BUTTON_PRESS && nextEventType == GDK.GDK_2BUTTON_PRESS) {
@@ -272,15 +272,16 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
-	if (gdkEvent.button == 3 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+	int eventType = GDK.gdk_event_get_event_type(event);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
+	if (eventButton[0] == 3 && eventType == GDK.GDK_BUTTON_PRESS) {
 		sendEvent (SWT.MenuDetect);
 		return 0;
 	}
-	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) {
+	if (eventType == GDK.GDK_2BUTTON_PRESS) {
 		sendSelectionEvent (SWT.DefaultSelection);
 	} else {
 		sendSelectionEvent (SWT.Selection);

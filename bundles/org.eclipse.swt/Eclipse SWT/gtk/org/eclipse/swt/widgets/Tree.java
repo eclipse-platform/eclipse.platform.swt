@@ -2050,9 +2050,23 @@ TreeItem _getCachedTopItem() {
 
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int eventType = GDK.gdk_event_get_event_type(event);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+	long /*int*/ eventGdkResource = GTK.GTK4 ? GDK.gdk_event_get_surface(event) : GDK.gdk_event_get_window(event);
+	if (GTK.GTK4) {
+		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
+	} else {
+		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	}
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
@@ -2062,19 +2076,19 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
 	 */
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			!OS.isX11() && gdkEvent.type == GDK.GDK_BUTTON_PRESS) { // Wayland
+			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 	// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long /*int*/ nextEvent = GDK.gdk_event_peek ();
 		if (nextEvent == 0) {
 			long /*int*/ [] path = new long /*int*/ [1];
 			long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
-			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+			if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)eventX[0], (int)eventY[0], path, null, null, null) &&
 					path[0] != 0) {
 				//  selection count is used in the case of clicking an already selected item while holding Control
 				selectionCountOnPress = getSelectionCount();
 				if (GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
-					if (((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) ||
-							((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0)) {
+					if (((eventState[0] & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) ||
+							((eventState[0] & GDK.GDK_CONTROL_MASK) != 0)) {
 						/**
 						 * Disable selection on a mouse click if there are multiple items already selected. Also,
 						 * if control is currently being held down, we will designate the selection logic over to release
@@ -2099,10 +2113,10 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	* an unwanted selection event. The workaround is to detect that case and not
 	* run the default handler when the item is already part of the current selection.
 	*/
-	int button = gdkEvent.button;
-	if (button == 3 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
+	int button = eventButton[0];
+	if (button == 3 && eventType == GDK.GDK_BUTTON_PRESS) {
 		long /*int*/ [] path = new long /*int*/ [1];
-		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)eventX[0], (int)eventY[0], path, null, null, null)) {
 			if (path [0] != 0) {
 				long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 				if (GTK.gtk_tree_selection_path_is_selected (selection, path [0])) result = 1;
@@ -2120,7 +2134,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	*/
 	if ((style & SWT.SINGLE) != 0 && getSelectionCount () == 0) {
 		long /*int*/ [] path = new long /*int*/ [1];
-		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)eventX[0], (int)eventY[0], path, null, null, null)) {
 			if (path [0] != 0) {
 				long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -2138,7 +2152,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 * that 'row-activated' signal comes before double-click event. This prevents
 	 * opening of the current highlighted item when double clicking on any expander arrow.
 	 */
-	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS && rowActivated) {
+	if (eventType == GDK.GDK_2BUTTON_PRESS && rowActivated) {
 		sendTreeDefaultSelection ();
 		rowActivated = false;
 	}
@@ -2202,13 +2216,26 @@ void sendTreeDefaultSelection() {
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+	long /*int*/ eventGdkResource = GTK.GTK4 ? GDK.gdk_event_get_surface(event) : GDK.gdk_event_get_window(event);
+	if (GTK.GTK4) {
+		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
+	} else {
+		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	}
 	// Check region since super.gtk_button_release_event() isn't called
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	if (gdkEvent.window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
 	 * When doing a DnD, GTK de-selects all other items except for the widget being dragged from. By disabling the selection function
@@ -2221,15 +2248,15 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 		long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.
 		GTK.gtk_tree_selection_set_select_function(selection,0,0,0);
-		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null) &&
+		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)eventX[0], (int)eventY[0], path, null, null, null) &&
 				path[0] != 0 && GTK.gtk_tree_selection_path_is_selected (selection, path[0])) {
 			selectionCountOnRelease = getSelectionCount();
-			if ((gdkEvent.state & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
+			if ((eventState[0] & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
 			 // Check to see if there has been a new tree item selected when holding Control in Path.
 			 // If not, deselect the item.
-			if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
+			if ((eventState[0] & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
 		}

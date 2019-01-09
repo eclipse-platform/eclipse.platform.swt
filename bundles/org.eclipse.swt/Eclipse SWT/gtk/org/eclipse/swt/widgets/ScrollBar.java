@@ -551,13 +551,12 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
-	GdkEvent gtkEvent = new GdkEvent ();
-	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
-	switch (gtkEvent.type) {
+	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	switch (eventType) {
 		case GDK.GDK_BUTTON_RELEASE: {
-			GdkEventButton gdkEventButton = new GdkEventButton ();
-			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-			if (gdkEventButton.button == 1 && detail == GTK.GTK_SCROLL_JUMP) {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (eventButton[0] == 1 && detail == GTK.GTK_SCROLL_JUMP) {
 				if (!dragSent) {
 					Event event = new Event ();
 					event.detail = SWT.DRAG;

@@ -1312,9 +1312,10 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	* the left mouse button event from being propagated. The fix is to
 	* send the mouse event from the event_after handler.
 	*/
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.type == GDK.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventType = GDK.gdk_event_get_event_type(event);
+	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
 		return gtk_button_press_event(widget, event, false);
 	}
 	return super.gtk_button_press_event (widget, event);
@@ -1361,7 +1362,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 				keyPress = true;
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -1520,14 +1521,19 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	* user clicks on the drop down button focus is assigned to the text
 	* field.
 	*/
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-	switch (event.type) {
+	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
-			GdkEventButton gdkEventButton = new GdkEventButton ();
-			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-			if (gdkEventButton.button == 1) {
-				if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			int eventTime = GDK.gdk_event_get_time(gdkEvent);
+			double [] eventRX = new double [1];
+			double [] eventRY = new double [1];
+			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+			int [] eventState = new int [1];
+			GDK.gdk_event_get_state(gdkEvent, eventState);
+			if (eventButton[0] == 1) {
+				if (!sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
 					return 1;
 				}
 				if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
@@ -1538,9 +1544,15 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 		}
 		case GDK.GDK_FOCUS_CHANGE: {
 			if ((style & SWT.READ_ONLY) == 0) {
-				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-				if (gdkEventFocus.in != 0) {
+				boolean [] focusIn = new boolean [1];
+				if (GTK.GTK4) {
+					GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+				} else {
+					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+					focusIn[0] = gdkEventFocus.in != 0;
+				}
+				if (focusIn[0]) {
 					if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 						GTK.gtk_widget_set_focus_on_click(handle, false);
 					} else {
@@ -2599,7 +2611,7 @@ String verifyText (String string, int start, int end) {
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	/*
 	 * It is possible (but unlikely), that application

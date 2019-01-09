@@ -154,20 +154,27 @@ void drawBand (int x, int y, int width, int height) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-	int button = gdkEvent.button;
+	// Event fields
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventType = GDK.gdk_event_get_event_type(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int eventTime = GDK.gdk_event_get_time(event);
+
+	int button = eventButton[0];
 	if (button != 1) return 0;
-	if (gdkEvent.type == GDK.GDK_2BUTTON_PRESS) return 0;
-	if (gdkEvent.type == GDK.GDK_3BUTTON_PRESS) return 0;
+	if (eventType == GDK.GDK_2BUTTON_PRESS) return 0;
+	if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
 	long /*int*/ window = gtk_widget_get_window (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	startX = (int) (gdkEvent.x_root - origin_x [0]);
-	startY = (int) (gdkEvent.y_root - origin_y [0]);
+	startX = (int) (eventRX[0] - origin_x [0]);
+	startY = (int) (eventRY[0] - origin_y [0]);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(handle, allocation);
 	int x = allocation.x;
@@ -176,19 +183,19 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 	int height = allocation.height;
 	lastX = x;
 	lastY = y;
-	Event event = new Event ();
-	event.time = gdkEvent.time;
+	Event jEvent = new Event ();
+	jEvent.time = eventTime;
 	Rectangle eventRect = new Rectangle (lastX, lastY, width, height);
-	event.setBounds (DPIUtil.autoScaleDown (eventRect));
+	jEvent.setBounds (DPIUtil.autoScaleDown (eventRect));
 	if ((style & SWT.SMOOTH) == 0) {
-		event.detail = SWT.DRAG;
+		jEvent.detail = SWT.DRAG;
 	}
-	if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - event.x;
-	sendSelectionEvent (SWT.Selection, event, true);
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - jEvent.x;
+	sendSelectionEvent (SWT.Selection, jEvent, true);
 	if (isDisposed ()) return 0;
-	if (event.doit) {
+	if (jEvent.doit) {
 		dragging = true;
-		Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+		Rectangle rect = DPIUtil.autoScaleUp (jEvent.getBounds ());
 		lastX = rect.x;
 		lastY = rect.y;
 		if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth () - width - lastX;
@@ -203,12 +210,13 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 }
 
 @Override
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ result = super.gtk_button_release_event (widget, eventPtr);
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-	int button = gdkEvent.button;
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventTime = GDK.gdk_event_get_time(event);
+	int button = eventButton[0];
 	if (button != 1) return 0;
 	if (!dragging) return 0;
 	dragging = false;
@@ -216,17 +224,17 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPt
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
-	Event event = new Event ();
-	event.time = gdkEvent.time;
+	Event jEvent = new Event ();
+	jEvent.time = eventTime;
 	Rectangle eventRect = new Rectangle (lastX, lastY, width, height);
-	event.setBounds (DPIUtil.autoScaleDown (eventRect));
+	jEvent.setBounds (DPIUtil.autoScaleDown (eventRect));
 	drawBand (lastX, lastY, width, height);
-	if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - event.x;
-	sendSelectionEvent (SWT.Selection, event, true);
+	if ((parent.style & SWT.MIRRORED) != 0) jEvent.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - jEvent.x;
+	sendSelectionEvent (SWT.Selection, jEvent, true);
 	if (isDisposed ()) return result;
-	if (event.doit) {
+	if (jEvent.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
-			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+			Rectangle rect = DPIUtil.autoScaleUp (jEvent.getBounds ());
 			setBoundsInPixels (rect.x, rect.y, width, height);
 			// widget could be disposed at this point
 		}

@@ -611,7 +611,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 				keyPress = true;
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -1225,7 +1225,7 @@ String verifyText (String string, int start, int end) {
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	int index = 0;
 	if (GTK.gtk_spin_button_get_digits (handle) > 0) {

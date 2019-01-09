@@ -1454,10 +1454,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result;
 	result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	int eventType = GDK.gdk_event_get_event_type(event);
 	if (!doubleClick) {
-		switch (gdkEvent.type) {
+		switch (eventType) {
 			case GDK.GDK_2BUTTON_PRESS:
 			case GDK.GDK_3BUTTON_PRESS:
 				return 1;
@@ -1485,7 +1484,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 				keyPress = true;
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	if (keyPress) {
 		postEvent (SWT.Modify);
@@ -1635,13 +1634,18 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	* use the correct value.
 	*/
 	if ((style & SWT.SINGLE) != 0 && display.entrySelectOnFocus) {
-		GdkEvent event = new GdkEvent ();
-		OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-		switch (event.type) {
+		int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+		switch (eventType) {
 			case GDK.GDK_FOCUS_CHANGE:
-				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-				if (gdkEventFocus.in == 0) {
+				boolean [] focusIn = new boolean [1];
+				if (GTK.GTK4) {
+					GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+				} else {
+					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+					focusIn[0] = gdkEventFocus.in != 0;
+				}
+				if (focusIn[0]) {
 					long /*int*/ settings = GTK.gtk_settings_get_default ();
 					OS.g_object_set (settings, GTK.gtk_entry_select_on_focus, true, 0);
 				}
@@ -2820,7 +2824,7 @@ String verifyText (String string, int start, int end) {
 				setKeyState (event, gdkEvent);
 				break;
 		}
-		GDK.gdk_event_free (eventPtr);
+		gdk_event_free (eventPtr);
 	}
 	/*
 	 * It is possible (but unlikely), that application

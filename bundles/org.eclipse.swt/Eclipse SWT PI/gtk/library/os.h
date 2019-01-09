@@ -195,12 +195,8 @@
 #define NO_memmove__LLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEvent_2I
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEvent_2J
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventAny_2I
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventAny_2J
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II
@@ -209,8 +205,6 @@
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventCrossing_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ
-#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I
-#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventFocus_2I
@@ -221,8 +215,6 @@
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ
-#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I
-#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventScroll_2I
@@ -362,6 +354,7 @@
 #define NO__1gdk_1window_1show_1unraised
 #define NO__1gdk_1device_1get_1window_1at_1position
 #define NO__1gdk_1window_1set_1background_1pattern
+#define NO__1gdk_1event_1get_1window
 
 // GdkDragContext removals
 #define NO__1gdk_1drag_1context_1get_1dest_1window
@@ -432,6 +425,7 @@
 #define NO__1gdk_1surface_1set_1functions
 #define NO__1gdk_1surface_1get_1root_1origin
 #define NO__1gdk_1surface_1invalidate_1region
+#define NO__1gdk_1event_1get_1surface
 
 // No GtkSnapshot on GTK3
 #define NO__1gtk_1snapshot_1append_1cairo
@@ -449,6 +443,9 @@
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
 #define NO__1gdk_1display_1get_1keymap
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
+
+// GdkEvent functions which do not exist on GTK3
+#define NO__1gdk_1event_1get_1focus_1in
 #endif
 
 #include "os_custom.h"

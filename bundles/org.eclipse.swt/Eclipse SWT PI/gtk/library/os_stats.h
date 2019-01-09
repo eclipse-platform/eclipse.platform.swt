@@ -102,6 +102,7 @@ typedef enum {
 	_1gdk_1display_1get_1monitor_1at_1window_FUNC,
 	_1gdk_1display_1get_1n_1monitors_FUNC,
 	_1gdk_1display_1get_1primary_1monitor_FUNC,
+	_1gdk_1display_1peek_1event_FUNC,
 	_1gdk_1display_1supports_1cursor_1color_FUNC,
 	_1gdk_1drag_1context_1get_1actions_FUNC,
 	_1gdk_1drag_1context_1get_1dest_1window_FUNC,
@@ -112,12 +113,17 @@ typedef enum {
 	_1gdk_1event_1copy_FUNC,
 	_1gdk_1event_1free_FUNC,
 	_1gdk_1event_1get_FUNC,
+	_1gdk_1event_1get_1button_FUNC,
 	_1gdk_1event_1get_1coords_FUNC,
 	_1gdk_1event_1get_1event_1type_FUNC,
+	_1gdk_1event_1get_1focus_1in_FUNC,
+	_1gdk_1event_1get_1root_1coords_FUNC,
 	_1gdk_1event_1get_1scroll_1deltas_FUNC,
 	_1gdk_1event_1get_1seat_FUNC,
 	_1gdk_1event_1get_1state_FUNC,
+	_1gdk_1event_1get_1surface_FUNC,
 	_1gdk_1event_1get_1time_FUNC,
+	_1gdk_1event_1get_1window_FUNC,
 	_1gdk_1event_1handler_1set_FUNC,
 	_1gdk_1event_1new_FUNC,
 	_1gdk_1event_1peek_FUNC,
@@ -1709,19 +1715,9 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J_FUNC,
 #endif
 #ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J_FUNC,
-#endif
-#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventKey_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I_FUNC,
@@ -1764,11 +1760,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ_FUNC,
 #endif
 #ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ_FUNC,
-#endif
-#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ_FUNC,
@@ -1807,11 +1798,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II_FUNC,

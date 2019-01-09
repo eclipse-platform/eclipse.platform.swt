@@ -842,9 +842,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (result != 0) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			GdkEventButton gdkEvent = new GdkEventButton ();
-			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-			if (gdkEvent.button == 1) {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(event, eventButton);
+			if (eventButton[0] == 1) {
 				if (getChildrenCount () == 0) setFocus ();
 			}
 		}

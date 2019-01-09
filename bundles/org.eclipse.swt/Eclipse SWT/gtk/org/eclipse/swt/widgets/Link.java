@@ -331,12 +331,16 @@ public String getText () {
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.button == 1 && gdkEvent.type == GDK.GDK_BUTTON_PRESS) {
+	int eventType = GDK.gdk_event_get_event_type(event);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (eventButton[0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
 		if (focusIndex != -1) setFocus ();
-		int x = (int) gdkEvent.x;
-		int y = (int) gdkEvent.y;
+		int x = (int) eventX[0];
+		int y = (int) eventY[0];
 		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		int offset = DPIUtil.autoScaleUp(layout.getOffset (x, y, null));
 		int oldSelectionX = selection.x;
@@ -372,11 +376,14 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	long /*int*/ result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.button == 1) {
-		int x = (int) gdkEvent.x;
-		int y = (int) gdkEvent.y;
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (eventButton[0] == 1) {
+		int x = (int) eventX[0];
+		int y = (int) eventY[0];
 		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		Rectangle [] rects = getRectanglesInPixels (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
@@ -410,9 +417,8 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	long /*int*/ result = super.gtk_event_after (widget, gdkEvent);
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-	switch (event.type) {
+	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	switch (eventType) {
 		case GDK.GDK_FOCUS_CHANGE:
 			redraw ();
 			break;

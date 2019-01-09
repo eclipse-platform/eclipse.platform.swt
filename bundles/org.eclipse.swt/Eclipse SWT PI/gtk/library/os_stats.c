@@ -92,6 +92,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1display_1get_1monitor_1at_1window",
 	"_1gdk_1display_1get_1n_1monitors",
 	"_1gdk_1display_1get_1primary_1monitor",
+	"_1gdk_1display_1peek_1event",
 	"_1gdk_1display_1supports_1cursor_1color",
 	"_1gdk_1drag_1context_1get_1actions",
 	"_1gdk_1drag_1context_1get_1dest_1window",
@@ -102,12 +103,17 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1event_1copy",
 	"_1gdk_1event_1free",
 	"_1gdk_1event_1get",
+	"_1gdk_1event_1get_1button",
 	"_1gdk_1event_1get_1coords",
 	"_1gdk_1event_1get_1event_1type",
+	"_1gdk_1event_1get_1focus_1in",
+	"_1gdk_1event_1get_1root_1coords",
 	"_1gdk_1event_1get_1scroll_1deltas",
 	"_1gdk_1event_1get_1seat",
 	"_1gdk_1event_1get_1state",
+	"_1gdk_1event_1get_1surface",
 	"_1gdk_1event_1get_1time",
+	"_1gdk_1event_1get_1window",
 	"_1gdk_1event_1handler_1set",
 	"_1gdk_1event_1new",
 	"_1gdk_1event_1peek",
@@ -1735,19 +1741,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventKey_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkRGBA_2I",
@@ -1790,11 +1786,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ",
 #endif
 #ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ",
@@ -1833,11 +1824,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkKeymapKey_2II",
