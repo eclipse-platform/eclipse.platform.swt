@@ -404,7 +404,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		long /*int*/ vboxHandle = parent.vboxHandle;
 		GTK.gtk_container_add (vboxHandle, handle);
-		GTK.gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
+		gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 	} else {
 		handle = GTK.gtk_menu_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);

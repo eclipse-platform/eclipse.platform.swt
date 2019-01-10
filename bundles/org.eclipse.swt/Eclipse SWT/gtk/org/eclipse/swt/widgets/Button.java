@@ -730,11 +730,11 @@ void _setAlignment (int alignment) {
 	}
 	if ((alignment & SWT.LEFT) != 0) {
 		if (bothVisible) {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_START);
 		} else {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
@@ -750,8 +750,8 @@ void _setAlignment (int alignment) {
 	}
 	if ((alignment & SWT.CENTER) != 0) {
 		if (bothVisible) {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0))  {
 				gtk_label_set_align(labelHandle,0.0f,0.5f);
@@ -762,8 +762,8 @@ void _setAlignment (int alignment) {
 			}
 
 		} else {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 
 			if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0))  {
 				gtk_label_set_align(labelHandle,0.5f,0.5f);
@@ -778,11 +778,11 @@ void _setAlignment (int alignment) {
 	}
 	if ((alignment & SWT.RIGHT) != 0) {
 		if (bothVisible) {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_END);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, GTK.GTK_PACK_END);
 		} else {
-			GTK.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
-			GTK.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_END);
+			gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
 
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0))  {

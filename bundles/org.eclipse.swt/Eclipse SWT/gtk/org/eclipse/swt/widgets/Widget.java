@@ -1884,6 +1884,20 @@ long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 	return box;
 }
 
+void gtk_box_set_child_packing (long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding, int pack_type) {
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_hexpand(child, expand);
+		GTK.gtk_widget_set_vexpand(child, expand);
+		if (fill) {
+			GTK.gtk_widget_set_halign(child, GTK.GTK_ALIGN_FILL);
+			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
+		}
+		GTK.gtk_box_set_child_packing(box, child, pack_type);
+	} else {
+		GTK.gtk_box_set_child_packing(box, child, expand, fill, padding, pack_type);
+	}
+}
+
 int gdk_pointer_grab (long /*int*/ gdkResource, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
 	long /*int*/ display = 0;
 	if (GTK.GTK4) {

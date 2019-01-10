@@ -651,7 +651,7 @@ void showWidget (int index) {
 		if (boxHandle != 0)
 			GTK.gtk_widget_show (boxHandle);
 		GTK.gtk_container_add (parent.handle, handle);
-		GTK.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
+		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 }
 
 @Override

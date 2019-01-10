@@ -256,8 +256,8 @@ void createHandle (int index) {
 		GTK.gtk_container_add (handle, boxHandle);
 		GTK.gtk_container_add (boxHandle, labelHandle);
 		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
-		GTK.gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+		gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
+		gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 	}
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = GTK.gtk_frame_new (null);

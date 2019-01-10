@@ -2814,7 +2814,32 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param expand cast=(gboolean)
+	 */
+	public static final native void _gtk_widget_set_hexpand(long /*int*/ widget, boolean expand);
+	public static final void gtk_widget_set_hexpand(long /*int*/ widget, boolean expand) {
+		lock.lock();
+		try {
+			_gtk_widget_set_hexpand(widget, expand);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param expand cast=(gboolean)
+	 */
+	public static final native void _gtk_widget_set_vexpand(long /*int*/ widget, boolean expand);
+	public static final void gtk_widget_set_vexpand(long /*int*/ widget, boolean expand) {
+		lock.lock();
+		try {
+			_gtk_widget_set_vexpand(widget, expand);
+		} finally {
+			lock.unlock();
+		}
+	}
 	//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
 	/**
 	 * @method flags=dynamic

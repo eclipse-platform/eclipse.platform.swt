@@ -12738,6 +12738,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1has_1window)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1hexpand
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1hexpand)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1hexpand_FUNC);
+	gtk_widget_set_hexpand((GtkWidget *)arg0, (gboolean)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1hexpand_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1margin_1bottom
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1margin_1bottom)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -12931,6 +12941,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1valign)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1valign_FUNC);
 	gtk_widget_set_valign((GtkWidget *)arg0, (GtkAlign)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1valign_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1vexpand
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1vexpand)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1vexpand_FUNC);
+	gtk_widget_set_vexpand((GtkWidget *)arg0, (gboolean)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1vexpand_FUNC);
 }
 #endif
 
