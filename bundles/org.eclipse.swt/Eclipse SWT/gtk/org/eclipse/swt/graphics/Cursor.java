@@ -368,6 +368,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				for (int i=3; i<buffer.length; i+=4) {
 					buffer[i] = alphaData[i/4];
 				}
+			} else {
+				for (int i=3; i<buffer.length; i+=4) {
+					buffer[i] = -1;
+				}
 			}
 		}
 		C.memmove(data, buffer, stride * height);
