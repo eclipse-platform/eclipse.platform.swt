@@ -13062,15 +13062,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1style_1get__J_3B_3IJ)(JNIEnv *e
 #endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
 	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_style_get)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, const gchar *, jint *, const gchar *))fp)((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-		}
-	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -13098,15 +13090,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1style_1get__J_3B_3JJ)(JNIEnv *e
 #endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
 	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_style_get)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkWidget *, const gchar *, jlong *, const gchar *))fp)((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-		}
-	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);

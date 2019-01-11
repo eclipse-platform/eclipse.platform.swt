@@ -283,6 +283,10 @@
 #define NO__1gdk_1selection_1owner_1set
 #define NO__1gdk_1selection_1owner_1get
 #define NO__1gdk_1visual_1get_1depth
+#define NO__1gtk_1widget_1style_1get__I_3B_3II
+#define NO__1gtk_1widget_1style_1get__J_3B_3IJ
+#define NO__1gtk_1widget_1style_1get__I_3B_3JI
+#define NO__1gtk_1widget_1style_1get__J_3B_3JJ
 
 // Some GtkContainer functions don't exist on GTK4
 #define NO__1gtk_1container_1propagate_1draw

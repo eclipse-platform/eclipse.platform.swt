@@ -8971,13 +8971,12 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void _gtk_widget_style_get(long /*int*/ widget, byte[] property_name, int[] value, long /*int*/ terminator);
-	/** [GTK3 only] */
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_style_get(long /*int*/ widget, byte[] property_name, int[] value, long /*int*/ terminator) {
 		lock.lock();
 		try {
@@ -8987,13 +8986,12 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void _gtk_widget_style_get(long /*int*/ widget, byte[] property_name, long[] value, long /*int*/ terminator);
-	/** [GTK3 only] */
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gtk_widget_style_get(long /*int*/ widget, byte[] property_name, long[] value, long /*int*/ terminator) {
 		lock.lock();
 		try {
