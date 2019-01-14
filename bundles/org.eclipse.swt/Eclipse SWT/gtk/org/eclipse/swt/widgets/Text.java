@@ -1657,8 +1657,19 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 @Override
 long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	if ((state & OBSCURED) != 0) return 0;
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 20, 0) && (state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
+		if (GTK.gtk_widget_get_visible(widget)) GTK.gtk_widget_set_visible(widget, false);
+		// Display should not be disposed after hiding widget
+		if (isDisposed() || display == null || display.isDisposed()) error (SWT.ERROR_DEVICE_DISPOSED);
+	}
 	long /*int*/ result = super.gtk_draw (widget, cairo);
 	return result;
+}
+
+@Override
+boolean mustBeVisibleOnInitBounds() {
+	// Bug 542940: Workaround to avoid NPE, make Text visible on initialization
+	return true;
 }
 
 @Override
