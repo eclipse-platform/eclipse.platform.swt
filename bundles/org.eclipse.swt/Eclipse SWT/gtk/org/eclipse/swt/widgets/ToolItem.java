@@ -470,38 +470,12 @@ int getWidthInPixels () {
 
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	// TODO_GTK4: this method needs to be converted to use GTK4 GdkEvent API
-	// as all the event structs are sealed now.
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (handle, allocation);
-	double x = gdkEvent.x + allocation.x;
-	double y = gdkEvent.y + allocation.y;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	long /*int*/ result = parent.gtk_button_press_event (widget, event);
-	gdkEvent.x = x;
-	gdkEvent.y = y;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	return result;
+	return parent.gtk_button_press_event (widget, event);
 }
 
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
-	// TODO_GTK4: this method needs to be converted to use GTK4 GdkEvent API
-	// as all the event structs are sealed now.
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (handle, allocation);
-	double x = gdkEvent.x + allocation.x;
-	double y = gdkEvent.y + allocation.y;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	long /*int*/ result = parent.gtk_button_release_event (widget, event);
-	gdkEvent.x = x;
-	gdkEvent.y = y;
-	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
-	return result;
+	return parent.gtk_button_release_event (widget, event);
 }
 
 @Override
