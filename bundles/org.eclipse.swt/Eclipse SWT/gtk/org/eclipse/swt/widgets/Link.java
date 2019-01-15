@@ -431,9 +431,9 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-	switch (gdkEvent.keyval) {
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, key);
+	switch (key[0]) {
 		case GDK.GDK_Return:
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_space:
@@ -867,7 +867,7 @@ void styleLinkParts() {
 }
 
 @Override
-int traversalCode (int key, GdkEventKey event) {
+int traversalCode(int key, long /*int*/ event) {
 	if (offsets.length == 0) return 0;
 	int bits = super.traversalCode (key, event);
 	if (key == GDK.GDK_Tab && focusIndex < offsets.length - 1) {

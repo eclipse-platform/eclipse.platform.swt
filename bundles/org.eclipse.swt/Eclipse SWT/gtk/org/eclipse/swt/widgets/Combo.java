@@ -1355,9 +1355,8 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	boolean keyPress = false;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-		switch (gdkEvent.type) {
+		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
 				break;
@@ -1381,7 +1380,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
-	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
+	char [] newChars = sendIMKeyEvent (SWT.KeyDown, 0, chars);
 	if (newChars == null) return 0;
 	/*
 	* Feature in GTK.  For a GtkEntry, during the insert-text signal,
@@ -1630,12 +1629,11 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
 	if ((style & SWT.READ_ONLY) == 0) {
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 		int oldIndex = GTK.gtk_combo_box_get_active (handle);
 		int newIndex = oldIndex;
-		int key = keyEvent.keyval;
-		switch (key) {
+		int [] eventKeyval = new int [1];
+		GDK.gdk_event_get_keyval(event, eventKeyval);
+		switch (eventKeyval[0]) {
 			case GDK.GDK_Down:
 			case GDK.GDK_KP_Down:
 				 if (oldIndex != (items.length - 1)) {
@@ -2576,9 +2574,10 @@ boolean checkSubwindow () {
 }
 
 @Override
-boolean translateTraversal (GdkEventKey keyEvent) {
-	int key = keyEvent.keyval;
-	switch (key) {
+boolean translateTraversal (long /*int*/ event) {
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
+	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {
 			long /*int*/ imContext = imContext ();
@@ -2593,7 +2592,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 			}
 		}
 	}
-	return super.translateTraversal (keyEvent);
+	return super.translateTraversal (event);
 }
 
 String verifyText (String string, int start, int end) {
@@ -2604,11 +2603,10 @@ String verifyText (String string, int start, int end) {
 	event.end = end;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-		switch (gdkEvent.type) {
+		int type = GDK.gdk_event_get_event_type(eventPtr);
+		switch (type) {
 			case GDK.GDK_KEY_PRESS:
-				setKeyState (event, gdkEvent);
+				setKeyState (event, eventPtr);
 				break;
 		}
 		gdk_event_free (eventPtr);

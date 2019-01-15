@@ -275,23 +275,24 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-	int keyval = gdkEvent.keyval;
-	switch (keyval) {
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, key);
+	int [] state = new int[1];
+	GDK.gdk_event_get_state(eventPtr, state);
+	switch (key[0]) {
 		case GDK.GDK_Left:
 		case GDK.GDK_Right:
 		case GDK.GDK_Up:
 		case GDK.GDK_Down:
 			int xChange = 0, yChange = 0;
 			int stepSize = PAGE_INCREMENT;
-			if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0) stepSize = INCREMENT;
+			if ((state[0] & GDK.GDK_CONTROL_MASK) != 0) stepSize = INCREMENT;
 			if ((style & SWT.VERTICAL) != 0) {
-				if (keyval == GDK.GDK_Up || keyval == GDK.GDK_Down) break;
-				xChange = keyval == GDK.GDK_Left ? -stepSize : stepSize;
+				if (key[0] == GDK.GDK_Up || key[0] == GDK.GDK_Down) break;
+				xChange = key[0] == GDK.GDK_Left ? -stepSize : stepSize;
 			} else {
-				if (keyval == GDK.GDK_Left ||keyval == GDK.GDK_Right) break;
-				yChange = keyval == GDK.GDK_Up ? -stepSize : stepSize;
+				if (key[0] == GDK.GDK_Left ||key[0] == GDK.GDK_Right) break;
+				yChange = key[0] == GDK.GDK_Up ? -stepSize : stepSize;
 			}
 			int parentBorder = 0;
 			GtkAllocation allocation = new GtkAllocation ();
@@ -317,7 +318,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
-			event.time = gdkEvent.time;
+			event.time = GDK.gdk_event_get_time(eventPtr);
 			Rectangle eventRect = new Rectangle (newX, newY, width, height);
 			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 			if ((parent.style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth () - width) - event.x;
@@ -468,7 +469,7 @@ void setCursor (long /*int*/ cursor) {
 }
 
 @Override
-int traversalCode (int key, GdkEventKey event) {
+int traversalCode (int key, long /*int*/ event) {
 	return 0;
 }
 

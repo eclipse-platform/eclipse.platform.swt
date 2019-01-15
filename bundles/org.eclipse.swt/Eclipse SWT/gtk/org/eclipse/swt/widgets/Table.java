@@ -2103,10 +2103,9 @@ long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int
 
 @Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, event, GdkEventKey.sizeof);
-	int key = keyEvent.keyval;
-	keyPressDefaultSelectionHandler (event, key);
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
+	keyPressDefaultSelectionHandler (event, key[0]);
 	return super.gtk_key_press_event (widget, event);
 }
 

@@ -318,10 +318,10 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 		if (items [index].hasFocus ()) break;
 		index++;
 	}
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
 	boolean next = false;
-	switch (gdkEvent.keyval) {
+	switch (key[0]) {
 		case GDK.GDK_Up:
 		case GDK.GDK_Left: next = false; break;
 		case GDK.GDK_Down:

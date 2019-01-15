@@ -803,15 +803,11 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 }
 
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	return sendKeyEvent (SWT.KeyDown, gdkEvent) ? 0 : 1;
+	return sendKeyEvent (SWT.KeyDown, event) ? 0 : 1;
 }
 
 long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	return sendKeyEvent (SWT.KeyUp, gdkEvent) ? 0 : 1;
+	return sendKeyEvent (SWT.KeyUp, event) ? 0 : 1;
 }
 
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
@@ -1433,13 +1429,25 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
-	int length = keyEvent.length;
-	if (keyEvent.string == 0 || OS.g_utf16_strlen (keyEvent.string, length) <= 1) {
-		Event event = new Event ();
-		event.time = keyEvent.time;
-		if (!setKeyState (event, keyEvent)) return true;
-		sendEvent (type, event);
+boolean sendKeyEvent (int type, long /*int*/ event) {
+	int length;
+	long /*int*/ string;
+	if (GTK.GTK4) {
+		long /*int*/ [] eventString = new long /*int*/ [1];
+		GDK.gdk_event_get_string(event, eventString);
+		string = eventString[0];
+		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
+	} else {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+		length = gdkEvent.length;
+		string = gdkEvent.string;
+	}
+	if (string == 0 || OS.g_utf16_strlen (string, length) <= 1) {
+		Event javaEvent = new Event ();
+		javaEvent.time = GDK.gdk_event_get_time(event);
+		if (!setKeyState (javaEvent, event)) return true;
+		sendEvent (type, javaEvent);
 		// widget could be disposed at this point
 
 		/*
@@ -1449,47 +1457,48 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 		* the key by returning false.
 		*/
 		if (isDisposed ()) return false;
-		return event.doit;
+		return javaEvent.doit;
 	}
 	byte [] buffer = new byte [length];
-	C.memmove (buffer, keyEvent.string, length);
+	C.memmove (buffer, string, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
-	return sendIMKeyEvent (type, keyEvent, chars) != null;
+	return sendIMKeyEvent (type, event, chars) != null;
 }
 
-char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
+char [] sendIMKeyEvent (int type, long /*int*/ event, char [] chars) {
 	int index = 0, count = 0, state = 0;
 	long /*int*/ ptr = 0;
-	if (keyEvent == null) {
+	if (event == 0) {
 		ptr = GTK.gtk_get_current_event ();
 		if (ptr != 0) {
-			keyEvent = new GdkEventKey ();
-			OS.memmove (keyEvent, ptr, GdkEventKey.sizeof);
-			switch (keyEvent.type) {
+			int eventType = GDK.gdk_event_get_event_type(ptr);
+			switch (eventType) {
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE:
-					state = keyEvent.state;
+					int [] eventState = new int[1];
+					GDK.gdk_event_get_state(ptr, eventState);
+					state = eventState[0];
 					break;
 				default:
-					keyEvent = null;
+					event = 0;
 					break;
 			}
 		}
 	}
-	if (keyEvent == null) {
+	if (event == 0) {
 		int [] buffer = new int [1];
 		GTK.gtk_get_current_event_state (buffer);
 		state = buffer [0];
 	}
 	while (index < chars.length) {
-		Event event = new Event ();
-		if (keyEvent != null && chars.length <= 1) {
-			setKeyState (event, keyEvent);
+		Event javaEvent = new Event ();
+		if (event != 0 && chars.length <= 1) {
+			setKeyState (javaEvent, ptr);
 		} else {
-			setInputState (event, state);
+			setInputState (javaEvent, state);
 		}
-		event.character = chars [index];
-		sendEvent (type, event);
+		javaEvent.character = chars [index];
+		sendEvent (type, javaEvent);
 
 		/*
 		* It is possible (but unlikely), that application
@@ -1501,10 +1510,10 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
 			if (ptr != 0) gdk_event_free (ptr);
 			return null;
 		}
-		if (event.doit) chars [count++] = chars [index];
+		if (javaEvent.doit) chars [count++] = chars [index];
 		index++;
 	}
-	if (ptr != 0) GDK.gdk_event_free (ptr);
+	if (ptr != 0) gdk_event_free (ptr);
 	if (count == 0) return null;
 	if (index != count) {
 		char [] result = new char [count];
@@ -1681,56 +1690,81 @@ boolean setInputState (Event event, int state) {
 	return true;
 }
 
-boolean setKeyState (Event event, GdkEventKey keyEvent) {
-	if (keyEvent.string != 0 && OS.g_utf16_strlen (keyEvent.string, keyEvent.length) > 1) return false;
+boolean setKeyState (Event javaEvent, long /*int*/ event) {
+	long /*int*/ string;
+	int length;
+	int [] eventKeyval = new int[1];
+	int group;
+	GDK.gdk_event_get_keyval(event, eventKeyval);
+	int [] eventState = new int[1];
+	GDK.gdk_event_get_state(event, eventState);
+	if (GTK.GTK4) {
+		long /*int*/ [] eventString = new long /*int*/ [1];
+		GDK.gdk_event_get_string(event, eventString);
+		string = eventString[0];
+		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
+		int [] eventGroup = new int [1];
+		GDK.gdk_event_get_key_group(event, eventGroup);
+		group = eventGroup[0];
+	} else {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+		length = gdkEvent.length;
+		string = gdkEvent.string;
+		group = gdkEvent.group;
+	}
+	if (string != 0 && OS.g_utf16_strlen (string, length) > 1) return false;
 	boolean isNull = false;
-	event.keyCode = Display.translateKey (keyEvent.keyval);
-	switch (keyEvent.keyval) {
-		case GDK.GDK_BackSpace:		event.character = SWT.BS; break;
-		case GDK.GDK_Linefeed:		event.character = SWT.LF; break;
+	javaEvent.keyCode = Display.translateKey (eventKeyval[0]);
+	switch (eventKeyval[0]) {
+		case GDK.GDK_BackSpace:		javaEvent.character = SWT.BS; break;
+		case GDK.GDK_Linefeed:		javaEvent.character = SWT.LF; break;
 		case GDK.GDK_KP_Enter:
-		case GDK.GDK_Return: 		event.character = SWT.CR; break;
+		case GDK.GDK_Return: 		javaEvent.character = SWT.CR; break;
 		case GDK.GDK_KP_Delete:
-		case GDK.GDK_Delete:			event.character = SWT.DEL; break;
-		case GDK.GDK_Escape:			event.character = SWT.ESC; break;
+		case GDK.GDK_Delete:			javaEvent.character = SWT.DEL; break;
+		case GDK.GDK_Escape:			javaEvent.character = SWT.ESC; break;
 		case GDK.GDK_Tab:
-		case GDK.GDK_ISO_Left_Tab: 	event.character = SWT.TAB; break;
+		case GDK.GDK_ISO_Left_Tab: 	javaEvent.character = SWT.TAB; break;
 		default: {
-			if (event.keyCode == 0) {
+			if (javaEvent.keyCode == 0) {
 				int [] keyval = new int [1];
 				int [] effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
 				/* If current group is not a Latin layout, get the most Latin Layout group from input source. */
 				Map<Integer, Integer> groupLatinKeysCount = display.getGroupKeysCount();
-				int keyLayoutGroup = keyEvent.group;
-				if (!groupLatinKeysCount.containsKey(keyLayoutGroup)) {
-					keyLayoutGroup = display.getLatinKeyGroup();
+				if (!groupLatinKeysCount.containsKey(group)) {
+					group = display.getLatinKeyGroup();
 				}
 				long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
-				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyEvent.hardware_keycode,
-						0, keyLayoutGroup, keyval, effective_group, level, consumed_modifiers)) {
-					event.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
+				short [] keyCode = new short [1];
+				GDK.gdk_event_get_keycode(event, keyCode);
+				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
+						0, group, keyval, effective_group, level, consumed_modifiers)) {
+					javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				}
 			}
-			int key = keyEvent.keyval;
-			if ((keyEvent.state & GDK.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
+			int key = eventKeyval[0];
+			if ((eventState[0] & GDK.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
 				if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
 				if (64 <= key && key <= 95) key -= 64;
-				event.character = (char) key;
-				isNull = keyEvent.keyval == '@' && key == 0;
+				javaEvent.character = (char) key;
+				isNull = eventKeyval[0] == '@' && key == 0;
 			} else {
-				event.character = (char) GDK.gdk_keyval_to_unicode (key);
+				javaEvent.character = (char) GDK.gdk_keyval_to_unicode (key);
 			}
 		}
 	}
-	setLocationState (event, keyEvent);
-	if (event.keyCode == 0 && event.character == 0) {
+	setLocationState (javaEvent, event);
+	if (javaEvent.keyCode == 0 && javaEvent.character == 0) {
 		if (!isNull) return false;
 	}
-	return setInputState (event, keyEvent.state);
+	return setInputState (javaEvent, eventState[0]);
 }
 
-void setLocationState (Event event, GdkEventKey keyEvent) {
-	switch (keyEvent.keyval) {
+void setLocationState (Event event, long /*int*/ eventPtr) {
+	int [] eventKeyval = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+	switch (eventKeyval[0]) {
 		case GDK.GDK_Alt_L:
 		case GDK.GDK_Shift_L:
 		case GDK.GDK_Control_L:

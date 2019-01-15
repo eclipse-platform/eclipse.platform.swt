@@ -446,6 +446,8 @@
 
 // GdkEvent functions which do not exist on GTK3
 #define NO__1gdk_1event_1get_1focus_1in
+#define NO__1gdk_1event_1get_1string
+#define NO__1gdk_1event_1get_1key_1group
 #endif
 
 #include "os_custom.h"

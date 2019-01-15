@@ -863,10 +863,9 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	* fix is to avoid calling the default handler.
 	*/
 	if ((state & CANVAS) != 0 && socketHandle == 0) {
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
-		int key = keyEvent.keyval;
-		switch (key) {
+		int [] eventKeyval = new int [1];
+		GDK.gdk_event_get_keyval(event, eventKeyval);
+		switch (eventKeyval[0]) {
 			case GDK.GDK_Return:
 			case GDK.GDK_KP_Enter: return 1;
 		}
@@ -1770,7 +1769,7 @@ boolean translateMnemonic (Event event, Control control) {
 }
 
 @Override
-int traversalCode(int key, GdkEventKey event) {
+int traversalCode(int key, long /*int*/ event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
 		if (hooksKeys ()) return 0;
@@ -1779,9 +1778,9 @@ int traversalCode(int key, GdkEventKey event) {
 }
 
 @Override
-boolean translateTraversal (GdkEventKey keyEvent) {
+boolean translateTraversal (long /*int*/ event) {
 	if (socketHandle != 0) return false;
-	return super.translateTraversal (keyEvent);
+	return super.translateTraversal (event);
 }
 
 @Override

@@ -1920,10 +1920,9 @@ void setText (String dateTimeText) {
 @Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!isReadOnly () && (isTime () || isDate ())) {
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
-		int key = keyEvent.keyval;
-		switch (key) {
+		int [] key = new int[1];
+		GDK.gdk_event_get_keyval(event, key);
+		switch (key[0]) {
 		case GDK.GDK_Up:
 		case GDK.GDK_KP_Up:
 			incrementField(+1);
@@ -1960,7 +1959,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 			}
 			break;
 		default:
-			onNumberKeyInput(key);
+			onNumberKeyInput(key[0]);
 		}
 	}
 	return 1;
@@ -2075,21 +2074,13 @@ private int validateValueBounds(FieldPosition field, int value) {
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	if (isDate () || isTime ()) {
-		GdkEventButton gdkEvent = getEventInfoFromOS (event);
-		if (gdkEvent.button == 1) { // left mouse button.
-			onTextMouseClick (gdkEvent);
+		int [] eventButton = new int [1];
+		GDK.gdk_event_get_button(event, eventButton);
+		if (eventButton[0] == 1) { // left mouse button.
+			onTextMouseClick ();
 		}
 	}
 	return super.gtk_button_release_event (widget, event);
-}
-
-private GdkEventButton getEventInfoFromOS (long /*int*/ nativeEventPointer) {
-	// create place holder.
-	GdkEventButton localEventCopy = new GdkEventButton ();
-
-	// copy data in memory from OS to local JAVA space.
-	OS.memmove (localEventCopy, nativeEventPointer, GdkEventButton.sizeof);
-	return localEventCopy;
 }
 /**
  * Output signal is called when Spinner's arrow buttons are triggered,
@@ -2127,7 +2118,7 @@ void replaceCurrentlySelectedTextRegion (String string) {
 	GTK.gtk_editable_set_position (textEntryHandle, start [0]);
 }
 
-void onTextMouseClick(GdkEventButton event) {
+void onTextMouseClick() {
 	if (calendar == null) {
 		return; // Guard: Object not fully initialized yet.
 	}

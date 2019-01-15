@@ -1045,6 +1045,54 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1event_1get_1key_1group
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1key_1group)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1key_1group_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_key_group((GdkEvent *)arg0, (guint *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1key_1group_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1event_1get_1keycode
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1keycode)
+	(JNIEnv *env, jclass that, jintLong arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1keycode_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_keycode((GdkEvent *)arg0, (guint16 *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1keycode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1event_1get_1keyval
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1keyval)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1keyval_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_keyval((GdkEvent *)arg0, (guint *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1keyval_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1event_1get_1root_1coords
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1root_1coords)
 	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
@@ -1115,6 +1163,22 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1state)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1state_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1event_1get_1string
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1string)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
+{
+	jintLong *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1string_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_string((GdkEvent *)arg0, (const char **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1string_FUNC);
 	return rc;
 }
 #endif

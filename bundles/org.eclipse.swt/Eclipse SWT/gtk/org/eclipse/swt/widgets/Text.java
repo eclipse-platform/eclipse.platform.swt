@@ -1477,9 +1477,8 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	boolean keyPress = false;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-		switch (gdkEvent.type) {
+		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
 				break;
@@ -1513,7 +1512,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
 	Arrays.fill (buffer, (byte) 0);
-	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
+	char [] newChars = sendIMKeyEvent (SWT.KeyDown, 0, chars);
 	if (newChars == null) return 0;
 	/*
 	* Feature in GTK.  For a GtkEntry, during the insert-text signal,
@@ -1750,9 +1749,19 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	boolean handleSegments = false, segmentsCleared = false;
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-		if (gdkEvent.length > 0 && (gdkEvent.state & (GDK.GDK_MOD1_MASK | GDK.GDK_CONTROL_MASK)) == 0) {
+		int length;
+		int [] state = new int[1];
+		GDK.gdk_event_get_state(event, state);
+		if (GTK.GTK4) {
+			long /*int*/ [] eventString = new long /*int*/ [1];
+			GDK.gdk_event_get_string(event, eventString);
+			length = (int)/*64*/OS.g_utf16_strlen (eventString[0], -1);
+		} else {
+			GdkEventKey gdkEvent = new GdkEventKey ();
+			OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+			length = gdkEvent.length;
+		}
+		if (length > 0 && (state[0] & (GDK.GDK_MOD1_MASK | GDK.GDK_CONTROL_MASK)) == 0) {
 			handleSegments = true;
 			if (segments != null) {
 				clearSegments (true);
@@ -2765,9 +2774,10 @@ int translateOffset (int offset) {
 }
 
 @Override
-boolean translateTraversal (GdkEventKey keyEvent) {
-	int key = keyEvent.keyval;
-	switch (key) {
+boolean translateTraversal (long /*int*/ event) {
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
+	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {
 			long /*int*/ imContext =  imContext ();
@@ -2782,18 +2792,20 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 			}
 		}
 	}
-	return super.translateTraversal (keyEvent);
+	return super.translateTraversal (event);
 }
 
 @Override
-int traversalCode (int key, GdkEventKey event) {
+int traversalCode (int key, long /*int*/ event) {
 	int bits = super.traversalCode (key, event);
 	if ((style & SWT.READ_ONLY) != 0)  return bits;
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
-		if (key == GDK.GDK_Tab && event != null) {
-			boolean next = (event.state & GDK.GDK_SHIFT_MASK) == 0;
-			if (next && (event.state & GDK.GDK_CONTROL_MASK) == 0) {
+		if (key == GDK.GDK_Tab && event != 0) {
+			int [] eventState = new int [1];
+			GDK.gdk_event_get_state(event, eventState);
+			boolean next = (eventState[0] & GDK.GDK_SHIFT_MASK) == 0;
+			if (next && (eventState[0] & GDK.GDK_CONTROL_MASK) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 			}
 		}
@@ -2817,11 +2829,10 @@ String verifyText (String string, int start, int end) {
 	event.end = end;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-		switch (gdkEvent.type) {
+		int type = GDK.gdk_event_get_event_type(eventPtr);
+		switch (type) {
 			case GDK.GDK_KEY_PRESS:
-				setKeyState (event, gdkEvent);
+				setKeyState (event, eventPtr);
 				break;
 		}
 		gdk_event_free (eventPtr);

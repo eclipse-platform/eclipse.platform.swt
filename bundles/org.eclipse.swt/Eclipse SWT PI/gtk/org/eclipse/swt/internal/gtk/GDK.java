@@ -1013,6 +1013,46 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param event cast=(GdkEvent *)
+	 * @param keyval cast=(guint *)
+	 */
+	public static final native boolean _gdk_event_get_keyval(long /*int*/ event,int [] keyval);
+	public static final boolean gdk_event_get_keyval(long /*int*/ event, int [] keyval) {
+		lock.lock();
+		try {
+			return _gdk_event_get_keyval(event, keyval);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param keycode cast=(guint16 *)
+	 */
+	public static final native boolean _gdk_event_get_keycode(long /*int*/ event, short [] keycode);
+	public static final boolean gdk_event_get_keycode(long /*int*/ event, short [] keycode) {
+		lock.lock();
+		try {
+			return _gdk_event_get_keycode(event, keycode);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param group cast=(guint *)
+	 */
+	public static final native boolean _gdk_event_get_key_group(long /*int*/ event,int [] group);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gdk_event_get_key_group(long /*int*/ event, int [] group) {
+		lock.lock();
+		try {
+			return _gdk_event_get_key_group(event, group);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
 	 * @param x cast=(gdouble *)
 	 * @param y cast=(gdouble *)
 	 */
@@ -1034,6 +1074,20 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_event_get_state(event, pmod);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param string cast=(const char **)
+	 */
+	public static final native boolean _gdk_event_get_string(long /*int*/ event, long /*int*/ [] string);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gdk_event_get_string(long /*int*/ event, long /*int*/ [] string) {
+		lock.lock();
+		try {
+			return _gdk_event_get_string(event, string);
 		} finally {
 			lock.unlock();
 		}

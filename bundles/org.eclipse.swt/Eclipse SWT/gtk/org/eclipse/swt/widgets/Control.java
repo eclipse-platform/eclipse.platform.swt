@@ -2662,9 +2662,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				}
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE: {
-					GdkEventKey gdkEvent = new GdkEventKey ();
-					OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-					if (gdkEvent.keyval == GDK.GDK_Escape) quit = true;
+					int [] eventKeyval = new int [1];
+					GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+					if (eventKeyval[0] == GDK.GDK_Escape) quit = true;
 					break;
 				}
 				case GDK.GDK_BUTTON_RELEASE:
@@ -3431,7 +3431,7 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, text, length);
 	char [] chars = Converter.mbcsToWcs (buffer);
-	sendIMKeyEvent (SWT.KeyDown, null, chars);
+	sendIMKeyEvent (SWT.KeyDown, 0, chars);
 	return 0;
 }
 
@@ -3684,6 +3684,8 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 
 @Override
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	int [] eventKeyval = new int [1];
+	GDK.gdk_event_get_keyval(event, eventKeyval);
 	if (!hasFocus ()) {
 		/*
 		* Feature in GTK.  On AIX, the IME window deactivates the current shell and even
@@ -3692,24 +3694,19 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 		* and call filterKey() only.
 		*/
 		if (display.getActiveShell () == null) {
-			GdkEventKey gdkEvent = new GdkEventKey ();
-			OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-			if (filterKey (gdkEvent.keyval, event)) return 1;
+			if (filterKey (eventKeyval[0], event)) return 1;
 		}
 		return 0;
 	}
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-
-	if (translateMnemonic (gdkEvent.keyval, gdkEvent)) return 1;
+	if (translateMnemonic (eventKeyval[0], event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 
-	if (filterKey (gdkEvent.keyval, event)) return 1;
+	if (filterKey (eventKeyval[0], event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 
-	if (translateTraversal (gdkEvent)) return 1;
+	if (translateTraversal (event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 	return super.gtk_key_press_event (widget, event);
@@ -3749,9 +3746,8 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	int result = 0;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-		if (keyEvent.type == GDK.GDK_KEY_PRESS) {
+		int type = GDK.gdk_event_get_event_type(eventPtr);
+		if (type == GDK.GDK_KEY_PRESS) {
 			Control focusControl = display.getFocusControl ();
 			long /*int*/ focusHandle = focusControl != null ? focusControl.focusHandle () : 0;
 			if (focusHandle != 0) {
@@ -4050,7 +4046,7 @@ boolean isTabGroup () {
 			if (tabList [i] == this) return true;
 		}
 	}
-	int code = traversalCode (0, null);
+	int code = traversalCode (0, 0);
 	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
 	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
 }
@@ -4061,7 +4057,7 @@ boolean isTabItem () {
 			if (tabList [i] == this) return false;
 		}
 	}
-	int code = traversalCode (0, null);
+	int code = traversalCode (0, 0);
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
@@ -6223,32 +6219,38 @@ boolean translateMnemonic (Event event, Control control) {
 	return traverse (event);
 }
 
-boolean translateMnemonic (int keyval, GdkEventKey gdkEvent) {
+boolean translateMnemonic (int keyval, long /*int*/ event) {
 	long key = GDK.gdk_keyval_to_unicode (keyval);
+	int [] state = new int[1];
+	GDK.gdk_event_get_state(event, state);
 	if (key < 0x20) return false;
-	if (gdkEvent.state == 0) {
-		int code = traversalCode (keyval, gdkEvent);
+	if (state[0] == 0) {
+		int code = traversalCode (keyval, event);
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
 	} else {
 		Shell shell = _getShell ();
 		int mask = GDK.GDK_CONTROL_MASK | GDK.GDK_SHIFT_MASK | GDK.GDK_MOD1_MASK;
-		if ((gdkEvent.state & mask) != GTK.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+		if ((state[0] & mask) != GTK.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		Event event = new Event ();
-		event.detail = SWT.TRAVERSE_MNEMONIC;
-		if (setKeyState (event, gdkEvent)) {
-			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
+		Event javaEvent = new Event ();
+		javaEvent.detail = SWT.TRAVERSE_MNEMONIC;
+		if (setKeyState (javaEvent, event)) {
+			return translateMnemonic (javaEvent, null) || shell.translateMnemonic (javaEvent, this);
 		}
 	}
 	return false;
 }
 
-boolean translateTraversal (GdkEventKey keyEvent) {
+boolean translateTraversal (long /*int*/ event) {
 	int detail = SWT.TRAVERSE_NONE;
-	int key = keyEvent.keyval;
-	int code = traversalCode (key, keyEvent);
+	int [] eventKeyval = new int [1];
+	GDK.gdk_event_get_keyval(event, eventKeyval);
+	int [] eventState = new int[1];
+	GDK.gdk_event_get_state(event, eventState);
+	int key = eventKeyval[0];
+	int code = traversalCode (key, event);
 	boolean all = false;
 	switch (key) {
 		case GDK.GDK_Escape: {
@@ -6264,7 +6266,7 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		}
 		case GDK.GDK_ISO_Left_Tab:
 		case GDK.GDK_Tab: {
-			boolean next = (keyEvent.state & GDK.GDK_SHIFT_MASK) == 0;
+			boolean next = (eventState[0] & GDK.GDK_SHIFT_MASK) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -6282,30 +6284,30 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		case GDK.GDK_Page_Up:
 		case GDK.GDK_Page_Down: {
 			all = true;
-			if ((keyEvent.state & GDK.GDK_CONTROL_MASK) == 0) return false;
+			if ((eventState[0] & GDK.GDK_CONTROL_MASK) == 0) return false;
 			detail = key == GDK.GDK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
 		default:
 			return false;
 	}
-	Event event = new Event ();
-	event.doit = (code & detail) != 0;
-	event.detail = detail;
-	event.time = keyEvent.time;
-	if (!setKeyState (event, keyEvent)) return false;
+	Event javaEvent = new Event ();
+	javaEvent.doit = (code & detail) != 0;
+	javaEvent.detail = detail;
+	javaEvent.time = GDK.gdk_event_get_time(event);
+	if (!setKeyState (javaEvent, event)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
-		if (control.traverse (event)) return true;
-		if (!event.doit && control.hooks (SWT.Traverse)) return false;
+		if (control.traverse (javaEvent)) return true;
+		if (!javaEvent.doit && control.hooks (SWT.Traverse)) return false;
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);
 	return false;
 }
 
-int traversalCode (int key, GdkEventKey event) {
+int traversalCode (int key, long /*int*/ event) {
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT |  SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;

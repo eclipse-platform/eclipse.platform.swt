@@ -1634,10 +1634,12 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 					GTK.gtk_accelerator_parse (accel [0], keyval, mods);
 					OS.g_free (accel [0]);
 					if (keyval [0] != 0) {
-						GdkEventKey keyEvent = new GdkEventKey ();
-						OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+						int [] key = new int[1];
+						GDK.gdk_event_get_keyval(event, key);
+						int [] state = new int [1];
+						GDK.gdk_event_get_state(event, state);
 						int mask = GTK.gtk_accelerator_get_default_mod_mask ();
-						if (keyEvent.keyval == keyval [0] && (keyEvent.state & mask) == (mods [0] & mask)) {
+						if (key[0] == keyval [0] && (state[0] & mask) == (mods [0] & mask)) {
 							return focusControl.gtk_key_press_event (focusControl.focusHandle (), event);
 						}
 					}

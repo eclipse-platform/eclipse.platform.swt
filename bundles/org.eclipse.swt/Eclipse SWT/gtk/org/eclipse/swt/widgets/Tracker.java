@@ -480,11 +480,13 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-	int stepSize = ((keyEvent.state & GDK.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+	int [] state = new int[1];
+	GDK.gdk_event_get_state(eventPtr, state);
+	int [] keyval = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, keyval);
+	int stepSize = ((state[0] & GDK.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
-	switch (keyEvent.keyval) {
+	switch (keyval[0]) {
 		case GDK.GDK_Escape:
 			cancelled = true;
 			// fallthrough

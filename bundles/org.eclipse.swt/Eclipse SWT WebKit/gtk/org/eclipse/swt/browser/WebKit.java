@@ -787,16 +787,18 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 				switch (GDK.GDK_EVENT_TYPE (event)) {
 					case GDK.GDK_KEY_PRESS: {
 						if (browser.isFocusControl ()) {
-							final GdkEventKey gdkEvent = new GdkEventKey ();
-							OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-							switch (gdkEvent.keyval) {
+							int [] key = new int[1];
+							GDK.gdk_event_get_keyval(event, key);
+							int [] state = new int[1];
+							GDK.gdk_event_get_state(event, state);
+							switch (key[0]) {
 								case GDK.GDK_ISO_Left_Tab:
 								case GDK.GDK_Tab: {
-									if ((gdkEvent.state & (GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) == 0) {
+									if ((state[0] & (GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 										browser.getDisplay ().asyncExec (() -> {
 											if (browser.isDisposed ()) return;
 											if (browser.getDisplay ().getFocusControl () == null) {
-												int traversal = (gdkEvent.state & GDK.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+												int traversal = (state[0] & GDK.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
 												browser.traverse (traversal);
 											}
 										});
@@ -808,9 +810,9 @@ static long /*int*/ JSDOMEventProc (long /*int*/ arg0, long /*int*/ event, long 
 									keyEvent.widget = browser;
 									keyEvent.type = SWT.KeyDown;
 									keyEvent.keyCode = keyEvent.character = SWT.ESC;
-									if ((gdkEvent.state & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
-									if ((gdkEvent.state & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
-									if ((gdkEvent.state & GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+									if ((state[0] & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
+									if ((state[0] & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
+									if ((state[0]& GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
 									try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
 										  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
 										nonBlockingEvaluate++;
@@ -2075,12 +2077,13 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 	int keyEventState = 0;
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-		switch (gdkEvent.type) {
+		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		int [] state = new int[1];
+		GDK.gdk_event_get_state(eventPtr, state);
+		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 			case GDK.GDK_KEY_RELEASE:
-				keyEventState = gdkEvent.state;
+				keyEventState = state[0];
 				break;
 		}
 		if (GTK.GTK4) {
