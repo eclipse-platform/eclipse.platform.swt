@@ -926,26 +926,43 @@ void hookEvents () {
 		GTK.gtk_widget_add_controller(shellHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
-		long focusAddress = display.focusCallback.getAddress();
+		long /*int*/ keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
+		long /*int*/ focusAddress = display.focusCallback.getAddress();
 		OS.g_signal_connect (keyController, OS.key_pressed, keyPressReleaseAddress, KEY_PRESSED);
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
 		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
+
+		long /*int*/ enterLeaveController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(shellHandle, enterLeaveController);
+
+		long /*int*/ enterMotionAddress = display.enterMotionScrollCallback.getAddress();
+		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionAddress, ENTER);
+		if (isCustomResize()) {
+			long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+			GTK.gtk_widget_add_controller(shellHandle, motionController);
+			GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+
+			OS.g_signal_connect (motionController, OS.motion, enterMotionAddress, MOTION);
+			long /*int*/ leaveAddress = display.leaveCallback.getAddress();
+			OS.g_signal_connect (enterLeaveController, OS.leave, leaveAddress, LEAVE);
+		}
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [DELETE_EVENT], 0, display.getClosure (DELETE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	}
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.getClosure (MOVE_FOCUS), false);
 	if (isCustomResize ()) {
-		int mask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_BUTTON_PRESS_MASK |  GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-		if (!GTK.GTK4) GTK.gtk_widget_add_events (shellHandle, mask);
+		if (!GTK.GTK4) {
+			int mask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_BUTTON_PRESS_MASK |  GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
+			GTK.gtk_widget_add_events (shellHandle, mask);
+			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
+			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
+		}
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }

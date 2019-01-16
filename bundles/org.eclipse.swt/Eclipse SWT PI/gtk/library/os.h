@@ -439,7 +439,11 @@
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
 #define NO__1gdk_1display_1get_1keymap
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
+
+// GtkEventController related functions for GTK4
 #define NO__1gtk_1event_1controller_1key_1new
+#define NO__1gtk_1event_1controller_1motion_1new
+#define NO__1gtk_1event_1controller_1scroll_1new
 #define NO__1gtk_1widget_1add_1controller
 
 // GdkEvent functions which do not exist on GTK3

@@ -842,10 +842,19 @@ void hookEvents(long /*int*/ [] handles) {
 		long /*int*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
 			/* Connect the mouse signals */
-			GTK.gtk_widget_add_events (eventHandle, eventMask);
+			if (GTK.GTK4) {
+				long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+				GTK.gtk_widget_add_controller(eventHandle, motionController);
+				long /*int*/ motionAddress = display.enterMotionScrollCallback.getAddress();
+				OS.g_signal_connect (motionController, OS.motion, motionAddress, MOTION);
+				OS.g_signal_connect (motionController, OS.motion, motionAddress, MOTION_INVERSE);
+			} else {
+				GTK.gtk_widget_add_events (eventHandle, eventMask);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
+			}
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
@@ -855,7 +864,6 @@ void hookEvents(long /*int*/ [] handles) {
 			*/
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
 
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != focusHandle ()) {

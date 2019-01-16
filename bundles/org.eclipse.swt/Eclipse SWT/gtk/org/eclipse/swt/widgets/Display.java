@@ -128,10 +128,10 @@ public class Display extends Device {
 	Callback eventCallback;
 	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long /*int*/ snapshotDrawProc;
-	long /*int*/ keyPressReleaseProc, focusProc;
+	long /*int*/ keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw;
-	Callback keyPressReleaseCallback, focusCallback;
+	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -3617,8 +3617,25 @@ void initializeCallbacks () {
 				long.class, long.class}); //$NON-NLS-1$
 		focusProc = focusCallback.getAddress ();
 		if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 		closuresProc [Widget.FOCUS_IN] = focusProc;
 		closuresProc [Widget.FOCUS_OUT] = focusProc;
+
+		enterMotionScrollCallback = new Callback (this, "enterMotionScrollProc", long.class, new Type[] {
+				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
+		enterMotionScrollProc = enterMotionScrollCallback.getAddress ();
+		if (enterMotionScrollProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		closuresProc [Widget.ENTER] = enterMotionScrollProc;
+		closuresProc [Widget.MOTION] = enterMotionScrollProc;
+		closuresProc [Widget.SCROLL] = enterMotionScrollProc;
+
+		leaveCallback = new Callback (this, "leaveProc", long.class, new Type[] {
+				long.class, long.class}); //$NON-NLS-1$
+		leaveProc = leaveCallback.getAddress ();
+		if (leaveProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		closuresProc [Widget.LEAVE] = leaveProc;
 	}
 
 	closuresProc [Widget.ACTIVATE] = windowProc2;
@@ -5935,6 +5952,13 @@ void wakeThread () {
 	wake = true;
 }
 
+long /*int*/ enterMotionScrollProc (long /*int*/ controller, double x, double y, long /*int*/ user_data) {
+	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.enterMotionScrollProc(handle, x, y, user_data);
+}
+
 long /*int*/ focusProc (long /*int*/ controller, long /*int*/ user_data) {
 	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
@@ -5947,6 +5971,13 @@ long /*int*/ keyPressReleaseProc (long /*int*/ controller, int keyval, int keyco
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.keyPressReleaseProc(handle, keyval, keycode, state, user_data);
+}
+
+long /*int*/ leaveProc (long /*int*/ controller, long /*int*/ user_data) {
+	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.leaveProc(handle, user_data);
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

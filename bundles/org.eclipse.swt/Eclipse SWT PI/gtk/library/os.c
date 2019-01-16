@@ -5488,6 +5488,30 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1controller_1key_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1event_1controller_1motion_1new
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1controller_1motion_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1motion_1new_FUNC);
+	rc = (jintLong)gtk_event_controller_motion_new();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1motion_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1event_1controller_1scroll_1new
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1controller_1scroll_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1scroll_1new_FUNC);
+	rc = (jintLong)gtk_event_controller_scroll_new(arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1scroll_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1event_1controller_1set_1propagation_1phase
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1event_1controller_1set_1propagation_1phase)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)

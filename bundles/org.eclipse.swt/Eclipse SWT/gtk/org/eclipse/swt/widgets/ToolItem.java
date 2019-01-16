@@ -716,20 +716,29 @@ void hookEvents () {
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 	}
 	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
-
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 	if (GTK.GTK4) {
 		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
 		GTK.gtk_widget_add_controller(eventHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long focusAddress = display.focusCallback.getAddress();
+		long /*int*/ focusAddress = display.focusCallback.getAddress();
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
 		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
+
+		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(eventHandle, motionController);
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+
+		long /*int*/ enterAddress = display.enterMotionScrollCallback.getAddress();
+		long /*int*/ leaveAddress = display.leaveCallback.getAddress();
+		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
+		OS.g_signal_connect (motionController, OS.leave, leaveAddress, LEAVE);
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
+
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 	}
 	/*
 	* Feature in GTK.  Usually, GTK widgets propagate all events to their

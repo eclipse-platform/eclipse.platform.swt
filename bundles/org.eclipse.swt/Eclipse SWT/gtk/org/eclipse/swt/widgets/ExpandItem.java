@@ -392,7 +392,16 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+	if (GTK.GTK4) {
+		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(handle, motionController);
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+
+		long /*int*/ enterAddress = display.enterMotionScrollCallback.getAddress();
+		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
+	} else {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+	}
 }
 
 void redraw () {

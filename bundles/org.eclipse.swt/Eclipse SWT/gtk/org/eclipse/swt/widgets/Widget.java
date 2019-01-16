@@ -230,8 +230,9 @@ public abstract class Widget {
 	static final int ENTER = 95;
 	static final int LEAVE = 96;
 	static final int MOTION = 97;
-	static final int CLOSE_REQUEST = 98;
-	static final int LAST_SIGNAL = 99;
+	static final int MOTION_INVERSE = 98;
+	static final int CLOSE_REQUEST = 99;
+	static final int LAST_SIGNAL = 100;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -2045,6 +2046,27 @@ boolean translateTraversal (int event) {
 	return false;
 }
 
+long /*int*/ enterMotionScrollProc (long /*int*/ handle, double x, double y, long /*int*/ user_data) {
+	long /*int*/ event = GTK.gtk_get_current_event();
+	long /*int*/ result = 0;
+	switch ((int)/*64*/user_data) {
+		case ENTER:
+			result = gtk_enter_notify_event(handle, event);
+			break;
+		case MOTION:
+			result = gtk_motion_notify_event(handle, event);
+			break;
+		case MOTION_INVERSE:
+			result = 1;
+			break;
+		case SCROLL:
+			result = gtk_scroll_event(handle, event);
+			break;
+	}
+	gdk_event_free(event);
+	return result;
+}
+
 long /*int*/ focusProc (long /*int*/ handle, long /*int*/ user_data) {
 	long /*int*/ event = GTK.gtk_get_current_event();
 	long /*int*/ result = 0;
@@ -2069,6 +2091,18 @@ long /*int*/ keyPressReleaseProc (long /*int*/ handle, int keyval, int keycode, 
 			break;
 		case KEY_RELEASED:
 			result = gtk_key_release_event(handle, event);
+			break;
+	}
+	gdk_event_free(event);
+	return result;
+}
+
+long /*int*/ leaveProc (long /*int*/ handle, long /*int*/ user_data) {
+	long /*int*/ event = GTK.gtk_get_current_event();
+	long /*int*/ result = 0;
+	switch ((int)/*64*/user_data) {
+		case LEAVE:
+			result = gtk_leave_notify_event(handle, event);
 			break;
 	}
 	gdk_event_free(event);

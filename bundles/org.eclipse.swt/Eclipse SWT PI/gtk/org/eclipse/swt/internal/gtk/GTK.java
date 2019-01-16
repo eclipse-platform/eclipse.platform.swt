@@ -90,6 +90,12 @@ public class GTK extends OS {
 	public static final int GTK_PRINT_DUPLEX_SIMPLEX = 0;
 	public static final int GTK_PRINT_DUPLEX_HORIZONTAL = 1;
 	public static final int GTK_PRINT_DUPLEX_VERTICAL = 2;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_NONE = 0;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_VERTICAL = 1;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_HORIZONTAL = 2;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_DISCRETE = 3;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_KINETIC = 4;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES = 5;
 	public static final int GTK_PHASE_NONE = 0;
 	public static final int GTK_PHASE_CAPTURE = 1;
 	public static final int GTK_PHASE_BUBBLE = 2;
@@ -2454,6 +2460,26 @@ public class GTK extends OS {
 	        lock.lock();
 	        try {
 	        	return _gtk_event_controller_key_new();
+	        } finally {
+	                lock.unlock();
+	        }
+	}
+	public static final native long /*int*/ _gtk_event_controller_motion_new();
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_event_controller_motion_new() {
+	        lock.lock();
+	        try {
+	        	return _gtk_event_controller_motion_new();
+	        } finally {
+	                lock.unlock();
+	        }
+	}
+	public static final native long /*int*/ _gtk_event_controller_scroll_new(int flag);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_event_controller_scroll_new(int flag) {
+	        lock.lock();
+	        try {
+	        	return _gtk_event_controller_scroll_new(flag);
 	        } finally {
 	                lock.unlock();
 	        }

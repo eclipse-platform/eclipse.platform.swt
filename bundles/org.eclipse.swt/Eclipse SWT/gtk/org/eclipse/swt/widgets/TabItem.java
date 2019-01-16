@@ -235,7 +235,16 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 void hookEvents () {
 	super.hookEvents ();
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+	if (GTK.GTK4) {
+		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(handle, motionController);
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+
+		long /*int*/ enterMotionAddress = display.enterMotionScrollCallback.getAddress();
+		OS.g_signal_connect (motionController, OS.enter, enterMotionAddress, ENTER);
+	} else {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+	}
 }
 
 @Override

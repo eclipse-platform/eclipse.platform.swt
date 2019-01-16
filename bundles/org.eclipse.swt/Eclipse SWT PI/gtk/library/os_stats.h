@@ -494,6 +494,8 @@ typedef enum {
 	_1gtk_1event_1controller_1get_1widget_FUNC,
 	_1gtk_1event_1controller_1handle_1event_FUNC,
 	_1gtk_1event_1controller_1key_1new_FUNC,
+	_1gtk_1event_1controller_1motion_1new_FUNC,
+	_1gtk_1event_1controller_1scroll_1new_FUNC,
 	_1gtk_1event_1controller_1set_1propagation_1phase_FUNC,
 	_1gtk_1expander_1get_1expanded_FUNC,
 	_1gtk_1expander_1new_FUNC,

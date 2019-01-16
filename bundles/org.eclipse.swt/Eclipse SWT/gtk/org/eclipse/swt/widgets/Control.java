@@ -413,19 +413,52 @@ void hookEvents () {
 
 	/* Connect the mouse signals */
 	long /*int*/ eventHandle = eventHandle ();
-	int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
-	if (!GTK.GTK4) GTK.gtk_widget_add_events (eventHandle, eventMask);
+	long /*int*/ blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
+	long /*int*/ enterExitHandle = enterExitHandle ();
+	if (GTK.GTK4) {
+		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(eventHandle, motionController);
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_BUBBLE);
+
+		long /*int*/ enterMotionScrollAddress = display.enterMotionScrollCallback.getAddress();
+		OS.g_signal_connect (motionController, OS.motion, enterMotionScrollAddress, MOTION);
+
+		long /*int*/ enterLeaveController;
+		enterLeaveController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_widget_add_controller(enterExitHandle, enterLeaveController);
+		GTK.gtk_event_controller_set_propagation_phase(enterLeaveController, GTK.GTK_PHASE_TARGET);
+
+		long /*int*/ leaveAddress = display.leaveCallback.getAddress();
+		OS.g_signal_connect (enterLeaveController, OS.leave, leaveAddress, LEAVE);
+		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionScrollAddress, ENTER);
+
+		long /*int*/ motionInverseController;
+		if (blockHandle != eventHandle) {
+			motionInverseController = GTK.gtk_event_controller_motion_new();
+			GTK.gtk_widget_add_controller(blockHandle, motionInverseController);
+			GTK.gtk_event_controller_set_propagation_phase(motionInverseController, GTK.GTK_PHASE_TARGET);
+		} else {
+			motionInverseController = motionController;
+		}
+		OS.g_signal_connect (motionInverseController, OS.motion, enterMotionScrollAddress, MOTION_INVERSE);
+
+		long /*int*/ scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+		GTK.gtk_widget_add_controller(eventHandle, scrollController);
+		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
+		OS.g_signal_connect (scrollController, OS.scroll, enterMotionScrollAddress, SCROLL);
+	} else {
+		int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
+		GTK.gtk_widget_add_events (eventHandle, eventMask);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
+
+		int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
+		GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
+		OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
+	}
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
-
-	/* Connect enter/exit signals */
-	long /*int*/ enterExitHandle = enterExitHandle ();
-	int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-	if (!GTK.GTK4) GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
-	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
-	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 
 	/*Connect gesture signals */
 	setZoomGesture();
@@ -442,10 +475,9 @@ void hookEvents () {
 	* The signal is hooked to the fixedHandle to catch events sent to
 	* lightweight widgets.
 	*/
-	long /*int*/ blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
 	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
 	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
-	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
+	if (!GTK.GTK4) OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
 
 	/* Connect the event_after signal for both key and mouse */
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
