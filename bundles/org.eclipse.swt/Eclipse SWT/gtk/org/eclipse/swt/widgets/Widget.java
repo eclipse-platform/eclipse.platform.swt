@@ -1735,7 +1735,13 @@ boolean setKeyState (Event javaEvent, long /*int*/ event) {
 				if (!groupLatinKeysCount.containsKey(group)) {
 					group = display.getLatinKeyGroup();
 				}
-				long /*int*/ keymap = GDK.gdk_keymap_get_for_display(GDK.gdk_display_get_default());
+				long /*int*/ keymap = 0;
+				long /*int*/ display = GDK.gdk_display_get_default();
+				if (GTK.GTK4) {
+					keymap = GDK.gdk_display_get_keymap(display);
+				} else {
+					keymap = GDK.gdk_keymap_get_for_display(display);
+				}
 				short [] keyCode = new short [1];
 				GDK.gdk_event_get_keycode(event, keyCode);
 				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
@@ -1904,6 +1910,7 @@ void gdk_surface_get_size (long /*int*/ surface, int[] width, int[] height) {
  * @param event the event to be freed
  */
 void gdk_event_free (long /*int*/ event) {
+	if (event == 0) return;
 	if (GTK.GTK4) {
 		OS.g_object_unref(event);
 	} else {
@@ -2020,6 +2027,36 @@ long /*int*/ timerProc (long /*int*/ widget) {
 
 boolean translateTraversal (int event) {
 	return false;
+}
+
+long /*int*/ focusProc (long /*int*/ handle, long /*int*/ user_data) {
+	long /*int*/ event = GTK.gtk_get_current_event();
+	long /*int*/ result = 0;
+	switch ((int)/*64*/user_data) {
+		case FOCUS_IN:
+			result = gtk_focus_in_event(handle, event);
+			break;
+		case FOCUS_OUT:
+			result = gtk_focus_out_event(handle, event);
+			break;
+	}
+	gdk_event_free(event);
+	return result;
+}
+
+long /*int*/ keyPressReleaseProc (long /*int*/ handle, int keyval, int keycode, int state, long /*int*/ user_data) {
+	long /*int*/ event = GTK.gtk_get_current_event();
+	long /*int*/ result = 0;
+	switch ((int)/*64*/user_data) {
+		case KEY_PRESSED:
+			result = gtk_key_press_event(handle, event);
+			break;
+		case KEY_RELEASED:
+			result = gtk_key_release_event(handle, event);
+			break;
+	}
+	gdk_event_free(event);
+	return result;
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

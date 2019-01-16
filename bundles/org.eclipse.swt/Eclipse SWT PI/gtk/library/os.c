@@ -5418,6 +5418,26 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1box_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1event_1controller_1get_1widget
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1controller_1get_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1get_1widget_FUNC);
+/*
+	rc = (jintLong)gtk_event_controller_get_widget(arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_event_controller_get_widget)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1get_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1event_1controller_1handle_1event
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1event_1controller_1handle_1event)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -5433,6 +5453,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1event_1controller_1handle_1event)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1handle_1event_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1event_1controller_1key_1new
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1event_1controller_1key_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1event_1controller_1key_1new_FUNC);
+	rc = (jintLong)gtk_event_controller_key_new();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1event_1controller_1key_1new_FUNC);
+	return rc;
 }
 #endif
 
@@ -11822,6 +11854,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1add_1accelerator)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1add_1accelerator_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1add_1controller
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1add_1controller)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1add_1controller_FUNC);
+	gtk_widget_add_controller((GtkWidget *)arg0, (GtkEventController *)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1add_1controller_FUNC);
 }
 #endif
 

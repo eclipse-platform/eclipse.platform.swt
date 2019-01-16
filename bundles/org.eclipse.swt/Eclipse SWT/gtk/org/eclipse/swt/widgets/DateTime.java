@@ -948,7 +948,16 @@ final private void hookEventsForCalendar () {
 
 final private void hookEventsForDateTimeSpinner () {
 	OS.g_signal_connect_closure (textEntryHandle, OS.output, display.getClosure (OUTPUT), true);
-	OS.g_signal_connect_closure (textEntryHandle, OS.focus_in_event, display.getClosure (FOCUS_IN_EVENT), true);
+	if (GTK.GTK4) {
+		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
+		GTK.gtk_widget_add_controller(textEntryHandle, keyController);
+		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
+
+		long focusAddress = display.focusCallback.getAddress();
+		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
+	} else {
+		OS.g_signal_connect_closure (textEntryHandle, OS.focus_in_event, display.getClosure (FOCUS_IN_EVENT), true);
+	}
 }
 
 final private void hookEventsForMenu () {

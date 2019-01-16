@@ -90,6 +90,10 @@ public class GTK extends OS {
 	public static final int GTK_PRINT_DUPLEX_SIMPLEX = 0;
 	public static final int GTK_PRINT_DUPLEX_HORIZONTAL = 1;
 	public static final int GTK_PRINT_DUPLEX_VERTICAL = 2;
+	public static final int GTK_PHASE_NONE = 0;
+	public static final int GTK_PHASE_CAPTURE = 1;
+	public static final int GTK_PHASE_BUBBLE = 2;
+	public static final int GTK_PHASE_TARGET = 3;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
@@ -2444,6 +2448,30 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	public static final native long /*int*/ _gtk_event_controller_key_new();
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_event_controller_key_new() {
+	        lock.lock();
+	        try {
+	        	return _gtk_event_controller_key_new();
+	        } finally {
+	                lock.unlock();
+	        }
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param controller cast=(GtkEventController *)
+	 */
+	public static final native void _gtk_widget_add_controller(long /*int*/ widget, long /*int*/ controller);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_add_controller(long /*int*/ widget, long /*int*/ controller) {
+	        lock.lock();
+	        try {
+	        	_gtk_widget_add_controller(widget, controller);
+	        } finally {
+	                lock.unlock();
+	        }
+	}
 	/**
 	 * @method flags=dynamic
 	 */
@@ -2480,6 +2508,18 @@ public class GTK extends OS {
 	        lock.lock();
 	        try {
 	                _gtk_event_controller_handle_event(gesture, event);
+	        } finally {
+	                lock.unlock();
+	        }
+	}
+	/**
+	 * @method flags=dynamic
+	 */
+	public static final native long /*int*/ _gtk_event_controller_get_widget(long /*int*/ controller);
+	public static final long /*int*/ gtk_event_controller_get_widget(long /*int*/ controller) {
+	        lock.lock();
+	        try {
+	        		return _gtk_event_controller_get_widget(controller);
 	        } finally {
 	                lock.unlock();
 	        }

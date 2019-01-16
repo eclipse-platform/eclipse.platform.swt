@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 import java.util.Map.*;
@@ -127,8 +128,10 @@ public class Display extends Device {
 	Callback eventCallback;
 	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long /*int*/ snapshotDrawProc;
+	long /*int*/ keyPressReleaseProc, focusProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw;
+	Callback keyPressReleaseCallback, focusCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -3596,6 +3599,28 @@ void initializeCallbacks () {
 	windowProc2 = windowCallback2.getAddress ();
 	if (windowProc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	if (GTK.GTK4) {
+		keyPressReleaseCallback = new Callback (this, "keyPressReleaseProc", long.class, new Type[] {
+				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
+		keyPressReleaseProc = keyPressReleaseCallback.getAddress ();
+		if (keyPressReleaseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		/*
+		 * Usually GTK4 signals will be connected via g_signal_connect(),
+		 * i.e. without closures, but we will assign the closures anyways
+		 * just to be safe.
+		 */
+		closuresProc [Widget.KEY_PRESSED] = keyPressReleaseProc;
+		closuresProc [Widget.KEY_RELEASED] = keyPressReleaseProc;
+
+		focusCallback = new Callback (this, "focusProc", long.class, new Type[] {
+				long.class, long.class}); //$NON-NLS-1$
+		focusProc = focusCallback.getAddress ();
+		if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		closuresProc [Widget.FOCUS_IN] = focusProc;
+		closuresProc [Widget.FOCUS_OUT] = focusProc;
+	}
+
 	closuresProc [Widget.ACTIVATE] = windowProc2;
 	closuresProc [Widget.ACTIVATE_INVERSE] = windowProc2;
 	closuresProc [Widget.CHANGED] = windowProc2;
@@ -4590,6 +4615,13 @@ void releaseDisplay () {
 		windowCallback6.dispose ();  windowCallback6 = null;
 	}
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = windowProc6 = 0;
+
+	if (GTK.GTK4) {
+		keyPressReleaseCallback.dispose();
+		keyPressReleaseProc = 0;
+		focusCallback.dispose();
+		focusProc = 0;
+	}
 
 	/* Dispose checkIfEvent callback */
 	checkIfEventCallback.dispose(); checkIfEventCallback = null;
@@ -5901,6 +5933,20 @@ public void wake () {
 void wakeThread () {
 	OS.g_main_context_wakeup (0);
 	wake = true;
+}
+
+long /*int*/ focusProc (long /*int*/ controller, long /*int*/ user_data) {
+	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.focusProc(handle, user_data);
+}
+
+long /*int*/ keyPressReleaseProc (long /*int*/ controller, int keyval, int keycode, int state, long /*int*/ user_data) {
+	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.keyPressReleaseProc(handle, keyval, keycode, state, user_data);
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

@@ -388,14 +388,28 @@ void hookEvents () {
 	/* Connect the keyboard signals */
 	long /*int*/ focusHandle = focusHandle ();
 	int focusMask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK;
-	if (!GTK.GTK4) GTK.gtk_widget_add_events (focusHandle, focusMask);
+	if (GTK.GTK4) {
+		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
+		GTK.gtk_widget_add_controller(focusHandle, keyController);
+		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
+
+		long keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
+		long focusAddress = display.focusCallback.getAddress();
+		OS.g_signal_connect (keyController, OS.key_pressed, keyPressReleaseAddress, KEY_PRESSED);
+		OS.g_signal_connect (keyController, OS.key_released, keyPressReleaseAddress, KEY_RELEASED);
+		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
+		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
+
+	} else {
+		GTK.gtk_widget_add_events (focusHandle, focusMask);
+		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_RELEASE_EVENT], 0, display.getClosure (KEY_RELEASE_EVENT), false);
+		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
+		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
+	}
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [POPUP_MENU], 0, display.getClosure (POPUP_MENU), false);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_RELEASE_EVENT], 0, display.getClosure (KEY_RELEASE_EVENT), false);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS], 0, display.getClosure (FOCUS), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 
 	/* Connect the mouse signals */
 	long /*int*/ eventHandle = eventHandle ();
