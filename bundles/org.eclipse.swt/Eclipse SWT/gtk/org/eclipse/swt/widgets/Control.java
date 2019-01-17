@@ -4916,7 +4916,6 @@ void setCursor (long /*int*/ cursor) {
 		long /*int*/ window = eventWindow ();
 		if (window != 0) {
 			GDK.gdk_window_set_cursor (window, cursor);
-			GDK.gdk_flush ();
 		}
 	}
 }
@@ -6445,7 +6444,6 @@ void update (boolean all, boolean flush) {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 16, 0)) {
 		GDK.gdk_window_process_updates (window, all);
 	}
-	if (!GTK.GTK4) GDK.gdk_flush ();
 }
 
 void updateBackgroundMode () {

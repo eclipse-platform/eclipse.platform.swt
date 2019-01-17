@@ -133,7 +133,6 @@ typedef enum {
 	_1gdk_1event_1peek_FUNC,
 	_1gdk_1event_1put_FUNC,
 	_1gdk_1event_1set_1device_FUNC,
-	_1gdk_1flush_FUNC,
 	_1gdk_1get_1default_1root_1window_FUNC,
 	_1gdk_1keymap_1get_1entries_1for_1keyval_FUNC,
 	_1gdk_1keymap_1get_1for_1display_FUNC,

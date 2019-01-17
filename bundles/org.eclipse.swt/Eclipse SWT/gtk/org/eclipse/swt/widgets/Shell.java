@@ -2084,7 +2084,6 @@ void setCursor (long /*int*/ cursor) {
 	} else {
 		if (enableWindow != 0) {
 			GDK.gdk_window_set_cursor (enableWindow, cursor);
-			GDK.gdk_flush ();
 		}
 	}
 	super.setCursor (cursor);
@@ -2152,7 +2151,6 @@ public void setEnabled (boolean enabled) {
 			if (enableWindow != 0) {
 				if (cursor != null) {
 					GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
-					GDK.gdk_flush ();
 				}
 				/* 427776: we need to listen to all enter-notify-event signals to
 				 * see if this new GdkWindow has been added to a widget's internal

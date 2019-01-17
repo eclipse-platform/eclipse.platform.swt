@@ -1273,24 +1273,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1event_1set_1device)
 }
 #endif
 
-#ifndef NO__1gdk_1flush
-JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1flush)
-	(JNIEnv *env, jclass that)
-{
-	GDK_NATIVE_ENTER(env, that, _1gdk_1flush_FUNC);
-/*
-	gdk_flush();
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_flush)
-		if (fp) {
-			((void (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, _1gdk_1flush_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1get_1default_1root_1window
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1get_1default_1root_1window)
 	(JNIEnv *env, jclass that)

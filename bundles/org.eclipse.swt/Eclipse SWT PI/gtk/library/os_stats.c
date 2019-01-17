@@ -123,7 +123,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1event_1peek",
 	"_1gdk_1event_1put",
 	"_1gdk_1event_1set_1device",
-	"_1gdk_1flush",
 	"_1gdk_1get_1default_1root_1window",
 	"_1gdk_1keymap_1get_1entries_1for_1keyval",
 	"_1gdk_1keymap_1get_1for_1display",

@@ -1249,19 +1249,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gdk_flush();
-	/** [GTK3 only] */
-	public static final void gdk_flush() {
-		lock.lock();
-		try {
-			_gdk_flush();
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long /*int*/ _gdk_get_default_root_window();
 	/** [GTK3 only, if-def'd in os.h] */
 	public static final long /*int*/ gdk_get_default_root_window() {
