@@ -1556,12 +1556,15 @@ long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ directionType) {
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
-			GdkEventMotion gdkEvent = new GdkEventMotion ();
-			OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-			if ((gdkEvent.state & GDK.GDK_BUTTON1_MASK) != 0) {
+			int [] state = new int [1];
+			GDK.gdk_event_get_state(event, state);
+			double [] eventRX = new double [1];
+			double [] eventRY = new double [1];
+			GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+			if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
 				int border = gtk_container_get_border_width_or_margin (shellHandle);
-				int dx = (int)(gdkEvent.x_root - display.resizeLocationX);
-				int dy = (int)(gdkEvent.y_root - display.resizeLocationY);
+				int dx = (int)(eventRX[0] - display.resizeLocationX);
+				int dy = (int)(eventRY[0] - display.resizeLocationY);
 				int x = display.resizeBoundsX;
 				int y = display.resizeBoundsY;
 				int width = display.resizeBoundsWidth;
@@ -1610,7 +1613,10 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 					GTK.gtk_window_resize (shellHandle, width, height);
 				}
 			} else {
-				int mode = getResizeMode (gdkEvent.x, gdkEvent.y);
+				double [] eventX = new double [1];
+				double [] eventY = new double [1];
+				GDK.gdk_event_get_coords(event, eventX, eventY);
+				int mode = getResizeMode (eventX[0], eventY[0]);
 				if (mode != display.resizeMode) {
 					long /*int*/ window = gtk_widget_get_window (shellHandle);
 					long /*int*/ cursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), mode);

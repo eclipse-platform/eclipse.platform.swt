@@ -2660,10 +2660,14 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			if (eventPtr == 0) return dragOnTimeout;
 			switch (GDK.GDK_EVENT_TYPE (eventPtr)) {
 				case GDK.GDK_MOTION_NOTIFY: {
-					GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
-					OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
-					if ((gdkMotionEvent.state & GDK.GDK_BUTTON1_MASK) != 0) {
-						if (GTK.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
+					int [] state = new int[1];
+					GDK.gdk_event_get_state(eventPtr, state);
+					long /*int*/ gdkResource = gdk_event_get_surface_or_window(eventPtr);
+					double [] eventX = new double[1];
+					double [] eventY = new double[1];
+					GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+					if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
+						if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
 							dragging = true;
 							quit = true;
 						}
@@ -2671,7 +2675,11 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 						quit = true;
 					}
 					int [] newX = new int [1], newY = new int [1];
-					display.gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
+					if (GTK.GTK4) {
+						display.gdk_surface_get_device_position (gdkResource, newX, newY, null);
+					} else {
+						display.gdk_window_get_device_position (gdkResource, newX, newY, null);
+					}
 					break;
 				}
 				case GDK.GDK_KEY_PRESS:
@@ -3782,10 +3790,14 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		dragBegun = true;
 	}
 	int result;
-	GdkEventMotion gdkEvent = new GdkEventMotion ();
-	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	double [] eventX = new double[1];
+	double [] eventY = new double[1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	double [] eventRX = new double[1];
+	double [] eventRY = new double[1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	/*
 	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
@@ -3795,7 +3807,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		boolean dragging = false;
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				boolean [] consume = new boolean [1];
-				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
+				if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
 					dragging = true;
 					if (consume [0]) result = 1;
 				if (isDisposed ()) return 1;
@@ -3806,9 +3818,6 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 			GTK.gtk_event_controller_handle_event(dragGesture,event);
 			int eventType = GDK.gdk_event_get_event_type(event);
 			if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
-			double [] eventX = new double [1];
-			double [] eventY = new double [1];
-			GDK.gdk_event_get_coords(event, eventX, eventY);
 			Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
 			int [] eventButton = new int [1];
 			GDK.gdk_event_get_button(event, eventButton);
@@ -3816,34 +3825,42 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 			GDK.gdk_event_get_state(event, eventState);
 			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)){
 				return 1;
+			}
 		}
 	}
-}
 	if (this == display.currentControl && (hooks (SWT.MouseHover) || filters (SWT.MouseHover))) {
 		display.addMouseHoverTimeout (handle);
 	}
-	double x = gdkEvent.x_root, y = gdkEvent.y_root;
-	int state = gdkEvent.state;
-	if (gdkEvent.is_hint != 0) {
-		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		long /*int*/ window = eventWindow ();
-		display.gdk_window_get_device_position (window, pointer_x, pointer_y, mask);
-		x = pointer_x [0];
-		y = pointer_y [0];
-		state = mask [0];
+	double x = eventRX[0], y = eventRY[0];
+	int [] state = new int [1];
+	GdkEventMotion gdkEvent = new GdkEventMotion();
+	if (!GTK.GTK4) {
+		OS.memmove(gdkEvent, event, GdkEventMotion.sizeof);
+		state[0] = gdkEvent.state;
+		if (gdkEvent.is_hint != 0) {
+			int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
+			long /*int*/ window = eventWindow ();
+			display.gdk_window_get_device_position (window, pointer_x, pointer_y, mask);
+			x = pointer_x [0];
+			y = pointer_y [0];
+			state[0] = mask [0];
+		}
+	} else {
+		GDK.gdk_event_get_state(event, state);
 	}
+	int time = GDK.gdk_event_get_time(event);
 	if (this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
 			display.removeMouseHoverTimeout (display.currentControl.handle);
 			Point pt = display.mapInPixels (this, display.currentControl, (int) x, (int) y);
-			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, pt.x, pt.y, gdkEvent.is_hint != 0, state);
+			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, time, pt.x, pt.y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]);
 		}
 		if (!isDisposed ()) {
 			display.currentControl = this;
-			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state);
+			sendMouseEvent (SWT.MouseEnter, 0, time, x, y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]);
 		}
 	}
-	result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
+	result = sendMouseEvent (SWT.MouseMove, 0, time, x, y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]) ? 0 : 1;
 	return result;
 }
 

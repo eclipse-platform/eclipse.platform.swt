@@ -1919,6 +1919,22 @@ void gdk_event_free (long /*int*/ event) {
 }
 
 /**
+ * Wrapper function for gdk_event_get_surface() on GTK4,
+ * and gdk_event_get_window() on GTK3.
+ *
+ * @param event the event whose window or surface to fetch
+ * @return the GdkWindow or GdkSurface associated with the event
+ */
+long /*int*/ gdk_event_get_surface_or_window(long /*int*/ event) {
+	if (event == 0) return 0;
+	if (GTK.GTK4) {
+		return GDK.gdk_event_get_surface(event);
+	} else {
+		return GDK.gdk_event_get_window(event);
+	}
+}
+
+/**
  * Wrapper function for gdk_event_get_state()
  * @param event   pointer to the GdkEvent.
  * @return the keymask to be used with constants like

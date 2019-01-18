@@ -354,21 +354,37 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	long /*int*/ result = super.gtk_motion_notify_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (!dragging) return 0;
-	GdkEventMotion gdkEvent = new GdkEventMotion ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int eventX, eventY, eventState;
-	if (gdkEvent.is_hint != 0) {
+	double [] fetchedX = new double [1];
+	double [] fetchedY = new double [1];
+	GDK.gdk_event_get_root_coords(eventPtr, fetchedX, fetchedY);
+	int [] state = new int [1];
+	GDK.gdk_event_get_state(eventPtr, state);
+	long /*int*/ gdkResource = gdk_event_get_surface_or_window(eventPtr);
+	boolean isHint;
+	if (GTK.GTK4) {
+		isHint = false;
+	} else {
+		GdkEventMotion gdkEvent = new GdkEventMotion ();
+		OS.memmove(gdkEvent, eventPtr, GdkEventMotion.sizeof);
+		isHint = gdkEvent.is_hint != 0;
+	}
+	if (isHint) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		display.gdk_window_get_device_position (gdkEvent.window, pointer_x, pointer_y, mask);
+		display.gdk_window_get_device_position (gdkResource, pointer_x, pointer_y, mask);
 		eventX = pointer_x [0];
 		eventY = pointer_y [0];
 		eventState = mask [0];
 	} else {
 		int [] origin_x = new int [1], origin_y = new int [1];
-		GDK.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
-		eventX = (int) (gdkEvent.x_root - origin_x [0]);
-		eventY = (int) (gdkEvent.y_root - origin_y [0]);
-		eventState = gdkEvent.state;
+		if (GTK.GTK4) {
+			GDK.gdk_surface_get_origin(gdkResource, origin_x, origin_y);
+		} else {
+			GDK.gdk_window_get_origin (gdkResource, origin_x, origin_y);
+		}
+		eventX = (int) (fetchedX[0] - origin_x [0]);
+		eventY = (int) (fetchedY[0] - origin_y [0]);
+		eventState = state[0];
 	}
 	if ((eventState & GDK.GDK_BUTTON1_MASK) == 0) return 0;
 	GtkAllocation allocation = new GtkAllocation ();
@@ -391,7 +407,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	drawBand (lastX, lastY, width, height);
 
 	Event event = new Event ();
-	event.time = gdkEvent.time;
+	event.time = GDK.gdk_event_get_time(eventPtr);
 	Rectangle eventRect = new Rectangle (newX, newY, width, height);
 	event.setBounds (DPIUtil.autoScaleDown (eventRect));
 	if ((style & SWT.SMOOTH) == 0) {

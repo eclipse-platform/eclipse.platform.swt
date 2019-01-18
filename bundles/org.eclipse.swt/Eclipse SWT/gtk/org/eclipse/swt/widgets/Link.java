@@ -461,12 +461,15 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_motion_notify_event (widget, event);
 	if (result != 0) return result;
-	GdkEventMotion gdkEvent = new GdkEventMotion ();
-	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-	int x = (int) gdkEvent.x;
-	int y = (int) gdkEvent.y;
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int x = (int) eventX[0];
+	int y = (int) eventY[0];
+	int [] state = new int [1];
+	GDK.gdk_event_get_state(event, state);
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-	if ((gdkEvent.state & GDK.GDK_BUTTON1_MASK) != 0) {
+	if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
 		selection.y = DPIUtil.autoScaleUp(layout.getOffset (x, y, null));
 		if (selection.y != oldSelection) {
