@@ -997,6 +997,22 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1event_1get_1crossing_1mode
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1crossing_1mode)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1crossing_1mode_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_crossing_mode((GdkEvent *)arg0, (GdkCrossingMode *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1crossing_1mode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1event_1get_1event_1type
 JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1event_1get_1event_1type)
 	(JNIEnv *env, jclass that, jintLong arg0)

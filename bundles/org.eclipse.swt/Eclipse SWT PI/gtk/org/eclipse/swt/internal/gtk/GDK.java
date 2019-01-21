@@ -985,6 +985,20 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param event cast=(GdkEvent *)
+	 * @param mode cast=(GdkCrossingMode *)
+	 */
+	public static final native boolean _gdk_event_get_crossing_mode(long /*int*/ event, int [] mode);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gdk_event_get_crossing_mode(long /*int*/ event, int [] mode) {
+		lock.lock();
+		try {
+			return _gdk_event_get_crossing_mode(event, mode);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(GdkEvent *)
 	 * @param button cast=(guint *)
 	 */
 	public static final native boolean _gdk_event_get_button(long /*int*/ event, int[] button);

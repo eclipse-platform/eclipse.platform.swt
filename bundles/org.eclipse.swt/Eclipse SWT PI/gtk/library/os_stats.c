@@ -104,6 +104,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1event_1get",
 	"_1gdk_1event_1get_1button",
 	"_1gdk_1event_1get_1coords",
+	"_1gdk_1event_1get_1crossing_1mode",
 	"_1gdk_1event_1get_1event_1type",
 	"_1gdk_1event_1get_1focus_1in",
 	"_1gdk_1event_1get_1key_1group",

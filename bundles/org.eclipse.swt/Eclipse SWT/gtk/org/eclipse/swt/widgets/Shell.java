@@ -1519,11 +1519,16 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
-			GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-			OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-			if ((gdkEvent.state & GDK.GDK_BUTTON1_MASK) == 0) {
-				long /*int*/ window = gtk_widget_get_window (shellHandle);
-				GDK.gdk_window_set_cursor (window, 0);
+			int [] state = new int [1];
+			GDK.gdk_event_get_state(event, state);
+			if ((state[0] & GDK.GDK_BUTTON1_MASK) == 0) {
+				if (GTK.GTK4) {
+					long /*int*/ surface = gtk_widget_get_surface (shellHandle);
+					GDK.gdk_surface_set_cursor(surface, 0);
+				} else {
+					long /*int*/ window = gtk_widget_get_window (shellHandle);
+					GDK.gdk_window_set_cursor (window, 0);
+				}
 				display.resizeMode = 0;
 			}
 		}

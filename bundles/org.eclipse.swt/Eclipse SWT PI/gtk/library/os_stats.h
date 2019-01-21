@@ -114,6 +114,7 @@ typedef enum {
 	_1gdk_1event_1get_FUNC,
 	_1gdk_1event_1get_1button_FUNC,
 	_1gdk_1event_1get_1coords_FUNC,
+	_1gdk_1event_1get_1crossing_1mode_FUNC,
 	_1gdk_1event_1get_1event_1type_FUNC,
 	_1gdk_1event_1get_1focus_1in_FUNC,
 	_1gdk_1event_1get_1key_1group_FUNC,

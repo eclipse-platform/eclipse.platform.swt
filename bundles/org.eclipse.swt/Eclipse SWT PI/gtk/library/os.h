@@ -446,6 +446,7 @@
 #define NO__1gdk_1event_1get_1focus_1in
 #define NO__1gdk_1event_1get_1string
 #define NO__1gdk_1event_1get_1key_1group
+#define NO__1gdk_1event_1get_1crossing_1mode
 #endif
 
 #include "os_custom.h"

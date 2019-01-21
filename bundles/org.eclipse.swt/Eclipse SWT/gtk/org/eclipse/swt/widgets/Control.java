@@ -3475,10 +3475,29 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	long /*int*/ childGdkResource = 0;
+	int [] crossingMode = new int[1];
+	int [] state = new int [1];
+	GDK.gdk_event_get_state(event, state);
+	int time = GDK.gdk_event_get_time(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_crossing_mode(event, crossingMode);
+		// TODO_GTK4: GTK devs are still deciding whether or not
+		// to provide API for GdkEventCrossing->child_surface.
+	} else {
+		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+		crossingMode[0] = gdkEvent.mode;
+		childGdkResource = gdkEvent.subwindow;
+	}
 
 	/*
 	 * It is possible to send out too many enter/exit events if entering a
@@ -3486,16 +3505,16 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	 * events if the GdkEventCrossing subwindow field is set and the control
 	 * requests to check the field.
 	 */
-	if (gdkEvent.subwindow != 0 && checkSubwindow ()) return 0;
-	if (gdkEvent.mode != GDK.GDK_CROSSING_NORMAL && gdkEvent.mode != GDK.GDK_CROSSING_UNGRAB) return 0;
-	if ((gdkEvent.state & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
+	if (childGdkResource != 0 && checkSubwindow ()) return 0;
+	if (crossingMode [0] != GDK.GDK_CROSSING_NORMAL && crossingMode[0] != GDK.GDK_CROSSING_UNGRAB) return 0;
+	if ((state[0] & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
 	if (display.currentControl != null && !display.currentControl.isDisposed ()) {
 		display.removeMouseHoverTimeout (display.currentControl.handle);
-		display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
+		display.currentControl.sendMouseEvent (SWT.MouseExit,  0, time, eventRX[0], eventRY[0], false, state[0]);
 	}
 	if (!isDisposed ()) {
 		display.currentControl = this;
-		return sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+		return sendMouseEvent (SWT.MouseEnter, 0, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 	}
 	return 0;
 }
@@ -3748,16 +3767,31 @@ long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (display.currentControl != this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	int [] crossingMode = new int[1];
+	int [] state = new int [1];
+	GDK.gdk_event_get_state(event, state);
+	int time = GDK.gdk_event_get_time(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_crossing_mode(event, crossingMode);
+	} else {
+		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+		crossingMode[0] = gdkEvent.mode;
+	}
 	display.removeMouseHoverTimeout (handle);
 	int result = 0;
 	if (sendLeaveNotify () || display.getCursorControl () == null) {
-		if (gdkEvent.mode != GDK.GDK_CROSSING_NORMAL && gdkEvent.mode != GDK.GDK_CROSSING_UNGRAB) return 0;
-		if ((gdkEvent.state & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
-		result = sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+		if (crossingMode[0] != GDK.GDK_CROSSING_NORMAL && crossingMode[0] != GDK.GDK_CROSSING_UNGRAB) return 0;
+		if ((state[0] & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
+		result = sendMouseEvent (SWT.MouseExit, 0, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 		display.currentControl = null;
 	}
 	return result;
