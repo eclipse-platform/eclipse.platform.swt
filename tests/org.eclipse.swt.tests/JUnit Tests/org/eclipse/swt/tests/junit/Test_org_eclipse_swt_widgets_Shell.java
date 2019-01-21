@@ -692,36 +692,39 @@ public void test_activateEventSend() {
 
 /**
  * Regression test for Bug 445900: [GTK] Shell#computeTrim(..) wrong for
- * first invisible shell (editor hovers jump when enriched)
+ * first invisible shell (editor hovers jump when enriched).
+ *
+ * Disabled on Wayland as there is no absolute positioning.
  */
 @Test
 public void test_setBounds() throws Exception {
+	if (SwtTestUtil.isX11) {
+		Rectangle bounds = new Rectangle(100, 200, 200, 200);
+		Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
 
-	Rectangle bounds = new Rectangle(100, 200, 200, 200);
-	Rectangle bounds2 = new Rectangle(150, 250, 250, 250);
+		StringBuilder log = new StringBuilder();
+		int[] styles = { SWT.NO_TRIM, SWT.BORDER, SWT.RESIZE, SWT.TITLE | SWT.BORDER, SWT.TITLE | SWT.RESIZE, SWT.TITLE };
+		for (int i = 0; i < styles.length; i++) {
+			Shell testShell = new Shell(shell, styles[i]);
+			try {
+				testShell.setBounds(bounds);
+				logUnlessEquals(log, i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
-	StringBuilder log = new StringBuilder();
-	int[] styles = { SWT.NO_TRIM, SWT.BORDER, SWT.RESIZE, SWT.TITLE | SWT.BORDER, SWT.TITLE | SWT.RESIZE, SWT.TITLE };
-	for (int i = 0; i < styles.length; i++) {
-		Shell testShell = new Shell(shell, styles[i]);
-		try {
-			testShell.setBounds(bounds);
-			logUnlessEquals(log, i + ".1: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+				testShell.open();
+				logUnlessEquals(IS_GTK_BUG_445900 ? System.out : log, i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
-			testShell.open();
-			logUnlessEquals(IS_GTK_BUG_445900 ? System.out : log, i + ".2: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
+				testShell.setBounds(bounds);
+				logUnlessEquals(log, i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
 
-			testShell.setBounds(bounds);
-			logUnlessEquals(log, i + ".3: style 0x" + Integer.toHexString(styles[i]), bounds, testShell.getBounds());
-
-			testShell.setBounds(bounds2);
-			logUnlessEquals(log, i + ".4: style 0x" + Integer.toHexString(styles[i]), bounds2, testShell.getBounds());
-		} finally {
-			testShell.dispose();
+				testShell.setBounds(bounds2);
+				logUnlessEquals(log, i + ".4: style 0x" + Integer.toHexString(styles[i]), bounds2, testShell.getBounds());
+			} finally {
+				testShell.dispose();
+			}
 		}
-	}
-	if (log.length() > 0) {
-		Assert.fail(log.toString());
+		if (log.length() > 0) {
+			Assert.fail(log.toString());
+		}
 	}
 }
 
