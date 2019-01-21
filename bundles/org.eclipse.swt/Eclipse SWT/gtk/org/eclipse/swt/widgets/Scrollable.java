@@ -312,9 +312,9 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	*/
 	if ((state & CANVAS) != 0) {
 		ScrollBar scrollBar;
-		GdkEventScroll gdkEvent = new GdkEventScroll ();
-		OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
-		if (gdkEvent.direction == GDK.GDK_SCROLL_SMOOTH) {
+		int [] direction = new int[1];
+		GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+		if (direction[0] == GDK.GDK_SCROLL_SMOOTH) {
 			double[] delta_x = new double[1], delta_y = new double [1];
 			if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
@@ -343,7 +343,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				}
 			}
 		} else {
-			if (gdkEvent.direction == GDK.GDK_SCROLL_UP || gdkEvent.direction == GDK.GDK_SCROLL_DOWN) {
+			if (direction[0] == GDK.GDK_SCROLL_UP || direction[0] == GDK.GDK_SCROLL_DOWN) {
 				scrollBar = verticalBar;
 			} else {
 				scrollBar = horizontalBar;
@@ -353,7 +353,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 				gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 				/* Calculate wheel delta to match GTK+ 2.4 and higher */
 				int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
-				if (gdkEvent.direction == GDK.GDK_SCROLL_UP || gdkEvent.direction == GDK.GDK_SCROLL_LEFT)
+				if (direction[0] == GDK.GDK_SCROLL_UP || direction[0] == GDK.GDK_SCROLL_LEFT)
 					wheel_delta = -wheel_delta;
 				int value = (int) Math.max(adjustment.lower,
 						Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));

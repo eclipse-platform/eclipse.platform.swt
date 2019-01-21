@@ -268,7 +268,6 @@ public class GDK extends OS {
 	public static final native int GdkEventFocus_sizeof();
 	public static final native int GdkEventKey_sizeof();
 	public static final native int GdkEventMotion_sizeof();
-	public static final native int GdkEventScroll_sizeof();
 	public static final native int GdkEventWindowState_sizeof();
 	public static final native int GdkGeometry_sizeof();
 	public static final native int GdkRectangle_sizeof();
@@ -1102,6 +1101,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_event_get_scroll_deltas(event, delta_x, delta_y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param event cast=(const GdkEvent *)
+	 * @param direction cast=(GdkScrollDirection *)
+	 */
+	public static final native boolean _gdk_event_get_scroll_direction(long /*int*/ event, int [] direction);
+	public static final boolean gdk_event_get_scroll_direction(long /*int*/ event, int [] direction) {
+		lock.lock();
+		try {
+			return _gdk_event_get_scroll_direction(event, direction);
 		} finally {
 			lock.unlock();
 		}

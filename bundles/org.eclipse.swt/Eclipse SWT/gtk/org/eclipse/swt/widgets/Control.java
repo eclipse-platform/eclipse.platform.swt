@@ -3903,29 +3903,38 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	GdkEventScroll gdkEvent = new GdkEventScroll ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
-	lastInput.x = (int) gdkEvent.x;
-	lastInput.y = (int) gdkEvent.y;
+	double [] eventX = new double[1];
+	double [] eventY = new double[1];
+	GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+	double [] eventRX = new double[1];
+	double [] eventRY = new double[1];
+	GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
+	int time = GDK.gdk_event_get_time(eventPtr);
+	int [] state = new int[1];
+	GDK.gdk_event_get_state(eventPtr, state);
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
+	int [] direction = new int[1];
+	GDK.gdk_event_get_scroll_direction(eventPtr, direction);
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	switch (gdkEvent.direction) {
+	switch (direction[0]) {
 		case GDK.GDK_SCROLL_UP:
-			return sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 		case GDK.GDK_SCROLL_DOWN:
-			return sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 		case GDK.GDK_SCROLL_LEFT:
-			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, 3, 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, 3, 0, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 		case GDK.GDK_SCROLL_RIGHT:
-			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, -3, 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, -3, 0, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
 		case GDK.GDK_SCROLL_SMOOTH:
 			long /*int*/ result = 0;
 			double[] delta_x = new double[1], delta_y = new double [1];
 			if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
-					result = (sendMouseEvent (SWT.MouseHorizontalWheel, 0, (int)(-3 * delta_x [0]), 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
+					result = (sendMouseEvent (SWT.MouseHorizontalWheel, 0, (int)(-3 * delta_x [0]), 0, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1);
 				}
 				if (delta_y [0] != 0) {
-					result = (sendMouseEvent (SWT.MouseWheel, 0, (int)(-3 * delta_y [0]), SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1);
+					result = (sendMouseEvent (SWT.MouseWheel, 0, (int)(-3 * delta_y [0]), SWT.SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1);
 				}
 			}
 			return result;

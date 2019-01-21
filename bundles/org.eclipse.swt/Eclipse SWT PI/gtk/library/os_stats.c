@@ -32,7 +32,6 @@ char * GDK_nativeFunctionNames[] = {
 	"GdkEventFocus_1sizeof",
 	"GdkEventKey_1sizeof",
 	"GdkEventMotion_1sizeof",
-	"GdkEventScroll_1sizeof",
 	"GdkEventWindowState_1sizeof",
 	"GdkEvent_1sizeof",
 	"GdkGeometry_1sizeof",
@@ -112,6 +111,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1event_1get_1keyval",
 	"_1gdk_1event_1get_1root_1coords",
 	"_1gdk_1event_1get_1scroll_1deltas",
+	"_1gdk_1event_1get_1scroll_1direction",
 	"_1gdk_1event_1get_1seat",
 	"_1gdk_1event_1get_1state",
 	"_1gdk_1event_1get_1string",
@@ -1820,11 +1820,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II",

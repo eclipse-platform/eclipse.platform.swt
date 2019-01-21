@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -619,67 +619,6 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 	(*env)->SetIntLongField(env, lpObject, GdkEventMotionFc.device, (jintLong)lpStruct->device);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.x_root, (jdouble)lpStruct->x_root);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.y_root, (jdouble)lpStruct->y_root);
-}
-#endif
-
-#ifndef NO_GdkEventScroll
-typedef struct GdkEventScroll_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID window, send_event, time, x, y, state, direction, device, x_root, y_root;
-} GdkEventScroll_FID_CACHE;
-
-GdkEventScroll_FID_CACHE GdkEventScrollFc;
-
-void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkEventScrollFc.cached) return;
-	cacheGdkEventFields(env, lpObject);
-	GdkEventScrollFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventScrollFc.window = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "window", I_J);
-	GdkEventScrollFc.send_event = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "send_event", "B");
-	GdkEventScrollFc.time = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "time", "I");
-	GdkEventScrollFc.x = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x", "D");
-	GdkEventScrollFc.y = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y", "D");
-	GdkEventScrollFc.state = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "state", "I");
-	GdkEventScrollFc.direction = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "direction", "I");
-	GdkEventScrollFc.device = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "device", I_J);
-	GdkEventScrollFc.x_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x_root", "D");
-	GdkEventScrollFc.y_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y_root", "D");
-	GdkEventScrollFc.cached = 1;
-}
-
-GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct)
-{
-	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
-	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventScrollFc.window);
-	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventScrollFc.send_event);
-	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.time);
-	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x);
-	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y);
-	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.state);
-	lpStruct->direction = (GdkScrollDirection)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.direction);
-	lpStruct->device = (GdkDevice *)(*env)->GetIntLongField(env, lpObject, GdkEventScrollFc.device);
-	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x_root);
-	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y_root);
-	return lpStruct;
-}
-
-void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct)
-{
-	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
-	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntLongField(env, lpObject, GdkEventScrollFc.window, (jintLong)lpStruct->window);
-	(*env)->SetByteField(env, lpObject, GdkEventScrollFc.send_event, (jbyte)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.time, (jint)lpStruct->time);
-	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x, (jdouble)lpStruct->x);
-	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y, (jdouble)lpStruct->y);
-	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.state, (jint)lpStruct->state);
-	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.direction, (jint)lpStruct->direction);
-	(*env)->SetIntLongField(env, lpObject, GdkEventScrollFc.device, (jintLong)lpStruct->device);
-	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x_root, (jdouble)lpStruct->x_root);
-	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y_root, (jdouble)lpStruct->y_root);
 }
 #endif
 

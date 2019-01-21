@@ -2957,12 +2957,6 @@ public static final native void memmove(GdkEventMotion dest, long /*int*/ src, l
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove(GdkEventScroll dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
 public static final native void memmove(GdkEventWindowState dest, long /*int*/ src, long /*int*/ size);
 public static final native void memmove(long /*int*/ dest, GtkCellRendererClass src);
 public static final native void memmove(GtkCellRendererClass dest, long /*int*/ src);

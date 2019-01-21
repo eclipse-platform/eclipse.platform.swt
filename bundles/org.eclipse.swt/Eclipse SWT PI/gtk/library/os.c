@@ -144,18 +144,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventMotion_1sizeof)
 }
 #endif
 
-#ifndef NO_GdkEventScroll_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventScroll_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventScroll_1sizeof_FUNC);
-	rc = (jint)GdkEventScroll_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventScroll_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkEventWindowState_1sizeof
 JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventWindowState_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -1127,6 +1115,22 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1scroll_1deltas_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1event_1get_1scroll_1direction
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1event_1get_1scroll_1direction)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1get_1scroll_1direction_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_scroll_direction((const GdkEvent *)arg0, (GdkScrollDirection *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1get_1scroll_1direction_FUNC);
 	return rc;
 }
 #endif
@@ -18822,32 +18826,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	GdkEventScroll _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ_FUNC);
-#endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventScrollFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ_FUNC);
 #endif
 }
 #endif

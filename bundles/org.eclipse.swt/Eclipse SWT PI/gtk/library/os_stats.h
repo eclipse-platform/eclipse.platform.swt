@@ -42,7 +42,6 @@ typedef enum {
 	GdkEventFocus_1sizeof_FUNC,
 	GdkEventKey_1sizeof_FUNC,
 	GdkEventMotion_1sizeof_FUNC,
-	GdkEventScroll_1sizeof_FUNC,
 	GdkEventWindowState_1sizeof_FUNC,
 	GdkEvent_1sizeof_FUNC,
 	GdkGeometry_1sizeof_FUNC,
@@ -122,6 +121,7 @@ typedef enum {
 	_1gdk_1event_1get_1keyval_FUNC,
 	_1gdk_1event_1get_1root_1coords_FUNC,
 	_1gdk_1event_1get_1scroll_1deltas_FUNC,
+	_1gdk_1event_1get_1scroll_1direction_FUNC,
 	_1gdk_1event_1get_1seat_FUNC,
 	_1gdk_1event_1get_1state_FUNC,
 	_1gdk_1event_1get_1string_FUNC,
@@ -1794,11 +1794,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II_FUNC,
