@@ -481,6 +481,7 @@ Point getScreenDPI () {
 			pMonitor = GDK.gdk_display_get_monitor(display, 0);
 		}
 		int widthMM = GDK.gdk_monitor_get_width_mm(pMonitor);
+		if (widthMM == 0) return new Point (dpi, dpi);
 		int scaleFactor = GDK.gdk_monitor_get_scale_factor(pMonitor);
 		GdkRectangle monitorGeometry = new GdkRectangle ();
 		GDK.gdk_monitor_get_geometry(pMonitor, monitorGeometry);
