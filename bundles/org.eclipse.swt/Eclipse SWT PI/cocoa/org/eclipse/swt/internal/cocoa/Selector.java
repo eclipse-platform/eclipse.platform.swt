@@ -354,6 +354,7 @@ public enum Selector {
 	, sel_credentialWithUser_password_persistence_("credentialWithUser:password:persistence:")
 	, sel_crosshairCursor("crosshairCursor")
 	, sel_ctrlKey("ctrlKey")
+	, sel_currentAppearance("currentAppearance")
 	, sel_currentApplication("currentApplication")
 	, sel_currentContext("currentContext")
 	, sel_currentCursor("currentCursor")

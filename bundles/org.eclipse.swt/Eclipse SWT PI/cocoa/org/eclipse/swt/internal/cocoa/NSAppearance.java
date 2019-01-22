@@ -32,6 +32,11 @@ public static NSAppearance appearanceNamed(NSString name) {
 	return result != 0 ? new NSAppearance(result) : null;
 }
 
+public static NSAppearance currentAppearance() {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSAppearance, OS.sel_currentAppearance);
+	return result != 0 ? new NSAppearance(result) : null;
+}
+
 public NSString name() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_name);
 	return result != 0 ? new NSString(result) : null;

@@ -220,6 +220,22 @@ public class OS extends C {
 	public static void setTheme(boolean isDarkTheme) {
 		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
 	}
+	public static boolean isAppDarkAppearance() {
+		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 14, 0)) {
+			NSAppearance currentAppearance = NSAppearance.currentAppearance();
+			if (currentAppearance != null) {
+				return "NSAppearanceNameDarkAqua".equals(currentAppearance.name().getString());
+			}
+		}
+		return false;
+	}
+	public static boolean isSystemDarkAppearance() {
+		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 14, 0)) {
+			NSString osxMode = NSUserDefaults.standardUserDefaults ().stringForKey (NSString.stringWith ("AppleInterfaceStyle"));
+			return osxMode != null && "Dark".equals (osxMode.getString ());
+		}
+		return false;
+	}
 
 /** JNI natives */
 
@@ -1242,6 +1258,7 @@ public static final long /*int*/ sel_createFileAtPath_contents_attributes_ = Sel
 public static final long /*int*/ sel_credentialWithUser_password_persistence_ = Selector.sel_credentialWithUser_password_persistence_.value;
 public static final long /*int*/ sel_crosshairCursor = Selector.sel_crosshairCursor.value;
 public static final long /*int*/ sel_ctrlKey = Selector.sel_ctrlKey.value;
+public static final long /*int*/ sel_currentAppearance = Selector.sel_currentAppearance.value;
 public static final long /*int*/ sel_currentApplication = Selector.sel_currentApplication.value;
 public static final long /*int*/ sel_currentContext = Selector.sel_currentContext.value;
 public static final long /*int*/ sel_currentCursor = Selector.sel_currentCursor.value;

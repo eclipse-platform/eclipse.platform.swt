@@ -110,7 +110,7 @@ public class Display extends Device {
 	enum APPEARANCE {
 		Dark, Light,
 	}
-	APPEARANCE appAppearance = null;
+	APPEARANCE appAppearance;
 
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -1897,7 +1897,7 @@ double /*float*/ [] getWidgetColorRGB (int id) {
 			break;
 		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: color = NSColor.controlLightHighlightColor(); break;
 		case SWT.COLOR_WIDGET_BACKGROUND:
-			color = OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0) ? NSColor.windowBackgroundColor()
+			color = OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0) ? NSColor.controlBackgroundColor()
 					: NSColor.controlHighlightColor();
 			break;
 		case SWT.COLOR_WIDGET_FOREGROUND: color = NSColor.controlTextColor(); break;
@@ -2224,6 +2224,11 @@ boolean hasDefaultButton () {
 @Override
 protected void init () {
 	super.init ();
+
+	if (OS.isSystemDarkAppearance()) {
+		setAppAppearance(APPEARANCE.Dark);
+	}
+
 	initClasses ();
 	initColors ();
 	initFonts ();

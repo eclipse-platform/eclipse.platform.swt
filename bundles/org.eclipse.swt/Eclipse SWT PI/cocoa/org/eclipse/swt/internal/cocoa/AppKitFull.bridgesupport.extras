@@ -58,6 +58,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="currentAppearance" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="name" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
