@@ -393,8 +393,8 @@ void hookEvents () {
 		GTK.gtk_widget_add_controller(focusHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
-		long focusAddress = display.focusCallback.getAddress();
+		long /*int*/ keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
+		long /*int*/ focusAddress = display.focusCallback.getAddress();
 		OS.g_signal_connect (keyController, OS.key_pressed, keyPressReleaseAddress, KEY_PRESSED);
 		OS.g_signal_connect (keyController, OS.key_released, keyPressReleaseAddress, KEY_RELEASED);
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
@@ -497,7 +497,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.getClosure (PREEDIT_CHANGED), false);
 	}
 
-	OS.g_signal_connect_closure_by_id (paintHandle (), display.signalIds [STYLE_SET], 0, display.getClosure (STYLE_SET), false);
+	OS.g_signal_connect_closure_by_id (paintHandle (), display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
 
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
@@ -4015,7 +4015,7 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 }
 
 @Override
-long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
+long /*int*/ gtk_style_updated (long /*int*/ widget) {
 	if (backgroundImage != null) {
 		setBackgroundSurface (backgroundImage);
 	}

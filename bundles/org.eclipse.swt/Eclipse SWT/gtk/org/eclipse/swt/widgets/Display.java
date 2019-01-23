@@ -262,7 +262,7 @@ public class Display extends Device {
 	Callback signalCallback;
 	long /*int*/ shellHandle;
 	boolean settingsChanged, runSettings;
-	static final int STYLE_SET = 1;
+	static final int STYLE_UPDATED = 1;
 	static final int PROPERTY_NOTIFY = 2;
 
 	/* Entry focus behaviour */
@@ -3583,7 +3583,7 @@ void initializeCallbacks () {
 	signalIds [Widget.SHOW] = OS.g_signal_lookup (OS.show, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.SHOW_HELP] = OS.g_signal_lookup (OS.show_help, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.SIZE_ALLOCATE] = OS.g_signal_lookup (OS.size_allocate, GTK.GTK_TYPE_WIDGET ());
-	signalIds [Widget.STYLE_SET] = OS.g_signal_lookup (OS.style_set, GTK.GTK_TYPE_WIDGET ());
+	signalIds [Widget.STYLE_UPDATED] = OS.g_signal_lookup (OS.style_updated, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNMAP] = OS.g_signal_lookup (OS.unmap, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNMAP_EVENT] = OS.g_signal_lookup (OS.unmap_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, GTK.GTK_TYPE_WIDGET ());
@@ -3658,6 +3658,7 @@ void initializeCallbacks () {
 	closuresProc [Widget.SELECTION_DONE] = windowProc2;
 	closuresProc [Widget.SHOW] = windowProc2;
 	closuresProc [Widget.START_INTERACTIVE_SEARCH] = windowProc2;
+	closuresProc [Widget.STYLE_UPDATED] = windowProc2;
 	closuresProc [Widget.VALUE_CHANGED] = windowProc2;
 	closuresProc [Widget.UNMAP] = windowProc2;
 	closuresProc [Widget.UNREALIZE] = windowProc2;
@@ -3702,7 +3703,6 @@ void initializeCallbacks () {
 	closuresProc [Widget.SCROLL_EVENT] = windowProc3;
 	closuresProc [Widget.SHOW_HELP] = windowProc3;
 	closuresProc [Widget.SIZE_ALLOCATE] = windowProc3;
-	closuresProc [Widget.STYLE_SET] = windowProc3;
 	closuresProc [Widget.TOGGLED] = windowProc3;
 	closuresProc [Widget.UNMAP_EVENT] = windowProc3;
 	closuresProc [Widget.WINDOW_STATE_EVENT] = windowProc3;
@@ -3869,7 +3869,7 @@ void initializeSubclasses () {
 }
 
 void initializeSystemSettings () {
-	if (!GTK.GTK4) OS.g_signal_connect (shellHandle, OS.style_set, signalProc, STYLE_SET);
+	OS.g_signal_connect (shellHandle, OS.style_updated, signalProc, STYLE_UPDATED);
 
 	/*
 	* Feature in GTK.  Despite the fact that the
@@ -5847,7 +5847,7 @@ String simple_color_parser (String output, String value, int index) {
 
 long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ user_data) {
 	switch((int)/*64*/user_data) {
-		case STYLE_SET:
+		case STYLE_UPDATED:
 			settingsChanged = true;
 			break;
 	}

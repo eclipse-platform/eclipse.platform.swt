@@ -923,8 +923,8 @@ long /*int*/ gtk_scroll_child (long /*int*/ widget, long /*int*/ scrollType, lon
 }
 
 @Override
-long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
-	long /*int*/ result = super.gtk_style_set (widget, previousStyle);
+long /*int*/ gtk_style_updated (long /*int*/ widget) {
+	long /*int*/ result = super.gtk_style_updated (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		//TODO: implement this on GTK3 as pixmaps are gone.
 	}

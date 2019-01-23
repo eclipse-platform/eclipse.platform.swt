@@ -181,7 +181,7 @@ public abstract class Widget {
 	static final int SHOW = 45;
 	static final int SHOW_HELP = 46;
 	static final int SIZE_ALLOCATE = 47;
-	static final int STYLE_SET = 48;
+	static final int STYLE_UPDATED = 48;
 	static final int SWITCH_PAGE = 49;
 	static final int TEST_COLLAPSE_ROW = 50;
 	static final int TEST_EXPAND_ROW = 51;
@@ -935,7 +935,7 @@ long /*int*/ gtk_start_interactive_search (long /*int*/ widget) {
 	return 0;
 }
 
-long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
+long /*int*/ gtk_style_updated (long /*int*/ widget) {
 	return 0;
 }
 
@@ -2127,6 +2127,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
 		case START_INTERACTIVE_SEARCH: return gtk_start_interactive_search (handle);
+		case STYLE_UPDATED: return gtk_style_updated (handle);
 		case SELECT: return gtk_select (handle);
 		case SELECTION_DONE: return gtk_selection_done (handle);
 		case SHOW: return gtk_show (handle);
@@ -2179,7 +2180,6 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
-		case STYLE_SET: return gtk_style_set (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);

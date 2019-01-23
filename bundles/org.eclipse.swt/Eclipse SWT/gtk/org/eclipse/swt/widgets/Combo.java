@@ -1700,10 +1700,10 @@ long /*int*/ gtk_selection_done(long /*int*/ menushell) {
 }
 
 @Override
-long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
+long /*int*/ gtk_style_updated (long /*int*/ widget) {
 	setButtonHandle (findButtonHandle ());
 	setMenuHandle (findMenuHandle ());
-	return super.gtk_style_set (widget, previousStyle);
+	return super.gtk_style_updated (widget);
 }
 
 /**
