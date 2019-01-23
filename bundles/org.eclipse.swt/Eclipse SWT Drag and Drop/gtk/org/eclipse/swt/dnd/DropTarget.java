@@ -567,14 +567,14 @@ public DropTargetEffect getDropTargetEffect() {
 
 int getOperationFromKeyState() {
 	int[] state = new int[1];
-	long /*int*/ root = GDK.gdk_get_default_root_window ();
-	long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_window_get_display (root));
+	long /*int*/ pointer = GDK.gdk_get_pointer (GDK.gdk_display_get_default());
 	if (GTK.GTK4) {
 		/*
 		 * TODO: calling gdk_window_get_device_position() here
 		 * uses gdk_get_default_root_window(), which doesn't exist on GTK4.
 		 */
 	} else {
+		long /*int*/ root = GDK.gdk_get_default_root_window ();
 		GDK.gdk_window_get_device_position(root, pointer, null, null, state);
 	}
 	boolean ctrl = (state[0] & GDK.GDK_CONTROL_MASK) != 0;

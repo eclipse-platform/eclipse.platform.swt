@@ -329,7 +329,12 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * @param rects
  */
 void drawRectangles (Rectangle [] rects) {
-	long /*int*/ gdkResource = GDK.gdk_get_default_root_window();
+	long /*int*/ gdkResource = 0;
+	if (GTK.GTK4) {
+		if (parent != null) gdkResource = gtk_widget_get_surface(parent.handle);
+	} else {
+		gdkResource = GDK.gdk_get_default_root_window();
+	}
 	if (parent != null) {
 		long /*int*/ paintHandle = parent.paintHandle();
 		gdkResource = GTK.GTK4 ? gtk_widget_get_surface(paintHandle) : gtk_widget_get_window (paintHandle);
@@ -764,7 +769,7 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget();
-	window = GDK.gdk_get_default_root_window();
+	if (!GTK.GTK4) window = GDK.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	}
