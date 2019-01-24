@@ -2342,8 +2342,13 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 
 @Override
 long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ window = GDK.GDK_EVENT_WINDOW (event);
-	if (window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	if (GTK.GTK4) {
+		long /*int*/ surface = GDK.gdk_event_get_surface(event);
+		if (surface != gtk_widget_get_surface(handle)) return 0;
+	} else {
+		long /*int*/ window = GDK.GDK_EVENT_WINDOW (event);
+		if (window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	}
 	return super.gtk_motion_notify_event (widget, event);
 }
 
@@ -2944,18 +2949,23 @@ long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ hand
 }
 
 @Override
+long /*int*/ rendererSnapshotProc (long /*int*/ cell, long /*int*/ snapshot, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+	long /*int*/ rect = Graphene.graphene_rect_alloc();
+	GdkRectangle gdkRectangle = new GdkRectangle ();
+	OS.memmove(gdkRectangle, background_area, GdkRectangle.sizeof);
+	Graphene.graphene_rect_init(rect, gdkRectangle.x, gdkRectangle.y, gdkRectangle.width, gdkRectangle.height);
+	long /*int*/ cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	rendererRender (cell, cairo, snapshot, widget, background_area, cell_area, 0, flags);
+	return 0;
+}
+
+@Override
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	rendererRender (cell, cr, 0, widget, background_area, cell_area, 0, flags);
 	return 0;
 }
 
-@Override
-long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
-	rendererRender (cell, 0, window, widget, background_area, cell_area, expose_area, flags);
-	return 0;
-}
-
-void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
+void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ snapshot, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
 	TreeItem item = null;
 	boolean wasSelected = false;
 	long /*int*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
@@ -3008,7 +3018,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
 						}
-						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
+						drawBackground (control, 0, cr, 0, rect.x, rect.y, rect.width, rect.height);
 						if (cr != 0) {
 							Cairo.cairo_restore (cr);
 						}
@@ -3091,7 +3101,11 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		if (drawForegroundRGBA != null && GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			OS.g_object_set (cell, OS.foreground_rgba, drawForegroundRGBA, 0);
 		}
-		OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
+		if (GTK.GTK4) {
+			OS.call (klass.snapshot, cell, snapshot, widget, background_area, cell_area, drawFlags);
+		} else {
+			OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
+		}
 	}
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {

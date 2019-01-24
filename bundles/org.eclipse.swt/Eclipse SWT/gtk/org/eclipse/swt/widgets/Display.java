@@ -336,9 +336,9 @@ public class Display extends Device {
 	/* Renderer Subclass */
 	static long /*int*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
 	static long /*int*/ text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
-	static Callback rendererClassInitCallback, rendererRenderCallback;
+	static Callback rendererClassInitCallback, rendererRenderCallback, rendererSnapshotCallback;
 	static Callback rendererGetPreferredWidthCallback;
-	static long /*int*/ rendererClassInitProc, rendererRenderProc;
+	static long /*int*/ rendererClassInitProc, rendererRenderProc, rendererSnapshotProc;
 	static long /*int*/ rendererGetPreferredWidthProc;
 
 	/* Key Mappings */
@@ -1062,10 +1062,18 @@ void createDisplay (DeviceData data) {
 		rendererClassInitProc = rendererClassInitCallback.getAddress ();
 		if (rendererClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	if (rendererRenderProc == 0) {
-		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 6); //$NON-NLS-1$
-		rendererRenderProc = rendererRenderCallback.getAddress ();
-		if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (GTK.GTK4) {
+		if (rendererSnapshotProc == 0) {
+			rendererSnapshotCallback = new Callback (getClass (), "rendererSnapshotProc", 6); //$NON-NLS-1$
+			rendererSnapshotProc = rendererSnapshotCallback.getAddress ();
+			if (rendererSnapshotProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
+	} else {
+		if (rendererRenderProc == 0) {
+			rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 6); //$NON-NLS-1$
+			rendererRenderProc = rendererRenderCallback.getAddress ();
+			if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
 	}
 	if (rendererGetPreferredWidthProc == 0) {
 		rendererGetPreferredWidthCallback = new Callback (getClass (), "rendererGetPreferredWidthProc", 4); //$NON-NLS-1$
@@ -1477,7 +1485,11 @@ public Widget findWidget (Widget widget, long /*int*/ id) {
 static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ class_data) {
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
-	klass.render = rendererRenderProc;
+	if (GTK.GTK4) {
+		klass.snapshot = rendererSnapshotProc;
+	} else {
+		klass.render = rendererRenderProc;
+	}
 	klass.get_preferred_width = rendererGetPreferredWidthProc;
 	OS.memmove (g_class, klass);
 	return 0;
@@ -1504,10 +1516,10 @@ static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long
 	return 0;
 }
 
-static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
+static long /*int*/ rendererSnapshotProc (long /*int*/ cell, long /*int*/ snapshot, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
-	if (widget != null) return widget.rendererRenderProc (cell, window, handle, background_area, cell_area, expose_area, flags);
+	if (widget != null) return widget.rendererSnapshotProc (cell, snapshot, handle, background_area, cell_area, flags);
 	return 0;
 }
 
@@ -4644,6 +4656,10 @@ void releaseDisplay () {
 		keyPressReleaseProc = 0;
 		focusCallback.dispose();
 		focusProc = 0;
+		enterMotionScrollCallback.dispose();
+		enterMotionScrollProc = 0;
+		leaveCallback.dispose();
+		leaveProc = 0;
 	}
 
 	/* Dispose checkIfEvent callback */

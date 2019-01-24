@@ -1323,7 +1323,7 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*
 	return 0;
 }
 
-long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
+long /*int*/ rendererSnapshotProc (long /*int*/ cell, long /*int*/ snapshot, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
 	return 0;
 }
 
