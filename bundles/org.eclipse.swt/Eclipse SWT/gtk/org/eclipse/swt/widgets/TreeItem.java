@@ -509,7 +509,7 @@ Rectangle getBoundsInPixels () {
 	int [] buffer = new int [1];
 	GTK.gtk_tree_path_free (path);
 
-	GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 
@@ -971,7 +971,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	int [] buffer = new int [1];
 	GTK.gtk_tree_path_free (path);
 
-	GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);

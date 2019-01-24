@@ -661,9 +661,9 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		yborder += borderWidth;
 	}
 	int [] property = new int [1];
-	GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
 	if (property [0] == 0) {
-		GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 		xborder += property [0];
 		yborder += property [0];
 	}

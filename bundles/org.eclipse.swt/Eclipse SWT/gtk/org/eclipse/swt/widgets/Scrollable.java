@@ -531,7 +531,7 @@ private Point scrollBarSize(long /*int*/ scrollBarHandle) {
 	}
 	gtk_widget_get_preferred_size (scrollBarHandle, requisition);
 	int [] padding = new int [1];
-	GTK.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
 	int spacing = padding[0];
 	return new Point(requisition.width + spacing, requisition.height + spacing);
 }

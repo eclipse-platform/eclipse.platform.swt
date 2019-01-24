@@ -443,11 +443,11 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 		width += rect.x;
 		/* expander */
 		if (!GTK.gtk_tree_view_column_get_visible(column)) {
-			GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
 			width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 		}
 	}
-	GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
 	long /*int*/ list = GTK.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
@@ -478,7 +478,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 
 	if (path != 0) GTK.gtk_tree_path_free (path);
 	if (GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE) {
-		GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
 		width += 2 * w [0];
 	}
 	return width;

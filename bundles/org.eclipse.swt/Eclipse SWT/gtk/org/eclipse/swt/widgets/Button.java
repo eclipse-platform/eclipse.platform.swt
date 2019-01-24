@@ -201,16 +201,16 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wrap) {
 		int borderWidth = gtk_container_get_border_width_or_margin (handle);
 		int[] focusWidth = new int[1];
-		GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
 		int[] focusPadding = new int[1];
-		GTK.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
 		int trimWidth = 2 * (borderWidth + focusWidth [0] + focusPadding [0]), trimHeight = trimWidth;
 		int indicatorHeight = 0;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			int[] indicatorSize = new int[1];
-			GTK.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
+			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
 			int[] indicatorSpacing = new int[1];
-			GTK.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
+			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
 			indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
 			trimWidth += indicatorHeight + indicatorSpacing [0];
 		} else {

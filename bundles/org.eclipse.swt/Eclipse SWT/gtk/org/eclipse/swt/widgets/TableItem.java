@@ -319,10 +319,10 @@ Rectangle getBoundsinPixels () {
 	rect.width = w [0];
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
-	GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 
@@ -748,10 +748,10 @@ Rectangle getTextBoundsInPixels (int index) {
 	parent.ignoreSize = false;
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
-	GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
 
