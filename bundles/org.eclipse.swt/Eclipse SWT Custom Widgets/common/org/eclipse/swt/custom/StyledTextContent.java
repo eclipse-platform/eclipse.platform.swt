@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -53,6 +53,18 @@ public int getCharCount();
  *	delimiters of preceding lines. Index 0 is the first line of the
  * 	content.
  * @return the line text without delimiters
+ * 	For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
+ * <ul>
+ * <li>getLine(0) == ""
+ * <li>getLine(1) == ""
+ * <li>getLine(2) == ""
+ * </ul>
+ * 	or if text = "A\nBC\nD", and delimiter = "\n", then:
+ * <ul>
+ * <li>getLine(0) == "A"
+ * <li>getLine(1) == "BC"
+ * <li>getLine(2) == "D"
+ * </ul>
  */
 public String getLine(int lineIndex);
 
@@ -61,8 +73,8 @@ public String getLine(int lineIndex);
  * <p>
  *
  * @param offset offset of the line to return. The first character of the
- * 	document is at offset 0.  An offset of getLength() is valid and should
- *	answer the number of lines.
+ * 	document is at offset 0.  An offset of {@link #getCharCount()} is valid
+ *	and should answer the line index of the last line.
  * @return the line index. The first line is at index 0.  If the character
  * 	at offset is a delimiter character, answer the line index of the line
  * 	that is delimited.
@@ -73,6 +85,16 @@ public String getLine(int lineIndex);
  * <li>getLineAtOffset(2) == 1
  * <li>getLineAtOffset(3) == 1
  * <li>getLineAtOffset(4) == 2
+ * </ul>
+ * 	or if text = "A\nBC\nD", and delimiter = "\n", then:
+ * <ul>
+ * <li>getLineAtOffset(0) == 0
+ * <li>getLineAtOffset(1) == 0
+ * <li>getLineAtOffset(2) == 1
+ * <li>getLineAtOffset(3) == 1
+ * <li>getLineAtOffset(4) == 1
+ * <li>getLineAtOffset(5) == 2
+ * <li>getLineAtOffset(6) == 2
  * </ul>
  */
 public int getLineAtOffset(int offset);
