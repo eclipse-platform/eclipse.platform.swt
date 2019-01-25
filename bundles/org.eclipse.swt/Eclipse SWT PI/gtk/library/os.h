@@ -438,6 +438,7 @@
 #define NO__1gdk_1cursor_1new_1from_1name___3BI
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
 #define NO__1gdk_1display_1get_1keymap
+#define NO__1gtk_1widget_1measure
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
 
 // GtkEventController related functions for GTK4

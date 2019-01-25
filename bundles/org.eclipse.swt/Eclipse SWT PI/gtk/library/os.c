@@ -12689,7 +12689,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1measure)
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	gtk_widget_measure((GtkWidget *)arg0, arg1, arg2, lparg3, lparg4, lparg5, lparg6);
+	gtk_widget_measure((GtkWidget *)arg0, (GtkOrientation)arg1, (int)arg2, (int *)lparg3, (int *)lparg4, (int *)lparg5, (int *)lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
