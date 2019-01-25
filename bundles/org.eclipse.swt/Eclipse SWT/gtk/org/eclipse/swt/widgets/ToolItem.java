@@ -469,6 +469,21 @@ int getWidthInPixels () {
 }
 
 @Override
+long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+	if (!GTK.GTK4) return 0;
+	int eventType = GDK.gdk_event_get_event_type(event);
+	switch (eventType) {
+		case GDK.GDK4_BUTTON_PRESS: {
+			return gtk_button_press_event(widget, event);
+		}
+		case GDK.GDK4_BUTTON_RELEASE: {
+			return gtk_button_release_event(widget, event);
+		}
+	}
+	return 0;
+}
+
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return parent.gtk_button_press_event (widget, event);
 }
@@ -755,8 +770,12 @@ void hookEvents () {
 		GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK |
 		GDK.GDK_FOCUS_CHANGE_MASK;
 	GTK.gtk_widget_add_events (eventHandle, mask);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+	if (GTK.GTK4) {
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+	} else {
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+	}
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 
 	long /*int*/ topHandle = topHandle ();

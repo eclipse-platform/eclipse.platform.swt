@@ -917,9 +917,15 @@ boolean hasBorder () {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
+	if (GTK.GTK4) {
+		// Replace configure-event with generic event handler
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+	} else {
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
+	}
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
 	if (GTK.GTK4) {
 		OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
 		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
@@ -953,7 +959,6 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 	}
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.getClosure (MOVE_FOCUS), false);
 	if (isCustomResize ()) {
 		if (!GTK.GTK4) {
@@ -961,9 +966,10 @@ void hookEvents () {
 			GTK.gtk_widget_add_events (shellHandle, mask);
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
+
+			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
+			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 		}
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.getClosure (EXPOSE_EVENT), false);
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }
 
@@ -1385,6 +1391,24 @@ public Shell [] getShells () {
 		}
 	}
 	return result;
+}
+
+@Override
+long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+	if (!GTK.GTK4) return 0;
+	int eventType = GDK.gdk_event_get_event_type(event);
+	switch (eventType) {
+		case GDK.GDK4_BUTTON_PRESS: {
+			return gtk_button_press_event(widget, event);
+		}
+		case GDK.GDK4_BUTTON_RELEASE: {
+			return gtk_button_release_event(widget, event);
+		}
+		case GDK.GDK4_CONFIGURE: {
+			return gtk_configure_event(widget, event);
+		}
+	}
+	return 0;
 }
 
 @Override

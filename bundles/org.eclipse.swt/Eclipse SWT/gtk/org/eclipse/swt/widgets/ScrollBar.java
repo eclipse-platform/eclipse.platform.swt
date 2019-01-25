@@ -502,6 +502,21 @@ public boolean getVisible () {
 }
 
 @Override
+long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+	if (!GTK.GTK4) return 0;
+	int eventType = GDK.gdk_event_get_event_type(event);
+	switch (eventType) {
+		case GDK.GDK4_BUTTON_PRESS: {
+			return gtk_button_press_event(widget, event);
+		}
+		case GDK.GDK4_BUTTON_RELEASE: {
+			return gtk_button_release_event(widget, event);
+		}
+	}
+	return 0;
+}
+
+@Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -578,7 +593,11 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+	if (GTK.GTK4) {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+	} else {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+	}
 }
 
 /**

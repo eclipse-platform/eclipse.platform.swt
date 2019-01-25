@@ -853,17 +853,23 @@ void hookEvents(long /*int*/ [] handles) {
 				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
 			}
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+			if (GTK.GTK4) {
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+			} else {
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+			}
 			/*
-			* Feature in GTK.  Events such as mouse move are propagated up
+			* Feature in GTK3.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
 			* correct GTK behavior but not correct for SWT.  The fix is to
 			* hook a signal after and stop the propagation using a negative
 			* event number to distinguish this case.
 			*/
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
+			if (!GTK.GTK4) {
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
+			}
 
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != focusHandle ()) {

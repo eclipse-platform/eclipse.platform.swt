@@ -172,7 +172,6 @@ void connectPaint () {
 		int paintMask = GDK.GDK_EXPOSURE_MASK;
 		GTK.gtk_widget_add_events (paintHandle, paintMask);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
-
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
 	}
 }
@@ -408,7 +407,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	}
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [POPUP_MENU], 0, display.getClosure (POPUP_MENU), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+	if (!GTK.GTK4) OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS], 0, display.getClosure (FOCUS), false);
 
 	/* Connect the mouse signals */
@@ -457,8 +456,13 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
 	}
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+	if (GTK.GTK4) {
+		// GTK4: button-press/release-event dropped, use generic event instead
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+	} else {
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+	}
 
 	/*Connect gesture signals */
 	setZoomGesture();
@@ -466,7 +470,7 @@ void hookEvents () {
 	setRotateGesture();
 
 	/*
-	* Feature in GTK.  Events such as mouse move are propagate up
+	* Feature in GTK3.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
 	* correct GTK behavior but not correct for SWT.  The fix is to
 	* hook a signal after and stop the propagation using a negative
@@ -474,15 +478,23 @@ void hookEvents () {
 	*
 	* The signal is hooked to the fixedHandle to catch events sent to
 	* lightweight widgets.
+	*
+	* Events are not propagated up on GTK4
 	*/
-	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
-	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
-	if (!GTK.GTK4) OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
+	if (!GTK.GTK4) {
+		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
+	}
 
 	/* Connect the event_after signal for both key and mouse */
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
-	if (focusHandle != eventHandle) {
-		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+	if (GTK.GTK4) {
+		// TODO: Replacements for event-after, no GdkEventController for button-press/release-event
+	} else {
+		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+		if (focusHandle != eventHandle) {
+			OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+		}
 	}
 
 	/* Connect the paint signal */
@@ -3360,6 +3372,26 @@ void gtk_style_context_get_border (long /*int*/ context, int state, GtkBorder pa
 	} else {
 		GTK.gtk_style_context_get_border(context, state, padding);
 	}
+}
+/**
+ * Generic "event" handler for signals that are dropped in GTK4
+ * This method routes the following signals:
+ * - button-press-event
+ * - button-release-event
+ */
+@Override
+long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+	if (!GTK.GTK4) return 0;
+	int eventType = GDK.gdk_event_get_event_type(event);
+	switch (eventType) {
+		case GDK.GDK4_BUTTON_PRESS: {
+			return gtk_button_press_event(widget, event);
+		}
+		case GDK.GDK4_BUTTON_RELEASE: {
+			return gtk_button_release_event(widget, event);
+		}
+	}
+	return 0;
 }
 
 @Override
