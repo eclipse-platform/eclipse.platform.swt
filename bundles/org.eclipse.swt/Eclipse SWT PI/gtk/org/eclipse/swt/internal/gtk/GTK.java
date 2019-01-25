@@ -8709,6 +8709,17 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void _gtk_widget_measure(long /*int*/ widget, int orientation, int for_size, int[] minimum, int[] natural, int[] minimum_baseline, int[] natural_baseline);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_measure(long /*int*/ widget,  int orientation, int for_size, int[] minimum, int[] natural, int[] minimum_baseline, int[] natural_baseline) {
+		lock.lock();
+		try {
+			_gtk_widget_measure(widget, orientation, for_size, minimum, natural, minimum_baseline, natural_baseline);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param group_cycling cast=(gboolean)

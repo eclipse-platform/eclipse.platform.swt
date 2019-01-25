@@ -1140,6 +1140,7 @@ typedef enum {
 	_1gtk_1widget_1input_1shape_1combine_1region_FUNC,
 	_1gtk_1widget_1is_1focus_FUNC,
 	_1gtk_1widget_1map_FUNC,
+	_1gtk_1widget_1measure_FUNC,
 	_1gtk_1widget_1mnemonic_1activate_FUNC,
 	_1gtk_1widget_1override_1background_1color_FUNC,
 	_1gtk_1widget_1override_1color_FUNC,

@@ -835,10 +835,18 @@ Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) 
 	} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		int [] natural_size = new int [1];
 		if (wHint == SWT.DEFAULT) {
-			GTK.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height, null, natural_size, null, null);
+			} else {
+				GTK.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
+			}
 			width = natural_size [0];
 		} else {
-			GTK.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
+			if (GTK.GTK4) {
+				GTK.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width, null, natural_size, null, null);
+			} else {
+				GTK.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
+			}
 			height = natural_size [0];
 		}
 	}

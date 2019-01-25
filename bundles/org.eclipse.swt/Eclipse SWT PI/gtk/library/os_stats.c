@@ -1142,6 +1142,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1input_1shape_1combine_1region",
 	"_1gtk_1widget_1is_1focus",
 	"_1gtk_1widget_1map",
+	"_1gtk_1widget_1measure",
 	"_1gtk_1widget_1mnemonic_1activate",
 	"_1gtk_1widget_1override_1background_1color",
 	"_1gtk_1widget_1override_1color",

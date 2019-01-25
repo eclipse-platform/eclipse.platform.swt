@@ -12676,6 +12676,29 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1map)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1measure
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1measure)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1measure_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_widget_measure((GtkWidget *)arg0, arg1, arg2, lparg3, lparg4, lparg5, lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1measure_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1mnemonic_1activate
 JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1mnemonic_1activate)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
