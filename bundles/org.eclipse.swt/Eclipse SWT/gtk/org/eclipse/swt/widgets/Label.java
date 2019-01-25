@@ -245,19 +245,30 @@ void createHandle (int index) {
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = GTK.gtk_event_box_new();
+		if (GTK.GTK4) {
+			handle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+		} else {
+			handle = GTK.gtk_event_box_new();
+			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = GTK.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		imageHandle = GTK.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (handle, boxHandle);
-		GTK.gtk_container_add (boxHandle, labelHandle);
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
-		gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+		if (GTK.GTK4) {
+			GTK.gtk_container_add (handle, labelHandle);
+			GTK.gtk_container_add (handle, imageHandle);
+			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+		} else {
+			GTK.gtk_container_add (handle, boxHandle);
+			GTK.gtk_container_add (boxHandle, labelHandle);
+			GTK.gtk_container_add (boxHandle, imageHandle);
+			gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
+			gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
+		}
 	}
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = GTK.gtk_frame_new (null);
