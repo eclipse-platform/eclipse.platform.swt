@@ -760,6 +760,10 @@ void createHandle () {
 		style |= SWT.NO_BACKGROUND;
 	}
 
+	if (display.appAppearance != null) {
+		display.setWindowAppearance(window, display.getAppearance(display.appAppearance));
+	}
+
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 
 	if (window == null) {

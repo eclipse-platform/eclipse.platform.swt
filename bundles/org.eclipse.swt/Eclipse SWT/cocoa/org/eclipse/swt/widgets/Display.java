@@ -105,6 +105,12 @@ public class Display extends Device {
 	static byte[] types = {'*','\0'};
 	static int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
+	/* Mac Dark and Light appearance */
+	enum APPEARANCE {
+		Dark, Light,
+	}
+	APPEARANCE appAppearance = null;
+
 	/* Windows and Events */
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
@@ -921,6 +927,7 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
 		OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_finishLaunching, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_appAppearanceChanged, proc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}
 	applicationClass = OS.object_setClass(application.id, cls);
@@ -4258,6 +4265,33 @@ boolean runSettings () {
 	return true;
 }
 
+NSAppearance getAppearance (APPEARANCE newMode) {
+	String appearanceName = (newMode == APPEARANCE.Dark) ? "NSAppearanceNameDarkAqua" : "NSAppearanceNameAqua";
+	return NSAppearance.appearanceNamed (NSString.stringWith (appearanceName));
+}
+
+void setWindowAppearance (NSWindow window, NSAppearance appearance) {
+	if (window != null && appearance != null) {
+		OS.objc_msgSend(window.id, OS.sel_setAppearance_, appearance.id);
+	}
+}
+
+void setWindowsAppearance (APPEARANCE newMode) {
+	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 14, 0)) return;
+
+	NSAppearance appearance = getAppearance(newMode);
+	if (appearance != null) {
+		Shell [] shells = getShells ();
+		for (int i=0; i<shells.length; i++) {
+			Shell shell = shells [i];
+			if (!shell.isDisposed ()) {
+				setWindowAppearance (shell.window, appearance);
+			}
+		}
+		appAppearance = newMode;
+	}
+}
+
 boolean runSkin () {
 	if (skinCount > 0) {
 		Widget [] oldSkinWidgets = skinList;
@@ -5498,6 +5532,11 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 	}
 
 	NSApplication application = display.application;
+
+	if (sel == OS.sel_appAppearanceChanged) {
+		display.setWindowsAppearance(arg0 == 1 ? APPEARANCE.Dark : APPEARANCE.Light);
+		return 0;
+	}
 
 	switch (Selector.valueOf(sel)) {
 		case sel_sendEvent_: {

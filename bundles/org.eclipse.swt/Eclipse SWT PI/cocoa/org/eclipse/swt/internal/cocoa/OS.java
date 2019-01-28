@@ -213,6 +213,14 @@ public class OS extends C {
 		OS.beginSheetModalForWindow(id.id, OS.sel_beginSheetModalForWindow_completionHandler_, window != null ? window.id : 0, handler);
 	}
 
+	/*
+	 * Custom message that will be sent when setTheme is called for example from Platform UI code.
+	 */
+	public static final long /*int*/ sel_appAppearanceChanged = OS.sel_registerName("appAppearanceChanged");
+	public static void setTheme(boolean isDarkTheme) {
+		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
+	}
+
 /** JNI natives */
 
 /** @method flags=jni */
@@ -776,6 +784,7 @@ public static final long /*int*/ class_DOMWheelEvent = objc_getClass("DOMWheelEv
 public static final long /*int*/ class_NSActionCell = objc_getClass("NSActionCell");
 public static final long /*int*/ class_NSAffineTransform = objc_getClass("NSAffineTransform");
 public static final long /*int*/ class_NSAlert = objc_getClass("NSAlert");
+public static final long /*int*/ class_NSAppearance = objc_getClass("NSAppearance");
 public static final long /*int*/ class_NSAppleEventDescriptor = objc_getClass("NSAppleEventDescriptor");
 public static final long /*int*/ class_NSApplication = objc_getClass("NSApplication");
 public static final long /*int*/ class_NSArray = objc_getClass("NSArray");
@@ -922,6 +931,7 @@ public static final long /*int*/ class_WebView = objc_getClass("WebView");
 /** Protocols */
 public static final long /*int*/ protocol_NSAccessibility = objc_getProtocol("NSAccessibility");
 public static final long /*int*/ protocol_NSAccessibilityAdditions = objc_getProtocol("NSAccessibilityAdditions");
+public static final long /*int*/ protocol_NSAppearanceCustomization = objc_getProtocol("NSAppearanceCustomization");
 public static final long /*int*/ protocol_NSApplicationDelegate = objc_getProtocol("NSApplicationDelegate");
 public static final long /*int*/ protocol_NSApplicationNotifications = objc_getProtocol("NSApplicationNotifications");
 public static final long /*int*/ protocol_NSColorPanelResponderMethod = objc_getProtocol("NSColorPanelResponderMethod");
@@ -1037,6 +1047,7 @@ public static final long /*int*/ sel_altKey = Selector.sel_altKey.value;
 public static final long /*int*/ sel_alternateSelectedControlColor = Selector.sel_alternateSelectedControlColor.value;
 public static final long /*int*/ sel_alternateSelectedControlTextColor = Selector.sel_alternateSelectedControlTextColor.value;
 public static final long /*int*/ sel_alwaysShowsDecimalSeparator = Selector.sel_alwaysShowsDecimalSeparator.value;
+public static final long /*int*/ sel_appearanceNamed_ = Selector.sel_appearanceNamed_.value;
 public static final long /*int*/ sel_appendAttributedString_ = Selector.sel_appendAttributedString_.value;
 public static final long /*int*/ sel_appendBezierPath_ = Selector.sel_appendBezierPath_.value;
 public static final long /*int*/ sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_ = Selector.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_.value;
@@ -1889,6 +1900,7 @@ public static final long /*int*/ sel_setAllowsUserCustomization_ = Selector.sel_
 public static final long /*int*/ sel_setAlpha_ = Selector.sel_setAlpha_.value;
 public static final long /*int*/ sel_setAlphaValue_ = Selector.sel_setAlphaValue_.value;
 public static final long /*int*/ sel_setAlternateButtonTitle_ = Selector.sel_setAlternateButtonTitle_.value;
+public static final long /*int*/ sel_setAppearance_ = Selector.sel_setAppearance_.value;
 public static final long /*int*/ sel_setApplicationIconImage_ = Selector.sel_setApplicationIconImage_.value;
 public static final long /*int*/ sel_setApplicationNameForUserAgent_ = Selector.sel_setApplicationNameForUserAgent_.value;
 public static final long /*int*/ sel_setAttachmentCell_ = Selector.sel_setAttachmentCell_.value;
