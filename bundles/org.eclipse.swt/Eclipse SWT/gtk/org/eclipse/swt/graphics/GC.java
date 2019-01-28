@@ -2618,7 +2618,7 @@ void initCairo() {
 	if (GTK.GTK_VERSION >= 	OS.VERSION(3, 22, 0)) {
 		long /*int*/ surface;
 		if (GTK.GTK4) {
-			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A8, data.width, data.height);
 		} else {
 			surface = GDK.gdk_window_create_similar_surface(data.drawable, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
 		}

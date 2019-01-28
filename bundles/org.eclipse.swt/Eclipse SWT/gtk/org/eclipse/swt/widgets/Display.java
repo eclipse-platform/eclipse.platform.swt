@@ -1499,7 +1499,7 @@ static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ cl
 static long /*int*/ snapshotDrawProc (long /*int*/ handle, long /*int*/ snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
-	widget.snapshotToDraw(handle, snapshot);
+	if (widget != null) widget.snapshotToDraw(handle, snapshot);
 	return 0;
 }
 
@@ -3975,7 +3975,7 @@ public long /*int*/ internal_new_GC (GCData data) {
 	long /*int*/ gc = 0;
 	long /*int*/ root = 0;
 	if (GTK.GTK4) {
-		long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+		long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A8, data.width, data.height);
 		gc = Cairo.cairo_create(surface);
 	} else {
 		root = GDK.gdk_get_default_root_window();

@@ -1250,7 +1250,7 @@ void init(int width, int height) {
 
 	/* Create the pixmap */
 	if (GTK.GTK4) {
-		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_CONTENT_COLOR, width, height);
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, width, height);
 	} else {
 		surface = GDK.gdk_window_create_similar_surface(GDK.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 	}

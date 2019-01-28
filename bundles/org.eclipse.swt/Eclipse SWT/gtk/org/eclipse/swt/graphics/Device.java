@@ -664,7 +664,7 @@ protected void init () {
 		long /*int*/ gdkResource;
 		long /*int*/ surface;
 		if (GTK.GTK4) {
-			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_CONTENT_COLOR, 10, 10);
+			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, 10, 10);
 		} else {
 			gdkResource = GDK.gdk_get_default_root_window();
 			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);

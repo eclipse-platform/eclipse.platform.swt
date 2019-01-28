@@ -976,8 +976,26 @@ static AtkObject *swt_fixed_get_accessible (GtkWidget *widget) {
 
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline) {
+	SwtFixed *fixed = SWT_FIXED (widget);
+	SwtFixedPrivate *priv = fixed->priv;
+	GList *list;
+	int total_nat, child_nat;
+
+	total_nat = 0;
+
+	list = priv->children;
+
+	while (list) {
+		SwtFixedChild *child_data = list->data;
+		GtkWidget *child = child_data->widget;
+
+		gtk_widget_measure(child, orientation, -1, NULL, &child_nat, NULL, NULL);
+		total_nat = total_nat + child_nat;
+
+		list = list->next;
+	}
 	if (minimum) *minimum = 0;
-	if (natural) *natural = 0;
+	if (natural) *natural = total_nat;
 	if (minimum_baseline) *minimum_baseline = -1;
 	if (natural_baseline) *natural_baseline = -1;
 	return;

@@ -118,7 +118,7 @@ static int checkStyle (int style) {
 static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorder) {
     GtkBorder gtkBorder = new GtkBorder();
     long /*int*/ []  borderPtr = new long /*int*/ [1];
-    GTK.gtk_widget_style_get (handle, border, borderPtr,0);
+    if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, border, borderPtr,0);
     if (borderPtr[0] != 0) {
         OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
         GTK.gtk_border_free(borderPtr[0]);
