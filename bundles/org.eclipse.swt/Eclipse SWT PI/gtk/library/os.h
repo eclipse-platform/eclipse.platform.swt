@@ -370,7 +370,6 @@
 #define NO_GDK_1EVENT_1WINDOW
 
 // GdkCursor removals
-#define NO__1gdk_1cursor_1new_1for_1display
 #define NO__1gdk_1cursor_1new_1from_1pixbuf
 #define NO__1gdk_1display_1supports_1cursor_1color
 #define NO__1gdk_1cursor_1new_1from_1name__I_3B
@@ -435,11 +434,17 @@
 // Miscellaneous functions not present on GTK3
 #define NO__1gdk_1device_1warp__III
 #define NO__1gdk_1device_1warp__JII
-#define NO__1gdk_1cursor_1new_1from_1name___3BI
-#define NO__1gdk_1cursor_1new_1from_1name___3BJ
 #define NO__1gdk_1display_1get_1keymap
 #define NO__1gtk_1widget_1measure
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
+
+// GdkCursor API changes from GTK3 -> GTK4
+#define NO__1gdk_1cursor_1new_1from_1name___3BI
+#define NO__1gdk_1cursor_1new_1from_1name___3BJ
+#define NO__1gdk_1cursor_1new_1from_1texture
+
+// No GdkTexture on GTK3
+#define NO__1gdk_1texture_1new_1for_1pixbuf
 
 // GtkEventController related functions for GTK4
 #define NO__1gtk_1event_1controller_1key_1new

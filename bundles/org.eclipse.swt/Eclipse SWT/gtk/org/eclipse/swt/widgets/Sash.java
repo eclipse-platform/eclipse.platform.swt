@@ -145,8 +145,21 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_surface_or_window (handle, true);
 	GTK.gtk_widget_set_can_focus (handle, true);
-	int type = (style & SWT.VERTICAL) != 0 ? GDK.GDK_SB_H_DOUBLE_ARROW : GDK.GDK_SB_V_DOUBLE_ARROW;
-	defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), type);
+	if ((style & SWT.VERTICAL) != 0) {
+		byte [] name = Converter.wcsToMbcs("w-resize", true);
+		if (GTK.GTK4) {
+			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
+		} else {
+			defaultCursor = GDK.gdk_cursor_new_from_name(GDK.gdk_display_get_default(), name);
+		}
+	} else {
+		byte [] name = Converter.wcsToMbcs("ns-resize", true);
+		if (GTK.GTK4) {
+			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
+		} else {
+			defaultCursor = GDK.gdk_cursor_new_from_name(GDK.gdk_display_get_default(), name);
+		}
+	}
 }
 
 void drawBand (int x, int y, int width, int height) {

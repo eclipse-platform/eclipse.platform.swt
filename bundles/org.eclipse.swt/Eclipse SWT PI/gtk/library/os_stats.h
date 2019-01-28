@@ -60,7 +60,6 @@ typedef enum {
 	_1gdk_1cairo_1set_1source_1pixbuf_FUNC,
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
-	_1gdk_1cursor_1new_1for_1display_FUNC,
 #ifndef JNI64
 	_1gdk_1cursor_1new_1from_1name__I_3B_FUNC,
 #else
@@ -72,6 +71,7 @@ typedef enum {
 	_1gdk_1cursor_1new_1from_1name___3BJ_FUNC,
 #endif
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
+	_1gdk_1cursor_1new_1from_1texture_FUNC,
 	_1gdk_1device_1get_1associated_1device_FUNC,
 	_1gdk_1device_1get_1seat_FUNC,
 	_1gdk_1device_1get_1surface_1at_1position_FUNC,
@@ -214,6 +214,7 @@ typedef enum {
 	_1gdk_1surface_1show_FUNC,
 	_1gdk_1surface_1show_1unraised_FUNC,
 	_1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,
+	_1gdk_1texture_1new_1for_1pixbuf_FUNC,
 	_1gdk_1unicode_1to_1keyval_FUNC,
 	_1gdk_1utf8_1to_1string_1target_FUNC,
 	_1gdk_1visual_1get_1depth_FUNC,

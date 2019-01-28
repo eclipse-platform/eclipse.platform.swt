@@ -50,7 +50,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1set_1source_1pixbuf",
 	"_1gdk_1cairo_1set_1source_1rgba",
 	"_1gdk_1cairo_1set_1source_1window",
-	"_1gdk_1cursor_1new_1for_1display",
 #ifndef JNI64
 	"_1gdk_1cursor_1new_1from_1name__I_3B",
 #else
@@ -62,6 +61,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1cursor_1new_1from_1name___3BJ",
 #endif
 	"_1gdk_1cursor_1new_1from_1pixbuf",
+	"_1gdk_1cursor_1new_1from_1texture",
 	"_1gdk_1device_1get_1associated_1device",
 	"_1gdk_1device_1get_1seat",
 	"_1gdk_1device_1get_1surface_1at_1position",
@@ -204,6 +204,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1surface_1show",
 	"_1gdk_1surface_1show_1unraised",
 	"_1gdk_1text_1property_1to_1utf8_1list_1for_1display",
+	"_1gdk_1texture_1new_1for_1pixbuf",
 	"_1gdk_1unicode_1to_1keyval",
 	"_1gdk_1utf8_1to_1string_1target",
 	"_1gdk_1visual_1get_1depth",

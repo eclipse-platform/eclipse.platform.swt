@@ -647,19 +647,6 @@ public class GDK extends OS {
 	                lock.unlock();
 	        }
 	}
-	/** @param display cast=(GdkDisplay *)
-	 *  @param cursor_type cast=(GdkCursorType)
-	 */
-	public static final native long /*int*/ _gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final long /*int*/ gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type) {
-		lock.lock();
-		try {
-			return _gdk_cursor_new_for_display(display, cursor_type);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param cursor_name cast=(const gchar *)
@@ -700,6 +687,22 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_cursor_new_from_pixbuf(display, pixbuf, x, y);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param texture cast=(GdkTexture *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 * @param fallback cast=(GdkCursor *)
+	 */
+	public static final native long /*int*/ _gdk_cursor_new_from_texture(long /*int*/ texture, int x, int y, long /*int*/ fallback);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_cursor_new_from_texture(long /*int*/ texture, int x, int y, long /*int*/ fallback) {
+		lock.lock();
+		try {
+			return _gdk_cursor_new_from_texture(texture, x, y, fallback);
 		} finally {
 			lock.unlock();
 		}
@@ -2148,6 +2151,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_text_property_to_utf8_list_for_display(display, encoding, format, text, length, list);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param pixbuf cast=(GdkPixbuf *)
+	 */
+	public static final native long /*int*/ _gdk_texture_new_for_pixbuf (long /*int*/ pixbuf);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_texture_new_for_pixbuf (long /*int*/ pixbuf) {
+		lock.lock();
+		try {
+			return _gdk_texture_new_for_pixbuf(pixbuf);
 		} finally {
 			lock.unlock();
 		}

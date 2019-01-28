@@ -380,18 +380,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1window)
 }
 #endif
 
-#ifndef NO__1gdk_1cursor_1new_1for_1display
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1for_1display)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
-	rc = (jintLong)gdk_cursor_new_for_display((GdkDisplay *)arg0, (GdkCursorType)arg1);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
-	return rc;
-}
-#endif
-
 #if (!defined(NO__1gdk_1cursor_1new_1from_1name__I_3B) && !defined(JNI64)) || (!defined(NO__1gdk_1cursor_1new_1from_1name__J_3B) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name__I_3B)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
@@ -454,6 +442,18 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
 	rc = (jintLong)gdk_cursor_new_from_pixbuf((GdkDisplay *)arg0, (GdkPixbuf *)arg1, (gint)arg2, (gint)arg3);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1cursor_1new_1from_1texture
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1texture)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintLong arg3)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1texture_FUNC);
+	rc = (jintLong)gdk_cursor_new_from_texture((GdkTexture *)arg0, (gint)arg1, (gint)arg2, (GdkCursor *)arg3);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1texture_FUNC);
 	return rc;
 }
 #endif
@@ -2499,6 +2499,18 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1text_1property_1to_1utf8_1list_1for_1di
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1texture_1new_1for_1pixbuf
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1texture_1new_1for_1pixbuf)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1texture_1new_1for_1pixbuf_FUNC);
+	rc = (jintLong)gdk_texture_new_for_pixbuf((GdkPixbuf *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1texture_1new_1for_1pixbuf_FUNC);
 	return rc;
 }
 #endif

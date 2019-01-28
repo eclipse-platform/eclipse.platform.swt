@@ -1652,9 +1652,28 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 				GDK.gdk_event_get_coords(event, eventX, eventY);
 				int mode = getResizeMode (eventX[0], eventY[0]);
 				if (mode != display.resizeMode) {
-					long /*int*/ window = gtk_widget_get_window (shellHandle);
-					long /*int*/ cursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), mode);
-					GDK.gdk_window_set_cursor (window, cursor);
+					long /*int*/ cursor;
+					byte [] name;
+					switch (mode) {
+						case GDK.GDK_BOTTOM_RIGHT_CORNER: name = Converter.wcsToMbcs("se-resize", true); break;
+						case GDK.GDK_BOTTOM_LEFT_CORNER: name = Converter.wcsToMbcs("sw-resize", true); break;
+						case GDK.GDK_TOP_LEFT_CORNER: name = Converter.wcsToMbcs("nw-resize", true); break;
+						case GDK.GDK_TOP_RIGHT_CORNER: name = Converter.wcsToMbcs("ne-resize", true); break;
+						case GDK.GDK_BOTTOM_SIDE: name = Converter.wcsToMbcs("s-resize", true); break;
+						case GDK.GDK_TOP_SIDE: name = Converter.wcsToMbcs("n-resize", true); break;
+						case GDK.GDK_LEFT_SIDE: name = Converter.wcsToMbcs("w-resize", true); break;
+						case GDK.GDK_RIGHT_SIDE: name = Converter.wcsToMbcs("e-resize", true); break;
+						default: name = Converter.wcsToMbcs("none", true); break;
+					}
+					if (GTK.GTK4) {
+						long /*int*/ surface = gtk_widget_get_surface(shellHandle);
+						cursor = GDK.gdk_cursor_new_from_name(name, 0);
+						GDK.gdk_surface_set_cursor(surface, cursor);
+					} else {
+						long /*int*/ window = gtk_widget_get_window (shellHandle);
+						cursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), name);
+						GDK.gdk_window_set_cursor (window, cursor);
+					}
 					OS.g_object_unref (cursor);
 					display.resizeMode = mode;
 				}
