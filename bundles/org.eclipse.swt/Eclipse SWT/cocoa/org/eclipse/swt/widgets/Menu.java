@@ -761,6 +761,7 @@ public int indexOf (MenuItem item) {
 public boolean isEnabled () {
 	checkWidget ();
 	if (this == display.appMenuBar) return getEnabled();
+	if (this == display.appMenu) return getEnabled();
 	Menu parentMenu = getParentMenu ();
 	if (parentMenu == null) {
 		return getEnabled () && parent.isEnabled ();
