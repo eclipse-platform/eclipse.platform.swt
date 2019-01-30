@@ -68,7 +68,7 @@ public class DateTime extends Composite {
 	 * Major handles of this class.
 	 * Note, these can vary or all equal each other depending on Date/Time/Calendar/Drop_down
 	 * configuration used. See createHandle () */
-	long /*int*/ textEntryHandle,
+	long /*int*/ textEntryHandle, spinButtonHandle,
 	containerHandle,
 	calendarHandle;
 
@@ -295,7 +295,7 @@ Point computeMaxTextSize (int wHint, int hHint, boolean changed) {
 			// Fixed length for DEFAULT_SHORT_DATE_FORMAT, no need to adjust text length.
 	}
 
-	Point textSize = computeNativeSize (textEntryHandle, wHint, hHint, changed);
+	Point textSize = computeNativeSize (GTK.GTK4? spinButtonHandle : textEntryHandle, wHint, hHint, changed);
 	// Change the text back to match the current calendar
 	updateControl();
 	return textSize;
@@ -361,7 +361,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
-		long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
+		long /*int*/ context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? spinButtonHandle :textEntryHandle);
 		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(textEntryHandle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
@@ -464,12 +464,19 @@ private void createHandleForDateWithDropDown () {
 
 private void createHandleForDateTime () {
 	long /*int*/ adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
-	textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
+	if (GTK.GTK4) {
+		spinButtonHandle =  GTK.gtk_spin_button_new (adjusment, 1, 0);
+		long /*int*/ boxHandle = GTK.gtk_widget_get_first_child(spinButtonHandle);
+		long /*int*/ textHandle = GTK.gtk_widget_get_first_child(boxHandle);
+		textEntryHandle = textHandle;
+		handle = spinButtonHandle;
+		containerHandle = spinButtonHandle;
+	} else {
+		textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
+		handle = textEntryHandle;
+		containerHandle = textEntryHandle;
+	}
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	//in this case,the Entry becomes the container.
-	handle = textEntryHandle;
-	containerHandle = textEntryHandle;
 
 	GTK.gtk_spin_button_set_numeric (textEntryHandle, false);
 	GTK.gtk_container_add (fixedHandle, textEntryHandle);
@@ -913,8 +920,13 @@ long /*int*/ fontHandle () {
 private long /*int*/ dateTimeHandle () {
 	if (isCalendar () && calendarHandle != 0) {
 		 return calendarHandle;
-	} else if ((isDate () || isTime ()) && textEntryHandle != 0) {
-		 return textEntryHandle;
+	} else if ((isDate () || isTime ())) {
+		if (GTK.GTK4) {
+			if (spinButtonHandle != 0) return spinButtonHandle;
+		} else {
+			if (textEntryHandle != 0) return textEntryHandle;
+		}
+		return super.focusHandle ();
 	} else {
 		return super.focusHandle ();
 	}
@@ -1677,12 +1689,13 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton ()) {
+		long /*int*/ sizingHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
 		GtkRequisition requisition = new GtkRequisition ();
-		GTK.gtk_widget_get_preferred_size (textEntryHandle, null, requisition);
+		GTK.gtk_widget_get_preferred_size (sizingHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
 
 		int newWidth = width - (down.getSizeInPixels ().x + getGtkBorderPadding ().right);
-		GTK.gtk_widget_set_size_request (textEntryHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
+		GTK.gtk_widget_set_size_request (sizingHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
 	}
 
 	/*
@@ -1719,7 +1732,7 @@ private void setDropDownButtonSize () {
 	Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, parentHeight);
 
 	//TAG_GTK3__NO_VERTICAL_FILL_ADJUSTMENT
-	int dateEntryHeight = computeNativeSize (textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
+	int dateEntryHeight = computeNativeSize (GTK.GTK4 ? spinButtonHandle : textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
 	int newHeight = dateEntryHeight;
 
 	//Move button a little closer to entry field, by amount of padding.
@@ -1738,8 +1751,9 @@ private void setDropDownButtonSize () {
 GtkBorder getGtkBorderPadding () {
 	//In Gtk3, acquire border.
 	GtkBorder gtkBorderPadding = new GtkBorder ();
-	long /*int*/ context = GTK.gtk_widget_get_style_context (textEntryHandle);
-	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(textEntryHandle);
+	long /*int*/ contextHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
+	long /*int*/ context = GTK.gtk_widget_get_style_context (contextHandle);
+	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(contextHandle);
 	gtk_style_context_get_padding(context, state_flag, gtkBorderPadding);
 	return gtkBorderPadding;
 }

@@ -50,6 +50,7 @@ public class Spinner extends Composite {
 	int lastEventTime = 0;
 	long /*int*/ imContext;
 	long /*int*/ gdkEventKey = 0;
+	long /*int*/ entryHandle;
 	int fixStart = -1, fixEnd = -1;
 	double climbRate = 1;
 
@@ -212,7 +213,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	GTK.gtk_widget_realize (handle);
-	long /*int*/ layout = GTK.gtk_entry_get_layout (handle);
+	long /*int*/ layout = GTK.gtk_entry_get_layout (GTK.GTK4 ? entryHandle : handle);
 	long /*int*/ hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
 	double upper = GTK.gtk_adjustment_get_upper (hAdjustment);
 	int digits = GTK.gtk_spin_button_get_digits (handle);
@@ -267,7 +268,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	int [] property = new int [1];
 	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
 	if (property [0] == 0) {
-		GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 		xborder += property [0];
 		yborder += property [0];
 	}
@@ -291,7 +292,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
-	GTK.gtk_editable_copy_clipboard (handle);
+	GTK.gtk_editable_copy_clipboard (GTK.GTK4? entryHandle : handle);
 }
 
 @Override
@@ -305,9 +306,14 @@ void createHandle (int index) {
 	handle = GTK.gtk_spin_button_new (adjustment, climbRate, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_container_add (fixedHandle, handle);
-	GTK.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
+	if (GTK.GTK4) {
+		long /*int*/ boxHandle = GTK.gtk_widget_get_first_child(handle);
+		long /*int*/ textHandle = GTK.gtk_widget_get_first_child(boxHandle);
+		entryHandle = textHandle;
+	}
+	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);
 	if (GTK.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+		GTK.gtk_entry_set_has_frame (GTK.GTK4 ? entryHandle : handle, (style & SWT.BORDER) != 0);
 	}
 	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
 	imContext = OS.imContextLast();
@@ -330,7 +336,7 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	GTK.gtk_editable_cut_clipboard (handle);
+	GTK.gtk_editable_cut_clipboard (GTK.GTK4? entryHandle : handle);
 }
 
 @Override
@@ -516,7 +522,7 @@ public int getSelection () {
  */
 public String getText () {
 	checkWidget ();
-	long /*int*/ str = GTK.gtk_entry_get_text (handle);
+	long /*int*/ str = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (str == 0) return "";
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
@@ -543,7 +549,7 @@ public String getText () {
  */
 public int getTextLimit () {
 	checkWidget ();
-	int limit = GTK.gtk_entry_get_max_length (handle);
+	int limit = GTK.gtk_entry_get_max_length (GTK.GTK4 ? entryHandle : handle);
 	return limit == 0 ? LIMIT : limit;
 }
 
@@ -578,7 +584,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 
 @Override
 long /*int*/ gtk_changed (long /*int*/ widget) {
-	long /*int*/ str = GTK.gtk_entry_get_text (handle);
+	long /*int*/ str = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	int length = C.strlen (str);
 	if (length > 0) {
 		long /*int*/ [] endptr = new long /*int*/ [1];
@@ -624,7 +630,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
-	if (!GTK.gtk_editable_get_editable (handle)) return 0;
+	if (!GTK.gtk_editable_get_editable (GTK.GTK4? entryHandle : handle)) return 0;
 	int length = C.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
@@ -653,8 +659,8 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
 	if (fixStart != -1 && fixEnd != -1) {
-		GTK.gtk_editable_set_position (handle, fixStart);
-		GTK.gtk_editable_select_region (handle, fixStart, fixEnd);
+		GTK.gtk_editable_set_position (GTK.GTK4? entryHandle : handle, fixStart);
+		GTK.gtk_editable_select_region (GTK.GTK4? entryHandle : handle, fixStart, fixEnd);
 	}
 	fixStart = fixEnd = -1;
 	return 0;
@@ -663,7 +669,7 @@ long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 @Override
 long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long /*int*/ ptr = GTK.gtk_entry_get_text (handle);
+	long /*int*/ ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -677,10 +683,10 @@ long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long 
 			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			GTK.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
+			GTK.gtk_editable_insert_text (GTK.GTK4? entryHandle : handle, buffer, buffer.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			GTK.gtk_editable_set_position (handle, pos [0]);
+			GTK.gtk_editable_set_position (GTK.GTK4? entryHandle : handle, pos [0]);
 		}
 	}
 	return 0;
@@ -707,24 +713,24 @@ long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long /*int*/ ptr = GTK.gtk_entry_get_text (handle);
+	long /*int*/ ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
-		GTK.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
+		GTK.gtk_editable_get_selection_bounds (GTK.GTK4? entryHandle : handle, newStart, newEnd);
 		if (newText != null) {
 			if (newStart [0] != newEnd [0]) {
 				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-				GTK.gtk_editable_delete_selection (handle);
+				GTK.gtk_editable_delete_selection (GTK.GTK4? entryHandle : handle);
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
 			byte [] buffer3 = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			GTK.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
+			GTK.gtk_editable_insert_text (GTK.GTK4? entryHandle : handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			newStart [0] = newEnd [0] = pos [0];
 		}
@@ -818,7 +824,7 @@ long /*int*/ paintSurface () {
  */
 public void paste () {
 	checkWidget ();
-	GTK.gtk_editable_paste_clipboard (handle);
+	GTK.gtk_editable_paste_clipboard (GTK.GTK4? entryHandle : handle);
 }
 
 @Override
@@ -1086,7 +1092,7 @@ public void setSelection (int value) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	GTK.gtk_entry_set_max_length (handle, limit);
+	GTK.gtk_entry_set_max_length (GTK.GTK4 ? entryHandle : handle, limit);
 }
 
 /**

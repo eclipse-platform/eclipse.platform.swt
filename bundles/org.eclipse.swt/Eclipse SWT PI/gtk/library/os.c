@@ -12167,6 +12167,18 @@ JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1widget_1get_1events)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1first_1child
+JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1first_1child)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1first_1child_FUNC);
+	rc = (jintLong)gtk_widget_get_first_child((GtkWidget *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1first_1child_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1has_1surface
 JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1has_1surface)
 	(JNIEnv *env, jclass that, jintLong arg0)

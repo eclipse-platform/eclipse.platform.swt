@@ -1107,6 +1107,7 @@ typedef enum {
 	_1gtk_1widget_1get_1child_1visible_FUNC,
 	_1gtk_1widget_1get_1clip_FUNC,
 	_1gtk_1widget_1get_1events_FUNC,
+	_1gtk_1widget_1get_1first_1child_FUNC,
 	_1gtk_1widget_1get_1has_1surface_FUNC,
 	_1gtk_1widget_1get_1has_1window_FUNC,
 	_1gtk_1widget_1get_1mapped_FUNC,

@@ -1109,6 +1109,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1child_1visible",
 	"_1gtk_1widget_1get_1clip",
 	"_1gtk_1widget_1get_1events",
+	"_1gtk_1widget_1get_1first_1child",
 	"_1gtk_1widget_1get_1has_1surface",
 	"_1gtk_1widget_1get_1has_1window",
 	"_1gtk_1widget_1get_1mapped",

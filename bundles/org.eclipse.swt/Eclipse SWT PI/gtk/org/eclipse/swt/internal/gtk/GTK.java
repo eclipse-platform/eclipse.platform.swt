@@ -463,6 +463,18 @@ public class GTK extends OS {
 		}
 	}
 
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long /*int*/ _gtk_widget_get_first_child(long /*int*/ widget);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long /*int*/ gtk_widget_get_first_child(long /*int*/ widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_first_child(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 */
