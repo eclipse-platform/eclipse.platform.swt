@@ -140,31 +140,60 @@ public Cursor(Device device, int style) {
 	super(device);
 	int shape = 0;
 	byte[] name = null;
-	switch (style) {
-	case SWT.CURSOR_APPSTARTING:	name = Converter.wcsToMbcs("progress", true) ; break;
-	case SWT.CURSOR_ARROW:			name = Converter.wcsToMbcs("default", true) ; break;
-	case SWT.CURSOR_WAIT:			name = Converter.wcsToMbcs("wait", true) ; break;
-	case SWT.CURSOR_CROSS:			name = Converter.wcsToMbcs("cell", true) ; break;
-	case SWT.CURSOR_HAND:			name = Converter.wcsToMbcs("pointer", true) ; break;
-	case SWT.CURSOR_HELP:			name = Converter.wcsToMbcs("help", true) ; break;
-	case SWT.CURSOR_SIZEALL:		name = Converter.wcsToMbcs("all-scroll", true) ; break;
-	case SWT.CURSOR_SIZENESW:		name = Converter.wcsToMbcs("nesw-resize", true); break;
-	case SWT.CURSOR_SIZENS:			name = Converter.wcsToMbcs("row-resize", true) ; break;
-	case SWT.CURSOR_SIZENWSE:		name = Converter.wcsToMbcs("nwse-resize", true); break;
-	case SWT.CURSOR_SIZEWE:			name = Converter.wcsToMbcs("col-resize", true); break;
-	case SWT.CURSOR_SIZEN:			name = Converter.wcsToMbcs("n-resize", true); break;
-	case SWT.CURSOR_SIZES:			name = Converter.wcsToMbcs("s-resize", true); break;
-	case SWT.CURSOR_SIZEE:			name = Converter.wcsToMbcs("e-resize", true); break;
-	case SWT.CURSOR_SIZEW:			name = Converter.wcsToMbcs("w-resize", true); break;
-	case SWT.CURSOR_SIZENE:			name = Converter.wcsToMbcs("ne-resize", true); break;
-	case SWT.CURSOR_SIZESE:			name = Converter.wcsToMbcs("se-resize", true); break;
-	case SWT.CURSOR_SIZESW:			name = Converter.wcsToMbcs("sw-resize", true); break;
-	case SWT.CURSOR_SIZENW:			name = Converter.wcsToMbcs("nw-resize", true); break;
-	case SWT.CURSOR_UPARROW:		name = Converter.wcsToMbcs("ns-resize", true); break;
-	case SWT.CURSOR_IBEAM:			name = Converter.wcsToMbcs("text", true); break;
-	case SWT.CURSOR_NO:				name = Converter.wcsToMbcs("not-allowed", true) ; break;
-	default:
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (GTK.GTK4) {
+		switch (style) {
+			case SWT.CURSOR_APPSTARTING:	name = Converter.wcsToMbcs("progress", true) ; break;
+			case SWT.CURSOR_ARROW:			name = Converter.wcsToMbcs("default", true) ; break;
+			case SWT.CURSOR_WAIT:			name = Converter.wcsToMbcs("wait", true) ; break;
+			case SWT.CURSOR_CROSS:			name = Converter.wcsToMbcs("cell", true) ; break;
+			case SWT.CURSOR_HAND:			name = Converter.wcsToMbcs("pointer", true) ; break;
+			case SWT.CURSOR_HELP:			name = Converter.wcsToMbcs("help", true) ; break;
+			case SWT.CURSOR_SIZEALL:		name = Converter.wcsToMbcs("all-scroll", true) ; break;
+			case SWT.CURSOR_SIZENESW:		name = Converter.wcsToMbcs("nesw-resize", true); break;
+			case SWT.CURSOR_SIZENS:			name = Converter.wcsToMbcs("row-resize", true) ; break;
+			case SWT.CURSOR_SIZENWSE:		name = Converter.wcsToMbcs("nwse-resize", true); break;
+			case SWT.CURSOR_SIZEWE:			name = Converter.wcsToMbcs("col-resize", true); break;
+			case SWT.CURSOR_SIZEN:			name = Converter.wcsToMbcs("n-resize", true); break;
+			case SWT.CURSOR_SIZES:			name = Converter.wcsToMbcs("s-resize", true); break;
+			case SWT.CURSOR_SIZEE:			name = Converter.wcsToMbcs("e-resize", true); break;
+			case SWT.CURSOR_SIZEW:			name = Converter.wcsToMbcs("w-resize", true); break;
+			case SWT.CURSOR_SIZENE:			name = Converter.wcsToMbcs("ne-resize", true); break;
+			case SWT.CURSOR_SIZESE:			name = Converter.wcsToMbcs("se-resize", true); break;
+			case SWT.CURSOR_SIZESW:			name = Converter.wcsToMbcs("sw-resize", true); break;
+			case SWT.CURSOR_SIZENW:			name = Converter.wcsToMbcs("nw-resize", true); break;
+			case SWT.CURSOR_UPARROW:		name = Converter.wcsToMbcs("ns-resize", true); break;
+			case SWT.CURSOR_IBEAM:			name = Converter.wcsToMbcs("text", true); break;
+			case SWT.CURSOR_NO:				name = Converter.wcsToMbcs("not-allowed", true) ; break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	} else {
+		switch (style) {
+			case SWT.CURSOR_APPSTARTING:	name = Converter.wcsToMbcs("progress", true) ; break;
+			case SWT.CURSOR_ARROW:			shape = GDK.GDK_LEFT_PTR; break;
+			case SWT.CURSOR_WAIT:			shape = GDK.GDK_WATCH; break;
+			case SWT.CURSOR_CROSS:			shape = GDK.GDK_CROSS; break;
+			case SWT.CURSOR_HAND:			shape = GDK.GDK_HAND2; break;
+			case SWT.CURSOR_HELP:			shape = GDK.GDK_QUESTION_ARROW; break;
+			case SWT.CURSOR_SIZEALL:		shape = GDK.GDK_FLEUR; break;
+			case SWT.CURSOR_SIZENESW:		shape = GDK.GDK_SIZING; name=Converter.wcsToMbcs("nesw-resize", true); break;
+			case SWT.CURSOR_SIZENS:			shape = GDK.GDK_DOUBLE_ARROW; break;
+			case SWT.CURSOR_SIZENWSE:		shape = GDK.GDK_SIZING; name=Converter.wcsToMbcs("nwse-resize", true); break;
+			case SWT.CURSOR_SIZEWE:			shape = GDK.GDK_SB_H_DOUBLE_ARROW; break;
+			case SWT.CURSOR_SIZEN:			shape = GDK.GDK_TOP_SIDE; break;
+			case SWT.CURSOR_SIZES:			shape = GDK.GDK_BOTTOM_SIDE; break;
+			case SWT.CURSOR_SIZEE:			shape = GDK.GDK_RIGHT_SIDE; break;
+			case SWT.CURSOR_SIZEW:			shape = GDK.GDK_LEFT_SIDE; break;
+			case SWT.CURSOR_SIZENE:			shape = GDK.GDK_TOP_RIGHT_CORNER; break;
+			case SWT.CURSOR_SIZESE:			shape = GDK.GDK_BOTTOM_RIGHT_CORNER; break;
+			case SWT.CURSOR_SIZESW:			shape = GDK.GDK_BOTTOM_LEFT_CORNER; break;
+			case SWT.CURSOR_SIZENW:			shape = GDK.GDK_TOP_LEFT_CORNER; break;
+			case SWT.CURSOR_UPARROW:		shape = GDK.GDK_SB_UP_ARROW; break;
+			case SWT.CURSOR_IBEAM:			shape = GDK.GDK_XTERM; break;
+			case SWT.CURSOR_NO:				shape = GDK.GDK_X_CURSOR; name=Converter.wcsToMbcs("not-allowed", true) ; break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 	}
 	if (name != null) {
 		if (GTK.GTK4) {
@@ -180,7 +209,10 @@ public Cursor(Device device, int style) {
 			byte[] mask = new byte[APPSTARTING_MASK.length];
 			System.arraycopy(APPSTARTING_MASK, 0, mask, 0, mask.length);
 			handle = createCursor(src, mask, 32, 32, 2, 2, true);
+		} else {
+			if (!GTK.GTK4) handle = GDK.gdk_cursor_new_for_display(GDK.gdk_display_get_default(), shape);
 		}
+
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();

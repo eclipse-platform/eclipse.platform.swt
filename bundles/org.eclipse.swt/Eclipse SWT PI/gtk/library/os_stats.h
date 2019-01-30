@@ -60,6 +60,7 @@ typedef enum {
 	_1gdk_1cairo_1set_1source_1pixbuf_FUNC,
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
+	_1gdk_1cursor_1new_1for_1display_FUNC,
 #ifndef JNI64
 	_1gdk_1cursor_1new_1from_1name__I_3B_FUNC,
 #else

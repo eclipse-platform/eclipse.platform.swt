@@ -380,6 +380,18 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1window)
 }
 #endif
 
+#ifndef NO__1gdk_1cursor_1new_1for_1display
+JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1for_1display)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
+	rc = (jintLong)gdk_cursor_new_for_display((GdkDisplay *)arg0, (GdkCursorType)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1for_1display_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1gdk_1cursor_1new_1from_1name__I_3B) && !defined(JNI64)) || (!defined(NO__1gdk_1cursor_1new_1from_1name__J_3B) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1from_1name__I_3B)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)

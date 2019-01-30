@@ -647,6 +647,19 @@ public class GDK extends OS {
 	                lock.unlock();
 	        }
 	}
+	/** @param display cast=(GdkDisplay *)
+	 *  @param cursor_type cast=(GdkCursorType)
+	 */
+	public static final native long /*int*/ _gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type);
+	/** [GTK3 only, if-def'd in os.h] */
+	public static final long /*int*/ gdk_cursor_new_for_display(long /*int*/ display, long /*int*/ cursor_type) {
+		lock.lock();
+		try {
+			return _gdk_cursor_new_for_display(display, cursor_type);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param cursor_name cast=(const gchar *)

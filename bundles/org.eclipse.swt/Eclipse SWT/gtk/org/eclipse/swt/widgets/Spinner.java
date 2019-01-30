@@ -924,11 +924,11 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0)  {
-		byte [] name = Converter.wcsToMbcs("text", true);
 		if (GTK.GTK4) {
+			byte [] name = Converter.wcsToMbcs("text", true);
 			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_from_name(GDK.gdk_display_get_default(), name);
+			defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
 		}
 	}
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);

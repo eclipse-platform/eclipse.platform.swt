@@ -370,6 +370,7 @@
 #define NO_GDK_1EVENT_1WINDOW
 
 // GdkCursor removals
+#define NO__1gdk_1cursor_1new_1for_1display
 #define NO__1gdk_1cursor_1new_1from_1pixbuf
 #define NO__1gdk_1display_1supports_1cursor_1color
 #define NO__1gdk_1cursor_1new_1from_1name__I_3B
