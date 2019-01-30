@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -782,19 +782,6 @@ public static int VERSION(int major, int minor, int micro) {
 public static boolean isX11 () {
 	return OS.GDK_WINDOWING_X11() && GDK.GDK_IS_X11_DISPLAY(GDK.gdk_display_get_default());
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /** 64 bit */
 public static final native int GInterfaceInfo_sizeof ();
