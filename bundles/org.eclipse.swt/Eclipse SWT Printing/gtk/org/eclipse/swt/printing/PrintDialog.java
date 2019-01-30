@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -403,7 +403,7 @@ public PrinterData open() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
 	if (GTK.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);

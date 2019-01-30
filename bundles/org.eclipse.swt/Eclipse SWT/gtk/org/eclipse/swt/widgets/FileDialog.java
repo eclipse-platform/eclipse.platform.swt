@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -345,7 +345,7 @@ String openNativeChooserDialog () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
@@ -402,7 +402,7 @@ String openChooserDialog () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	display.sendPostExternalEventDispatchEvent ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);

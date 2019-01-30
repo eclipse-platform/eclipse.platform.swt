@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -300,7 +300,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock acquired by the function above.
 			*/
-			GDK.gdk_threads_leave();
+			if (!GTK.GTK4) GDK.gdk_threads_leave();
 		}
 		if (selection_data != 0) break;
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
@@ -311,7 +311,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock acquired by the function above.
 			*/
-			GDK.gdk_threads_leave();
+			if (!GTK.GTK4) GDK.gdk_threads_leave();
 		}
 	}
 	if (selection_data == 0) return null;
@@ -599,7 +599,7 @@ private  int[] getAvailablePrimaryTypes() {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
@@ -624,7 +624,7 @@ private int[] getAvailableClipboardTypes () {
 	* code outside of SWT (i.e AWT, etc). It ensures that the current
 	* thread leaves the GTK lock acquired by the function above.
 	*/
-	GDK.gdk_threads_leave();
+	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);

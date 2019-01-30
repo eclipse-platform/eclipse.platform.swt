@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -846,7 +846,7 @@ public boolean open () {
 			* code outside of SWT (i.e AWT, etc). It ensures that the current
 			* thread leaves the GTK lock before calling the function below.
 			*/
-			GDK.gdk_threads_leave();
+			if (!GTK.GTK4) GDK.gdk_threads_leave();
 			OS.g_main_context_iteration (0, true);
 			display.sendPostExternalEventDispatchEvent ();
 			display.runAsyncMessages (false);
