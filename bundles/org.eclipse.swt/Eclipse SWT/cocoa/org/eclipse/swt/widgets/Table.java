@@ -968,7 +968,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 
 	Color selectionBackground = null, selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
-		selectionForeground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
+		selectionForeground = Color.cocoa_new(display, (hasFocus || Display.APPEARANCE.Dark == display.appAppearance) ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
 		selectionBackground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlColor : display.secondarySelectedControlColor);
 	}
 
@@ -1500,7 +1500,7 @@ public Color getHeaderForeground () {
 	return getHeaderForegroundColor ();
 }
 
-private Color getHeaderForegroundColor () {
+Color getHeaderForegroundColor () {
 	return headerForeground != null ? Color.cocoa_new (display, headerForeground) : getForegroundColor ();
 }
 
