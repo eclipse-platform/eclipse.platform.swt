@@ -224,6 +224,7 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_RELEASE: {
 			int [] eventButton = new int [1];

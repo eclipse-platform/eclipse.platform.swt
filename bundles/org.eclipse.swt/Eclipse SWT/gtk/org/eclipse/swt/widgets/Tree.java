@@ -2054,6 +2054,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	double [] eventY = new double [1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
 	int eventType = GDK.gdk_event_get_event_type(event);
+	eventType = fixGdkEventTypeValues(eventType);
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	double [] eventRX = new double [1];

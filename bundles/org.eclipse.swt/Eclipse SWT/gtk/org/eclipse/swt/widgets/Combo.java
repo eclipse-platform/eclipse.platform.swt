@@ -1329,6 +1329,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	int eventType = GDK.gdk_event_get_event_type(event);
+	eventType = fixGdkEventTypeValues(eventType);
 	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
 		return gtk_button_press_event(widget, event, false);
 	}
@@ -1370,6 +1371,7 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		eventType = fixGdkEventTypeValues(eventType);
 		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 				keyPress = true;
@@ -1535,6 +1537,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	* field.
 	*/
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	eventType = fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];
@@ -2618,6 +2621,7 @@ String verifyText (String string, int start, int end) {
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
+		type = fixGdkEventTypeValues(type);
 		switch (type) {
 			case GDK.GDK_KEY_PRESS:
 				setKeyState (event, eventPtr);

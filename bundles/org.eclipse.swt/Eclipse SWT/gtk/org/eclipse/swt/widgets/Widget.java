@@ -1473,6 +1473,7 @@ char [] sendIMKeyEvent (int type, long /*int*/ event, char [] chars) {
 		ptr = GTK.gtk_get_current_event ();
 		if (ptr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(ptr);
+			eventType = Control.fixGdkEventTypeValues(eventType);
 			switch (eventType) {
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE:
@@ -1536,6 +1537,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 	long /*int*/ ptr = GTK.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
+		currentEventType = Control.fixGdkEventTypeValues(currentEventType);
 		switch (currentEventType) {
 			case GDK.GDK_KEY_PRESS:
 			case GDK.GDK_KEY_RELEASE:

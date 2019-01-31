@@ -294,6 +294,31 @@ long /*int*/ eventSurface () {
 	return gtk_widget_get_surface (eventHandle);
 }
 
+/**
+ * GdkEventType constants different on GTK4 and GTK3.
+ * This checks for GTK versions and return the correct constants defined in GDK.java
+ * @param eventType
+ * @return constant defined
+ */
+static int fixGdkEventTypeValues(int eventType) {
+	if (GTK.GTK4) {
+		switch (eventType) {
+			case GDK.GDK4_EXPOSE: return GDK.GDK_EXPOSE;
+			case GDK.GDK4_MOTION_NOTIFY: return GDK.GDK_MOTION_NOTIFY;
+			case GDK.GDK4_BUTTON_PRESS: return GDK.GDK_BUTTON_PRESS;
+			case GDK.GDK4_BUTTON_RELEASE: return GDK.GDK_BUTTON_RELEASE;
+			case GDK.GDK4_KEY_PRESS: return GDK.GDK_KEY_PRESS;
+			case GDK.GDK4_ENTER_NOTIFY: return GDK.GDK_ENTER_NOTIFY;
+			case GDK.GDK4_LEAVE_NOTIFY: return GDK.GDK_LEAVE_NOTIFY;
+			case GDK.GDK4_FOCUS_CHANGE: return GDK.GDK_FOCUS_CHANGE;
+			case GDK.GDK4_CONFIGURE: return GDK.GDK_CONFIGURE;
+			case GDK.GDK4_MAP: return GDK.GDK_MAP;
+			case GDK.GDK4_UNMAP: return GDK.GDK_UNMAP;
+		}
+	}
+	return eventType;
+}
+
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
@@ -2711,7 +2736,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			display.sendPostExternalEventDispatchEvent();
 			if (dragging) return true;  //428852
 			if (eventPtr == 0) return dragOnTimeout;
-			switch (GDK.GDK_EVENT_TYPE (eventPtr)) {
+			int eventType = GDK.gdk_event_get_event_type(eventPtr);
+			eventType = fixGdkEventTypeValues(eventType);
+			switch (eventType) {
 				case GDK.GDK_MOTION_NOTIFY: {
 					int [] state = new int[1];
 					GDK.gdk_event_get_state(eventPtr, state);
@@ -3408,6 +3435,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	double [] eventY = new double [1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
 	int eventType = GDK.gdk_event_get_event_type(event);
+	eventType = fixGdkEventTypeValues(eventType);
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	int eventTime = GDK.gdk_event_get_time(event);
@@ -3599,6 +3627,7 @@ boolean checkSubwindow () {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	eventType = fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			if (widget != eventHandle ()) break;
@@ -3876,6 +3905,7 @@ long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
+		type = fixGdkEventTypeValues(type);
 		if (type == GDK.GDK_KEY_PRESS) {
 			Control focusControl = display.getFocusControl ();
 			long /*int*/ focusHandle = focusControl != null ? focusControl.focusHandle () : 0;

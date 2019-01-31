@@ -264,6 +264,8 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 			gdk_event_free(currEvent);
 		}
 		GDK.gdk_event_free (nextEvent);
+		currEventType = Control.fixGdkEventTypeValues(currEventType);
+		nextEventType = Control.fixGdkEventTypeValues(nextEventType);
 		if (currEventType == GDK.GDK_BUTTON_PRESS && nextEventType == GDK.GDK_2BUTTON_PRESS) {
 			sendSelectionEvent (SWT.DefaultSelection);
 		}
@@ -274,6 +276,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	int eventType = GDK.gdk_event_get_event_type(event);
+	eventType = Control.fixGdkEventTypeValues(eventType);
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;

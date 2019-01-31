@@ -500,6 +500,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 		long /*int*/ eventPtr = GTK.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
+			eventType = Control.fixGdkEventTypeValues(eventType);
 			long /*int*/ topHandle = topHandle();
 			switch (eventType) {
 				case GDK.GDK_KEY_RELEASE: //Fall Through..
@@ -655,6 +656,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
+	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];

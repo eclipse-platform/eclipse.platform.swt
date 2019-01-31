@@ -332,6 +332,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	int eventType = GDK.gdk_event_get_event_type(event);
+	eventType = fixGdkEventTypeValues(eventType);
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	double [] eventX = new double [1];

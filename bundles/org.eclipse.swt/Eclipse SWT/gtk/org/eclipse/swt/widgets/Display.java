@@ -1376,6 +1376,7 @@ long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
 	if (time != 0) lastEventTime = time;
 
 	int eventType = GTK.GTK4 ? GDK.gdk_event_get_event_type(event) : GDK.GDK_EVENT_TYPE (event);
+	Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS:
 		case GDK.GDK_KEY_PRESS:

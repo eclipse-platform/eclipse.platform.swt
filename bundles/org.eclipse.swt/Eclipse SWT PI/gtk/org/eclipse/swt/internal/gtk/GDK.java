@@ -41,14 +41,11 @@ public class GDK extends OS {
 	public static final int GDK_BUTTON2_MOTION_MASK	= 1 << 6;
 	public static final int GDK_BUTTON3_MOTION_MASK	= 1 << 7;
 	public static final int GDK_BUTTON_PRESS = 0x4;
-	public static final int GDK4_BUTTON_PRESS = 0x5;
 	public static final int GDK_BUTTON_PRESS_MASK = 0x100;
 	public static final int GDK_BUTTON_RELEASE = 0x7;
-	public static final int GDK4_BUTTON_RELEASE = 0x6;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONFIGURE = 13;
-	public static final int GDK4_CONFIGURE = 12;
 	public static final int GDK_CONTROL_MASK = 0x4;
 	public static final int GDK_CROSS = 0x1e;
 	public static final int GDK_CROSSING_NORMAL = 0;
@@ -259,6 +256,20 @@ public class GDK extends OS {
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
 	public static final int GDK_WINDOW_TYPE_HINT_UTILITY = 5;
 	public static final int GDK_WINDOW_TYPE_HINT_TOOLTIP = 10;
+
+	/** GdkEventType constants are different on GTK4 */
+	public static final int GDK4_EXPOSE = 3;
+	public static final int GDK4_MOTION_NOTIFY = 4;
+	public static final int GDK4_BUTTON_PRESS = 5;
+	public static final int GDK4_BUTTON_RELEASE = 6;
+	public static final int GDK4_KEY_PRESS = 7;
+	public static final int GDK4_KEY_RELEASE = 8;
+	public static final int GDK4_ENTER_NOTIFY = 9;
+	public static final int GDK4_LEAVE_NOTIFY = 10;
+	public static final int GDK4_FOCUS_CHANGE = 11;
+	public static final int GDK4_CONFIGURE = 12;
+	public static final int GDK4_MAP = 13;
+	public static final int GDK4_UNMAP = 14;
 
 	/** sizeof(TYPE) for 32/64 bit support */
 	public static final native int GdkKeymapKey_sizeof();
