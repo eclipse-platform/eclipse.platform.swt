@@ -819,9 +819,9 @@ void updateOrientation () {
 	super.updateOrientation ();
 	long /*int*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
-		TCHAR buffer = new TCHAR (0, 128);
-		OS.GetClassName (hwndChild, buffer, buffer.length ());
-		String className = buffer.toString (0, buffer.strlen ());
+		char [] buffer = new char [128];
+		int length = OS.GetClassName (hwndChild, buffer, buffer.length);
+		String className = new String (buffer, 0, length);
 		if (className.equals ("msctls_updown32")) { //$NON-NLS-1$
 			int bits = OS.GetWindowLong (hwndChild, OS.GWL_EXSTYLE);
 			if ((style & SWT.RIGHT_TO_LEFT) != 0) {

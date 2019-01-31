@@ -280,7 +280,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 					width = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
 				} else {
-					TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+					char [] buffer = text.toCharArray ();
 					long /*int*/ textDC = hDC != 0 ? hDC : OS.GetDC (hwnd), oldFont = -1;
 					if (hDC == 0) {
 						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
@@ -288,7 +288,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					}
 					RECT textRect = new RECT ();
 					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
-					OS.DrawText (textDC, buffer, buffer.length (), textRect, flags);
+					OS.DrawText (textDC, buffer, buffer.length, textRect, flags);
 					width = textRect.right - textRect.left;
 					if (hDC == 0) {
 						if (oldFont != -1) OS.SelectObject (textDC, oldFont);
@@ -397,9 +397,9 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 				String string = column == 0 ? text : strings != null ? strings [column] : null;
 				if (string != null) {
 					RECT textRect = new RECT ();
-					TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
+					char [] buffer = string.toCharArray ();
 					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
-					OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
+					OS.DrawText (hDC, buffer, buffer.length, textRect, flags);
 					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 2;
 				}
 			}

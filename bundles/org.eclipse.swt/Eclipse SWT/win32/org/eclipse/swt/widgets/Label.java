@@ -177,7 +177,7 @@ static int checkStyle (int style) {
 				flags |= OS.DT_WORDBREAK;
 				rect.right = Math.max (0, wHint - width);
 			}
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			char [] buffer = new char [length + 1];
 			OS.GetWindowText (handle, buffer, length + 1);
 			OS.DrawText (hDC, buffer, length, rect, flags);
 			width += rect.right - rect.left;
@@ -555,7 +555,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 				imageHeight = rect.height;
 			}
 			RECT rect = null;
-			TCHAR buffer = null;
+			char [] buffer = null;
 			int textWidth = 0, textHeight = 0, flags = 0;
 			if (drawText) {
 				rect = new RECT ();
@@ -567,8 +567,8 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 					flags |= OS.DT_WORDBREAK;
 					rect.right = Math.max (0, width - imageWidth - margin);
 				}
-				buffer = new TCHAR (getCodePage (), text, true);
-				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
+				buffer = text.toCharArray ();
+				OS.DrawText (struct.hDC, buffer, buffer.length, rect, flags);
 				textWidth = rect.right - rect.left;
 				textHeight = rect.bottom - rect.top;
 			}
@@ -596,7 +596,7 @@ LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 				rect.right += rect.left;
 				rect.top = Math.max (0, (height - textHeight) / 2);
 				rect.bottom += rect.top;
-				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
+				OS.DrawText (struct.hDC, buffer, buffer.length, rect, flags);
 			}
 		}
 	}

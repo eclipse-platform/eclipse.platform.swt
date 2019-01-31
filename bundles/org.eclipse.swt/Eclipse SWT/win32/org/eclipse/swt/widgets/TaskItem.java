@@ -517,8 +517,8 @@ void updateText () {
 
 	int uFormat = OS.DT_LEFT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	RECT rect = new RECT ();
-	TCHAR buffer = new TCHAR (shell.getCodePage (), overlayText, false);
-	int length = buffer.length();
+	char [] buffer = overlayText.toCharArray ();
+	int length = buffer.length;
 	long /*int*/ hFont = 0, oldHFont = 0;
 	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
 	info.cbSize = NONCLIENTMETRICS.sizeof;

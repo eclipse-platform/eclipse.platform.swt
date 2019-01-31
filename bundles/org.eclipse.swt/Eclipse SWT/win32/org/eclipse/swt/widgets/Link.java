@@ -176,14 +176,14 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		long /*int*/ oldFont = OS.SelectObject (hDC, newFont);
 		if (text.length () > 0) {
-			TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
+			char [] buffer = parse (text).toCharArray ();
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 			if (wHint != SWT.DEFAULT) {
 				flags |= OS.DT_WORDBREAK;
 				rect.right = wHint;
 			}
-			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 			width = rect.right - rect.left;
 			height = rect.bottom;
 		} else {

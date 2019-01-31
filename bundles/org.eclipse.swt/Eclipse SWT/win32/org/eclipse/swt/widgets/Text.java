@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -227,7 +229,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 							rect.right--;
 							rect.bottom--;
 						}
-						TCHAR buffer = new TCHAR (getCodePage (), message, false);
+						char [] buffer = message.toCharArray ();
 						int uFormat = OS.DT_EDITCONTROL;
 						boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
 						if (rtl) uFormat |= OS.DT_RTLREADING;
@@ -241,7 +243,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 						long /*int*/ hOldFont = OS.SelectObject (hDC, hFont);
 						OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 						OS.SetBkMode (hDC, OS.TRANSPARENT);
-						OS.DrawText (hDC, buffer, buffer.length (), rect, uFormat);
+						OS.DrawText (hDC, buffer, buffer.length, rect, uFormat);
 						OS.SelectObject (hDC, hOldFont);
 					}
 
@@ -479,10 +481,9 @@ void applySegments () {
 	if (isDisposed() || --clearSegmentsCount != 0) return;
 	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return;
 	int length = OS.GetWindowTextLength (handle);
-	int cp = getCodePage ();
-	TCHAR buffer = new TCHAR (cp, length + 1);
+	char [] buffer = new char [length + 1];
 	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
-	String string = buffer.toString (0, length);
+	String string = new String (buffer, 0, length);
 	/* Get segments text */
 	Event event = new Event ();
 	event.text = string;
@@ -545,10 +546,9 @@ void applySegments () {
 	 * Sending OS.EM_REPLACESEL message instead.
 	 */
 	newChars [length] = 0;
-	buffer = new TCHAR (cp, newChars, false);
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
 	long /*int*/ undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
-	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
+	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, newChars);
 	/* Restore selection */
 	start [0] = translateOffset (start [0]);
 	end [0] = translateOffset (end [0]);
@@ -656,10 +656,10 @@ public void clearSelection () {
 		}
 		int length = OS.GetWindowTextLength (handle);
 		if (length != 0) {
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			char [] buffer = new char [length + 1];
 			OS.GetWindowText (handle, buffer, length + 1);
 			OS.DrawText (hDC, buffer, length, rect, flags);
-			buffer.clear ();
+			Arrays.fill (buffer, '\0'); // erase sensitive data
 			width = rect.right - rect.left;
 		}
 		if (wrap && hHint == SWT.DEFAULT) {
@@ -668,8 +668,8 @@ public void clearSelection () {
 		}
 		if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 			OS.SetRect (rect, 0, 0, 0, 0);
-			TCHAR buffer = new TCHAR (getCodePage (), message, false);
-			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			char [] buffer = message.toCharArray ();
+			OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 			width = Math.max (width, rect.right - rect.left);
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
@@ -916,7 +916,6 @@ Point getCaretLocationInPixels () {
 	if (caretPos == -1) {
 		caretPos = 0;
 		if (position >= OS.GetWindowTextLength (handle)) {
-			int cp = getCodePage ();
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 			OS.SendMessage (handle, OS.EM_SETSEL, position, position);
@@ -932,10 +931,10 @@ Point getCaretLocationInPixels () {
 			* handler from WM_CHAR.
 			*/
 			ignoreCharacter = ignoreModify = true;
-			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
+			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new char [] {' ', '\0'});
 			caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
 			OS.SendMessage (handle, OS.EM_SETSEL, position, position + 1);
-			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
+			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new char [] {'\0'});
 			ignoreCharacter = ignoreModify = false;
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0]);
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
@@ -1296,8 +1295,7 @@ int getTabWidth (int tabs) {
 	long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-	TCHAR SPACE = new TCHAR (getCodePage (), " ", false);
-	OS.DrawText (hDC, SPACE, SPACE.length (), rect, flags);
+	OS.DrawText (hDC, new char [] {' '}, 1, rect, flags);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	return (rect.right - rect.left) * tabs;
@@ -2793,9 +2791,9 @@ LRESULT wmClipboard (int msg, long /*int*/ wParam, long /*int*/ lParam) {
 				int [] newStart = new int [1], newEnd = new int [1];
 				OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
 				if (length != 0 && newStart [0] != newEnd [0]) {
-					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+					char [] buffer = new char [length + 1];
 					OS.GetWindowText (handle, buffer, length + 1);
-					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
+					newText = new String (buffer, newStart [0], newEnd [0] - newStart [0]);
 				} else {
 					newText = "";
 				}

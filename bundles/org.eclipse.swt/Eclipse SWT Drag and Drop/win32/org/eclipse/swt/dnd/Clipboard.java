@@ -743,10 +743,10 @@ public String[] getAvailableTypeNames() {
 	String[] names = new String[types.length];
 	int maxSize = 128;
 	for (int i = 0; i < types.length; i++){
-		TCHAR buffer = new TCHAR(0, maxSize);
+		char [] buffer = new char [maxSize];
 		int size = OS.GetClipboardFormatName(types[i].cfFormat, buffer, maxSize);
 		if (size != 0) {
-			names[i] = buffer.toString(0, size);
+			names[i] = new String (buffer, 0, size);
 		} else {
 			switch (types[i].cfFormat) {
 				case COM.CF_HDROP: names[i] = "CF_HDROP"; break; //$NON-NLS-1$

@@ -14,9 +14,9 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -386,7 +386,7 @@ public String open () {
 	display.sendPostExternalEventDispatchEvent ();
 	switch (OS.CommDlgExtendedError ()) {
 		case OS.FNERR_INVALIDFILENAME:
-			OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
+			OS.MoveMemory (lpstrFile, new char [1], TCHAR.sizeof);
 			display.sendPreExternalEventDispatchEvent ();
 			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 			display.sendPostExternalEventDispatchEvent ();
@@ -410,19 +410,11 @@ public String open () {
 	fileNames = new String [0];
 	String fullPath = null;
 	if (success) {
-
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, struct.nMaxFile);
-		int byteCount1 = buffer.length () * TCHAR.sizeof;
-		OS.MoveMemory (buffer, lpstrFile, byteCount1);
+		char [] buffer = new char [struct.nMaxFile];
+		OS.MoveMemory (buffer, lpstrFile, buffer.length * TCHAR.sizeof);
 		int nFileOffset = struct.nFileOffset;
 		if (nFileOffset > 0) {
-
-			/* Use the character encoding for the default locale */
-			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
-			int byteCount2 = prefix.length () * TCHAR.sizeof;
-			OS.MoveMemory (prefix, lpstrFile, byteCount2);
-			filterPath = prefix.toString (0, prefix.length ());
+			filterPath = new String (buffer, 0, nFileOffset - 1);
 
 			/*
 			* Get each file from the buffer.  Files are delimited
@@ -433,9 +425,9 @@ public String open () {
 			int start = nFileOffset;
 			do {
 				int end = start;
-				while (end < buffer.length () && buffer.tcharAt (end) != 0) end++;
-				String string = buffer.toString (start, end - start);
-				start = end;
+				while (end < buffer.length && buffer [end] != 0) end++;
+				String string = new String (buffer, start, end - start);
+				start = end + 1;
 				if (count == fileNames.length) {
 					String [] newFileNames = new String [fileNames.length + 4];
 					System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
@@ -443,8 +435,7 @@ public String open () {
 				}
 				fileNames [count++] = string;
 				if ((style & SWT.MULTI) == 0) break;
-				start++;
-			} while (start < buffer.length () && buffer.tcharAt (start) != 0);
+			} while (start < buffer.length && buffer[start] != 0);
 
 			if (fileNames.length > 0) fileName = fileNames  [0];
 			String separator = "";

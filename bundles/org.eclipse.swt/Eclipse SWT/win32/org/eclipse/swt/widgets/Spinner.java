@@ -15,9 +15,9 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -197,8 +197,7 @@ void createHandle () {
 	OS.SendMessage (hwndUpDown, OS.UDM_SETPOS32, 0, 0);
 	pageIncrement = 10;
 	digits = 0;
-	TCHAR buffer = new TCHAR (getCodePage (), "0", true);
-	OS.SetWindowText (hwndText, buffer);
+	OS.SetWindowText (hwndText, new char [] {'0', '\0'});
 }
 
 /**
@@ -316,9 +315,9 @@ long /*int*/ borderHandle () {
 			}
 			string = buffer.toString ();
 		}
-		TCHAR buffer = new TCHAR (getCodePage (), string, false);
+		char [] buffer = string.toCharArray ();
 		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
-		OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+		OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 		width = rect.right - rect.left;
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (hwndText, hDC);
@@ -445,9 +444,9 @@ public int getDigits () {
 }
 
 String getDecimalSeparator () {
-	TCHAR tchar = new TCHAR (getCodePage (), 4);
-	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SDECIMAL, tchar, 4);
-	return size != 0 ? tchar.toString (0, size - 1) : ".";
+	char [] data = new char [4];
+	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SDECIMAL, data, 4);
+	return size != 0 ? new String (data, 0, size - 1) : ".";
 }
 
 /**
@@ -535,9 +534,9 @@ public int getSelection () {
 
 int getSelectionText (boolean [] parseFail) {
 	int length = OS.GetWindowTextLength (hwndText);
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	char [] buffer = new char [length + 1];
 	OS.GetWindowText (hwndText, buffer, length + 1);
-	String string = buffer.toString (0, length);
+	String string = new String (buffer, 0, length);
 	try {
 		int value;
 		if (digits > 0) {
@@ -594,9 +593,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (hwndText);
 	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	char [] buffer = new char [length + 1];
 	OS.GetWindowText (hwndText, buffer, length + 1);
-	return buffer.toString (0, length);
+	return new String (buffer, 0, length);
 }
 
 /**
@@ -1334,9 +1333,9 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 				int [] newStart = new int [1], newEnd = new int [1];
 				OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
 				if (length != 0 && newStart [0] != newEnd [0]) {
-					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+					char [] buffer = new char [length + 1];
 					OS.GetWindowText (hwndText, buffer, length + 1);
-					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
+					newText = new String (buffer, newStart [0], newEnd [0] - newStart [0]);
 				} else {
 					newText = "";
 				}

@@ -109,7 +109,7 @@ public void add (String string) {
 	int result = (int)/*64*/OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 	if (result == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
-	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer.chars, true);
 }
 /**
  * Adds the argument to the receiver's list at the given
@@ -152,7 +152,7 @@ public void add (String string, int index) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
 	}
-	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer.chars, true);
 }
 
 /**
@@ -232,13 +232,12 @@ static int checkStyle (int style) {
 			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-			int cp = getCodePage ();
-			TCHAR buffer = new TCHAR (cp, 64 + 1);
+			char [] buffer = new char [64 + 1];
 			for (int i=0; i<count; i++) {
 				int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, i, 0);
 				if (length != OS.LB_ERR) {
-					if (length + 1 > buffer.length ()) {
-						buffer = new TCHAR (cp, length + 1);
+					if (length + 1 > buffer.length) {
+						buffer = new char [length + 1];
 					}
 					int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer);
 					if (result != OS.LB_ERR) {
@@ -438,9 +437,9 @@ public String getItem (int index) {
 	checkWidget ();
 	int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
 	if (length != OS.LB_ERR) {
-		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+		char [] buffer = new char [length + 1];
 		int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer);
-		if (result != OS.LB_ERR) return ((state & HAS_AUTO_DIRECTION) != 0) ? buffer.toString (1, length - 1) : buffer.toString (0, length);
+		if (result != OS.LB_ERR) return ((state & HAS_AUTO_DIRECTION) != 0) ? new String (buffer, 1, length - 1) : new String (buffer, 0, length);
 	}
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -764,16 +763,16 @@ public void remove (int [] indices) {
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	}
-	int cp = getCodePage ();
 	int i = 0, topCount = 0, last = -1;
 	while (i < newIndices.length) {
 		int index = newIndices [i];
 		if (index != last) {
-			TCHAR buffer = null;
+			char [] buffer = null;
+			int length = 0;
 			if ((style & SWT.H_SCROLL) != 0) {
-				int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
+				length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
 				if (length == OS.LB_ERR) break;
-				buffer = new TCHAR (cp, length + 1);
+				buffer = new char [length + 1];
 				int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer);
 				if (result == OS.LB_ERR) break;
 			}
@@ -781,7 +780,7 @@ public void remove (int [] indices) {
 			if (result == OS.LB_ERR) break;
 			if ((style & SWT.H_SCROLL) != 0) {
 				int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-				OS.DrawText (hDC, buffer, -1, rect, flags);
+				OS.DrawText (hDC, buffer, length, rect, flags);
 				newWidth = Math.max (newWidth, rect.right - rect.left);
 			}
 			if (index < topIndex) topCount++;
@@ -817,7 +816,7 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
-	TCHAR buffer = null;
+	char [] buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
 		if (length == OS.LB_ERR) {
@@ -825,7 +824,7 @@ public void remove (int index) {
 			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			error (SWT.ERROR_INVALID_RANGE);
 		}
-		buffer = new TCHAR (getCodePage (), length + 1);
+		buffer = new char [length + 1];
 		int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer);
 		if (result == OS.LB_ERR) {
 			int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -884,22 +883,22 @@ public void remove (int start, int end) {
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	}
-	int cp = getCodePage ();
 	int index = start;
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	while (index <= end) {
-		TCHAR buffer = null;
+		char [] buffer = null;
+		int length = 0;
 		if ((style & SWT.H_SCROLL) != 0) {
-			int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, start, 0);
+			length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, start, 0);
 			if (length == OS.LB_ERR) break;
-			buffer = new TCHAR (cp, length + 1);
+			buffer = new char [length + 1];
 			int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, start, buffer);
 			if (result == OS.LB_ERR) break;
 		}
 		int result = (int)/*64*/OS.SendMessage (handle, OS.LB_DELETESTRING, start, 0);
 		if (result == OS.LB_ERR) break;
 		if ((style & SWT.H_SCROLL) != 0) {
-			OS.DrawText (hDC, buffer, -1, rect, flags);
+			OS.DrawText (hDC, buffer, length, rect, flags);
 			newWidth = Math.max (newWidth, rect.right - rect.left);
 		}
 		index++;
@@ -1276,16 +1275,15 @@ void setScrollWidth () {
 	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	int cp = getCodePage ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	for (int i=0; i<count; i++) {
 		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, i, 0);
 		if (length != OS.LB_ERR) {
-			TCHAR buffer = new TCHAR (cp, length + 1);
+			char [] buffer = new char [length + 1];
 			int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer);
 			if (result != OS.LB_ERR) {
-				OS.DrawText (hDC, buffer, -1, rect, flags);
+				OS.DrawText (hDC, buffer, length, rect, flags);
 				newWidth = Math.max (newWidth, rect.right - rect.left);
 			}
 		}
@@ -1295,7 +1293,7 @@ void setScrollWidth () {
 	OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + INSET, 0);
 }
 
-void setScrollWidth (TCHAR buffer, boolean grow) {
+void setScrollWidth (char[] buffer, boolean grow) {
 	RECT rect = new RECT ();
 	long /*int*/ newFont, oldFont = 0;
 	long /*int*/ hDC = OS.GetDC (handle);
@@ -1540,12 +1538,11 @@ void updateMenuLocation (Event event) {
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-		int cp = getCodePage ();
-		TCHAR buffer = new TCHAR (cp, 64 + 1);
+		char [] buffer = new char [64 + 1];
 		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
 		if (length != OS.LB_ERR) {
-			if (length + 1 > buffer.length ()) {
-				buffer = new TCHAR (cp, length + 1);
+			if (length + 1 > buffer.length) {
+				buffer = new char [length + 1];
 			}
 			int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, focusIndex, buffer);
 			if (result != OS.LB_ERR) {
@@ -1580,20 +1577,17 @@ boolean updateTextDirection (int textDirection) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (count == OS.LB_ERR) return false;
 	int selection = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
-	int cp = getCodePage ();
 	addedUCC = false;
 	while (count-- > 0) {
 		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, count, 0);
 		if (length == OS.LB_ERR) break;
 		if (length == 0) continue;
-		TCHAR buffer = new TCHAR (cp, length + 1);
+		char [] buffer = new char [length + 1];
 		if (OS.SendMessage (handle, OS.LB_GETTEXT, count, buffer) == OS.LB_ERR) break;
 		if (OS.SendMessage (handle, OS.LB_DELETESTRING, count, 0) == OS.LB_ERR) break;
 		if ((state & HAS_AUTO_DIRECTION) == 0) {
 			/* Should remove UCC */
-			char [] chars = new char [length - 1];
-			System.arraycopy (buffer.chars, 1, chars, 0, length - 1); // buffer.chars as we are always Unicode here
-			buffer = new TCHAR (cp, chars, true);
+			System.arraycopy(buffer, 1, buffer, 0, length);
 		}
 		/* Adding UCC is handled in OS.LB_INSERTSTRING */
 		if (OS.SendMessage (handle, OS.LB_INSERTSTRING, count, buffer) == OS.LB_ERR) break;

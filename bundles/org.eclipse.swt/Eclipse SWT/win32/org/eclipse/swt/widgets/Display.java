@@ -4788,8 +4788,8 @@ int textWidth (String text, long /*int*/ handle) {
 	long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-	TCHAR buffer = new TCHAR(0, text, false);
-	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+	char [] buffer = text.toCharArray ();
+	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	return (rect.right - rect.left);

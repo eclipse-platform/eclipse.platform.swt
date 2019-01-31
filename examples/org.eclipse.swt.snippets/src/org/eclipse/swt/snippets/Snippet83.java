@@ -24,7 +24,6 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -112,10 +111,10 @@ protected int[] getTypeIds(){
 static String getNameFromId(int id) {
 	String name = null;
 	int maxSize = 128;
-	TCHAR buffer = new TCHAR(0, maxSize);
+	char [] buffer = new char [maxSize];
 	int size = COM.GetClipboardFormatName(id, buffer, maxSize);
 	if (size != 0) {
-		name = buffer.toString(0, size);
+		name = new String (buffer, 0, size);
 	} else {
 		switch (id) {
 			case COM.CF_HDROP:

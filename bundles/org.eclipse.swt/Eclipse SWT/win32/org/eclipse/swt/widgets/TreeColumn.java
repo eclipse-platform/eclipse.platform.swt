@@ -378,8 +378,8 @@ public void pack () {
 	}
 	RECT rect = new RECT ();
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-	TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
-	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+	char [] buffer = text.toCharArray ();
+	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
 	if (OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
 	if (image != null || parent.sortColumn == this) {
@@ -659,8 +659,8 @@ public void setText (String string) {
 	* mnemonic characters.
 	*/
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
+	char [] buffer = fixMnemonic (string);
+	int byteCount = buffer.length * TCHAR.sizeof;
 	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
 	long /*int*/ hwndHeader = parent.hwndHeader;

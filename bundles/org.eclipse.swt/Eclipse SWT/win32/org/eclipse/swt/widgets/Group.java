@@ -149,14 +149,14 @@ protected void checkSubclass () {
 		* If the group has text, and the text is wider than the
 		* client area, pad the width so the text is not clipped.
 		*/
-		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
+		char [] buffer = (string == null ? text : string).toCharArray ();
 		long /*int*/ newFont, oldFont = 0;
 		long /*int*/ hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-		OS.DrawText (hDC, buffer, -1, rect, flags);
+		OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 		int offsetY = OS.IsAppThemed () ? 0 : 1;
@@ -502,7 +502,7 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 
 	if (hasCustomForeground() && text.length () != 0) {
 		String string = fixText (false);
-		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, false);
+		char [] buffer = (string == null ? text : string).toCharArray ();
 
 		// We cannot use BeginPaint and EndPaint, because that removes the group border
 		long /*int*/ hDC = OS.GetDC(handle);
@@ -514,13 +514,13 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 
-		OS.DrawText(hDC, buffer, buffer.length(), rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP | OS.DT_CALCRECT);
+		OS.DrawText(hDC, buffer, buffer.length, rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP | OS.DT_CALCRECT);
 		// The calculated rectangle is a little bit too small. Italic fonts would show some small part in the default color.
 		rect.right += CLIENT_INSET;
 		drawBackground(hDC, rect);
 		OS.SetBkMode(hDC, OS.TRANSPARENT);
 		OS.SetTextColor(hDC, getForegroundPixel());
-		OS.DrawText(hDC, buffer, buffer.length(), rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP);
+		OS.DrawText(hDC, buffer, buffer.length, rect, OS.DT_SINGLELINE | OS.DT_LEFT | OS.DT_TOP);
 
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC(handle, hDC);

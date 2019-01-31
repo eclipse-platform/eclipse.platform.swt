@@ -523,7 +523,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 					String string = index == 0 ? text : strings != null ? strings [index] : null;
 					if (string != null) {
 						RECT textRect = new RECT ();
-						TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
+						char [] buffer = string.toCharArray ();
 						int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
 						long /*int*/ hNewDC = hDC, hFont = 0;
 						if (hDC == 0) {
@@ -532,7 +532,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 							if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 							hFont = OS.SelectObject (hNewDC, hFont);
 						}
-						OS.DrawText (hNewDC, buffer, buffer.length (), textRect, flags);
+						OS.DrawText (hNewDC, buffer, buffer.length, textRect, flags);
 						if (hDC == 0) {
 							OS.SelectObject (hNewDC, hFont);
 							OS.ReleaseDC (hwnd, hNewDC);

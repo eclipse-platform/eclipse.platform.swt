@@ -4853,9 +4853,9 @@ boolean setScrollWidth (TableItem item, boolean force) {
 					long /*int*/ hDC = OS.GetDC (handle);
 					long /*int*/ oldFont = OS.SelectObject (hDC, hFont);
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-					TCHAR buffer = new TCHAR (getCodePage (), string, false);
+					char [] buffer = string.toCharArray ();
 					RECT rect = new RECT ();
-					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+					OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 					OS.SelectObject (hDC, oldFont);
 					OS.ReleaseDC (handle, hDC);
 					newWidth = Math.max (newWidth, rect.right - rect.left);
@@ -4878,7 +4878,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		* space.
 		*/
 		if (newWidth == 0) {
-			TCHAR buffer = new TCHAR (getCodePage (), " ", true);
+			char [] buffer = {' ', '\0'};
 			newWidth = Math.max (newWidth, (int)/*64*/OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 		}
 		long /*int*/ hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
@@ -6996,7 +6996,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
 							if ((columns[i].style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 							if ((columns[i].style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-							TCHAR buffer = new TCHAR (getCodePage (), columns[i].text, false);
+							char [] buffer = columns[i].text.toCharArray ();
 							OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
 							OS.SetTextColor(nmcd.hdc, getHeaderForegroundPixel());
 							RECT textRect = new RECT();
@@ -7004,7 +7004,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							textRect.top = rects[i].top;
 							textRect.right = rects[i].right;
 							textRect.bottom = rects[i].bottom;
-							OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+							OS.DrawText (nmcd.hdc, buffer, buffer.length, textRect, flags);
 						}
 					}
 
@@ -7330,10 +7330,10 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long /*int*/ lParam) {
 							if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 							if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
 						}
-						TCHAR buffer = new TCHAR (getCodePage (), string, false);
+						char [] buffer = string.toCharArray ();
 						RECT textRect = new RECT ();
 						OS.SetRect (textRect, x, cellRect.top, cellRect.right, cellRect.bottom);
-						OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+						OS.DrawText (nmcd.hdc, buffer, buffer.length, textRect, flags);
 					}
 					gc.dispose ();
 					OS.RestoreDC (nmcd.hdc, nSavedDC);

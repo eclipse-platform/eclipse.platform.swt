@@ -41,7 +41,6 @@ public class FileTransfer extends ByteArrayTransfer {
 	private static FileTransfer _instance = new FileTransfer();
 	private static final String CF_HDROP = "CF_HDROP "; //$NON-NLS-1$
 	private static final int CF_HDROPID = COM.CF_HDROP;
-	private static final String CF_HDROP_SEPARATOR = "\0"; //$NON-NLS-1$
 
 private FileTransfer() {}
 
@@ -75,9 +74,11 @@ public void javaToNative(Object object, TransferData transferData) {
 	StringBuffer allFiles = new StringBuffer();
 	for (int i = 0; i < fileNames.length; i++) {
 		allFiles.append(fileNames[i]);
-		allFiles.append(CF_HDROP_SEPARATOR); // each name is null terminated
+		allFiles.append('\0'); // each name is null terminated
 	}
-	TCHAR buffer = new TCHAR(0, allFiles.toString(), true); // there is an extra null terminator at the very end
+	allFiles.append('\0'); // there is an extra null terminator at the very end
+	char [] buffer = new char [allFiles.length()];
+	allFiles.getChars(0, allFiles.length(), buffer, 0);
 	DROPFILES dropfiles = new DROPFILES();
 	dropfiles.pFiles = DROPFILES.sizeof;
 	dropfiles.pt_x = dropfiles.pt_y = 0;
@@ -85,7 +86,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	dropfiles.fWide = 1;
 	// Allocate the memory because the caller (DropTarget) has not handed it in
 	// The caller of this method must release the data when it is done with it.
-	int byteCount = buffer.length() * TCHAR.sizeof;
+	int byteCount = buffer.length * TCHAR.sizeof;
 	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
 	OS.MoveMemory(newPtr, dropfiles, DROPFILES.sizeof);
 	OS.MoveMemory(newPtr + DROPFILES.sizeof, buffer, byteCount);
@@ -130,11 +131,11 @@ public Object nativeToJava(TransferData transferData) {
 	String[] fileNames = new String[count];
 	for (int i = 0; i < count; i++) {
 		// How long is the name ?
-		int size = OS.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
-		TCHAR lpszFile = new TCHAR(0, size);
+		int size = OS.DragQueryFile(stgmedium.unionField, i, null, 0);
+		char [] lpszFile = new char [size + 1];
 		// Get file name and append it to string
-		OS.DragQueryFile(stgmedium.unionField, i, lpszFile.chars, size);
-		fileNames[i] = lpszFile.toString(0, lpszFile.strlen());
+		OS.DragQueryFile(stgmedium.unionField, i, lpszFile, size + 1);
+		fileNames[i] = new String(lpszFile, 0, size);
 	}
 	OS.DragFinish(stgmedium.unionField); // frees data associated with HDROP data
 	return fileNames;

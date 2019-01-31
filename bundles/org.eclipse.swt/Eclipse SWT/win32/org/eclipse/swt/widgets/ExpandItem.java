@@ -200,22 +200,23 @@ void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
 	}
 	if (text.length () > 0) {
 		rect.left += ExpandItem.TEXT_INSET;
-		TCHAR buffer;
+		char [] buffer;
 		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
 			int bits  = OS.GetWindowLong (parent.handle, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
-				buffer = new TCHAR (parent.getCodePage (), LRE + text, false);
+				buffer = (LRE + text).toCharArray ();
 			} else {
-				buffer = new TCHAR (parent.getCodePage (), RLE + text, false);
+				buffer = (RLE + text).toCharArray ();
 			}
 		}
-		else
-			buffer = new TCHAR (parent.getCodePage (), text, false);
+		else {
+			buffer = text.toCharArray ();
+		}
 		if (hTheme != 0) {
-			OS.DrawThemeText (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_VCENTER | OS.DT_SINGLELINE, 0, rect);
+			OS.DrawThemeText (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer, buffer.length, OS.DT_VCENTER | OS.DT_SINGLELINE, 0, rect);
 		} else {
 			int oldBkMode = OS.SetBkMode (hDC, OS.TRANSPARENT);
-			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_VCENTER | OS.DT_SINGLELINE);
+			OS.DrawText (hDC, buffer, buffer.length, rect, OS.DT_VCENTER | OS.DT_SINGLELINE);
 			OS.SetBkMode (hDC, oldBkMode);
 		}
 	}
@@ -348,11 +349,11 @@ int getPreferredWidth (long /*int*/ hTheme, long /*int*/ hDC) {
 	}
 	if (text.length() > 0) {
 		RECT rect = new RECT ();
-		TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+		char [] buffer = text.toCharArray ();
 		if (hTheme != 0) {
-			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_SINGLELINE, null, rect);
+			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer, buffer.length, OS.DT_SINGLELINE, null, rect);
 		} else {
-			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_CALCRECT);
+			OS.DrawText (hDC, buffer, buffer.length, rect, OS.DT_CALCRECT);
 		}
 		width += (rect.right - rect.left);
 	}

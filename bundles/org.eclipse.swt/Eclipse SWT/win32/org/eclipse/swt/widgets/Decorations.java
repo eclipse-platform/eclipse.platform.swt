@@ -683,10 +683,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	/* Use the character encoding for the default locale */
-	TCHAR buffer = new TCHAR (0, length + 1);
+	char [] buffer = new char [length + 1];
 	OS.GetWindowText (handle, buffer, length + 1);
-	return buffer.toString (0, length);
+	return new String (buffer, 0, length);
 }
 
 @Override
@@ -1519,9 +1518,9 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 	* WM_ACTIVATE messages that come from AWT Windows.
 	*/
 	if (OS.GetParent (lParam) == handle) {
-		TCHAR buffer = new TCHAR (0, 128);
-		OS.GetClassName (lParam, buffer, buffer.length ());
-		String className = buffer.toString (0, buffer.strlen ());
+		char [] buffer = new char [128];
+		int length = OS.GetClassName (lParam, buffer, buffer.length);
+		String className = new String (buffer, 0, length);
 		if (className.equals (Display.AWT_WINDOW_CLASS)) {
 			return LRESULT.ZERO;
 		}

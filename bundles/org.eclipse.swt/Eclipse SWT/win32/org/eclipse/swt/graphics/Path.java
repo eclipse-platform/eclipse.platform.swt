@@ -315,9 +315,7 @@ void addStringInPixels(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int length = string.length();
-	char[] buffer = new char[length];
-	string.getChars(0, length, buffer, 0);
+	char[] buffer = string.toCharArray();
 	long /*int*/ hDC = device.internal_new_GC(null);
 	long /*int*/ [] family = new long /*int*/ [1];
 	long /*int*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, device.fontCollection, family, null);
@@ -326,7 +324,7 @@ void addStringInPixels(String string, float x, float y, Font font) {
 	point.Y = y;
 	int style = Gdip.Font_GetStyle(gdipFont);
 	float size = Gdip.Font_GetSize(gdipFont);
-	Gdip.GraphicsPath_AddString(handle, buffer, length, family[0], style, size, point, 0);
+	Gdip.GraphicsPath_AddString(handle, buffer, buffer.length, family[0], style, size, point, 0);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 	Gdip.FontFamily_delete(family[0]);
 	Gdip.Font_delete(gdipFont);

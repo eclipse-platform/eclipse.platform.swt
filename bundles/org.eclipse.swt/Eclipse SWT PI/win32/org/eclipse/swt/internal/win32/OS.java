@@ -2174,16 +2174,6 @@ public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, long /*in
 	return ExtractIconEx (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
 }
 
-public static final boolean ExtTextOut(long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, TCHAR lpString, int cbCount, int[] lpDx) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return ExtTextOut (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
-}
-
-public static final int GetCharacterPlacement (long /*int*/ hdc, TCHAR lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GetCharacterPlacement (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
-}
-
 public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
 	boolean result;
 
@@ -2200,16 +2190,6 @@ public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassN
 	lpWndClass.lpszClassName = 0;
 
 	return result;
-}
-
-public static final int GetClassName (long /*int*/ hWnd, TCHAR lpClassName, int nMaxCount) {
-	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-	return GetClassName (hWnd, lpClassName1, nMaxCount);
-}
-
-public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName, int cchMaxCount) {
-	char [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.chars;
-	return GetClipboardFormatName (format, lpszFormatName1, cchMaxCount);
 }
 
 public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
@@ -2230,11 +2210,6 @@ public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHA
 	return GetProfileString (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
 }
 
-public static final boolean GetTextExtentPoint32 (long /*int*/ hdc, TCHAR lpString, int cbString, SIZE lpSize) {
-	char [] lpString1 = lpString == null ? null : lpString.chars;
-	return GetTextExtentPoint32 (hdc, lpString1, cbString, lpSize);
-}
-
 public static final int GetWindowText (long /*int*/ hWnd, TCHAR lpString, int nMaxCount) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return GetWindowText (hWnd, lpString1, nMaxCount);
@@ -2248,11 +2223,6 @@ public static final int GlobalAddAtom (TCHAR lpString) {
 public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, TCHAR lpData) {
 	char [] lpData1 = lpData == null ? null : lpData.chars;
 	return ImmEscape (hKL, hIMC, uEscape, lpData1);
-}
-
-public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
-	char [] lpBuf1 = lpBuf == null ? null : lpBuf.chars;
-	return ImmGetCompositionString (hIMC, dwIndex, lpBuf1, dwBufLen);
 }
 
 public static final boolean InternetGetCookie (TCHAR lpszUrl, TCHAR lpszCookieName, TCHAR lpszCookieData, int[] lpdwSize) {

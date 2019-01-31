@@ -81,13 +81,11 @@ public class TaskBar extends Widget {
 		OS.IIDFromString ("{F1B32785-6FBA-4FCF-9D55-7B8E7F157091}\0".toCharArray (), FOLDERID_LocalAppData); //$NON-NLS-1$
 		OS.PSPropertyKeyFromString ("{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 2\0".toCharArray (), PKEY_Title); //$NON-NLS-1$
 		OS.PSPropertyKeyFromString ("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}, 6\0".toCharArray (), PKEY_AppUserModel_IsDestListSeparator); //$NON-NLS-1$
-		TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-		while (OS.GetModuleFileName (0, buffer, buffer.length ()) == buffer.length ()) {
-			buffer = new TCHAR (0, buffer.length () + OS.MAX_PATH);
+		char [] buffer = new char [OS.MAX_PATH];
+		while (OS.GetModuleFileName (0, buffer, buffer.length) == buffer.length) {
+			buffer = new char [buffer.length + OS.MAX_PATH];
 		}
-		int length = buffer.strlen ();
-		EXE_PATH = new char [length + 1];
-		System.arraycopy (buffer.chars, 0, EXE_PATH, 0, length);
+		EXE_PATH = buffer;
 	}
 
 TaskBar (Display display, int style) {

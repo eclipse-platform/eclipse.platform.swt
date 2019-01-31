@@ -468,6 +468,7 @@ char [] fixMnemonic (String string, boolean spaces) {
 }
 
 char [] fixMnemonic (String string, boolean spaces, boolean removeAppended) {
+	// fixMnemonic must return a null-terminated array
 	char [] buffer = new char [string.length () + 1];
 	string.getChars (0, string.length (), buffer, 0);
 	int i = 0, j = 0;

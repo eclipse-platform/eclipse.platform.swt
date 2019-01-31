@@ -636,14 +636,14 @@ void showCertificate (Shell parent, long /*int*/ certificate) {
 	OS.MoveMemory (info, context.pCertInfo, CERT_INFO.sizeof);
 
 	int length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, null, 0);
-	TCHAR tchar = new TCHAR (0, length);
-	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, tchar.chars, length);
-	String issuer = tchar.toString (0, tchar.strlen ());
+	char [] buffer = new char [length];
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, buffer, length);
+	String issuer = new String (buffer, 0, length - 1);
 
 	length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, null, 0);
-	tchar = new TCHAR (0, length);
-	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, tchar.chars, length);
-	String subject = tchar.toString (0, tchar.strlen ());
+	buffer = new char [length];
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, buffer, length);
+	String subject = new String (buffer, 0, length - 1);
 
 	final String SEPARATOR_DATE = "/"; //$NON-NLS-1$
 	final String SEPARATOR_TIME = ":"; //$NON-NLS-1$

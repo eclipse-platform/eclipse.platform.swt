@@ -577,10 +577,10 @@ String getLastErrorText () {
 	int dwFlags = OS.FORMAT_MESSAGE_ALLOCATE_BUFFER | OS.FORMAT_MESSAGE_FROM_SYSTEM | OS.FORMAT_MESSAGE_IGNORE_INSERTS;
 	int length = OS.FormatMessage(dwFlags, 0, error, OS.LANG_USER_DEFAULT, buffer, 0, 0);
 	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
-	TCHAR buffer1 = new TCHAR(0, length);
+	char [] buffer1 = new char [length];
 	OS.MoveMemory(buffer1, buffer[0], length * TCHAR.sizeof);
 	if (buffer[0] != 0) OS.LocalFree(buffer[0]);
-	return buffer1.toString(0, length);
+	return new String(buffer1);
 }
 
 /**

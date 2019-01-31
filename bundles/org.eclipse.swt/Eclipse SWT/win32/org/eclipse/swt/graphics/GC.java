@@ -2090,11 +2090,8 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//	TCHAR buffer = new TCHAR (getCodePage(), string, false);
-	int length = string.length();
-	if (length == 0) return;
-	char[] buffer = new char [length];
-	string.getChars(0, length, buffer, 0);
+	if (string.isEmpty()) return;
+	char[] buffer = string.toCharArray();
 	long /*int*/ gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | (isTransparent ? 0 : BACKGROUND));
@@ -2109,7 +2106,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 	if ((data.style & SWT.MIRRORED) != 0) {
 		if (!isTransparent) {
 			size = new SIZE();
-			OS.GetTextExtentPoint32(handle, buffer, length, size);
+			OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
 			rect = new RECT ();
 			rect.left = x;
 			rect.right = x + size.cx;
@@ -2120,13 +2117,13 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		x--;
 	}
 	if (OS.GetROP2(handle) != OS.R2_XORPEN) {
-		OS.ExtTextOut(handle, x, y, flags, rect, buffer, length, null);
+		OS.ExtTextOut(handle, x, y, flags, rect, buffer, buffer.length, null);
 	} else {
 		int foreground = OS.GetTextColor(handle);
 		if (isTransparent) {
 			if (size == null) {
 				size = new SIZE();
-				OS.GetTextExtentPoint32(handle, buffer, length, size);
+				OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
 			}
 			int width = size.cx, height = size.cy;
 			long /*int*/ hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
@@ -2137,7 +2134,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 			OS.SetBkMode(memDC, OS.TRANSPARENT);
 			OS.SetTextColor(memDC, foreground);
 			OS.SelectObject(memDC, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-			OS.ExtTextOut(memDC, 0, 0, 0, null, buffer, length, null);
+			OS.ExtTextOut(memDC, 0, 0, 0, null, buffer, buffer.length, null);
 			OS.BitBlt(handle, x, y, width, height, memDC, 0, 0, OS.SRCINVERT);
 			OS.SelectObject(memDC, hOldBitmap);
 			OS.DeleteDC(memDC);
@@ -2145,7 +2142,7 @@ void drawStringInPixels (String string, int x, int y, boolean isTransparent) {
 		} else {
 			int background = OS.GetBkColor(handle);
 			OS.SetTextColor(handle, foreground ^ background);
-			OS.ExtTextOut(handle, x, y, flags, rect, buffer, length, null);
+			OS.ExtTextOut(handle, x, y, flags, rect, buffer, buffer.length, null);
 			OS.SetTextColor(handle, foreground);
 		}
 	}
@@ -2255,16 +2252,14 @@ public void drawText (String string, int x, int y, int flags) {
 void drawTextInPixels (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (string.length() == 0) return;
+	if (string.isEmpty()) return;
 	long /*int*/ gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | ((flags & SWT.DRAW_TRANSPARENT) != 0 ? 0 : BACKGROUND));
 		drawText(gdipGraphics, string, x, y, flags, null);
 		return;
 	}
-	TCHAR buffer = new TCHAR(getCodePage(), string, false);
-	int length = buffer.length();
-	if (length == 0) return;
+	char [] buffer = string.toCharArray();
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x6FFFFFF, 0x6FFFFFF);
 	int uFormat = OS.DT_LEFT;
@@ -2277,11 +2272,11 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 	checkGC(FONT | FOREGROUND_TEXT | BACKGROUND_TEXT);
 	int oldBkMode = OS.SetBkMode(handle, (flags & SWT.DRAW_TRANSPARENT) != 0 ? OS.TRANSPARENT : OS.OPAQUE);
 	if (OS.GetROP2(handle) != OS.R2_XORPEN) {
-		OS.DrawText(handle, buffer, length, rect, uFormat);
+		OS.DrawText(handle, buffer, buffer.length, rect, uFormat);
 	} else {
 		int foreground = OS.GetTextColor(handle);
 		if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-			OS.DrawText(handle, buffer, buffer.length(), rect, uFormat | OS.DT_CALCRECT);
+			OS.DrawText(handle, buffer, buffer.length, rect, uFormat | OS.DT_CALCRECT);
 			int width = rect.right - rect.left;
 			int height = rect.bottom - rect.top;
 			long /*int*/ hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
@@ -2293,7 +2288,7 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 			OS.SetTextColor(memDC, foreground);
 			OS.SelectObject(memDC, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 			OS.SetRect(rect, 0, 0, 0x7FFF, 0x7FFF);
-			OS.DrawText(memDC, buffer, length, rect, uFormat);
+			OS.DrawText(memDC, buffer, buffer.length, rect, uFormat);
 			OS.BitBlt(handle, x, y, width, height, memDC, 0, 0, OS.SRCINVERT);
 			OS.SelectObject(memDC, hOldBitmap);
 			OS.DeleteDC(memDC);
@@ -2301,7 +2296,7 @@ void drawTextInPixels (String string, int x, int y, int flags) {
 		} else {
 			int background = OS.GetBkColor(handle);
 			OS.SetTextColor(handle, foreground ^ background);
-			OS.DrawText(handle, buffer, length, rect, uFormat);
+			OS.DrawText(handle, buffer, buffer.length, rect, uFormat);
 			OS.SetTextColor(handle, foreground);
 		}
 	}
@@ -2328,8 +2323,7 @@ boolean useGDIP (long /*int*/ hdc, char[] buffer) {
 
 void drawText(long /*int*/ gdipGraphics, String string, int x, int y, int flags, Point size) {
 	int length = string.length();
-	char[] chars = new char [length];
-	string.getChars(0, length, chars, 0);
+	char[] chars = string.toCharArray();
 	long /*int*/ hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 	long /*int*/ hFont = data.hGDIFont;
 	if (hFont == 0 && data.font != null) hFont = data.font.handle;
@@ -2516,8 +2510,7 @@ void drawTextGDIP(long /*int*/ gdipGraphics, String string, int x, int y, int fl
 	char[] buffer;
 	int length = string.length();
 	if (length != 0) {
-		buffer = new char [length];
-		string.getChars(0, length, buffer, 0);
+		buffer = string.toCharArray();
 	} else {
 		if (draw) return;
 		buffer = new char[]{' '};
@@ -3375,10 +3368,6 @@ public void getClipping (Region region) {
 		}
 		OS.DeleteObject(sysRgn);
 	}
-}
-
-int getCodePage () {
-	return OS.CP_ACP;
 }
 
 long /*int*/ getFgBrush() {
@@ -4893,9 +4882,7 @@ Point stringExtentInPixels (String string) {
 		OS.GetTextExtentPoint32(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
-//		TCHAR buffer = new TCHAR (getCodePage(), string, false);
-		char[] buffer = new char [length];
-		string.getChars(0, length, buffer, 0);
+		char[] buffer = string.toCharArray();
 		OS.GetTextExtentPoint32(handle, buffer, length, size);
 		return new Point(size.cx, size.cy);
 	}
@@ -4975,12 +4962,12 @@ Point textExtentInPixels(String string, int flags) {
 		return new Point(0, size.cy);
 	}
 	RECT rect = new RECT();
-	TCHAR buffer = new TCHAR(getCodePage(), string, false);
+	char [] buffer = string.toCharArray();
 	int uFormat = OS.DT_LEFT | OS.DT_CALCRECT;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
 	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;
-	OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
+	OS.DrawText(handle, buffer, buffer.length, rect, uFormat);
 	return new Point(rect.right, rect.bottom);
 }
 

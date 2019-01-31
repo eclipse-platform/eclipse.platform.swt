@@ -369,13 +369,12 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	caretOffset = commitCount = 0;
 	long /*int*/ hwnd = parent.handle;
 	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
-	int codePage = parent.getCodePage ();
 	if (hIMC != 0) {
-		TCHAR buffer = null;
+		char [] buffer = null;
 		if ((lParam & OS.GCS_RESULTSTR) != 0) {
-			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, (TCHAR)null, 0);
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, (char [])null, 0);
 			if (length > 0) {
-				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
+				buffer = new char [length / TCHAR.sizeof];
 				OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, buffer, length);
 				if (startOffset == -1) {
 					Event event = new Event ();
@@ -387,7 +386,7 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 				event.detail = SWT.COMPOSITION_CHANGED;
 				event.start = startOffset;
 				event.end = startOffset + text.length();
-				event.text = text = buffer != null ? buffer.toString () : ""; //$NON-NLS-1$
+				event.text = text = buffer != null ? new String (buffer) : ""; //$NON-NLS-1$
 				commitCount = text.length ();
 				sendEvent (SWT.ImeComposition, event);
 				String chars = text;
@@ -412,12 +411,12 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 		}
 		buffer = null;
 		if ((lParam & OS.GCS_COMPSTR) != 0) {
-			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0);
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (char [])null, 0);
 			if (length > 0) {
-				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
+				buffer = new char [length / TCHAR.sizeof];
 				OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, buffer, length);
 				if ((lParam & OS.GCS_CURSORPOS) != 0) {
-					caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, (TCHAR) null, 0);
+					caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, (char [])null, 0);
 				}
 				int [] clauses = null;
 				if ((lParam & OS.GCS_COMPCLAUSE) != 0) {
@@ -509,7 +508,7 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 		event.detail = SWT.COMPOSITION_CHANGED;
 		event.start = startOffset;
 		event.end = end;
-		event.text = text = buffer != null ? buffer.toString () : ""; //$NON-NLS-1$
+		event.text = text = buffer != null ? new String (buffer) : ""; //$NON-NLS-1$
 		sendEvent (SWT.ImeComposition, event);
 		if (text.length() == 0) {
 			startOffset = -1;
@@ -581,7 +580,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	if (hIMC != 0) {
 		if (OS.ImmGetOpenStatus (hIMC)) {
-			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0) > 0) {
+			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (char [])null, 0) > 0) {
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_OFFSET;
 				event.setLocationInPixels(OS.GET_X_LPARAM (lParam), OS.GET_Y_LPARAM (lParam));

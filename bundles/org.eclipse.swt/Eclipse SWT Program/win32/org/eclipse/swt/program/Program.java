@@ -113,14 +113,13 @@ public static Program findProgram (String extension) {
  */
 public static String [] getExtensions () {
 	String [] extensions = new String [1024];
-	/* Use the character encoding for the default locale */
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
+	char [] lpName = new char [1024];
+	int [] lpcName = {lpName.length};
 	FILETIME ft = new FILETIME ();
 	int dwIndex = 0, count = 0;
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
-		String extension = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
+		String extension = new String (lpName, 0, lpcName [0]);
+		lpcName [0] = lpName.length;
 		if (extension.length () > 0 && extension.charAt (0) == '.') {
 			if (count == extensions.length) {
 				String [] newExtensions = new String [extensions.length + 1024];
@@ -165,19 +164,17 @@ static String getKeyValue (String string, boolean expand) {
 			length++;
 		}
 		if (length != 0) {
-			/* Use the character encoding for the default locale */
-			TCHAR lpData = new TCHAR (0, length);
+			char [] lpData = new char [length];
 			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
 				if (expand) {
 					length = OS.ExpandEnvironmentStrings (lpData, null, 0);
 					if (length != 0) {
-						TCHAR lpDst = new TCHAR (0, length);
+						char [] lpDst = new char [length];
 						OS.ExpandEnvironmentStrings (lpData, lpDst, length);
-						result = lpDst.toString (0, Math.max (0, length - 1));
+						result = new String (lpDst, 0, length - 1);
 					}
 				} else {
-					length = Math.max (0, lpData.length () - 1);
-					result = lpData.toString (0, length);
+					result = new String (lpData, 0, length - 1);
 				}
 			}
 		}
@@ -225,14 +222,13 @@ static Program getProgram (String key, String extension) {
  */
 public static Program [] getPrograms () {
 	LinkedHashSet<Program> programs = new LinkedHashSet<>(1024);
-	/* Use the character encoding for the default locale */
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
+	char [] lpName = new char [1024];
+	int [] lpcName = new int [] {lpName.length};
 	FILETIME ft = new FILETIME ();
 	int dwIndex = 0;
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
-		String path = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
+		String path = new String (lpName, 0, lpcName [0]);
+		lpcName [0] = lpName.length;
 		Program program = getProgram (path, null);
 		if (program != null) {
 			programs.add(program);

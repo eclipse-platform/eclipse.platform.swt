@@ -172,7 +172,7 @@ public void add (String string) {
 	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
-	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer.chars, true);
 }
 
 /**
@@ -213,7 +213,7 @@ public void add (String string, int index) {
 	if (result == OS.CB_ERRSPACE || result == OS.CB_ERR) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
-	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer.chars, true);
 }
 
 /**
@@ -357,10 +357,9 @@ void applyEditSegments () {
 	if (!hooks (SWT.Segments) && !filters (SWT.Segments) && (state & HAS_AUTO_DIRECTION) == 0) return;
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	int length = OS.GetWindowTextLength (hwndText);
-	int cp = getCodePage ();
-	TCHAR buffer = new TCHAR (cp, length + 1);
+	char [] buffer = new char [length + 1];
 	if (length > 0) OS.GetWindowText (hwndText, buffer, length + 1);
-	String string = buffer.toString (0, length);
+	String string = new String (buffer, 0, length);
 	/* Get segments */
 	segments = null;
 	Event event = getSegments (string);
@@ -400,10 +399,9 @@ void applyEditSegments () {
 	 * Sending OS.EM_REPLACESEL message instead.
 	 */
 	newChars [length] = 0;
-	buffer = new TCHAR (cp, newChars, false);
 	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
 	long /*int*/ undo = OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0);
-	OS.SendMessage (hwndText, OS.EM_REPLACESEL, undo, buffer);
+	OS.SendMessage (hwndText, OS.EM_REPLACESEL, undo, newChars);
 	/* Restore selection */
 	start [0] = translateOffset (start [0]);
 	end [0] = translateOffset (end [0]);
@@ -482,9 +480,9 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 		if (lockText && msg == OS.WM_SETTEXT) {
 			long /*int*/ hHeap = OS.GetProcessHeap ();
 			int length = OS.GetWindowTextLength (handle);
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			char [] buffer = new char [length + 1];
 			OS.GetWindowText (handle, buffer, length + 1);
-			int byteCount = buffer.length () * TCHAR.sizeof;
+			int byteCount = buffer.length * TCHAR.sizeof;
 			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			OS.MoveMemory (pszText, buffer, byteCount);
 			long /*int*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
@@ -502,9 +500,9 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 
 long /*int*/ CBTProc (long /*int*/ nCode, long /*int*/ wParam, long /*int*/ lParam) {
 	if ((int)/*64*/nCode == OS.HCBT_CREATEWND) {
-		TCHAR buffer = new TCHAR (0, 128);
-		OS.GetClassName (wParam, buffer, buffer.length ());
-		String className = buffer.toString (0, buffer.strlen ());
+		char [] buffer = new char [128];
+		int length = OS.GetClassName (wParam, buffer, buffer.length);
+		String className = new String (buffer, 0, length);
 		if (className.equals ("Edit") || className.equals ("EDIT")) { //$NON-NLS-1$  //$NON-NLS-2$
 			int bits = OS.GetWindowLong (wParam, OS.GWL_STYLE);
 			OS.SetWindowLong (wParam, OS.GWL_STYLE, bits & ~OS.ES_NOHIDESEL);
@@ -626,8 +624,7 @@ public void clearSelection () {
 		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 		if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
 		int length = OS.GetWindowTextLength (handle);
-		int cp = getCodePage ();
-		TCHAR buffer = new TCHAR (cp, length + 1);
+		char [] buffer = new char [length + 1];
 		OS.GetWindowText (handle, buffer, length + 1);
 		OS.DrawText (hDC, buffer, length, rect, flags);
 		width = Math.max (width, rect.right - rect.left);
@@ -637,7 +634,7 @@ public void clearSelection () {
 			for (int i=0; i<count; i++) {
 				length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 				if (length != OS.CB_ERR) {
-					if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
+					if (length + 1 > buffer.length) buffer = new char [length + 1];
 					int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
 					if (result != OS.CB_ERR) {
 						OS.DrawText (hDC, buffer, length, rect, flags);
@@ -950,7 +947,6 @@ Point getCaretLocationInPixels () {
 	if (caretPos == -1) {
 		caretPos = 0;
 		if (position >= OS.GetWindowTextLength (hwndText)) {
-			int cp = getCodePage ();
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position);
@@ -966,10 +962,10 @@ Point getCaretLocationInPixels () {
 			* handler from WM_CHAR.
 			*/
 			ignoreCharacter = ignoreModify = true;
-			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new char [] {' ', '\0'});
 			caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
 			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position + 1);
-			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new char [1]);
 			ignoreCharacter = ignoreModify = false;
 			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], start [0]);
 			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
@@ -1058,9 +1054,9 @@ public String getItem (int index) {
 	int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
 		if (hooks (SWT.Segments) || filters (SWT.Segments) || (state & HAS_AUTO_DIRECTION) != 0) return items [index];
-		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+		char [] buffer = new char [length + 1];
 		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
-		if (result != OS.CB_ERR) return buffer.toString (0, length);
+		if (result != OS.CB_ERR) return new String (buffer, 0, length);
 	}
 	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -1586,7 +1582,7 @@ public void remove (int index) {
 }
 
 void remove (int index, boolean notify) {
-	TCHAR buffer = null;
+	char [] buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 		if (length == OS.CB_ERR) {
@@ -1594,7 +1590,7 @@ void remove (int index, boolean notify) {
 			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			error (SWT.ERROR_INVALID_RANGE);
 		}
-		buffer = new TCHAR (getCodePage (), length + 1);
+		buffer = new char [length + 1];
 		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
 		if (result == OS.CB_ERR) {
 			int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
@@ -1657,14 +1653,13 @@ public void remove (int start, int end) {
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	}
-	int cp = getCodePage ();
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	for (int i=start; i<=end; i++) {
-		TCHAR buffer = null;
+		char [] buffer = null;
 		if ((style & SWT.H_SCROLL) != 0) {
 			int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, start, 0);
 			if (length == OS.CB_ERR) break;
-			buffer = new TCHAR (cp, length + 1);
+			buffer = new char [length + 1];
 			int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, start, buffer);
 			if (result == OS.CB_ERR) break;
 		}
@@ -2166,13 +2161,12 @@ void setScrollWidth () {
 	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	int cp = getCodePage ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	for (int i=0; i<count; i++) {
 		int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 		if (length != OS.CB_ERR) {
-			TCHAR buffer = new TCHAR (cp, length + 1);
+			char [] buffer = new char [length + 1];
 			int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
 			if (result != OS.CB_ERR) {
 				OS.DrawText (hDC, buffer, -1, rect, flags);
@@ -2223,7 +2217,7 @@ void setScrollWidth (int scrollWidth) {
 	if ((style & SWT.READ_ONLY) == 0) lockText = oldLockText;
 }
 
-void setScrollWidth (TCHAR buffer, boolean grow) {
+void setScrollWidth (char[] buffer, boolean grow) {
 	RECT rect = new RECT ();
 	long /*int*/ newFont, oldFont = 0;
 	long /*int*/ hDC = OS.GetDC (handle);
@@ -3133,9 +3127,9 @@ LRESULT wmClipboard (long /*int*/ hwndText, int msg, long /*int*/ wParam, long /
 				int [] newStart = new int [1], newEnd = new int [1];
 				OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
 				if (length != 0 && newStart [0] != newEnd [0]) {
-					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+					char [] buffer = new char [length + 1];
 					OS.GetWindowText (hwndText, buffer, length + 1);
-					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
+					newText = new String (buffer, newStart [0], newEnd [0] - newStart [0]);
 				} else {
 					newText = "";
 				}

@@ -752,8 +752,8 @@ public void setText (String string) {
 	* mnemonic characters.
 	*/
 	long /*int*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
+	char [] buffer = fixMnemonic (string);
+	int byteCount = buffer.length * TCHAR.sizeof;
 	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
 	lvColumn.mask |= OS.LVCF_TEXT;

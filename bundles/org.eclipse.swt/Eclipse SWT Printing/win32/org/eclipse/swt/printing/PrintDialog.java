@@ -463,25 +463,25 @@ public PrinterData open() {
 			ptr = OS.GlobalLock(hMem);
 			short[] offsets = new short[4];
 			OS.MoveMemory(offsets, ptr, 2 * offsets.length);
-			TCHAR buffer = new TCHAR(0, size);
+			char [] buffer = new char [size];
 			OS.MoveMemory(buffer, ptr, size);
 			OS.GlobalUnlock(hMem);
 
 			int driverOffset = offsets[0];
 			int i = 0;
 			while (driverOffset + i < size) {
-				if (buffer.tcharAt(driverOffset + i) == 0) break;
+				if (buffer [driverOffset + i] == 0) break;
 				i++;
 			}
-			String driver = buffer.toString(driverOffset, i);
+			String driver = new String(buffer, driverOffset, i);
 
 			int deviceOffset = offsets[1];
 			i = 0;
 			while (deviceOffset + i < size) {
-				if (buffer.tcharAt(deviceOffset + i) == 0) break;
+				if (buffer [deviceOffset + i] == 0) break;
 				i++;
 			}
-			String device = buffer.toString(deviceOffset, i);
+			String device = new String(buffer, deviceOffset, i);
 
 			/* Create PrinterData object and set fields from PRINTDLG */
 			data = new PrinterData(driver, device);

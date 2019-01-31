@@ -823,9 +823,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long /*int*/ wParam, long /*int
 							if ((string != null) && (string.length() > Item.TEXT_LIMIT)) {
 								string = string.substring(0, Item.TEXT_LIMIT - Item.ELLIPSIS.length()) + Item.ELLIPSIS;
 							}
-							TCHAR buffer = new TCHAR (getCodePage (), string, false);
-							if (!ignoreDrawForeground) OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-							OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);
+							char [] buffer = string.toCharArray ();
+							if (!ignoreDrawForeground) OS.DrawText (hDC, buffer, buffer.length, rect, flags);
+							OS.DrawText (hDC, buffer, buffer.length, rect, flags | OS.DT_CALCRECT);
 							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 							if (clrText != -1) clrText = OS.SetTextColor (hDC, clrText);
 							if (clrTextBk != -1) clrTextBk = OS.SetBkColor (hDC, clrTextBk);
@@ -7324,11 +7324,11 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					if (strings != null) string = strings [index];
 				}
 				if (string != null) {
-					TCHAR buffer = new TCHAR (getCodePage (), string, false);
-					int byteCount = Math.min (buffer.length (), lptvdi.cchTextMax - 1) * TCHAR.sizeof;
-					OS.MoveMemory (lptvdi.pszText, buffer, byteCount);
-					OS.MoveMemory (lptvdi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-					lptvdi.cchTextMax = Math.min (lptvdi.cchTextMax, string.length () + 1);
+					int length = Math.min (string.length() + 1, lptvdi.cchTextMax);
+					char [] buffer = new char [length];
+					string.getChars(0, length - 1, buffer, 0);
+					OS.MoveMemory (lptvdi.pszText, buffer, length * TCHAR.sizeof);
+					lptvdi.cchTextMax = length;
 				}
 			}
 			if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
@@ -7744,7 +7744,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
 							if ((columns[i].style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 							if ((columns[i].style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-							TCHAR buffer = new TCHAR (getCodePage (), columns[i].text, false);
+							char [] buffer = columns[i].text.toCharArray ();
 							OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
 							OS.SetTextColor(nmcd.hdc, getHeaderForegroundPixel());
 							RECT textRect = new RECT();
@@ -7752,7 +7752,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 							textRect.top = rects[i].top;
 							textRect.right = rects[i].right;
 							textRect.bottom = rects[i].bottom;
-							OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+							OS.DrawText (nmcd.hdc, buffer, buffer.length, textRect, flags);
 						}
 					}
 
@@ -8043,10 +8043,10 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long /*int*/ lParam) {
 									if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 									if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
 								}
-								TCHAR buffer = new TCHAR (getCodePage (), string, false);
+								char [] buffer = string.toCharArray ();
 								RECT textRect = new RECT ();
 								OS.SetRect (textRect, x, cellRect [0].top, cellRect [0].right, cellRect [0].bottom);
-								OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+								OS.DrawText (nmcd.hdc, buffer, buffer.length, textRect, flags);
 							}
 							gc.dispose ();
 							OS.RestoreDC (nmcd.hdc, nSavedDC);
