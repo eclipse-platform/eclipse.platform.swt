@@ -256,9 +256,9 @@ void _setVisible (boolean visible) {
 				if (ableToSetLocation()) {
 					// Create the GdkEvent manually as we need to control
 					// certain fields like the event window
-					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+					eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
 					GdkEventButton event = new GdkEventButton ();
-					event.type = GDK.GDK_BUTTON_PRESS;
+					event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
 					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
 					event.time = display.getLastEventTime();
 
@@ -309,9 +309,9 @@ void _setVisible (boolean visible) {
 					 */
 					eventPtr = GTK.gtk_get_current_event();
 					if (eventPtr == 0) {
-						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+						eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
 						GdkEventButton event = new GdkEventButton ();
-						event.type = GDK.GDK_BUTTON_PRESS;
+						event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
 						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
 						if (OS.isX11()) {
 							event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
@@ -1215,19 +1215,36 @@ void adjustParentWindowWayland (long /*int*/ eventPtr) {
 		}
 		OS.g_object_ref(deviceResource);
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		switch (eventType) {
-			case GDK.GDK_BUTTON_PRESS:
-				GdkEventButton eventButton = new GdkEventButton();
-				OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
-				eventButton.window = deviceResource;
-				OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
-				break;
-			case GDK.GDK_KEY_PRESS:
-				GdkEventKey eventKey = new GdkEventKey();
-				OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
-				eventKey.window = deviceResource;
-				OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
-				break;
+		if (GTK.GTK4) {
+			switch (eventType) {
+				case GDK.GDK4_BUTTON_PRESS:
+					GdkEventButton eventButton = new GdkEventButton();
+					OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
+					eventButton.window = deviceResource;
+					OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
+					break;
+				case GDK.GDK4_KEY_PRESS:
+					GdkEventKey eventKey = new GdkEventKey();
+					OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
+					eventKey.window = deviceResource;
+					OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
+					break;
+			}
+		} else {
+			switch (eventType) {
+				case GDK.GDK_BUTTON_PRESS:
+					GdkEventButton eventButton = new GdkEventButton();
+					OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
+					eventButton.window = deviceResource;
+					OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
+					break;
+				case GDK.GDK_KEY_PRESS:
+					GdkEventKey eventKey = new GdkEventKey();
+					OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
+					eventKey.window = deviceResource;
+					OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
+					break;
+			}
 		}
 	}
 	return;

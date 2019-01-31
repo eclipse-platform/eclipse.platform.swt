@@ -337,7 +337,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
 	GDK.gdk_event_get_coords(event, eventX, eventY);
-	if (eventButton[0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
+	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
+	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
+	if (eventButton[0] == 1 && (GTK3_BUTTON_PRESS || GTK4_BUTTON_PRESS)) {
 		if (focusIndex != -1) setFocus ();
 		int x = (int) eventX[0];
 		int y = (int) eventY[0];

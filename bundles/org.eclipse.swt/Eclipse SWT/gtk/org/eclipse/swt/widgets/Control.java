@@ -2711,47 +2711,82 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			display.sendPostExternalEventDispatchEvent();
 			if (dragging) return true;  //428852
 			if (eventPtr == 0) return dragOnTimeout;
-			switch (GDK.GDK_EVENT_TYPE (eventPtr)) {
-				case GDK.GDK_MOTION_NOTIFY: {
-					int [] state = new int[1];
-					GDK.gdk_event_get_state(eventPtr, state);
-					long /*int*/ gdkResource = gdk_event_get_surface_or_window(eventPtr);
-					double [] eventX = new double[1];
-					double [] eventY = new double[1];
-					GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
-					if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
-						if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
-							dragging = true;
+			if (GTK.GTK4) {
+				switch (GDK.GDK_EVENT_TYPE (eventPtr)) {
+					case GDK.GDK4_MOTION_NOTIFY: {
+						int [] state = new int[1];
+						GDK.gdk_event_get_state(eventPtr, state);
+						long /*int*/ gdkResource = gdk_event_get_surface_or_window(eventPtr);
+						double [] eventX = new double[1];
+						double [] eventY = new double[1];
+						GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+						if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
+							if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
+								dragging = true;
+								quit = true;
+							}
+						} else {
 							quit = true;
 						}
-					} else {
-						quit = true;
-					}
-					int [] newX = new int [1], newY = new int [1];
-					if (GTK.GTK4) {
+						int [] newX = new int [1], newY = new int [1];
 						display.gdk_surface_get_device_position (gdkResource, newX, newY, null);
-					} else {
-						display.gdk_window_get_device_position (gdkResource, newX, newY, null);
+						break;
 					}
-					break;
+					case GDK.GDK4_KEY_PRESS:
+					case GDK.GDK4_KEY_RELEASE: {
+						int [] eventKeyval = new int [1];
+						GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+						if (eventKeyval[0] == GDK.GDK_Escape) quit = true;
+						break;
+					}
+					case GDK.GDK4_BUTTON_RELEASE:
+					case GDK.GDK4_BUTTON_PRESS: {
+						GDK.gdk_event_put (eventPtr);
+						quit = true;
+						break;
+					}
+					default:
+						GTK.gtk_main_do_event (eventPtr);
 				}
-				case GDK.GDK_KEY_PRESS:
-				case GDK.GDK_KEY_RELEASE: {
-					int [] eventKeyval = new int [1];
-					GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
-					if (eventKeyval[0] == GDK.GDK_Escape) quit = true;
-					break;
+			} else {
+				switch (GDK.GDK_EVENT_TYPE (eventPtr)) {
+					case GDK.GDK_MOTION_NOTIFY: {
+						int [] state = new int[1];
+						GDK.gdk_event_get_state(eventPtr, state);
+						long /*int*/ gdkResource = gdk_event_get_surface_or_window(eventPtr);
+						double [] eventX = new double[1];
+						double [] eventY = new double[1];
+						GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+						if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
+							if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
+								dragging = true;
+								quit = true;
+							}
+						} else {
+							quit = true;
+						}
+						int [] newX = new int [1], newY = new int [1];
+						display.gdk_window_get_device_position (gdkResource, newX, newY, null);
+						break;
+					}
+					case GDK.GDK_KEY_PRESS:
+					case GDK.GDK_KEY_RELEASE: {
+						int [] eventKeyval = new int [1];
+						GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+						if (eventKeyval[0] == GDK.GDK_Escape) quit = true;
+						break;
+					}
+					case GDK.GDK_BUTTON_RELEASE:
+					case GDK.GDK_BUTTON_PRESS:
+					case GDK.GDK_2BUTTON_PRESS:
+					case GDK.GDK_3BUTTON_PRESS: {
+						GDK.gdk_event_put (eventPtr);
+						quit = true;
+						break;
+					}
+					default:
+						GTK.gtk_main_do_event (eventPtr);
 				}
-				case GDK.GDK_BUTTON_RELEASE:
-				case GDK.GDK_BUTTON_PRESS:
-				case GDK.GDK_2BUTTON_PRESS:
-				case GDK.GDK_3BUTTON_PRESS: {
-					GDK.gdk_event_put (eventPtr);
-					quit = true;
-					break;
-				}
-				default:
-					GTK.gtk_main_do_event (eventPtr);
 			}
 			GDK.gdk_event_free (eventPtr);
 		}
@@ -3433,7 +3468,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		shell.forceActive();
 	}
 	long /*int*/ result = 0;
-	if (eventType == GDK.GDK_BUTTON_PRESS) {
+	if ((GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS) || ((!GTK.GTK4) && eventType == GDK.GDK_BUTTON_PRESS)) {
 		boolean dragging = false;
 		display.clickCount = 1;
 		long /*int*/ defaultDisplay = GDK.gdk_display_get_default();
@@ -3599,66 +3634,65 @@ boolean checkSubwindow () {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	switch (eventType) {
-		case GDK.GDK_BUTTON_PRESS: {
-			if (widget != eventHandle ()) break;
-			/*
-			* Pop up the context menu in the event_after signal to allow
-			* the widget to process the button press.  This allows widgets
-			* such as GtkTreeView to select items before a menu is shown.
-			*/
-			if ((state & MENU) == 0) {
-				double [] eventRX = new double [1];
-				double [] eventRY = new double [1];
-				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
-				int [] eventButton = new int [1];
-				GDK.gdk_event_get_button(gdkEvent, eventButton);
-				if (eventButton[0] == 3) {
-					showMenu ((int) eventRX[0], (int) eventRY[0]);
-				}
+	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
+	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
+	boolean GTK4_FOCUS_CHANGE = GTK.GTK4 && eventType == GDK.GDK4_FOCUS_CHANGE;
+	boolean GTK3_FOCUS_CHANGE = !GTK.GTK4 && eventType == GDK.GDK_FOCUS_CHANGE;
+	if (GTK4_BUTTON_PRESS || GTK3_BUTTON_PRESS) {
+		if (widget != eventHandle ()) return 0;
+		/*
+		* Pop up the context menu in the event_after signal to allow
+		* the widget to process the button press.  This allows widgets
+		* such as GtkTreeView to select items before a menu is shown.
+		*/
+		if ((state & MENU) == 0) {
+			double [] eventRX = new double [1];
+			double [] eventRY = new double [1];
+			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (eventButton[0] == 3) {
+				showMenu ((int) eventRX[0], (int) eventRY[0]);
 			}
-			break;
 		}
-		case GDK.GDK_FOCUS_CHANGE: {
-			if (!isFocusHandle (widget)) break;
-			boolean [] focusIn = new boolean [1];
-			if (GTK.GTK4) {
-				GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
-			} else {
-				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-				focusIn[0] = gdkEventFocus.in != 0;
-			}
+	} else if (GTK4_FOCUS_CHANGE || GTK3_FOCUS_CHANGE) {
+		if (!isFocusHandle (widget)) return 0;
+		boolean [] focusIn = new boolean [1];
+		if (GTK.GTK4) {
+			GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+		} else {
+			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			focusIn[0] = gdkEventFocus.in != 0;
+		}
 
-			/*
-			 * Feature in GTK. The GTK combo box popup under some window managers
-			 * is implemented as a GTK_MENU.  When it pops up, it causes the combo
-			 * box to lose focus when focus is received for the menu.  The
-			 * fix is to check the current grab handle and see if it is a GTK_MENU
-			 * and ignore the focus event when the menu is both shown and hidden.
-			 *
-			 * NOTE: This code runs for all menus.
-			 */
-			Display display = this.display;
-			if (focusIn[0]) {
-				if (display.ignoreFocus) {
-					display.ignoreFocus = false;
-					break;
-				}
-			} else {
+		/*
+		 * Feature in GTK. The GTK combo box popup under some window managers
+		 * is implemented as a GTK_MENU.  When it pops up, it causes the combo
+		 * box to lose focus when focus is received for the menu.  The
+		 * fix is to check the current grab handle and see if it is a GTK_MENU
+		 * and ignore the focus event when the menu is both shown and hidden.
+		 *
+		 * NOTE: This code runs for all menus.
+		 */
+		Display display = this.display;
+		if (focusIn[0]) {
+			if (display.ignoreFocus) {
 				display.ignoreFocus = false;
-				long /*int*/ grabHandle = GTK.gtk_grab_get_current ();
-				if (grabHandle != 0) {
-					if (OS.G_OBJECT_TYPE (grabHandle) == GTK.GTK_TYPE_MENU ()) {
-						display.ignoreFocus = true;
-						break;
-					}
+				return 0;
+			}
+		} else {
+			display.ignoreFocus = false;
+			long /*int*/ grabHandle = GTK.gtk_grab_get_current ();
+			if (grabHandle != 0) {
+				if (OS.G_OBJECT_TYPE (grabHandle) == GTK.GTK_TYPE_MENU ()) {
+					display.ignoreFocus = true;
+					return 0;
 				}
 			}
-
-			sendFocusEvent (focusIn[0] ? SWT.FocusIn : SWT.FocusOut);
-			break;
 		}
+
+		sendFocusEvent (focusIn[0] ? SWT.FocusIn : SWT.FocusOut);
 	}
 	return 0;
 }

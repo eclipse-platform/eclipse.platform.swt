@@ -1329,7 +1329,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	int [] eventButton = new int [1];
 	GDK.gdk_event_get_button(event, eventButton);
 	int eventType = GDK.gdk_event_get_event_type(event);
-	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
+	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
+	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
+	if ((GTK3_BUTTON_PRESS || GTK4_BUTTON_PRESS) && eventButton[0] == 1) {
 		return gtk_button_press_event(widget, event, false);
 	}
 	return super.gtk_button_press_event (widget, event);
@@ -1535,51 +1537,50 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	* field.
 	*/
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	switch (eventType) {
-		case GDK.GDK_BUTTON_PRESS: {
-			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(gdkEvent, eventButton);
-			int eventTime = GDK.gdk_event_get_time(gdkEvent);
-			double [] eventRX = new double [1];
-			double [] eventRY = new double [1];
-			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
-			int [] eventState = new int [1];
-			GDK.gdk_event_get_state(gdkEvent, eventState);
-			if (eventButton[0] == 1) {
-				if (!sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
-					return 1;
-				}
-				if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
-					GTK.gtk_widget_grab_focus (entryHandle);
-				}
+	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
+	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
+	boolean GTK4_FOCUS_CHANGE = GTK.GTK4 && eventType == GDK.GDK4_FOCUS_CHANGE;
+	boolean GTK3_FOCUS_CHANGE = !GTK.GTK4 && eventType == GDK.GDK_FOCUS_CHANGE;
+	if (GTK4_BUTTON_PRESS || GTK3_BUTTON_PRESS) {
+		int [] eventButton = new int [1];
+		GDK.gdk_event_get_button(gdkEvent, eventButton);
+		int eventTime = GDK.gdk_event_get_time(gdkEvent);
+		double [] eventRX = new double [1];
+		double [] eventRY = new double [1];
+		GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+		int [] eventState = new int [1];
+		GDK.gdk_event_get_state(gdkEvent, eventState);
+		if (eventButton[0] == 1) {
+			if (!sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
+				return 1;
 			}
-			break;
+			if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
+				GTK.gtk_widget_grab_focus (entryHandle);
+			}
 		}
-		case GDK.GDK_FOCUS_CHANGE: {
-			if ((style & SWT.READ_ONLY) == 0) {
-				boolean [] focusIn = new boolean [1];
-				if (GTK.GTK4) {
-					GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+	} else if (GTK4_FOCUS_CHANGE || GTK3_FOCUS_CHANGE) {
+		if ((style & SWT.READ_ONLY) == 0) {
+			boolean [] focusIn = new boolean [1];
+			if (GTK.GTK4) {
+				GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+			} else {
+				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+				focusIn[0] = gdkEventFocus.in != 0;
+			}
+			if (focusIn[0]) {
+				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+					GTK.gtk_widget_set_focus_on_click(handle, false);
 				} else {
-					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-					focusIn[0] = gdkEventFocus.in != 0;
+					GTK.gtk_combo_box_set_focus_on_click (handle, false);
 				}
-				if (focusIn[0]) {
-					if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-						GTK.gtk_widget_set_focus_on_click(handle, false);
-					} else {
-						GTK.gtk_combo_box_set_focus_on_click (handle, false);
-					}
+			} else {
+				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+					GTK.gtk_widget_set_focus_on_click(handle, true);
 				} else {
-					if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-						GTK.gtk_widget_set_focus_on_click(handle, true);
-					} else {
-						GTK.gtk_combo_box_set_focus_on_click (handle, true);
-					}
+					GTK.gtk_combo_box_set_focus_on_click (handle, true);
 				}
 			}
-			break;
 		}
 	}
 	return super.gtk_event_after(widget, gdkEvent);
