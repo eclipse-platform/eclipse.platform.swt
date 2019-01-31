@@ -478,7 +478,7 @@ boolean grab () {
 @Override
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	Control.mouseDown = false;
-	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_BUTTON_RELEASE : GDK.GDK_BUTTON_RELEASE, widget, event);
+	return gtk_mouse (GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
 @Override
@@ -625,7 +625,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 		grabbed = grab ();
 		lastCursor = cursor;
 	}
-	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_MOTION_NOTIFY : GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
+	return gtk_mouse (GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
 long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
@@ -736,11 +736,7 @@ long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPt
 		oldX = newX [0];
 		oldY = newY [0];
 	}
-	if (GTK.GTK4) {
-		tracking = eventType != GDK.GDK4_BUTTON_RELEASE;
-	} else {
-		tracking = eventType != GDK.GDK_BUTTON_RELEASE;
-	}
+	tracking = eventType != GDK.GDK_BUTTON_RELEASE;
 	return 0;
 }
 
@@ -907,44 +903,24 @@ private void setTrackerBackground(boolean opaque) {
 boolean processEvent (long /*int*/ eventPtr) {
 	int eventType = GDK.gdk_event_get_event_type(eventPtr);
 	long /*int*/ widget = GTK.gtk_get_event_widget (eventPtr);
-	if (GTK.GTK4) {
-		switch (eventType) {
-			case GDK.GDK4_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
-			case GDK.GDK4_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
-			case GDK.GDK4_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
-			case GDK.GDK4_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
-			case GDK.GDK4_BUTTON_PRESS:
-			case GDK.GDK_ENTER_NOTIFY:
-			case GDK.GDK_LEAVE_NOTIFY:
-				/* Do not dispatch these */
-				break;
-			case GDK.GDK4_EXPOSE:
-				update ();
-				GTK.gtk_main_do_event (eventPtr);
-				break;
-			default:
-				return true;
-		}
-	} else {
-		switch (eventType) {
-			case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
-			case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
-			case GDK.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
-			case GDK.GDK_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
-			case GDK.GDK_BUTTON_PRESS:
-			case GDK.GDK_2BUTTON_PRESS:
-			case GDK.GDK_3BUTTON_PRESS:
-			case GDK.GDK_ENTER_NOTIFY:
-			case GDK.GDK_LEAVE_NOTIFY:
-				/* Do not dispatch these */
-				break;
-			case GDK.GDK_EXPOSE:
-				update ();
-				GTK.gtk_main_do_event (eventPtr);
-				break;
-			default:
-				return true;
-		}
+	switch (eventType) {
+		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
+		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_PRESS: gtk_key_press_event (widget, eventPtr); break;
+		case GDK.GDK_KEY_RELEASE: gtk_key_release_event (widget, eventPtr); break;
+		case GDK.GDK_BUTTON_PRESS:
+		case GDK.GDK_2BUTTON_PRESS:
+		case GDK.GDK_3BUTTON_PRESS:
+		case GDK.GDK_ENTER_NOTIFY:
+		case GDK.GDK_LEAVE_NOTIFY:
+			/* Do not dispatch these */
+			break;
+		case GDK.GDK_EXPOSE:
+			update ();
+			GTK.gtk_main_do_event (eventPtr);
+			break;
+		default:
+			return true;
 	}
 	return false;
 }

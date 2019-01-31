@@ -501,62 +501,32 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 		if (eventPtr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
 			long /*int*/ topHandle = topHandle();
-			if (GTK.GTK4) {
-				switch (eventType) {
-					case GDK.GDK4_KEY_RELEASE: //Fall Through..
-					case GDK.GDK4_BUTTON_PRESS:
-					case GDK.GDK4_BUTTON_RELEASE: {
-						boolean isArrow = false;
-						if (widget == arrowHandle) {
-							isArrow = true;
-							topHandle = widget;
-							/*
-							 * Feature in GTK. ArrowButton stays in toggled state if there is no popup menu.
-							 * It is required to set back the state of arrow to normal state after it is clicked.
-							 */
-							OS.g_signal_handlers_block_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-							GTK.gtk_toggle_button_set_active(widget, false);
-							OS.g_signal_handlers_unblock_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-						}
-						if (isArrow) {
-							event.detail = SWT.ARROW;
-							GtkAllocation allocation = new GtkAllocation ();
-							GTK.gtk_widget_get_allocation (topHandle, allocation);
-							event.x = DPIUtil.autoScaleDown(allocation.x);
-							if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
-							event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
-						}
-						break;
+			switch (eventType) {
+				case GDK.GDK_KEY_RELEASE: //Fall Through..
+				case GDK.GDK_BUTTON_PRESS:
+				case GDK.GDK_2BUTTON_PRESS:
+				case GDK.GDK_BUTTON_RELEASE: {
+					boolean isArrow = false;
+					if (widget == arrowHandle) {
+						isArrow = true;
+						topHandle = widget;
+						/*
+						 * Feature in GTK. ArrowButton stays in toggled state if there is no popup menu.
+						 * It is required to set back the state of arrow to normal state after it is clicked.
+						 */
+						OS.g_signal_handlers_block_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
+						GTK.gtk_toggle_button_set_active(widget, false);
+						OS.g_signal_handlers_unblock_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 					}
-				}
-			} else {
-				switch (eventType) {
-					case GDK.GDK_KEY_RELEASE: //Fall Through..
-					case GDK.GDK_BUTTON_PRESS:
-					case GDK.GDK_2BUTTON_PRESS:
-					case GDK.GDK_BUTTON_RELEASE: {
-						boolean isArrow = false;
-						if (widget == arrowHandle) {
-							isArrow = true;
-							topHandle = widget;
-							/*
-							 * Feature in GTK. ArrowButton stays in toggled state if there is no popup menu.
-							 * It is required to set back the state of arrow to normal state after it is clicked.
-							 */
-							OS.g_signal_handlers_block_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-							GTK.gtk_toggle_button_set_active(widget, false);
-							OS.g_signal_handlers_unblock_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-						}
-						if (isArrow) {
-							event.detail = SWT.ARROW;
-							GtkAllocation allocation = new GtkAllocation ();
-							GTK.gtk_widget_get_allocation (topHandle, allocation);
-							event.x = DPIUtil.autoScaleDown(allocation.x);
-							if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
-							event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
-						}
-						break;
+					if (isArrow) {
+						event.detail = SWT.ARROW;
+						GtkAllocation allocation = new GtkAllocation ();
+						GTK.gtk_widget_get_allocation (topHandle, allocation);
+						event.x = DPIUtil.autoScaleDown(allocation.x);
+						if ((style & SWT.MIRRORED) != 0) event.x = DPIUtil.autoScaleDown (parent.getClientWidth ()- allocation.width) - event.x;
+						event.y = DPIUtil.autoScaleDown(allocation.y + allocation.height);
 					}
+					break;
 				}
 			}
 			gdk_event_free (eventPtr);
@@ -685,16 +655,17 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
-	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
-	if (GTK4_BUTTON_PRESS || GTK3_BUTTON_PRESS) {
-		int [] eventButton = new int [1];
-		GDK.gdk_event_get_button(gdkEvent, eventButton);
-		if (eventButton[0] == 3) {
-			double [] eventRX = new double [1];
-			double [] eventRY = new double [1];
-			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
-			parent.showMenu ((int) eventRX[0], (int) eventRY[0]);
+	switch (eventType) {
+		case GDK.GDK_BUTTON_PRESS: {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (eventButton[0] == 3) {
+				double [] eventRX = new double [1];
+				double [] eventRY = new double [1];
+				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+				parent.showMenu ((int) eventRX[0], (int) eventRY[0]);
+			}
+			break;
 		}
 	}
 	return 0;

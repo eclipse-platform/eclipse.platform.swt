@@ -353,15 +353,16 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 		GDK.gdk_event_get_button(eventPtr, eventButton);
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		int eventTime = GDK.gdk_event_get_time(eventPtr);
-		boolean GTK4_BUTTON_RELEASE = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_RELEASE;
-		boolean GTK3_BUTTON_RELEASE = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_RELEASE;
-		if (GTK4_BUTTON_RELEASE || GTK3_BUTTON_RELEASE) {
-			int clickTime = display.getDoubleClickTime ();
-			if (lastButton == eventButton[0] && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-				doubleClick = true;
+		switch (eventType) {
+			case GDK.GDK_BUTTON_RELEASE: {
+				int clickTime = display.getDoubleClickTime ();
+				if (lastButton == eventButton[0] && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+					doubleClick = true;
+				}
+				lastTime = eventTime == 0 ? 1: eventTime;
+				lastButton = eventButton[0];
+				break;
 			}
-			lastTime = eventTime == 0 ? 1: eventTime;
-			lastButton = eventButton[0];
 		}
 		gdk_event_free (eventPtr);
 	}
@@ -372,16 +373,17 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
-	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
-	if (GTK4_BUTTON_PRESS || GTK3_BUTTON_PRESS) {
-		int [] eventButton = new int [1];
-		GDK.gdk_event_get_button(gdkEvent, eventButton);
-		if (eventButton[0] == 3) {
-			double [] eventRX = new double [1];
-			double [] eventRY = new double [1];
-			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
-			parent.showMenu ((int) eventRX[0], (int) eventRY[0]);
+	switch (eventType) {
+		case GDK.GDK_BUTTON_PRESS: {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (eventButton[0] == 3) {
+				double [] eventRX = new double [1];
+				double [] eventRY = new double [1];
+				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+				parent.showMenu ((int) eventRX[0], (int) eventRY[0]);
+			}
+			break;
 		}
 	}
 	return 0;

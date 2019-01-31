@@ -1536,30 +1536,16 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 	long /*int*/ ptr = GTK.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
-		if (GTK.GTK4) {
-			switch (currentEventType) {
-				case GDK.GDK4_KEY_PRESS:
-				case GDK.GDK4_KEY_RELEASE:
-				case GDK.GDK4_BUTTON_PRESS:
-				case GDK.GDK4_BUTTON_RELEASE: {
-					int [] state = new int [1];
-					GDK.gdk_event_get_state (ptr, state);
-					setInputState (event, state [0]);
-					break;
-				}
-			}
-		} else {
-			switch (currentEventType) {
-				case GDK.GDK_KEY_PRESS:
-				case GDK.GDK_KEY_RELEASE:
-				case GDK.GDK_BUTTON_PRESS:
-				case GDK.GDK_2BUTTON_PRESS:
-				case GDK.GDK_BUTTON_RELEASE: {
-					int [] state = new int [1];
-					GDK.gdk_event_get_state (ptr, state);
-					setInputState (event, state [0]);
-					break;
-				}
+		switch (currentEventType) {
+			case GDK.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_RELEASE:
+			case GDK.GDK_BUTTON_PRESS:
+			case GDK.GDK_2BUTTON_PRESS:
+			case GDK.GDK_BUTTON_RELEASE: {
+				int [] state = new int [1];
+				GDK.gdk_event_get_state (ptr, state);
+				setInputState (event, state [0]);
+				break;
 			}
 		}
 		gdk_event_free (ptr);

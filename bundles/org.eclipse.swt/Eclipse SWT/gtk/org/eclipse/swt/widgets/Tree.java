@@ -2075,10 +2075,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	 * in GTK in the case that additional items aren't being added (CTRL_MASK or SHIFT_MASK) and the item being dragged is already
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
 	 */
-	boolean GTK4_BUTTON_PRESS = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_PRESS;
-	boolean GTK3_BUTTON_PRESS = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_PRESS;
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			!OS.isX11() && (GTK3_BUTTON_PRESS || GTK4_BUTTON_PRESS)) { // Wayland
+			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 	// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long /*int*/ nextEvent = GDK.gdk_event_peek ();
 		if (nextEvent == 0) {
@@ -2116,7 +2114,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	* run the default handler when the item is already part of the current selection.
 	*/
 	int button = eventButton[0];
-	if (button == 3 && (GTK3_BUTTON_PRESS || GTK4_BUTTON_PRESS)) {
+	if (button == 3 && eventType == GDK.GDK_BUTTON_PRESS) {
 		long /*int*/ [] path = new long /*int*/ [1];
 		if (GTK.gtk_tree_view_get_path_at_pos (handle, (int)eventX[0], (int)eventY[0], path, null, null, null)) {
 			if (path [0] != 0) {

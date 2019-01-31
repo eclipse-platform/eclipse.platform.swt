@@ -919,9 +919,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if (GTK.GTK4) {
 		// Replace configure-event with generic event handler
-		if (eventHandle() == 0) {
-			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-		}
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
@@ -2676,25 +2674,15 @@ public void setVisible (boolean visible) {
 		}
 		if (isDisposed ()) return;
 		if (!(OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
-			if (GTK.GTK4) {
-				display.dispatchEvents = new int [] {
-						GDK.GDK_EXPOSE,
-						GDK.GDK_FOCUS_CHANGE,
-						GDK.GDK_CONFIGURE,
-						GDK.GDK_MAP,
-						GDK.GDK_UNMAP,
-						GDK.GDK_NO_EXPOSE,
-						GDK.GDK_WINDOW_STATE
-					};
-			} else {
-				display.dispatchEvents = new int [] {
-						GDK.GDK4_EXPOSE,
-						GDK.GDK4_FOCUS_CHANGE,
-						GDK.GDK4_CONFIGURE,
-						GDK.GDK4_MAP,
-						GDK.GDK4_UNMAP,
-					};
-			}
+			display.dispatchEvents = new int [] {
+				GDK.GDK_EXPOSE,
+				GDK.GDK_FOCUS_CHANGE,
+				GDK.GDK_CONFIGURE,
+				GDK.GDK_MAP,
+				GDK.GDK_UNMAP,
+				GDK.GDK_NO_EXPOSE,
+				GDK.GDK_WINDOW_STATE
+			};
 			Display display = this.display;
 			display.putGdkEvents();
 			boolean iconic = false;

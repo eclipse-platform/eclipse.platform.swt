@@ -567,21 +567,22 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 @Override
 long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
-	boolean GTK4_BUTTON_RELEASE = GTK.GTK4 && eventType == GDK.GDK4_BUTTON_RELEASE;
-	boolean GTK3_BUTTON_RELEASE = !GTK.GTK4 && eventType == GDK.GDK_BUTTON_RELEASE;
-	if (GTK4_BUTTON_RELEASE || GTK3_BUTTON_RELEASE) {
-		int [] eventButton = new int [1];
-		GDK.gdk_event_get_button(gdkEvent, eventButton);
-		if (eventButton[0] == 1 && detail == GTK.GTK_SCROLL_JUMP) {
-			if (!dragSent) {
-				Event event = new Event ();
-				event.detail = SWT.DRAG;
-				sendSelectionEvent (SWT.Selection, event, false);
+	switch (eventType) {
+		case GDK.GDK_BUTTON_RELEASE: {
+			int [] eventButton = new int [1];
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (eventButton[0] == 1 && detail == GTK.GTK_SCROLL_JUMP) {
+				if (!dragSent) {
+					Event event = new Event ();
+					event.detail = SWT.DRAG;
+					sendSelectionEvent (SWT.Selection, event, false);
+				}
+				sendSelectionEvent (SWT.Selection);
 			}
-			sendSelectionEvent (SWT.Selection);
+			detail = GTK.GTK_SCROLL_NONE;
+			dragSent = false;
+			break;
 		}
-		detail = GTK.GTK_SCROLL_NONE;
-		dragSent = false;
 	}
 	return super.gtk_event_after (widget, gdkEvent);
 }
