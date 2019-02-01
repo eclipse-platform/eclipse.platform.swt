@@ -871,8 +871,6 @@ public class CTabFolderRenderer {
 		int y = closeRect.y + Math.max(1, (closeRect.height-9)/2);
 		y += parent.onBottom ? -1 : 1;
 
-		int aa = gc.getAntialias();
-		gc.setAntialias(SWT.ON);
 		Color closeBorder = display.getSystemColor(BUTTON_BORDER);
 		switch (closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND)) {
 			case SWT.NONE: {
@@ -914,7 +912,6 @@ public class CTabFolderRenderer {
 				break;
 			}
 		}
-		gc.setAntialias(aa);
 	}
 
 	void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
