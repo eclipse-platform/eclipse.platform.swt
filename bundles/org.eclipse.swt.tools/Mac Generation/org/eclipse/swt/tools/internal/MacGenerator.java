@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2017 IBM Corporation and others.
+ * Copyright (c) 2008, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Thomas Wolf <thomas.wolf@paranor.ch> [534923] Annotate sends "fixedargs=2"
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
@@ -1742,7 +1743,7 @@ void generateSends(boolean superCall) {
 			outln();
 			out(" *");
 		}
-		out(" @method flags=cast");
+		out(" @method flags=cast,fixedargs=2");
 		if (tags.size() > 0) outln();
 		for (String tag : tags) {
 			out(tag);

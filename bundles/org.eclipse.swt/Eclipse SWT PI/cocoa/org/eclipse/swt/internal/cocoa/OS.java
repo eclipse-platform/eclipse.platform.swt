@@ -3802,521 +3802,521 @@ public static final native long /*int*/ NSTemporaryDirectory();
 /** Super Sends */
 
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSendSuper_bool(objc_super superId, long /*int*/ sel, NSRange arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSendSuper_bool(objc_super superId, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, NSPoint arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, NSRect arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, NSRect arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, NSSize arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, boolean arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, boolean arg0, NSRect arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, long /*int*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, NSRect arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, boolean arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, boolean arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSendSuper(objc_super superId, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, long /*int*/ sel, NSRect arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, long /*int*/ sel, NSRect arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, long /*int*/ sel, long /*int*/ arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, long /*int*/ sel, long /*int*/ arg0, NSRect arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, long /*int*/ sel, NSRect arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, long /*int*/ sel, boolean arg0);
 
 /** Sends */
 
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, NSPoint arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, NSPoint arg0, NSRect arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, NSRange arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, NSRect arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSSize arg1, boolean arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native boolean objc_msgSend_bool(long /*int*/ id, long /*int*/ sel, short arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native double objc_msgSend_fpret(long /*int*/ id, long /*int*/ sel);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native double objc_msgSend_fpret(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native double objc_msgSend_fpret(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native float objc_msgSend_floatret(long /*int*/ id, long /*int*/ sel);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSAffineTransformStruct arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  * @param arg2 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, NSPoint arg1, NSPoint arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, NSPoint arg1, long /*int*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, NSRect arg1, long /*int*/ arg2, double /*float*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, double /*float*/ arg1, double /*float*/ arg2, double /*float*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, double /*float*/ arg1, double /*float*/ arg2, double /*float*/ arg3, boolean arg4);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSPoint arg0, long /*int*/ arg1, double[] /*float[]*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRange arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRange arg0, NSPoint arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRange arg0, NSRange arg1, long /*int*/ arg2, long[] /*int[]*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRange arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRange arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, byte[] arg5);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSPoint arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  * @param arg2 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSRange arg1, NSRect arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSRect arg1, long /*int*/ arg2, double /*float*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, NSSize arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, boolean arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, boolean arg1, boolean arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, double /*float*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, double /*float*/ arg1, double /*float*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1, boolean arg2, long /*int*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1, long /*int*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1, long /*int*/ arg2, boolean arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1, long /*int*/ arg2, boolean arg3, long /*int*/ arg4);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, NSSize arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, boolean arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, boolean arg0, NSRect arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, boolean arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, byte[] arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, byte[] arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, char[] arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, char[] arg0, NSRange arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, char[] arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, boolean arg4);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double /*float*/ arg0, double /*float*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double /*float*/ arg0, double /*float*/ arg1, double /*float*/ arg2, double /*float*/ arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double /*float*/ arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double[] /*float[]*/ arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, double[] /*float[]*/ arg0, long /*int*/ arg1, double /*float*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  * @param arg2 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, NSSize arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5, boolean arg6);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, long /*int*/ arg2);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, long /*int*/ arg2, double arg3, long /*int*/ arg4, long /*int*/ arg5, long /*int*/ arg6, long /*int*/ arg7, long /*int*/ arg8);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, long /*int*/ arg2, double arg3, long /*int*/ arg4, long /*int*/ arg5, short arg6, long /*int*/ arg7, long /*int*/ arg8);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSRange arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSRect arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, boolean arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, double /*float*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg2 flags=struct
  */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, NSRange arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, boolean arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, double arg2, long /*int*/ arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, boolean arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, double /*float*/ arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, boolean arg5, boolean arg6, long /*int*/ arg7, long /*int*/ arg8, long /*int*/ arg9);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, boolean arg5, boolean arg6, long /*int*/ arg7, long /*int*/ arg8, long /*int*/ arg9, long /*int*/ arg10);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5, long /*int*/ arg6);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long[] /*int[]*/ arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, long[] /*int[]*/ arg0, int arg1, int arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long /*int*/ objc_msgSend(long /*int*/ id, long /*int*/ sel, int[] arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native int objc_msgSend(int id, int sel, float arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long objc_msgSend(long id, long sel, int arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long objc_msgSend(long id, long sel, int[] arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native long objc_msgSend(long id, long sel, long[] arg0, long arg1, long arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSAffineTransformStruct result, long /*int*/ id, long /*int*/ sel);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSPoint result, long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSPoint result, long /*int*/ id, long /*int*/ sel, NSPoint arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSPoint result, long /*int*/ id, long /*int*/ sel, NSPoint arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSPoint result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRange result, long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRange result, long /*int*/ id, long /*int*/ sel, NSRange arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRange result, long /*int*/ id, long /*int*/ sel, NSRect arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRange result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, NSRange arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, NSRect arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, NSSize arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg1 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSRect arg1, long /*int*/ arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSRect result, long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, boolean arg2);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSRect arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSSize arg0);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSSize arg0, boolean arg1, boolean arg2, long /*int*/ arg3);
 /**
- * @method flags=cast
+ * @method flags=cast,fixedargs=2
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, NSSize arg0, long /*int*/ arg1);
-/** @method flags=cast */
+/** @method flags=cast,fixedargs=2 */
 public static final native void objc_msgSend_stret(NSSize result, long /*int*/ id, long /*int*/ sel, boolean arg0);
 
 /** Sizeof natives */
