@@ -1641,6 +1641,14 @@ void textChanging(TextChangingEvent event) {
 		lineSizes = new LineSizeInfo[lineCount];
 		reset(0, lineCount);
 	} else {
+		int startIndex = startLine + replaceLineCount + 1;
+		int endIndex = startLine + newLineCount + 1;
+		if(lineCount < startLine) {
+			SWT.error(SWT.ERROR_INVALID_RANGE, null, "bug 478020: lineCount < startLine: " + lineCount + ":" + startLine);
+		}
+		if(lineCount < startIndex) {
+			SWT.error(SWT.ERROR_INVALID_RANGE, null, "bug 478020: lineCount < startIndex: " + lineCount + ":" + startIndex);
+		}
 		int delta = newLineCount - replaceLineCount;
 		if (lineCount + delta > lineSizes.length) {
 			LineSizeInfo[] newLineSizes = new LineSizeInfo[lineCount + delta + GROW];
@@ -1654,8 +1662,6 @@ void textChanging(TextChangingEvent event) {
 				lines = newLines;
 			}
 		}
-		int startIndex = startLine + replaceLineCount + 1;
-		int endIndex = startLine + newLineCount + 1;
 		System.arraycopy(lineSizes, startIndex, lineSizes, endIndex, lineCount - startIndex);
 		for (int i = startLine; i < endIndex; i++) {
 			lineSizes[i] = null;
