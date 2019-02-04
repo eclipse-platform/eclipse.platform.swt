@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2919,7 +2919,15 @@ void fillPolygonInPixels (int[] pointArray) {
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+		/*
+		 * GC.fillPolygon method paints at wrong coordinates when GDI+ is used, the
+		 * difference is marginal, hence applying the transformation with additional
+		 * 0.5f pixel correction to avoid the issue seen in bug 139791
+		 */
+		float offsetCorrection = 0.5f;
+		Gdip.Graphics_TranslateTransform(data.gdipGraphics, data.gdipXOffset + offsetCorrection, data.gdipYOffset + offsetCorrection, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_FillPolygon(data.gdipGraphics, data.gdipBrush, pointArray, pointArray.length / 2, mode);
+		Gdip.Graphics_TranslateTransform(data.gdipGraphics, -(data.gdipXOffset + offsetCorrection), -(data.gdipYOffset + offsetCorrection), Gdip.MatrixOrderPrepend);
 		return;
 	}
 	if ((data.style & SWT.MIRRORED) != 0) {
@@ -2933,6 +2941,7 @@ void fillPolygonInPixels (int[] pointArray) {
 			pointArray[i]++;
 		}
 	}
+
 }
 
 /**
