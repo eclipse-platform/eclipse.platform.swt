@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -275,7 +275,7 @@ boolean generateGetParameter(JNIMethod method, JNIParameter param, boolean criti
 		// Keep diagnostic code (commented-out) below for diagnosing these.
 		output("if (!arg");
 		output(iStr);
-		output(") goto fail;\n");
+		outputln(") goto fail;");
 		//output(") {fprintf(stderr,\"fail: method=");
 		//output(method.getName());
 		//output(", arg");
