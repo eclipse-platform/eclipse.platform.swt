@@ -100,7 +100,7 @@ public class Tree extends Composite {
 	double cachedAdjustment, currentAdjustment;
 	Color headerBackground, headerForeground;
 	String headerCSSBackground, headerCSSForeground;
-	boolean boundsChangedSinceLastDraw;
+	boolean boundsChangedSinceLastDraw, wasScrolled;
 	boolean rowActivated;
 
 	static final int ID_COLUMN = 0;
@@ -2394,6 +2394,13 @@ long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int
 }
 
 @Override
+long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_scroll_event(widget, eventPtr);
+	if (!wasScrolled) wasScrolled = true;
+	return result;
+}
+
+@Override
 long /*int*/ gtk_start_interactive_search(long /*int*/ widget) {
 	if (!searchEnabled()) {
 		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search);
@@ -2656,6 +2663,23 @@ long /*int*/ paintWindow () {
 	GTK.gtk_widget_realize (handle);
 	// TODO: this function has been removed on GTK4
 	return GTK.gtk_tree_view_get_bin_window (handle);
+}
+
+@Override
+void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
+	/*
+	 * Sometimes Tree/Table headers need to be re-drawn, as some of the
+	 * "noChildDrawing" widgets might still be partially drawn.
+	 */
+	super.propagateDraw(container, cairo);
+	if (headerVisible && noChildDrawing != null && wasScrolled) {
+		for (TreeColumn column : columns) {
+			if (column != null) {
+				GTK.gtk_widget_queue_draw(column.buttonHandle);
+			}
+		}
+		wasScrolled = false;
+	}
 }
 
 void recreateRenderers () {

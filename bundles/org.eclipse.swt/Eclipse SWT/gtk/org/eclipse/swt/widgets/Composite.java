@@ -1459,12 +1459,6 @@ void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
 			temp = OS.g_list_next (temp);
 		}
 		OS.g_list_free (list);
-		/*
-		 * Sometimes the sibling widget needs a draw event to remove any mis-drawn
-		 * widgets still remaining -- usually only happens when scrolling with the mouse
-		 * wheel. See bug 535978.
-		 */
-		if (noChildDrawing != null) GTK.gtk_widget_queue_draw(handle);
 	}
 }
 
