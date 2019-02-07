@@ -478,9 +478,9 @@ private void createHandleForDateTime () {
 	}
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	GTK.gtk_spin_button_set_numeric (textEntryHandle, false);
-	GTK.gtk_container_add (fixedHandle, textEntryHandle);
-	GTK.gtk_spin_button_set_wrap (textEntryHandle, (style & SWT.WRAP) != 0);
+	GTK.gtk_spin_button_set_numeric (GTK.GTK4? spinButtonHandle : textEntryHandle, false);
+	GTK.gtk_container_add (fixedHandle, GTK.GTK4? spinButtonHandle : textEntryHandle);
+	GTK.gtk_spin_button_set_wrap (GTK.GTK4? spinButtonHandle : textEntryHandle, (style & SWT.WRAP) != 0);
 }
 
 void createDropDownButton () {

@@ -4816,29 +4816,57 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1css_1provider_1load_1from_1data
-JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1css_1provider_1load_1from_1data)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3)
+#if (!defined(NO__1gtk_1css_1provider_1load_1from_1data__I_3BI) && !defined(JNI64)) || (!defined(NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1css_1provider_1load_1from_1data__I_3BI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1css_1provider_1load_1from_1data__J_3BJ)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
+#endif
+{
+	jbyte *lparg1=NULL;
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data__I_3BI_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data__J_3BJ_FUNC);
+#endif
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_css_provider_load_from_data((GtkCssProvider *)arg0, (const gchar *)lparg1, (gssize)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data__I_3BI_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data__J_3BJ_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1gtk_1css_1provider_1load_1from_1data__I_3BI_3I) && !defined(JNI64)) || (!defined(NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1css_1provider_1load_1from_1data__I_3BI_3I)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3)
+#else
+JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3)
+#endif
 {
 	jbyte *lparg1=NULL;
 	jintLong *lparg3=NULL;
 	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data__I_3BI_3I_FUNC);
+#else
+	GTK_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J_FUNC);
+#endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gtk_css_provider_load_from_data(arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_css_provider_load_from_data)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, const gchar *, gssize, GError **))fp)(arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
-		}
-	}
+	rc = (jboolean)gtk_css_provider_load_from_data((GtkCssProvider *)arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data_FUNC);
+#ifndef JNI64
+	GTK_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data__I_3BI_3I_FUNC);
+#else
+	GTK_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J_FUNC);
+#endif
 	return rc;
 }
 #endif

@@ -3879,16 +3879,32 @@ public class GTK extends OS {
 		}
 	}
 	/**
-	 * @method flags=dynamic
+	 * @param css_provider cast=(GtkCssProvider *)
 	 * @param data cast=(const gchar *)
 	 * @param length cast=(gssize)
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean _gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[]);
+	/** [GTK3 only, if-def'd in os.h] */
 	public static final boolean gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[] ) {
 		lock.lock();
 		try {
 			return _gtk_css_provider_load_from_data(css_provider, data, length, error);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param css_provider cast=(GtkCssProvider *)
+	 * @param data cast=(const gchar *)
+	 * @param length cast=(gssize)
+	 */
+	public static final native void _gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length) {
+		lock.lock();
+		try {
+			_gtk_css_provider_load_from_data(css_provider, data, length);
 		} finally {
 			lock.unlock();
 		}

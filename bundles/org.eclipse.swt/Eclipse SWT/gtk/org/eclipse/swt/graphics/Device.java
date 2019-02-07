@@ -787,7 +787,11 @@ private void overrideThemeValues () {
 		}
 		GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	}
-	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1, null);
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1, null);
+	}
 }
 
 /**

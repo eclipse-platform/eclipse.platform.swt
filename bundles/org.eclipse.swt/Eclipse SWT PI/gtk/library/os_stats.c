@@ -430,7 +430,16 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1container_1remove",
 	"_1gtk_1container_1set_1border_1width",
 	"_1gtk_1css_1provider_1get_1named",
-	"_1gtk_1css_1provider_1load_1from_1data",
+#ifndef JNI64
+	"_1gtk_1css_1provider_1load_1from_1data__I_3BI",
+#else
+	"_1gtk_1css_1provider_1load_1from_1data__J_3BJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1css_1provider_1load_1from_1data__I_3BI_3I",
+#else
+	"_1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J",
+#endif
 	"_1gtk_1css_1provider_1new",
 	"_1gtk_1css_1provider_1to_1string",
 	"_1gtk_1dialog_1add_1button",

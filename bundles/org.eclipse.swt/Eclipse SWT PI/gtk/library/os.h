@@ -275,6 +275,8 @@
 #define NO__1gtk_1widget_1style_1get__J_3B_3IJ
 #define NO__1gtk_1widget_1style_1get__I_3B_3JI
 #define NO__1gtk_1widget_1style_1get__J_3B_3JJ
+#define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI_3I
+#define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J
 
 // Some GtkContainer functions don't exist on GTK4
 #define NO__1gtk_1container_1propagate_1draw
@@ -439,6 +441,8 @@
 #define NO__1gtk_1widget_1measure
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
 #define NO__1gtk_1widget_1get_1first_1child
+#define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI
+#define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ
 
 // GdkCursor API changes from GTK3 -> GTK4
 #define NO__1gdk_1cursor_1new_1from_1name___3BI

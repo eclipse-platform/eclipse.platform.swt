@@ -1671,7 +1671,11 @@ public void setData (String key, Object value) {
 		long /*int*/ provider = GTK.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
 			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
-			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1, null);
+			if (GTK.GTK4) {
+				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1);
+			} else {
+				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1, null);
+			}
 			OS.g_object_unref (provider);
 		}
 	}

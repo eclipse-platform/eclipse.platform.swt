@@ -2135,7 +2135,11 @@ void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {
 		GTK.gtk_style_context_add_provider(buttonContext, buttonProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref(buttonProvider);
 	}
-	GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs(finalCss, true), -1, null);
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+	}
 }
 
 void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
@@ -2155,7 +2159,11 @@ void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
 		GTK.gtk_style_context_add_provider(buttonContext, buttonProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref(buttonProvider);
 	}
-	GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs(finalCss, true), -1, null);
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+	}
 }
 
 @Override

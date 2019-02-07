@@ -633,7 +633,11 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref (provider);
 	}
-	GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+	}
 }
 
 @Override

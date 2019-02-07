@@ -428,7 +428,16 @@ typedef enum {
 	_1gtk_1container_1remove_FUNC,
 	_1gtk_1container_1set_1border_1width_FUNC,
 	_1gtk_1css_1provider_1get_1named_FUNC,
-	_1gtk_1css_1provider_1load_1from_1data_FUNC,
+#ifndef JNI64
+	_1gtk_1css_1provider_1load_1from_1data__I_3BI_FUNC,
+#else
+	_1gtk_1css_1provider_1load_1from_1data__J_3BJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1css_1provider_1load_1from_1data__I_3BI_3I_FUNC,
+#else
+	_1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J_FUNC,
+#endif
 	_1gtk_1css_1provider_1new_FUNC,
 	_1gtk_1css_1provider_1to_1string_FUNC,
 	_1gtk_1dialog_1add_1button_FUNC,

@@ -979,23 +979,22 @@ static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, i
 	SwtFixed *fixed = SWT_FIXED (widget);
 	SwtFixedPrivate *priv = fixed->priv;
 	GList *list;
-	int total_nat, child_nat;
-
-	total_nat = 0;
+	int natural_size, child_nat;
 
 	list = priv->children;
+	natural_size = 0;
 
 	while (list) {
 		SwtFixedChild *child_data = list->data;
 		GtkWidget *child = child_data->widget;
 
 		gtk_widget_measure(child, orientation, -1, NULL, &child_nat, NULL, NULL);
-		total_nat = total_nat + child_nat;
+		if (child_nat > natural_size) natural_size = child_nat;
 
 		list = list->next;
 	}
+	if (natural) *natural = natural_size;
 	if (minimum) *minimum = 0;
-	if (natural) *natural = total_nat;
 	if (minimum_baseline) *minimum_baseline = -1;
 	if (natural_baseline) *natural_baseline = -1;
 	return;
