@@ -411,7 +411,7 @@ public void test_setItemCountI() {
 	new TreeItem (tree, SWT.NULL, 0);
 	assertEquals(1, tree.indexOf(tree.getItems()[1]));
 	assertEquals(8, tree.getItemCount());
-	tree.removeAll();
+	tree.setItemCount(0);
 	assertEquals(0, tree.getItemCount());
 	tree.setItemCount(0);
 	assertEquals(0, tree.getItemCount());
@@ -433,6 +433,14 @@ public void test_setItemCountI() {
 	tree.setItemCount(40);
 	assertEquals(40, tree.getItemCount());
 	tree.getItem(39);
+	tree.setItemCount(0);
+	assertEquals(0, tree.getItemCount());
+	try {
+		tree.getItem(39);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
 }
 
 @Test

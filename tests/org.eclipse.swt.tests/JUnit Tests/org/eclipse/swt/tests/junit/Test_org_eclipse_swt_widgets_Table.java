@@ -1376,6 +1376,53 @@ public void test_setHeaderVisibleZ() {
 }
 
 @Test
+public void test_setItemCountI() {
+	table.removeAll();
+	assertEquals(0, table.getItemCount());
+	for (int i=0; i<8; i++) {
+		new TableItem(table, SWT.NULL);
+		assertEquals(i+1, table.getItemCount());
+	}
+	assertEquals(8, table.getItemCount());
+	assertEquals(4, table.indexOf(table.getItems()[4]));
+	table.getItem(1).dispose();
+	assertEquals(7, table.getItemCount());
+	new TableItem (table, SWT.NULL, 0);
+	assertEquals(1, table.indexOf(table.getItems()[1]));
+	assertEquals(8, table.getItemCount());
+	table.setItemCount(0);
+	assertEquals(0, table.getItemCount());
+	table.setItemCount(0);
+	assertEquals(0, table.getItemCount());
+	table.setItemCount(-1);
+	assertEquals(0, table.getItemCount());
+	table.setItemCount(10);
+	assertEquals(10, table.getItemCount());
+	table.getItem(1).dispose();
+	assertEquals(9, table.getItemCount());
+	assertEquals(4, table.indexOf(table.getItems()[4]));
+	table.setItemCount(3);
+	assertEquals(3, table.getItemCount());
+	try {
+		table.getItem(4);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	table.setItemCount(40);
+	assertEquals(40, table.getItemCount());
+	table.getItem(39);
+	table.setItemCount(0);
+	assertEquals(0, table.getItemCount());
+	try {
+		table.getItem(39);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+}
+
+@Test
 public void test_setLinesVisibleZ() {
 	assertFalse(table.getLinesVisible());
 	table.setLinesVisible(true);

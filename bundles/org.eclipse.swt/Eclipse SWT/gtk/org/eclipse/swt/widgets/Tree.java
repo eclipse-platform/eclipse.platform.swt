@@ -3300,7 +3300,11 @@ void setItemCount (long /*int*/ parentIter, int count) {
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	if (!isVirtual) setRedraw (false);
-	remove (parentIter, count, itemCount - 1);
+	if(parentIter == 0 && count == 0) {
+		removeAll();
+	} else {
+		remove (parentIter, count, itemCount - 1);
+	}
 	if (isVirtual) {
 		if (fixAccessibility ()) {
 			ignoreAccessibility = true;
