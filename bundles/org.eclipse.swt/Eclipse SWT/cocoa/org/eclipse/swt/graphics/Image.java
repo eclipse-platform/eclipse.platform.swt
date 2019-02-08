@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.graphics.*;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -1151,15 +1152,35 @@ NSBitmapImageRep getRepresentation_200 () {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
 	long count = reps.count();
+	NSBitmapImageRep bestRep = null;
+	int width = (int)size.width * 2;
+	int height = (int)size.height * 2;
+	NSBitmapImageRep rep;
 	for (int i = 0; i < count; i++) {
-		NSBitmapImageRep rep = new NSBitmapImageRep(reps.objectAtIndex(i));
-		int width = (int)size.width * 2;
-		int height = (int)size.height * 2;
+		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
 		if ((width == rep.pixelsWide() && height == rep.pixelsHigh())) {
 			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
 				return rep;
 			}
+			if (bestRep == null) {
+				bestRep = rep;
+			}
 		}
+
+	}
+	if (bestRep != null) {
+		bestRep.retain();
+		for (int i = 0; i < count; i++) {
+			handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
+		}
+		handle.addRepresentation(bestRep);
+		NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+		newRep = newRep.initWithData(handle.TIFFRepresentation());
+		handle.addRepresentation(newRep);
+		handle.removeRepresentation(bestRep);
+		bestRep.release();
+		newRep.release();
+		return newRep;
 	}
 	return null;
 }
@@ -1343,37 +1364,28 @@ public ImageData getImageData(int zoom) {
 					}
 					handle.addRepresentation(imageRep);
 
-					NSSize size = handle.size();
-					imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-					imageRep = imageRep.initWithBitmapDataPlanes(0, (int) size.width, (int) size.height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, (int) size.width * 4, 32);
-					C.memset(imageRep.bitmapData(), 0xFF, (int) size.width * (int)size.height * 4);
-					NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
-					NSGraphicsContext.static_saveGraphicsState();
-					context.setImageInterpolation(OS.NSImageInterpolationDefault);
-					NSGraphicsContext.setCurrentContext(context);
-					NSRect target = new NSRect();
-					target.width = size.width;
-					target.height = size.height;
-					NSRect sourceRect = new NSRect();
-					sourceRect.width = 0;
-					sourceRect.height = 0;
-					handle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 1);
-					NSGraphicsContext.static_restoreGraphicsState();
+					NSSize targetSize = handle.size();
+					imageRep = createImageRep(targetSize);
 					return _getImageData(imageRep, alphaInfo_100);
 				}
 			}
 		}
 		if (zoom == 200) {
 			NSBitmapImageRep imageRep200 = getRepresentation_200();
-			if (imageRep200 != null) {
-				if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
-					if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
-				}
-				if (alphaInfo_200 == null) {
-					initAlpha_200(imageRep200);
-				}
-				return _getImageData(imageRep200, alphaInfo_200);
+			if (imageRep200 == null) {
+				NSSize imgSize = handle.size();
+				NSSize targetSize = new NSSize();
+				targetSize.height = imgSize.height * 2;
+				targetSize.width = imgSize.width * 2;
+				imageRep200 = createImageRep(targetSize);
 			}
+			if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
+				if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
+			}
+			if (alphaInfo_200 == null) {
+				initAlpha_200(imageRep200);
+			}
+			return _getImageData(imageRep200, alphaInfo_200);
 		}
 	} finally {
 		if (pool != null) pool.release();
@@ -1383,33 +1395,35 @@ public ImageData getImageData(int zoom) {
 
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
 NSBitmapImageRep getRepresentation () {
-	NSBitmapImageRep rep = new NSBitmapImageRep(handle.bestRepresentationForDevice(null));
-	if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
-		return rep;
+	NSBitmapImageRep rep = null;
+	int scaleFactor = DPIUtil.getDeviceZoom ();
+	switch (scaleFactor) {
+	case 100:
+		rep = getRepresentation_100 ();
+		break;
+	case 200:
+		rep = getRepresentation_200 ();
+		break;
+	}
+
+	if (rep == null) {
+		NSSize targetSize = new NSSize();
+		NSSize imgSize = handle.size();
+		targetSize.width = (int) imgSize.width * scaleFactor / 100;
+		targetSize.height = (int) imgSize.height * scaleFactor / 100;
+		rep = createImageRep(targetSize);
 	}
 	NSArray reps = handle.representations();
-	NSSize size = handle.size();
 	long count = reps.count();
-	NSBitmapImageRep bestRep = null;
-	for (int i = 0; i < count; i++) {
-		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
-		if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) return rep;
-		if (bestRep == null || ((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
-			bestRep = rep;
-		}
-	}
-	bestRep.retain();
 	for (int i = 0; i < count; i++) {
 		handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
 	}
-	handle.addRepresentation(bestRep);
-	NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	newRep = newRep.initWithData(handle.TIFFRepresentation());
-	handle.addRepresentation(newRep);
-	handle.removeRepresentation(bestRep);
-	bestRep.release();
-	newRep.release();
-	return newRep;
+	handle.addRepresentation(rep);
+	return rep;
+}
+
+ NSBitmapImageRep createImageRep(NSSize targetSize) {
+	return ImageUtil.createImageRep(this, targetSize);
 }
 
 /**
@@ -1573,6 +1587,7 @@ public long internal_new_GC (GCData data) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		int scaleFactor = DPIUtil.getDeviceZoom() / 100;
 		NSBitmapImageRep imageRep = getRepresentation();
 
 		// Can't perform transforms on image reps with alpha.
@@ -1587,8 +1602,8 @@ public long internal_new_GC (GCData data) {
 		NSGraphicsContext.setCurrentContext(context);
 		NSAffineTransform transform = NSAffineTransform.transform();
 		NSSize size = handle.size();
-		transform.translateXBy(0, size.height);
-		transform.scaleXBy(1, -1);
+		transform.translateXBy(0, size.height * scaleFactor);
+		transform.scaleXBy(scaleFactor, -scaleFactor);
 		transform.set();
 		NSGraphicsContext.static_restoreGraphicsState();
 		if (data != null) {

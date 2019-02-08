@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.graphics.*;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -181,13 +182,13 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 		Image image = caret.image;
 		if (image != null) {
 			NSImage imageHandle = image.handle;
-			NSImageRep imageRep = imageHandle.bestRepresentationForDevice(null);
+		 	NSSize size = imageHandle.size();
+			NSImageRep imageRep = ImageUtil.createImageRep(image, size);
 			if (!imageRep.isKindOfClass(OS.class_NSBitmapImageRep)) return;
 			NSBitmapImageRep rep = new NSBitmapImageRep(imageRep);
 			CGRect destRect = new CGRect ();
 			destRect.origin.x = caret.x;
 			destRect.origin.y = caret.y;
-		 	NSSize size = imageHandle.size();
 			destRect.size.width = size.width;
 			destRect.size.height = size.height;
 		 	long data = rep.bitmapData();
