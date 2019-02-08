@@ -559,6 +559,8 @@ typedef enum {
 	_1gtk_1gesture_1get_1sequences_FUNC,
 	_1gtk_1gesture_1group_FUNC,
 	_1gtk_1gesture_1is_1recognized_FUNC,
+	_1gtk_1gesture_1multi_1press_1new_FUNC,
+	_1gtk_1gesture_1multi_1press_1set_1area_FUNC,
 	_1gtk_1gesture_1pan_1get_1orientation_FUNC,
 	_1gtk_1gesture_1pan_1new_FUNC,
 	_1gtk_1gesture_1pan_1set_1orientation_FUNC,

@@ -129,9 +129,11 @@ public class Display extends Device {
 	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long /*int*/ snapshotDrawProc;
 	long /*int*/ keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
+	long /*int*/ gesturePressReleaseProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw;
 	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
+	Callback gesturePressReleaseCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -3644,6 +3646,14 @@ void initializeCallbacks () {
 		closuresProc [Widget.MOTION] = enterMotionScrollProc;
 		closuresProc [Widget.SCROLL] = enterMotionScrollProc;
 
+		gesturePressReleaseCallback = new Callback (this, "gesturePressReleaseProc", long.class, new Type[] {
+				long.class, int.class, double.class, double.class, long.class}); //$NON-NLS-1$
+		gesturePressReleaseProc = gesturePressReleaseCallback.getAddress();
+		if (gesturePressReleaseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		closuresProc [Widget.GESTURE_PRESSED] = gesturePressReleaseProc;
+		closuresProc [Widget.GESTURE_RELEASED] = gesturePressReleaseProc;
+
 		leaveCallback = new Callback (this, "leaveProc", long.class, new Type[] {
 				long.class, long.class}); //$NON-NLS-1$
 		leaveProc = leaveCallback.getAddress ();
@@ -4662,6 +4672,8 @@ void releaseDisplay () {
 		enterMotionScrollProc = 0;
 		leaveCallback.dispose();
 		leaveProc = 0;
+		gesturePressReleaseCallback.dispose();
+		gesturePressReleaseProc = 0;
 	}
 
 	/* Dispose checkIfEvent callback */
@@ -5995,6 +6007,13 @@ long /*int*/ keyPressReleaseProc (long /*int*/ controller, int keyval, int keyco
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.keyPressReleaseProc(handle, keyval, keycode, state, user_data);
+}
+
+long /*int*/ gesturePressReleaseProc (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ user_data) {
+	long /*int*/ handle = GTK.gtk_event_controller_get_widget(gesture);
+	Widget widget = getWidget (handle);
+	if (widget == null) return 0;
+	return widget.getsurePressReleaseProc (gesture, n_press, x, y, user_data);
 }
 
 long /*int*/ leaveProc (long /*int*/ controller, long /*int*/ user_data) {

@@ -345,6 +345,8 @@ public class OS extends C {
 	public static final byte[] move_focus = ascii("move-focus");
 	public static final byte[] output = ascii("output");
 	public static final byte[] paste_clipboard = ascii("paste-clipboard");
+	public static final byte[] pressed = ascii("pressed");
+	public static final byte[] released = ascii("released");
 	public static final byte[] popped_up = ascii("popped-up");
 	public static final byte[] popup_menu = ascii("popup-menu");
 	public static final byte[] populate_popup = ascii("populate-popup");

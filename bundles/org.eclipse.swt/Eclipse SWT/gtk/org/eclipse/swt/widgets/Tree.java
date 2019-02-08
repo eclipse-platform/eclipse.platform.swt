@@ -2162,6 +2162,20 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
+long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+	if (n_press == 1) return 0;
+	long /*int*/ widget = GTK.gtk_event_controller_get_widget(gesture);
+	long /*int*/ result = gtk_button_press_event (widget, event);
+
+	if (n_press == 2 && rowActivated) {
+		sendTreeDefaultSelection ();
+		rowActivated = false;
+	}
+	return result;
+}
+
+
+@Override
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	rowActivated = true;
 	return 0;

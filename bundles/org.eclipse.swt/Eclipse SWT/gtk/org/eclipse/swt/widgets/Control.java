@@ -424,6 +424,12 @@ void hookEvents () {
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
 		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
 
+		long /*int*/ gesturePressReleaseAddress = display.gesturePressReleaseCallback.getAddress();
+		long /*int*/ gestureMultiPress = GTK.gtk_gesture_multi_press_new();
+		GTK.gtk_widget_add_controller(focusHandle, gestureMultiPress);
+		OS.g_signal_connect(gestureMultiPress, OS.pressed, gesturePressReleaseAddress, GESTURE_PRESSED);
+		OS.g_signal_connect(gestureMultiPress, OS.released, gesturePressReleaseAddress, GESTURE_RELEASED);
+
 	} else {
 		GTK.gtk_widget_add_events (focusHandle, focusMask);
 		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
@@ -3419,6 +3425,77 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 		}
 	}
 	return 0;
+}
+
+/**
+ * Handling multi-press event on GTK4
+ */
+@Override
+long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+	if (n_press == 1) return 0;
+	mouseDown = true;
+	dragBegun = false;
+
+	// Event fields
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int eventTime = GDK.gdk_event_get_time(event);
+	int [] eventState = new int[1];
+	GDK.gdk_event_get_state(event, eventState);
+
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
+	/*
+	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
+	* do not activate the shell when the user clicks on the
+	* the client area or on the border or a control within the
+	* shell that does not take focus.
+	*/
+	Shell shell = _getShell ();
+	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
+		shell.forceActive();
+	}
+
+	long /*int*/ result = 0;
+	// Only send DoubleClick event as regular click is handled by generic gtk_event
+	if (n_press == 2) {
+		display.clickCount = 2;
+		result = sendMouseEvent (SWT.MouseDoubleClick, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
+	}
+	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
+	return result;
+}
+
+@Override
+long /*int*/ gtk_gesture_release_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+	if (n_press == 1) return 0;
+	mouseDown = false;
+
+	// Event fields
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+	int [] eventButton = new int [1];
+	GDK.gdk_event_get_button(event, eventButton);
+	int eventTime = GDK.gdk_event_get_time(event);
+	double [] eventRX = new double [1];
+	double [] eventRY = new double [1];
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	int [] eventState = new int [1];
+	GDK.gdk_event_get_state(event, eventState);
+
+	lastInput.x = (int) eventX[0];
+	lastInput.y = (int) eventY[0];
+	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+	return sendMouseEvent (SWT.MouseUp, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
 }
 
 @Override

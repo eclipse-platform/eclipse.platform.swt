@@ -232,7 +232,9 @@ public abstract class Widget {
 	static final int MOTION = 97;
 	static final int MOTION_INVERSE = 98;
 	static final int CLOSE_REQUEST = 99;
-	static final int LAST_SIGNAL = 100;
+	static final int GESTURE_PRESSED = 100;
+	static final int GESTURE_RELEASED = 101;
+	static final int LAST_SIGNAL = 102;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -700,6 +702,14 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	return 0;
+}
+
+long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+	return 0;
+}
+
+long /*int*/ gtk_gesture_release_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
 	return 0;
 }
 
@@ -2098,6 +2108,21 @@ long /*int*/ keyPressReleaseProc (long /*int*/ handle, int keyval, int keycode, 
 			break;
 		case KEY_RELEASED:
 			result = gtk_key_release_event(handle, event);
+			break;
+	}
+	gdk_event_free(event);
+	return result;
+}
+
+long /*int*/ getsurePressReleaseProc (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ user_data) {
+	long /*int*/ event = GTK.gtk_get_current_event();
+	long /*int*/ result = 0;
+	switch ((int)/*64*/user_data) {
+		case GESTURE_PRESSED:
+			result = gtk_gesture_press_event(gesture, n_press, x, y, event);
+			break;
+		case GESTURE_RELEASED:
+			result = gtk_gesture_release_event(gesture, n_press, x, y, event);
 			break;
 	}
 	gdk_event_free(event);

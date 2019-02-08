@@ -293,6 +293,19 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
+long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+	if (n_press == 1) return 0;
+	long /*int*/ widget = GTK.gtk_event_controller_get_widget(gesture);
+	long /*int*/ result = gtk_button_press_event (widget, event);
+
+	if (n_press == 2) {
+		sendSelectionEvent (SWT.DefaultSelection);
+	}
+
+	return result;
+}
+
+@Override
 long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }

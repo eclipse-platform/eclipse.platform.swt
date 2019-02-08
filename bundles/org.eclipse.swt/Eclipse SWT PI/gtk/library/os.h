@@ -444,6 +444,9 @@
 #define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ
 
+#define NO__1gtk_1gesture_1multi_1press_1new
+#define NO__1gtk_1gesture_1multi_1press_1set_1area
+
 // GdkCursor API changes from GTK3 -> GTK4
 #define NO__1gdk_1cursor_1new_1from_1name___3BI
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
