@@ -3610,7 +3610,11 @@ public void setItemCount (int count) {
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	if (!isVirtual) setRedraw (false);
-	remove (count, itemCount - 1);
+	if(count == 0) {
+		removeAll();
+	} else {
+		remove (count, itemCount - 1);
+	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
 	TableItem [] newItems = new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, itemCount);
