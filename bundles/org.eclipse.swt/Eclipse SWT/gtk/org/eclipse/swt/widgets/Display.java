@@ -1046,6 +1046,7 @@ void createDisplay (DeviceData data) {
 	if (OS.isX11()) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
 	}
+	if (OS.SWT_DEBUG) Device.DEBUG = true;
 	long /*int*/ ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
 	if (ptr != 0) {
 		int length = C.strlen (ptr);

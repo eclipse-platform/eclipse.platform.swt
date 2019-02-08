@@ -691,6 +691,11 @@ public class OS extends C {
 	public static final boolean SWT_MENU_LOCATION_DEBUGGING;
 
 	/*
+	 * Enable the DEBUG flag via environment variable. See bug 515849.
+	 */
+	public static final boolean SWT_DEBUG;
+
+	/*
 	 * Check for the GTK_THEME environment variable. If set, parse
 	 * it to get the theme name and check if a dark variant is specified.
 	 * We can make use of this information when loading SWT system colors.
@@ -740,6 +745,14 @@ public class OS extends C {
 			menuLocationDebuggingEnabled = true;
 		}
 		SWT_MENU_LOCATION_DEBUGGING = menuLocationDebuggingEnabled;
+
+		String debugProperty = "SWT_DEBUG";
+		String debugCheck = getEnvironmentalVariable(debugProperty);
+		boolean swtDebuggingEnabled = false;
+		if (debugCheck != null && debugCheck.equals("1")) {
+			swtDebuggingEnabled = true;
+		}
+		SWT_DEBUG = swtDebuggingEnabled;
 
 		String gtkThemeProperty = "GTK_THEME";
 		String gtkThemeCheck = getEnvironmentalVariable(gtkThemeProperty);
