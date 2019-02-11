@@ -1485,16 +1485,17 @@ char [] sendIMKeyEvent (int type, long /*int*/ event, char [] chars) {
 					event = 0;
 					break;
 			}
+		} else {
+			int [] buffer = new int [1];
+			GTK.gtk_get_current_event_state (buffer);
+			state = buffer [0];
 		}
-	}
-	if (event == 0) {
-		int [] buffer = new int [1];
-		GTK.gtk_get_current_event_state (buffer);
-		state = buffer [0];
+	} else {
+		ptr = event;
 	}
 	while (index < chars.length) {
 		Event javaEvent = new Event ();
-		if (event != 0 && chars.length <= 1) {
+		if (ptr != 0 && chars.length <= 1) {
 			setKeyState (javaEvent, ptr);
 		} else {
 			setInputState (javaEvent, state);
@@ -1509,13 +1510,13 @@ char [] sendIMKeyEvent (int type, long /*int*/ event, char [] chars) {
 		* the key by returning null.
 		*/
 		if (isDisposed ()) {
-			if (ptr != 0) gdk_event_free (ptr);
+			if (ptr != 0 && ptr != event) gdk_event_free (ptr);
 			return null;
 		}
 		if (javaEvent.doit) chars [count++] = chars [index];
 		index++;
 	}
-	if (ptr != 0) gdk_event_free (ptr);
+	if (ptr != 0 && ptr != event) gdk_event_free (ptr);
 	if (count == 0) return null;
 	if (index != count) {
 		char [] result = new char [count];
