@@ -2039,7 +2039,6 @@ static gchar *swt_fixed_accessible_text_get_selection (AtkText *text, gint selec
 }
 
 static gchar *swt_fixed_accessible_text_get_text (AtkText *text, gint start_offset, gint end_offset) {
-	return NULL;
 	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (text);
 	SwtFixedAccessiblePrivate *private = fixed->priv;
 	jintLong returned_value = 0;
