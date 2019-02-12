@@ -4270,6 +4270,16 @@ NSAppearance getAppearance (APPEARANCE newMode) {
 	return NSAppearance.appearanceNamed (NSString.stringWith (appearanceName));
 }
 
+void setAppAppearance (APPEARANCE newMode) {
+	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 14, 0)) return;
+
+	NSAppearance appearance = getAppearance(newMode);
+	if (appearance != null && application != null) {
+		OS.objc_msgSend(application.id, OS.sel_setAppearance_, appearance.id);
+		appAppearance = newMode;
+	}
+}
+
 void setWindowAppearance (NSWindow window, NSAppearance appearance) {
 	if (window != null && appearance != null) {
 		OS.objc_msgSend(window.id, OS.sel_setAppearance_, appearance.id);
@@ -5534,7 +5544,7 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 	NSApplication application = display.application;
 
 	if (sel == OS.sel_appAppearanceChanged) {
-		display.setWindowsAppearance(arg0 == 1 ? APPEARANCE.Dark : APPEARANCE.Light);
+		display.setAppAppearance(arg0 == 1 ? APPEARANCE.Dark : APPEARANCE.Light);
 		return 0;
 	}
 
