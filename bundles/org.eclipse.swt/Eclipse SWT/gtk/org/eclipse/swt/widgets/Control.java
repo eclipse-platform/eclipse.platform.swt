@@ -1206,6 +1206,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			if (GTK.GTK4) {
 				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
 			} else {
+				// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
+				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+					GTK.gtk_widget_get_preferred_size(topHandle, null, null);
+				}
 				GTK.gtk_widget_size_allocate (topHandle, allocation);
 			}
 		}
@@ -5501,6 +5505,10 @@ void setInitialBounds () {
 		if (GTK.GTK4) {
 			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
 		} else {
+			// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
+			}
 			GTK.gtk_widget_size_allocate (topHandle, allocation);
 		}
 	} else {
