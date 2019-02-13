@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.*;
  * The <code>numColumns</code> field is the most important field in a
  * <code>GridLayout</code>. Widgets are laid out in columns from left
  * to right, and a new row is created when <code>numColumns</code> + 1
- * controls are added to the <code>Composite<code>.
+ * controls are added to the <code>Composite</code>.
  * </p>
  *
  * @see GridData

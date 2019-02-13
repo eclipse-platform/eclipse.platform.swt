@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
  * when a string is selected.  A list may be single or multi select.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI</dd>

@@ -36,12 +36,10 @@ import org.eclipse.swt.widgets.*;
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> effect constants.
  * </p>
- * <p>
  * <dl>
  * <dt><b>Feedback:</b></dt>
  * <dd>FEEDBACK_SELECT, FEEDBACK_SCROLL</dd>
  * </dl>
- * </p>
  *
  * @see DropTargetAdapter
  * @see DropTargetEvent

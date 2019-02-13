@@ -19,14 +19,13 @@ import org.eclipse.swt.graphics.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a expandable item in a expand bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * </p><p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *

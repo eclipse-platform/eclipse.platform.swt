@@ -60,14 +60,14 @@ import org.eclipse.swt.internal.gtk.*;
  * it does not normally make sense to add <code>Control</code> children to
  * it, or set a layout on it, unless implementing something like a cell
  * editor.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.

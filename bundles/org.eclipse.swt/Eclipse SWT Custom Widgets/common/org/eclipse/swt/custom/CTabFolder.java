@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.*;
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>CLOSE, TOP, BOTTOM, FLAT, BORDER, SINGLE, MULTI</dd>
@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.*;
  * <dd>Selection</dd>
  * <dd>"CTabFolder2"</dd>
  * </dl>
- * <p>
  * Note: Only one of the styles TOP and BOTTOM
  * may be specified.
  * </p><p>

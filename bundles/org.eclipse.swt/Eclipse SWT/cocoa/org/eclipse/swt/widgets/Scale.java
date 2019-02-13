@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </dl>
  * <p>
  * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
- * </p><p>
+ * </p>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>

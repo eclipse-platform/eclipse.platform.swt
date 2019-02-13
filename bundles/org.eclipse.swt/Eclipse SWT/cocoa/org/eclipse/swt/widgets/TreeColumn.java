@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
- * <p><dl>
+ * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </dl>
  * </p><p>
  * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
- * </p><p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *

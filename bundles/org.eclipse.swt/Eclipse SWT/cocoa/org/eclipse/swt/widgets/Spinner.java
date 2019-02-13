@@ -25,14 +25,14 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add children to it, or set a layout on it.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify, Verify</dd>
  * </dl>
- * </p><p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *

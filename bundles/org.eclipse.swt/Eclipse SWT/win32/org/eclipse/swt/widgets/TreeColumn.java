@@ -22,13 +22,13 @@ import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
- * <p><dl>
+ * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd> Move, Resize, Selection</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.

@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.win32.*;
  * Instances of this class represent a selectable
  * user interface object that displays a text with
  * links.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>

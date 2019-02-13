@@ -35,12 +35,11 @@ import org.eclipse.swt.widgets.*;
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>DND</code> effect constants.
  * </p>
- * <p>
  * <dl>
  * <dt><b>Feedback:</b></dt>
  * <dd>FEEDBACK_SELECT, FEEDBACK_INSERT_BEFORE, FEEDBACK_INSERT_AFTER, FEEDBACK_EXPAND, FEEDBACK_SCROLL</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles FEEDBACK_SELECT, FEEDBACK_INSERT_BEFORE or
  * FEEDBACK_INSERT_AFTER may be specified.
  * </p>

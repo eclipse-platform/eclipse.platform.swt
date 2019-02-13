@@ -28,7 +28,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * without a border, an effort is made to remove the
  * inset such that the preferred size of the control
  * is the same size as the contents.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>CENTER, ICON_CANCEL, ICON_SEARCH, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>

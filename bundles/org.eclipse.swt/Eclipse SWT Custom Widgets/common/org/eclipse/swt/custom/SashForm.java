@@ -24,12 +24,10 @@ import org.eclipse.swt.widgets.*;
  * a Sash between each child. One child may be maximized to occupy the
  * entire size of the SashForm.  The relative sizes of the children may
  * be specified using weights.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * </dl>
- * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#sashform">SashForm snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>

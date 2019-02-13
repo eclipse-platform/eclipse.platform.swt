@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
- * <p>
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
@@ -33,7 +32,7 @@ import org.eclipse.swt.internal.cocoa.*;
  *     MouseExit, MouseHover, MouseUp, MouseMove, MouseWheel, MouseHorizontalWheel, MouseVerticalWheel, Move,
  *     Paint, Resize, Traverse</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>

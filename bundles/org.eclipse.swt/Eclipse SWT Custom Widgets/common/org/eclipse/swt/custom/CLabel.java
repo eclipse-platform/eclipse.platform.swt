@@ -30,15 +30,14 @@ import org.eclipse.swt.widgets.*;
  * 		shortens the text by replacing the center portion of the label with an ellipsis
  * 		shortens the text by removing the center portion of the label
  * </pre>
- * <p>
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>LEFT, RIGHT, CENTER, SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
  * <dt><b>Events:</b>
- * <dd></dd>
+ * <dd>(NONE)</dd>
  * </dl>
  *
- * </p><p>
+ *<p>
  * This class may be subclassed for the purpose of overriding the default string
  * shortening algorithm that is implemented in method <code>shortenText()</code>.
  * </p>

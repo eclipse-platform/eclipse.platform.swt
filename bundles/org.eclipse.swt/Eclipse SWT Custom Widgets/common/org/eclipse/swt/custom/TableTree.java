@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add <code>Control</code> children to it,
  * or set a layout on it.
- * </p><p>
+ * </p>
  * <dl>
  *	<dt><b>Styles:</b> <dd> SINGLE, MULTI, CHECK, FULL_SELECTION
  *	<dt><b>Events:</b> <dd> Selection, DefaultSelection, Collapse, Expand

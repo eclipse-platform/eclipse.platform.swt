@@ -73,12 +73,12 @@ import org.eclipse.swt.widgets.*;
  * The content implementation for this widget may also be user-defined.  To do so,
  * you must implement the StyledTextContent interface and use the StyledText API
  * setContent(StyledTextContent) to initialize the widget.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b><dd>FULL_SELECTION, MULTI, READ_ONLY, SINGLE, WRAP
  * <dt><b>Events:</b><dd>ExtendedModify, LineGetBackground, LineGetSegments, LineGetStyle, Modify, Selection, Verify, VerifyKey, OrientationChange
  * </dl>
- * </p><p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *

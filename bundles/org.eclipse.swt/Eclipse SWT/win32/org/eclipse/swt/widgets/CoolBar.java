@@ -29,14 +29,14 @@ import org.eclipse.swt.internal.win32.*;
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add <code>Control</code> children to it,
  * or set a layout on it.
- * </p><p>
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>FLAT, HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.

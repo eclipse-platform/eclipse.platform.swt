@@ -24,14 +24,13 @@ import org.eclipse.swt.internal.gtk.*;
 /**
  * Instances of this class represent popup windows that are used
  * to inform or warn the user.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BALLOON, ICON_ERROR, ICON_INFORMATION, ICON_WARNING</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p><p>
+ * <p>
  * Note: Only one of the styles ICON_ERROR, ICON_INFORMATION,
  * and ICON_WARNING may be specified.
  * </p><p>
