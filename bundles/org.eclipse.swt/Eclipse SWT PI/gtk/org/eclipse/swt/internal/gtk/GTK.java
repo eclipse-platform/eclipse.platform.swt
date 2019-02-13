@@ -2476,16 +2476,6 @@ public class GTK extends OS {
 	                lock.unlock();
 	        }
 	}
-	public static final native void _gtk_gesture_multi_press_set_area(long /*int*/ gesture, GdkRectangle rect);
-	/** [GTK4 only, if-def'd in os.h] */
-	public static final void gtk_gesture_multi_press_set_area(long /*int*/ gesture, GdkRectangle rect) {
-	        lock.lock();
-	        try {
-	        	_gtk_gesture_multi_press_set_area(gesture, rect);
-	        } finally {
-	                lock.unlock();
-	        }
-	}
 	public static final native long /*int*/ _gtk_event_controller_key_new();
 	/** [GTK4 only, if-def'd in os.h] */
 	public static final long /*int*/ gtk_event_controller_key_new() {

@@ -562,7 +562,6 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1gesture_1group",
 	"_1gtk_1gesture_1is_1recognized",
 	"_1gtk_1gesture_1multi_1press_1new",
-	"_1gtk_1gesture_1multi_1press_1set_1area",
 	"_1gtk_1gesture_1pan_1get_1orientation",
 	"_1gtk_1gesture_1pan_1new",
 	"_1gtk_1gesture_1pan_1set_1orientation",

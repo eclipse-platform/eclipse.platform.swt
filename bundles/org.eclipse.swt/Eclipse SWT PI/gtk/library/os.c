@@ -6253,20 +6253,6 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1gesture_1multi_1press_1new)
 }
 #endif
 
-#ifndef NO__1gtk_1gesture_1multi_1press_1set_1area
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1gesture_1multi_1press_1set_1area)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkRectangle _arg1, *lparg1=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1gesture_1multi_1press_1set_1area_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-	gtk_gesture_multi_press_set_area(arg0, lparg1);
-fail:
-	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1gesture_1multi_1press_1set_1area_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1gesture_1pan_1get_1orientation
 JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1gesture_1pan_1get_1orientation)
 	(JNIEnv *env, jclass that, jintLong arg0)
