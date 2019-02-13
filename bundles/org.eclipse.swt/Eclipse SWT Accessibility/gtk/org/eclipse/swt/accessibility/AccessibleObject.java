@@ -406,113 +406,6 @@ class AccessibleObject {
 	}
 
 	/**
-	 * Gets the position of component in the form of a point specifying
-	 * component's top-left corner.
-	 *
-	 * This is the implementation of an ATK function which
-	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
-	 * interfaces are implemented in os_custom.c and access this method via
-	 * JNI.
-	 *
-	 * @param atkObject a pointer to the current AtkObject
-	 * @param x memory address of gint to put x coordinate
-	 * @param y memory address of gint to put y coordinate
-	 * @param coord_type specifies whether the coordinates are relative to
-	 * the screen or to the components top level window
-	 *
-	 * @return 0 (this is a void function at the native level)
-	 */
-	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x,
-			long /*int*/ y, long /*int*/ coord_type) {
-		AccessibleObject object = getAccessibleObject (atkObject);
-		C.memmove (x, new int[] {0}, 4);
-		C.memmove (y, new int[] {0}, 4);
-		AtkComponentIface iface = getParentComponentIface (atkObject);
-		if (iface != null && iface.get_position != 0) {
-			OS.call (iface.get_position, atkObject, x, y, coord_type);
-		}
-		if (object != null) {
-			Accessible accessible = object.accessible;
-			List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
-			int length = size(listeners);
-			if (length > 0) {
-				int[] parentX = new int [1], parentY = new int [1];
-				C.memmove (parentX, x, 4);
-				C.memmove (parentY, y, 4);
-				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
-				event.childID = object.id;
-				event.x = parentX [0]; event.y = parentY [0];
-				int[] topWindowX = new int [1], topWindowY = new int [1];
-				if (coord_type == ATK.ATK_XY_WINDOW) {
-					windowPoint (object, topWindowX, topWindowY);
-					event.x += topWindowX [0];
-					event.y += topWindowY [0];
-				}
-				for (int i = 0; i < length; i++) {
-					AccessibleControlListener listener = listeners.get (i);
-					listener.getLocation (event);
-				}
-				if (coord_type == ATK.ATK_XY_WINDOW) {
-					event.x -= topWindowX [0];
-					event.y -= topWindowY [0];
-				}
-				C.memmove (x, new int[] {event.x}, 4);
-				C.memmove (y, new int[] {event.y}, 4);
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * Gets the size of the component in terms of width and height.
-	 *
-	 * This is the implementation of an ATK function which
-	 * queries the Accessible listeners at the Java level. On GTK3 the ATK
-	 * interfaces are implemented in os_custom.c and access this method via
-	 * JNI.
-	 *
-	 * @param atkObject a pointer to the current AtkObject
-	 * @param width memory address of gint to put x coordinate
-	 * @param height memory address of gint to put y coordinate
-	 * @param coord_type specifies whether the coordinates are relative to
-	 * the screen or to the components top level window (this parameter is always 0
-	 * on GTK3)
-	 *
-	 * @return 0 (this is a void function at the native level)
-	 */
-	static long /*int*/ atkComponent_get_size (long /*int*/ atkObject, long /*int*/ width,
-			long /*int*/ height, long /*int*/ coord_type) {
-		AccessibleObject object = getAccessibleObject (atkObject);
-		C.memmove (width, new int[] {0}, 4);
-		C.memmove (height, new int[] {0}, 4);
-		AtkComponentIface iface = getParentComponentIface (atkObject);
-		if (iface != null && iface.get_size != 0) {
-			// ATK with GTK3 doesn't have the coord_type parameter
-			ATK.call (iface.get_size, atkObject, width, height);
-		}
-		if (object != null) {
-			Accessible accessible = object.accessible;
-			List<AccessibleControlListener> listeners = accessible.accessibleControlListeners;
-			int length = size(listeners);
-			if (length > 0) {
-				int[] parentWidth = new int [1], parentHeight = new int [1];
-				C.memmove (parentWidth, width, 4);
-				C.memmove (parentHeight, height, 4);
-				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
-				event.childID = object.id;
-				event.width = parentWidth [0]; event.height = parentHeight [0];
-				for (int i = 0; i < length; i++) {
-					AccessibleControlListener listener = listeners.get (i);
-					listener.getLocation (event);
-				}
-				C.memmove (width, new int[] {event.width}, 4);
-				C.memmove (height, new int[] {event.height}, 4);
-			}
-		}
-		return 0;
-	}
-
-	/**
 	 * Gets a reference to the accessible child, if one exists,
 	 * at the coordinate point specified by x and y.
 	 *
@@ -4615,6 +4508,35 @@ class AccessibleObject {
 			case ACC.RELATION_POPUP_FOR: return ATK.ATK_RELATION_POPUP_FOR;
 			case ACC.RELATION_SUBWINDOW_OF: return ATK.ATK_RELATION_SUBWINDOW_OF;
 		}
+		return 0;
+	}
+
+	/**
+	 * Static toDisplay implementation for accessibility purposes. This function
+	 * is called from os_custom.c via JNI.
+	 *
+	 * @param gdkResource the GdkWindow (GTK3) or GdkSurface (GTK4)
+	 * @param x a pointer to an integer which represents the x coordinate
+	 * @param y a pointer to an integer which represents the y coordinate
+	 * @return 0
+	 */
+	static long /*int*/ toDisplay (long /*int*/ gdkResource, long /*int*/ x, long /*int*/ y) {
+		int [] origin_x = new int [1], origin_y = new int [1];
+		if (gdkResource == 0) {
+			// memmove anyways to prevent garbage data in the pointers
+			C.memmove (x, new int[] {0}, 4);
+			C.memmove (y, new int[] {0}, 4);
+			return 0;
+		}
+		if (GTK.GTK4) {
+			GDK.gdk_surface_get_origin (gdkResource, origin_x, origin_y);
+		} else {
+			GDK.gdk_window_get_origin (gdkResource, origin_x, origin_y);
+		}
+		int scaledX = DPIUtil.autoScaleDown (origin_x [0]);
+		int scaledY = DPIUtil.autoScaleDown (origin_y [0]);
+		C.memmove (x, new int[] {scaledX}, 4);
+		C.memmove (y, new int[] {scaledY}, 4);
 		return 0;
 	}
 

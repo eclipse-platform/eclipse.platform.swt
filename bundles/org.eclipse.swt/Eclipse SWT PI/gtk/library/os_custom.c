@@ -1482,29 +1482,30 @@ static void swt_fixed_accessible_component_get_extents (AtkComponent *component,
 	if (private->has_accessible) {
 		call_accessible_object_function("atkComponent_get_extents", "(JJJJJJ)J", component, x, y,
 			width, height, coord_type);
-	}
-	return;
-}
-
-static void swt_fixed_accessible_component_get_position (AtkComponent *component, gint *x, gint *y,
-		AtkCoordType coord_type) {
-	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
-	SwtFixedAccessiblePrivate *private = fixed->priv;
-
-	if (private->has_accessible) {
-		call_accessible_object_function("atkComponent_get_position", "(JJJJ)J", component, x, y, coord_type);
-	}
-	return;
-}
-
-static void swt_fixed_accessible_component_get_size (AtkComponent *component, gint *width, gint *height) {
-	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
-	SwtFixedAccessiblePrivate *private = fixed->priv;
-
-	if (private->has_accessible) {
-		// Note we are calling the Java method with 4 arguments: on GTK2 atk_component_get_size
-		// accepts 4 parameters, on GTK3 it only accepts 3.
-		call_accessible_object_function("atkComponent_get_size", "(JJJJ)J", component, width, height, 0);
+	} else {
+		// Only GTK3 has accessibility support at the moment.
+		#if !defined(GTK4)
+			GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE(fixed));
+			GdkWindow *window = gtk_widget_get_window(widget);
+			gint fixed_x, fixed_y;
+			call_accessible_object_function("toDisplay", "(JJJ)J", window, &fixed_x, &fixed_y);
+			GtkAllocation allocation;
+			gtk_widget_get_allocation(widget, &allocation);
+			if (coord_type == ATK_XY_SCREEN) {
+				*x = fixed_x;
+				*y = fixed_y;
+			}
+			if (coord_type == ATK_XY_WINDOW) {
+				GtkWidget *top = gtk_widget_get_toplevel(widget);
+				GdkWindow *top_window = gtk_widget_get_window(top);
+				gint top_x, top_y;
+				call_accessible_object_function("toDisplay", "(JJJ)J", top_window, &top_x, &top_y);
+				*x = fixed_x - top_x;
+				*y = fixed_y - top_y;
+			}
+			*width = allocation.width;
+			*height = allocation.height;
+		#endif
 	}
 	return;
 }
@@ -2176,8 +2177,6 @@ static void swt_fixed_accessible_action_iface_init (AtkActionIface *iface) {
 
 static void swt_fixed_accessible_component_iface_init (AtkComponentIface *iface) {
 	iface->get_extents = swt_fixed_accessible_component_get_extents;
-	iface->get_position = swt_fixed_accessible_component_get_position;
-	iface->get_size = swt_fixed_accessible_component_get_size;
 	iface->ref_accessible_at_point = swt_fixed_accessible_component_ref_accessible_at_point;
 }
 
