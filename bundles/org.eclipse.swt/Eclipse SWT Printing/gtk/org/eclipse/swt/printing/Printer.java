@@ -350,7 +350,7 @@ static double restoreDouble(String key) {
 
 static boolean restoreBoolean(String key) {
 	byte [] value = restoreBytes(key, false);
-	return Boolean.valueOf(new String(value)).booleanValue();
+	return Boolean.parseBoolean(new String(value));
 }
 
 static byte [] restoreBytes(String key, boolean nullTerminate) {
