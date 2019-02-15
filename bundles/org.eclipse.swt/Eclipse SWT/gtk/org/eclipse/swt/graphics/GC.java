@@ -17,7 +17,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -3141,9 +3140,6 @@ public void setClipping(Rectangle rect) {
 	setClippingInPixels(DPIUtil.autoScaleUp(drawable, rect));
 }
 void setClippingInPixels(Rectangle rect) {
-	if (drawable instanceof Tree || drawable instanceof Table) {
-		return; //FIXME: This is an atrocious hack for bug 446075
-	}
 	if (rect == null) {
 		resetClipping();
 	} else {

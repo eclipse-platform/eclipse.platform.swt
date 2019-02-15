@@ -2999,6 +2999,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ snapshot, 
 
 
 			if (hooks (SWT.EraseItem)) {
+				Cairo.cairo_save(cr);
 				/*
 				 * Cache the selection state so that it is not lost if a
 				 * PaintListener wants to draw custom selection foregrounds.
@@ -3064,6 +3065,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ snapshot, 
 					}
 				}
 				gc.dispose();
+				Cairo.cairo_restore(cr);
 			}
 		}
 	}
