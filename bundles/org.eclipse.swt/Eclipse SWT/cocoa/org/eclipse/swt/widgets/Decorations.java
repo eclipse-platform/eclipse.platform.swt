@@ -32,6 +32,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>
  * Instances are always displayed in one of the maximized,
  * minimized or normal states:
+ * </p>
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
@@ -55,7 +56,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p>
  * Note: The styles supported by this class must be treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate

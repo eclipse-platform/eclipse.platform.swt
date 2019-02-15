@@ -14,7 +14,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent whenever the platform-
@@ -48,10 +48,10 @@ public final class MenuDetectEvent extends TypedEvent {
 
 	/**
 	 * The context menu trigger type.
-	 * <p><ul>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#MENU_MOUSE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#MENU_KEYBOARD}</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * A field indicating whether the context menu was triggered by a
 	 * pointing device such as a mouse (indicated by <code>MENU_MOUSE</code>),

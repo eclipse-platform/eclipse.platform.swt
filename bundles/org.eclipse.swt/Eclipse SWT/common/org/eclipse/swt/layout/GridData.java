@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
  * control, you use the <code>Control.setLayoutData(Object)</code> method.
  * <p>
  * There are two ways to create a <code>GridData</code> object with certain
- * fields set. The first is to set the fields directly, like this:
+ * fields set. The first is to set the fields directly, like this:</p>
  * <pre>
  * 		GridData gridData = new GridData();
  * 		gridData.horizontalAlignment = GridData.FILL;
@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.*;
  *      button1.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
  *      button2.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1));
  * </pre>
- * </p>
  * <p>
  * NOTE: Do not reuse <code>GridData</code> objects. Every control in a
  * <code>Composite</code> that is managed by a <code>GridLayout</code>

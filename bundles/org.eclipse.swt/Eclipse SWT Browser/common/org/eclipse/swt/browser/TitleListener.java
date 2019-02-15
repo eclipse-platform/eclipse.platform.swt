@@ -31,9 +31,8 @@ public interface TitleListener extends SWTEventListener {
 /**
  * This method is called when the title of the current document
  * is available or has changed.
- * <p>
  *
- * <p>The following fields in the <code>TitleEvent</code> apply:
+ * <p>The following fields in the <code>TitleEvent</code> apply:</p>
  * <ul>
  * <li>(in) title the title of the current document
  * <li>(in) widget the <code>Browser</code> whose current document's

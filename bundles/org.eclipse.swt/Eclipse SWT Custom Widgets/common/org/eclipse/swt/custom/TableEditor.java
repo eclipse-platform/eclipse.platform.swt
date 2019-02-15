@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.*;
 * in a Table so that the user can edit the contents of that cell.  It can also be used to display
 * a button that can launch a dialog for modifying the contents of the associated cell.
 *
-* <p> Here is an example of using a TableEditor:
-* <code><pre>
+* <p> Here is an example of using a TableEditor:</p>
+* <pre><code>
 *	final Table table = new Table(shell, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 *	TableColumn column1 = new TableColumn(table, SWT.NONE);
 *	TableColumn column2 = new TableColumn(table, SWT.NONE);
@@ -71,7 +71,7 @@ import org.eclipse.swt.widgets.*;
 *			editor.setEditor(newEditor, item, EDITABLECOLUMN);
 *		}
 *	});
-* </pre></code>
+* </code></pre>
 *
 * @see <a href="http://www.eclipse.org/swt/snippets/#tableeditor">TableEditor snippets</a>
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>

@@ -27,14 +27,14 @@ import org.eclipse.swt.events.*;
  * <p>
  * The elements in the segments field specify the start offset of
  * a segment relative to the start of the line. They must follow
- * the following rules:
+ * the following rules:</p>
  * <ul>
  * <li>elements must be in ascending order and must not have duplicates
  * <li>elements must not exceed the line length
  * </ul>
  * In addition, the first element may be set to zero and the last element may
  * be set to the end of the line but this is not required.
- *
+ * <p>
  * The segments field may be left null if the entire line should
  * be reordered as is.
  * </p>
@@ -67,11 +67,11 @@ import org.eclipse.swt.events.*;
  * to insert Unicode Control Characters in specific offsets in the line, the character
  * at segmentsChars[i] is inserted at the offset specified by segments[i]. When both fields
  * are set, the rules for the segments field are less restrictive:
+ * </p>
  * <ul>
  * <li>elements must be in ascending order, duplicates are allowed
  * <li>elements must not exceed the line length
  * </ul>
- * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */

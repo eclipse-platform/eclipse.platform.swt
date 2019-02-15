@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.*;
  * The DropTarget can receive data from within the same application or from other applications
  * (such as text dragged from a text editor like Word).</p>
  *
- * <code><pre>
+ * <pre><code>
  *	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
  *	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
  *	DropTarget target = new DropTarget(label, operations);
@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.*;
  * <code>event.currentDataType</code> field.  When the data is dropped, it is the responsibility of
  * the application to copy this data for its own purposes.
  *
- * <code><pre>
+ * <pre><code>
  *	target.addDropListener (new DropTargetListener() {
  *		public void dragEnter(DropTargetEvent event) {};
  *		public void dragOver(DropTargetEvent event) {};
@@ -63,7 +63,7 @@ import org.eclipse.swt.widgets.*;
  *			label.setText ((String) event.data); // data copied to label text
  *		}
  * 	});
- * </pre></code>
+ * </code></pre>
  *
  * <dl>
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
@@ -280,7 +280,7 @@ static DropTarget FindDropTarget(long /*int*/ handle) {
  * it one of the messages defined in the <code>DropTargetListener</code>
  * interface.
  *
- * <p><ul>
+ * <ul>
  * <li><code>dragEnter</code> is called when the cursor has entered the drop target boundaries
  * <li><code>dragLeave</code> is called when the cursor has left the drop target boundaries and just before
  * the drop occurs or is cancelled.
@@ -290,7 +290,7 @@ static DropTarget FindDropTarget(long /*int*/ handle) {
  * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given
  * the chance to change the nature of the drop or veto the drop by setting the <code>event.detail</code> field
  * <li><code>drop</code> is called when the data is being dropped
- * </ul></p>
+ * </ul>
  *
  * @param listener the listener which should be notified
  *

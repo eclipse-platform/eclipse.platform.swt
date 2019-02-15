@@ -13,9 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * A <code>WindowEvent</code> is sent by a {@link Browser} when
@@ -26,9 +26,9 @@ import org.eclipse.swt.graphics.*;
  *
  * <p>
  * The following example shows how <code>WindowEvent</code>'s are typically
- * handled.
+ * handled.</p>
  *
- * <code><pre>
+ * <pre><code>
  *	public static void main(String[] args) {
  *		Display display = new Display();
  *		Shell shell = new Shell(display);
@@ -92,30 +92,32 @@ import org.eclipse.swt.graphics.*;
  *			}
  *		});
  *	}
- * </pre></code>
+ * </code></pre>
  *
  * The following notifications are emitted when the user selects a hyperlink that targets a new window
  * or as the result of a javascript that executes window.open.
  *
- * <p>Main Browser
+ * <p>Main Browser</p>
  * <ul>
  *    <li>User selects a link that opens in a new window or javascript requests a new window</li>
- *    <li>OpenWindowListener.open() notified</li>
+ *    <li>OpenWindowListener.open() notified
  *    <ul>
  *    		<li>Application creates a new Shell and a second Browser inside that Shell</li>
  *    		<li>Application registers WindowListener's on that second Browser, such as VisibilityWindowListener</li>
  *	    	<li>Application returns the second Browser as the host for the new window content</li>
  *    </ul>
+ *    </li>
  * </ul>
  *
- * <p>Second Browser
+ * <p>Second Browser</p>
  * <ul>
- *    <li>VisibilityWindowListener.show() notified</li>
+ *    <li>VisibilityWindowListener.show() notified
  *    <ul>
  *    		<li>Application sets navigation tool bar, status bar, menu bar and Shell size
  *    		<li>Application makes the Shell hosting the second Browser visible
  *    		<li>User now sees the new window
  *    </ul>
+ *    </li>
  * </ul>
  *
  * @see CloseWindowListener

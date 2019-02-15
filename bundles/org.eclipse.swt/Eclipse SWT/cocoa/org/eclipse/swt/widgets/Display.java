@@ -65,6 +65,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * even on platforms which support it, is to have multiple threads.)
  * </li>
  * </ul>
+ * <p>
  * Enforcing these attributes allows SWT to be implemented directly
  * on the underlying operating system's event model. This has
  * numerous benefits including smaller footprint, better use of

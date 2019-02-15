@@ -34,9 +34,9 @@ public interface ProgressListener extends SWTEventListener {
 /**
  * This method is called when a progress is made during the loading of the
  * current location.
- * <p>
  *
- * <p>The following fields in the <code>ProgressEvent</code> apply:
+ *
+ * <p>The following fields in the <code>ProgressEvent</code> apply:</p>
  * <ul>
  * <li>(in) current the progress for the location currently being loaded
  * <li>(in) total the maximum progress for the location currently being loaded
@@ -52,9 +52,9 @@ public void changed(ProgressEvent event);
 
 /**
  * This method is called when the current location has been completely loaded.
- * <p>
  *
- * <p>The following fields in the <code>ProgressEvent</code> apply:
+ *
+ * <p>The following fields in the <code>ProgressEvent</code> apply:</p>
  * <ul>
  * <li>(in) widget the <code>Browser</code> whose current URL has been loaded
  * </ul>

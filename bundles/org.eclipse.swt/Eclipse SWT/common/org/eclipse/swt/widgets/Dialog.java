@@ -26,7 +26,7 @@ import org.eclipse.swt.*;
  * This class can also be used as the abstract superclass
  * for user-designed dialogs. Such dialogs usually consist
  * of a Shell with child widgets. The basic template for a
- * user-defined dialog typically looks something like this:
+ * user-defined dialog typically looks something like this:</p>
  * <pre><code>
  * public class MyDialog extends Dialog {
  *	Object result;
@@ -50,7 +50,7 @@ import org.eclipse.swt.*;
  *		return result;
  *	}
  * }
- * </pre></code>
+ * </code></pre>
  * <p>
  * Note: The <em>modality</em> styles supported by this class
  * are treated as <em>HINT</em>s, because not all are supported
@@ -62,6 +62,7 @@ import org.eclipse.swt.*;
  * for shells, the window manager for the desktop on which the
  * instance is visible has ultimate control over the appearance
  * and behavior of the instance, including its modality.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>APPLICATION_MODAL, PRIMARY_MODAL, SYSTEM_MODAL, SHEET</dd>

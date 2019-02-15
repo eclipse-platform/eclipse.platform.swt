@@ -34,8 +34,8 @@ import org.eclipse.swt.internal.win32.*;
  * trees that are very large or for which <code>TreeItem</code> population is
  * expensive (for example, retrieving values from an external source).
  * </p><p>
- * Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:
- * <code><pre>
+ * Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:</p>
+ * <pre><code>
  *  final Tree tree = new Tree(parent, SWT.VIRTUAL | SWT.BORDER);
  *  tree.setItemCount(20);
  *  tree.addListener(SWT.SetData, new Listener() {
@@ -53,8 +53,8 @@ import org.eclipse.swt.internal.win32.*;
  *          item.setItemCount(10);
  *      }
  *  });
- * </pre></code>
- * </p><p>
+ * </code></pre>
+ * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not normally make sense to add <code>Control</code> children to
  * it, or set a layout on it, unless implementing something like a cell

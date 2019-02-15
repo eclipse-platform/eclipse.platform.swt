@@ -38,14 +38,14 @@ public class GestureEvent extends TypedEvent {
 
 	/**
 	 * The gesture type.
-	 * <p><ul>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_BEGIN}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_END}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_MAGNIFY}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_PAN}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_ROTATE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_SWIPE}</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * This field determines the <code>GestureEvent</code> fields that contain valid data.
 	 */

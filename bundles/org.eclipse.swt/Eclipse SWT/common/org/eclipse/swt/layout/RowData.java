@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * The following code uses a <code>RowData</code> object to change the initial
  * size of a <code>Button</code> in a <code>Shell</code>:
+ * </p>
  * <pre>
  * 		Display display = new Display();
  * 		Shell shell = new Shell(display);
@@ -31,7 +32,6 @@ import org.eclipse.swt.graphics.*;
  * 		button1.setText("Button 1");
  * 		button1.setLayoutData(new RowData(50, 40));
  * </pre>
- * </p>
  *
  * @see RowLayout
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>

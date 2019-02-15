@@ -55,7 +55,7 @@ import org.eclipse.swt.widgets.*;
  *
  * <p> The following example shows a Label widget that allows text to be dragged from it.</p>
  *
- * <code><pre>
+ * <pre><code>
  *	// Enable a label as a Drag Source
  *	Label label = new Label(shell, SWT.NONE);
  *	// This example will allow text to be dragged
@@ -90,7 +90,7 @@ import org.eclipse.swt.widgets.*;
  *				label.setText("");
  *		}
  *	});
- * </pre></code>
+ * </code></pre>
  *
  *
  * <dl>
@@ -202,14 +202,14 @@ static int checkStyle(int style) {
  * it one of the messages defined in the <code>DragSourceListener</code>
  * interface.
  *
- * <p><ul>
+ * <ul>
  * <li><code>dragStart</code> is called when the user has begun the actions required to drag the widget.
  * This event gives the application the chance to decide if a drag should be started.
  * <li><code>dragSetData</code> is called when the data is required from the drag source.
  * <li><code>dragFinished</code> is called when the drop has successfully completed (mouse up
  * over a valid target) or has been terminated (such as hitting the ESC key). Perform cleanup
  * such as removing data from the source side on a successful move operation.
- * </ul></p>
+ * </ul>
  *
  * @param listener the listener which should be notified
  *

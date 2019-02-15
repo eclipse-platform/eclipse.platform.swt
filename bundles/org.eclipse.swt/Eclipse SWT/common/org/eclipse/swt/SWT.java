@@ -662,11 +662,11 @@ public class SWT {
 	 * </p>
 	 *
 	 * The detail field indicates the action to be taken:
-	 * <p><ul>
+	 * <ul>
 	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
 	 * <li>{@link SWT#COMPOSITION_OFFSET}</li>
 	 * <li>{@link SWT#COMPOSITION_SELECTION}</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -2260,10 +2260,10 @@ public class SWT {
 	/**
 	 * Style constant specifying that a Browser should use a Mozilla GRE
 	 * for rendering its content (value is 1&lt;&lt;15).
-	 * <p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Browser</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 * @deprecated This style is deprecated and will be removed in the future.
@@ -2276,10 +2276,10 @@ public class SWT {
 	/**
 	 * Style constant specifying that a Browser should use WebKit
 	 * for rendering its content (value is 1&lt;&lt;16).
-	 * <p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Browser</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.7
 	 */

@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * The following example code creates a <code>RowLayout</code>, sets all
  * of its fields to non-default values, and then sets it into a
- * <code>Shell</code>.
+ * <code>Shell</code>.</p>
  * <pre>
  * 		RowLayout rowLayout = new RowLayout();
  * 		rowLayout.wrap = false;
@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.*;
  * <pre>
  * 		shell.setLayout(new RowLayout());
  * </pre>
- * </p>
  *
  * @see RowData
  * @see <a href="http://www.eclipse.org/swt/snippets/#rowlayout">RowLayout snippets</a>

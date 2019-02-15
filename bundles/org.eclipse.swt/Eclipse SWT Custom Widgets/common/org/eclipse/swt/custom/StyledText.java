@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.*;
  * LineStyleListener.  If you define your own listener, you will be responsible
  * for maintaining the text style information for the widget.  IMPORTANT: You may
  * not define your own listener and use the StyledText API.  The following
- * StyledText API is not supported if you have defined a LineStyleListener:
+ * StyledText API is not supported if you have defined a LineStyleListener:</p>
  * <ul>
  * <li>getStyleRangeAtOffset(int)
  * <li>getStyleRanges()
@@ -57,19 +57,19 @@ import org.eclipse.swt.widgets.*;
  * <li>setStyleRange(StyleRange)
  * <li>setStyleRanges(StyleRange[])
  * </ul>
- * </p><p>
+ * <p>
  * There are two ways to use this widget when specifying line background colors.
  * You may use the API that is defined for StyledText or you may define your own
  * LineBackgroundListener.  If you define your own listener, you will be responsible
  * for maintaining the line background color information for the widget.
  * IMPORTANT: You may not define your own listener and use the StyledText API.
  * The following StyledText API is not supported if you have defined a
- * LineBackgroundListener:
+ * LineBackgroundListener:</p>
  * <ul>
  * <li>getLineBackground(int)
  * <li>setLineBackground(int,int,Color)
  * </ul>
- * </p><p>
+ * <p>
  * The content implementation for this widget may also be user-defined.  To do so,
  * you must implement the StyledTextContent interface and use the StyledText API
  * setContent(StyledTextContent) to initialize the widget.
@@ -5019,7 +5019,7 @@ public StyleRange getStyleRangeAtOffset(int offset) {
  * Returns an empty array if a LineStyleListener has been set.
  * Should not be called if a LineStyleListener has been set since the
  * listener maintains the styles.
- * <p></p>
+ * </p><p>
  * Note: Because a StyleRange includes the start and length, the
  * same instance cannot occur multiple times in the array of styles.
  * If the same style attributes, such as font and color, occur in
@@ -9151,10 +9151,10 @@ public void setLeftMargin (int leftMargin) {
 /**
  * Sets the alignment of the specified lines. The argument should be one of <code>SWT.LEFT</code>,
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>.
- * <p><p>
+ * <p>
  * Note that if <code>SWT.MULTI</code> is set, then <code>SWT.WRAP</code> must also be set
  * in order to stabilize the right edge before setting alignment.
- * </p>
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the listener
  * maintains the line attributes.
  * </p><p>
@@ -9165,7 +9165,7 @@ public void setLeftMargin (int leftMargin) {
  * will "move" with their respective text. An entire line is defined as
  * extending from the first character on a line to the last and including the
  * line delimiter.
- * </p><p>
+ * </p>
  * When two lines are joined by deleting a line delimiter, the top line
  * attributes take precedence and the attributes of the bottom line are deleted.
  * For all other text changes line attributes will remain unchanged.

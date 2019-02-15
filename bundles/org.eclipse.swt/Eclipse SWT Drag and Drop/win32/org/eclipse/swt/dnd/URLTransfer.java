@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  * <p>An example of a java <code>String</code> containing a URL is shown below:</p>
  *
- * <code><pre>
+ * <pre><code>
  *     String url = "http://www.eclipse.org";
  * </code></pre>
  *

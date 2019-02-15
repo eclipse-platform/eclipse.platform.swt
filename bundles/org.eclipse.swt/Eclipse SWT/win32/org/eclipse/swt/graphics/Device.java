@@ -177,7 +177,7 @@ void addFont (String font) {
  * </p><p>
  * In future releases of SWT, there may be more or fewer error
  * checks and exceptions may be thrown for different reasons.
- * <p>
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

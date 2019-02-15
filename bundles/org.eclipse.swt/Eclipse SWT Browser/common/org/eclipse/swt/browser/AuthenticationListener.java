@@ -39,9 +39,9 @@ public interface AuthenticationListener extends SWTEventListener {
  * be shown to the user.  Otherwise, setting the event's <code>doit</code>
  * field to <code>false</code> cancels the authentication challenge, and
  * the page will not be loaded.
- * <p>
+ * </p>
  *
- * <p>The following fields in the <code>AuthenticationEvent</code> apply:
+ * <p>The following fields in the <code>AuthenticationEvent</code> apply:</p>
  * <ul>
  * <li>(in) widget the <code>Browser</code> that is attempting to show the
  * page that requires authentication

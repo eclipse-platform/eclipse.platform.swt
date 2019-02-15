@@ -43,9 +43,8 @@ public interface OpenWindowListener extends SWTEventListener {
  * new window requests.
  * <p>
  * The navigation is cancelled if the event.required field is set to
- * <code>true</code> and the event.browser field is left <code>null</code>.
- * <p>
- * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <code>true</code> and the event.browser field is left <code>null</code>.</p>
+ * <p>The following fields in the <code>WindowEvent</code> apply:</p>
  * <ul>
  * <li>(in/out) {@link WindowEvent#required}: true if the platform requires the user to provide a
  * <code>Browser</code> to handle the new window or false otherwise.

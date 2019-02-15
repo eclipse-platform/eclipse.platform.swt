@@ -35,9 +35,8 @@ public interface VisibilityWindowListener extends SWTEventListener {
  * This method is called when the window hosting a <code>Browser</code>
  * is requested to be hidden. Application would typically hide the
  * {@link org.eclipse.swt.widgets.Shell} that hosts the <code>Browser</code>.
- * <p>
  *
- * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <p>The following fields in the <code>WindowEvent</code> apply:</p>
  * <ul>
  * <li>(in) widget the <code>Browser</code> that needs to be hidden
  * </ul>
@@ -57,9 +56,8 @@ public void hide(WindowEvent event);
  * location and the size of the {@link org.eclipse.swt.widgets.Shell}
  * that hosts the <code>Browser</code>, if a particular location and size
  * are specified. The application would then open that <code>Shell</code>.
- * <p>
  *
- * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <p>The following fields in the <code>WindowEvent</code> apply:</p>
  * <ul>
  * <li>(in) widget the <code>Browser</code> to display
  * <li>(in) location the requested location for the <code>Shell</code>

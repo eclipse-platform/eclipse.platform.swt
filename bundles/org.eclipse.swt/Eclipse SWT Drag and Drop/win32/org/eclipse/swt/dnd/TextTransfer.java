@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * <p>An example of a java <code>String</code> containing plain text is shown
  * below:</p>
  *
- * <code><pre>
+ * <pre><code>
  *     String textData = "Hello World";
  * </code></pre>
  *

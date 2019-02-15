@@ -32,8 +32,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * tables that are very large or for which <code>TableItem</code> population is
  * expensive (for example, retrieving values from an external source).
  * </p><p>
- * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
- * <code><pre>
+ * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:</p>
+ * <pre><code>
  *  final Table table = new Table (parent, SWT.VIRTUAL | SWT.BORDER);
  *  table.setItemCount (1000000);
  *  table.addListener (SWT.SetData, new Listener () {
@@ -44,8 +44,8 @@ import org.eclipse.swt.internal.cocoa.*;
  *          System.out.println (item.getText ());
  *      }
  *  });
- * </pre></code>
- * </p><p>
+ * </code></pre>
+ * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not normally make sense to add <code>Control</code> children to
  * it, or set a layout on it, unless implementing something like a cell

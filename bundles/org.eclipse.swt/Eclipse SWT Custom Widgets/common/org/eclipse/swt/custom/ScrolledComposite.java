@@ -24,17 +24,19 @@ import org.eclipse.swt.widgets.*;
  *
  * <p>There are two ways to use the ScrolledComposite:
  *
- * <p>
- * 1) Set the size of the control that is being scrolled and the ScrolledComposite
- * will show scrollbars when the contained control can not be fully seen.
+ * </p>
+ * <ol>
+ * <li> Set the size of the control that is being scrolled and the ScrolledComposite
+ * will show scrollbars when the contained control can not be fully seen.</li>
  *
- * 2) The second way imitates the way a browser would work.  Set the minimum size of
+ * <li>The second way imitates the way a browser would work.  Set the minimum size of
  * the control and the ScrolledComposite will show scroll bars if the visible area is
  * less than the minimum size of the control and it will expand the size of the control
  * if the visible area is greater than the minimum size.  This requires invoking
- * both setMinWidth(), setMinHeight() and setExpandHorizontal(), setExpandVertical().
+ * both setMinWidth(), setMinHeight() and setExpandHorizontal(), setExpandVertical().</li>
+ * </ol>
  *
- * <code><pre>
+ * <pre><code>
  * public static void main (String [] args) {
  *      Display display = new Display ();
  *      Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -94,7 +96,7 @@ import org.eclipse.swt.widgets.*;
  *      }
  *      display.dispose ();
  * }
- * </pre></code>
+ * </code></pre>
  *
  * <dl>
  * <dt><b>Styles:</b><dd>H_SCROLL, V_SCROLL

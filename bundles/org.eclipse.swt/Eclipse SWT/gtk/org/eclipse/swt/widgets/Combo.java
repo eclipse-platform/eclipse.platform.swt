@@ -1975,7 +1975,7 @@ public void remove (String string) {
 /**
  * Removes all of the items from the receiver's list and clear the
  * contents of receiver's text field.
- * <p>
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

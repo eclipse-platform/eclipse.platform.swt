@@ -40,7 +40,7 @@ import org.eclipse.swt.internal.image.*;
  * <li>load/save animated GIF images</li>
  * <li>load interlaced GIF/PNG images</li>
  * <li>load progressive JPEG images</li>
- * </ul></p>
+ * </ul>
  *
  * <p>
  * NOTE: <code>ImageLoader</code> is implemented in Java, which has certain performance

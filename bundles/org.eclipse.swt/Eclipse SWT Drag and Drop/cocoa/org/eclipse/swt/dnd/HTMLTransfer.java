@@ -23,8 +23,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * <p>An example of a java <code>String</code> containing HTML text is shown
  * below:</p>
  *
- * <code><pre>
- *     String htmlData = "<p>This is a paragraph of text.</p>";
+ * <pre><code>
+ *     String htmlData = "&lt;p&gt;This is a paragraph of text.&lt;/p&gt;";
  * </code></pre>
  *
  * @see Transfer

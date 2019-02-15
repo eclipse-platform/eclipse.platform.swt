@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.*;
  * <code>FormAttachments</code> are set into the top, bottom, left,
  * and right fields of the <code>FormData</code> for a control.
  * For example:
+ * </p>
  * <pre>
  * 		FormData data = new FormData();
  * 		data.top = new FormAttachment(0,5);
@@ -31,7 +32,6 @@ import org.eclipse.swt.widgets.*;
  * 		data.right = new FormAttachment(100,-5);
  * 		button.setLayoutData(data);
  * </pre>
- * </p>
  * <p>
  * A <code>FormAttachment</code> defines where to attach the side of
  * a control by using the equation, y = ax + b. The "a" term represents
@@ -39,16 +39,17 @@ import org.eclipse.swt.widgets.*;
  * (from the top). It can be defined using a numerator and denominator,
  * or just a percentage value. If a percentage is used, the denominator
  * is set to 100. The "b" term in the equation represents an offset, in
- * points, from the attachment position. For example:
+ * points, from the attachment position. For example:</p>
  * <pre>
  * 		FormAttachment attach = new FormAttachment (20, -5);
  * </pre>
+ * <p>
  * specifies that the side to which the <code>FormAttachment</code>
  * object belongs will lie at 20% of the parent composite, minus 5 points.
  * </p>
  * <p>
  * Control sides can also be attached to another control.
- * For example:
+ * For example:</p>
  * <pre>
  * 		FormAttachment attach = new FormAttachment (button, 10);
  * </pre>
@@ -71,7 +72,6 @@ import org.eclipse.swt.widgets.*;
  * specifies that the left side of the control will be positioned so that it is
  * centered between the left and right sides of the <code>button</code> control.
  * If the alignment is not specified, the default is to attach to the adjacent side.
- * </p>
  *
  * @see FormLayout
  * @see FormData

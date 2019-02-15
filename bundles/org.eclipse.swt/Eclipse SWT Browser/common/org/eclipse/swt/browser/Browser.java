@@ -660,7 +660,7 @@ public Object evaluate (String script) throws SWTException {
  * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>.
  * </p>
  * @param script the script with javascript commands
- * @param trusted <code>true> or <code>false</code> depending on the security context to be used
+ * @param trusted <code>true</code> or <code>false</code> depending on the security context to be used
  *
  * @return the return value, if any, of executing the script
  *

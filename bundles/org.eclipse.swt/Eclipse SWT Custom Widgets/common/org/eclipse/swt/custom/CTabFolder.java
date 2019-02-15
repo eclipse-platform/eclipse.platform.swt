@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.*;
  * </dl>
  * Note: Only one of the styles TOP and BOTTOM
  * may be specified.
- * </p><p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *

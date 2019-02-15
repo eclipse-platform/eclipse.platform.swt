@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  * <p>An example of a java <code>String[]</code> containing a list of files is shown
  * below:</p>
  *
- * <code><pre>
+ * <pre><code>
  *     File file1 = new File("C:\temp\file1");
  *     File file2 = new File("C:\temp\file2");
  *     String[] fileData = new String[2];

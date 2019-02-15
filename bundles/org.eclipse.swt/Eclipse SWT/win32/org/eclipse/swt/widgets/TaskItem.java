@@ -383,13 +383,13 @@ public void setProgress (int progress) {
 /**
  * Sets the receiver's progress state, the state can be one of
  * the following:
- * <p><ul>
+ * <ul>
  * <li>{@link SWT#DEFAULT}</li>
  * <li>{@link SWT#NORMAL}</li>
  * <li>{@link SWT#PAUSED}</li>
  * <li>{@link SWT#ERROR}</li>
  * <li>{@link SWT#INDETERMINATE}</li>
- * </ul></p>
+ * </ul>
  *
  * The percentage of progress shown by the states <code>SWT#NORMAL</code>, <code>SWT#PAUSED</code>,
  * <code>SWT#ERROR</code> is set with <code>setProgress()</code>. <br>

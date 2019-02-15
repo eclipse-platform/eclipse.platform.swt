@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * <p>An example of a java <code>String</code> containing RTF text is shown
  * below:</p>
  *
- * <code><pre>
+ * <pre><code>
  *     String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
  *

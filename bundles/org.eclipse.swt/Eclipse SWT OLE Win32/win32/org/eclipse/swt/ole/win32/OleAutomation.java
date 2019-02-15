@@ -43,7 +43,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  * <p>An example of how to interact with this extended functionality is shown below:
  *
- * <code><pre>
+ * <pre><code>
  *	OleAutomation automation = new OleAutomation(myControlSite);
  *
  *	// Look up the ID of the maxFileCount parameter
@@ -82,7 +82,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  *	automation.dispose();
  *
- * </pre></code>
+ * </code></pre>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>

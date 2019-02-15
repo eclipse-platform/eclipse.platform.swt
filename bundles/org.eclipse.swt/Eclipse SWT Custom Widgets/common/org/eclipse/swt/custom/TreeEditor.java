@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.*;
 * in a Tree so that the user can edit the contents of that cell.  It can also be used to display
 * a button that can launch a dialog for modifying the contents of the associated cell.
 *
-* <p> Here is an example of using a TreeEditor:
-* <code><pre>
+* <p> Here is an example of using a TreeEditor:</p>
+* <pre><code>
 *	final Tree tree = new Tree(shell, SWT.BORDER);
 *	for (int i = 0; i &lt; 3; i++) {
 *		TreeItem item = new TreeItem(tree, SWT.NONE);
@@ -69,7 +69,7 @@ import org.eclipse.swt.widgets.*;
 *			editor.setEditor(newEditor, item);
 *		}
 *	});
-* </pre></code>
+* </code></pre>
 *
 * @see <a href="http://www.eclipse.org/swt/snippets/#treeeditor">TreeEditor snippets</a>
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>

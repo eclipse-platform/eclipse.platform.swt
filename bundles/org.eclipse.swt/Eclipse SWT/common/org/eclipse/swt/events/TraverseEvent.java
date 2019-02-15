@@ -85,7 +85,7 @@ public final class TraverseEvent extends KeyEvent {
 
 	/**
 	 * The traversal type.
-	 * <p><ul>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_NONE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_ESCAPE}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_RETURN}</li>
@@ -96,7 +96,7 @@ public final class TraverseEvent extends KeyEvent {
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_MNEMONIC}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_PAGE_NEXT}</li>
 	 * <li>{@link org.eclipse.swt.SWT#TRAVERSE_PAGE_PREVIOUS}</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * Setting this field will change the type of traversal.
 	 * For example, setting the detail to <code>TRAVERSE_NONE</code>

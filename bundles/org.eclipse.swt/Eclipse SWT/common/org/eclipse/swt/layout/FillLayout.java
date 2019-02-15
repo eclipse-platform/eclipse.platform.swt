@@ -36,12 +36,12 @@ import org.eclipse.swt.widgets.*;
  * its type field is set, and then the layout is set into the
  * <code>Composite</code>. Note that in a <code>FillLayout</code>,
  * children are always the same size, and they fill all available space.
+ * </p>
  * <pre>
  * 		FillLayout fillLayout = new FillLayout();
  * 		fillLayout.type = SWT.VERTICAL;
  * 		shell.setLayout(fillLayout);
  * </pre>
- * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>

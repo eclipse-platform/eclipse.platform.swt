@@ -32,9 +32,8 @@ public interface StatusTextListener extends SWTEventListener {
  * This method is called when the status text is changed. The
  * status text is typically displayed in the status bar of a browser
  * application.
- * <p>
  *
- * <p>The following fields in the <code>StatusTextEvent</code> apply:
+ * <p>The following fields in the <code>StatusTextEvent</code> apply:</p>
  * <ul>
  * <li>(in) text the modified status text
  * <li>(in) widget the <code>Browser</code> whose status text is changed

@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.*;
 * that cell.  It can also be used to display a button that can launch a dialog for
 * modifying the contents of the associated cell.
 *
-* <p> Here is an example of using a TableTreeEditor:
-* <code><pre>
+* <p> Here is an example of using a TableTreeEditor:</p>
+* <pre><code>
 *	final TableTree tableTree = new TableTree(shell, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 *	final Table table = tableTree.getTable();
 *	TableColumn column1 = new TableColumn(table, SWT.NONE);
@@ -78,7 +78,7 @@ import org.eclipse.swt.widgets.*;
 *			editor.setEditor(newEditor, item, EDITABLECOLUMN);
 *		}
 *	});
-* </pre></code>
+* </code></pre>
 *
 * @deprecated As of 3.1 use TreeEditor with Tree, TreeItem and TreeColumn
 * @noreference This API will be deleted in a future release. See bug 475833 for details.

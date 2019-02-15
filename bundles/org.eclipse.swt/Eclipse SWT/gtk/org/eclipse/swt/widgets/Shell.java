@@ -32,7 +32,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <em>dialog</em> shells.
  * <p>
  * Instances are always displayed in one of the maximized,
- * minimized or normal states:
+ * minimized or normal states:</p>
  * <ul>
  * <li>
  * When an instance is marked as <em>maximized</em>, the
@@ -56,7 +56,7 @@ import org.eclipse.swt.internal.gtk.*;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p><p>
+ * <p>
  * The <em>modality</em> of an instance may be specified using
  * style bits. The modality style bits are used to determine
  * whether input is blocked for other shells on the display.
@@ -82,7 +82,7 @@ import org.eclipse.swt.internal.gtk.*;
  * restrictive style. For example, most operating systems
  * no longer support <code>SYSTEM_MODAL</code> because
  * it can freeze up the desktop, so this is typically
- * downgraded to <code>APPLICATION_MODAL</code>.
+ * downgraded to <code>APPLICATION_MODAL</code>.</p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER, CLOSE, MIN, MAX, NO_MOVE, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
@@ -90,8 +90,9 @@ import org.eclipse.swt.internal.gtk.*;
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
  * </dl>
+ * <p>
  * Class <code>SWT</code> provides two "convenience constants"
- * for the most commonly required style combinations:
+ * for the most commonly required style combinations:</p>
  * <dl>
  * <dt><code>SHELL_TRIM</code></dt>
  * <dd>
@@ -106,7 +107,6 @@ import org.eclipse.swt.internal.gtk.*;
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
- * </p>
  * <p>
  * Note: Only one of the styles APPLICATION_MODAL, MODELESS,
  * PRIMARY_MODAL and SYSTEM_MODAL may be specified.

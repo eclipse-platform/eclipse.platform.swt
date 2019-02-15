@@ -26,9 +26,9 @@ import org.eclipse.swt.widgets.*;
 * capabilities by using a text editor or for launching a dialog by placing a button
 * above a control.
 *
-* <p> Here is an example of using a ControlEditor:
+* <p> Here is an example of using a ControlEditor:</p>
 *
-* <code><pre>
+* <pre><code>
 * Canvas canvas = new Canvas(shell, SWT.BORDER);
 * canvas.setBounds(10, 10, 300, 300);
 * Color color = new Color(null, 255, 0, 0);
@@ -61,7 +61,7 @@ import org.eclipse.swt.widgets.*;
 * editor.minimumWidth = size.x;
 * editor.minimumHeight = size.y;
 * editor.setEditor (button);
-* </pre></code>
+* </code></pre>
 *
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */

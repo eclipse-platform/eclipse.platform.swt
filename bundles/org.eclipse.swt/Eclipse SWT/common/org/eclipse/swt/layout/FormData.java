@@ -25,13 +25,13 @@ import org.eclipse.swt.widgets.*;
  * To set a <code>FormData</code> object into a control, you use the
  * <code>setLayoutData ()</code> method. To define attachments for the
  * <code>FormData</code>, set the fields directly, like this:
+ * </p>
  * <pre>
  * 		FormData data = new FormData();
  * 		data.left = new FormAttachment(0,5);
  * 		data.right = new FormAttachment(100,-5);
  * 		button.setLayoutData(formData);
  * </pre>
- * </p>
  * <p>
  * <code>FormData</code> contains the <code>FormAttachments</code> for
  * each edge of the control that the <code>FormLayout</code> uses to

@@ -30,6 +30,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <em>minimum</em> and <em>maximum</em> values).
  * </p><p>
  * Typically, sliders will be made up of five areas:
+ * </p>
  * <ol>
  * <li>an arrow button for decrementing the value</li>
  * <li>a page decrement area for decrementing the value by a larger amount</li>
@@ -37,6 +38,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <li>a page increment area for incrementing the value by a larger amount</li>
  * <li>an arrow button for incrementing the value</li>
  * </ol>
+ * <p>
  * Based on their style, sliders are either <code>HORIZONTAL</code>
  * (which have a left facing button for decrementing the value and a
  * right facing button for incrementing it) or <code>VERTICAL</code>

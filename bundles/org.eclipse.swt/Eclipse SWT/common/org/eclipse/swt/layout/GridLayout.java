@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <p>
  * The following code creates a shell managed by a <code>GridLayout</code>
- * with 3 columns:
+ * with 3 columns:</p>
  * <pre>
  * 		Display display = new Display();
  * 		Shell shell = new Shell(display);
@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.*;
  * 		gridLayout.numColumns = 3;
  * 		shell.setLayout(gridLayout);
  * </pre>
+ * <p>
  * The <code>numColumns</code> field is the most important field in a
  * <code>GridLayout</code>. Widgets are laid out in columns from left
  * to right, and a new row is created when <code>numColumns</code> + 1

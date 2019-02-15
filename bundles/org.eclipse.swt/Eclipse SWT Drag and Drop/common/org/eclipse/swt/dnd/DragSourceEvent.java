@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -37,8 +37,8 @@ public class DragSourceEvent extends TypedEvent {
  	 * In dragStart, the doit field determines if the drag and drop operation
  	 * should proceed; in dragFinished, the doit field indicates whether
  	 * the operation was performed successfully.
- 	 * <p></p>
- 	 * In dragStart:
+ 	 * <p>
+ 	 * In dragStart:</p>
  	 * <p>Flag to determine if the drag and drop operation should proceed.
  	 * The application can set this value to false to prevent the drag from starting.
  	 * Set to true by default.</p>

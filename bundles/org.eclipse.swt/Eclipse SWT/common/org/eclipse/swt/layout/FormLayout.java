@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * The following example code creates a <code>FormLayout</code> and then sets
  * it into a <code>Shell</code>:
+ * </p>
  * <pre>
  * 		Display display = new Display ();
  *		Shell shell = new Shell(display);
@@ -33,7 +34,6 @@ import org.eclipse.swt.widgets.*;
  *		layout.marginHeight = 3;
  *		shell.setLayout(layout);
  * </pre>
- * </p>
  * <p>
  * To use a <code>FormLayout</code>, create a <code>FormData</code> with
  * <code>FormAttachment</code> for each child of <code>Composite</code>.
@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.*;
  * and left edge of the composite and <code>button2</code> to the right
  * edge of <code>button1</code> and the top and right edges of the
  * composite:
+ * </p>
  * <pre>
  *		FormData data1 = new FormData();
  *		data1.left = new FormAttachment(0, 0);
@@ -52,7 +53,6 @@ import org.eclipse.swt.widgets.*;
  *		data2.right = new FormAttachment(100, 0);
  *		button2.setLayoutData(data2);
  * </pre>
- * </p>
  * <p>
  * Each side of a child control can be attached to a position in the parent
  * composite, or to other controls within the <code>Composite</code> by
@@ -66,13 +66,13 @@ import org.eclipse.swt.widgets.*;
  * automatically attached to the left and top of the composite respectively.
  * The following code positions <code>button1</code> and <code>button2</code>
  * but relies on default attachments:
+ * </p>
  * <pre>
  *		FormData data2 = new FormData();
  *		data2.left = new FormAttachment(button1);
  *		data2.right = new FormAttachment(100, 0);
  *		button2.setLayoutData(data2);
  * </pre>
- * </p>
  * <p>
  * IMPORTANT: Do not define circular attachments.  For example, do not attach
  * the right edge of <code>button1</code> to the left edge of <code>button2</code>

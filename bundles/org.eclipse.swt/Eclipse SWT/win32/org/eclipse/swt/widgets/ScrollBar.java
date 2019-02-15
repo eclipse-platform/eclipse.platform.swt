@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.win32.*;
  * values the scroll bar represents (that is, between its
  * <em>minimum</em> and <em>maximum</em> values).
  * </p><p>
- * Typically, scroll bars will be made up of five areas:
+ * Typically, scroll bars will be made up of five areas:</p>
  * <ol>
  * <li>an arrow button for decrementing the value</li>
  * <li>a page decrement area for decrementing the value by a larger amount</li>
@@ -38,6 +38,7 @@ import org.eclipse.swt.internal.win32.*;
  * <li>a page increment area for incrementing the value by a larger amount</li>
  * <li>an arrow button for incrementing the value</li>
  * </ol>
+ * <p>
  * Based on their style, scroll bars are either <code>HORIZONTAL</code>
  * (which have a left facing button for decrementing the value and a
  * right facing button for incrementing it) or <code>VERTICAL</code>
