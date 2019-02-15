@@ -261,9 +261,11 @@ public ScrollBar getHorizontalBar () {
  * Returns the mode of the receiver's scrollbars. This will be
  * <em>bitwise</em> OR of one or more of the constants defined in class
  * <code>SWT</code>.<br>
+ * <ul>
  * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
  * uses overlay scrollbars</li>
  * <li><code>SWT.NONE</code> - otherwise</li>
+ * </ul>
  *
  * @return the mode of scrollbars
  *

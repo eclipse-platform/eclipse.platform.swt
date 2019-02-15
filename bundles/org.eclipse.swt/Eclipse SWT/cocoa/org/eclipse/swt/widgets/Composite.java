@@ -710,7 +710,6 @@ public void layout (boolean changed) {
  * resize event will invoke the layout of the child.  Note that
  * a layout due to a resize will not flush any cached information
  * (same as <code>layout(false)</code>).
- * </p>
  * <p>
  * It is normally more efficient to invoke {@link Control#requestLayout()}
  * on every control which has changed in the layout than it is to invoke
@@ -789,6 +788,7 @@ public void layout (Control [] changed) {
  * receiver.
  * <p>
  * The parameter <code>flags</code> may be a combination of:
+ * </p>
  * <dl>
  * <dt><b>SWT.ALL</b></dt>
  * <dd>all children in the receiver's widget tree should be laid out</dd>
@@ -797,7 +797,6 @@ public void layout (Control [] changed) {
  * <dt><b>SWT.DEFER</b></dt>
  * <dd>layout will be deferred</dd>
  * </dl>
- * </p>
  * <p>
  * When the <code>changed</code> array is specified, the flags <code>SWT.ALL</code>
  * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the

@@ -401,13 +401,13 @@ void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
  * </p>
  * <p>
  * The parameter <code>flags</code> may be either:
+ * </p>
  * <dl>
  * <dt><b>{@link SWT#ALL}</b></dt>
  * <dd>all children in the receiver's widget tree should be skinned</dd>
  * <dt><b>{@link SWT#NONE}</b></dt>
  * <dd>only the receiver should be skinned</dd>
  * </dl>
- * </p>
  * @param flags the flags specifying how to reskin
  *
  * @exception SWTException

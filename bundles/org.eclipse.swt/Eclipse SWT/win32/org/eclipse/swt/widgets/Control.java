@@ -3899,6 +3899,7 @@ void setToolTipText (Shell shell, String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    </ul>
  *
  * @see Display#getTouchEnabled
  *
