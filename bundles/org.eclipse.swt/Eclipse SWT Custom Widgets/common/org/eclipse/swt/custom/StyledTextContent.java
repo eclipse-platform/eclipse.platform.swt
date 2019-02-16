@@ -166,6 +166,7 @@ public void removeTextChangeListener(TextChangeListener listener);
  * <code>TextChangedEvent</code> is received.
  * <p>
  * The <code>TextChangingEvent</code> should be set as follows:
+ * </p>
  * <ul>
  * <li>event.start = start of the replaced text
  * <li>event.newText = text that is going to be inserted or empty String
@@ -185,7 +186,6 @@ public void removeTextChangeListener(TextChangeListener listener);
  * <li>("a", "\n\n") ==> (0, 2)
  * <li>("\n", "") ==> (1, 0)
  * </ul>
- * </p>
  *
  * @param start start offset of text to replace, none of the offsets include
  *	delimiters of preceding lines, offset 0 is the first character of the

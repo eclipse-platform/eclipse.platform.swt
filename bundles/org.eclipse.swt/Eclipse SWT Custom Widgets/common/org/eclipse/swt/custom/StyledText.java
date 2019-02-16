@@ -7980,6 +7980,7 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
  * <p>
  * <b>NOTE:</b> During the replace operation the current selection is
  * changed as follows:
+ * </p>
  * <ul>
  * <li>selection before replaced text: selection unchanged
  * <li>selection after replaced text: adjust the selection so that same text
@@ -7987,7 +7988,6 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
  * <li>selection intersects replaced text: selection is cleared and caret
  * is placed after inserted text
  * </ul>
- * </p>
  *
  * @param start offset of first character to replace
  * @param length number of characters to replace. Use 0 to insert text
@@ -8407,7 +8407,7 @@ void setAlignment() {
 /**
  * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>,
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.
- * </p><p>
+ * <p>
  * Note that if <code>SWT.MULTI</code> is set, then <code>SWT.WRAP</code> must also be set
  * in order to stabilize the right edge before setting alignment.
  * </p>
@@ -8605,7 +8605,6 @@ void setBlockSelectionOffset (int anchorOffset, int offset, boolean sendEvent) {
 /**
  * Sets the receiver's caret.  Set the caret's height and location.
  *
- * </p>
  * @param caret the new caret for the receiver
  *
  * @exception SWTException <ul>
@@ -8875,7 +8874,6 @@ public void setCursor (Cursor cursor) {
 }
 /**
  * Sets whether the widget implements double click mouse behavior.
- * </p>
  *
  * @param enable if true double clicking a word selects the word, if false
  * 	double clicks have the same effect as regular mouse clicks.
@@ -8895,7 +8893,6 @@ public void setDragDetect (boolean dragDetect) {
 }
 /**
  * Sets whether the widget content can be edited.
- * </p>
  *
  * @param editable if true content can be edited, if false content can not be
  * 	edited
@@ -9492,7 +9489,6 @@ public void setLineSpacing(int lineSpacing) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
  * </ul>
  * @see #setLineSpacingProvider(StyledTextLineSpacingProvider)
  * @since 3.107

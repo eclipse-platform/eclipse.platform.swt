@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * The <code>DragSourceListener</code> class provides event notification to the application for DragSource events.
@@ -33,12 +33,12 @@ public interface DragSourceListener extends SWTEventListener {
  * The user has begun the actions required to drag the widget. This event gives the application
  * the chance to decide if a drag should be started.
  *
- * <p>The following fields in the DragSourceEvent apply:
+ * <p>The following fields in the DragSourceEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
  * <li>(in,out)doit
- * </ul></p>
+ * </ul>
  *
  * @param event the information associated with the drag start event
  *
@@ -49,14 +49,14 @@ public void dragStart(DragSourceEvent event);
 /**
  * The data is required from the drag source.
  *
- * <p>The following fields in the DragSourceEvent apply:
+ * <p>The following fields in the DragSourceEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
  * <li>(in)dataType - the type of data requested.
  * <li>(out)data    - the application inserts the actual data here (must match the dataType)
  * <li>(out)doit    - set this to cancel the drag
- * </ul></p>
+ * </ul>
  *
  * @param event the information associated with the drag set data event
  *
@@ -68,13 +68,13 @@ public void dragSetData(DragSourceEvent event);
  * The drop has successfully completed(mouse up over a valid target) or has been terminated (such as hitting
  * the ESC key). Perform cleanup such as removing data from the source side on a successful move operation.
  *
- * <p>The following fields in the DragSourceEvent apply:
+ * <p>The following fields in the DragSourceEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
  * <li>(in)doit
  * <li>(in)detail
- * </ul></p>
+ * </ul>
  *
  * @param event the information associated with the drag finished event
  *

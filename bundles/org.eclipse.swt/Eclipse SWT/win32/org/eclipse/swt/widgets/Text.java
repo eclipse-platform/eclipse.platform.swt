@@ -2141,7 +2141,6 @@ public void setSelection (Point selection) {
  *
  * @param tabs the number of tabs
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

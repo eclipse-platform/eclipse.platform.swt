@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * The <code>DropTargetListener</code> class provides event notification to the application
@@ -41,7 +41,7 @@ public interface DropTargetListener extends SWTEventListener {
 /**
  * The cursor has entered the drop target boundaries.
  *
- * <p>The following fields in the DropTargetEvent apply:
+ * <p>The following fields in the DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -52,7 +52,7 @@ public interface DropTargetListener extends SWTEventListener {
  * <li>(in)operations
  * <li>(in,out)detail
  * <li>(in,out)feedback
- * </ul></p>
+ * </ul>
  *
  * <p>The <code>operations</code> value is determined by the modifier keys pressed by the user.
  * If no keys are pressed the <code>event.detail</code> field is set to DND.DROP_DEFAULT.
@@ -84,7 +84,7 @@ public void dragEnter(DropTargetEvent event);
  * The cursor has left the drop target boundaries OR the drop has been cancelled OR the data
  * is about to be dropped.
  *
- * <p>The following fields in the DropTargetEvent apply:
+ * <p>The following fields in the DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -94,7 +94,7 @@ public void dragEnter(DropTargetEvent event);
  * <li>(in)currentDataType
  * <li>(in)operations
  * <li>(in)detail
- * </ul></p>
+ * </ul>
  *
  * @param event  the information associated with the drag leave event
  *
@@ -106,7 +106,7 @@ public void dragLeave(DropTargetEvent event);
  * The operation being performed has changed (usually due to the user changing the selected modifier key(s)
  * while dragging).
  *
- * <p>The following fields in the DropTargetEvent apply:
+ * <p>The following fields in the DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -117,7 +117,7 @@ public void dragLeave(DropTargetEvent event);
  * <li>(in)operations
  * <li>(in,out)detail
  * <li>(in,out)feedback
- * </ul></p>
+ * </ul>
  *
  * <p>The <code>operations</code> value is determined by the modifier keys pressed by the user.
  * If no keys are pressed the <code>event.detail</code> field is set to DND.DROP_DEFAULT.
@@ -144,7 +144,7 @@ public void dragOperationChanged(DropTargetEvent event);
 /**
  * The cursor is moving over the drop target.
  *
- * <p>The following fields in the DropTargetEvent apply:
+ * <p>The following fields in the DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -155,7 +155,7 @@ public void dragOperationChanged(DropTargetEvent event);
  * <li>(in)operations
  * <li>(in,out)detail
  * <li>(in,out)feedback
- * </ul></p>
+ * </ul>
  *
  * <p>The <code>operations</code> value is determined by the value assigned to
  * <code>currentDataType</code> in previous dragEnter and dragOver calls.</p>
@@ -197,7 +197,7 @@ public void dragOver(DropTargetEvent event);
  * To determine the type of the data object, refer to the documentation for the Transfer subclass
  * specified in event.currentDataType.
  *
- * <p>The following fields in DropTargetEvent apply:
+ * <p>The following fields in DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -206,7 +206,7 @@ public void dragOver(DropTargetEvent event);
  * <li>(in,out)detail
  * <li>(in)currentDataType
  * <li>(in)data
- * </ul></p>
+ * </ul>
  *
  * <p>The application can refuse to perform the drop operation by setting the detail
  * field to DND.DROP_NONE.</p>
@@ -221,7 +221,7 @@ public void drop(DropTargetEvent event);
  * The drop is about to be performed.
  * The drop target is given a last chance to change the nature of the drop.
  *
- * <p>The following fields in the DropTargetEvent apply:
+ * <p>The following fields in the DropTargetEvent apply:</p>
  * <ul>
  * <li>(in)widget
  * <li>(in)time
@@ -231,7 +231,7 @@ public void drop(DropTargetEvent event);
  * <li>(in,out)currentDataType
  * <li>(in)operations
  * <li>(in,out)detail
- * </ul></p>
+ * </ul>
  *
  * <p>The application can veto the drop by setting the <code>event.detail</code> field to
  * <code>DND.DROP_NONE</code>.</p>
@@ -241,8 +241,8 @@ public void drop(DropTargetEvent event);
  * <code>operations</code> field.</p>
  *
  * <p>The application can also change the type of data being requested by modifying the
- * <code>currentDataTypes</code> field  but the value must be one of the values in the <
- * code>dataTypes</code> list.</p>
+ * <code>currentDataTypes</code> field  but the value must be one of the values in the
+ * <code>dataTypes</code> list.</p>
  *
  * @param event  the information associated with the drop accept event
  *

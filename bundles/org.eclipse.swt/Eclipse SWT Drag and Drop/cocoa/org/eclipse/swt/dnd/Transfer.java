@@ -79,18 +79,18 @@ abstract protected String[] getTypeNames();
  * Converts a java representation of data to a platform specific representation of
  * the data.
  *
- * <p>On a successful conversion, the transferData.result field will be set as follows:
+ * <p>On a successful conversion, the transferData.result field will be set as follows:</p>
  * <ul>
  * <li>Windows: COM.S_OK
  * <li>GTK: 1
- * </ul></p>
+ * </ul>
  *
  * <p>If this transfer agent is unable to perform the conversion, the transferData.result
- * field will be set to a failure value as follows:
+ * field will be set to a failure value as follows:</p>
  * <ul>
  * <li>Windows: COM.DV_E_TYMED or COM.E_FAIL
  * <li>GTK: 0
- * </ul></p>
+ * </ul>
  *
  * @param object a java representation of the data to be converted; the type of
  * Object that is passed in is dependent on the <code>Transfer</code> subclass.
