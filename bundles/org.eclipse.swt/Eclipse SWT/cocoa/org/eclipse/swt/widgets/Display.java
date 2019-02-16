@@ -3228,13 +3228,13 @@ boolean isValidThread () {
  * <p>KeyDown, KeyUp
  * <p>The following fields in the <code>Event</code> apply:
  * <ul>
- * <li>(in) type KeyDown or KeyUp</li>
- * <p> Either one of:
- * <li>(in) character a character that corresponds to a keyboard key</li>
+ * <li>(in) type KeyDown or KeyUp</li></ul>
+ * <p> Either one of:</p>
+ * <ul><li>(in) character a character that corresponds to a keyboard key</li>
  * <li>(in) keyCode the key code of the key that was typed,
- *          as defined by the key code constants in class <code>SWT</code></li>
+ *          as defined by the key code constants in class <code>SWT</code></li></ul>
  * <p> Optional (on some platforms): </p>
- * <li>(in) stateMask the state of the keyboard modifier,
+ * <ul><li>(in) stateMask the state of the keyboard modifier,
  * 			as defined by the key code constants in class <code>SWT</code>
  * </li>
  * </ul>
@@ -3247,18 +3247,17 @@ boolean isValidThread () {
  * <p>MouseMove</p>
  * <p>The following fields in the <code>Event</code> apply:
  * <ul>
- * <li>(in) type MouseMove
- * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates
- * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates
+ * <li>(in) type MouseMove</li>
+ * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates</li>
+ * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates</li>
  * </ul>
  * <p>MouseWheel</p>
- * <p>The following fields in the <code>Event</code> apply:
+ * <p>The following fields in the <code>Event</code> apply:</p>
  * <ul>
- * <li>(in) type MouseWheel
- * <li>(in) detail either SWT.SCROLL_LINE or SWT.SCROLL_PAGE
- * <li>(in) count the number of lines or pages to scroll
+ * <li>(in) type MouseWheel</li>
+ * <li>(in) detail either SWT.SCROLL_LINE or SWT.SCROLL_PAGE</li>
+ * <li>(in) count the number of lines or pages to scroll</li>
  * </ul>
- * </dl>
  *
  * @param event the event to be generated
  *

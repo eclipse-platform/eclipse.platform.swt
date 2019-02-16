@@ -262,7 +262,6 @@ void destroyWidget () {
  *
  * @return the accelerator or 0
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -614,7 +613,6 @@ void sendSelection () {
  *
  * @param accelerator an integer that is the bit-wise OR of masks and a key
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

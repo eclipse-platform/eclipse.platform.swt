@@ -735,7 +735,7 @@ void printErrors () {
  * The handle is needed by <code>destroy</code>.
  * </p>
  * This method is called before <code>destroy</code>.
- * </p><p>
+ * <p>
  * If subclasses reimplement this method, they must
  * call the <code>super</code> implementation.
  * </p>

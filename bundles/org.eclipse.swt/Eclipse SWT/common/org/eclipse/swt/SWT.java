@@ -1158,9 +1158,10 @@ public class SWT {
 	 * A constant indicating that widgets have changed.
 	 * (value is 1&lt;&lt;1).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code> layout</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
 	 *
@@ -1172,9 +1173,10 @@ public class SWT {
 	 * A constant indicating that a given operation should be deferred.
 	 * (value is 1&lt;&lt;2).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code> layout</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
 	 *
@@ -1229,47 +1231,52 @@ public class SWT {
 
 	/**
 	 * Style constant for menu bar behavior (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Menu</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int BAR = 1 << 1;
 
 	/**
 	 * Style constant for drop down menu/list behavior (value is 1&lt;&lt;2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Menu</code></li>
 	 * <li><code>ToolItem</code></li>
 	 * <li><code>CoolItem</code></li>
 	 * <li><code>Combo</code></li>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int DROP_DOWN = 1 << 2;
 
 	/**
 	 * Style constant for pop up menu behavior (value is 1&lt;&lt;3).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Menu</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int POP_UP = 1 << 3;
 
 	/**
 	 * Style constant for line separator behavior (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>MenuItem</code></li>
 	 * <li><code>ToolItem</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SEPARATOR = 1 << 1;
 
     /**
      * Constant representing a flexible space separator in a ToolBar.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ToolItem.setWidth()</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.7
      */
@@ -1277,111 +1284,122 @@ public class SWT {
 
 	/**
 	 * Style constant for toggle button behavior (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int TOGGLE = 1 << 1;
 
 	/**
 	 * Style constant for arrow button behavior (value is 1&lt;&lt;2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int ARROW = 1 << 2;
 
 	/**
 	 * Style constant for push button behavior (value is 1&lt;&lt;3).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>MenuItem</code></li>
 	 * <li><code>ToolItem</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int PUSH = 1 << 3;
 
 	/**
 	 * Style constant for radio button behavior (value is 1&lt;&lt;4).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>MenuItem</code></li>
 	 * <li><code>ToolItem</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int RADIO = 1 << 4;
 
 	/**
 	 * Style constant for check box behavior (value is 1&lt;&lt;5).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>MenuItem</code></li>
 	 * <li><code>ToolItem</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CHECK = 1 << 5;
 
 	/**
 	 * Style constant for cascade behavior (value is 1&lt;&lt;6).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>MenuItem</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CASCADE = 1 << 6;
 
 	/**
 	 * Style constant for multi-selection behavior in lists
 	 * and multiple line support on text fields (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
 	 * <li><code>List</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
 	 * <li><code>FileDialog</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int MULTI = 1 << 1;
 
 	/**
 	 * Style constant for single selection behavior in lists
 	 * and single line support on text fields (value is 1&lt;&lt;2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
 	 * <li><code>List</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SINGLE = 1 << 2;
 
 	/**
 	 * Style constant for read-only behavior (value is 1&lt;&lt;3).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Combo</code></li>
 	 * <li><code>Text</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int READ_ONLY = 1 << 3;
 
 	/**
 	 * Style constant for automatic line wrap behavior (value is 1&lt;&lt;6).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
 	 * <li><code>Text</code></li>
 	 * <li><code>ToolBar</code></li>
 	 * <li><code>Spinner</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int WRAP = 1 << 6;
 
 	/**
 	 * Style constant for search behavior (value is 1&lt;&lt;7).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -1390,17 +1408,19 @@ public class SWT {
 	/**
 	 * Style constant for simple (not drop down) behavior (value is 1&lt;&lt;6).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Combo</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SIMPLE = 1 << 6;
 
 	/**
 	 * Style constant for password behavior (value is 1&lt;&lt;22).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.0
 	 */
@@ -1409,57 +1429,63 @@ public class SWT {
 	/**
 	 * Style constant for shadow in behavior (value is 1&lt;&lt;2).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>Group</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHADOW_IN = 1 << 2;
 
 	/**
 	 * Style constant for shadow out behavior (value is 1&lt;&lt;3).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>Group</code></li>
 	 * <li><code>ToolBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHADOW_OUT = 1 << 3;
 
 	/**
 	 * Style constant for shadow etched in behavior (value is 1&lt;&lt;4).
 	 * <br>Note that this is a <em>HINT</em>. It is currently ignored on all platforms.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Group</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHADOW_ETCHED_IN = 1 << 4;
 
 	/**
 	 * Style constant for shadow etched out behavior (value is 1&lt;&lt;6).
 	 * <br>Note that this is a <em>HINT</em>. It is currently ignored on all platforms.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Group</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHADOW_ETCHED_OUT = 1 << 6;
 
 	/**
 	 * Style constant for no shadow behavior (value is 1&lt;&lt;5).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>Group</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHADOW_NONE = 1 << 5;
 
 	/**
 	 * Style constant for progress bar behavior (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ProgressBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int INDETERMINATE = 1 << 1;
 
@@ -1470,69 +1496,77 @@ public class SWT {
 	 * It typically has a title bar that is shorter than a normal title bar,
 	 * and the window title is typically drawn using a smaller font.
 	 * <br>Note that this is a <em>HINT</em>.
-	 * </p><p><b>Used By:</b><ul>
+	 * </p><p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int TOOL = 1 << 2;
 
 	/**
 	 * Style constant to ensure no trimmings are used (value is 1&lt;&lt;3).
 	 * <br>Note that this overrides all other trim styles.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_TRIM = 1 << 3;
 
 	/**
 	 * Style constant for resize box trim (value is 1&lt;&lt;4).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
 	 * <li><code>Tracker</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int RESIZE = 1 << 4;
 
 	/**
 	 * Style constant for title area trim (value is 1&lt;&lt;5).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int TITLE = 1 << 5;
 
 	/**
 	 * Style constant for close box trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CLOSE = 1 << 6;
 
 	/**
 	 * Style constant for shell menu trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int MENU = CLOSE;
 
 	/**
 	 * Style constant for minimize box trim (value is 1&lt;&lt;7).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int MIN = 1 << 7;
 
 	/**
 	 * Style constant for maximize box trim (value is 1&lt;&lt;10).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Decorations</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int MAX = 1 << 10;
 
@@ -1541,26 +1575,29 @@ public class SWT {
 	 * Creates the title trim when no other trim style is specified.
 	 * Doesn't create the title trim when NO_TRIM is specified.
 	 * <p>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 * @since 3.105
 	 */
 	public static final int NO_MOVE = 1 << 23;
 
 	/**
 	 * Style constant for horizontal scrollbar behavior (value is 1&lt;&lt;8).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Scrollable</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int H_SCROLL = 1 << 8;
 
 	/**
 	 * Style constant for vertical scrollbar behavior (value is 1&lt;&lt;9).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Scrollable</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int V_SCROLL = 1 << 9;
 
@@ -1572,10 +1609,11 @@ public class SWT {
 	 * Using NO_SCROLL overrides the default and forces the control
 	 * to have no scroll bars.
 	 *
-	 * <b>Used By:</b><ul>
+	 * <b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Tree</code></li>
 	 * <li><code>Table</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -1584,9 +1622,10 @@ public class SWT {
 	/**
 	 * Style constant for bordered behavior (value is 1&lt;&lt;11).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int BORDER = 1 << 11;
 
@@ -1594,9 +1633,10 @@ public class SWT {
 	 * Style constant indicating that the window manager should clip
 	 * a widget's children with respect to its viewable area. (value is 1&lt;&lt;12).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CLIP_CHILDREN = 1 << 12;
 
@@ -1604,18 +1644,20 @@ public class SWT {
 	 * Style constant indicating that the window manager should clip
 	 * a widget's siblings with respect to its viewable area. (value is 1&lt;&lt;13).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CLIP_SIBLINGS = 1 << 13;
 
 	/**
 	 * Style constant for always on top behavior (value is 1&lt;&lt;14).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Shell</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int ON_TOP = 1 << 14;
 
@@ -1629,10 +1671,11 @@ public class SWT {
 	 * on the Macintosh, at the time this documentation was written, the
 	 * window title is not visible.
 	 * <br>Note that this is a <em>HINT</em>.
-	 * </p><p><b>Used By:</b><ul>
+	 * </p><p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Dialog</code> and subclasses</li>
 	 * <li><code>Shell</code> and subclasses</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.5
 	 */
@@ -1641,67 +1684,74 @@ public class SWT {
 	/**
 	 * Trim style convenience constant for the most common top level shell appearance
 	 * (value is CLOSE|TITLE|MIN|MAX|RESIZE).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SHELL_TRIM = CLOSE | TITLE | MIN | MAX | RESIZE;
 
 	/**
 	 * Trim style convenience constant for the most common dialog shell appearance
 	 * (value is CLOSE|TITLE|BORDER).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int DIALOG_TRIM = TITLE | CLOSE | BORDER;
 
 	/**
 	 * Style constant for modeless behavior (value is 0).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int MODELESS = 0;
 
 	/**
 	 * Style constant for primary modal behavior (value is 1&lt;&lt;15).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int PRIMARY_MODAL = 1 << 15;
 
 	/**
 	 * Style constant for application modal behavior (value is 1&lt;&lt;16).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int APPLICATION_MODAL = 1 << 16;
 
 	/**
 	 * Style constant for system modal behavior (value is 1&lt;&lt;17).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SYSTEM_MODAL = 1 << 17;
 
 	/**
 	 * Style constant for selection hiding behavior when the widget loses focus (value is 1&lt;&lt;15).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Table</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int HIDE_SELECTION = 1 << 15;
 
@@ -1710,32 +1760,34 @@ public class SWT {
 	 * selection constant indicating that a full line should be
 	 * drawn. (value is 1&lt;&lt;16).
 	 * <br>Note that for some widgets this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
 	 * <li><code>StyledText</code></li>
 	 * <li><code>TextLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
 
 	/**
 	 * Style constant for flat appearance. (value is 1&lt;&lt;23).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>ToolBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int FLAT = 1 << 23;
 
 	/**
 	 * Style constant for smooth appearance. (value is 1&lt;&lt;16).
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p><ul>
 	 * <li><code>ProgressBar</code></li>
 	 * <li><code>Sash</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int SMOOTH = 1 << 16;
 
@@ -1747,9 +1799,10 @@ public class SWT {
 	 * for filling every pixel of the client area.
 	 * This style might be used as an alternative to "double-buffering" in order to reduce flicker.
 	 * This style does not mean "transparent" - widgets that are obscured will not draw through.
-	 * </p><p><b>Used By:</b><ul>
+	 * </p><p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_BACKGROUND = 1 << 18;
 
@@ -1764,9 +1817,10 @@ public class SWT {
 	 *
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_FOCUS = 1 << 19;
 
@@ -1780,9 +1834,10 @@ public class SWT {
 	 * style, the entire client area will be repainted.
 	 *
 	 * <br>Note that this is a <em>HINT</em>.
-	 * </p><p><b>Used By:</b><ul>
+	 * </p><p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_REDRAW_RESIZE = 1 << 20;
 
@@ -1790,18 +1845,20 @@ public class SWT {
 	 * Style constant for no paint event merging behavior (value is 1&lt;&lt;21).
 	 *
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_MERGE_PAINTS = 1 << 21;
 
 	/**
 	 * Style constant for preventing child radio group behavior (value is 1&lt;&lt;22).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
 	 * <li><code>Menu</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
 
@@ -1815,11 +1872,12 @@ public class SWT {
 	 * of the child when that child is created.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
 	 * <li><code>GC</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 2.1.2
 	 */
@@ -1835,11 +1893,12 @@ public class SWT {
 	 * of the child when that child is created.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
 	 * <li><code>GC</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 2.1.2
 	 */
@@ -1847,10 +1906,11 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate coordinate mirroring (value is 1&lt;&lt;27).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 2.1.2
 	 */
@@ -1858,9 +1918,10 @@ public class SWT {
 
 	/**
 	 * Style constant to allow embedding (value is 1&lt;&lt;24).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.0
 	 */
@@ -1868,10 +1929,11 @@ public class SWT {
 
 	/**
 	 * Style constant to allow virtual data (value is 1&lt;&lt;28).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.0
 	 */
@@ -1879,9 +1941,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate double buffering (value is 1&lt;&lt;29).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.1
 	 */
@@ -1893,9 +1956,10 @@ public class SWT {
 	 * By default, before a widget paints, the client area is filled with the current background.
 	 * When this style is specified, the background is not filled and widgets that are obscured
 	 * will draw through.
-	 * </p><p><b>Used By:</b><ul>
+	 * </p><p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 *
@@ -1909,9 +1973,10 @@ public class SWT {
 	 * When the bit is set, text direction mismatches the widget orientation.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
 	 * @see org.eclipse.swt.widgets.Control#getTextDirection()
@@ -1927,10 +1992,11 @@ public class SWT {
 	 * first strong Bidi character.
 	 * </p>
 	 * <br>Note that this is a <em>HINT</em> and it works on Windows only.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>TextLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
 	 * @see org.eclipse.swt.graphics.TextLayout#setTextDirection(int)
@@ -1942,20 +2008,22 @@ public class SWT {
 	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int UP = 1 << 7;
 
 	/**
 	 * Style constant to indicate single underline (value is 0).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -1963,9 +2031,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate double underline (value is 1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -1973,9 +2042,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate error underline (value is 2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -1983,9 +2053,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate squiggle underline (value is 3).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -2001,9 +2072,10 @@ public class SWT {
 	 * will include code to track the mouse and change the cursor to the hand
 	 * cursor when mouse is over the link.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.5
 	 */
@@ -2011,9 +2083,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate solid border (value is 1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -2021,9 +2094,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate dashed border (value is 2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -2031,9 +2105,10 @@ public class SWT {
 
 	/**
 	 * Style constant to indicate dotted border (value is 4).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextStyle</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -2042,37 +2117,41 @@ public class SWT {
 	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int TOP = UP;
 
 	/**
 	 * Style constant for align down behavior (value is 1&lt;&lt;10,
 	 * since align DOWN and align BOTTOM are considered the same).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int DOWN               = 1 << 10;
 
 	/**
 	 * Style constant for align bottom behavior (value is 1&lt;&lt;10,
 	 * since align DOWN and align BOTTOM are considered the same).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * <li><code>TabFolder</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int BOTTOM             = DOWN;
 
 	/**
 	 * Style constant for leading alignment (value is 1&lt;&lt;14).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
 	 * <li><code>Text</code></li>
@@ -2080,7 +2159,7 @@ public class SWT {
 	 * <li><code>TreeColumn</code></li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 2.1.2
 	 */
@@ -2100,7 +2179,8 @@ public class SWT {
 
 	/**
 	 * Style constant for trailing alignment (value is 1&lt;&lt;17).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
 	 * <li><code>Text</code></li>
@@ -2108,7 +2188,7 @@ public class SWT {
 	 * <li><code>TreeColumn</code></li>
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 2.1.2
 	 */
@@ -2128,18 +2208,20 @@ public class SWT {
 
 	/**
 	 * Style constant for align center behavior (value is 1&lt;&lt;24).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
 	 * <li><code>TableColumn</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CENTER = 1 << 24;
 
 	/**
 	 * Style constant for horizontal alignment or orientation behavior (value is 1&lt;&lt;8).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>ProgressBar</code></li>
 	 * <li><code>Sash</code></li>
@@ -2149,13 +2231,14 @@ public class SWT {
 	 * <li><code>ToolBar</code></li>
 	 * <li><code>FillLayout</code> type</li>
 	 * <li><code>RowLayout</code> type</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int HORIZONTAL = 1 << 8;
 
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1&lt;&lt;9).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Label</code></li>
 	 * <li><code>ProgressBar</code></li>
 	 * <li><code>Sash</code></li>
@@ -2166,15 +2249,16 @@ public class SWT {
 	 * <li><code>CoolBar</code></li>
 	 * <li><code>FillLayout</code> type</li>
 	 * <li><code>RowLayout</code> type</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int VERTICAL = 1 << 9;
 
 	/**
 	 * Style constant for date display (value is 1&lt;&lt;5).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2182,9 +2266,10 @@ public class SWT {
 
 	/**
 	 * Style constant for time display (value is 1&lt;&lt;7).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2192,9 +2277,10 @@ public class SWT {
 
 	/**
 	 * Style constant for calendar display (value is 1&lt;&lt;10).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2203,9 +2289,10 @@ public class SWT {
 	/**
 	 * Style constant for displaying week numbers in the calendar.
 	 * <br>Note that this is a <em>HINT</em> and is supported on Windows & GTK platforms only.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.108
 	 */
@@ -2218,9 +2305,10 @@ public class SWT {
 	 * A short time displays hours and minutes.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2233,9 +2321,10 @@ public class SWT {
 	 * A medium time displays hours, minutes, and seconds.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2249,9 +2338,10 @@ public class SWT {
 	 * The day and month names may be displayed.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>DateTime</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.3
 	 */
@@ -2287,9 +2377,10 @@ public class SWT {
 
 	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ToolTip</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.2
 	 */
@@ -2297,17 +2388,19 @@ public class SWT {
 
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>GridLayout</code> type</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int BEGINNING = 1;
 
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 4).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>GridLayout</code> type</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int FILL = 4;
 
@@ -2549,9 +2642,10 @@ public class SWT {
 
 	/**
 	 * Constants to indicate line scrolling (value is 1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.1
 	 */
@@ -2559,9 +2653,10 @@ public class SWT {
 
 	/**
 	 * Constants to indicate page scrolling (value is 2).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Control</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.1
 	 */
@@ -3038,9 +3133,10 @@ public class SWT {
 	 * </code> (value is 1&lt;&lt;9).
 	 * <br>Note that this is a <em>HINT</em>.
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see #SEARCH
 	 * @see #ICON_CANCEL
@@ -3055,9 +3151,10 @@ public class SWT {
 	 * </code> (value is 1&lt;&lt;8).
 	 * <br>Note that this is a <em>HINT</em>.
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Text</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see #SEARCH
 	 * @see #ICON_SEARCH
@@ -3093,9 +3190,10 @@ public class SWT {
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
 	 * (value is 1&lt;&lt;8).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>MessageBox</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int CANCEL = 1 << 8;
 
@@ -3410,9 +3508,10 @@ public class SWT {
 	 * Selection constant indicating that a line delimiter should be
 	 * drawn (value is 1&lt;&lt;17).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see #FULL_SELECTION
 	 * @see #LAST_LINE_SELECTION
@@ -3426,9 +3525,10 @@ public class SWT {
 	 * to the end and should be drawn using either a line delimiter
 	 * or full line selection (value is 1&lt;&lt;20).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>TextLayout</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see #DELIMITER_SELECTION
 	 * @see #FULL_SELECTION
@@ -3781,9 +3881,10 @@ public class SWT {
 
 	/**
 	 * Constant to indicate an error state (value is 1).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ProgressBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -3791,9 +3892,10 @@ public class SWT {
 
 	/**
 	 * Constant to a indicate a paused state (value is 4).
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ProgressBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.4
 	 */
@@ -3803,9 +3905,10 @@ public class SWT {
 	 * The font style constant indicating a normal weight, non-italic font
 	 * (value is 0). This constant is also used with <code>ProgressBar</code>
 	 * to indicate a normal state.
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>ProgressBar</code></li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public static final int NORMAL = 0;
 
@@ -4242,9 +4345,10 @@ public class SWT {
 	 * A constant indicating that a given operation should be performed on
 	 * all widgets (value is 1&lt;&lt;0).
 	 *
-	 * <p><b>Used By:</b><ul>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
 	 * <li><code>Composite</code> layout</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
 	 *
@@ -4487,6 +4591,7 @@ public static void error (int code) {
  * throwable which caused SWT to throw an exception.
  * <p>
  * In SWT, errors are reported by throwing one of three exceptions:
+ * </p>
  * <dl>
  * <dd>java.lang.IllegalArgumentException</dd>
  * <dt>thrown whenever one of the API methods is invoked with an illegal argument</dt>
@@ -4497,7 +4602,6 @@ public static void error (int code) {
  * </dl>
  * This method provides the logic which maps between error codes
  * and one of the above exceptions.
- * </p>
  *
  * @param code the SWT error code.
  * @param throwable the exception which caused the error to occur.
@@ -4516,6 +4620,7 @@ public static void error (int code, Throwable throwable) {
  * throwable which caused SWT to throw an exception.
  * <p>
  * In SWT, errors are reported by throwing one of three exceptions:
+ * </p>
  * <dl>
  * <dd>java.lang.IllegalArgumentException</dd>
  * <dt>thrown whenever one of the API methods is invoked with an illegal argument</dt>
@@ -4526,7 +4631,6 @@ public static void error (int code, Throwable throwable) {
  * </dl>
  * This method provides the logic which maps between error codes
  * and one of the above exceptions.
- * </p>
  *
  * @param code the SWT error code.
  * @param throwable the exception which caused the error to occur.
