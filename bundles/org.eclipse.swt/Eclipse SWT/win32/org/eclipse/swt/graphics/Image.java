@@ -2084,13 +2084,13 @@ public boolean isDisposed() {
  * In these cases, it may be desired to simulate transparency by using
  * the background color of the widget to paint the transparent pixels
  * of the image. This method specifies the color that will be used in
- * these cases. For example:
+ * these cases. For example:</p>
  * <pre>
  *    Button b = new Button();
  *    image.setBackground(b.getBackground());
  *    b.setImage(image);
  * </pre>
- * </p><p>
+ * <p>
  * The image may be modified by this operation (in effect, the
  * transparent regions may be filled with the supplied color).  Hence
  * this operation is not reversible and it is not legal to call

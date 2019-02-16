@@ -381,7 +381,7 @@ public void setFont (Font font) {
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
  * which may not be null. The string may include the mnemonic character.
- * </p>
+ * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, focus is assigned

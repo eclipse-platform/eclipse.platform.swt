@@ -46,8 +46,8 @@ public class GLCanvas extends Canvas {
  * @param data the requested attributes of the GLCanvas
  *
  * @exception IllegalArgumentException
- * <ul><li>ERROR_NULL_ARGUMENT when the data is null
- *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul>
+ * <ul><li>ERROR_NULL_ARGUMENT when the data is null</li>
+ *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</li>
  * </ul>
  */
 public GLCanvas (Composite parent, int style, GLData data) {

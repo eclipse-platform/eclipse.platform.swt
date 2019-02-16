@@ -1899,7 +1899,6 @@ public void setMinimumSize (Point size) {
  *
  * @param modified the new modified state for the receiver
  *
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

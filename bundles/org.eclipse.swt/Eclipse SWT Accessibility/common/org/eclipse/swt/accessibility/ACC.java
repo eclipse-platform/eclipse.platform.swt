@@ -368,10 +368,10 @@ public class ACC {
 	/**
 	 * Send when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
 	 * <p>
-	 * The eventData object is an array of 2 ints specifying the following:<ul>
+	 * The eventData object is an array of 2 ints specifying the following:</p><ul>
 	 * <li>state - the STATE_* constant identifying the state that changed</li>
 	 * <li>newValue - either 1 or 0, indicating whether the state has changed to true or false</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.6
 	 */
@@ -404,10 +404,11 @@ public class ACC {
 	/**
 	 * Send when an object's value has changed.
 	 * <p>
-	 * The eventData object is an array of 2 Numbers specifying the following:<ul>
+	 * The eventData object is an array of 2 Numbers specifying the following:</p>
+	 * <ul>
 	 * <li>oldValue - the object's old value</li>
 	 * <li>newValue - the object's new value</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.6
 	 */
@@ -543,13 +544,14 @@ public class ACC {
 	/**
 	 * Send when a table's data has changed.
 	 * <p>
-	 * The eventData object is an array of 5 ints specifying the following:<ul>
+	 * The eventData object is an array of 5 ints specifying the following:</p>
+	 * <ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
 	 * <li>rowStart - the index of the first row that changed</li>
 	 * <li>rowCount - the number of contiguous rows that changed, or 0 if no rows changed</li>
 	 * <li>columnStart - the index of the first column that changed</li>
 	 * <li>columnCount - the number of contiguous columns that changed, or 0 if no columns changed</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.6
 	 */
@@ -602,12 +604,13 @@ public class ACC {
 	/**
 	 * Send when text was inserted or deleted.
 	 * <p>
-	 * The eventData object is an array of 4 objects specifying the following:<ul>
+	 * The eventData object is an array of 4 objects specifying the following:</p>
+	 * <ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
 	 * <li>start - the index of the first character that changed</li>
 	 * <li>end - the index of the last character that changed</li>
 	 * <li>text - the text string that was inserted or deleted</li>
-	 * </ul></p>
+	 * </ul>
 	 *
 	 * @since 3.6
 	 */

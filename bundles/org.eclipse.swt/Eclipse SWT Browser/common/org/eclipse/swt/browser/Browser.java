@@ -656,7 +656,7 @@ public Object evaluate (String script) throws SWTException {
  * An <code>SWTException</code> is thrown if the return value has an
  * unsupported type, or if evaluating the script causes a javascript
  * error to be thrown.
- * </p><p>
+ * <p>
  * Note: Chrome security context is applicable only to Browsers with style <code>SWT.Mozilla</code>.
  * </p>
  * @param script the script with javascript commands

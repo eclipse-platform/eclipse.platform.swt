@@ -235,7 +235,7 @@ public void dispose () {
  * <p>The following snippet shows text and RTF text being retrieved from the
  * clipboard:</p>
  *
- *    <code><pre>
+ *    <pre><code>
  *    Clipboard clipboard = new Clipboard(display);
  *    TextTransfer textTransfer = TextTransfer.getInstance();
  *    String textData = (String)clipboard.getContents(textTransfer);
@@ -270,7 +270,7 @@ public Object getContents(Transfer transfer) {
  * <p>The following snippet shows text and RTF text being retrieved from the
  * clipboard:</p>
  *
- *    <code><pre>
+ *    <pre><code>
  *    Clipboard clipboard = new Clipboard(display);
  *    TextTransfer textTransfer = TextTransfer.getInstance();
  *    String textData = (String)clipboard.getContents(textTransfer);
@@ -379,7 +379,7 @@ public boolean isDisposed () {
  * clipboard:
  * </p>
  *
- * <code><pre>
+ * <pre><code>
  * 	Clipboard clipboard = new Clipboard(display);
  *	String textData = "Hello World";
  *	String rtfData = "{\\rtf1\\b\\i Hello World}";
@@ -436,7 +436,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * clipboard:
  * </p>
  *
- * <code><pre>
+ * <pre><code>
  * 	Clipboard clipboard = new Clipboard(display);
  *	String textData = "Hello World";
  *	String rtfData = "{\\rtf1\\b\\i Hello World}";

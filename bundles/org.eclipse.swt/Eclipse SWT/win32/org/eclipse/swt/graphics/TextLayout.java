@@ -1843,7 +1843,7 @@ long /*int*/ getItemFont (StyleItem item) {
  *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li></ul>
  */
 public int getLevel (int offset) {
 	checkLayout();

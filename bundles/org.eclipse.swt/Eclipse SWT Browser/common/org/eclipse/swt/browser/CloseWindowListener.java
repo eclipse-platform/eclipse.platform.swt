@@ -37,10 +37,10 @@ public interface CloseWindowListener extends SWTEventListener {
  * hosts the <code>Browser</code>. The <code>Browser</code> is disposed after this
  * notification.
  *
- * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <p>The following fields in the <code>WindowEvent</code> apply:</p>
  * <ul>
  * <li>(in) widget the <code>Browser</code> that is going to be disposed
- * </ul></p>
+ * </ul>
  *
  * @param event the <code>WindowEvent</code> that specifies the <code>Browser</code>
  * that is going to be disposed

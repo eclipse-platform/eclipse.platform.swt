@@ -246,7 +246,7 @@ public static void error (int code) {
  * The <code>hresult</code> argument should be either 0, or the
  * platform specific error code.
  * <p>
- * In DND, errors are reported by throwing one of three exceptions:
+ * In DND, errors are reported by throwing one of three exceptions:</p>
  * <dl>
  * <dd>java.lang.IllegalArgumentException</dd>
  * <dt>thrown whenever one of the API methods is invoked with an illegal argument</dt>
@@ -255,6 +255,7 @@ public static void error (int code) {
  * <dd>org.eclipse.swt.SWTError (extends java.lang.Error)</dd>
  * <dt>thrown whenever a <b>non-recoverable</b> error happens internally in SWT</dt>
  * </dl>
+ * <p>
  * This method provides the logic which maps between error codes
  * and one of the above exceptions.
  * </p>

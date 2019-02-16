@@ -562,8 +562,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK style, return false.
- * <p>
+ * the <code>CHECK</code> style, return false.
  *
  * @return the checked state
  *
@@ -697,8 +696,7 @@ public Color getForeground (int index) {
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
- * the <code>CHECK style, return false.
- * <p>
+ * the <code>CHECK</code> style, return false.
  *
  * @return the grayed state of the checkbox
  *

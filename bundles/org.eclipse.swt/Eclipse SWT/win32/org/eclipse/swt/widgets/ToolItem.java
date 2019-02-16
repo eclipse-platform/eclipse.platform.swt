@@ -827,7 +827,6 @@ void _setText (String string) {
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
- * </p>
  * <p>
  * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a

@@ -153,7 +153,7 @@ BrowserFunction (Browser browser, String name, boolean top, String[] frameNames,
 /**
  * Disposes of the resources associated with this BrowserFunction.
  * Applications must dispose of all BrowserFunctions that they create.
- * </p><p>
+ * <p>
  * Note that disposing a Browser automatically disposes all
  * BrowserFunctions associated with it.
  * </p>

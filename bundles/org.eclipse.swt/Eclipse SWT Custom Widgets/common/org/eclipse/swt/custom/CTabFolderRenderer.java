@@ -251,6 +251,7 @@ public class CTabFolderRenderer {
 	 * </p><p>
 	 * The <code>part</code> value indicated what component the preferred size is
 	 * to be calculated for. Valid values are any of the part constants:
+	 * </p>
 	 * <ul>
 	 * <li>PART_BODY</li>
 	 * <li>PART_HEADER</li>
@@ -262,14 +263,13 @@ public class CTabFolderRenderer {
 	 * <li>PART_CLOSE_BUTTON</li>
 	 * <li>A positive integer which is the index of an item in the CTabFolder.</li>
 	 * </ul>
-	 * </p>
 	 * <p>
 	 * The <code>state</code> parameter may be one of the following:
+	 * </p>
 	 * <ul>
 	 * <li>SWT.NONE</li>
 	 * <li>SWT.SELECTED - whether the part is selected</li>
 	 * </ul>
-	 * </p>
 	 * @param part a part constant
 	 * @param state current state
 	 * @param gc the gc to use for measuring
@@ -570,6 +570,7 @@ public class CTabFolderRenderer {
 	/**
 	 * Draw a specified <code>part</code> of the CTabFolder using the provided <code>bounds</code> and <code>GC</code>.
 	 * <p>The valid CTabFolder <code>part</code> constants are:
+	 * </p>
 	 * <ul>
 	 * <li>PART_BODY - the entire body of the CTabFolder</li>
 	 * <li>PART_HEADER - the upper tab area of the CTabFolder</li>
@@ -581,16 +582,15 @@ public class CTabFolderRenderer {
 	 * <li>PART_CLOSE_BUTTON</li>
 	 * <li>A positive integer which is the index of an item in the CTabFolder.</li>
 	 * </ul>
-	 * </p>
 	 * <p>
 	 * The <code>state</code> parameter may be a combination of:
+	 * </p>
 	 * <ul>
 	 * <li>SWT.BACKGROUND - whether the background should be drawn</li>
 	 * <li>SWT.FOREGROUND - whether the foreground should be drawn</li>
 	 * <li>SWT.SELECTED - whether the part is selected</li>
 	 * <li>SWT.HOT - whether the part is hot (i.e. mouse is over the part)</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @param part part to draw
 	 * @param state state of the part

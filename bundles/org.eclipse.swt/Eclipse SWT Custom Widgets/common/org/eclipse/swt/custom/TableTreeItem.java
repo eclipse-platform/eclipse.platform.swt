@@ -270,7 +270,7 @@ public Rectangle getBounds (int index) {
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK style, return false.
+ * the <code>CHECK</code> style, return false.
  *
  * @return the checked state of the checkbox
  *

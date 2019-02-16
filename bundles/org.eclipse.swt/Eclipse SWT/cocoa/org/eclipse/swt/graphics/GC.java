@@ -1125,7 +1125,7 @@ public void drawFocus(int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li></ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1724,6 +1724,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  * receiver's background color.
  * <p>
  * The parameter <code>flags</code> may be a combination of:
+ * </p>
  * <dl>
  * <dt><b>DRAW_DELIMITER</b></dt>
  * <dd>draw multiple lines</dd>
@@ -1734,7 +1735,6 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  * <dt><b>DRAW_TRANSPARENT</b></dt>
  * <dd>transparent background</dd>
  * </dl>
- * </p>
  *
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn

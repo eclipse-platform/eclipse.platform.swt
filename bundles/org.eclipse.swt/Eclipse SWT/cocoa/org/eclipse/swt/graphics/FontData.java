@@ -392,11 +392,12 @@ public void setLocale(String locale) {
  * Sets the name of the receiver.
  * <p>
  * Some platforms support font foundries. On these platforms, the name
- * of the font specified in setName() may have one of the following forms:
+ * of the font specified in setName() may have one of the following forms:</p>
  * <ol>
  * <li>a face name (for example, "courier")</li>
  * <li>a foundry followed by a dash ("-") followed by a face name (for example, "adobe-courier")</li>
  * </ol>
+ * <p>
  * In either case, the name returned from getName() will include the
  * foundry.
  * </p>

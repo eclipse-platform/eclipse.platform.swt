@@ -37,9 +37,12 @@ public class SelectionEvent extends TypedEvent {
 	/**
 	 * Extra detail information about the selection, depending on the widget.
 	 *
-	 * <p><b>Sash</b><ul>
+	 * <p><b>Sash</b></p>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
-	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
+	 * </ul>
+	 * <p><b>ScrollBar and Slider</b></p>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
 	 * <li>{@link org.eclipse.swt.SWT#HOME}</li>
 	 * <li>{@link org.eclipse.swt.SWT#END}</li>
@@ -47,13 +50,19 @@ public class SelectionEvent extends TypedEvent {
 	 * <li>{@link org.eclipse.swt.SWT#ARROW_UP}</li>
 	 * <li>{@link org.eclipse.swt.SWT#PAGE_DOWN}</li>
 	 * <li>{@link org.eclipse.swt.SWT#PAGE_UP}</li>
-	 * </ul></p><p><b>Table and Tree</b><ul>
+	 * </ul>
+	 * <p><b>Table and Tree</b></p>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#CHECK}</li>
-	 * </ul></p><p><b>Text</b><ul>
+	 * </ul>
+	 * <p><b>Text</b></p>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#CANCEL}</li>
-	 * </ul></p><p><b>CoolItem and ToolItem</b><ul>
+	 * </ul>
+	 * <p><b>CoolItem and ToolItem</b></p>
+	 * <ul>
 	 * <li>{@link org.eclipse.swt.SWT#ARROW}</li>
-	 * </ul></p>
+	 * </ul>
 	 */
 	public int detail;
 

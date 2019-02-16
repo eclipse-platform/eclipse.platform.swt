@@ -42,6 +42,7 @@ public class MouseEvent extends TypedEvent {
 	 * <li>2 for the second button (usually 'middle')</li>
 	 * <li>3 for the third button (usually 'right')</li>
 	 * <li>etc.</li>
+	 * </ul>
 	 */
 	public int button;
 
