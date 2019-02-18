@@ -85,7 +85,7 @@ public Color(Device device, int red, int green, int blue) {
 
 /**
  * Constructs a new instance of this class given a device and the
- * desired red, green, blue & alpha values expressed as ints in the range
+ * desired red, green, blue &amp; alpha values expressed as ints in the range
  * 0 to 255 (where 0 is black and 255 is full brightness). On limited
  * color devices, the color instance created by this call may not have
  * the same RGB values as the ones specified by the arguments. The
@@ -146,7 +146,7 @@ public Color(Device device, RGB rgb) {
 
 /**
  * Constructs a new instance of this class given a device and an
- * <code>RGBA</code> describing the desired red, green, blue & alpha values.
+ * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
  * On limited color devices, the color instance created by this call
  * may not have the same RGBA values as the ones specified by the
  * argument. The RGBA values on the returned instance will be the color

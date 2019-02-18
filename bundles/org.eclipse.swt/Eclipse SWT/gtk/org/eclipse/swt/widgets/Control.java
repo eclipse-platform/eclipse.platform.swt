@@ -5943,7 +5943,7 @@ public void setTextDirection(int textDirection) {
  * </p>
  * <p>
  * NOTE: This operation is a hint and behavior is platform specific, on Windows
- * for CJK-style mnemonics of the form " (&C)" at the end of the tooltip text
+ * for CJK-style mnemonics of the form " (&amp;C)" at the end of the tooltip text
  * are not shown in tooltip.
  * </p>
  *

@@ -177,7 +177,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[in,out] start - the 0 based offset of first character of the substring</li>
 	 * <li>[in,out] end - the 0 based offset after the last character of the substring</li>
 	 * <li>[in,out] count - the number of boundary type units to move to find the substring:<ul>
-	 * 		<li>in - look count units before start if count < 0, or after end if count > 0. Look at start if count == 0</li>
+	 * 		<li>in - look count units before start if count &lt; 0, or after end if count &gt; 0. Look at start if count == 0</li>
 	 * 		<li>out - the actual number of boundary type units that were moved. This may be fewer than the input count</li>
 	 * 		</ul></li>
 	 * <li>[out] result - the requested substring.  This may be empty or null

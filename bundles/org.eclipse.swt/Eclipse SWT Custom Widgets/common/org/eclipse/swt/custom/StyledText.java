@@ -1413,7 +1413,7 @@ public void addPaintObjectListener(PaintObjectListener listener) {
  * <p>
  * When <code>widgetSelected</code> is called, the event x and y fields contain
  * the start and end caret indices of the selection. The selection values returned are visual
- * (i.e., x will always always be <= y).
+ * (i.e., x will always always be &lt;= y).
  * No event is sent when the caret is moved while the selection length is 0.
  * </p><p>
  * <code>widgetDefaultSelected</code> is not called for StyledTexts.
@@ -3486,7 +3486,7 @@ public int getBaseline() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (&lt; 0 or &gt; getCharCount())</li>
  * </ul>
  *
  * @since 3.2
@@ -3801,7 +3801,7 @@ int getHorizontalIncrement() {
  * Returns the horizontal scroll offset relative to the start of the line.
  *
  * @return horizontal scroll offset relative to the start of the line,
- * measured in character increments starting at 0, if > 0 the content is scrolled
+ * measured in character increments starting at 0, if &gt; 0 the content is scrolled
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3815,7 +3815,7 @@ public int getHorizontalIndex() {
  * Returns the horizontal scroll offset relative to the start of the line.
  *
  * @return the horizontal scroll offset relative to the start of the line,
- * measured in SWT logical point starting at 0, if > 0 the content is scrolled.
+ * measured in SWT logical point starting at 0, if &gt; 0 the content is scrolled.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3909,7 +3909,7 @@ public int getCharCount() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (< 0 or >= getLineCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (&lt; 0 or &gt;= getLineCount())</li>
  * </ul>
  * @since 3.4
  */
@@ -3953,14 +3953,14 @@ public int getLineAlignment(int index) {
  * returns the line of the insert location.
  *
  * @param offset offset relative to the start of the content.
- * 	0 <= offset <= getCharCount()
+ * 	0 &lt;= offset &lt;= getCharCount()
  * @return line at the specified offset in the text
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (&lt; 0 or &gt; getCharCount())</li>
  * </ul>
  */
 public int getLineAtOffset(int offset) {
@@ -4103,7 +4103,7 @@ public int getLineHeight() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (&lt; 0 or &gt; getCharCount())</li>
  * </ul>
  *
  * @since 3.2
@@ -4382,7 +4382,7 @@ public int getLeftMargin() {
  * relative to the upper left corner of the widget client area.
  *
  * @param offset offset relative to the start of the content.
- * 	0 <= offset <= getCharCount()
+ * 	0 &lt;= offset &lt;= getCharCount()
  * @return x, y location of the upper left corner of the character
  * 	bounding box at the specified offset in the text.
  * @exception SWTException <ul>
@@ -4390,7 +4390,7 @@ public int getLeftMargin() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (&lt; 0 or &gt; getCharCount())</li>
  * </ul>
  */
 public Point getLocationAtOffset(int offset) {
@@ -4422,7 +4422,7 @@ public boolean getMouseNavigatorEnabled () {
  * Returns the character offset of the first character of the given line.
  *
  * @param lineIndex index of the line, 0 based relative to the first
- * 	line in the content. 0 <= lineIndex < getLineCount(), except
+ * 	line in the content. 0 &lt;= lineIndex &lt; getLineCount(), except
  * 	lineIndex may always be 0
  * @return offset offset of the first character of the line, relative to
  * 	the beginning of the document. The first character of the document is
@@ -4434,7 +4434,7 @@ public boolean getMouseNavigatorEnabled () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (< 0 or >= getLineCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (&lt; 0 or &gt;= getLineCount())</li>
  * </ul>
  * @since 2.0
  */
@@ -4754,7 +4754,7 @@ public int getRightMargin() {
  * @return start and end of the selection, x is the offset of the first
  * 	selected character, y is the offset after the last selected character.
  *  The selection values returned are visual (i.e., x will always always be
- *  <= y).  To determine if a selection is right-to-left (RtoL) vs. left-to-right
+ *  &lt;= y).  To determine if a selection is right-to-left (RtoL) vs. left-to-right
  *  (LtoR), compare the caretOffset to the start and end of the selection
  *  (e.g., caretOffset == start of selection implies that the selection is RtoL).
  * @see #getSelectionRange
@@ -4990,7 +4990,7 @@ int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
  * </p>
  *
  * @param offset the offset to return the style for.
- * 	0 <= offset < getCharCount() must be true.
+ * 	0 &lt;= offset &lt; getCharCount() must be true.
  * @return a StyleRange with start == offset and length == 1, indicating
  * 	the style at the given offset. null if a LineStyleListener has been set
  * 	or if a style is not set for the given offset.
@@ -5090,9 +5090,9 @@ public StyleRange[] getStyleRanges(boolean includeRanges) {
  *
  * @return the styles or an empty array if a LineStyleListener has
  *  been set.  The returned styles will reflect the given range.  The first
- *  returned <code>StyleRange</code> will have a starting offset >= start
+ *  returned <code>StyleRange</code> will have a starting offset &gt;= start
  *  and the last returned <code>StyleRange</code> will have an ending
- *  offset <= start + length - 1
+ *  offset &lt;= start + length - 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -5130,9 +5130,9 @@ public StyleRange[] getStyleRanges(int start, int length) {
  *
  * @return the styles or an empty array if a LineStyleListener has
  *  been set.  The returned styles will reflect the given range.  The first
- *  returned <code>StyleRange</code> will have a starting offset >= start
+ *  returned <code>StyleRange</code> will have a starting offset &gt;= start
  *  and the last returned <code>StyleRange</code> will have an ending
- *  offset <= start + length - 1
+ *  offset &gt;= start + length - 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -7956,7 +7956,7 @@ public void removeWordMovementListener(MovementListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 &lt;= offset &lt;= getCharCount())</li>
  *   <li>ERROR_NULL_ARGUMENT when ranges is null</li>
  * </ul>
  *
@@ -7997,7 +7997,7 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 &lt;= offset &lt;= getCharCount())</li>
  *   <li>ERROR_INVALID_ARGUMENT when either start or end is inside a multi byte line delimiter.
  * 		Splitting a line delimiter for example by inserting text in between the CR and LF and deleting part of a line delimiter is not supported</li>
  *   <li>ERROR_NULL_ARGUMENT when string is null</li>
@@ -8959,7 +8959,7 @@ public void setForeground(Color color) {
  *
  * @param offset horizontal scroll offset relative to the start
  * 	of the line, measured in character increments starting at 0, if
- * 	equal to 0 the content is not scrolled, if > 0 = the content is scrolled.
+ * 	equal to 0 the content is not scrolled, if &gt; 0 = the content is scrolled.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -9826,7 +9826,7 @@ public void setSelection(int start) {
  * </p>
  *
  * @param point x=selection start offset, y=selection end offset
- * 	The caret will be placed at the selection start when x > y.
+ * 	The caret will be placed at the selection start when x &gt; y.
  * @see #setSelection(int,int)
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -9907,7 +9907,7 @@ public void setSelectionForeground (Color color) {
  * </p>
  *
  * @param start selection start offset. The caret will be placed at the
- * 	selection start when start > end.
+ * 	selection start when start &gt; end.
  * @param end selection end offset
  * @see #setSelectionRange(int,int)
  * @exception SWTException <ul>
@@ -10042,7 +10042,7 @@ public void setSelectionRange(int start, int length) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the style range is outside the valid range (> getCharCount())</li>
+ *   <li>ERROR_INVALID_RANGE when the style range is outside the valid range (&gt; getCharCount())</li>
  * </ul>
  */
 public void setStyleRange(StyleRange range) {
@@ -10087,7 +10087,7 @@ public void setStyleRange(StyleRange range) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when an element in the styles array is null</li>
  *    <li>ERROR_INVALID_RANGE when the number of ranges and style do not match (ranges.length * 2 == styles.length)</li>
- *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (> getCharCount() or less than zero)</li>
+ *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (&gt; getCharCount() or less than zero)</li>
  *    <li>ERROR_INVALID_RANGE when a range overlaps</li>
  * </ul>
  *
@@ -10129,7 +10129,7 @@ public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] sty
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when an element in the styles array is null</li>
  *    <li>ERROR_INVALID_RANGE when the number of ranges and style do not match (ranges.length * 2 == styles.length)</li>
- *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (> getCharCount() or less than zero)</li>
+ *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (&gt; getCharCount() or less than zero)</li>
  *    <li>ERROR_INVALID_RANGE when a range overlaps</li>
  * </ul>
  *
@@ -10370,7 +10370,7 @@ private int endRangeOffset(int[] ranges, int styleIndex) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when the list of ranges is null</li>
- *    <li>ERROR_INVALID_RANGE when the last of the style ranges is outside the valid range (> getCharCount())</li>
+ *    <li>ERROR_INVALID_RANGE when the last of the style ranges is outside the valid range (&gt; getCharCount())</li>
  * </ul>
  *
  * @see #setStyleRanges(int[], StyleRange[])

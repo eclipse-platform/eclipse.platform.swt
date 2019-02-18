@@ -592,13 +592,13 @@ public boolean close () {
  * </p><p>
  * If the script returns a value with a supported type then a java
  * representation of the value is returned.  The supported
- * javascript -> java mappings are:
+ * javascript -&gt; java mappings are:
  * <ul>
- * <li>javascript null or undefined -> <code>null</code></li>
- * <li>javascript number -> <code>java.lang.Double</code></li>
- * <li>javascript string -> <code>java.lang.String</code></li>
- * <li>javascript boolean -> <code>java.lang.Boolean</code></li>
- * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
+ * <li>javascript null or undefined -&gt; <code>null</code></li>
+ * <li>javascript number -&gt; <code>java.lang.Double</code></li>
+ * <li>javascript string -&gt; <code>java.lang.String</code></li>
+ * <li>javascript boolean -&gt; <code>java.lang.Boolean</code></li>
+ * <li>javascript array whose elements are all of supported types -&gt; <code>java.lang.Object[]</code></li>
  * </ul>
  *
  * An <code>SWTException</code> is thrown if the return value has an
@@ -645,13 +645,13 @@ public Object evaluate (String script) throws SWTException {
  * </p><p>
  * If the script returns a value with a supported type then a java
  * representation of the value is returned.  The supported
- * javascript -> java mappings are:
+ * javascript -&gt; java mappings are:
  * <ul>
- * <li>javascript null or undefined -> <code>null</code></li>
- * <li>javascript number -> <code>java.lang.Double</code></li>
- * <li>javascript string -> <code>java.lang.String</code></li>
- * <li>javascript boolean -> <code>java.lang.Boolean</code></li>
- * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
+ * <li>javascript null or undefined -&gt; <code>null</code></li>
+ * <li>javascript number -&gt; <code>java.lang.Double</code></li>
+ * <li>javascript string -&gt; <code>java.lang.String</code></li>
+ * <li>javascript boolean -&gt; <code>java.lang.Boolean</code></li>
+ * <li>javascript array whose elements are all of supported types -&gt; <code>java.lang.Object[]</code></li>
  * </ul>
  * An <code>SWTException</code> is thrown if the return value has an
  * unsupported type, or if evaluating the script causes a javascript

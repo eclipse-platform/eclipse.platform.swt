@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.*;
  * 		});
  *
  * 		shell.open();
- * 		while (shell != null && !shell.isDisposed()) {
+ * 		while (shell != null &amp;&amp; !shell.isDisposed()) {
  * 			if (!display.readAndDispatch())
  * 				display.sleep();
  * 		}

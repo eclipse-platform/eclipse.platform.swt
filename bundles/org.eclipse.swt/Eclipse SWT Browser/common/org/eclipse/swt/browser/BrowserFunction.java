@@ -177,11 +177,11 @@ void dispose (boolean remove) {
  * supported types then this method is invoked with the argument values
  * converted as follows:
  *
- * javascript null or undefined -> <code>null</code>
- * javascript number -> <code>java.lang.Double</code>
- * javascript string -> <code>java.lang.String</code>
- * javascript boolean -> <code>java.lang.Boolean</code>
- * javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code>
+ * javascript null or undefined -&gt; <code>null</code>
+ * javascript number -&gt; <code>java.lang.Double</code>
+ * javascript string -&gt; <code>java.lang.String</code>
+ * javascript boolean -&gt; <code>java.lang.Boolean</code>
+ * javascript array whose elements are all of supported types -&gt; <code>java.lang.Object[]</code>
  *
  * If any of the javascript arguments are of unsupported types then the
  * function invocation will fail and this method will not be called.

@@ -2288,7 +2288,7 @@ public class SWT {
 
 	/**
 	 * Style constant for displaying week numbers in the calendar.
-	 * <br>Note that this is a <em>HINT</em> and is supported on Windows & GTK platforms only.
+	 * <br>Note that this is a <em>HINT</em> and is supported on Windows &amp; GTK platforms only.
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>DateTime</code></li>
@@ -2483,7 +2483,7 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating that the ALT_GR key
 	 * was pushed on the keyboard when the event was generated
-	 * (value is 1 &lt;&lt 15).
+	 * (value is 1 &lt;&lt; 15).
 	 *
 	 * @since 3.108
 	 */
@@ -2536,7 +2536,7 @@ public class SWT {
 	 * any modifier is pressed and will continue to work as new modifier
 	 * masks are added.
 	 *
- 	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
+ 	 * <code>(stateMask &amp; SWT.MODIFIER_MASK) != 0</code>.
 	 *
 	 * @since 2.1
 	 */
@@ -2586,7 +2586,7 @@ public class SWT {
 	 * any button is pressed and will continue to work as new button
 	 * masks are added.
 	 *
- 	 * <code>(stateMask & SWT.BUTTON_MASK) != 0</code>.
+ 	 * <code>(stateMask &amp; SWT.BUTTON_MASK) != 0</code>.
 	 *
 	 * @since 2.1
 	 */
@@ -2673,11 +2673,11 @@ public class SWT {
 	 *
 	 * The following expression is false:
 	 *
-	 * <code>((SWT.MOD1 | SWT.MOD2 | 'T') & SWT.KEYCODE_BIT) != 0</code>.
+	 * <code>((SWT.MOD1 | SWT.MOD2 | 'T') &amp; SWT.KEYCODE_BIT) != 0</code>.
 	 *
 	 * The following expression is true:
 	 *
-	 * <code>((SWT.MOD3 | SWT.F2) & SWT.KEYCODE_BIT) != 0</code>.
+	 * <code>((SWT.MOD3 | SWT.F2) &amp; SWT.KEYCODE_BIT) != 0</code>.
 	 *
 	 * (value is (1&lt;&lt;24))
 	 *

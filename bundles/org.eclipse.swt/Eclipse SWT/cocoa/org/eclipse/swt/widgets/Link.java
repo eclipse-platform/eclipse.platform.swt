@@ -733,7 +733,7 @@ void setOrientation () {
  * HREF attribute can be used to distinguish between them.  The string may
  * include the mnemonic character and line delimiters. The only delimiter
  * the HREF attribute supports is the quotation mark ("). Text containing
- * angle-bracket characters &lt or &gt may be escaped using \\, however
+ * angle-bracket characters &lt; or &gt; may be escaped using \\, however
  * this operation is a hint and varies from platform to platform.
  * </p>
  * <p>

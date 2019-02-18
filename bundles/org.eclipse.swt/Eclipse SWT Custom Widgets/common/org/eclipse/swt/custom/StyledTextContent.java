@@ -84,11 +84,11 @@ public int getLineAtOffset(int offset);
  *
  * @return the number of lines.  For example:
  * <ul>
- * <li>	text value ==> getLineCount
- * <li>	null ==> 1
- * <li>	"" ==> 1
- * <li>	"a\n" ==> 2
- * <li>	"\n\n" ==> 3
+ * <li>	text value ==&gt; getLineCount
+ * <li>	null ==&gt; 1
+ * <li>	"" ==&gt; 1
+ * <li>	"a\n" ==&gt; 2
+ * <li>	"\n\n" ==&gt; 3
  * </ul>
  */
 public int getLineCount();
@@ -180,11 +180,11 @@ public void removeTextChangeListener(TextChangeListener listener);
  * is the number of deleted lines based on the change that occurs visually.
  * For example:
  * <ul>
- * <li>(replaceText, newText) ==> (replaceLineCount, newLineCount)
- * <li>("", "\n") ==> (0, 1)
- * <li>("\n\n", "a") ==> (2, 0)
- * <li>("a", "\n\n") ==> (0, 2)
- * <li>("\n", "") ==> (1, 0)
+ * <li>(replaceText, newText) ==&gt; (replaceLineCount, newLineCount)
+ * <li>("", "\n") ==&gt; (0, 1)
+ * <li>("\n\n", "a") ==&gt; (2, 0)
+ * <li>("a", "\n\n") ==&gt; (0, 2)
+ * <li>("\n", "") ==&gt; (1, 0)
  * </ul>
  *
  * @param start start offset of text to replace, none of the offsets include

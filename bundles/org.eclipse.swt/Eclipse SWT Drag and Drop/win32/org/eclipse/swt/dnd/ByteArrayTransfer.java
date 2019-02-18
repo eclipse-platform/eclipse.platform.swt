@@ -88,7 +88,7 @@ import org.eclipse.swt.internal.win32.*;
  * 		try {
  * 			ByteArrayInputStream in = new ByteArrayInputStream(buffer);
  * 			DataInputStream readIn = new DataInputStream(in);
- * 			while(readIn.available() > 20) {
+ * 			while(readIn.available() &gt; 20) {
  * 				MyType datum = new MyType();
  * 				int size = readIn.readInt();
  * 				byte[] name = new byte[size];

@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
  * combo box. Specifically, on win32, the height of a CCombo can be set;
  * attempts to set the height of a Combo are ignored. CCombo can be used
  * anywhere that having the increased flexibility is more important than
- * getting native L&F, but the decision should not be taken lightly.
+ * getting native L&amp;F, but the decision should not be taken lightly.
  * There is no is no strict requirement that CCombo look or behave
  * the same as the native combo box.
  * </p>
