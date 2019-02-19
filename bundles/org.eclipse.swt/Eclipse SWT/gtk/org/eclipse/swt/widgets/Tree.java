@@ -3146,8 +3146,14 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ snapshot, 
 		long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
-		if (drawForegroundRGBA != null && GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
-			OS.g_object_set (cell, OS.foreground_rgba, drawForegroundRGBA, 0);
+		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
+			/*
+			 * SWT.FOREGROUND means the Tree is responsible for painting the default foreground
+			 * color. This can be either the system default (COLOR_LIST_FOREGROUND), or the
+			 * color set by setForeground(). See bug 294300.
+			 */
+			GdkRGBA rgba = foreground != null ? foreground : display.getSystemColor(SWT.COLOR_LIST_FOREGROUND).handle;
+			OS.g_object_set (cell, OS.foreground_rgba, rgba, 0);
 		}
 		if (GTK.GTK4) {
 			OS.call (klass.snapshot, cell, snapshot, widget, background_area, cell_area, drawFlags);
