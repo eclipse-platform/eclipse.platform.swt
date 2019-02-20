@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -54,6 +54,9 @@ class StyledTextTab extends ScrollableTab {
 	/* Buttons for adding StyleRanges to StyledText */
 	Button boldButton, italicButton, redButton, yellowButton, underlineButton, strikeoutButton, resetButton;
 	Image boldImage, italicImage, redImage, yellowImage, underlineImage, strikeoutImage;
+
+	/* Other widgets added to the "Other" group */
+	Button mouseNavigatorButton;
 
 	/* Variables for saving state. */
 	String text;
@@ -301,6 +304,19 @@ class StyledTextTab extends ScrollableTab {
 		tabFolderPage.addControlListener(ControlListener.controlResizedAdapter(e ->	setExampleWidgetSize ()));
 
 		return tabFolderPage;
+	}
+
+	/**
+	 * Creates the "Other" group.
+	 */
+	@Override
+	void createOtherGroup () {
+		super.createOtherGroup ();
+
+		/* Create display controls specific to this example */
+		mouseNavigatorButton = new Button (otherGroup, SWT.CHECK);
+		mouseNavigatorButton.setText (ControlExample.getResourceString("Mouse_Nav"));
+		mouseNavigatorButton.addSelectionListener (widgetSelectedAdapter(event -> styledText.setMouseNavigatorEnabled(mouseNavigatorButton.getSelection())));
 	}
 
 	/**

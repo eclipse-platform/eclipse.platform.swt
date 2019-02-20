@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -846,6 +846,17 @@ public class TextEditor {
 			item.setPreferredSize(size);
 			item.setSize(size);
 		}
+
+		composite = new Composite(coolBar, SWT.NONE);
+		composite.setLayout(new GridLayout(1, false));
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(composite);
+
+		// Button to toggle Mouse Navigator in StyledText
+		Button mouseNavigator = new Button(composite, SWT.CHECK);
+		mouseNavigator.setText(getResourceString("MouseNav"));
+		mouseNavigator.addSelectionListener (widgetSelectedAdapter(event -> styledText.setMouseNavigatorEnabled(mouseNavigator.getSelection())));
+
 		coolBar.addControlListener(ControlListener.controlResizedAdapter(event -> handleResize(event)));
 	}
 
