@@ -47,6 +47,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * event is sent causing the application to search for an empty string.
  * </p>
  * <p>
+ * Note: Some text actions such as Undo are not natively supported on all platforms.
+ * </p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
