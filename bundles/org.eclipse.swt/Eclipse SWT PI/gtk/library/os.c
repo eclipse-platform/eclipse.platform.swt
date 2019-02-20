@@ -5414,6 +5414,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1tabs
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1entry_1set_1tabs)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1tabs_FUNC);
+	gtk_entry_set_tabs((GtkEntry *)arg0, (PangoTabArray *)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1tabs_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1set_1text
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1entry_1set_1text)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)

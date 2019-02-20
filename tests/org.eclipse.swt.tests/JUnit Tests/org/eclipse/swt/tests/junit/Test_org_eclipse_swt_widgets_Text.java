@@ -613,7 +613,7 @@ public void test_getSelectionText() {
 
 @Test
 public void test_getTabs() {
-	if (SWT.getPlatform().equals("win32")) {
+	if (SWT.getPlatform().equals("win32") || SWT.getPlatform().equals("gtk")) {
 		// API not supported on all platforms
 		text.setTabs(1);
 		assertTrue(":a:", text.getTabs() == 1);

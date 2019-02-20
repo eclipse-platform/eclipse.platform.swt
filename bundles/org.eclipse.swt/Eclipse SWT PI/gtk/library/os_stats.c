@@ -498,6 +498,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1entry_1set_1invisible_1char",
 	"_1gtk_1entry_1set_1max_1length",
 	"_1gtk_1entry_1set_1placeholder_1text",
+	"_1gtk_1entry_1set_1tabs",
 	"_1gtk_1entry_1set_1text",
 	"_1gtk_1entry_1set_1visibility",
 	"_1gtk_1entry_1set_1width_1chars",

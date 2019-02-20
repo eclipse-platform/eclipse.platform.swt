@@ -2571,11 +2571,14 @@ public void setTabs (int tabs) {
 }
 
 void setTabStops (int tabs) {
-	if ((style & SWT.SINGLE) != 0) return;
 	int tabWidth = getTabWidth (tabs);
 	long /*int*/ tabArray = OS.pango_tab_array_new (1, false);
 	OS.pango_tab_array_set_tab (tabArray, 0, OS.PANGO_TAB_LEFT, tabWidth);
-	GTK.gtk_text_view_set_tabs (handle, tabArray);
+	if ((style & SWT.SINGLE) != 0) {
+		GTK.gtk_entry_set_tabs (handle, tabArray);
+	} else {
+		GTK.gtk_text_view_set_tabs (handle, tabArray);
+	}
 	OS.pango_tab_array_free (tabArray);
 }
 

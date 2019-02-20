@@ -2161,6 +2161,19 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param entry cast=(GtkEntry *)
+	 * @param tabs cast=(PangoTabArray *)
+	 */
+	public static final native void _gtk_entry_set_tabs(long /*int*/ entry, long /*int*/ tabs);
+	public static final void gtk_entry_set_tabs(long /*int*/ entry, long /*int*/ tabs) {
+		lock.lock();
+		try {
+			_gtk_entry_set_tabs(entry, tabs);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param entry cast=(GtkEntry *)
 	 * @param text cast=(const gchar *)
 	 */
 	public static final native void _gtk_entry_set_text(long /*int*/ entry, byte[] text);

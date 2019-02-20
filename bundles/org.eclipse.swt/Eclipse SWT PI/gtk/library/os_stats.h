@@ -496,6 +496,7 @@ typedef enum {
 	_1gtk_1entry_1set_1invisible_1char_FUNC,
 	_1gtk_1entry_1set_1max_1length_FUNC,
 	_1gtk_1entry_1set_1placeholder_1text_FUNC,
+	_1gtk_1entry_1set_1tabs_FUNC,
 	_1gtk_1entry_1set_1text_FUNC,
 	_1gtk_1entry_1set_1visibility_FUNC,
 	_1gtk_1entry_1set_1width_1chars_FUNC,
