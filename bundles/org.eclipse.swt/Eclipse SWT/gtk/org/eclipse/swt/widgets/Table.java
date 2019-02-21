@@ -2657,21 +2657,24 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	if (start == 0 && end == itemCount - 1) {
+		removeAll();
+		return;
+	}
 	long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
 	long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
-	int index = end;
-	while (index >= start) {
-		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	int index = -1;
+	for (index = start; index <= end; index++) {
+		if (index == start) GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		TableItem item = items [index];
 		if (item != null && !item.isDisposed ()) item.release (false);
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		GTK.gtk_list_store_remove (modelHandle, iter);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		index--;
 	}
 	if (fixAccessibility ()) {
 		ignoreAccessibility = false;
@@ -3623,11 +3626,7 @@ public void setItemCount (int count) {
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	if (!isVirtual) setRedraw (false);
-	if(count == 0) {
-		removeAll();
-	} else {
-		remove (count, itemCount - 1);
-	}
+	remove (count, itemCount - 1);
 	int length = Math.max (4, (count + 3) / 4 * 4);
 	TableItem [] newItems = new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, itemCount);
