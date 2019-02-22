@@ -1075,6 +1075,18 @@ void releaseWidget () {
 	strings = null;
 }
 
+@Override
+public void dispose () {
+	// Workaround to Bug489751, avoid selecting next node when selected node is disposed.
+	if (parent != null && parent.getItemCount() > 0) {
+		TreeItem tmpItem = parent.getItem(0);
+		long /*int*/ path = GTK.gtk_tree_model_get_path (parent.modelHandle, tmpItem.handle);
+		GTK.gtk_tree_view_set_cursor (parent.handle, path, 0, false);
+		parent.deselectAll();
+	}
+	super.dispose();
+}
+
 /**
  * Removes all of the items from the receiver.
  *
