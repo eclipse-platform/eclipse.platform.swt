@@ -9401,6 +9401,9 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	}
 	setVariableLineHeight();
 	int oldBottom = getLinePixel(lineIndex + 1);
+	if (oldBottom <= getClientArea().height) {
+		verticalScrollOffset = -1;
+	}
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	resetCache(lineIndex, 1);
 	int newBottom = getLinePixel(lineIndex + 1);
