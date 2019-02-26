@@ -24,8 +24,6 @@ import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentListener;
@@ -4822,17 +4820,6 @@ public void test_setTopPixelI(){
 	text.setText("");
 	text.setTopPixel(2 * lineHeight);
 	assertTrue(":i:", text.getTopPixel() == 0);
-}
-
-@Test
-public void test_verticalIndent_changeRelativeBounds() {
-	String _5000lines = IntStream.range(1, 5001).mapToObj(n -> Integer.toString(n)).collect(Collectors.joining("\n"));
-	text.setText(_5000lines);
-	text.setSize(500, 200);
-	text.invokeAction(ST.TEXT_END);
-	text.setLineVerticalIndent(text.getContent().getLineCount() - 1, 10);
-	text.invokeAction(ST.TEXT_START);
-	assertEquals(0, text.getTopPixel());
 }
 
 @Test
