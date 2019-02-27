@@ -106,7 +106,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
- * 
  * <p>
  * Note: Only one of the styles APPLICATION_MODAL, MODELESS,
  * PRIMARY_MODAL and SYSTEM_MODAL may be specified.

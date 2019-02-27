@@ -27,9 +27,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * <dt><b>Events:</b></dt>
  * <dd> Move, Resize, Selection</dd>
  * </dl>
- * </p><p>
- * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
  * <p>
+ * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
