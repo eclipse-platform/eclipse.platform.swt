@@ -698,6 +698,7 @@ static Browser FindBrowser (long /*int*/ webView) {
 }
 
 static boolean IsInstalled () {
+	if (GTK.GTK4) return false;
 	if (!WebKitGTK.LibraryLoaded) return false;
 	// TODO webkit_check_version() should take care of the following, but for some
 	// reason this symbol is missing from the latest build.  If it is present in

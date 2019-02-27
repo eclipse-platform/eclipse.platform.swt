@@ -19,6 +19,7 @@ class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	if (OS.IsWin32) return null;
+	if (GTK.GTK4) return null;
 	boolean webkitInstalled = WebKit.IsInstalled ();
 	if (!webkitInstalled) return null;
 

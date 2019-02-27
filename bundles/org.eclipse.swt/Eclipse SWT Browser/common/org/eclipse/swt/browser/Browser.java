@@ -104,17 +104,18 @@ public Browser (Composite parent, int style) {
 	}
 	dispose ();
 
-	String errMsg = " because no underlying browser available.\n";
+	String errMsg = " because there is no underlying browser available.\n";
 	switch (SWT.getPlatform()) {
 	case "gtk":
-		errMsg = errMsg + "   Please ensure Webkit with its Gtk 3.x bindings installed. Webkit2 API level preferred.\n";
+		errMsg = errMsg + "Please ensure that WebKit with its GTK 3.x bindings is installed (WebKit2 API level is preferred)."
+				+ " Additionally, please note that GTK4 does not currently have Browser support.\n";
 		break;
 	case "cocoa":
-		errMsg = errMsg + " SWT failed to load webkit library.\n";
+		errMsg = errMsg + "SWT failed to load the WebKit library.\n";
 		break;
 	case "win32":
-		errMsg = errMsg + " SWT uses either IE or Webkit. Either SWT.WEBKIT flag is passed and Webkit library was not "
-				+ "loaded properly by SWT or SWT failed to load IE.\n";
+		errMsg = errMsg + "SWT uses either IE or WebKit. Either the SWT.WEBKIT flag is passed and the WebKit library was not "
+				+ "loaded properly by SWT, or SWT failed to load IE.\n";
 		break;
 	default:
 		break;
