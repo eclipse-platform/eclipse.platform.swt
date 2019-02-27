@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -75,6 +76,7 @@ public void test_ConstructorI() {
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(cases[i]);
 		assertTrue("a " +i, newShell.getDisplay() == shell.getDisplay());
+		assertNotEquals(0, newShell.getStyle() & cases[i]);
 		newShell.dispose();
 	}
 }
