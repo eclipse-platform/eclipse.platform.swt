@@ -478,7 +478,7 @@ public void create(Composite parent, int style) {
 								long /*int*/ pCancel1 = cancel1.getByRef();
 								OS.MoveMemory(pCancel1, new short[] {OS.VARIANT_FALSE}, 2);
 							}
-							isAboutBlank = false;
+							setAboutBlank(false);
 							break;
 						} else {
 							/*
@@ -536,7 +536,7 @@ public void create(Composite parent, int style) {
 						Variant variant1 = new Variant(auto); /* does not need to be disposed */
 						IDispatch top1 = variant1.getDispatch();
 						if (top1.getAddress() == dispatch1.getAddress()) {
-							isAboutBlank = url1.startsWith(ABOUT_BLANK);
+							setAboutBlank(url1.startsWith(ABOUT_BLANK));
 						}
 					}
 					break;
@@ -701,7 +701,7 @@ public void create(Composite parent, int style) {
 						Variant variant3 = new Variant(auto); /* does not need to be disposed */
 						IDispatch top3 = variant3.getDispatch();
 						if (top3.getAddress() == dispatch3.getAddress()) {
-							isAboutBlank = url3.startsWith(ABOUT_BLANK);
+							setAboutBlank(url3.startsWith(ABOUT_BLANK));
 							lastNavigateURL = url3;
 						}
 					}
@@ -1431,6 +1431,20 @@ void setHTML (String string) {
 	}
 }
 
+private void setAboutBlank(boolean value) {
+	isAboutBlank = value;
+	updateForceTrusted();
+}
+
+private void setUntrustedText(boolean value) {
+	untrustedText = value;
+	updateForceTrusted();
+}
+
+private void updateForceTrusted() {
+	site.isForceTrusted = isAboutBlank && !untrustedText;
+}
+
 @Override
 public boolean setText(final String html, boolean trusted) {
 	/*
@@ -1452,7 +1466,7 @@ public boolean setText(final String html, boolean trusted) {
 	*/
 	boolean blankLoading = this.html != null;
 	this.html = html;
-	untrustedText = !trusted;
+	setUntrustedText(!trusted);
 	if (blankLoading) return true;
 
 	/*
@@ -1567,7 +1581,7 @@ public void stop() {
 	* Ensure that isAboutBlank is set accurately since Stop can be issued at
 	* any stage in the page load cycle.
 	*/
-	isAboutBlank = getUrl().startsWith(ABOUT_BLANK);
+	setAboutBlank(getUrl().startsWith(ABOUT_BLANK));
 
 	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
