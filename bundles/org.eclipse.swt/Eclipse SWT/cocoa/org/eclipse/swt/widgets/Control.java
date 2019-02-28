@@ -78,7 +78,7 @@ public abstract class Control extends Widget implements Drawable {
 	final static int VISIBLE_REGION = 1 << 12;
 
 	/**
-	 * Magic number comes from experience. There's no API for this value in Cocoa or Carbon.
+	 * Magic number comes from experience. There's no API for this value in Cocoa.
 	 */
 	static final int DEFAULT_DRAG_HYSTERESIS = 5;
 

@@ -3791,7 +3791,7 @@ public void setTransform(Transform transform) {
  * is replaced with the source color value.
  * <p>
  * Note that this mode in fundamentally unsupportable on certain
- * platforms, notably Carbon (Mac OS X). Clients that want their
+ * platforms. Clients that want their
  * code to run on all platforms need to avoid this method.
  * </p>
  *

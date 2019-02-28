@@ -98,15 +98,14 @@ public class JavadocBasher {
 				"Eclipse SWT Theme", "Eclipse SWT WebKit", };
 		String sourceSubdir = "win32";
 		String[] targetSubdirs = new String[] { "cairo", // used by gtk
-				// "carbon", // we are no longer maintaining carbon
 				"cocoa",
 				// "common",
 				// "common_j2me",
 				// "common_j2se",
 				"emulated", "emulated/bidi", // used by carbon, cocoa
-				"emulated/coolbar", // used by carbon, cocoa, gtk
-				"emulated/expand", // used by carbon, cocoa
-				"emulated/taskbar", // used by carbon, gtk
+				"emulated/coolbar", // used by cocoa, gtk
+				"emulated/expand", // used by cocoa
+				"emulated/taskbar", // used by gtk
 				"emulated/tooltip", // used by cocoa (?!)
 				"glx", // used by gtk
 				"gtk"
