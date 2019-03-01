@@ -2233,7 +2233,7 @@ public void remove (int start, int end) {
 		removeAll ();
 	} else {
 		int length = end - start + 1;
-		for (int i=start; i<length; i++) {
+		for (int i=start; i<=end; i++) {
 			TableItem item = items [i];
 			if (item != null) item.release (false);
 		}
