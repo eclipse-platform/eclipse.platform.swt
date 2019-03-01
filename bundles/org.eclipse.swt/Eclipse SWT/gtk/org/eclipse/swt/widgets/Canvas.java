@@ -45,6 +45,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
+	long /*int*/ cachedCairo;
 	boolean blink, drawFlag;
 
 Canvas () {}
@@ -178,6 +179,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		 result = super.gtk_draw (widget, cairo);
 		if (isFocus) caret.setFocus ();
 	} else {
+		this.cachedCairo = cairo;
 		result = super.gtk_draw (widget, cairo);
 		/*
 		 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
@@ -317,6 +319,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 }
 
 void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
+	long /*int*/ cairo = this.cachedCairo;
+	if (cairo == 0) return;
 	if ((style & SWT.MIRRORED) != 0) {
 		int clientWidth = getClientWidth ();
 		x = clientWidth - width - x;
@@ -327,9 +331,12 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	if (!isVisible ()) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	long /*int*/ window = paintWindow ();
-	long /*int*/ visibleRegion = GDK.gdk_window_get_visible_region (window);
+	GdkRectangle clipRect = new GdkRectangle ();
+	GDK.gdk_cairo_get_clip_rectangle (cairo, clipRect);
 	cairo_rectangle_int_t srcRect = new cairo_rectangle_int_t ();
+	srcRect.convertFromGdkRectangle(clipRect);
+	long /*int*/ gdkResource = GTK.GTK4? paintSurface () : paintWindow ();
+	long /*int*/ visibleRegion = Cairo.cairo_region_create_rectangle(srcRect);
 	srcRect.x = x;
 	srcRect.y = y;
 	/*
@@ -377,63 +384,48 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		redrawWidget (x, y, width, height, false, false, false);
 		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-		long /*int*/ cairo = 0;
-		long /*int*/ context = 0;
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			long /*int*/ cairo_region = GDK.gdk_window_get_visible_region(window);
-			context = GDK.gdk_window_begin_draw_frame(window, cairo_region);
-			cairo = GDK.gdk_drawing_context_get_cairo_context(context);
-		} else {
-			cairo = GDK.gdk_cairo_create(window);
-		}
-		if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
-			GDK.gdk_cairo_set_source_window(cairo, window, 0, 0);
-		} else {
-			Cairo.cairo_push_group(cairo);
-			GDK.gdk_cairo_set_source_window(cairo, window, 0, 0);
-			Cairo.cairo_paint(cairo);
-			Cairo.cairo_pop_group_to_source(cairo);
-		}
+		Cairo.cairo_push_group(cairo);
+		Cairo.cairo_paint(cairo);
+		Cairo.cairo_pop_group_to_source(cairo);
 		double[] matrix = {1, 0, 0, 1, -deltaX, -deltaY};
 		Cairo.cairo_pattern_set_matrix(Cairo.cairo_get_source(cairo), matrix);
 		Cairo.cairo_rectangle(cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_paint(cairo);
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			if (context != 0) GDK.gdk_window_end_draw_frame(window, context);
-		} else {
-			Cairo.cairo_destroy(cairo);
-		}
 		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 		if (disjoint) {
-			cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
-			rect.x = x;
-			rect.y = y;
-			rect.width = width;
-			rect.height = height;
-			Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
+			cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
+			cairoRect.x = x;
+			cairoRect.y = y;
+			cairoRect.width = width;
+			cairoRect.height = height;
+			Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
 		} else {
-			cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
+			cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
 			if (deltaX != 0) {
 				int newX = destX - deltaX;
 				if (deltaX < 0) newX = destX + width;
-				rect.x = newX;
-				rect.y = y;
-				rect.width = Math.abs(deltaX);
-				rect.height = height;
-				Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
+				cairoRect.x = newX;
+				cairoRect.y = y;
+				cairoRect.width = Math.abs(deltaX);
+				cairoRect.height = height;
+				Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
 			}
 			if (deltaY != 0) {
 				int newY = destY - deltaY;
 				if (deltaY < 0) newY = destY + height;
-				rect.x = x;
-				rect.y = newY;
-				rect.width = width;
-				rect.height = Math.abs(deltaY);
-				Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
+				cairoRect.x = x;
+				cairoRect.y = newY;
+				cairoRect.width = width;
+				cairoRect.height = Math.abs(deltaY);
+				Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
 			}
 		}
-		GDK.gdk_window_invalidate_region(window, invalidateRegion, all);
+		if (GTK.GTK4) {
+			GDK.gdk_surface_invalidate_region(gdkResource, invalidateRegion);
+		} else {
+			GDK.gdk_window_invalidate_region(gdkResource, invalidateRegion, all);
+		}
 	}
 	Cairo.cairo_region_destroy (visibleRegion);
 	Cairo.cairo_region_destroy (copyRegion);
@@ -442,10 +434,10 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
-			Rectangle rect = child.getBoundsInPixels ();
-			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
-				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
-					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
+			Rectangle childBounds = child.getBoundsInPixels ();
+			if (Math.min(x + width, childBounds.x + childBounds.width) >= Math.max (x, childBounds.x) &&
+				Math.min(y + height, childBounds.y + childBounds.height) >= Math.max (y, childBounds.y)) {
+					child.setLocationInPixels (childBounds.x + deltaX, childBounds.y + deltaY);
 			}
 		}
 	}

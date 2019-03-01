@@ -2233,20 +2233,19 @@ long /*int*/ gtk_changed (long /*int*/ widget) {
 	return 0;
 }
 
-void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
+void drawInheritedBackground (long /*int*/ cairo) {
 	if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 		Control control = findBackgroundControl ();
 		if (control != null) {
-			long /*int*/ window = GTK.gtk_tree_view_get_bin_window (handle);
-			long /*int*/ rgn = 0;
-			if (eventPtr != 0) {
-				GdkEventExpose gdkEvent = new GdkEventExpose ();
-				OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
-				if (window != gdkEvent.window) return;
-				rgn = gdkEvent.region;
-			}
 			int [] width = new int [1], height = new int [1];
-			gdk_window_get_size (window, width, height);
+			long /*int*/ gdkResource;
+			if (GTK.GTK4) {
+				gdkResource = gtk_widget_get_surface(handle);
+				gdk_surface_get_size (gdkResource, width, height);
+			} else {
+				gdkResource = GTK.gtk_tree_view_get_bin_window (handle);
+				gdk_window_get_size (gdkResource, width, height);
+			}
 			int bottom = 0;
 			if (itemCount != 0) {
 				long /*int*/ iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
@@ -2259,7 +2258,7 @@ void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 				OS.g_free (iter);
 			}
 			if (height [0] > bottom) {
-				drawBackground (control, window, cairo, rgn, 0, bottom, width [0], height [0] - bottom);
+				drawBackground (control, gdkResource, cairo, 0, 0, bottom, width [0], height [0] - bottom);
 			}
 		}
 	}
@@ -2283,7 +2282,7 @@ long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 		GTK.gtk_widget_queue_draw(handle);
 		return 0;
 	}
-	drawInheritedBackground (0, cairo);
+	drawInheritedBackground (cairo);
 	return super.gtk_draw (widget, cairo);
 }
 
@@ -4180,15 +4179,15 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			 * expose events. The fix is to fill the background in the inverse expose
 			 * event.
 			 */
-			if (itemCount == 0 && (state & OBSCURED) == 0) {
+			if (itemCount == 0 && (state & OBSCURED) == 0 && !GTK.GTK4) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
 					if (control != null) {
-						GdkEventExpose gdkEvent = new GdkEventExpose ();
-						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
 						long /*int*/ window = GTK.gtk_tree_view_get_bin_window (handle);
-						if (window == gdkEvent.window) {
-							drawBackground (control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+						if (window == GTK.gtk_widget_get_window(handle)) {
+							GdkRectangle rect = new GdkRectangle ();
+							GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
+							drawBackground (control, window, arg0, 0, rect.x, rect.y, rect.width, rect.height);
 						}
 					}
 				}

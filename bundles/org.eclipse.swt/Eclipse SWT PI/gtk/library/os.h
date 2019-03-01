@@ -182,7 +182,6 @@
 #define NO_GdkEventAny
 #define NO_GdkEventButton
 #define NO_GdkEventCrossing
-#define NO_GdkEventExpose
 #define NO_GdkEventFocus
 #define NO_GdkEventKey
 #define NO_GdkEventMotion
@@ -205,8 +204,6 @@
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventCrossing_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventFocus_2I
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventFocus_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II
@@ -442,6 +439,7 @@
 #define NO__1gtk_1widget_1measure
 #define NO__1gtk_1style_1context_1add_1provider_1for_1display
 #define NO__1gtk_1widget_1get_1first_1child
+#define NO__1gtk_1widget_1get_1next_1sibling
 #define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ
 #define NO__1gdk_1display_1is_1composited

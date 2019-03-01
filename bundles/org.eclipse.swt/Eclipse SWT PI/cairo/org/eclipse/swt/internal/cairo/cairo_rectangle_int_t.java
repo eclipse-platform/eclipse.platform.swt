@@ -42,4 +42,15 @@ public class cairo_rectangle_int_t {
 		}
 		return;
 	}
+
+	/**
+	 * Returns a string containing a concise, human-readable
+	 * description of the receiver.
+	 *
+	 * @return a string representation of the <code>cairo_rectangle_int_t</code>
+	 */
+	@Override
+	public String toString() {
+		return "cairo_rectangle_int_t {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	}
 }

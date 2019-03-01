@@ -28,7 +28,6 @@ char * GDK_nativeFunctionNames[] = {
 	"GdkEventAny_1sizeof",
 	"GdkEventButton_1sizeof",
 	"GdkEventCrossing_1sizeof",
-	"GdkEventExpose_1sizeof",
 	"GdkEventFocus_1sizeof",
 	"GdkEventKey_1sizeof",
 	"GdkEventMotion_1sizeof",
@@ -211,10 +210,8 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1unicode_1to_1keyval",
 	"_1gdk_1utf8_1to_1string_1target",
 	"_1gdk_1visual_1get_1depth",
-	"_1gdk_1window_1begin_1draw_1frame",
 	"_1gdk_1window_1create_1similar_1surface",
 	"_1gdk_1window_1destroy",
-	"_1gdk_1window_1end_1draw_1frame",
 	"_1gdk_1window_1focus",
 	"_1gdk_1window_1get_1children",
 	"_1gdk_1window_1get_1device_1position",
@@ -1131,6 +1128,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1margin_1start",
 	"_1gtk_1widget_1get_1margin_1top",
 	"_1gtk_1widget_1get_1name",
+	"_1gtk_1widget_1get_1next_1sibling",
 	"_1gtk_1widget_1get_1opacity",
 	"_1gtk_1widget_1get_1pango_1context",
 	"_1gtk_1widget_1get_1parent",
@@ -1820,11 +1818,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II",

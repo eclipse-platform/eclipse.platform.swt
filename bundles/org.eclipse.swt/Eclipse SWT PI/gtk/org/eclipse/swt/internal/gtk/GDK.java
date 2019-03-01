@@ -278,7 +278,6 @@ public class GDK extends OS {
 	public static final native int GdkEventAny_sizeof();
 	public static final native int GdkEventButton_sizeof();
 	public static final native int GdkEventCrossing_sizeof();
-	public static final native int GdkEventExpose_sizeof();
 	public static final native int GdkEventFocus_sizeof();
 	public static final native int GdkEventKey_sizeof();
 	public static final native int GdkEventMotion_sizeof();
@@ -426,36 +425,6 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_x11_surface_lookup_for_display(gdkdisplay, xid);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param region cast=(cairo_region_t *)
-	 * @method flags=dynamic
-	 */
-	public static final native long /*int*/ _gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final long /*int*/ gdk_window_begin_draw_frame(long /*int*/ window, long /*int*/ region) {
-		lock.lock();
-		try {
-			return _gdk_window_begin_draw_frame(window, region);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param window cast=(GdkWindow *)
-	 * @param context cast=(GdkDrawingContext *)
-	 * @method flags=dynamic
-	 */
-	public static final native long /*int*/ _gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final long /*int*/ gdk_window_end_draw_frame(long /*int*/ window, long /*int*/ context) {
-		lock.lock();
-		try {
-			return _gdk_window_end_draw_frame(window, context);
 		} finally {
 			lock.unlock();
 		}

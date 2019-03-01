@@ -464,7 +464,7 @@ void copyAreaInPixels(Image image, int x, int y) {
 	if (data.image != null) {
 		Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
 	} else if (data.drawable != 0) {
-		GDK.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
+		if (!GTK.GTK4) GDK.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
 	} else {
 		Cairo.cairo_destroy(cairo);
 		return;
@@ -542,7 +542,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		Cairo.cairo_translate(handle, deltaX, deltaY);
 		Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_push_group(handle);
-		GDK.gdk_cairo_set_source_window(handle, drawable, 0, 0);
+		if (!GTK.GTK4) GDK.gdk_cairo_set_source_window(handle, drawable, 0, 0);
 		Cairo.cairo_paint(handle);
 		Cairo.cairo_pop_group_to_source(handle);
 		Cairo.cairo_rectangle(handle, destX - deltaX, destY - deltaY, width, height);
@@ -550,24 +550,24 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 		Cairo.cairo_paint(handle);
 		Cairo.cairo_restore(handle);
 		if (paint) {
-			long /*int*/ visibleRegion = GDK.gdk_window_get_visible_region (drawable);
 			cairo_rectangle_int_t srcRect = new cairo_rectangle_int_t ();
 			srcRect.x = srcX;
 			srcRect.y = srcY;
 			srcRect.width = width;
 			srcRect.height = height;
-			long /*int*/ copyRegion = Cairo.cairo_region_create_rectangle (srcRect);
-			Cairo.cairo_region_intersect(copyRegion, visibleRegion);
 			long /*int*/ invalidateRegion = Cairo.cairo_region_create_rectangle (srcRect);
-			Cairo.cairo_region_subtract (invalidateRegion, visibleRegion);
-			Cairo.cairo_region_translate (invalidateRegion, deltaX, deltaY);
 			if (GTK.GTK4) {
 				GDK.gdk_surface_invalidate_region(drawable, invalidateRegion);
 			} else {
+				long /*int*/ visibleRegion = GDK.gdk_window_get_visible_region (drawable);
+				long /*int*/ copyRegion = Cairo.cairo_region_create_rectangle (srcRect);
+				Cairo.cairo_region_intersect(copyRegion, visibleRegion);
+				Cairo.cairo_region_subtract (invalidateRegion, visibleRegion);
+				Cairo.cairo_region_translate (invalidateRegion, deltaX, deltaY);
 				GDK.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+				Cairo.cairo_region_destroy (visibleRegion);
+				Cairo.cairo_region_destroy (copyRegion);
 			}
-			Cairo.cairo_region_destroy (visibleRegion);
-			Cairo.cairo_region_destroy (copyRegion);
 			Cairo.cairo_region_destroy (invalidateRegion);
 		}
 	}
@@ -579,8 +579,11 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 			rect.y = srcY;
 			rect.width = Math.max (0, width);
 			rect.height = Math.max (0, height);
-			GDK.gdk_window_invalidate_rect (drawable, rect, false);
-//			OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
+			if (GTK.GTK4) {
+				GDK.gdk_surface_invalidate_rect (drawable, rect);
+			} else {
+				GDK.gdk_window_invalidate_rect (drawable, rect, false);
+			}
 		} else {
 			if (deltaX != 0) {
 				int newX = destX - deltaX;
@@ -589,8 +592,11 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 				rect.y = srcY;
 				rect.width = Math.abs(deltaX);
 				rect.height = Math.max (0, height);
-				GDK.gdk_window_invalidate_rect (drawable, rect, false);
-//				OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
+				if (GTK.GTK4) {
+					GDK.gdk_surface_invalidate_rect (drawable, rect);
+				} else {
+					GDK.gdk_window_invalidate_rect (drawable, rect, false);
+				}
 			}
 			if (deltaY != 0) {
 				int newY = destY - deltaY;
@@ -599,8 +605,11 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 				rect.y = newY;
 				rect.width = Math.max (0, width);
 				rect.height = Math.abs(deltaY);
-				GDK.gdk_window_invalidate_rect (drawable, rect, false);
-//				OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
+				if (GTK.GTK4) {
+					GDK.gdk_surface_invalidate_rect (drawable, rect);
+				} else {
+					GDK.gdk_window_invalidate_rect (drawable, rect, false);
+				}
 			}
 		}
 	}

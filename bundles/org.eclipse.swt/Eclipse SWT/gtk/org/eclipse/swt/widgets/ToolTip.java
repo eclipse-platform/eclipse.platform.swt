@@ -505,23 +505,9 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
-void drawTooltip (long /*int*/ cr) {
-	long /*int*/ gdkResource = GTK.GTK4 ? gtk_widget_get_surface(handle) : gtk_widget_get_window (handle);
+void drawTooltip (long /*int*/ cairo) {
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
-	long /*int*/ cairo = 0;
-	long /*int*/ context = 0;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		if (cr == 0) {
-			long /*int*/ cairo_region = GDK.gdk_window_get_visible_region(gdkResource);
-			context = GDK.gdk_window_begin_draw_frame(gdkResource, cairo_region);
-			cairo = GDK.gdk_drawing_context_get_cairo_context(context);
-		} else {
-			cairo = cr;
-		}
-	} else {
-		cairo = cr != 0 ? cr : GDK.gdk_cairo_create(gdkResource);
-	}
 	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 	int count = borderPolygon.length / 2;
 	if (count != 0) {
@@ -564,11 +550,6 @@ void drawTooltip (long /*int*/ cr) {
 		GDK.gdk_cairo_set_source_rgba(cairo,foreground.handle);
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layoutMessage);
-	}
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		if (cairo != cr && context != 0) GDK.gdk_window_end_draw_frame(gdkResource, context);
-	} else {
-		if (cairo != cr) Cairo.cairo_destroy(cairo);
 	}
 }
 

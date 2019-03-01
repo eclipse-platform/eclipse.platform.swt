@@ -402,61 +402,6 @@ void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *
 }
 #endif
 
-#ifndef NO_GdkEventExpose
-typedef struct GdkEventExpose_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID window, send_event, area_x, area_y, area_width, area_height, region, count;
-} GdkEventExpose_FID_CACHE;
-
-GdkEventExpose_FID_CACHE GdkEventExposeFc;
-
-void cacheGdkEventExposeFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkEventExposeFc.cached) return;
-	cacheGdkEventFields(env, lpObject);
-	GdkEventExposeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventExposeFc.window = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "window", I_J);
-	GdkEventExposeFc.send_event = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "send_event", "B");
-	GdkEventExposeFc.area_x = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_x", "I");
-	GdkEventExposeFc.area_y = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_y", "I");
-	GdkEventExposeFc.area_width = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_width", "I");
-	GdkEventExposeFc.area_height = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_height", "I");
-	GdkEventExposeFc.region = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "region", I_J);
-	GdkEventExposeFc.count = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "count", "I");
-	GdkEventExposeFc.cached = 1;
-}
-
-GdkEventExpose *getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct)
-{
-	if (!GdkEventExposeFc.cached) cacheGdkEventExposeFields(env, lpObject);
-	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.window);
-	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventExposeFc.send_event);
-	lpStruct->area.x = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_x);
-	lpStruct->area.y = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_y);
-	lpStruct->area.width = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_width);
-	lpStruct->area.height = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_height);
-	lpStruct->region = (void *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.region);
-	lpStruct->count = (gint)(*env)->GetIntField(env, lpObject, GdkEventExposeFc.count);
-	return lpStruct;
-}
-
-void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct)
-{
-	if (!GdkEventExposeFc.cached) cacheGdkEventExposeFields(env, lpObject);
-	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntLongField(env, lpObject, GdkEventExposeFc.window, (jintLong)lpStruct->window);
-	(*env)->SetByteField(env, lpObject, GdkEventExposeFc.send_event, (jbyte)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_x, (jint)lpStruct->area.x);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_y, (jint)lpStruct->area.y);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_width, (jint)lpStruct->area.width);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_height, (jint)lpStruct->area.height);
-	(*env)->SetIntLongField(env, lpObject, GdkEventExposeFc.region, (jintLong)lpStruct->region);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.count, (jint)lpStruct->count);
-}
-#endif
-
 #ifndef NO_GdkEventFocus
 typedef struct GdkEventFocus_FID_CACHE {
 	int cached;

@@ -2936,12 +2936,6 @@ public static final native void memmove(GdkEventCrossing dest, long /*int*/ src,
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove(GdkEventExpose dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
 public static final native void memmove(GdkEventFocus dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in

@@ -1504,6 +1504,12 @@ static long /*int*/ snapshotDrawProc (long /*int*/ handle, long /*int*/ snapshot
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) widget.snapshotToDraw(handle, snapshot);
+	long /*int*/ child = GTK.gtk_widget_get_first_child(handle);
+	// Propagate the snapshot down the widget tree
+	while (child != 0) {
+		GTK.gtk_widget_snapshot_child(handle, child, snapshot);
+		child = GTK.gtk_widget_get_next_sibling(child);
+	}
 	return 0;
 }
 

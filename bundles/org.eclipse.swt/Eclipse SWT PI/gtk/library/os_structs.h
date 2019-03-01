@@ -114,18 +114,6 @@ void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *
 #define GdkEventCrossing_sizeof() 0
 #endif
 
-#ifndef NO_GdkEventExpose
-void cacheGdkEventExposeFields(JNIEnv *env, jobject lpObject);
-GdkEventExpose *getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct);
-void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct);
-#define GdkEventExpose_sizeof() sizeof(GdkEventExpose)
-#else
-#define cacheGdkEventExposeFields(a,b)
-#define getGdkEventExposeFields(a,b,c) NULL
-#define setGdkEventExposeFields(a,b,c)
-#define GdkEventExpose_sizeof() 0
-#endif
-
 #ifndef NO_GdkEventFocus
 void cacheGdkEventFocusFields(JNIEnv *env, jobject lpObject);
 GdkEventFocus *getGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFocus *lpStruct);

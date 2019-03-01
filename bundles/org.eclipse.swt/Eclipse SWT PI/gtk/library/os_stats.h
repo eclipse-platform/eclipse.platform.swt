@@ -38,7 +38,6 @@ typedef enum {
 	GdkEventAny_1sizeof_FUNC,
 	GdkEventButton_1sizeof_FUNC,
 	GdkEventCrossing_1sizeof_FUNC,
-	GdkEventExpose_1sizeof_FUNC,
 	GdkEventFocus_1sizeof_FUNC,
 	GdkEventKey_1sizeof_FUNC,
 	GdkEventMotion_1sizeof_FUNC,
@@ -221,10 +220,8 @@ typedef enum {
 	_1gdk_1unicode_1to_1keyval_FUNC,
 	_1gdk_1utf8_1to_1string_1target_FUNC,
 	_1gdk_1visual_1get_1depth_FUNC,
-	_1gdk_1window_1begin_1draw_1frame_FUNC,
 	_1gdk_1window_1create_1similar_1surface_FUNC,
 	_1gdk_1window_1destroy_FUNC,
-	_1gdk_1window_1end_1draw_1frame_FUNC,
 	_1gdk_1window_1focus_FUNC,
 	_1gdk_1window_1get_1children_FUNC,
 	_1gdk_1window_1get_1device_1position_FUNC,
@@ -1129,6 +1126,7 @@ typedef enum {
 	_1gtk_1widget_1get_1margin_1start_FUNC,
 	_1gtk_1widget_1get_1margin_1top_FUNC,
 	_1gtk_1widget_1get_1name_FUNC,
+	_1gtk_1widget_1get_1next_1sibling_FUNC,
 	_1gtk_1widget_1get_1opacity_FUNC,
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,
@@ -1794,11 +1792,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II_FUNC,
