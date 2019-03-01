@@ -487,7 +487,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
 	}
 	if (GTK.GTK4) {
-		// GTK4: button-press/release-event dropped, use generic event instead
+		// GTK4: replace button-press/release-event, event-after dropped with generic event
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
@@ -519,7 +519,10 @@ void hookEvents () {
 
 	/* Connect the event_after signal for both key and mouse */
 	if (GTK.GTK4) {
-		// TODO: Replacements for event-after, no GdkEventController for button-press/release-event
+		// GTK4: event-after replaced with generic event
+		if (focusHandle != eventHandle) {
+			OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+		}
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 		if (focusHandle != eventHandle) {
@@ -3426,8 +3429,18 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 		case GDK.GDK4_BUTTON_RELEASE: {
 			return gtk_button_release_event(widget, event);
 		}
+		case GDK.GDK4_CONFIGURE: {
+			return gtk_configure_event(widget, event);
+		}
+		case GDK.GDK4_MAP: {
+			return gtk_map_event(widget, event);
+		}
+		case GDK.GDK4_UNMAP: {
+			// not used in SWT at all, could be removed
+			return gtk_unmap_event(widget, event);
+		}
 	}
-	return 0;
+	return gtk_event_after(widget, event);
 }
 
 /**

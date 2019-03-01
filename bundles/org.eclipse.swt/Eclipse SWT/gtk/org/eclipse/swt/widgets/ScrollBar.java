@@ -594,11 +594,12 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	if (GTK.GTK4) {
+		// GTK4: event-after replaced with generic event
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
 }
 

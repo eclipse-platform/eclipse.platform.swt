@@ -918,7 +918,7 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	if (GTK.GTK4) {
-		// Replace configure-event with generic event handler
+		// Replace configure-event, map-event with generic event handler
 		if (eventHandle() == 0) {
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 		}

@@ -873,7 +873,11 @@ void hookEvents(long /*int*/ [] handles) {
 
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != focusHandle ()) {
-				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+				if (GTK.GTK4) {
+					OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+				} else {
+					OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+				}
 			}
 			if (OS.G_OBJECT_TYPE (eventHandle) == GTK.GTK_TYPE_MENU ()) {
 				OS.g_signal_connect_closure(eventHandle, OS.selection_done, display.getClosure (SELECTION_DONE), true);
