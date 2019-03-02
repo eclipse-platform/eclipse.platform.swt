@@ -1,15 +1,15 @@
 /**
- *  Copyright (c) 2019 Laurent CARON.
+ * Copyright (c) 2018 Laurent CARON.
  *
- *  This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License 2.0
- *  which accompanies this distribution, and is available at
- *  https://www.eclipse.org/legal/epl-2.0/
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
  *
- *  SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: EPL-2.0
  *
- *  Contributors:
- *  Laurent CARON (laurent.caron at gmail dot com) - initial API and implementation (bug 542777)
+ * Contributors:
+ * Laurent CARON (laurent.caron at gmail dot com) - initial API and implementation (bug 542777)
  */
 package org.eclipse.swt.custom;
 
@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
  * This class add the following behaviour to <code>StyledText</code> widgets:<br/>
  * When the user clicks on the wheel, a circle with arrows appears. When the user moves the mouse,
  * the StyledText content is scrolled (on the right or on the left for horizontal movements, up or down for vertical movements).<br/>
+ *
  * @since 3.110
  */
 class MouseNavigator {
@@ -31,6 +32,7 @@ class MouseNavigator {
 	private static final int CENTRAL_POINT_RADIUS = 2;
 	private Point originalMouseLocation;
 	private final Listener mouseDownListener, mouseUpListener, paintListener, mouseMoveListener, focusOutListener;
+	private boolean hasHBar, hasVBar;
 
 	MouseNavigator(final StyledText styledText) {
 		if (styledText == null) {
@@ -77,7 +79,9 @@ class MouseNavigator {
 		}
 
 		// Widget has no bar or bars are not enabled
-		if (!hasHorizontalBar() && !hasVerticalBar()) {
+		initBarState();
+
+		if (!hasHBar && !hasVBar) {
 			return;
 		}
 
@@ -87,14 +91,19 @@ class MouseNavigator {
 		parent.redraw();
 	}
 
-	private boolean hasHorizontalBar() {
+	private void initBarState() {
+		hasHBar = computeHasHorizontalBar();
+		hasVBar = computeHasVerticalBar();
+	}
+
+	private boolean computeHasHorizontalBar() {
 		final ScrollBar horizontalBar = parent.getHorizontalBar();
 		final boolean hasHorizontalBar = horizontalBar != null && horizontalBar.isVisible();
 		final boolean exceedHorizontalSpace = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).x > parent.getSize().x;
 		return hasHorizontalBar && exceedHorizontalSpace;
 	}
 
-	private boolean hasVerticalBar() {
+	private boolean computeHasVerticalBar() {
 		final ScrollBar verticalBar = parent.getVerticalBar();
 		final boolean hasVerticalBar = verticalBar != null && verticalBar.isEnabled();
 		final boolean exceedVerticalSpace = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).y > parent.getSize().y;
@@ -144,13 +153,13 @@ class MouseNavigator {
 		}
 
 		parent.setRedraw(false);
-		if (hasHorizontalBar()) {
+		if (hasHBar) {
 			final ScrollBar bar = parent.getHorizontalBar();
 			bar.setSelection((int) (bar.getSelection() - deltaX * .1));
 			fireSelectionEvent(e, bar);
 		}
 
-		if (hasVerticalBar()) {
+		if (hasVBar) {
 			final ScrollBar bar = parent.getVerticalBar();
 			bar.setSelection((int) (bar.getSelection() - deltaY * .1));
 			fireSelectionEvent(e, bar);
@@ -191,7 +200,7 @@ class MouseNavigator {
 		gc.setAdvanced(true);
 
 		final Color oldForegroundColor = gc.getForeground();
-		final Color oldBackgroundColor = gc.getForeground();
+		final Color oldBackgroundColor = gc.getBackground();
 		gc.setBackground(parent.getForeground());
 
 		drawCircle();
@@ -219,10 +228,10 @@ class MouseNavigator {
 
 	private void drawArrows() {
 		gc.setLineWidth(2);
-		if (hasHorizontalBar()) {
+		if (hasHBar) {
 			drawHorizontalArrows();
 		}
-		if (hasVerticalBar()) {
+		if (hasVBar) {
 			drawVerticalArrows();
 		}
 	}
