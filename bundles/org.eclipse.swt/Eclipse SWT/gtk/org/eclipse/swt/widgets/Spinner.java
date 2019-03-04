@@ -924,7 +924,11 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	background = rgba;
-	setBackgroundGradientGdkRGBA (context, handle, rgba);
+	if (GTK.GTK4) {
+		super.setBackgroundGdkRGBA(context, handle, rgba);
+	} else {
+		setBackgroundGradientGdkRGBA (context, handle, rgba);
+	}
 }
 
 @Override
