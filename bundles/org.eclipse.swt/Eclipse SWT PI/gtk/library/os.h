@@ -443,7 +443,7 @@
 #define NO__1gtk_1widget_1get_1first_1child
 #define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ
-
+#define NO__1gdk_1display_1is_1composited
 #define NO__1gtk_1gesture_1multi_1press_1new
 
 // GdkCursor API changes from GTK3 -> GTK4

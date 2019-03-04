@@ -838,6 +838,18 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1get_1primary_1monitor)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1is_1composited
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1display_1is_1composited)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1is_1composited_FUNC);
+	rc = (jboolean)gdk_display_is_composited((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1is_1composited_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1peek_1event
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1peek_1event)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1987,18 +1999,6 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1system_1visual)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
 	rc = (jintLong)gdk_screen_get_system_visual((GdkScreen *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1system_1visual_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1screen_1get_1window_1stack
-JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1screen_1get_1window_1stack)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	GDK_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1window_1stack_FUNC);
-	rc = (jintLong)gdk_screen_get_window_stack((GdkScreen *)arg0);
-	GDK_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1window_1stack_FUNC);
 	return rc;
 }
 #endif

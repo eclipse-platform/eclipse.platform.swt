@@ -1641,7 +1641,11 @@ Rectangle getBoundsInPixels () {
 			return bounds;
 		}
 	}
-	return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
+	if (GTK.GTK4) {
+		return new Rectangle (0, 0, 0, 0);
+	} else {
+		return new Rectangle (0, 0, GDK.gdk_screen_width (), GDK.gdk_screen_height ());
+	}
 }
 
 /**
@@ -2591,9 +2595,14 @@ public boolean getHighContrast () {
 @Override
 public int getDepth () {
 	checkDevice ();
-	long /*int*/ screen = GDK.gdk_screen_get_default();
-	long /*int*/ visual = GDK.gdk_screen_get_system_visual(screen);
-	return GDK.gdk_visual_get_depth(visual);
+	if (GTK.GTK4) {
+		// Bit depth is always 32 in GTK4
+		return 32;
+	} else {
+		long /*int*/ screen = GDK.gdk_screen_get_default();
+		long /*int*/ visual = GDK.gdk_screen_get_system_visual(screen);
+		return GDK.gdk_visual_get_depth(visual);
+	}
 }
 
 /**
@@ -5217,9 +5226,13 @@ public void setCursorLocation (int x, int y) {
 
 void setCursorLocationInPixels (Point location) {
 	long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
-	long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
 	long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
-	GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
+	if (GTK.GTK4) {
+		GDK.gdk_device_warp(gdkPointer, location.x, location.y);
+	} else {
+		long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
+		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
+	}
 }
 
 /**

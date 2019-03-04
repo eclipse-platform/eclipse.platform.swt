@@ -168,7 +168,7 @@ void configure () {
 	GTK.gtk_window_resize (handle, w, h + TIP_HEIGHT);
 	int[] polyline;
 	Rectangle bounds = display.getBounds();
-	int width = bounds != null ? bounds.width : GDK.gdk_screen_width();
+	int width = bounds != null && GTK.GTK4 ? bounds.width : GDK.gdk_screen_width();
 	spikeAbove = dest.height >= y + h + TIP_HEIGHT;
 	if ((dest.width >= x + w) || (multipleMonitors && width >= x + w)) {
 		if (dest.height >= y + h + TIP_HEIGHT) {

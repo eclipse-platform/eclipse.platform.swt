@@ -1736,17 +1736,6 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param screen cast=(GdkScreen *) */
-	public static final native long /*int*/ _gdk_screen_get_window_stack(long /*int*/ screen);
-	/** [GTK3 only, if-def'd in os.h] */
-	public static final long /*int*/ gdk_screen_get_window_stack(long /*int*/ screen) {
-		lock.lock();
-		try {
-			return _gdk_screen_get_window_stack(screen);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param screen cast=(GdkScreen *)
 	 */
@@ -1903,6 +1892,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_display_get_primary_monitor(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native boolean _gdk_display_is_composited(long /*int*/ display);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final boolean gdk_display_is_composited(long /*int*/ display) {
+		lock.lock();
+		try {
+			return _gdk_display_is_composited(display);
 		} finally {
 			lock.unlock();
 		}

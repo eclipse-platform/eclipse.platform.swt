@@ -1146,8 +1146,14 @@ void forceResize (int width, int height) {
  */
 public int getAlpha () {
 	checkWidget ();
-	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
-	boolean composited = GDK.gdk_screen_is_composited(screen);
+	boolean composited;
+	if (GTK.GTK4) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		composited = GDK.gdk_display_is_composited(display);
+	} else {
+		long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
+		composited = GDK.gdk_screen_is_composited(screen);
+	}
 	if (composited) {
 		return (int) (GTK.gtk_widget_get_opacity(shellHandle) * 255);
 	}
@@ -2058,8 +2064,14 @@ void setActiveControl (Control control, int type) {
  */
 public void setAlpha (int alpha) {
 	checkWidget ();
-	long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
-	boolean composited = GDK.gdk_screen_is_composited(screen);
+	boolean composited;
+	if (GTK.GTK4) {
+		long /*int*/ display = GDK.gdk_display_get_default();
+		composited = GDK.gdk_display_is_composited(display);
+	} else {
+		long /*int*/ screen = GTK.gtk_widget_get_screen(shellHandle);
+		composited = GDK.gdk_screen_is_composited(screen);
+	}
 	if (composited) {
 		GTK.gtk_widget_set_opacity (shellHandle, (double) alpha / 255);
 	}
@@ -2335,7 +2347,7 @@ void setInitialBounds () {
 			if (display != 0) {
 				long /*int*/ monitor;
 				if (GTK.GTK4) {
-					monitor = GDK.gdk_display_get_monitor_at_surface(display, paintWindow());
+					monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
 				} else {
 					monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
 				}
@@ -2354,7 +2366,7 @@ void setInitialBounds () {
 				}
 			}
 		}
-		if (width == 0 && height == 0) {
+		if (width == 0 && height == 0 && !GTK.GTK4) {
 			// if the above failed, use gdk_screen_height/width as a fallback
 			width = GDK.gdk_screen_width () * 5 / 8;
 			height = GDK.gdk_screen_height () * 5 / 8;
