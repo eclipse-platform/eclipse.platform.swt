@@ -837,6 +837,17 @@ public class TextEditor {
 
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(composite);
+
+		// Button to toggle Mouse Navigator in StyledText
+		composite = new Composite(coolBar, SWT.NONE);
+		composite.setLayout(new GridLayout(1, false));
+		Button mouseNavigator = new Button(composite, SWT.CHECK);
+		mouseNavigator.setText(getResourceString("MouseNav"));
+		mouseNavigator.addSelectionListener (widgetSelectedAdapter(event -> styledText.setMouseNavigatorEnabled(mouseNavigator.getSelection())));
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(composite);
+
+		// Compute Size for various CoolItems
 		CoolItem[] coolItems = coolBar.getItems();
 		for (CoolItem item : coolItems) {
 			Control control = item.getControl();
@@ -846,16 +857,6 @@ public class TextEditor {
 			item.setPreferredSize(size);
 			item.setSize(size);
 		}
-
-		composite = new Composite(coolBar, SWT.NONE);
-		composite.setLayout(new GridLayout(1, false));
-		coolItem = new CoolItem(coolBar, SWT.NONE);
-		coolItem.setControl(composite);
-
-		// Button to toggle Mouse Navigator in StyledText
-		Button mouseNavigator = new Button(composite, SWT.CHECK);
-		mouseNavigator.setText(getResourceString("MouseNav"));
-		mouseNavigator.addSelectionListener (widgetSelectedAdapter(event -> styledText.setMouseNavigatorEnabled(mouseNavigator.getSelection())));
 
 		coolBar.addControlListener(ControlListener.controlResizedAdapter(event -> handleResize(event)));
 	}
