@@ -1776,6 +1776,78 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	return 0;
 }
 
+private void updateDecorations(long /*int*/ gdkResource) {
+	if (OS.isX11()) {
+		/*
+		 * Feature in X11. Configuring window decorations when
+		 * 'GTK_CSD=1' is set causes the window to have double
+		 * decorations.
+		 *
+		 * When client-side decorations (CSD) are in use,
+		 * server-side decorations (window title, borders, etc)
+		 * are hidden and GTK draws them instead. In this case,
+		 * configuring GDK window will at best have no effect,
+		 * because its decorations are hidden.
+		 *
+		 * On X11, it's even worse: it will cause server-side
+		 * decorations to appear, and window will have double
+		 * decorations.
+		 *
+		 * Current GTK implementation will ignore gdk_surface_set_decorations()
+		 * on Wayland and MIR anyway, so I decided to narrow
+		 * the workaround to X11 only to get a simpler
+		 * implementation. For example, getting CSD status via
+		 * 'GTK_CSD' variable is reliable on X11 only: on MIR
+		 * and Wayland more settings come into play,
+		 * @see 'gtk_window_should_use_csd' in GTK sources.
+		 */
+		String gtkCsdValue = System.getenv("GTK_CSD");
+		if ((gtkCsdValue != null) && gtkCsdValue.equals("1")) return;
+	}
+
+	int decorations = 0;
+	int functions = 0;
+	if ((style & SWT.NO_TRIM) == 0) {
+		if ((style & SWT.MIN) != 0) {
+			decorations |= GDK.GDK_DECOR_MINIMIZE;
+			functions |= GDK.GDK_FUNC_MINIMIZE;
+		}
+		if ((style & SWT.MAX) != 0) {
+			decorations |= GDK.GDK_DECOR_MAXIMIZE;
+			functions |= GDK.GDK_FUNC_MAXIMIZE;
+		}
+		if ((style & SWT.RESIZE) != 0) {
+			decorations |= GDK.GDK_DECOR_RESIZEH;
+			functions |= GDK.GDK_FUNC_RESIZE;
+		}
+		if ((style & SWT.BORDER) != 0) decorations |= GDK.GDK_DECOR_BORDER;
+		if ((style & SWT.MENU) != 0) decorations |= GDK.GDK_DECOR_MENU;
+		if ((style & SWT.TITLE) != 0) decorations |= GDK.GDK_DECOR_TITLE;
+		if ((style & SWT.CLOSE) != 0) functions |= GDK.GDK_FUNC_CLOSE;
+		/*
+		 * Feature in GTK.  Under some Window Managers (Sawmill), in order
+		 * to get any border at all from the window manager it is necessary to
+		 * set GDK_DECOR_BORDER.  The fix is to force these bits when any
+		 * kind of border is requested.
+		 */
+		if ((style & SWT.RESIZE) != 0) decorations |= GDK.GDK_DECOR_BORDER;
+		if ((style & SWT.NO_MOVE) == 0) functions |=  GDK.GDK_FUNC_MOVE;
+	}
+	if (GTK.GTK4) {
+		GDK.gdk_surface_set_decorations (gdkResource, decorations);
+		GDK.gdk_surface_set_functions(gdkResource, functions);
+	} else {
+		GDK.gdk_window_set_decorations (gdkResource, decorations);
+		/*
+		 * For systems running Metacity, this call forces the style hints to
+		 * be displayed in a window's titlebar. Otherwise, the decorations
+		 * set by the function gdk_window_set_decorations (window,
+		 * decorations) are ignored by the window manager.
+		 */
+		GDK.gdk_window_set_functions(gdkResource, functions);
+	}
+}
+
 @Override
 long /*int*/ gtk_realize (long /*int*/ widget) {
 	long /*int*/ result = super.gtk_realize (widget);
@@ -1786,47 +1858,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 		gdkResource = gtk_widget_get_window (shellHandle);
 	}
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
-		int decorations = 0;
-		int functions = 0;
-		if ((style & SWT.NO_TRIM) == 0) {
-				if ((style & SWT.MIN) != 0) {
-					decorations |= GDK.GDK_DECOR_MINIMIZE;
-					functions |= GDK.GDK_FUNC_MINIMIZE;
-				}
-				if ((style & SWT.MAX) != 0) {
-					decorations |= GDK.GDK_DECOR_MAXIMIZE;
-					functions |= GDK.GDK_FUNC_MAXIMIZE;
-				}
-				if ((style & SWT.RESIZE) != 0) {
-					decorations |= GDK.GDK_DECOR_RESIZEH;
-					functions |= GDK.GDK_FUNC_RESIZE;
-				}
-			if ((style & SWT.BORDER) != 0) decorations |= GDK.GDK_DECOR_BORDER;
-			if ((style & SWT.MENU) != 0) decorations |= GDK.GDK_DECOR_MENU;
-			if ((style & SWT.TITLE) != 0) decorations |= GDK.GDK_DECOR_TITLE;
-			if ((style & SWT.CLOSE) != 0) functions |= GDK.GDK_FUNC_CLOSE;
-			/*
-			* Feature in GTK.  Under some Window Managers (Sawmill), in order
-			* to get any border at all from the window manager it is necessary to
-			* set GDK_DECOR_BORDER.  The fix is to force these bits when any
-			* kind of border is requested.
-			*/
-			if ((style & SWT.RESIZE) != 0) decorations |= GDK.GDK_DECOR_BORDER;
-			if ((style & SWT.NO_MOVE) == 0) functions |=  GDK.GDK_FUNC_MOVE;
-		}
-		if (GTK.GTK4) {
-			GDK.gdk_surface_set_decorations (gdkResource, decorations);
-			GDK.gdk_surface_set_functions(gdkResource, functions);
-		} else {
-			GDK.gdk_window_set_decorations (gdkResource, decorations);
-			/*
-			* For systems running Metacity, this call forces the style hints to
-			* be displayed in a window's titlebar. Otherwise, the decorations
-			* set by the function gdk_window_set_decorations (window,
-			* decorations) are ignored by the window manager.
-			*/
-			GDK.gdk_window_set_functions(gdkResource, functions);
-		}
+		updateDecorations(gdkResource);
 	} else if ((style & SWT.NO_MOVE) != 0) {
 		// if the GDK_FUNC_ALL bit is present, all the other style
 		// bits specified as a parameter will be removed from the window
