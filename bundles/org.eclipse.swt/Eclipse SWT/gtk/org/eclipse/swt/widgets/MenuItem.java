@@ -360,7 +360,7 @@ void createHandle (int index) {
 		} else {
 			GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 		}
-		GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+		gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
 		GTK.gtk_widget_show (labelHandle);
 	}
 	if (boxHandle != 0) {

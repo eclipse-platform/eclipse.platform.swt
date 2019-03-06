@@ -1980,8 +1980,24 @@ void gtk_box_set_child_packing (long /*int*/ box, long /*int*/ child, boolean ex
 			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
 		}
 		GTK.gtk_box_set_child_packing(box, child, pack_type);
+		OS.g_object_set(box, OS.margin, padding, 0);
 	} else {
 		GTK.gtk_box_set_child_packing(box, child, expand, fill, padding, pack_type);
+	}
+}
+
+void gtk_box_pack_end (long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding) {
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_hexpand(child, expand);
+		GTK.gtk_widget_set_vexpand(child, expand);
+		if (fill) {
+			GTK.gtk_widget_set_halign(child, GTK.GTK_ALIGN_FILL);
+			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
+		}
+		OS.g_object_set(box, OS.margin, padding, 0);
+		GTK.gtk_box_pack_end(box, child);
+	} else {
+		GTK.gtk_box_pack_end(box, child, expand, fill, padding);
 	}
 }
 

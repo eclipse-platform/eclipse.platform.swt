@@ -409,6 +409,7 @@ public class OS extends C {
 	public static final byte[] indicator_spacing = ascii("indicator-spacing");
 	public static final byte[] initial_gap = ascii("initial-gap");
 	public static final byte[] interior_focus = ascii("interior-focus");
+	public static final byte[] margin = ascii("margin");
 	public static final byte[] mode = ascii("mode");
 	public static final byte[] model = ascii("model");
 	public static final byte[] spacing = ascii("spacing");

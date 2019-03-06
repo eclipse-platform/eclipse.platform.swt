@@ -457,7 +457,7 @@ void createIMMenu (long /*int*/ imHandle) {
 			}
 		}
 		if (labelHandle != 0 && boxHandle != 0) {
-			GTK.gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+			gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
 			GTK.gtk_widget_show (labelHandle);
 		}
 		if (boxHandle != 0) {

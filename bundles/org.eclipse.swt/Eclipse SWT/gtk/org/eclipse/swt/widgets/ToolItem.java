@@ -607,7 +607,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
 				GTK.gtk_container_add (boxHandle, menuImage);
-				GTK.gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
+				gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
 				GTK.gtk_container_add (menuItem, boxHandle);
 				GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 
