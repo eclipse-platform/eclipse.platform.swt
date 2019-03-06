@@ -418,6 +418,7 @@
 #define NO__1gdk_1surface_1get_1height
 #define NO__1gdk_1surface_1resize
 #define NO__1gdk_1surface_1move
+#define NO__1gdk_1surface_1move_1resize
 #define NO__1gdk_1surface_1hide
 #define NO__1gdk_1surface_1set_1decorations
 #define NO__1gdk_1surface_1set_1functions

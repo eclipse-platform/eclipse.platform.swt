@@ -1438,14 +1438,24 @@ void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
 						GTK.gtk_widget_get_allocation(child, allocation);
 						if ((allocation.y + allocation.height) < noChildDrawing.height) {
 							if (!childLowered) {
-								long /*int*/ window = gtk_widget_get_window(child);
-								GDK.gdk_window_lower(window);
+								if (GTK.GTK4) {
+									long /*int*/ surface = gtk_widget_get_surface(child);
+									GDK.gdk_surface_lower(surface);
+								} else {
+									long /*int*/ window = gtk_widget_get_window(child);
+									GDK.gdk_window_lower(window);
+								}
 								childrenLowered.put(widget, true);
 							}
 						} else {
 							if (childLowered) {
-								long /*int*/ window = gtk_widget_get_window(child);
-								GDK.gdk_window_raise(window);
+								if (GTK.GTK4) {
+									long /*int*/ surface = gtk_widget_get_surface(child);
+									GDK.gdk_surface_raise(surface);
+								} else {
+									long /*int*/ window = gtk_widget_get_window(child);
+									GDK.gdk_window_raise(window);
+								}
 								childrenLowered.put(widget, false);
 							}
 							GTK.gtk_container_propagate_draw(container, child, cairo);

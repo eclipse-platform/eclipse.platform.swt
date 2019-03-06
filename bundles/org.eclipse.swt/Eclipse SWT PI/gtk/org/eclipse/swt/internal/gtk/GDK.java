@@ -2599,6 +2599,17 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/** @param surface cast=(GdkSurface *) */
+	public static final native void _gdk_surface_move_resize(long /*int*/ surface, int x, int y, int width, int height);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gdk_surface_move_resize(long /*int*/ surface, int x, int y, int width, int height) {
+		lock.lock();
+		try {
+			_gdk_surface_move_resize(surface, x, y, width, height);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/**
 	 * @param parent cast=(GdkWindow *)
 	 * @param attributes flags=no_out

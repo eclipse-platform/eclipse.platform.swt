@@ -204,6 +204,7 @@ typedef enum {
 	_1gdk_1surface_1invalidate_1region_FUNC,
 	_1gdk_1surface_1lower_FUNC,
 	_1gdk_1surface_1move_FUNC,
+	_1gdk_1surface_1move_1resize_FUNC,
 	_1gdk_1surface_1new_1child_FUNC,
 	_1gdk_1surface_1raise_FUNC,
 	_1gdk_1surface_1resize_FUNC,

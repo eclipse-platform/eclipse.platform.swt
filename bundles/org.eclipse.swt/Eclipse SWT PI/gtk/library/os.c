@@ -2394,6 +2394,16 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1move)
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1move_1resize
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1move_1resize)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1move_1resize_FUNC);
+	gdk_surface_move_resize((GdkSurface *)arg0, arg1, arg2, arg3, arg4);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1move_1resize_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1new_1child
 JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1surface_1new_1child)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)

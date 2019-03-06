@@ -1674,7 +1674,11 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
-					GDK.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
+					if (GTK.GTK4) {
+						GDK.gdk_surface_move_resize (gtk_widget_get_surface (shellHandle), x, y, width, height);
+					} else {
+						GDK.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
+					}
 				} else {
 					GTK.gtk_window_resize (shellHandle, width, height);
 				}

@@ -194,6 +194,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1surface_1invalidate_1region",
 	"_1gdk_1surface_1lower",
 	"_1gdk_1surface_1move",
+	"_1gdk_1surface_1move_1resize",
 	"_1gdk_1surface_1new_1child",
 	"_1gdk_1surface_1raise",
 	"_1gdk_1surface_1resize",
