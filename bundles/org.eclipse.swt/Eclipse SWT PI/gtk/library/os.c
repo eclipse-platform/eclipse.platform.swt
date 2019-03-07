@@ -862,6 +862,16 @@ JNIEXPORT jintLong JNICALL GDK_NATIVE(_1gdk_1display_1peek_1event)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1put_1event
+JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1display_1put_1event)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1put_1event_FUNC);
+	gdk_display_put_event((GdkDisplay *)arg0, (const GdkEvent *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1put_1event_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1display_1supports_1cursor_1color
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 	(JNIEnv *env, jclass that, jintLong arg0)

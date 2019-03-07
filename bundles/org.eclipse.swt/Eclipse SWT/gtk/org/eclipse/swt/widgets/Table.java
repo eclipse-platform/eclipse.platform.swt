@@ -1996,7 +1996,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 	int [] eventState = new int [1];
 	GDK.gdk_event_get_state(event, eventState);
-	long /*int*/ eventGdkResource = GTK.GTK4 ? GDK.gdk_event_get_surface(event) : GDK.gdk_event_get_window(event);
+	long /*int*/ eventGdkResource = gdk_event_get_surface_or_window(event);
 	if (GTK.GTK4) {
 		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
 	} else {
@@ -2013,7 +2013,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
 			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long /*int*/ nextEvent = GDK.gdk_event_peek ();
+		long /*int*/ nextEvent = gdk_event_peek ();
 		if (nextEvent == 0) {
 			long /*int*/ [] path = new long /*int*/ [1];
 			long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
@@ -2037,7 +2037,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 				}
 			}
 		} else {
-			GDK.gdk_event_free (nextEvent);
+			gdk_event_free (nextEvent);
 		}
 	}
 	/*
@@ -2175,7 +2175,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 	int [] eventState = new int [1];
 	GDK.gdk_event_get_state(event, eventState);
-	long /*int*/ eventGdkResource = GTK.GTK4 ? GDK.gdk_event_get_surface(event) : GDK.gdk_event_get_window(event);
+	long /*int*/ eventGdkResource = gdk_event_get_surface_or_window(event);
 	if (GTK.GTK4) {
 		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
 	} else {

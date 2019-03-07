@@ -2735,7 +2735,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			long timeout = System.currentTimeMillis() + 500;
 			display.sendPreExternalEventDispatchEvent();
 			while (System.currentTimeMillis() < timeout) {
-				eventPtr = GDK.gdk_event_get ();
+				eventPtr = GTK.GTK4 ? GTK.gtk_get_current_event() : GDK.gdk_event_get ();
 				if (eventPtr != 0) {
 					break;
 				} else {
@@ -2785,14 +2785,19 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				case GDK.GDK_BUTTON_PRESS:
 				case GDK.GDK_2BUTTON_PRESS:
 				case GDK.GDK_3BUTTON_PRESS: {
-					GDK.gdk_event_put (eventPtr);
+					if (GTK.GTK4) {
+						long /*int*/ display = GDK.gdk_display_get_default();
+						GDK.gdk_display_put_event(display, eventPtr);
+					} else {
+						GDK.gdk_event_put (eventPtr);
+					}
 					quit = true;
 					break;
 				}
 				default:
 					GTK.gtk_main_do_event (eventPtr);
 			}
-			GDK.gdk_event_free (eventPtr);
+			gdk_event_free (eventPtr);
 		}
 	}
 	return dragging;
@@ -3557,8 +3562,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 	if (eventType == GDK.GDK_BUTTON_PRESS) {
 		boolean dragging = false;
 		display.clickCount = 1;
-		long /*int*/ defaultDisplay = GDK.gdk_display_get_default();
-		long /*int*/ nextEvent = GTK.GTK4 ? GDK.gdk_display_peek_event(defaultDisplay) : GDK.gdk_event_peek ();
+		long /*int*/ nextEvent = gdk_event_peek ();
 		if (nextEvent != 0) {
 			int peekedEventType = GDK.GDK_EVENT_TYPE (nextEvent);
 			if (peekedEventType == GDK.GDK_2BUTTON_PRESS) display.clickCount = 2;

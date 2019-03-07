@@ -104,6 +104,7 @@ typedef enum {
 	_1gdk_1display_1get_1primary_1monitor_FUNC,
 	_1gdk_1display_1is_1composited_FUNC,
 	_1gdk_1display_1peek_1event_FUNC,
+	_1gdk_1display_1put_1event_FUNC,
 	_1gdk_1display_1supports_1cursor_1color_FUNC,
 	_1gdk_1drag_1context_1get_1actions_FUNC,
 	_1gdk_1drag_1context_1get_1dest_1window_FUNC,

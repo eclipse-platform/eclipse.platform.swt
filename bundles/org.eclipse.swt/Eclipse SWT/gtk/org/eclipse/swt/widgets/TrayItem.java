@@ -253,7 +253,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	* the single-click as the current event and for the double-click in the
 	* event queue.
 	*/
-	long /*int*/ nextEvent = GDK.gdk_event_peek ();
+	long /*int*/ nextEvent = gdk_event_peek ();
 	if (nextEvent != 0) {
 		int nextEventType = GDK.GDK_EVENT_TYPE (nextEvent);
 		long /*int*/ currEvent = GTK.gtk_get_current_event ();
@@ -262,7 +262,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 			currEventType = GDK.GDK_EVENT_TYPE (currEvent);
 			gdk_event_free(currEvent);
 		}
-		GDK.gdk_event_free (nextEvent);
+		gdk_event_free (nextEvent);
 		currEventType = Control.fixGdkEventTypeValues(currEventType);
 		nextEventType = Control.fixGdkEventTypeValues(nextEventType);
 		if (currEventType == GDK.GDK_BUTTON_PRESS && nextEventType == GDK.GDK_2BUTTON_PRESS) {

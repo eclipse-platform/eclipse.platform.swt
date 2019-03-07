@@ -94,6 +94,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1display_1get_1primary_1monitor",
 	"_1gdk_1display_1is_1composited",
 	"_1gdk_1display_1peek_1event",
+	"_1gdk_1display_1put_1event",
 	"_1gdk_1display_1supports_1cursor_1color",
 	"_1gdk_1drag_1context_1get_1actions",
 	"_1gdk_1drag_1context_1get_1dest_1window",

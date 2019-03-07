@@ -1920,6 +1920,19 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 * @param display cast=(GdkDisplay *)
+	 * @param event cast=(const GdkEvent *)
+	 */
+	public static final native void _gdk_display_put_event(long /*int*/ display, long /*int*/ event);
+	public static final void gdk_display_put_event(long /*int*/ display, long /*int*/ event) {
+		lock.lock();
+		try {
+			_gdk_display_put_event(display, event);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)
 	 * @param dest flags=no_in

@@ -4468,8 +4468,17 @@ public boolean post (Event event) {
 
 					OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
 					GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
-					GDK.gdk_event_put(eventPtr);
-					GDK.gdk_event_free(eventPtr);
+					if (GTK.GTK4) {
+						long /*int*/ display = GDK.gdk_display_get_default();
+						GDK.gdk_display_put_event(display, eventPtr);
+					} else {
+						GDK.gdk_event_put (eventPtr);
+					}
+					if (GTK.GTK4) {
+						OS.g_object_unref(eventPtr);
+					} else {
+						GDK.gdk_event_free (eventPtr);
+					}
 					return true;
 				case SWT.MouseDown:
 				case SWT.MouseUp:
@@ -4497,7 +4506,11 @@ public boolean post (Event event) {
 					GDK.gdk_event_set_device(eventPtr, gdkPointerDevice);
 
 					GDK.gdk_event_put(eventPtr);
-					GDK.gdk_event_free(eventPtr);
+					if (GTK.GTK4) {
+						OS.g_object_unref(eventPtr);
+					} else {
+						GDK.gdk_event_free (eventPtr);
+					}
 					return true;
 			}
 			return false;
@@ -4535,9 +4548,18 @@ void putGdkEvents () {
 			long /*int*/ event = gdkEvents [i];
 			Widget widget = gdkEventWidgets [i];
 			if (widget == null || !widget.isDisposed ()) {
-				GDK.gdk_event_put (event);
+				if (GTK.GTK4) {
+					long /*int*/ display = GDK.gdk_display_get_default();
+					GDK.gdk_display_put_event(display, event);
+				} else {
+					GDK.gdk_event_put (event);
+				}
 			}
-			GDK.gdk_event_free (event);
+			if (GTK.GTK4) {
+				OS.g_object_unref (event);
+			} else {
+				GDK.gdk_event_free (event);
+			}
 			gdkEvents [i] = 0;
 			gdkEventWidgets [i] = null;
 		}

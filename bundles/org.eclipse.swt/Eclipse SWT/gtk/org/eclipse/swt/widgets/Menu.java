@@ -300,7 +300,7 @@ void _setVisible (boolean visible) {
 					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
 					GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
 							GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
-					GDK.gdk_event_free (eventPtr);
+					gdk_event_free (eventPtr);
 				} else {
 					/*
 					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
