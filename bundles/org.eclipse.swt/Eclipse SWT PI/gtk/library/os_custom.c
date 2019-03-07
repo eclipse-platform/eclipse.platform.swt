@@ -1478,19 +1478,32 @@ static void swt_fixed_accessible_component_get_extents (AtkComponent *component,
 		gint *width, gint *height, AtkCoordType coord_type) {
 	SwtFixedAccessible *fixed = SWT_FIXED_ACCESSIBLE (component);
 	SwtFixedAccessiblePrivate *private = fixed->priv;
-
 	if (private->has_accessible) {
 		call_accessible_object_function("atkComponent_get_extents", "(JJJJJJ)J", component, x, y,
 			width, height, coord_type);
 	} else {
-		// Only GTK3 has accessibility support at the moment.
-		#if !defined(GTK4)
-			GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE(fixed));
+		GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE(fixed));
+		gint fixed_x, fixed_y;
+		GtkAllocation allocation;
+		gtk_widget_get_allocation(widget, &allocation);
+		#if defined(GTK4)
+			GdkSurface *surface = gtk_widget_get_surface(widget);
+			call_accessible_object_function("toDisplay", "(JJJ)J", surface, &fixed_x, &fixed_y);
+			if (coord_type == ATK_XY_SCREEN) {
+				*x = fixed_x;
+				*y = fixed_y;
+			}
+			if (coord_type == ATK_XY_WINDOW) {
+				GtkWidget *top = gtk_widget_get_toplevel(widget);
+				GdkSurface *top_surface = gtk_widget_get_surface(top);
+				gint top_x, top_y;
+				call_accessible_object_function("toDisplay", "(JJJ)J", top_surface, &top_x, &top_y);
+				*x = fixed_x - top_x;
+				*y = fixed_y - top_y;
+			}
+		#else
 			GdkWindow *window = gtk_widget_get_window(widget);
-			gint fixed_x, fixed_y;
 			call_accessible_object_function("toDisplay", "(JJJ)J", window, &fixed_x, &fixed_y);
-			GtkAllocation allocation;
-			gtk_widget_get_allocation(widget, &allocation);
 			if (coord_type == ATK_XY_SCREEN) {
 				*x = fixed_x;
 				*y = fixed_y;
@@ -1503,9 +1516,9 @@ static void swt_fixed_accessible_component_get_extents (AtkComponent *component,
 				*x = fixed_x - top_x;
 				*y = fixed_y - top_y;
 			}
-			*width = allocation.width;
-			*height = allocation.height;
 		#endif
+		*width = allocation.width;
+		*height = allocation.height;
 	}
 	return;
 }
