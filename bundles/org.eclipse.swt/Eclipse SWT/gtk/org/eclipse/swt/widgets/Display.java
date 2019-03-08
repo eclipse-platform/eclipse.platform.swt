@@ -3209,14 +3209,12 @@ GdkRGBA copyRGBA (GdkRGBA source) {
 }
 
 void initializeSystemColors () {
-	long /*int*/ tooltipShellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
-	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	byte[] gtk_tooltip = Converter.wcsToMbcs ("gtk-tooltip", true); //$NON-NLS-1$
-	GTK.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
-	GTK.gtk_widget_realize (tooltipShellHandle);
-
 	COLOR_WIDGET_DARK_SHADOW_RGBA = new GdkRGBA ();
 	COLOR_WIDGET_DARK_SHADOW_RGBA.alpha = 1.0;
+
+	// Initialize and create a list of X11 named colors
+	initializeColorList();
+
 	/*
 	 * Feature in GTK: previously SWT fetched system colors using
 	 * GtkStyleContext machinery. This machinery is largely deprecated
@@ -3236,12 +3234,6 @@ void initializeSystemColors () {
 	 * them, while some colors only have one potential match. Therefore
 	 * some colors will have better theme coverage than others.
 	 */
-	long /*int*/ context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
-	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_TOOLTIP);
-	GTK.gtk_style_context_invalidate(context);
-	GdkRGBA rgba = new GdkRGBA();
-	// Initialize and create a list of X11 named colors
-	initializeColorList();
 	/*
 	 * Find current GTK theme: either use the system theme,
 	 * or one provided using the GTK_THEME environment variable.
@@ -3256,34 +3248,24 @@ void initializeSystemColors () {
 
 	String cssOutput = gtk_css_provider_to_string(themeProvider);
 
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND, cssOutput);
-		if (!colorInfoForeground.isEmpty()) {
-			if (colorInfoForeground != "parsed") {
-				COLOR_INFO_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorInfoForeground);
-			}
-		} else {
-			COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-		}
-	} else {
-		COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-	}
+	// Load Widget colors first, because 'COLOR_WIDGET_BACKGROUND_RGBA'
+	// can be used as substitute for other missing colors.
+	initializeSystemColorsWidget(cssOutput);
 
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND, cssOutput);
-		if (!colorInfoBackground.isEmpty()) {
-			if (colorInfoBackground != "parsed") {
-				COLOR_INFO_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorInfoBackground);
-			}
-		} else {
-			COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-		}
-	} else {
-		COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-	}
-	GTK.gtk_widget_destroy (tooltipShellHandle);
+	initializeSystemColorsList(cssOutput);
+	initializeSystemColorsTitle(cssOutput);
+	initializeSystemColorsLink(cssOutput);
+	initializeSystemColorsTooltip(cssOutput);
 
-	context = GTK.gtk_widget_get_style_context (shellHandle);
+	COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
+	COLOR_TITLE_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
+	COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
+	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, 1.3);
+}
+
+void initializeSystemColorsWidget(String cssOutput) {
+	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	GdkRGBA rgba = new GdkRGBA();
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorWidgetForeground = gtk_css_default_theme_values(SWT.COLOR_WIDGET_FOREGROUND, cssOutput);
@@ -3311,7 +3293,13 @@ void initializeSystemColors () {
 	COLOR_WIDGET_LIGHT_SHADOW_RGBA = COLOR_WIDGET_BACKGROUND_RGBA;
 	COLOR_WIDGET_NORMAL_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 0.7);
 	COLOR_WIDGET_HIGHLIGHT_SHADOW_RGBA = toGdkRGBA (COLOR_WIDGET_BACKGROUND_RGBA, 1.3);
+}
 
+void initializeSystemColorsList(String cssOutput) {
+	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	GdkRGBA rgba = new GdkRGBA();
+
+	// Apply temporary styles
 	GTK.gtk_style_context_save (context);
 	GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_VIEW);
 	GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_CELL);
@@ -3341,8 +3329,6 @@ void initializeSystemColors () {
 		COLOR_LIST_BACKGROUND_RGBA = copyRGBA(rgba);
 	}
 
-	GTK.gtk_style_context_restore (context);
-
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorListSelectionText = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION_TEXT, cssOutput);
 		if (!colorListSelectionText.isEmpty()) {
@@ -3353,7 +3339,6 @@ void initializeSystemColors () {
 	} else {
 		COLOR_LIST_SELECTION_TEXT_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_SELECTED);
 	}
-	COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorListSelection = gtk_css_default_theme_values(SWT.COLOR_LIST_SELECTION, cssOutput);
@@ -3367,8 +3352,6 @@ void initializeSystemColors () {
 		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_SELECTED, rgba);
 		COLOR_LIST_SELECTION_RGBA = copyRGBA (rgba);
 	}
-	COLOR_TITLE_BACKGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
-	COLOR_TITLE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_LIST_SELECTION_RGBA, 1.3);
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorListSelectionTextInactive = gtk_css_default_theme_values(SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE, cssOutput);
@@ -3394,6 +3377,14 @@ void initializeSystemColors () {
 		COLOR_LIST_SELECTION_INACTIVE_RGBA = copyRGBA (rgba);
 	}
 
+	// Revert temporary styles
+	GTK.gtk_style_context_restore (context);
+}
+
+void initializeSystemColorsTitle(String cssOutput) {
+	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	GdkRGBA rgba = new GdkRGBA();
+
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorTitleInactiveForeground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_FOREGROUND, cssOutput);
 		if (!colorTitleInactiveForeground.isEmpty()) {
@@ -3405,7 +3396,6 @@ void initializeSystemColors () {
 		COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 	}
 
-	COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = rgba;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String colorTitleInactiveBackground = gtk_css_default_theme_values(SWT.COLOR_TITLE_INACTIVE_BACKGROUND, cssOutput);
 		if (!colorTitleInactiveBackground.isEmpty()) {
@@ -3418,8 +3408,9 @@ void initializeSystemColors () {
 		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_INSENSITIVE, rgba);
 		COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = copyRGBA (rgba);
 	}
-	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA = toGdkRGBA (COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, 1.3);
+}
 
+private void initializeSystemColorsLink(String cssOutput) {
 	// NOTE: If COLOR_LINK_FOREGROUND cannot be found from the GTK CSS theme then there is no reliable
 	// way to find it on GTK3 using GtkStyleContext machinery. Use COLOR_LIST_SELECTION instead
 	// as they are often the same.
@@ -3435,8 +3426,48 @@ void initializeSystemColors () {
 	} else {
 		COLOR_LINK_FOREGROUND_RGBA = COLOR_LIST_SELECTION_RGBA;
 	}
+}
 
-	return;
+void initializeSystemColorsTooltip(String cssOutput) {
+	// Create a temporary Tooltip widget
+	long /*int*/ tooltipShellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	byte[] gtk_tooltip = Converter.wcsToMbcs ("gtk-tooltip", true); //$NON-NLS-1$
+	GTK.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
+	GTK.gtk_widget_realize (tooltipShellHandle);
+
+	long /*int*/ context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
+	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_TOOLTIP);
+	GTK.gtk_style_context_invalidate(context);
+
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorInfoForeground = gtk_css_default_theme_values(SWT.COLOR_INFO_FOREGROUND, cssOutput);
+		if (!colorInfoForeground.isEmpty()) {
+			if (colorInfoForeground != "parsed") {
+				COLOR_INFO_FOREGROUND_RGBA = gtk_css_property_to_rgba (colorInfoForeground);
+			}
+		} else {
+			COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+		}
+	} else {
+		COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
+
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		String colorInfoBackground = gtk_css_default_theme_values(SWT.COLOR_INFO_BACKGROUND, cssOutput);
+		if (!colorInfoBackground.isEmpty()) {
+			if (colorInfoBackground != "parsed") {
+				COLOR_INFO_BACKGROUND_RGBA = gtk_css_property_to_rgba (colorInfoBackground);
+			}
+		} else {
+			COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+		}
+	} else {
+		COLOR_INFO_BACKGROUND_RGBA = getBackgroundColor (context, GTK.GTK_STATE_FLAG_NORMAL);
+	}
+
+	// Destroy temporary Tooltip widget
+	GTK.gtk_widget_destroy (tooltipShellHandle);
 }
 
 GdkRGBA styleContextGetColor(long /*int*/ context, int flag) {
