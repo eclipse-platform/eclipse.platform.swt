@@ -4139,7 +4139,8 @@ public static final byte [] getThemeNameBytes() {
 	if (length == 0) {
 		return buffer;
 	}
-	buffer = new byte [length];
+	/* String will be passed to C function later, needs to be zero-terminated */
+	buffer = new byte [length + 1];
 	C.memmove (buffer, ptr [0], length);
 	OS.g_free (ptr [0]);
 	return buffer;
