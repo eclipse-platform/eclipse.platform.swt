@@ -509,8 +509,16 @@ Rectangle getBoundsInPixels () {
 	int [] buffer = new int [1];
 	GTK.gtk_tree_path_free (path);
 
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-	int horizontalSeparator = buffer[0];
+	int horizontalSeparator;
+	if (GTK.GTK4) {
+		long /*int*/ separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(separator, allocation);
+		horizontalSeparator = allocation.height;
+	} else {
+		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		horizontalSeparator = buffer[0];
+	}
 	rect.x += horizontalSeparator;
 
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
@@ -969,8 +977,16 @@ Rectangle getTextBoundsInPixels (int index) {
 	int [] buffer = new int [1];
 	GTK.gtk_tree_path_free (path);
 
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-	int horizontalSeparator = buffer[0];
+	int horizontalSeparator;
+	if (GTK.GTK4) {
+		long /*int*/ separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(separator, allocation);
+		horizontalSeparator = allocation.height;
+	} else {
+		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		horizontalSeparator = buffer[0];
+	}
 	rect.x += horizontalSeparator;
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
 	/*

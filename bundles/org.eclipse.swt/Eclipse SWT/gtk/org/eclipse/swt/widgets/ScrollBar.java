@@ -408,14 +408,21 @@ Rectangle getThumbTrackBoundsInPixels () {
 	checkWidget();
 	int x = 0, y = 0, width, height;
 	int[] has_stepper = new int[1];
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.has_backward_stepper, has_stepper, 0);
-	boolean hasB = has_stepper[0] != 0;
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.has_secondary_backward_stepper, has_stepper, 0);
-	boolean hasB2 = has_stepper[0] != 0;
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.has_forward_stepper, has_stepper, 0);
-	boolean hasF = has_stepper[0] != 0;
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
-	boolean hasF2 = has_stepper[0] != 0;
+	boolean hasB = false, hasB2 = false, hasF = false, hasF2 = false;
+	/*
+	 * Only GTK3 scrollbars have steppers, even non-overlay scrollbars in
+	 * GTK4 do not have steppers.
+	 */
+	if (!GTK.GTK4) {
+		GTK.gtk_widget_style_get (handle, OS.has_backward_stepper, has_stepper, 0);
+		hasB = has_stepper[0] != 0;
+		GTK.gtk_widget_style_get (handle, OS.has_secondary_backward_stepper, has_stepper, 0);
+		hasB2 = has_stepper[0] != 0;
+		GTK.gtk_widget_style_get (handle, OS.has_forward_stepper, has_stepper, 0);
+		hasF = has_stepper[0] != 0;
+		GTK.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
+		hasF2 = has_stepper[0] != 0;
+	}
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {

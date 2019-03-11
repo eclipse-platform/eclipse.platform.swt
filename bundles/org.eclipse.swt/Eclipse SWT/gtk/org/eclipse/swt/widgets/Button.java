@@ -115,14 +115,21 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorder) {
+GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorder) {
     GtkBorder gtkBorder = new GtkBorder();
     long /*int*/ []  borderPtr = new long /*int*/ [1];
-    if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, border, borderPtr,0);
-    if (borderPtr[0] != 0) {
-        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
-        GTK.gtk_border_free(borderPtr[0]);
-        return gtkBorder;
+    if (GTK.GTK4) {
+		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		int stateFlag = GTK.gtk_widget_get_state_flags(handle);
+		gtk_style_context_get_border(context, stateFlag, gtkBorder);
+		return gtkBorder;
+    } else {
+    	GTK.gtk_widget_style_get (handle, border, borderPtr,0);
+    	if (borderPtr[0] != 0) {
+            OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
+            GTK.gtk_border_free(borderPtr[0]);
+            return gtkBorder;
+        }
     }
     gtkBorder.left = defaultBorder;
     gtkBorder.top = defaultBorder;
@@ -200,19 +207,35 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && GTK.gtk_widget_get_visible (labelHandle);
 	if (wrap) {
 		int borderWidth = gtk_container_get_border_width_or_margin (handle);
-		int[] focusWidth = new int[1];
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
-		int[] focusPadding = new int[1];
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
-		int trimWidth = 2 * (borderWidth + focusWidth [0] + focusPadding [0]), trimHeight = trimWidth;
+		int trimWidth, trimHeight;
+		if (!GTK.GTK4) {
+			int[] focusWidth = new int[1];
+			GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
+			int[] focusPadding = new int[1];
+			GTK.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
+			trimWidth = 2 * (borderWidth + focusWidth [0] + focusPadding [0]);
+		} else {
+			trimWidth = 2 * borderWidth;
+		}
+		trimHeight = trimWidth;
 		int indicatorHeight = 0;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-			int[] indicatorSize = new int[1];
-			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
-			int[] indicatorSpacing = new int[1];
-			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
-			indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
-			trimWidth += indicatorHeight + indicatorSpacing [0];
+			if (GTK.GTK4) {
+				long /*int*/ icon = GTK.gtk_widget_get_first_child(handle);
+				GtkRequisition minimum = new GtkRequisition ();
+				GTK.gtk_widget_get_preferred_size(icon, minimum, null);
+				long /*int*/ context = GTK.gtk_widget_get_style_context(icon);
+				GtkBorder margin = new GtkBorder ();
+				GTK.gtk_style_context_get_margin(context, margin);
+				trimWidth += minimum.width + margin.right;
+			} else {
+				int[] indicatorSize = new int[1];
+				int[] indicatorSpacing = new int[1];
+				GTK.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
+				GTK.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
+				indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
+				trimWidth += indicatorHeight + indicatorSpacing [0];
+			}
 		} else {
 			Point thickness = getThickness (handle);
 			trimWidth += thickness.x * 2;

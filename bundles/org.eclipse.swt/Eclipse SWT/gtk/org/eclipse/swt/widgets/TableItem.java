@@ -329,11 +329,26 @@ Rectangle getBoundsinPixels () {
 	rect.width = w [0];
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		if (GTK.GTK4) {
+			long /*int*/ image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
+			GtkAllocation allocation = new GtkAllocation ();
+			GTK.gtk_widget_get_allocation(image, allocation);
+			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
+		} else {
+			GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+			rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		}
 	}
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-	int horizontalSeparator = buffer[0];
+	int horizontalSeparator;
+	if (GTK.GTK4) {
+		long /*int*/ separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(separator, allocation);
+		horizontalSeparator = allocation.height;
+	} else {
+		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		horizontalSeparator = buffer[0];
+	}
 	rect.x += horizontalSeparator;
 
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
@@ -758,11 +773,26 @@ Rectangle getTextBoundsInPixels (int index) {
 	parent.ignoreSize = false;
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		if (GTK.GTK4) {
+			long /*int*/ image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
+			GtkAllocation allocation = new GtkAllocation ();
+			GTK.gtk_widget_get_allocation(image, allocation);
+			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
+		} else {
+			GTK.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+			rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		}
 	}
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-	int horizontalSeparator = buffer[0];
+	int horizontalSeparator;
+	if (GTK.GTK4) {
+		long /*int*/ separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		GtkAllocation allocation = new GtkAllocation ();
+		GTK.gtk_widget_get_allocation(separator, allocation);
+		horizontalSeparator = allocation.height;
+	} else {
+		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		horizontalSeparator = buffer[0];
+	}
 	rect.x += horizontalSeparator;
 
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);

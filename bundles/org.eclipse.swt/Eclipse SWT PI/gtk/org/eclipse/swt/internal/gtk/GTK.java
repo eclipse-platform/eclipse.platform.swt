@@ -226,6 +226,7 @@ public class GTK extends OS {
 	public static final byte[] GTK_NAMED_ICON_GO_DOWN = OS.ascii ("go-down-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_NEXT = OS.ascii ("go-next-symbolic");
 	public static final byte[] GTK_NAMED_ICON_GO_PREVIOUS = OS.ascii ("go-previous-symbolic");
+	public static final byte[] GTK_NAMED_ICON_PAN_DOWN = OS.ascii ("pan-down-symbolic");
 	public static final byte[] GTK_NAMED_LABEL_OK = OS.ascii("_OK");
 	public static final byte[] GTK_NAMED_LABEL_CANCEL = OS.ascii("_Cancel");
 
@@ -6100,6 +6101,20 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_style_context_get_padding(context, padding);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param margin cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void _gtk_style_context_get_margin(long /*int*/ context, GtkBorder margin);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_style_context_get_margin(long /*int*/ context, GtkBorder margin) {
+		lock.lock();
+		try {
+			_gtk_style_context_get_margin(context, margin);
 		} finally {
 			lock.unlock();
 		}

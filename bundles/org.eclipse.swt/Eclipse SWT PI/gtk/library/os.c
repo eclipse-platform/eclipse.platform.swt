@@ -9619,6 +9619,20 @@ JNIEXPORT jintLong JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1font)
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1get_1margin
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1margin)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GtkBorder _arg1, *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1margin_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	gtk_style_context_get_margin((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1margin_FUNC);
+}
+#endif
+
 #if (!defined(NO__1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2) && !defined(JNI64)) || (!defined(NO__1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)

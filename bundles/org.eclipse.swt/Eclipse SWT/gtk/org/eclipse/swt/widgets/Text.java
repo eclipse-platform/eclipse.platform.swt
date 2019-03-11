@@ -662,12 +662,18 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 		xborder += borderWidth;
 		yborder += borderWidth;
 	}
-	int [] property = new int [1];
-	if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
-	if (property [0] == 0) {
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
-		xborder += property [0];
-		yborder += property [0];
+	/*
+	 * Focus line width is done via CSS in GTK4, and does not contribute
+	 * to the size of the widget.
+	 */
+	if (!GTK.GTK4) {
+		int [] property = new int [1];
+		GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
+		if (property [0] == 0) {
+			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			xborder += property [0];
+			yborder += property [0];
+		}
 	}
 	trim.x -= xborder;
 	trim.y -= yborder;

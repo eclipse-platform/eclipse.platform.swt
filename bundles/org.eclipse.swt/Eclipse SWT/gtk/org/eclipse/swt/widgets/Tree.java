@@ -452,12 +452,25 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 		width += rect.x;
 		/* expander */
 		if (!GTK.gtk_tree_view_column_get_visible(column)) {
-			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
-			width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+			if (GTK.GTK4) {
+				long /*int*/ image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
+				GtkAllocation allocation = new GtkAllocation ();
+				GTK.gtk_widget_get_allocation(image, allocation);
+				width += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
+			} else {
+				GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+				width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+			}
 		}
 	}
-	if (!GTK.GTK4) GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
-	width += 2 * w [0];
+	/*
+	 * Focus line width is done via CSS in GTK4, and does not contribute
+	 * to the size of the widget.
+	 */
+	if (!GTK.GTK4) {
+		GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
+		width += 2 * w [0];
+	}
 	long /*int*/ list = GTK.gtk_cell_layout_get_cells(column);
 	if (list == 0) return 0;
 	long /*int*/ temp = list;
@@ -487,8 +500,13 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter, boolean recurse) {
 
 	if (path != 0) GTK.gtk_tree_path_free (path);
 	if (GTK.gtk_tree_view_get_grid_lines(handle) > GTK.GTK_TREE_VIEW_GRID_LINES_NONE) {
-		if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
-		width += 2 * w [0];
+		/*
+		 * Grid line width is handled via CSS in GTK4.
+		 */
+		if (!GTK.GTK4) {
+			GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+			width += 2 * w [0];
+		}
 	}
 	return width;
 }

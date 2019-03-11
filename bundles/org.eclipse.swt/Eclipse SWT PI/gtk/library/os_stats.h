@@ -875,6 +875,7 @@ typedef enum {
 	_1gtk_1style_1context_1get_1color__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2_FUNC,
 #endif
 	_1gtk_1style_1context_1get_1font_FUNC,
+	_1gtk_1style_1context_1get_1margin_FUNC,
 #ifndef JNI64
 	_1gtk_1style_1context_1get_1padding__IILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC,
 #else

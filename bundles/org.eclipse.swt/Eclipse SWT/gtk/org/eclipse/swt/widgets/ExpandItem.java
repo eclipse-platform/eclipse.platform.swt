@@ -471,10 +471,16 @@ void resizeControl (int yScroll) {
 		if (x != -1 && y != -1) {
 			int width = allocation.width;
 			int height = allocation.height;
-			int [] property = new int [1];
-			if (!GTK.GTK4) GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
-			y += property [0] * 2;
-			height -= property [0] * 2;
+			/*
+			 * Focus line width is done via CSS in GTK4, and does not contribute
+			 * to the size of the widget.
+			 */
+			if (!GTK.GTK4) {
+				int [] property = new int [1];
+				GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+				y += property [0] * 2;
+				height -= property [0] * 2;
+			}
 
 			/*
 			* Feature in GTK. When the ExpandBar is resize too small the control
