@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -840,6 +841,74 @@ public void test_consistency_DragDetect () {
     List<String> events = new ArrayList<>();
     createTree(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
+@Test
+public void test_disposeItemNotTriggerSelection() {
+	Display display = shell.getDisplay();
+	shell.setLayout(new FillLayout());
+	Tree tree = new Tree (shell, SWT.BORDER);
+	for (int i=0; i<4; i++) {
+		TreeItem iItem = new TreeItem (tree, 0);
+		iItem.setText ("TreeItem (0) -" + i);
+		for (int j=0; j<4; j++) {
+			TreeItem jItem = new TreeItem (iItem, 0);
+			jItem.setText ("TreeItem (1) -" + j);
+			for (int k=0; k<4; k++) {
+				TreeItem kItem = new TreeItem (jItem, 0);
+				kItem.setText ("TreeItem (2) -" + k);
+				for (int l=0; l<4; l++) {
+					TreeItem lItem = new TreeItem(kItem, 0);
+					lItem.setText ("TreeItem (3) -" + l);
+				}
+			}
+		}
+	}
+	final boolean [] selectionCalled = { false };
+	tree.addListener(SWT.Selection, event -> {
+		selectionCalled [0] = true;
+	});
+
+	final TreeItem firstNode = tree.getItem(0);
+	firstNode.setExpanded(true);
+	tree.setSelection(firstNode.getItem(3));
+
+	shell.setSize(200, 200);
+	shell.open();
+
+	display.timerExec(1000, () -> {
+		if (shell.isDisposed()) {
+			return;
+		}
+
+		final TreeItem[] selection = tree.getSelection();
+		if (selection.length != 1) {
+			return;
+		}
+
+		final TreeItem item = selection[0];
+		final TreeItem parentItem = item.getParentItem();
+		if (parentItem == null) {
+			return;
+		}
+
+		tree.deselectAll();
+		item.dispose();
+
+	});
+
+	long end = System.currentTimeMillis() + 3000;
+	while (!shell.isDisposed() && System.currentTimeMillis() < end) {
+		if (!shell.getDisplay().readAndDispatch ()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	assertFalse(selectionCalled[0]);
 }
 
 @Test

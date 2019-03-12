@@ -242,10 +242,8 @@ void destroyWidget () {
 @Override
 public void dispose () {
 	// Workaround to Bug489751, avoid selecting next node when selected node is disposed.
-	if (parent != null && parent.getItemCount() > 0) {
-		TableItem tmpItem = parent.getItem(0);
-		long /*int*/ path = GTK.gtk_tree_model_get_path (parent.modelHandle, tmpItem.handle);
-		GTK.gtk_tree_view_set_cursor (parent.handle, path, 0, false);
+	if (parent != null && parent.getItemCount() > 0 && parent.getSelectionCount() == 0) {
+		parent.setSelection(parent.getItem(0));
 		parent.deselectAll();
 	}
 	super.dispose();
