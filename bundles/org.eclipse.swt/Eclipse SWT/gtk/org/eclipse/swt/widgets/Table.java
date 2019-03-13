@@ -700,22 +700,25 @@ void createItem (TableColumn column, int index) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
 			if (item != null) {
+				// Bug 545139: For consistency, do not wipe out content of first TableColumn created after TableItem
+				boolean doNotModify;
 				Font [] cellFont = item.cellFont;
-				if (cellFont != null) {
+				doNotModify = columnCount == 1 && cellFont != null && cellFont.length == columnCount;
+				if (cellFont != null && !doNotModify) {
 					Font [] temp = new Font [columnCount];
 					System.arraycopy (cellFont, 0, temp, 0, index);
 					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
 					item.cellFont = temp;
 				}
 				String [] strings = item.strings;
-				if (strings != null) {
+				doNotModify = columnCount == 1 && strings != null && strings.length == columnCount;
+				if (strings != null && !doNotModify) {
 					String [] temp = new String [columnCount];
 					System.arraycopy (strings, 0, temp, 0, index);
 					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
 					temp [index] = "";
 					item.strings = temp;
 				}
-
 			}
 		}
 	}
