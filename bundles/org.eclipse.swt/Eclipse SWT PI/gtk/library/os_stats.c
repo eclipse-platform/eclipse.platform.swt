@@ -187,6 +187,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1surface_1get_1height",
 	"_1gdk_1surface_1get_1origin",
 	"_1gdk_1surface_1get_1root_1origin",
+	"_1gdk_1surface_1get_1state",
 	"_1gdk_1surface_1get_1user_1data",
 	"_1gdk_1surface_1get_1width",
 	"_1gdk_1surface_1hide",

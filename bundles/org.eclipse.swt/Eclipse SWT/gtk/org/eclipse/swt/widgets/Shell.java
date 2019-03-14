@@ -922,6 +922,11 @@ void hookEvents () {
 		if (eventHandle() == 0) {
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 		}
+		// Replaced "window-state-event" with GdkSurface "notify::state", pass shellHandle as user_data
+		long /*int*/ notifyStateAddress = display.notifyStateCallback.getAddress();
+		GTK.gtk_widget_realize(shellHandle);
+		long /*int*/ gdkSurface = gtk_widget_get_surface (shellHandle);
+		OS.g_signal_connect (gdkSurface, OS.notify_state, notifyStateAddress, shellHandle);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
@@ -1881,6 +1886,25 @@ long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 	maximized = (gdkEvent.new_window_state & GDK.GDK_WINDOW_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkEvent.new_window_state & GDK.GDK_WINDOW_STATE_FULLSCREEN) != 0;
 	if ((gdkEvent.changed_mask & GDK.GDK_WINDOW_STATE_ICONIFIED) != 0) {
+		if (minimized) {
+			sendEvent (SWT.Iconify);
+		} else {
+			sendEvent (SWT.Deiconify);
+		}
+		updateMinimized (minimized);
+	}
+	return 0;
+}
+
+@Override
+long /*int*/ notifyStateProc (long /*int*/ gdk_handle, long /*int*/ handle) {
+	// GTK4 equivalent of gtk_window_state_event
+	assert GTK.GTK4;
+	int gdkSurfaceState = GDK.gdk_surface_get_state (gdk_handle);
+	minimized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_ICONIFIED) != 0;
+	maximized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MAXIMIZED) != 0;
+	fullScreen = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_FULLSCREEN) != 0;
+	if ((gdkSurfaceState & GDK.GDK_SURFACE_STATE_ICONIFIED) != 0) {
 		if (minimized) {
 			sendEvent (SWT.Iconify);
 		} else {

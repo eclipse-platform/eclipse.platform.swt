@@ -413,6 +413,7 @@
 #define NO__1gdk_1surface_1get_1frame_1extents
 #define NO__1gdk_1surface_1get_1width
 #define NO__1gdk_1surface_1get_1height
+#define NO__1gdk_1surface_1get_1state
 #define NO__1gdk_1surface_1resize
 #define NO__1gdk_1surface_1move
 #define NO__1gdk_1surface_1move_1resize

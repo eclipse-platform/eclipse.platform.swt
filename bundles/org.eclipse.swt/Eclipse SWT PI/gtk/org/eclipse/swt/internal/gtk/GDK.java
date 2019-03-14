@@ -229,6 +229,9 @@ public class GDK extends OS {
 	public static final int GDK_SHIFT_MASK = 0x1;
 	public static final int GDK_SIZING = 0x78;
 	public static final int GDK_STIPPLED = 0x2;
+	public static final int GDK_SURFACE_STATE_ICONIFIED = 1 << 1;
+	public static final int GDK_SURFACE_STATE_MAXIMIZED = 1 << 2;
+	public static final int GDK_SURFACE_STATE_FULLSCREEN = 1 << 4;
 	public static final int GDK_TILED = 0x1;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
@@ -554,6 +557,19 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_surface_get_width(surface);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 */
+	public static final native int _gdk_surface_get_state(long /*int*/ surface);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final int gdk_surface_get_state(long /*int*/ surface) {
+		lock.lock();
+		try {
+			return _gdk_surface_get_state(surface);
 		} finally {
 			lock.unlock();
 		}

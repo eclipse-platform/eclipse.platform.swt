@@ -2313,6 +2313,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1surface_1get_1state
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1surface_1get_1state)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1surface_1get_1state_FUNC);
+	rc = (jint)gdk_surface_get_state((GdkSurface *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1surface_1get_1state_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1surface_1get_1user_1data
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1surface_1get_1user_1data)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)

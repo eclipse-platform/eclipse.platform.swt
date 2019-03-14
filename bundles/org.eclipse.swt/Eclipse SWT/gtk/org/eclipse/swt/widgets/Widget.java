@@ -234,7 +234,8 @@ public abstract class Widget {
 	static final int CLOSE_REQUEST = 99;
 	static final int GESTURE_PRESSED = 100;
 	static final int GESTURE_RELEASED = 101;
-	static final int LAST_SIGNAL = 102;
+	static final int NOTIFY_STATE = 102;
+	static final int LAST_SIGNAL = 103;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -2168,6 +2169,10 @@ long /*int*/ leaveProc (long /*int*/ handle, long /*int*/ user_data) {
 	}
 	gdk_event_free(event);
 	return result;
+}
+
+long /*int*/ notifyStateProc (long /*int*/ gdk_handle, long /*int*/ handle) {
+	return 0;
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

@@ -131,10 +131,12 @@ public class Display extends Device {
 	long /*int*/ snapshotDrawProc;
 	long /*int*/ keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
 	long /*int*/ gesturePressReleaseProc;
+	long /*int*/ notifyStateProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw;
 	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
 	Callback gesturePressReleaseCallback;
+	Callback notifyStateCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -3707,6 +3709,13 @@ void initializeCallbacks () {
 		if (leaveProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.LEAVE] = leaveProc;
+
+		notifyStateCallback = new Callback(this, "notifyStateProc", long.class, new Type[] {
+				long.class, long.class, long.class}); //$NON-NLS-1$
+		notifyStateProc = notifyStateCallback.getAddress();
+		if (notifyStateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		closuresProc [Widget.NOTIFY_STATE] = notifyStateProc;
 	}
 
 	closuresProc [Widget.ACTIVATE] = windowProc2;
@@ -4742,6 +4751,8 @@ void releaseDisplay () {
 		leaveProc = 0;
 		gesturePressReleaseCallback.dispose();
 		gesturePressReleaseProc = 0;
+		notifyStateCallback.dispose();
+		notifyStateProc = 0;
 	}
 
 	/* Dispose checkIfEvent callback */
@@ -6093,6 +6104,12 @@ long /*int*/ leaveProc (long /*int*/ controller, long /*int*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.leaveProc(handle, user_data);
+}
+
+long /*int*/ notifyStateProc (long /*int*/ gdk_handle, long /*int*/ param_spec, long /*int*/ user_data) {
+	Widget widget = getWidget (user_data);
+	if (widget == null) return 0;
+	return widget.notifyStateProc(gdk_handle, user_data);
 }
 
 long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {

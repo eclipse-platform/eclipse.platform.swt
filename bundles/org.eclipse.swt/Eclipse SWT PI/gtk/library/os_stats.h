@@ -197,6 +197,7 @@ typedef enum {
 	_1gdk_1surface_1get_1height_FUNC,
 	_1gdk_1surface_1get_1origin_FUNC,
 	_1gdk_1surface_1get_1root_1origin_FUNC,
+	_1gdk_1surface_1get_1state_FUNC,
 	_1gdk_1surface_1get_1user_1data_FUNC,
 	_1gdk_1surface_1get_1width_FUNC,
 	_1gdk_1surface_1hide_FUNC,
