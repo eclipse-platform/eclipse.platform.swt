@@ -105,7 +105,7 @@ public class Text extends Scrollable {
 	/* Text uses non-standard CSS to set its background color, so we need
 	 * a global variable to keep track of its background color.
 	 */
-	GdkRGBA background;
+	GdkRGBA background, foreground;
 	long /*int*/ indexMark = 0;
 	double cachedAdjustment, currentAdjustment;
 
@@ -2239,6 +2239,19 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 }
 
 @Override
+GdkRGBA getContextColorGdkRGBA () {
+	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
+		if (foreground != null) {
+			return foreground;
+		} else {
+			return display.COLOR_WIDGET_FOREGROUND_RGBA;
+		}
+	} else {
+		return super.getContextColorGdkRGBA ();
+	}
+}
+
+@Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
 	/* Setting the background color overrides the selected background color.
 	 * To prevent this, we need to re-set the default. This can be done with CSS
@@ -2275,6 +2288,17 @@ void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rg
 	// Apply background color and any foreground color
 	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css(context, finalCss);
+}
+
+@Override
+void setForegroundGdkRGBA (GdkRGBA rgba) {
+	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+		foreground = rgba;
+		GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
+		setForegroundGdkRGBA (handle, toSet);
+	} else {
+		super.setForegroundGdkRGBA(rgba);
+	}
 }
 
 @Override

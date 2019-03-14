@@ -24,6 +24,7 @@ import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -1152,6 +1153,24 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
 	text.setFont(null);
 	font.dispose();
+}
+
+@Test
+public void test_setForegroundAfterBackground() {
+	makeCleanEnvironment(false);
+	Color gray = text.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
+	Color white = text.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+	Color defaultForeground = text.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+
+	text.setBackground(gray);
+	assertEquals(text.getForeground(), defaultForeground);
+	text.setForeground(white);
+	assertEquals(text.getForeground(), white);
+	assertEquals(text.getBackground(), gray);
+
+	gray.dispose();
+	white.dispose();
+	defaultForeground.dispose();
 }
 
 @Test
