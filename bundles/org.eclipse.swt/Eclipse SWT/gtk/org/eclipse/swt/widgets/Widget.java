@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1537,11 +1537,16 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
 		currentEventType = Control.fixGdkEventTypeValues(currentEventType);
 		switch (currentEventType) {
-			case GDK.GDK_KEY_PRESS:
-			case GDK.GDK_KEY_RELEASE:
 			case GDK.GDK_BUTTON_PRESS:
 			case GDK.GDK_2BUTTON_PRESS:
 			case GDK.GDK_BUTTON_RELEASE: {
+				int [] eventButton = new int [1];
+				GDK.gdk_event_get_button(ptr, eventButton);
+				setButtonState(event, eventButton [0]);
+			}
+			//$FALL-THROUGH$
+			case GDK.GDK_KEY_PRESS:
+			case GDK.GDK_KEY_RELEASE: {
 				int [] state = new int [1];
 				GDK.gdk_event_get_state (ptr, state);
 				setInputState (event, state [0]);
@@ -1683,6 +1688,17 @@ void setFontDescription (long /*int*/ widget, long /*int*/ font) {
 	GTK.gtk_widget_override_font (widget, font);
 	long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
 	GTK.gtk_style_context_invalidate (context);
+}
+
+void setButtonState (Event event, int eventButton) {
+	switch (eventButton) {
+	case 1: event.stateMask |= SWT.BUTTON1; break;
+	case 2: event.stateMask |= SWT.BUTTON2; break;
+	case 3: event.stateMask |= SWT.BUTTON3; break;
+	case 4: event.stateMask |= SWT.BUTTON4; break;
+	case 5: event.stateMask |= SWT.BUTTON5; break;
+	default:
+	}
 }
 
 boolean setInputState (Event event, int state) {
