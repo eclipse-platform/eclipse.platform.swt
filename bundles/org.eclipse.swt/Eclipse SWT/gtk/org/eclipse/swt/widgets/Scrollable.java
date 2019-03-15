@@ -315,8 +315,8 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & CANVAS) != 0) {
 		ScrollBar scrollBar;
 		int [] direction = new int[1];
-		GDK.gdk_event_get_scroll_direction(eventPtr, direction);
-		if (direction[0] == GDK.GDK_SCROLL_SMOOTH) {
+		boolean fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+		if (!fetched) {
 			double[] delta_x = new double[1], delta_y = new double [1];
 			if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
 				if (delta_x [0] != 0) {
