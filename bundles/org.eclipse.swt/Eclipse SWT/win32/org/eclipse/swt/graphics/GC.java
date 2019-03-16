@@ -209,12 +209,9 @@ void checkGC(int mask) {
 				}
 			} else {
 				int foreground = data.foreground;
-				int rgb = ((foreground >> 16) & 0xFF) | (foreground & 0xFF00) | ((foreground & 0xFF) << 16);
-				long /*int*/ color = Gdip.Color_new(data.alpha << 24 | rgb);
-				if (color == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				int color = (data.alpha << 24) | ((foreground >> 16) & 0xFF) | (foreground & 0xFF00) | ((foreground & 0xFF) << 16);
 				brush = Gdip.SolidBrush_new(color);
 				if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				Gdip.Color_delete(color);
 				data.gdipFgBrush = brush;
 			}
 			if (pen != 0) {
@@ -298,12 +295,9 @@ void checkGC(int mask) {
 				}
 			} else {
 				int background = data.background;
-				int rgb = ((background >> 16) & 0xFF) | (background & 0xFF00) | ((background & 0xFF) << 16);
-				long /*int*/ color = Gdip.Color_new(data.alpha << 24 | rgb);
-				if (color == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				int color = (data.alpha << 24) | ((background >> 16) & 0xFF) | (background & 0xFF00) | ((background & 0xFF) << 16);
 				long /*int*/ brush = Gdip.SolidBrush_new(color);
 				if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				Gdip.Color_delete(color);
 				data.gdipBrush = data.gdipBgBrush = brush;
 			}
 		}
@@ -2762,17 +2756,11 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 			p2.X = p1.X + width;
 			p2.Y = p1.Y;
 		}
-		int rgb = ((fromRGB.red & 0xFF) << 16) | ((fromRGB.green & 0xFF) << 8) | (fromRGB.blue & 0xFF);
-		long /*int*/ fromGpColor = Gdip.Color_new(data.alpha << 24 | rgb);
-		if (fromGpColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		rgb = ((toRGB.red & 0xFF) << 16) | ((toRGB.green & 0xFF) << 8) | (toRGB.blue & 0xFF);
-		long /*int*/ toGpColor = Gdip.Color_new(data.alpha << 24 | rgb);
-		if (toGpColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int fromGpColor = (data.alpha << 24) | ((fromRGB.red & 0xFF) << 16) | ((fromRGB.green & 0xFF) << 8) | (fromRGB.blue & 0xFF);
+		int toGpColor = (data.alpha << 24) | ((toRGB.red & 0xFF) << 16) | ((toRGB.green & 0xFF) << 8) | (toRGB.blue & 0xFF);
 		long /*int*/ brush = Gdip.LinearGradientBrush_new(p1, p2, fromGpColor, toGpColor);
 		Gdip.Graphics_FillRectangle(data.gdipGraphics, brush, x, y, width, height);
 		Gdip.LinearGradientBrush_delete(brush);
-		Gdip.Color_delete(fromGpColor);
-		Gdip.Color_delete(toGpColor);
 		return;
 	}
 	/*

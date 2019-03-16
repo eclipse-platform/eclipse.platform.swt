@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -57,8 +57,6 @@ typedef enum {
 	Brush_1Clone_FUNC,
 	Brush_1GetType_FUNC,
 	ColorPalette_1sizeof_FUNC,
-	Color_1delete_FUNC,
-	Color_1new_FUNC,
 	FontFamily_1GetFamilyName_FUNC,
 	FontFamily_1IsAvailable_FUNC,
 	FontFamily_1delete_FUNC,

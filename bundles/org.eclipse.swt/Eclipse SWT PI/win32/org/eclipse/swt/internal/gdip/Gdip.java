@@ -181,10 +181,10 @@ public static final native void Bitmap_delete(long /*int*/ bitmap);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
- * @param colorBackground cast=(Color*),flags=struct
+ * @param colorBackground cast=(Color)
  * @param hbmReturn cast=(HBITMAP*)
  */
-public static final native int Bitmap_GetHBITMAP(long /*int*/ bitmap, long /*int*/ colorBackground, long /*int*/[] hbmReturn);
+public static final native int Bitmap_GetHBITMAP(long /*int*/ bitmap, int colorBackground, long /*int*/[] hbmReturn);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
@@ -219,13 +219,6 @@ public static final native long /*int*/ Brush_Clone(long /*int*/ brush);
  * @param brush cast=(Brush *)
  */
 public static final native int Brush_GetType(long /*int*/ brush);
-/**
- * @method flags=new
- * @param argb cast=(ARGB)
- */
-public static final native long /*int*/ Color_new(int argb);
-/** @method flags=delete */
-public static final native void Color_delete(long /*int*/ color);
 /** @method flags=new */
 public static final native long /*int*/ PrivateFontCollection_new();
 /** @method flags=delete */
@@ -335,12 +328,12 @@ public static final native int Graphics_DrawArc(long /*int*/ graphics, long /*in
  */
 public static final native int Graphics_DrawDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, long /*int*/ brush, PointF /*long*/ positions, int flags, long /*int*/ matrix);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param text cast=(const UINT16 *)
  * @param font cast=(const Font *)
  * @param brush cast=(const Brush *)
- * @param positions cast=(const PointF *)
+ * @param positions cast=(const PointF *),flags=no_out
  * @param matrix cast=(const Matrix *)
  */
 public static final native int Graphics_DrawDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, long /*int*/ brush, float[] positions, int flags, long /*int*/ matrix);
@@ -380,9 +373,10 @@ public static final native int Graphics_DrawImage(long /*int*/ graphics, long /*
  */
 public static final native int Graphics_DrawLine(long /*int*/ graphics, long /*int*/ pen, int x1, int y1, int x2, int y2);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
+ * @param points cast=(const Point *),flags=no_out
  * @param count cast=(INT)
  */
 public static final native int Graphics_DrawLines(long /*int*/ graphics, long /*int*/ pen, int[] points, int count);
@@ -394,9 +388,10 @@ public static final native int Graphics_DrawLines(long /*int*/ graphics, long /*
  */
 public static final native int Graphics_DrawPath(long /*int*/ graphics, long /*int*/ pen, long /*int*/ path);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
+ * @param points cast=(Point *)
  * @param count cast=(INT)
  */
 public static final native int Graphics_DrawPolygon(long /*int*/ graphics, long /*int*/ pen, int[] points, int count);
@@ -463,10 +458,10 @@ public static final native void Graphics_Flush(long /*int*/ graphics, int intent
  */
 public static final native int Graphics_FillPie(long /*int*/ graphics, long /*int*/ brush, int x, int y, int width, int height, float startAngle, float sweepAngle);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param brush cast=(Brush *)
- * @param points cast=(Point *)
+ * @param points cast=(const Point *),flags=no_out
  * @param count cast=(INT)
  * @param fillMode cast=(FillMode)
  */
@@ -534,7 +529,14 @@ public static final native int Graphics_GetTransform(long /*int*/ graphics, long
  * @param graphics cast=(Graphics *)
  */
 public static final native int Graphics_GetVisibleClipBounds(long /*int*/ graphics, Rect rect);
-/** @method flags=no_gen */
+/**
+ * @method flags=cpp
+ * @param graphics cast=(Graphics *)
+ * @param text cast=(const UINT16 *)
+ * @param font cast=(Font *)
+ * @param positions cast=(const PointF *),flags=no_out
+ * @param matrix cast=(const Matrix *)
+ */
 public static final native int Graphics_MeasureDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, float[] positions, int flags, long /*int*/ matrix, RectF boundingBox);
 /**
  * @method flags=cpp
@@ -659,8 +661,10 @@ public static final native int Graphics_TranslateTransform(long /*int*/ graphics
  */
 public static final native long /*int*/ GraphicsPath_new(int fillMode);
 /**
- * @method flags=no_gen new
- * @param points cast=(FillMode)
+ * @method flags=new
+ * @param points cast=(const Point *),flags=no_out
+ * @param types cast=(const BYTE *),flags=no_out
+ * @param fillMode cast=(FillMode)
  */
 public static final native long /*int*/ GraphicsPath_new(int[] points, byte[] types, int count, int fillMode);
 /** @method flags=delete */
@@ -753,7 +757,7 @@ public static final native int GraphicsPath_GetBounds(long /*int*/ path, RectF b
  */
 public static final native int GraphicsPath_GetLastPoint(long /*int*/ path, PointF lastPoint);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param points cast=(PointF *)
  */
@@ -802,10 +806,10 @@ public static final native int GraphicsPath_Transform(long /*int*/ path, long /*
 /**
  * @method flags=new
  * @param hatchStyle cast=(HatchStyle)
- * @param foreColor cast=(Color *),flags=struct
- * @param backColor cast=(Color *),flags=struct
+ * @param foreColor cast=(Color)
+ * @param backColor cast=(Color)
  */
-public static final native long /*int*/ HatchBrush_new(int hatchStyle, long /*int*/ foreColor, long /*int*/ backColor);
+public static final native long /*int*/ HatchBrush_new(int hatchStyle, int foreColor, int backColor);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
@@ -861,19 +865,19 @@ public static final native void HatchBrush_delete(long /*int*/ brush);
  * @method flags=new
  * @param point1 flags=struct
  * @param point2 flags=struct
- * @param color1 cast=(Color *),flags=struct
- * @param color2 cast=(Color *),flags=struct
+ * @param color1 cast=(Color)
+ * @param color2 cast=(Color)
  */
-public static final native long /*int*/ LinearGradientBrush_new(PointF point1, PointF point2, long /*int*/ color1, long /*int*/ color2);
+public static final native long /*int*/ LinearGradientBrush_new(PointF point1, PointF point2, int color1, int color2);
 /** @method flags=delete */
 public static final native void LinearGradientBrush_delete(long /*int*/ brush);
 /**
- * @method flags=no_gen cpp
+ * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
- * @param presetColors cast=(const Color *)
- * @param blendPositions cast=(const REAL *)
+ * @param presetColors cast=(const Color *),flags=no_out
+ * @param blendPositions cast=(const REAL *),flags=no_out
  */
-public static final native int LinearGradientBrush_SetInterpolationColors(long /*int*/ brush, long /*int*/[] presetColors, float[] blendPositions, int count);
+public static final native int LinearGradientBrush_SetInterpolationColors(long /*int*/ brush, int [] presetColors, float[] blendPositions, int count);
 /**
  * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
@@ -960,7 +964,11 @@ public static final native int Matrix_Shear(long /*int*/ matrix, float shearX, f
  * @param matrix cast=(Matrix *)
  */
 public static final native int Matrix_TransformPoints(long /*int*/ matrix, PointF pts, int count);
-/** @method flags=no_gen */
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ * @param pts cast=(PointF *)
+ */
 public static final native int Matrix_TransformPoints(long /*int*/ matrix, float[] pts, int count);
 /**
  * @method flags=cpp
@@ -1006,9 +1014,9 @@ public static final native void PathGradientBrush_delete(long /*int*/ brush);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
- * @param color cast=(Color *),flags=struct
+ * @param color cast=(Color)
  */
-public static final native int PathGradientBrush_SetCenterColor(long /*int*/ brush, long /*int*/ color);
+public static final native int PathGradientBrush_SetCenterColor(long /*int*/ brush, int color);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
@@ -1016,19 +1024,19 @@ public static final native int PathGradientBrush_SetCenterColor(long /*int*/ bru
  */
 public static final native int PathGradientBrush_SetCenterPoint(long /*int*/ brush, PointF pt);
 /**
- * @method flags=no_gen
+ * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
- * @param presetColors cast=(const Color *)
- * @param blendPositions cast=(const REAL *)
+ * @param presetColors cast=(const Color *),flags=no_out
+ * @param blendPositions cast=(const REAL *),flags=no_out
  */
-public static final native int PathGradientBrush_SetInterpolationColors(long /*int*/ brush, long /*int*/[] presetColors, float[] blendPositions, int count);
+public static final native int PathGradientBrush_SetInterpolationColors(long /*int*/ brush, int [] presetColors, float[] blendPositions, int count);
 /**
- * @method flags=no_gen
+ * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
- * @param colors cast=(Color *)
+ * @param colors cast=(const Color *),flags=no_out
  * @param count cast=(INT *)
  */
-public static final native int PathGradientBrush_SetSurroundColors(long /*int*/ brush, long /*int*/[] colors, int[] count);
+public static final native int PathGradientBrush_SetSurroundColors(long /*int*/ brush, int [] colors, int[] count);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
@@ -1135,9 +1143,9 @@ public static final native long /*int*/ Region_GetHRGN(long /*int*/ region, long
 public static final native boolean Region_IsInfinite(long /*int*/ region, long /*int*/ graphics);
 /**
  * @method flags=new
- * @param color cast=(Color *),flags=struct
+ * @param color cast=(Color)
  */
-public static final native long /*int*/ SolidBrush_new(long /*int*/ color);
+public static final native long /*int*/ SolidBrush_new(int color);
 /** @method flags=delete */
 public static final native void SolidBrush_delete(long /*int*/ brush);
 /** @method flags=delete */

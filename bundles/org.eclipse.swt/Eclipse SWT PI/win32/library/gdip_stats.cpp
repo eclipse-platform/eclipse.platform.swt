@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -47,8 +47,6 @@ char * Gdip_nativeFunctionNames[] = {
 	"Brush_1Clone",
 	"Brush_1GetType",
 	"ColorPalette_1sizeof",
-	"Color_1delete",
-	"Color_1new",
 	"FontFamily_1GetFamilyName",
 	"FontFamily_1IsAvailable",
 	"FontFamily_1delete",

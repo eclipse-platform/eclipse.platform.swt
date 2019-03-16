@@ -190,15 +190,13 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device.checkGDIP();
 	int colorRef1 = color1.handle;
-	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
-	long /*int*/ foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
+	int foreColor = ((alpha1 & 0xFF) << 24) | ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
 	if (x1 == x2 && y1 == y2) {
 		handle = Gdip.SolidBrush_new(foreColor);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		int colorRef2 = color2.handle;
-		rgb = ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
-		long /*int*/ backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
+		int backColor = ((alpha2 & 0xFF) << 24) | ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
 		PointF p1 = new PointF();
 		p1.X = x1;
 		p1.Y = y1;
@@ -212,13 +210,10 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 			int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
 			int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
 			int b = (int)(((colorRef1 & 0xFF0000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
-			long /*int*/ midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
-			Gdip.LinearGradientBrush_SetInterpolationColors(handle, new long /*int*/ []{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
-			Gdip.Color_delete(midColor);
+			int midColor = a << 24 | r << 16 | g << 8 | b;
+			Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int [] {foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
 		}
-		Gdip.Color_delete(backColor);
 	}
-	Gdip.Color_delete(foreColor);
 	init();
 }
 
