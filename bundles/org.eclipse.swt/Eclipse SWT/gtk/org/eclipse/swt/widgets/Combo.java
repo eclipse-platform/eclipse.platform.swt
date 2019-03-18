@@ -469,6 +469,25 @@ Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) 
 	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, xpad, null);
 	Point nativeSize = super.computeNativeSize(h, wHint, hHint, changed);
 	nativeSize.x += xpad[0] * 2;
+
+	/*
+	 * Bug 545344 - [GTK3] Read only Combo text small cutoff on Linux, button.combo padding not taken into account
+	 *
+	 * A read only combo will use a GtkComboBoxText widget, which can be influenced by a css node:
+	 *
+	 * combobox button.combo
+	 *
+	 * This node can specify additional padding; if this padding is not taken into account,
+	 * Not all of the combo items text will be displayed. Some letters will be cut off, depending on how high the padding is set.
+	 */
+	if ((style & SWT.READ_ONLY) != 0 && !GTK.GTK4 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		GtkBorder buttonPadding = new GtkBorder();
+		long /*int*/ context = GTK.gtk_widget_get_style_context (buttonHandle);
+		int stateFlag = GTK.gtk_widget_get_state_flags(buttonHandle);
+		gtk_style_context_get_padding(context, stateFlag, buttonPadding);
+		nativeSize.x += buttonPadding.left + buttonPadding.right;
+	}
+
 	// Re-set fit-model to false as it was before
 	if (fitModelToggled) {
 		GTK.gtk_cell_view_set_fit_model(cellHandle, false);
