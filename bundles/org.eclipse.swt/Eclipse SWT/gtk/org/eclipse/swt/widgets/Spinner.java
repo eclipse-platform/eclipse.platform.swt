@@ -929,11 +929,23 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 
 @Override
 void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
-	background = rgba;
+	if (rgba == null) {
+		background = defaultBackground();
+	} else {
+		background = rgba;
+	}
 	if (GTK.GTK4) {
 		super.setBackgroundGdkRGBA(context, handle, rgba);
 	} else {
-		setBackgroundGradientGdkRGBA (context, handle, rgba);
+		String color = display.gtk_rgba_to_css_string (background);
+		String properties = " {background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));}";
+		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "spinbutton" : "GtkSpinButton";
+		String css = name + properties;
+
+		cssBackground = css;
+
+		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+		gtk_css_provider_load_from_css(context, finalCss);
 	}
 }
 
