@@ -2177,7 +2177,10 @@ long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
 long /*int*/ outlineView_child_ofItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ index, long /*int*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);
-	return item.handle.id;
+	if (item != null && item.handle != null) {
+		return item.handle.id;
+	}
+	return 0;
 }
 
 @Override
