@@ -1307,7 +1307,7 @@ public class GTK extends OS {
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param orientation cast=(GtkOrientation)
 	 * @param colors_per_line cast=(gint)
-	 * @param n_colors cast(gint)
+	 * @param n_colors cast=(gint)
 	 * @param colors cast=(GdkRGBA *)
 	 */
 	public static final native void _gtk_color_chooser_add_palette(long /*int*/ chooser, int orientation, int colors_per_line, int n_colors, long /*int*/ colors);

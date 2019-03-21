@@ -4477,7 +4477,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1color_1chooser_1add_1palette)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLong arg4)
 {
 	GTK_NATIVE_ENTER(env, that, _1gtk_1color_1chooser_1add_1palette_FUNC);
-	gtk_color_chooser_add_palette((GtkColorChooser *)arg0, (GtkOrientation)arg1, (gint)arg2, arg3, (GdkRGBA *)arg4);
+	gtk_color_chooser_add_palette((GtkColorChooser *)arg0, (GtkOrientation)arg1, (gint)arg2, (gint)arg3, (GdkRGBA *)arg4);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1color_1chooser_1add_1palette_FUNC);
 }
 #endif
