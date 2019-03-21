@@ -269,7 +269,7 @@ void createHandle (int index) {
 	}
 	imContext = OS.imContextLast();
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_entry_set_width_chars(handle, 6);
+		GTK.gtk_entry_set_width_chars(handle, 1);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
