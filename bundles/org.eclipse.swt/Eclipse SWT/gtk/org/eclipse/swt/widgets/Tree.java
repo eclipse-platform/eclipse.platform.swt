@@ -852,6 +852,7 @@ void createItem (TreeColumn column, int index) {
 	column.imageHandle = imageHandle;
 	GTK.gtk_tree_view_column_set_widget (column.handle, boxHandle);
 	column.buttonHandle = GTK.gtk_tree_view_column_get_button(column.handle);
+	GTK.gtk_widget_set_focus_on_click(column.buttonHandle, false);
 	if (columnCount == columns.length) {
 		TreeColumn [] newColumns = new TreeColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
