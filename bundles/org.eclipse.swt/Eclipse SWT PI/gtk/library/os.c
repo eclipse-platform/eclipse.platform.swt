@@ -6845,6 +6845,18 @@ JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1label_1get_1mnemonic_1keyval)
 }
 #endif
 
+#ifndef NO__1gtk_1label_1get_1type
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1label_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1label_1get_1type_FUNC);
+	rc = (jlong)gtk_label_get_type();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1label_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1label_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1label_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -9332,6 +9344,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1invalidate)
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1style_1context_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1new_FUNC);
+	rc = (jlong)gtk_style_context_new();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1remove_1class
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1remove_1class)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -9363,6 +9387,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1save)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1save_FUNC);
 	gtk_style_context_save((GtkStyleContext *)arg0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1save_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1set_1path
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1set_1path)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1set_1path_FUNC);
+	gtk_style_context_set_path((GtkStyleContext *)arg0, (GtkWidgetPath *)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1set_1path_FUNC);
 }
 #endif
 
@@ -12345,6 +12379,64 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1override_1font)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1font_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1path_1append_1type
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1widget_1path_1append_1type)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1path_1append_1type_FUNC);
+	rc = (jlong)gtk_widget_path_append_type((GtkWidgetPath *)arg0, (GType)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1path_1append_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1path_1free
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1path_1free)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1path_1free_FUNC);
+	gtk_widget_path_free((GtkWidgetPath *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1path_1free_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1path_1iter_1set_1object_1name
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1widget_1path_1iter_1set_1object_1name)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1path_1iter_1set_1object_1name_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_widget_path_iter_set_object_name((GtkWidgetPath *)arg0, (gint)arg1, (const char *)lparg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_path_iter_set_object_name)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidgetPath *, gint, const char *))fp)((GtkWidgetPath *)arg0, (gint)arg1, (const char *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1path_1iter_1set_1object_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1path_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1widget_1path_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1path_1new_FUNC);
+	rc = (jlong)gtk_widget_path_new();
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1path_1new_FUNC);
+	return rc;
 }
 #endif
 
