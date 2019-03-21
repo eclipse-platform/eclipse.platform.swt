@@ -259,7 +259,7 @@ void release (boolean destroy) {
 	//Since controls are now nested under the tabItem,
 	//tabItem is responsible for it's release.
 	if (control != null && !control.isDisposed ()) {
-		control.release (destroy);
+		Control.gtk_widget_reparent (control, parent.parentingHandle());
 	}
 	super.release (destroy);
 }
@@ -337,8 +337,12 @@ public void setControl (Control control) {
 		newControl.setVisible (true);
 	}
 
-	if (oldControl != null && newControl != null && oldControl != newControl)
-		oldControl.setVisible (false);
+	if ((oldControl != null) && (oldControl != newControl)) {
+		Control.gtk_widget_reparent (oldControl, parent.parentingHandle());
+		if (newControl != null) {
+			oldControl.setVisible (false);
+		}
+	}
 }
 
 void setFontDescription (long /*int*/ font) {
