@@ -5115,7 +5115,7 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundSurface (Image image) {
-	long /*int*/ window = gtk_widget_get_window (paintHandle ());
+	long /*int*/ window = GTK.gtk_widget_get_window (paintHandle ());
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		// gdk_window_set_background_pattern() deprecated in GTK3.22+
 		return;
