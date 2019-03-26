@@ -419,6 +419,11 @@ long gtk_size_allocate (long widget, long allocation) {
 		lastWidth = width;
 		sendEvent (SWT.Resize);
 	}
+	/*
+	 * Bug 545645: Updating SWT.VIRTUAL table sets header button can_focus to true,
+	 * set it back to false to avoid header being focused on click.
+	 */
+	GTK.gtk_widget_set_can_focus(buttonHandle, false);
 	return 0;
 }
 
