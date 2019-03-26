@@ -2953,7 +2953,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) ||
 				( (GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell) || GTK.GTK_VERSION > OS.VERSION(3, 13, 0)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
-			drawFlags = (int)/*64*/flags;
+			drawFlags = (int)flags;
 			drawState = SWT.FOREGROUND;
 			long [] ptr = new long [1];
 			GTK.gtk_tree_model_get (modelHandle, item.handle, Table.BACKGROUND_COLUMN, ptr, -1);
@@ -4155,7 +4155,7 @@ void updateScrollBarValue (ScrollBar bar) {
 
 @Override
 long windowProc (long handle, long arg0, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case EXPOSE_EVENT: {
 			/*
 			 * If this Table has any child widgets, propagate the draw signal

@@ -677,15 +677,15 @@ long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	long ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
-	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
-	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
+	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
+	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 	} else {
 		if (newText.length () > 0) {
 			int [] pos = new int [1];
-			pos [0] = (int)/*64*/end_pos;
+			pos [0] = (int)end_pos;
 			byte [] buffer = Converter.wcsToMbcs (newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -714,14 +714,14 @@ long gtk_focus_out_event (long widget, long event) {
 long gtk_insert_text (long widget, long new_text, long new_text_length, long position) {
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
-	byte [] buffer = new byte [(int)/*64*/new_text_length];
+	byte [] buffer = new byte [(int)new_text_length];
 	C.memmove (buffer, new_text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
 	long ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
-	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
-	int start = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, pos [0]);
+	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
+	int start = (int)OS.g_utf16_pointer_to_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];

@@ -3635,7 +3635,7 @@ Widget getWidget (long handle) {
 	long index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < widgetTable.length) {
 		lastHandle = handle;
-		return lastWidget = widgetTable [(int)/*64*/index];
+		return lastWidget = widgetTable [(int)index];
 	}
 	return null;
 }
@@ -5526,11 +5526,11 @@ public void setData (Object data) {
 }
 
 long setDirectionProc (long widget, long direction) {
-	GTK.gtk_widget_set_direction (widget, (int)/*64*/ direction);
+	GTK.gtk_widget_set_direction (widget, (int)direction);
 	if (GTK.GTK_IS_MENU_ITEM (widget)) {
 		long submenu = GTK.gtk_menu_item_get_submenu (widget);
 		if (submenu != 0) {
-			GTK.gtk_widget_set_direction (submenu, (int)/*64*/ direction);
+			GTK.gtk_widget_set_direction (submenu, (int)direction);
 			GTK.gtk_container_forall (submenu, setDirectionProc, direction);
 		}
 	}
@@ -5826,7 +5826,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 
 long timerProc (long i) {
 	if (timerList == null) return 0;
-	int index = (int)/*64*/i;
+	int index = (int)i;
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
@@ -6032,7 +6032,7 @@ String simple_color_parser (String output, String value, int index) {
 }
 
 long signalProc (long gobject, long arg1, long user_data) {
-	switch((int)/*64*/user_data) {
+	switch((int)user_data) {
 		case STYLE_UPDATED:
 			settingsChanged = true;
 			break;
@@ -6254,7 +6254,7 @@ long gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
  */
 @Override
 protected long gsettingsProc (long gobject, long arg1, long user_data) {
-	switch((int)/*64*/user_data) {
+	switch((int)user_data) {
 		case CHANGE_SCALEFACTOR:
 			this.scaleFactor = getDeviceZoom ();
 			DPIUtil.setDeviceZoom (scaleFactor);

@@ -248,7 +248,7 @@ public static Font gtk_new(Device device, long handle) {
  */
 @Override
 public int hashCode() {
-	return (int)/*64*/handle;
+	return (int)handle;
 }
 
 void init(String name, float height, int style, byte[] fontString) {

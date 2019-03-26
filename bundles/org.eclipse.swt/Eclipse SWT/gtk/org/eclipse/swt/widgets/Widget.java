@@ -1435,7 +1435,7 @@ boolean sendKeyEvent (int type, long event) {
 		long [] eventString = new long [1];
 		GDK.gdk_event_get_string(event, eventString);
 		string = eventString[0];
-		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
+		length = (int)OS.g_utf16_strlen (string, -1);
 	} else {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
@@ -1724,7 +1724,7 @@ boolean setKeyState (Event javaEvent, long event) {
 		long [] eventString = new long [1];
 		GDK.gdk_event_get_string(event, eventString);
 		string = eventString[0];
-		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
+		length = (int)OS.g_utf16_strlen (string, -1);
 		int [] eventGroup = new int [1];
 		GDK.gdk_event_get_key_group(event, eventGroup);
 		group = eventGroup[0];
@@ -2096,7 +2096,7 @@ boolean translateTraversal (int event) {
 long enterMotionScrollProc (long handle, double x, double y, long user_data) {
 	long event = GTK.gtk_get_current_event();
 	long result = 0;
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case ENTER:
 			result = gtk_enter_notify_event(handle, event);
 			break;
@@ -2117,7 +2117,7 @@ long enterMotionScrollProc (long handle, double x, double y, long user_data) {
 long focusProc (long handle, long user_data) {
 	long event = GTK.gtk_get_current_event();
 	long result = 0;
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case FOCUS_IN:
 			result = gtk_focus_in_event(handle, event);
 			break;
@@ -2132,7 +2132,7 @@ long focusProc (long handle, long user_data) {
 long keyPressReleaseProc (long handle, int keyval, int keycode, int state, long user_data) {
 	long event = GTK.gtk_get_current_event();
 	long result = 0;
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case KEY_PRESSED:
 			result = gtk_key_press_event(handle, event);
 			break;
@@ -2147,7 +2147,7 @@ long keyPressReleaseProc (long handle, int keyval, int keycode, int state, long 
 long getsurePressReleaseProc (long gesture, int n_press, double x, double y, long user_data) {
 	long event = GTK.gtk_get_current_event();
 	long result = 0;
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case GESTURE_PRESSED:
 			result = gtk_gesture_press_event(gesture, n_press, x, y, event);
 			break;
@@ -2162,7 +2162,7 @@ long getsurePressReleaseProc (long gesture, int n_press, double x, double y, lon
 long leaveProc (long handle, long user_data) {
 	long event = GTK.gtk_get_current_event();
 	long result = 0;
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case LEAVE:
 			result = gtk_leave_notify_event(handle, event);
 			break;
@@ -2176,7 +2176,7 @@ long notifyStateProc (long gdk_handle, long handle) {
 }
 
 long windowProc (long handle, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
@@ -2205,7 +2205,7 @@ long windowProc (long handle, long user_data) {
 }
 
 long windowProc (long handle, long arg0, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case EXPOSE_EVENT_INVERSE: {
 			if (GTK.GTK_IS_CONTAINER (handle)) {
 				return gtk_draw (handle, arg0);
@@ -2255,7 +2255,7 @@ long windowProc (long handle, long arg0, long user_data) {
 }
 
 long windowProc (long handle, long arg0, long arg1, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ICON_RELEASE: return gtk_icon_release (handle, arg0, arg1);
@@ -2272,7 +2272,7 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 }
 
 long windowProc (long handle, long arg0, long arg1, long arg2, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1, arg2);
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
@@ -2282,7 +2282,7 @@ long windowProc (long handle, long arg0, long arg1, long arg2, long user_data) {
 }
 
 long windowProc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case POPPED_UP: return gtk_menu_popped_up (handle, arg0, arg1, arg2, arg3);
 		default: return 0;
 	}

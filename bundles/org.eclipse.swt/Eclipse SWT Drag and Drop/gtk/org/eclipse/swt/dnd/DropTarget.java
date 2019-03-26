@@ -243,27 +243,27 @@ static int checkStyle (int style) {
 static long Drag_Data_Received ( long widget, long context, long x, long y, long data, long info, long time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	target.drag_data_received (widget, context, (int)/*64*/x, (int)/*64*/y, data, (int)/*64*/info, (int)/*64*/time);
+	target.drag_data_received (widget, context, (int)x, (int)y, data, (int)info, (int)time);
 	return 0;
 }
 
 static long Drag_Drop(long widget, long context, long x, long y, long time) {
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_drop (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
+	return target.drag_drop (widget, context, (int)x, (int)y, (int)time) ? 1 : 0;
 }
 
 static long Drag_Leave ( long widget, long context, long time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	target.drag_leave (widget, context, (int)/*64*/time);
+	target.drag_leave (widget, context, (int)time);
 	return 0;
 }
 
 static long Drag_Motion ( long widget, long context, long x, long y, long time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_motion (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
+	return target.drag_motion (widget, context, (int)x, (int)y, (int)time) ? 1 : 0;
 }
 
 static DropTarget FindDropTarget(long handle) {

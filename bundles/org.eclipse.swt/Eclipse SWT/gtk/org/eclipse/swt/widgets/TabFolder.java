@@ -553,7 +553,7 @@ long gtk_switch_page (long widget, long page, long page_num) {
 	} else {
 		return 0;
 	}
-	TabItem item = items [(int)/*64*/page_num];
+	TabItem item = items [(int)page_num];
 	Control control = item.getControl ();
 	if (control != null && !control.isDisposed ()) {
 		control.setBoundsInPixels(getClientAreaInPixels());

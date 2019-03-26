@@ -1043,7 +1043,7 @@ long webkit_authenticate (long web_view, long request){
 }
 
 long webViewProc (long handle, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case CLOSE_WEB_VIEW: return webkit_close_web_view (handle);
 		case WEB_VIEW_READY: return webkit_web_view_ready (handle);
 		default: return 0;
@@ -1051,7 +1051,7 @@ long webViewProc (long handle, long user_data) {
 }
 
 long webViewProc (long handle, long arg0, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case CREATE_WEB_VIEW: return webkit_create_web_view (handle, arg0);
 		case DOWNLOAD_REQUESTED: return webkit_download_requested (handle, arg0); // webkit1
 		case NOTIFY_LOAD_STATUS: return webkit_notify_load_status (handle, arg0); // Webkit1
@@ -1066,7 +1066,7 @@ long webViewProc (long handle, long arg0, long user_data) {
 }
 
 long webViewProc (long handle, long arg0, long arg1, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case HOVERING_OVER_LINK: return webkit_hovering_over_link (handle, arg0, arg1);		// Webkit1 only
 		case MOUSE_TARGET_CHANGED: return webkit_mouse_target_changed (handle, arg0, arg1); // Webkit2 only.
 		case DECIDE_POLICY: return webkit_decide_policy(handle, arg0, (int)arg1, user_data);
@@ -1075,7 +1075,7 @@ long webViewProc (long handle, long arg0, long arg1, long user_data) {
 }
 
 long webViewProc (long handle, long arg0, long arg1, long arg2, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case CONSOLE_MESSAGE: return webkit_console_message (handle, arg0, arg1, arg2);
 		case WINDOW_OBJECT_CLEARED: return webkit_window_object_cleared (handle, arg0, arg1, arg2);
 		case CONTEXT_MENU: return webkit_context_menu(handle, arg0, arg1, arg2);
@@ -1085,7 +1085,7 @@ long webViewProc (long handle, long arg0, long arg1, long arg2, long user_data) 
 }
 
 long webViewProc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case MIME_TYPE_POLICY_DECISION_REQUESTED: return webkit_mime_type_policy_decision_requested (handle, arg0, arg1, arg2, arg3);  // Webkit1
 		case NAVIGATION_POLICY_DECISION_REQUESTED: return webkit_navigation_policy_decision_requested (handle, arg0, arg1, arg2, arg3);
 		case RESOURCE_REQUEST_STARTING: return webkit_resource_request_starting (handle, arg0, arg1, arg2, arg3); // Webkit1
@@ -3450,7 +3450,7 @@ long webkit_load_failed_tls (long web_view, long failing_uri, long certificate, 
 		OS.g_object_ref(certificate);
 		tlsErrorCertificate = certificate;
 		convertUri (failing_uri);
-		switch ((int)/*64*/error) {
+		switch ((int)error) {
 			case WebKitGTK.G_TLS_CERTIFICATE_UNKNOWN_CA: {
 				tlsErrorType = SWT.getMessage("SWT_InvalidCert_UnknownCA");
 				break;
@@ -3951,11 +3951,11 @@ static Object convertToJava (long ctx, long value) {
 			long string = WebKitGTK.JSValueToStringCopy (ctx, value, null);
 			if (string == 0) return ""; //$NON-NLS-1$
 			long length = WebKitGTK.JSStringGetMaximumUTF8CStringSize (string);
-			byte[] bytes = new byte[(int)/*64*/length];
+			byte[] bytes = new byte[(int)length];
 			length = WebKitGTK.JSStringGetUTF8CString (string, bytes, length);
 			WebKitGTK.JSStringRelease (string);
 			/* length-1 is needed below to exclude the terminator character */
-			return new String (bytes, 0, (int)/*64*/length - 1, StandardCharsets.UTF_8);
+			return new String (bytes, 0, (int)length - 1, StandardCharsets.UTF_8);
 		}
 		case WebKitGTK.kJSTypeNull:
 			// FALL THROUGH

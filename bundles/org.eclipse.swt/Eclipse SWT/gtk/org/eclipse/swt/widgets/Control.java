@@ -6738,7 +6738,7 @@ void updateLayout (boolean all) {
 
 @Override
 long windowProc (long handle, long arg0, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case EXPOSE_EVENT_INVERSE: {
 			if ((state & OBSCURED) != 0) break;
 			Control control = findBackgroundControl ();

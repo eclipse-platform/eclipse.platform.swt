@@ -2006,8 +2006,8 @@ Point getSelection () {
 	int [] end = new int [1];
 	GTK.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
 	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
-	start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
-	end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
+	start[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
+	end[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	selection = new Point (start [0], end [0]);
 	return selection;
 
@@ -2060,8 +2060,8 @@ String getText (String str,int start, int end) {
 void setSelection (int start, int end) {
 	checkWidget ();
 	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
-	start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
-	end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
+	start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, start);
+	end = (int)OS.g_utf16_offset_to_utf8_offset (ptr, end);
 	GTK.gtk_editable_set_position (textEntryHandle, start);
 	GTK.gtk_editable_select_region (textEntryHandle, start, end);
 }

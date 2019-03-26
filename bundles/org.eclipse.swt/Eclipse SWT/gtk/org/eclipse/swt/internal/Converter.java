@@ -130,7 +130,7 @@ public static char [] mbcsToWcs (byte [] buffer) {
 	long [] items_written = new long [1];
 	long ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
 	if (ptr == 0) return EmptyCharArray;
-	int length = (int)/*64*/items_written [0];
+	int length = (int)items_written [0];
 	char [] chars = new char [length];
 	C.memmove (chars, ptr, length * 2);
 	OS.g_free (ptr);
@@ -208,7 +208,7 @@ public static byte [] wcsToMbcs (char [] chars, boolean terminate) {
 	*/
 	long ptr = OS.g_utf16_to_utf8 (chars, chars.length, items_read, items_written, null);
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
-	int written = (int)/*64*/items_written [0];
+	int written = (int)items_written [0];
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];
 	C.memmove (bytes, ptr, written);
 	OS.g_free (ptr);

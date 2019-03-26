@@ -188,7 +188,7 @@ public Object nativeToJava(TransferData transferData) {
 		long utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
 		if (utf16Ptr == 0) continue;
-		length = (int)/*64*/items_written[0];
+		length = (int)items_written[0];
 		char[] buffer = new char[length];
 		C.memmove(buffer, utf16Ptr, length * 2);
 		OS.g_free(utf16Ptr);

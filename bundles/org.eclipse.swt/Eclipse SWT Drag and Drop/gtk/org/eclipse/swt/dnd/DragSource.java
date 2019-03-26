@@ -238,7 +238,7 @@ static long DragEnd(long widget, long context){
 static long DragGetData(long widget, long context, long selection_data,  long info, long time){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
-	source.dragGetData(widget, context, selection_data, (int)/*64*/info, (int)/*64*/time);
+	source.dragGetData(widget, context, selection_data, (int)info, (int)time);
 	return 0;
 }
 

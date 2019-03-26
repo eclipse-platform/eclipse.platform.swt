@@ -192,7 +192,7 @@ long gtk_button_press_event (long widget, long eventPtr) {
 
 @Override
 long gtk_change_value (long widget, long scroll, long value1, long value2) {
-	detail = (int)/*64*/scroll;
+	detail = (int)scroll;
 	return 0;
 }
 

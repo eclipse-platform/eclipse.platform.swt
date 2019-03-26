@@ -877,7 +877,7 @@ long logProc (long log_domain, long log_level, long message, long user_data) {
 		if (DEBUG || debug) {
 			new Error ().printStackTrace ();
 		}
-		OS.g_log_default_handler (log_domain, (int)/*64*/log_level, message, 0);
+		OS.g_log_default_handler (log_domain, (int)log_level, message, 0);
 	}
 	return 0;
 }
@@ -1106,7 +1106,7 @@ protected int getDeviceZoom() {
  * @since 3.105
  */
 protected long gsettingsProc (long gobject, long arg1, long user_data) {
-	switch((int)/*64*/user_data) {
+	switch((int)user_data) {
 		case CHANGE_SCALEFACTOR:
 			this.scaleFactor = getDeviceZoom ();
 			DPIUtil.setDeviceZoom (scaleFactor);

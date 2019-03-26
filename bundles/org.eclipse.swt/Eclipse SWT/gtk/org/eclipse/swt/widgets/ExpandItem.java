@@ -689,7 +689,7 @@ void showWidget (int index) {
 
 @Override
 long windowProc (long handle, long user_data) {
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case ACTIVATE_INVERSE: {
 			expanded = GTK.gtk_expander_get_expanded (handle);
 			parent.layoutItems (0, false);

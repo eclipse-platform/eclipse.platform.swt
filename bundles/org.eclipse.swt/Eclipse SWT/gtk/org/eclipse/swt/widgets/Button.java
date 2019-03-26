@@ -1191,7 +1191,7 @@ long windowProc (long handle, long arg0, long user_data) {
 	 * Instead lets override windowProc() here and check for paintHandle() compatibility.
 	 * Fixes bug 481485 without re-introducing bug 483791.
 	 */
-	switch ((int)/*64*/user_data) {
+	switch ((int)user_data) {
 		case DRAW: {
 			if (paintHandle() == handle) {
 				return gtk_draw(handle, arg0);

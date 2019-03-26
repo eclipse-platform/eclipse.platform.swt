@@ -206,7 +206,7 @@ String openNativeChooserDialog () {
 				long utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 				OS.g_free (utf8Ptr);
 				if (utf16Ptr != 0) {
-					int clength = (int)/*64*/items_written [0];
+					int clength = (int)items_written [0];
 					char [] chars = new char [clength];
 					C.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
@@ -310,7 +310,7 @@ String openChooserDialog () {
 				long utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 				OS.g_free (utf8Ptr);
 				if (utf16Ptr != 0) {
-					int clength = (int)/*64*/items_written [0];
+					int clength = (int)items_written [0];
 					char [] chars = new char [clength];
 					C.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);

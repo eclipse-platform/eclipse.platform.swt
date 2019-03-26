@@ -1532,7 +1532,7 @@ long gtk_draw (long widget, long cairo) {
 
 @Override
 long gtk_focus (long widget, long directionType) {
-	switch ((int)/*64*/directionType) {
+	switch ((int)directionType) {
 		case GTK.GTK_DIR_TAB_FORWARD:
 		case GTK.GTK_DIR_TAB_BACKWARD:
 			Control control = display.getFocusControl ();
@@ -1617,7 +1617,7 @@ long gtk_move_focus (long widget, long directionType) {
 	Control control = display.getFocusControl ();
 	if (control != null) {
 		long focusHandle = control.focusHandle ();
-		GTK.gtk_widget_child_focus (focusHandle, (int)/*64*/directionType);
+		GTK.gtk_widget_child_focus (focusHandle, (int)directionType);
 	}
 	OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
 	return 1;

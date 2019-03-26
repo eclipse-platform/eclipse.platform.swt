@@ -1238,7 +1238,7 @@ public int hashCode () {
 	} else if (imageFileNameProvider != null) {
 		 return imageFileNameProvider.hashCode();
 	} else {
-		return (int)/*64*/surface;
+		return (int)surface;
 	}
 }
 
