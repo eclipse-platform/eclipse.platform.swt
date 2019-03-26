@@ -20,17 +20,17 @@ import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ImageList {
-	long /*int*/ [] pixbufs;
+	long [] pixbufs;
 	int width = -1, height = -1;
 	Image [] images;
 
 public ImageList() {
 	images = new Image [4];
-	pixbufs = new long /*int*/ [4];
+	pixbufs = new long [4];
 }
 
-public static long /*int*/ convertSurface(Image image) {
-	long /*int*/ newSurface = image.surface;
+public static long convertSurface(Image image) {
+	long newSurface = image.surface;
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
 		Rectangle bounds;
@@ -52,7 +52,7 @@ public static long /*int*/ convertSurface(Image image) {
 			}
 			Cairo.cairo_surface_set_device_scale(newSurface, sx[0], sy[0]);
 		}
-		long /*int*/ cairo = Cairo.cairo_create(newSurface);
+		long cairo = Cairo.cairo_create(newSurface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_set_source_surface (cairo, image.surface, 0, 0);
@@ -64,16 +64,16 @@ public static long /*int*/ convertSurface(Image image) {
 	return newSurface;
 }
 
-public static long /*int*/ createPixbuf(Image image) {
-	long /*int*/ surface = convertSurface(image);
+public static long createPixbuf(Image image) {
+	long surface = convertSurface(image);
 	int format = Cairo.cairo_image_surface_get_format(surface);
 	int width = Cairo.cairo_image_surface_get_width(surface);
 	int height = Cairo.cairo_image_surface_get_height(surface);
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
-	long /*int*/ pixbuf = GDK.gdk_pixbuf_new (GDK.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
+	long pixbuf = GDK.gdk_pixbuf_new (GDK.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
 	if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int stride = GDK.gdk_pixbuf_get_rowstride (pixbuf);
-	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
+	long pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
 	int oa, or, og, ob;
 	if (OS.BIG_ENDIAN) {
 		oa = 0; or = 1; og = 2; ob = 3;
@@ -81,7 +81,7 @@ public static long /*int*/ createPixbuf(Image image) {
 		oa = 3; or = 2; og = 1; ob = 0;
 	}
 	byte[] line = new byte[stride];
-	long /*int*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+	long surfaceData = Cairo.cairo_image_surface_get_data(surface);
 	if (hasAlpha) {
 		for (int y = 0; y < height; y++) {
 			C.memmove (line, surfaceData + (y * stride), stride);
@@ -136,7 +136,7 @@ public int add (Image image) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
 		images = newImages;
-		long /*int*/ [] newPixbufs = new long /*int*/ [pixbufs.length + 4];
+		long [] newPixbufs = new long [pixbufs.length + 4];
 		System.arraycopy (pixbufs, 0, newPixbufs, 0, pixbufs.length);
 		pixbufs = newPixbufs;
 	}
@@ -157,7 +157,7 @@ public Image get (int index) {
 	return images [index];
 }
 
-public long /*int*/ getPixbuf (int index) {
+public long getPixbuf (int index) {
 	return pixbufs [index];
 }
 
@@ -169,7 +169,7 @@ public int indexOf (Image image) {
 	return -1;
 }
 
-public int indexOf (long /*int*/ pixbuf) {
+public int indexOf (long pixbuf) {
 	if (pixbuf == 0) return -1;
 	for (int index=0; index<images.length; index++) {
 		if (pixbuf == pixbufs [index]) return index;
@@ -205,7 +205,7 @@ public void remove (Image image) {
 }
 
 void set (int index, Image image) {
-	long /*int*/ pixbuf = createPixbuf (image);
+	long pixbuf = createPixbuf (image);
 	int w = GDK.gdk_pixbuf_get_width(pixbuf);
 	int h = GDK.gdk_pixbuf_get_height(pixbuf);
 	if (width == -1 || height == -1) {
@@ -213,11 +213,11 @@ void set (int index, Image image) {
 		height = h;
 	}
 	if (w != width || h != height) {
-		long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, width, height, GDK.GDK_INTERP_BILINEAR);
+		long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, width, height, GDK.GDK_INTERP_BILINEAR);
 		OS.g_object_unref (pixbuf);
 		pixbuf = scaledPixbuf;
 	}
-	long /*int*/ oldPixbuf = pixbufs [index];
+	long oldPixbuf = pixbufs [index];
 	if (oldPixbuf != 0) {
 		if (images [index] == image) {
 			GDK.gdk_pixbuf_copy_area (pixbuf, 0, 0, width, height, oldPixbuf, 0, 0);

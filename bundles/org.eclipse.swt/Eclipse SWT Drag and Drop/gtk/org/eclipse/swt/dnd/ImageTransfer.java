@@ -91,7 +91,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	ImageData imgData = (ImageData)object;
 	if (imgData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	Image image = new Image(Display.getCurrent(), imgData);
- 	long /*int*/ pixbuf = ImageList.createPixbuf(image);
+ 	long pixbuf = ImageList.createPixbuf(image);
 	if (pixbuf != 0) {
 		String typeStr = "";
 		if (transferData.type ==  JPEG_ID) typeStr = "jpeg";
@@ -106,8 +106,8 @@ public void javaToNative(Object object, TransferData transferData) {
 		else if (transferData.type ==  XPM_ID) typeStr = "xpm";
 		else if (transferData.type ==  XV_ID) typeStr = "xv";
 		byte[] type = Converter.wcsToMbcs(typeStr, true);
-		long /*int*/ [] buffer = new long /*int*/ [1];
-		long /*int*/ [] len = new long /*int*/ [1];
+		long [] buffer = new long [1];
+		long [] len = new long [1];
 		if (type == null) return;
 		GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 		OS.g_object_unref(pixbuf);
@@ -133,11 +133,11 @@ public void javaToNative(Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData) {
 	ImageData imgData = null;
 	if (transferData.length > 0) {
-		long /*int*/ loader = GDK.gdk_pixbuf_loader_new();
+		long loader = GDK.gdk_pixbuf_loader_new();
 		try {
 			GDK.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
 			GDK.gdk_pixbuf_loader_close(loader, null);
-			long /*int*/ pixbuf = GDK.gdk_pixbuf_loader_get_pixbuf(loader);
+			long pixbuf = GDK.gdk_pixbuf_loader_get_pixbuf(loader);
 			if (pixbuf != 0) {
 				Image img = Image.gtk_new_from_pixbuf(Display.getCurrent(), SWT.BITMAP, pixbuf);
 				imgData = img.getImageData();

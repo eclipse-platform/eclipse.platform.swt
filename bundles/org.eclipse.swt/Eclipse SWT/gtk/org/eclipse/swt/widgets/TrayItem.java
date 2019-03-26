@@ -42,8 +42,8 @@ public class TrayItem extends Item {
 	Tray parent;
 	ToolTip toolTip;
 	String toolTipText;
-	long /*int*/ imageHandle;
-	long /*int*/ tooltipsHandle;
+	long imageHandle;
+	long tooltipsHandle;
 	ImageList imageList;
 	Image highlightImage;
 
@@ -245,7 +245,7 @@ public String getToolTipText () {
 }
 
 @Override
-long /*int*/ gtk_activate (long /*int*/ widget) {
+long gtk_activate (long widget) {
 	sendSelectionEvent (SWT.Selection);
 	/*
 	* Feature in GTK. GTK will generate a single-click event before sending
@@ -253,10 +253,10 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	* the single-click as the current event and for the double-click in the
 	* event queue.
 	*/
-	long /*int*/ nextEvent = gdk_event_peek ();
+	long nextEvent = gdk_event_peek ();
 	if (nextEvent != 0) {
 		int nextEventType = GDK.GDK_EVENT_TYPE (nextEvent);
-		long /*int*/ currEvent = GTK.gtk_get_current_event ();
+		long currEvent = GTK.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
 			currEventType = GDK.GDK_EVENT_TYPE (currEvent);
@@ -273,7 +273,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	int eventType = GDK.gdk_event_get_event_type(event);
 	eventType = Control.fixGdkEventTypeValues(eventType);
 	int [] eventButton = new int [1];
@@ -292,10 +292,10 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	if (n_press == 1) return 0;
-	long /*int*/ widget = GTK.gtk_event_controller_get_widget(gesture);
-	long /*int*/ result = gtk_button_press_event (widget, event);
+	long widget = GTK.gtk_event_controller_get_widget(gesture);
+	long result = gtk_button_press_event (widget, event);
 
 	if (n_press == 2) {
 		sendSelectionEvent (SWT.DefaultSelection);
@@ -305,12 +305,12 @@ long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double 
 }
 
 @Override
-long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
+long gtk_size_allocate (long widget, long allocation) {
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ button, long /*int*/ activate_time) {
+long gtk_status_icon_popup_menu (long widget, long button, long activate_time) {
 	/*
 	* GTK provides a MenuPositionFunc for GtkStatusIcon in order
 	* to set the popup-menu aligned to the tray.
@@ -471,7 +471,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		GTK.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
 		GTK.gtk_status_icon_set_visible (handle, true);
 	} else {

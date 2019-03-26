@@ -20,7 +20,7 @@ public class AtkTextRange {
 	public int start_offset;
 	public int end_offset;
 	/** @field cast=(gchar *) */
-	public long /*int*/ content;
+	public long content;
 	public static final int sizeof = ATK.AtkTextRange_sizeof ();
 
 }

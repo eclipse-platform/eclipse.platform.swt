@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventMotion extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public long /*int*/ window;
+	public long window;
 	/** @field cast=(gint8) */
 	public byte send_event;
 	/** @field cast=(guint32) */
@@ -27,13 +27,13 @@ public class GdkEventMotion extends GdkEvent {
 	/** @field cast=(gdouble) */
 	public double y;
 	/** @field cast=(gdouble *) */
-	public long /*int*/ axes;
+	public long axes;
 	/** @field cast=(guint) */
 	public int state;
 	/** @field cast=(gint16) */
 	public short is_hint;
 	/** @field cast=(GdkDevice *) */
-	public long /*int*/ device;
+	public long device;
 	/** @field cast=(gdouble) */
 	public double x_root;
 	/** @field cast=(gdouble) */

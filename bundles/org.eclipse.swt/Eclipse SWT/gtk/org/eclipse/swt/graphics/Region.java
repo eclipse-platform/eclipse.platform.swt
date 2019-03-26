@@ -45,7 +45,7 @@ public final class Region extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 /**
  * Constructs a new empty region.
@@ -89,12 +89,12 @@ public Region(Device device) {
 	init();
 }
 
-Region(Device device, long /*int*/ handle) {
+Region(Device device, long handle) {
 	super(device);
 	this.handle = handle;
 }
 
-static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
+static long gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
 	//TODO this does not perform well and could fail if the polygon is too big
 	int minX = pointArray[0], maxX = minX;
 	int minY = pointArray[1], maxY = minY;
@@ -106,9 +106,9 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 		if (y < minY) minY = y;
 		if (y > maxY) maxY = y;
 	}
-	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, maxX - minX, maxY - minY);
+	long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, maxX - minX, maxY - minY);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	long /*int*/ cairo = Cairo.cairo_create(surface);
+	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_move_to(cairo, pointArray[0] - minX, pointArray[1] - minY);
 	for (int i=2; i<count; i+=2) {
@@ -123,13 +123,13 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 	Cairo.cairo_set_fill_rule(cairo, cairo_rule);
 	Cairo.cairo_fill(cairo);
 	Cairo.cairo_destroy(cairo);
-	long /*int*/ polyRgn = GDK.gdk_cairo_region_create_from_surface(surface);
+	long polyRgn = GDK.gdk_cairo_region_create_from_surface(surface);
 	Cairo.cairo_region_translate (polyRgn, minX, minY);
 	Cairo.cairo_surface_destroy(surface);
 	return polyRgn;
 }
 
-static void cairo_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
+static void cairo_region_get_rectangles(long region, long /*int*/[] rectangles, int[] n_rectangles) {
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(cairo_rectangle_int_t.sizeof * num);
@@ -166,7 +166,7 @@ void addInPixels (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
+	long polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
 	Cairo.cairo_region_union(handle, polyRgn);
 	Cairo.cairo_region_destroy(polyRgn);
 }
@@ -356,7 +356,7 @@ Rectangle getBoundsInPixels() {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Region gtk_new(Device device, long /*int*/ handle) {
+public static Region gtk_new(Device device, long handle) {
 	return new Region(device, handle);
 }
 
@@ -431,7 +431,7 @@ void intersectInPixels(int x, int y, int width, int height) {
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
-	long /*int*/ rectRgn = Cairo.cairo_region_create_rectangle(rect);
+	long rectRgn = Cairo.cairo_region_create_rectangle(rect);
 	Cairo.cairo_region_intersect(handle, rectRgn);
 	Cairo.cairo_region_destroy(rectRgn);
 }
@@ -576,7 +576,7 @@ void subtractInPixels (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
+	long polyRgn = gdk_region_polygon(pointArray, pointArray.length / 2, GDK.GDK_EVEN_ODD_RULE);
 	Cairo.cairo_region_subtract(handle, polyRgn);
 	Cairo.cairo_region_destroy(polyRgn);
 }
@@ -636,7 +636,7 @@ void subtractInPixels(int x, int y, int width, int height) {
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
-	long /*int*/ rectRgn = Cairo.cairo_region_create_rectangle(rect);
+	long rectRgn = Cairo.cairo_region_create_rectangle(rect);
 	Cairo.cairo_region_subtract(handle, rectRgn);
 	Cairo.cairo_region_destroy(rectRgn);
 }

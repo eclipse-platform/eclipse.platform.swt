@@ -41,7 +41,7 @@ public class ExpandItem extends Item {
 	ExpandBar parent;
 	Control control;
 	ImageList imageList;
-	long /*int*/ clientHandle, boxHandle, labelHandle, imageHandle;
+	long clientHandle, boxHandle, labelHandle, imageHandle;
 	boolean expanded;
 	int x, y, width, height;
 	int imageHeight, imageWidth;
@@ -346,7 +346,7 @@ int getPreferredWidth (GC gc) {
 }
 
 @Override
-long /*int*/ gtk_activate (long /*int*/ widget) {
+long gtk_activate (long widget) {
 	Event event = new Event ();
 	event.item = this;
 	int type = GTK.gtk_expander_get_expanded (handle) ? SWT.Collapse : SWT.Expand;
@@ -355,7 +355,7 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_event (long widget, long event) {
 	if (!GTK.GTK4) return 0;
 	int eventType = GDK.gdk_event_get_event_type(event);
 	switch (eventType) {
@@ -370,26 +370,26 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	setFocus ();
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus_out_event (long widget, long event) {
 	GTK.gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
+long gtk_size_allocate (long widget, long allocation) {
 	parent.layoutItems (0, false);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_enter_notify_event (long widget, long event) {
 	parent.gtk_enter_notify_event(widget, event);
 	return 0;
 }
@@ -411,11 +411,11 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
 	if (GTK.GTK4) {
-		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long /*int*/ enterAddress = display.enterMotionScrollCallback.getAddress();
+		long enterAddress = display.enterMotionScrollCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
 	} else {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
@@ -570,7 +570,7 @@ public void setControl (Control control) {
 	parent.layoutItems (0, true);
 }
 
-long /*int*/ clientHandle () {
+long clientHandle () {
 	return clientHandle;
 }
 
@@ -603,7 +603,7 @@ boolean setFocus () {
 	return result;
 }
 
-void setFontDescription (long /*int*/ font) {
+void setFontDescription (long font) {
 	setFontDescription (handle, font);
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 	if (imageHandle != 0) setFontDescription (imageHandle, font);
@@ -648,7 +648,7 @@ public void setImage (Image image) {
 		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_gicon (imageHandle, pixbuf);
 		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show (imageHandle);
@@ -688,7 +688,7 @@ void showWidget (int index) {
 }
 
 @Override
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
+long windowProc (long handle, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case ACTIVATE_INVERSE: {
 			expanded = GTK.gtk_expander_get_expanded (handle);

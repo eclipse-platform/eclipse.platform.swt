@@ -17,10 +17,10 @@ package org.eclipse.swt.internal.gtk;
 
 public class GInterfaceInfo {
 	/** @field cast=(GInterfaceInitFunc) */
-	public long /*int*/ interface_init;
+	public long interface_init;
 	/** @field cast=(GInterfaceFinalizeFunc) */
-	public long /*int*/ interface_finalize;
+	public long interface_finalize;
 	/** @field cast=(gpointer) */
-	public long /*int*/ interface_data;
+	public long interface_data;
 	public static final int sizeof = OS.GInterfaceInfo_sizeof();
 }

@@ -17,29 +17,29 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkComponentIface {
 	/** @field cast=(guint (*)()) */
-	public long /*int*/ add_focus_handler;
+	public long add_focus_handler;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ contains;
+	public long contains;
 	/** @field cast=(AtkObject *(*)()) */
-	public long /*int*/ ref_accessible_at_point;
+	public long ref_accessible_at_point;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ get_extents;
+	public long get_extents;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ get_position;
+	public long get_position;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ get_size;
+	public long get_size;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ grab_focus;
+	public long grab_focus;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ remove_focus_handler;
+	public long remove_focus_handler;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ set_extents;
+	public long set_extents;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ set_position;
+	public long set_position;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ set_size;
+	public long set_size;
 	/** @field cast=(AtkLayer (*)()) */
-	public long /*int*/ get_layer;
+	public long get_layer;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_mdi_zorder;
+	public long get_mdi_zorder;
 }

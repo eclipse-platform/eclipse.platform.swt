@@ -52,7 +52,7 @@ public class Path extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 	boolean moved, closed = true;
 
@@ -83,7 +83,7 @@ public class Path extends Resource {
  */
 public Path (Device device) {
 	super(device);
-	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
@@ -129,12 +129,12 @@ public Path (Device device, Path path, float flatness) {
 	super(device);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	long /*int*/ copy;
+	long copy;
 	flatness = Math.max(0, flatness);
 	if (flatness == 0) {
 		copy = Cairo.cairo_copy_path(path.handle);
@@ -270,7 +270,7 @@ public void addPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	moved = false;
-	long /*int*/ copy = Cairo.cairo_copy_path(path.handle);
+	long copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(handle, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -392,8 +392,8 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;
-	long /*int*/ cairo = gc.data.cairo;
-	long /*int*/ copy = Cairo.cairo_copy_path(handle);
+	long cairo = gc.data.cairo;
+	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -466,7 +466,7 @@ public void getBounds(float[] bounds) {
 	}
 }
 void getBoundsInPixels(float[] bounds) {
-	long /*int*/ copy = Cairo.cairo_copy_path(handle);
+	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -478,7 +478,7 @@ void getBoundsInPixels(float[] bounds) {
 		double[] points = new double[6];
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
+			long offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:
@@ -572,7 +572,7 @@ public PathData getPathData() {
 }
 
 PathData getPathDataInPixels() {
-	long /*int*/ copy = Cairo.cairo_copy_path(handle);
+	long copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -584,7 +584,7 @@ PathData getPathDataInPixels() {
 		double[] points = new double[6];
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
+			long offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:

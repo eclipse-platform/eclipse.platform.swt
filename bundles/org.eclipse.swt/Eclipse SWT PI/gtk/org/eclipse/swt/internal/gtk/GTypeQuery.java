@@ -19,7 +19,7 @@ public class GTypeQuery {
 	/** @field cast=(GType) */
 	public int type;
 	/** @field cast=(const gchar *) */
-	public long /*int*/ type_name;
+	public long type_name;
 	/** @field cast=(guint) */
 	public int class_size;
 	/** @field cast=(guint) */

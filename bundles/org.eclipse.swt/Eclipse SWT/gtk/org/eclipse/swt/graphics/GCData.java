@@ -60,9 +60,9 @@ public final class GCData {
 	public int interpolation = SWT.DEFAULT;
 	public Image image;
 
-	public long /*int*/ clipRgn, context, layout, damageRgn, cairo, regionSet;
+	public long clipRgn, context, layout, damageRgn, cairo, regionSet;
 	/** Usually a GdkWindow on GTK3, or a GdkSurface on GTK4 */
-	public long /*int*/ drawable;
+	public long drawable;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
 	public double[] identity, clippingTransform;

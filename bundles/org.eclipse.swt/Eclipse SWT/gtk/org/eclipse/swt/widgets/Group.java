@@ -44,7 +44,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Group extends Composite {
-	long /*int*/ clientHandle, labelHandle;
+	long clientHandle, labelHandle;
 	String text = "";
 	// We use this to keep track of the foreground color
 	GdkRGBA foreground;
@@ -103,7 +103,7 @@ protected void checkSubclass () {
 }
 
 @Override
-long /*int*/ clientHandle () {
+long clientHandle () {
 	return clientHandle;
 }
 
@@ -168,7 +168,7 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		return super.getContextBackgroundGdkRGBA();
 	} else {
-		long /*int*/ context = GTK.gtk_widget_get_style_context (fixedHandle);
+		long context = GTK.gtk_widget_get_style_context (fixedHandle);
 		GdkRGBA rgba = new GdkRGBA ();
 		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
 		if ((state & BACKGROUND) == 0) {
@@ -240,7 +240,7 @@ void enableWidget (boolean enabled) {
 }
 
 @Override
-long /*int*/ eventHandle () {
+long eventHandle () {
 	/*
 	 * Bug 453827 - Group's events should be handled via it's internal
 	 * fixed container (clientHandle) and not via it's top level.
@@ -294,7 +294,7 @@ boolean mnemonicMatch (char key) {
 }
 
 @Override
-long /*int*/ parentingHandle() {
+long parentingHandle() {
 	/*
 	 * Bug 453827 - Children should be attached to the internal fixed
 	 * subcontainer (clienthandle) and not the top-level fixedHandle.
@@ -323,7 +323,7 @@ void releaseWidget () {
 }
 
 @Override
-void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA(long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
 		super.setBackgroundGdkRGBA(handle, rgba);
 	} else {
@@ -332,13 +332,13 @@ void setBackgroundGdkRGBA(long /*int*/ handle, GdkRGBA rgba) {
 }
 
 @Override
-void setFontDescription (long /*int*/ font) {
+void setFontDescription (long font) {
 	super.setFontDescription (font);
 	setFontDescription (labelHandle, font);
 }
 
 @Override
-void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
@@ -448,14 +448,14 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 }
 
 @Override
-long /*int*/ paintHandle() {
+long paintHandle() {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		return super.paintHandle();
 	} else {
 		if (GTK.GTK4) return clientHandle;
-		long /*int*/ topHandle = topHandle ();
+		long topHandle = topHandle ();
 		/* we draw all our children on the clientHandle*/
-		long /*int*/ paintHandle = clientHandle;
+		long paintHandle = clientHandle;
 		while (paintHandle != topHandle) {
 			if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
 			paintHandle = GTK.gtk_widget_get_parent (paintHandle);
@@ -465,15 +465,15 @@ long /*int*/ paintHandle() {
 }
 
 @Override
-long /*int*/ paintWindow () {
-	long /*int*/ paintHandle = clientHandle;
+long paintWindow () {
+	long paintHandle = clientHandle;
 	GTK.gtk_widget_realize (paintHandle);
 	return gtk_widget_get_window (paintHandle);
 }
 
 @Override
-long /*int*/ paintSurface () {
-	long /*int*/ paintHandle = clientHandle;
+long paintSurface () {
+	long paintHandle = clientHandle;
 	GTK.gtk_widget_realize (paintHandle);
 	return gtk_widget_get_surface (paintHandle);
 }

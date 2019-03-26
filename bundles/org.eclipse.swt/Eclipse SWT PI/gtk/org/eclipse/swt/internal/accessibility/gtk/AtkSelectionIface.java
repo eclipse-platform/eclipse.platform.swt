@@ -17,19 +17,19 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkSelectionIface {
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ add_selection;
+	public long add_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ clear_selection;
+	public long clear_selection;
 	/** @field cast=(AtkObject *(*)()) */
-	public long /*int*/ ref_selection;
+	public long ref_selection;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_selection_count;
+	public long get_selection_count;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ is_child_selected;
+	public long is_child_selected;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ remove_selection;
+	public long remove_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ select_all_selection;
+	public long select_all_selection;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ selection_changed;
+	public long selection_changed;
 }

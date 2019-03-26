@@ -149,16 +149,16 @@ public static Program[] getPrograms() {
 public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
-	long /*int*/ icon_theme =GTK.gtk_icon_theme_get_default();
+	long icon_theme =GTK.gtk_icon_theme_get_default();
 	byte[] icon = Converter.wcsToMbcs (iconPath, true);
-	long /*int*/ gicon = OS.g_icon_new_for_string(icon, null);
+	long gicon = OS.g_icon_new_for_string(icon, null);
 	if (gicon != 0) {
-		long /*int*/ gicon_info = GTK.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
+		long gicon_info = GTK.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
 		if (gicon_info != 0) {
-			long /*int*/ pixbuf = GTK.gtk_icon_info_load_icon(gicon_info, null);
+			long pixbuf = GTK.gtk_icon_info_load_icon(gicon_info, null);
 			if (pixbuf != 0) {
 				int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-				long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+				long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
 				int height = GDK.gdk_pixbuf_get_height(pixbuf);
 				int width = GDK.gdk_pixbuf_get_width(pixbuf);
 				boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
@@ -255,19 +255,19 @@ static String gio_getMimeType(String extension) {
 static Program gio_getProgram(Display display, String mimeType) {
 	Program program = null;
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs (mimeType, true);
-	long /*int*/ application = OS.g_app_info_get_default_for_type (mimeTypeBuffer, false);
+	long application = OS.g_app_info_get_default_for_type (mimeTypeBuffer, false);
 	if (application != 0) {
 		program = gio_getProgram(display, application);
 	}
 	return program;
 }
 
-static Program gio_getProgram (Display display, long /*int*/ application) {
+static Program gio_getProgram (Display display, long application) {
 	Program program = new Program();
 	program.display = display;
 	int length;
 	byte[] buffer;
-	long /*int*/ applicationName = OS.g_app_info_get_name (application);
+	long applicationName = OS.g_app_info_get_name (application);
 	if (applicationName != 0) {
 		length = C.strlen (applicationName);
 		if (length > 0) {
@@ -276,7 +276,7 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 			program.name = new String (Converter.mbcsToWcs (buffer));
 		}
 	}
-	long /*int*/ applicationCommand = OS.g_app_info_get_executable (application);
+	long applicationCommand = OS.g_app_info_get_executable (application);
 	if (applicationCommand != 0) {
 		length = C.strlen (applicationCommand);
 		if (length > 0) {
@@ -286,9 +286,9 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
 		}
 	}
 	program.gioExpectUri = OS.g_app_info_supports_uris(application);
-	long /*int*/ icon = OS.g_app_info_get_icon(application);
+	long icon = OS.g_app_info_get_icon(application);
 	if (icon != 0) {
-		long /*int*/ icon_name = OS.g_icon_to_string(icon);
+		long icon_name = OS.g_icon_to_string(icon);
 		if (icon_name != 0) {
 			length = C.strlen(icon_name);
 			if (length > 0) {
@@ -308,12 +308,12 @@ static Program gio_getProgram (Display display, long /*int*/ application) {
  *       become public and the original method above can be deprecated.
  */
 static Program[] getPrograms(Display display) {
-	long /*int*/ applicationList = OS.g_app_info_get_all ();
-	long /*int*/ list = applicationList;
+	long applicationList = OS.g_app_info_get_all ();
+	long list = applicationList;
 	Program program;
 	LinkedHashSet<Program> programs = new LinkedHashSet<>();
 	while (list != 0) {
-		long /*int*/ application = OS.g_list_data(list);
+		long application = OS.g_list_data(list);
 		if (application != 0) {
 			//TODO: Should the list be filtered or not?
 //			if (OS.g_app_info_should_show(application)) {
@@ -331,13 +331,13 @@ static boolean isExecutable(String fileName) {
 	byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
 	if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
 	if (!OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE)) return false;
-	long /*int*/ file = OS.g_file_new_for_path (fileNameBuffer);
+	long file = OS.g_file_new_for_path (fileNameBuffer);
 	boolean result = false;
 	if (file != 0) {
 		byte[] buffer = Converter.wcsToMbcs ("*", true); //$NON-NLS-1$
-		long /*int*/ fileInfo = OS.g_file_query_info(file, buffer, 0, 0, 0);
+		long fileInfo = OS.g_file_query_info(file, buffer, 0, 0, 0);
 		if (fileInfo != 0) {
-			long /*int*/ contentType = OS.g_file_info_get_content_type(fileInfo);
+			long contentType = OS.g_file_info_get_content_type(fileInfo);
 			if (contentType != 0) {
 				byte[] exeType = Converter.wcsToMbcs ("application/x-executable", true); //$NON-NLS-1$
 				result = OS.g_content_type_is_a(contentType, exeType);
@@ -359,9 +359,9 @@ static boolean isExecutable(String fileName) {
 static boolean gio_launch(String fileName) {
 	boolean result = false;
 	byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
-	long /*int*/ file = OS.g_file_new_for_commandline_arg (fileNameBuffer);
+	long file = OS.g_file_new_for_commandline_arg (fileNameBuffer);
 	if (file != 0) {
-		long /*int*/ uri = OS.g_file_get_uri (file);
+		long uri = OS.g_file_get_uri (file);
 		if (uri != 0) {
 			result = OS.g_app_info_launch_default_for_uri (uri, 0, 0);
 			OS.g_free(uri);
@@ -378,11 +378,11 @@ boolean gio_execute(String fileName) {
 	boolean result = false;
 	byte[] commandBuffer = Converter.wcsToMbcs (command, true);
 	byte[] nameBuffer = Converter.wcsToMbcs (name, true);
-	long /*int*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gioExpectUri
+	long application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gioExpectUri
 				? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
 	if (application != 0) {
 		byte[] fileNameBuffer = Converter.wcsToMbcs (fileName, true);
-		long /*int*/ file = 0;
+		long file = 0;
 		if (fileName.length() > 0) {
 			if (OS.g_app_info_supports_uris (application)) {
 				file = OS.g_file_new_for_uri (fileNameBuffer);
@@ -390,7 +390,7 @@ boolean gio_execute(String fileName) {
 				file = OS.g_file_new_for_path (fileNameBuffer);
 			}
 		}
-		long /*int*/ list = 0;
+		long list = 0;
 		if (file != 0) list = OS.g_list_append (0, file);
 		result = OS.g_app_info_launch (application, list, 0, 0);
 		if (list != 0) {

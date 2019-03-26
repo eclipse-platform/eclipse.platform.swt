@@ -146,7 +146,7 @@ public class Bug421127_Clipping_is_wrong {
 	}
 
 	private static void appendCairoMatrix(PaintEvent event, StringBuilder clipping) {
-		long /*int*/ cairo = cairo(event);
+		long cairo = cairo(event);
 		clipping.append("Cairo Matrix: ");
 		if (cairo != 0) {
 			double[] matrix = new double[6];
@@ -189,7 +189,7 @@ public class Bug421127_Clipping_is_wrong {
 		return null;
 	}
 
-	private static long /*int*/ cairo(PaintEvent event) {
+	private static long cairo(PaintEvent event) {
 		GC gc = gc(event);
 		if (gc != null) {
 			if (event.gc != null) {

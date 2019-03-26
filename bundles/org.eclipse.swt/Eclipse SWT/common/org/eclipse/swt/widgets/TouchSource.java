@@ -41,7 +41,7 @@ import org.eclipse.swt.graphics.*;
  * @since 3.7
  */
 public final class TouchSource {
-	long /*int*/ handle;
+	long handle;
 	boolean direct;
 	Rectangle bounds;
 
@@ -52,7 +52,7 @@ public final class TouchSource {
  * @param height height of the source in points.
  * @param width width of the source in points.
  */
-TouchSource (long /*int*/ handle, boolean direct, Rectangle bounds) {
+TouchSource (long handle, boolean direct, Rectangle bounds) {
 	this.handle = handle;
 	this.direct = direct;
 	this.bounds = bounds;

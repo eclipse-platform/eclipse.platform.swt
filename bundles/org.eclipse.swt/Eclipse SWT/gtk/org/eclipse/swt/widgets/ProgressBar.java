@@ -100,7 +100,7 @@ void createHandle (int index) {
 }
 
 @Override
-long /*int*/ eventHandle () {
+long eventHandle () {
 	return fixedHandle;
 }
 
@@ -172,8 +172,8 @@ public int getState () {
 }
 
 @Override
-long /*int*/ gtk_realize (long /*int*/ widget) {
-	long /*int*/ result = super.gtk_realize (widget);
+long gtk_realize (long widget) {
+	long result = super.gtk_realize (widget);
 	if (result != 0) return result;
 	/*
 	* Bug in GTK.  When a progress bar has been unrealized after being
@@ -191,7 +191,7 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
  * 2 warnings. For this reason, do not perform GtkCSSNode calculations.
  */
 @Override
-Point resizeCalculationsGTK3 (long /*int*/ widget, int width, int height) {
+Point resizeCalculationsGTK3 (long widget, int width, int height) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
 		// avoid warnings in GTK caused by too narrow progress bars
 		width = Math.max(2, width);
@@ -303,7 +303,7 @@ public void setState (int state) {
 }
 
 @Override
-long /*int*/ timerProc (long /*int*/ widget) {
+long timerProc (long widget) {
 	if (isVisible ()) GTK.gtk_progress_bar_pulse (handle);
 	return 1;
 }
@@ -321,7 +321,7 @@ void updateBar (int selection, int minimum, int maximum) {
 	GTK.gtk_progress_bar_set_fraction (handle, fraction);
 }
 
-void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
+void gtk_orientable_set_orientation (long pbar, int orientation) {
 	switch (orientation) {
 		case GTK.GTK_PROGRESS_BOTTOM_TO_TOP:
 			GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_VERTICAL);

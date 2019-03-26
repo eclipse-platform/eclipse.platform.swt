@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventFocus extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public long /*int*/ window;
+	public long window;
 	/** @field cast=(gint8) */
 	public byte send_event;
 	/** @field cast=(gint16) */

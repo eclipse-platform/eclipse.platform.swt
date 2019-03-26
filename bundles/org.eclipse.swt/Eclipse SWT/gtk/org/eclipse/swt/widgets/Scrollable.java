@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Scrollable extends Control {
-	long /*int*/ scrolledHandle;
+	long scrolledHandle;
 	ScrollBar horizontalBar, verticalBar;
 
 /**
@@ -78,7 +78,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-long /*int*/ clientHandle () {
+long clientHandle () {
 	return handle;
 }
 
@@ -233,7 +233,7 @@ public Rectangle getClientArea () {
 Rectangle getClientAreaInPixels () {
 	checkWidget ();
 	forceResize ();
-	long /*int*/ clientHandle = clientHandle ();
+	long clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (clientHandle, allocation);
 	int x = allocation.x;
@@ -304,8 +304,8 @@ public ScrollBar getVerticalBar () {
 }
 
 @Override
-long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ result = super.gtk_scroll_event (widget, eventPtr);
+long gtk_scroll_event (long widget, long eventPtr) {
+	long result = super.gtk_scroll_event (widget, eventPtr);
 
 	/*
 	* Feature in GTK.  Scrolled windows do not scroll if the scrollbars
@@ -424,7 +424,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
 	if (!GTK.gtk_widget_get_realized (handle)) return;
 	if (!trim) return;
-	long /*int*/ topHandle = topHandle (), paintHandle = paintHandle ();
+	long topHandle = topHandle (), paintHandle = paintHandle ();
 	if (topHandle == paintHandle) return;
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
@@ -441,10 +441,10 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		rect.height = Math.max (0, height);
 	}
 	if (GTK.GTK4) {
-		long /*int*/ surface = gtk_widget_get_surface (topHandle);
+		long surface = gtk_widget_get_surface (topHandle);
 		GDK.gdk_surface_invalidate_rect (surface, rect);
 	} else {
-		long /*int*/ window = gtk_widget_get_window (topHandle);
+		long window = gtk_widget_get_window (topHandle);
 		GDK.gdk_window_invalidate_rect (window, rect, all);
 	}
 }
@@ -479,7 +479,7 @@ void resizeHandle (int width, int height) {
 	if (fixedHandle != 0) {
 		OS.swt_fixed_resize (GTK.gtk_widget_get_parent(fixedHandle), fixedHandle, width, height);
 	}
-	long /*int*/ child = scrolledHandle != 0 ? scrolledHandle : handle;
+	long child = scrolledHandle != 0 ? scrolledHandle : handle;
 	Point sizes = resizeCalculationsGTK3 (child, width, height);
 	width = sizes.x;
 	height = sizes.y;
@@ -493,7 +493,7 @@ void showWidget () {
 }
 
 @Override
-long /*int*/ topHandle () {
+long topHandle () {
 	if (fixedHandle != 0) return fixedHandle;
 	if (scrolledHandle != 0) return scrolledHandle;
 	return super.topHandle ();
@@ -510,17 +510,17 @@ int vScrollBarWidth() {
 
 private Point hScrollbarSize() {
 	if (horizontalBar == null) return new Point(0, 0);
-	long /*int*/ vBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+	long vBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
 	return scrollBarSize(vBarHandle);
 }
 
 private Point vScrollBarSize() {
 	if (verticalBar == null) return new Point(0, 0);
-	long /*int*/ vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+	long vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
 	return scrollBarSize(vBarHandle);
 }
 
-private Point scrollBarSize(long /*int*/ scrollBarHandle) {
+private Point scrollBarSize(long scrollBarHandle) {
 	if (scrollBarHandle == 0) return new Point(0, 0);
 	GtkRequisition requisition = new GtkRequisition();
 	/*

@@ -61,7 +61,7 @@ public abstract class Widget {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -346,15 +346,15 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-long /*int*/ paintWindow () {
+long paintWindow () {
 	return 0;
 }
 
-long /*int*/ paintSurface () {
+long paintSurface () {
 	return 0;
 }
 
-long /*int*/ cssHandle() {
+long cssHandle() {
 	return handle;
 }
 
@@ -370,7 +370,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	return style;
 }
 
-long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*int*/ tree_model, long /*int*/ iter, long /*int*/ data) {
+long cellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
 	return 0;
 }
 
@@ -486,7 +486,7 @@ void deregister () {
 }
 
 void destroyWidget () {
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
 		GTK.gtk_widget_destroy (topHandle);
@@ -685,11 +685,11 @@ public int getStyle () {
 }
 
 
-long /*int*/ gtk_activate (long /*int*/ widget) {
+long gtk_activate (long widget) {
 	return 0;
 }
 
-void gtk_adjustment_get (long /*int*/ hAdjustment, GtkAdjustment adjustment) {
+void gtk_adjustment_get (long hAdjustment, GtkAdjustment adjustment) {
 	adjustment.lower = GTK.gtk_adjustment_get_lower (hAdjustment);
 	adjustment.upper = GTK.gtk_adjustment_get_upper (hAdjustment);
 	adjustment.page_increment = GTK.gtk_adjustment_get_page_increment (hAdjustment);
@@ -698,139 +698,139 @@ void gtk_adjustment_get (long /*int*/ hAdjustment, GtkAdjustment adjustment) {
 	adjustment.value = GTK.gtk_adjustment_get_value (hAdjustment);
 }
 
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_release_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_gesture_press_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_gesture_release_event (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ event) {
+long gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_changed (long /*int*/ widget) {
+long gtk_changed (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*int*/ value1, long /*int*/ value2) {
+long gtk_change_value (long widget, long scroll, long value1, long value2) {
 	return 0;
 }
 
-long /*int*/ gtk_clicked (long /*int*/ widget) {
+long gtk_clicked (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_close_request (long /*int*/ widget) {
+long gtk_close_request (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
+long gtk_commit (long imcontext, long text) {
 	return 0;
 }
 
-long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_configure_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
+long gtk_create_menu_proxy (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_day_selected (long /*int*/ widget) {
+long gtk_day_selected (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_day_selected_double_click (long /*int*/ widget) {
+long gtk_day_selected_double_click (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_delete_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_delete_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*int*/ iter2) {
+long gtk_delete_range (long widget, long iter1, long iter2) {
 	return 0;
 }
 
-long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
+long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	return 0;
 }
 
-long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_enter_notify_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ event) {
+long gtk_event_after (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_expand_collapse_cursor_row (long /*int*/ widget, long /*int*/ logical, long /*int*/ expand, long /*int*/ open_all) {
+long gtk_expand_collapse_cursor_row (long widget, long logical, long expand, long open_all) {
 	return 0;
 }
 
-long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+long gtk_draw (long widget, long cairo) {
 	return 0;
 }
 
-long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus_in_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus_out_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_grab_focus (long /*int*/ widget) {
+long gtk_grab_focus (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_hide (long /*int*/ widget) {
+long gtk_hide (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_icon_release (long /*int*/ widget, long /*int*/ icon_pos, long /*int*/ event) {
+long gtk_icon_release (long widget, long icon_pos, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_input (long /*int*/ widget, long /*int*/ arg1) {
+long gtk_input (long widget, long arg1) {
 	return 0;
 }
 
-long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
+long gtk_insert_text (long widget, long new_text, long new_text_length, long position) {
 	return 0;
 }
 
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_key_press_event (long widget, long event) {
 	return sendKeyEvent (SWT.KeyDown, event) ? 0 : 1;
 }
 
-long /*int*/ gtk_key_release_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_key_release_event (long widget, long event) {
 	return sendKeyEvent (SWT.KeyUp, event) ? 0 : 1;
 }
 
-long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_leave_notify_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_map (long /*int*/ widget) {
+long gtk_map (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_map_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_map_event (long widget, long event) {
 	return 0;
 }
 
@@ -851,126 +851,126 @@ long /*int*/ gtk_map_event (long /*int*/ widget, long /*int*/ event) {
  * @param flipped_x a boolean flag indicating whether the menu has been inverted along the X-axis
  * @param flipped_y a boolean flag indicating whether the menu has been inverted along the Y-axis
  */
-long /*int*/ gtk_menu_popped_up (long /*int*/ widget, long /*int*/ flipped_rect, long /*int*/ final_rect, long /*int*/ flipped_x, long /*int*/ flipped_y) {
+long gtk_menu_popped_up (long widget, long flipped_rect, long final_rect, long flipped_x, long flipped_y) {
 	return 0;
 }
 
-long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
+long gtk_mnemonic_activate (long widget, long arg1) {
 	return 0;
 }
 
-long /*int*/ gtk_month_changed (long /*int*/ widget) {
+long gtk_month_changed (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_motion_notify_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ event) {
+long gtk_move_focus (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_output (long /*int*/ widget) {
+long gtk_output (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
+long gtk_populate_popup (long widget, long menu) {
 	return 0;
 }
 
-long /*int*/ gtk_popup_menu (long /*int*/ widget) {
+long gtk_popup_menu (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
+long gtk_preedit_changed (long imcontext) {
 	return 0;
 }
 
-long /*int*/ gtk_realize (long /*int*/ widget) {
+long gtk_realize (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
+long gtk_row_activated (long tree, long path, long column) {
 	return 0;
 	// Note on SWT Tree/Table/List. This signal is no longer used for sending events, instead
 	// Send DefaultSelection is manually emitted. We use this function to know whether a
 	// 'row-activated' is triggered. See Bug 312568, 518414.
 }
 
-long /*int*/ gtk_row_deleted (long /*int*/ model, long /*int*/ path) {
+long gtk_row_deleted (long model, long path) {
 	return 0;
 }
 
-long /*int*/ gtk_row_inserted (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
+long gtk_row_inserted (long model, long path, long iter) {
 	return 0;
 }
 
-long /*int*/ gtk_row_has_child_toggled (long /*int*/ model, long /*int*/ path, long /*int*/ iter) {
+long gtk_row_has_child_toggled (long model, long path, long iter) {
 	return 0;
 }
 
-long /*int*/ gtk_scroll_child (long /*int*/ widget, long /*int*/ scrollType, long /*int*/ horizontal) {
+long gtk_scroll_child (long widget, long scrollType, long horizontal) {
 	return 0;
 }
 
-long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_scroll_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_select (long /*int*/ item) {
+long gtk_select (long item) {
 	return 0;
 }
 
-long /*int*/ gtk_selection_done (long /*int*/ menushell) {
+long gtk_selection_done (long menushell) {
 	return 0;
 }
 
-long /*int*/ gtk_show (long /*int*/ widget) {
+long gtk_show (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
+long gtk_show_help (long widget, long helpType) {
 	return 0;
 }
 
-long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
+long gtk_size_allocate (long widget, long allocation) {
 	return 0;
 }
 
-long /*int*/ gtk_status_icon_popup_menu (long /*int*/ handle, long /*int*/ button, long /*int*/ activate_time) {
+long gtk_status_icon_popup_menu (long handle, long button, long activate_time) {
 	return 0;
 }
 
-long /*int*/ gtk_start_interactive_search (long /*int*/ widget) {
+long gtk_start_interactive_search (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_style_updated (long /*int*/ widget) {
+long gtk_style_updated (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_switch_page (long /*int*/ widget, long /*int*/ page, long /*int*/ page_num) {
+long gtk_switch_page (long widget, long page, long page_num) {
 	return 0;
 }
 
-long /*int*/ gtk_test_collapse_row (long /*int*/ tree, long /*int*/ iter, long /*int*/ path) {
+long gtk_test_collapse_row (long tree, long iter, long path) {
 	return 0;
 }
 
-long /*int*/ gtk_test_expand_row (long /*int*/ tree, long /*int*/ iter, long /*int*/ path) {
+long gtk_test_expand_row (long tree, long iter, long path) {
 	return 0;
 }
 
-long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter, long /*int*/ text, long /*int*/ length) {
+long gtk_text_buffer_insert_text (long widget, long iter, long text, long length) {
 	return 0;
 }
 
-long /*int*/ gtk_timer () {
+long gtk_timer () {
 	return 0;
 }
 
-long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
+long gtk_toggled (long renderer, long pathStr) {
 	return 0;
 }
 
@@ -979,44 +979,44 @@ long /*int*/ gtk_toggled (long /*int*/ renderer, long /*int*/ pathStr) {
  * if there is an ongoing MeasureEvent listener. Disabling it and re-enabling the callback after the method is called
  * prevents a stack overflow from occurring.
  */
-boolean gtk_tree_view_column_cell_get_position (long /*int*/ column, long /*int*/ cell_renderer, int[] start_pos, int[] width) {
+boolean gtk_tree_view_column_cell_get_position (long column, long cell_renderer, int[] start_pos, int[] width) {
 	Callback.setEnabled(false);
 	boolean result = GTK.gtk_tree_view_column_cell_get_position (column, cell_renderer, start_pos, width);
 	Callback.setEnabled(true);
 	return result;
 }
 
-long /*int*/ gtk_unmap (long /*int*/ widget) {
+long gtk_unmap (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_unmap_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_unmap_event (long widget, long event) {
 	return 0;
 }
 
-long /*int*/ gtk_unrealize (long /*int*/ widget) {
+long gtk_unrealize (long widget) {
 	return 0;
 }
 
-long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
+long gtk_value_changed (long adjustment) {
 	return 0;
 }
 
-long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_window_state_event (long widget, long event) {
 	return 0;
 }
 
-int fontHeight (long /*int*/ font, long /*int*/ widgetHandle) {
-	long /*int*/ context = GTK.gtk_widget_get_pango_context (widgetHandle);
-	long /*int*/ lang = OS.pango_context_get_language (context);
-	long /*int*/ metrics = OS.pango_context_get_metrics (context, font, lang);
+int fontHeight (long font, long widgetHandle) {
+	long context = GTK.gtk_widget_get_pango_context (widgetHandle);
+	long lang = OS.pango_context_get_language (context);
+	long metrics = OS.pango_context_get_metrics (context, font, lang);
 	int ascent = OS.pango_font_metrics_get_ascent (metrics);
 	int descent = OS.pango_font_metrics_get_descent (metrics);
 	OS.pango_font_metrics_unref (metrics);
 	return OS.PANGO_PIXELS (ascent + descent);
 }
 
-long /*int*/ filterProc(long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*/ data2) {
+long filterProc(long xEvent, long gdkEvent, long data2) {
 	return 0;
 }
 
@@ -1153,11 +1153,11 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-long /*int*/ hoverProc (long /*int*/ widget) {
+long hoverProc (long widget) {
 	return 0;
 }
 
-boolean mnemonicHit (long /*int*/ mnemonicHandle, char key) {
+boolean mnemonicHit (long mnemonicHandle, char key) {
 	if (!mnemonicMatch (mnemonicHandle, key)) return false;
 	OS.g_signal_handlers_block_matched (mnemonicHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MNEMONIC_ACTIVATE);
 	boolean result = GTK.gtk_widget_mnemonic_activate (mnemonicHandle, false);
@@ -1165,7 +1165,7 @@ boolean mnemonicHit (long /*int*/ mnemonicHandle, char key) {
 	return result;
 }
 
-boolean mnemonicMatch (long /*int*/ mnemonicHandle, char key) {
+boolean mnemonicMatch (long mnemonicHandle, char key) {
 	long keyval1 = GDK.gdk_keyval_to_lower (GDK.gdk_unicode_to_keyval (key));
 	long keyval2 = GDK.gdk_keyval_to_lower (GTK.gtk_label_get_mnemonic_keyval (mnemonicHandle));
 	return keyval1 == keyval2;
@@ -1313,15 +1313,15 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 	eventTable.unhook (eventType, handler);
 }
 
-long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
+long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
 	return 0;
 }
 
-long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+long rendererRenderProc (long cell, long cr, long handle, long background_area, long cell_area, long flags) {
 	return 0;
 }
 
-long /*int*/ rendererSnapshotProc (long /*int*/ cell, long /*int*/ snapshot, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+long rendererSnapshotProc (long cell, long snapshot, long handle, long background_area, long cell_area, long flags) {
 	return 0;
 }
 
@@ -1428,11 +1428,11 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-boolean sendKeyEvent (int type, long /*int*/ event) {
+boolean sendKeyEvent (int type, long event) {
 	int length;
-	long /*int*/ string;
+	long string;
 	if (GTK.GTK4) {
-		long /*int*/ [] eventString = new long /*int*/ [1];
+		long [] eventString = new long [1];
 		GDK.gdk_event_get_string(event, eventString);
 		string = eventString[0];
 		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
@@ -1464,9 +1464,9 @@ boolean sendKeyEvent (int type, long /*int*/ event) {
 	return sendIMKeyEvent (type, event, chars) != null;
 }
 
-char [] sendIMKeyEvent (int type, long /*int*/ event, char [] chars) {
+char [] sendIMKeyEvent (int type, long event, char [] chars) {
 	int index = 0, count = 0, state = 0;
-	long /*int*/ ptr = 0;
+	long ptr = 0;
 	if (event == 0) {
 		ptr = GTK.gtk_get_current_event ();
 		if (ptr != 0) {
@@ -1533,7 +1533,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		return;
 	}
 	if (event == null) event = new Event ();
-	long /*int*/ ptr = GTK.gtk_get_current_event ();
+	long ptr = GTK.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
 		currentEventType = Control.fixGdkEventTypeValues(currentEventType);
@@ -1671,8 +1671,8 @@ public void setData (String key, Object value) {
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && key.equals(KEY_GTK_CSS) && value instanceof String) {
-		long /*int*/ context = GTK.gtk_widget_get_style_context (cssHandle());
-		long /*int*/ provider = GTK.gtk_css_provider_new();
+		long context = GTK.gtk_widget_get_style_context (cssHandle());
+		long provider = GTK.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
 			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
 			if (GTK.GTK4) {
@@ -1685,9 +1685,9 @@ public void setData (String key, Object value) {
 	}
 }
 
-void setFontDescription (long /*int*/ widget, long /*int*/ font) {
+void setFontDescription (long widget, long font) {
 	GTK.gtk_widget_override_font (widget, font);
-	long /*int*/ context = GTK.gtk_widget_get_style_context (widget);
+	long context = GTK.gtk_widget_get_style_context (widget);
 	GTK.gtk_style_context_invalidate (context);
 }
 
@@ -1712,8 +1712,8 @@ boolean setInputState (Event event, int state) {
 	return true;
 }
 
-boolean setKeyState (Event javaEvent, long /*int*/ event) {
-	long /*int*/ string;
+boolean setKeyState (Event javaEvent, long event) {
+	long string;
 	int length;
 	int [] eventKeyval = new int[1];
 	int group;
@@ -1721,7 +1721,7 @@ boolean setKeyState (Event javaEvent, long /*int*/ event) {
 	int [] eventState = new int[1];
 	GDK.gdk_event_get_state(event, eventState);
 	if (GTK.GTK4) {
-		long /*int*/ [] eventString = new long /*int*/ [1];
+		long [] eventString = new long [1];
 		GDK.gdk_event_get_string(event, eventString);
 		string = eventString[0];
 		length = (int)/*64*/OS.g_utf16_strlen (string, -1);
@@ -1757,8 +1757,8 @@ boolean setKeyState (Event javaEvent, long /*int*/ event) {
 				if (!groupLatinKeysCount.containsKey(group)) {
 					group = display.getLatinKeyGroup();
 				}
-				long /*int*/ keymap = 0;
-				long /*int*/ display = GDK.gdk_display_get_default();
+				long keymap = 0;
+				long display = GDK.gdk_display_get_default();
 				if (GTK.GTK4) {
 					keymap = GDK.gdk_display_get_keymap(display);
 				} else {
@@ -1789,7 +1789,7 @@ boolean setKeyState (Event javaEvent, long /*int*/ event) {
 	return setInputState (javaEvent, eventState[0]);
 }
 
-void setLocationState (Event event, long /*int*/ eventPtr) {
+void setLocationState (Event event, long eventPtr) {
 	int [] eventKeyval = new int[1];
 	GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
 	switch (eventKeyval[0]) {
@@ -1847,15 +1847,15 @@ boolean setTabItemFocus (boolean next) {
 	return false;
 }
 
-long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long shellMapProc (long handle, long arg0, long user_data) {
 	return 0;
 }
 
-long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long sizeAllocateProc (long handle, long arg0, long user_data) {
 	return 0;
 }
 
-long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long sizeRequestProc (long handle, long arg0, long user_data) {
 	return 0;
 }
 
@@ -1866,28 +1866,28 @@ long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int
  * @param handle the widget receiving the snapshot
  * @param snapshot the actual GtkSnapshot
  */
-void snapshotToDraw (long /*int*/ handle, long /*int*/ snapshot) {
+void snapshotToDraw (long handle, long snapshot) {
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(handle, allocation);
-	long /*int*/ rect = Graphene.graphene_rect_alloc();
+	long rect = Graphene.graphene_rect_alloc();
 	Graphene.graphene_rect_init(rect, 0, 0, allocation.width, allocation.height);
-	long /*int*/ cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	long cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
 	if (cairo != 0) gtk_draw(handle, cairo);
 	Graphene.graphene_rect_free(rect);
 	return;
 }
 
-long /*int*/ gtk_widget_get_window (long /*int*/ widget){
+long gtk_widget_get_window (long widget){
 	GTK.gtk_widget_realize(widget);
 	return GTK.gtk_widget_get_window (widget);
 }
 
-long /*int*/ gtk_widget_get_surface (long /*int*/ widget){
+long gtk_widget_get_surface (long widget){
 	GTK.gtk_widget_realize(widget);
 	return GTK.gtk_widget_get_surface (widget);
 }
 
-void gtk_widget_set_has_surface_or_window (long /*int*/ widget, boolean has) {
+void gtk_widget_set_has_surface_or_window (long widget, boolean has) {
 	if (GTK.GTK4) {
 		if (has && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
 			return;
@@ -1898,7 +1898,7 @@ void gtk_widget_set_has_surface_or_window (long /*int*/ widget, boolean has) {
 	}
 }
 
-boolean gtk_widget_get_has_surface_or_window (long /*int*/ widget) {
+boolean gtk_widget_get_has_surface_or_window (long widget) {
 	if (GTK.GTK4) {
 		return GTK.gtk_widget_get_has_surface(widget);
 	} else {
@@ -1906,16 +1906,16 @@ boolean gtk_widget_get_has_surface_or_window (long /*int*/ widget) {
 	}
 }
 
-void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
+void gtk_widget_set_visible (long widget, boolean visible) {
 	GTK.gtk_widget_set_visible (widget, visible);
 }
 
-void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
+void gdk_window_get_size (long drawable, int[] width, int[] height) {
 	width[0] = GDK.gdk_window_get_width (drawable);
 	height[0] = GDK.gdk_window_get_height (drawable);
 }
 
-void gdk_surface_get_size (long /*int*/ surface, int[] width, int[] height) {
+void gdk_surface_get_size (long surface, int[] width, int[] height) {
 	width[0] = GDK.gdk_surface_get_width (surface);
 	height[0] = GDK.gdk_surface_get_height (surface);
 }
@@ -1926,7 +1926,7 @@ void gdk_surface_get_size (long /*int*/ surface, int[] width, int[] height) {
  *
  * @param event the event to be freed
  */
-void gdk_event_free (long /*int*/ event) {
+void gdk_event_free (long event) {
 	if (event == 0) return;
 	if (GTK.GTK4) {
 		OS.g_object_unref(event);
@@ -1942,7 +1942,7 @@ void gdk_event_free (long /*int*/ event) {
  * @param event the event whose window or surface to fetch
  * @return the GdkWindow or GdkSurface associated with the event
  */
-long /*int*/ gdk_event_get_surface_or_window(long /*int*/ event) {
+long gdk_event_get_surface_or_window(long event) {
 	if (event == 0) return 0;
 	if (GTK.GTK4) {
 		return GDK.gdk_event_get_surface(event);
@@ -1957,9 +1957,9 @@ long /*int*/ gdk_event_get_surface_or_window(long /*int*/ event) {
  *
  * @return the GdkEvent fetched
  */
-long /*int*/ gdk_event_peek() {
+long gdk_event_peek() {
 	if (GTK.GTK4) {
-		long /*int*/ display = GDK.gdk_display_get_default();
+		long display = GDK.gdk_display_get_default();
 		return GDK.gdk_display_peek_event(display);
 	} else {
 		return GDK.gdk_event_peek();
@@ -1972,20 +1972,20 @@ long /*int*/ gdk_event_peek() {
  * @return the keymask to be used with constants like
  *        OS.GDK_SHIFT_MASK / OS.GDK_CONTROL_MASK / OS.GDK_MOD1_MASK etc..
  */
-int gdk_event_get_state (long /*int*/ event) {
+int gdk_event_get_state (long event) {
 	int [] state = new int [1];
 	GDK.gdk_event_get_state (event, state);
 	return state[0];
 }
 
 
-long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
-	long /*int*/ box = GTK.gtk_box_new (orientation, spacing);
+long gtk_box_new (int orientation, boolean homogeneous, int spacing) {
+	long box = GTK.gtk_box_new (orientation, spacing);
 	GTK.gtk_box_set_homogeneous (box, homogeneous);
 	return box;
 }
 
-void gtk_box_set_child_packing (long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding, int pack_type) {
+void gtk_box_set_child_packing (long box, long child, boolean expand, boolean fill, int padding, int pack_type) {
 	if (GTK.GTK4) {
 		GTK.gtk_widget_set_hexpand(child, expand);
 		GTK.gtk_widget_set_vexpand(child, expand);
@@ -2000,7 +2000,7 @@ void gtk_box_set_child_packing (long /*int*/ box, long /*int*/ child, boolean ex
 	}
 }
 
-void gtk_box_pack_end (long /*int*/ box, long /*int*/ child, boolean expand, boolean fill, int padding) {
+void gtk_box_pack_end (long box, long child, boolean expand, boolean fill, int padding) {
 	if (GTK.GTK4) {
 		GTK.gtk_widget_set_hexpand(child, expand);
 		GTK.gtk_widget_set_vexpand(child, expand);
@@ -2015,8 +2015,8 @@ void gtk_box_pack_end (long /*int*/ box, long /*int*/ child, boolean expand, boo
 	}
 }
 
-int gdk_pointer_grab (long /*int*/ gdkResource, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
-	long /*int*/ display = 0;
+int gdk_pointer_grab (long gdkResource, int grab_ownership, boolean owner_events, int event_mask, long confine_to, long cursor, int time_) {
+	long display = 0;
 	if (GTK.GTK4) {
 		if( gdkResource != 0) {
 			display = GDK.gdk_surface_get_display (gdkResource);
@@ -2030,31 +2030,31 @@ int gdk_pointer_grab (long /*int*/ gdkResource, int grab_ownership, boolean owne
 		}
 	}
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
+		long seat = GDK.gdk_display_get_default_seat(display);
 		if (gdkSeatGrabPrepareFunc == null) {
 			gdkSeatGrabPrepareFunc = new Callback(Widget.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 		}
-		long /*int*/ gdkSeatGrabPrepareFuncAddress = gdkSeatGrabPrepareFunc.getAddress();
+		long gdkSeatGrabPrepareFuncAddress = gdkSeatGrabPrepareFunc.getAddress();
 		if (gdkSeatGrabPrepareFuncAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFuncAddress, gdkResource);
 	} else {
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
+		long pointer = GDK.gdk_get_pointer(display);
 		return GDK.gdk_device_grab (pointer, gdkResource, grab_ownership, owner_events, event_mask, cursor, time_);
 	}
 }
 
-void gdk_pointer_ungrab (long /*int*/ gdkResource, int time_) {
-	long /*int*/ display = GTK.GTK4? GDK.gdk_surface_get_display(gdkResource) : GDK.gdk_window_get_display (gdkResource);
+void gdk_pointer_ungrab (long gdkResource, int time_) {
+	long display = GTK.GTK4? GDK.gdk_surface_get_display(gdkResource) : GDK.gdk_window_get_display (gdkResource);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long /*int*/ seat = GDK.gdk_display_get_default_seat(display);
+		long seat = GDK.gdk_display_get_default_seat(display);
 		GDK.gdk_seat_ungrab(seat);
 	} else {
-		long /*int*/ pointer = GDK.gdk_get_pointer(display);
+		long pointer = GDK.gdk_get_pointer(display);
 		GDK.gdk_device_ungrab (pointer, time_);
 	}
 }
 
-static long /*int*/ GdkSeatGrabPrepareFunc (long /*int*/ gdkSeat, long /*int*/ gdkResource, long /*int*/ userData_gdkResource) {
+static long GdkSeatGrabPrepareFunc (long gdkSeat, long gdkResource, long userData_gdkResource) {
 	if (userData_gdkResource != 0) {
 		if (GTK.GTK4) {
 			GDK.gdk_surface_show(userData_gdkResource);
@@ -2081,11 +2081,11 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
-long /*int*/ topHandle () {
+long topHandle () {
 	return handle;
 }
 
-long /*int*/ timerProc (long /*int*/ widget) {
+long timerProc (long widget) {
 	return 0;
 }
 
@@ -2093,9 +2093,9 @@ boolean translateTraversal (int event) {
 	return false;
 }
 
-long /*int*/ enterMotionScrollProc (long /*int*/ handle, double x, double y, long /*int*/ user_data) {
-	long /*int*/ event = GTK.gtk_get_current_event();
-	long /*int*/ result = 0;
+long enterMotionScrollProc (long handle, double x, double y, long user_data) {
+	long event = GTK.gtk_get_current_event();
+	long result = 0;
 	switch ((int)/*64*/user_data) {
 		case ENTER:
 			result = gtk_enter_notify_event(handle, event);
@@ -2114,9 +2114,9 @@ long /*int*/ enterMotionScrollProc (long /*int*/ handle, double x, double y, lon
 	return result;
 }
 
-long /*int*/ focusProc (long /*int*/ handle, long /*int*/ user_data) {
-	long /*int*/ event = GTK.gtk_get_current_event();
-	long /*int*/ result = 0;
+long focusProc (long handle, long user_data) {
+	long event = GTK.gtk_get_current_event();
+	long result = 0;
 	switch ((int)/*64*/user_data) {
 		case FOCUS_IN:
 			result = gtk_focus_in_event(handle, event);
@@ -2129,9 +2129,9 @@ long /*int*/ focusProc (long /*int*/ handle, long /*int*/ user_data) {
 	return result;
 }
 
-long /*int*/ keyPressReleaseProc (long /*int*/ handle, int keyval, int keycode, int state, long /*int*/ user_data) {
-	long /*int*/ event = GTK.gtk_get_current_event();
-	long /*int*/ result = 0;
+long keyPressReleaseProc (long handle, int keyval, int keycode, int state, long user_data) {
+	long event = GTK.gtk_get_current_event();
+	long result = 0;
 	switch ((int)/*64*/user_data) {
 		case KEY_PRESSED:
 			result = gtk_key_press_event(handle, event);
@@ -2144,9 +2144,9 @@ long /*int*/ keyPressReleaseProc (long /*int*/ handle, int keyval, int keycode, 
 	return result;
 }
 
-long /*int*/ getsurePressReleaseProc (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ user_data) {
-	long /*int*/ event = GTK.gtk_get_current_event();
-	long /*int*/ result = 0;
+long getsurePressReleaseProc (long gesture, int n_press, double x, double y, long user_data) {
+	long event = GTK.gtk_get_current_event();
+	long result = 0;
 	switch ((int)/*64*/user_data) {
 		case GESTURE_PRESSED:
 			result = gtk_gesture_press_event(gesture, n_press, x, y, event);
@@ -2159,9 +2159,9 @@ long /*int*/ getsurePressReleaseProc (long /*int*/ gesture, int n_press, double 
 	return result;
 }
 
-long /*int*/ leaveProc (long /*int*/ handle, long /*int*/ user_data) {
-	long /*int*/ event = GTK.gtk_get_current_event();
-	long /*int*/ result = 0;
+long leaveProc (long handle, long user_data) {
+	long event = GTK.gtk_get_current_event();
+	long result = 0;
 	switch ((int)/*64*/user_data) {
 		case LEAVE:
 			result = gtk_leave_notify_event(handle, event);
@@ -2171,11 +2171,11 @@ long /*int*/ leaveProc (long /*int*/ handle, long /*int*/ user_data) {
 	return result;
 }
 
-long /*int*/ notifyStateProc (long /*int*/ gdk_handle, long /*int*/ handle) {
+long notifyStateProc (long gdk_handle, long handle) {
 	return 0;
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
+long windowProc (long handle, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
@@ -2204,7 +2204,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	}
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
 			if (GTK.GTK_IS_CONTAINER (handle)) {
@@ -2254,7 +2254,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 	}
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
@@ -2271,7 +2271,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	}
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long arg2, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1, arg2);
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
@@ -2281,25 +2281,25 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	}
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
 	switch ((int)/*64*/user_data) {
 		case POPPED_UP: return gtk_menu_popped_up (handle, arg0, arg1, arg2, arg3);
 		default: return 0;
 	}
 }
 
-void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {
+void gtk_cell_renderer_get_preferred_size (long cell, long widget,  int[] width, int[] height) {
 	GtkRequisition minimum_size = new GtkRequisition ();
 	GTK.gtk_cell_renderer_get_preferred_size (cell, widget, minimum_size, null);
 	if (width != null) width [0] = minimum_size.width;
 	if (height != null) height[0] = minimum_size.height;
 }
 
-void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisition){
+void gtk_widget_get_preferred_size (long widget, GtkRequisition requisition){
 	GTK.gtk_widget_get_preferred_size (widget, requisition, null);
 }
 
-void gtk_image_set_from_gicon (long /*int*/ imageHandle, long /*int*/ pixbuf){
+void gtk_image_set_from_gicon (long imageHandle, long pixbuf){
 	GTK.gtk_image_set_from_gicon(imageHandle, pixbuf, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 }
 /**
@@ -2309,7 +2309,7 @@ void gtk_image_set_from_gicon (long /*int*/ imageHandle, long /*int*/ pixbuf){
  * @param handle
  * @return amount of space around the outside of the container.
  */
-int gtk_container_get_border_width_or_margin (long /*int*/ handle) {
+int gtk_container_get_border_width_or_margin (long handle) {
 	if (GTK.GTK4) {
 		int marginTop = GTK.gtk_widget_get_margin_top(handle);
 		int marginBottom = GTK.gtk_widget_get_margin_bottom(handle);
@@ -2325,7 +2325,7 @@ int gtk_container_get_border_width_or_margin (long /*int*/ handle) {
  * @param handle
  * @param border_width
  */
-void gtk_container_set_border_width (long /*int*/ handle, int border_width) {
+void gtk_container_set_border_width (long handle, int border_width) {
 	if (GTK.GTK4) {
 		GTK.gtk_widget_set_margin_top(handle, border_width);
 		GTK.gtk_widget_set_margin_bottom(handle, border_width);

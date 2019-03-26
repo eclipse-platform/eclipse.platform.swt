@@ -41,8 +41,8 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolItem extends Item {
-	long /*int*/ arrowHandle, labelHandle, imageHandle;
-	long /*int*/ eventHandle, proxyMenuItem, provider;
+	long arrowHandle, labelHandle, imageHandle;
+	long eventHandle, proxyMenuItem, provider;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -207,8 +207,8 @@ void createHandle (int index) {
 			 * disabled when it does not contain menu. The fix is to
 			 * find the arrow button handle and enable it.
 			 */
-			long /*int*/ child = GTK.gtk_bin_get_child (handle);
-			long /*int*/ list = GTK.gtk_container_get_children (child);
+			long child = GTK.gtk_bin_get_child (handle);
+			long list = GTK.gtk_container_get_children (child);
 			arrowHandle = OS.g_list_nth_data (list, 1);
 			if (arrowHandle != 0) {
 				GTK.gtk_widget_set_sensitive (arrowHandle, true);
@@ -303,7 +303,7 @@ public Rectangle getBounds () {
 Rectangle getBoundsInPixels () {
 	checkWidget();
 	parent.forceResize ();
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (topHandle, allocation);
 	int x = allocation.x;
@@ -367,7 +367,7 @@ public Image getDisabledImage () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	return GTK.gtk_widget_get_sensitive (topHandle);
 }
 
@@ -462,14 +462,14 @@ public int getWidth () {
 int getWidthInPixels () {
 	checkWidget();
 	parent.forceResize ();
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation (topHandle, allocation);
 	return allocation.width;
 }
 
 @Override
-long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_event (long widget, long event) {
 	if (!GTK.GTK4) return 0;
 	int eventType = GDK.gdk_event_get_event_type(event);
 	switch (eventType) {
@@ -484,24 +484,24 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	return parent.gtk_button_press_event (widget, event);
 }
 
 @Override
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_release_event (long widget, long event) {
 	return parent.gtk_button_release_event (widget, event);
 }
 
 @Override
-long /*int*/ gtk_clicked (long /*int*/ widget) {
+long gtk_clicked (long widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ eventPtr = GTK.gtk_get_current_event ();
+		long eventPtr = GTK.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
 			eventType = Control.fixGdkEventTypeValues(eventType);
-			long /*int*/ topHandle = topHandle();
+			long topHandle = topHandle();
 			switch (eventType) {
 				case GDK.GDK_KEY_RELEASE: //Fall Through..
 				case GDK.GDK_BUTTON_PRESS:
@@ -543,7 +543,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
+long gtk_create_menu_proxy (long widget) {
 	/*
 	 * Feature in GTK. If the item is a radio/check button
 	 * with only image, then that image does not appear in
@@ -567,7 +567,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 		if (imageList != null) {
 			int index = imageList.indexOf (image);
 			if (index != -1) {
-				long /*int*/ pixbuf = imageList.getPixbuf (index);
+				long pixbuf = imageList.getPixbuf (index);
 				byte[] label = null;
 				int [] showImages = new int []{1};
 				/*
@@ -588,13 +588,13 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 				else {
 					label = Converter.wcsToMbcs(text, true);
 				}
-				long /*int*/ menuItem = GTK.gtk_menu_item_new ();
+				long menuItem = GTK.gtk_menu_item_new ();
 				if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
 
-				long /*int*/ boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				long boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				long /*int*/ menuLabel = GTK.gtk_accel_label_new (label);
+				long menuLabel = GTK.gtk_accel_label_new (label);
 				if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
 				if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
 					GTK.gtk_label_set_xalign (labelHandle, 0);
@@ -603,7 +603,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 					GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
 				}
 
-				long /*int*/ menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
+				long menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
 				GTK.gtk_container_add (boxHandle, menuImage);
@@ -625,7 +625,7 @@ long /*int*/ gtk_create_menu_proxy (long /*int*/ widget) {
 	return 0;
 }
 
-void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+void gtk_css_provider_load_from_css (long context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 	if (provider == 0) {
@@ -641,7 +641,7 @@ void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
 }
 
 @Override
-long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_enter_notify_event (long widget, long event) {
 	parent.gtk_enter_notify_event (widget, event);
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage) {
@@ -649,7 +649,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 		if (imageList != null) {
 			int index = imageList.indexOf (hotImage);
 			if (index != -1 && imageHandle != 0) {
-				long /*int*/ pixbuf = imageList.getPixbuf (index);
+				long pixbuf = imageList.getPixbuf (index);
 				gtk_image_set_from_gicon(imageHandle, pixbuf);
 			}
 		}
@@ -658,7 +658,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
+long gtk_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {
@@ -678,20 +678,20 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 }
 
 @Override
-long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus_in_event (long widget, long event) {
 	parent.hasChildFocus = true;
 	parent.currentFocusItem = this;
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_focus_out_event (long widget, long event) {
 	parent.hasChildFocus = false;
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_leave_notify_event (long widget, long event) {
 	parent.gtk_leave_notify_event (widget, event);
 	if (drawHotImage) {
 		drawHotImage = false;
@@ -700,7 +700,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 			if (imageList != null) {
 				int index = imageList.indexOf (image);
 				if (index != -1 && imageHandle != 0) {
-					long /*int*/ pixbuf = imageList.getPixbuf (index);
+					long pixbuf = imageList.getPixbuf (index);
 					gtk_image_set_from_gicon(imageHandle, pixbuf);
 				}
 			}
@@ -710,13 +710,13 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_map (long /*int*/ widget) {
+long gtk_map (long widget) {
 	parent.fixZOrder ();
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
+long gtk_mnemonic_activate (long widget, long arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
@@ -732,26 +732,26 @@ void hookEvents () {
 	 */
 	eventHandle = GTK.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ list = GTK.gtk_container_get_children(eventHandle);
+		long list = GTK.gtk_container_get_children(eventHandle);
 		eventHandle = OS.g_list_nth_data(list, 0);
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 	}
 	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
 	if (GTK.GTK4) {
-		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
+		long keyController = GTK.gtk_event_controller_key_new();
 		GTK.gtk_widget_add_controller(eventHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long /*int*/ focusAddress = display.focusCallback.getAddress();
+		long focusAddress = display.focusCallback.getAddress();
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
 		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
 
-		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(eventHandle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long /*int*/ enterAddress = display.enterMotionScrollCallback.getAddress();
-		long /*int*/ leaveAddress = display.leaveCallback.getAddress();
+		long enterAddress = display.enterMotionScrollCallback.getAddress();
+		long leaveAddress = display.leaveCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
 		OS.g_signal_connect (motionController, OS.leave, leaveAddress, LEAVE);
 	} else {
@@ -788,7 +788,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
 
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
 }
 
@@ -989,7 +989,7 @@ public void setDisabledImage (Image image) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	if (GTK.gtk_widget_get_sensitive (topHandle) == enabled) return;
 	GTK.gtk_widget_set_sensitive (topHandle, enabled);
 }
@@ -998,7 +998,7 @@ boolean setFocus () {
 	return GTK.gtk_widget_child_focus (handle, GTK.GTK_DIR_TAB_FORWARD);
 }
 
-void setFontDescription (long /*int*/ font) {
+void setFontDescription (long font) {
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 }
 
@@ -1010,10 +1010,10 @@ void setBackgroundRGBA (GdkRGBA rgba) {
 	if (handle != 0) setBackgroundRGBA (handle, rgba);
 }
 
-void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundRGBA (long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		// Form background string
-		long /*int*/ context = GTK.gtk_widget_get_style_context(handle);
+		long context = GTK.gtk_widget_get_style_context(handle);
 		String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
         		: display.gtk_widget_get_name(handle);
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
@@ -1024,12 +1024,12 @@ void setBackgroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	}
 }
 
-void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
+void setForegroundRGBA (long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
 		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);
 		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_SELECTED, selectedForeground);
-		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		long context = GTK.gtk_widget_get_style_context (handle);
 		GTK.gtk_style_context_invalidate (context);
 		return;
 	}
@@ -1039,7 +1039,7 @@ void setForegroundRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	} else {
 		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
-	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+	long context = GTK.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
 	String css = "* {color: " + color + ";}";
@@ -1100,7 +1100,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_gicon(imageHandle, pixbuf);
 	} else {
 		gtk_image_set_from_gicon(imageHandle, 0);
@@ -1262,9 +1262,9 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	long /*int*/ child = GTK.gtk_bin_get_child (handle);
+	long child = GTK.gtk_bin_get_child (handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long /*int*/ list = GTK.gtk_container_get_children (child);
+		long list = GTK.gtk_container_get_children (child);
 		child = OS.g_list_nth_data (list, 0);
 		if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
 	}

@@ -19,35 +19,35 @@ public class JSClassDefinition {
     public int version;
     public int attributes;
     /** @field cast=(const char*) */
-    public long /*int*/ className;
+    public long className;
     /** @field cast=(void*) */
-    public long /*int*/ parentClass;
+    public long parentClass;
     /** @field cast=(const void*) */
-    public long /*int*/ staticValues;
+    public long staticValues;
     /** @field cast=(const void*) */
-    public long /*int*/ staticFunctions;
+    public long staticFunctions;
     /** @field cast=(void*) */
-    public long /*int*/ initialize;
+    public long initialize;
     /** @field cast=(void*) */
-    public long /*int*/ finalize;
+    public long finalize;
     /** @field cast=(void*) */
-    public long /*int*/ hasProperty;
+    public long hasProperty;
     /** @field cast=(void*) */
-    public long /*int*/ getProperty;
+    public long getProperty;
     /** @field cast=(void*) */
-    public long /*int*/ setProperty;
+    public long setProperty;
     /** @field cast=(void*) */
-    public long /*int*/ deleteProperty;
+    public long deleteProperty;
     /** @field cast=(void*) */
-    public long /*int*/ getPropertyNames;
+    public long getPropertyNames;
     /** @field cast=(void*) */
-    public long /*int*/ callAsFunction;
+    public long callAsFunction;
     /** @field cast=(void*) */
-    public long /*int*/ callAsConstructor;
+    public long callAsConstructor;
     /** @field cast=(void*) */
-    public long /*int*/ hasInstance;
+    public long hasInstance;
     /** @field cast=(void*) */
-    public long /*int*/ convertToType;
+    public long convertToType;
 
     public static final int sizeof = WebKitGTK.JSClassDefinition_sizeof();
 }

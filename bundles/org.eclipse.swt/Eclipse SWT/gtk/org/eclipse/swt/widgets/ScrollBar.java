@@ -89,7 +89,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
-	long /*int*/ adjustmentHandle;
+	long adjustmentHandle;
 	int detail;
 	boolean dragSent;
 
@@ -364,7 +364,7 @@ Rectangle getThumbBoundsInPixels () {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	if (GTK.GTK4) {
-		long /*int*/ surface = gtk_widget_get_surface (parent.scrolledHandle);
+		long surface = gtk_widget_get_surface (parent.scrolledHandle);
 		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
@@ -373,7 +373,7 @@ Rectangle getThumbBoundsInPixels () {
 		rect.x -= origin_x [0];
 		rect.y -= origin_y [0];
 	} else {
-		long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
+		long window = gtk_widget_get_window (parent.scrolledHandle);
 		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
@@ -459,7 +459,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	if (GTK.GTK4) {
-		long /*int*/ surface = gtk_widget_get_surface (parent.scrolledHandle);
+		long surface = gtk_widget_get_surface (parent.scrolledHandle);
 		if (surface != 0) GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
@@ -468,7 +468,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 		rect.x -= origin_x [0];
 		rect.y -= origin_y [0];
 	} else {
-		long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
+		long window = gtk_widget_get_window (parent.scrolledHandle);
 		if (window != 0) GDK.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
@@ -499,7 +499,7 @@ Rectangle getThumbTrackBoundsInPixels () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	long /*int*/ scrolledHandle = parent.scrolledHandle;
+	long scrolledHandle = parent.scrolledHandle;
 	int [] hsp = new int [1], vsp = new int [1];
 	GTK.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -510,7 +510,7 @@ public boolean getVisible () {
 }
 
 @Override
-long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_event (long widget, long event) {
 	if (!GTK.GTK4) return 0;
 	int eventType = GDK.gdk_event_get_event_type(event);
 	switch (eventType) {
@@ -525,8 +525,8 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
+long gtk_button_press_event (long widget, long eventPtr) {
+	long result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	detail = GTK.GTK_SCROLL_NONE;
 	dragSent = false;
@@ -534,17 +534,17 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr)
 }
 
 @Override
-long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*int*/ value1, long /*int*/ value2) {
+long gtk_change_value (long widget, long scroll, long value1, long value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
 }
 
-void gtk_range_get_slider_range (long /*int*/ widget, int [] slider_start, int [] slider_end) {
+void gtk_range_get_slider_range (long widget, int [] slider_start, int [] slider_end) {
 	GTK.gtk_range_get_slider_range (widget, slider_start, slider_end);
 }
 
 @Override
-long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
+long gtk_value_changed (long adjustment) {
 	Event event = new Event ();
 	dragSent = detail == GTK.GTK_SCROLL_JUMP;
 	switch (detail) {
@@ -573,7 +573,7 @@ long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 }
 
 @Override
-long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
+long gtk_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	eventType = Control.fixGdkEventTypeValues(eventType);
 	switch (eventType) {

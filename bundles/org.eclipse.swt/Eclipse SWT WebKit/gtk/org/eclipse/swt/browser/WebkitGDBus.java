@@ -46,7 +46,7 @@ class WebkitGDBus {
 	private static final String webkitWebExtensionIdentifier = WebKit.Webkit2Extension.getWebExtensionIdentifer();
 
 	/** Proxy connection to the web extension.*/
-	static long /*int*/ proxy;
+	static long proxy;
 	/** A field that is set to true if the proxy connection has been established, false otherwise */
 	static boolean proxyToExtension;
 	/** Set to true if there are <code>BrowserFunction</code> objects waiting to be registered with the web extension.*/
@@ -178,12 +178,12 @@ class WebkitGDBus {
 	 * @return	void.
 	 */
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long /*int*/ onBusAcquiredCallback (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
-		long /*int*/ gdBusNodeInfo;
+	private static long onBusAcquiredCallback (long connection, long name, long user_data) {
+		long gdBusNodeInfo;
 
 		// Parse XML
 		{
-			long /*int*/ [] error = new long /*int*/ [1];
+			long [] error = new long [1];
 			gdBusNodeInfo = OS.g_dbus_node_info_new_for_xml(Converter.javaStringToCString(dbus_introspection_xml), error);
 			if (gdBusNodeInfo == 0 || error[0] != 0) {
 				System.err.println("SWT WebkitGDBus: Failed to get introspection data");
@@ -193,9 +193,9 @@ class WebkitGDBus {
 
 		// Register object
 		{
-			long /*int*/ [] error = new long /*int*/ [1];
-			long /*int*/ interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
-			long /*int*/ vtable [] = { handleMethodCallback.getAddress(), 0, 0 };
+			long [] error = new long [1];
+			long interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
+			long vtable [] = { handleMethodCallback.getAddress(), 0, 0 };
 			// SWT Dev Note: SWT Tool's "32/64 bit" checking mechanism sometimes get's confused by this method signature and shows an incorrect warning.
 			// Other times it validates it fine. We ignore for now as 32bit will be dropped anyway.
 			OS.g_dbus_connection_register_object(
@@ -225,14 +225,14 @@ class WebkitGDBus {
 
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long /*int*/ onNameAcquiredCallback (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
+	private static long onNameAcquiredCallback (long connection, long name, long user_data) {
 		// Currently not used, but can be used if acquring the gdbus name should trigger something to load.
 		return 0;
 	}
 
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long /*int*/ onNameLostCallback (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
+	private static long onNameLostCallback (long connection, long name, long user_data) {
 		assert false : "This code should never have executed";
 		System.err.println("SWT WebkitGDBus.java: Lost GDBus name. This should never occur");
 		return 0;
@@ -259,11 +259,11 @@ class WebkitGDBus {
 	 * @return
 	 */
 	@SuppressWarnings("unused") // Callback only called directly by JNI.
-	private static long /*int*/ handleMethodCallback (
-			long /*int*/ connection, long /*int*/ sender,
-			long /*int*/ object_path, long /*int*/ interface_name,
-			long /*int*/ method_name, long /*int*/ gvar_parameters,
-			long /*int*/ invocation, long /*int*/ user_data) {
+	private static long handleMethodCallback (
+			long connection, long sender,
+			long object_path, long interface_name,
+			long method_name, long gvar_parameters,
+			long invocation, long user_data) {
 
 		String java_method_name = Converter.cCharPtrToJavaString(method_name, false);
 		Object result = null;
@@ -299,11 +299,11 @@ class WebkitGDBus {
 	}
 
 	@SuppressWarnings("unused")
-	private static long /*int*/ callExtensionAsyncCallback (long /*int*/ source_object, long /*int*/ res, long /*int*/ user_data) {
+	private static long callExtensionAsyncCallback (long source_object, long res, long user_data) {
 		long /*int*/[] gerror = new long /*int*/[1];
-		long /*int*/ result = OS.g_dbus_proxy_call_finish (proxy, res, gerror);
+		long result = OS.g_dbus_proxy_call_finish (proxy, res, gerror);
 		if (gerror[0] != 0){
-			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			long errMsg = OS.g_error_get_message(gerror[0]);
 			String msg = Converter.cCharPtrToJavaString(errMsg, false);
 			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension (Java callback).");
 			System.err.println("SWT webkit: the error message provided is " + msg);
@@ -323,10 +323,10 @@ class WebkitGDBus {
 	 * @param invocation the GDBus invocation to return the value on
 	 */
 	private static void invokeReturnValueExtensionIdentifier (HashMap<Long, ArrayList<ArrayList<String>>> map,
-			long /*int*/ invocation) {
-		long /*int*/ resultGVariant;
-		long /*int*/ builder;
-		long /*int*/ type = OS.g_variant_type_new(OS.G_VARIANT_TYPE_ARRAY_BROWSER_FUNCS);
+			long invocation) {
+		long resultGVariant;
+		long builder;
+		long type = OS.g_variant_type_new(OS.G_VARIANT_TYPE_ARRAY_BROWSER_FUNCS);
 		builder = OS.g_variant_builder_new(type);
 		if (builder == 0) return;
 		Object [] tupleArray = new Object[3];
@@ -343,7 +343,7 @@ class WebkitGDBus {
 			tupleArray[0] = (long)-1;
 			tupleArray[1] = "";
 			tupleArray[2] = "";
-			long /*int*/ tupleGVariant = convertJavaToGVariant(tupleArray);
+			long tupleGVariant = convertJavaToGVariant(tupleArray);
 			if (tupleGVariant != 0) {
 				OS.g_variant_builder_add_value(builder, tupleGVariant);
 			} else {
@@ -361,7 +361,7 @@ class WebkitGDBus {
 						}
 						tupleArray[0] = id;
 						System.arraycopy(stringArray, 0, tupleArray, 1, 2);
-						long /*int*/ tupleGVariant = convertJavaToGVariant(tupleArray);
+						long tupleGVariant = convertJavaToGVariant(tupleArray);
 						if (tupleGVariant != 0) {
 							OS.g_variant_builder_add_value(builder, tupleGVariant);
 						} else {
@@ -376,15 +376,15 @@ class WebkitGDBus {
 		if (!OS.DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS.equals(typeString)) {
 			System.err.println("An error packaging the GVariant occurred: type mismatch.");
 		}
-		long /*int*/ [] variants = {resultGVariant};
-		long /*int*/ finalGVariant = OS.g_variant_new_tuple(variants, 1);
+		long [] variants = {resultGVariant};
+		long finalGVariant = OS.g_variant_new_tuple(variants, 1);
 		OS.g_dbus_method_invocation_return_value(invocation, finalGVariant);
 		OS.g_variant_builder_unref(builder);
 		return;
 	}
 
-	private static void invokeReturnValue (Object result, long /*int*/ invocation) {
-		long /*int*/ resultGVariant = 0;
+	private static void invokeReturnValue (Object result, long invocation) {
+		long resultGVariant = 0;
 		try {
 			resultGVariant = convertJavaToGVariant(new Object [] {result}); // Result has to be a tuple.
 		} catch (SWTException e) {
@@ -407,13 +407,13 @@ class WebkitGDBus {
 			return true;
 		} else {
 			if (EXTENSION_DBUS_NAME != null && EXTENSION_DBUS_PATH != null) {
-				long /*int*/ [] error = new long /*int*/ [1];
+				long [] error = new long [1];
 				byte [] name = Converter.javaStringToCString(EXTENSION_DBUS_NAME);
 				byte [] path = Converter.javaStringToCString(EXTENSION_DBUS_PATH);
 				byte [] interfaceName = Converter.javaStringToCString(EXTENSION_INTERFACE_NAME);
 				proxy = OS.g_dbus_proxy_new_for_bus_sync(OS.G_BUS_TYPE_SESSION, OS.G_DBUS_PROXY_FLAGS_NONE, 0, name, path, interfaceName, 0, error);
 				if (error[0] != 0) {
-					long /*int*/ errMsg = OS.g_error_get_message(error[0]);
+					long errMsg = OS.g_error_get_message(error[0]);
 					String msg = Converter.cCharPtrToJavaString(errMsg, false);
 					OS.g_error_free(error[0]);
 					System.err.println("SWT webkit: there was an error establishing the proxy connection to the extension. " +
@@ -435,12 +435,12 @@ class WebkitGDBus {
 	 * @param methodName a String representing the DBus method name in the extension
 	 * @return an Object representing the return value from DBus in boolean form
 	 */
-	static Object callExtensionSync (long /*int*/ params, String methodName) {
-		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
-		long /*int*/ gVariant = OS.g_dbus_proxy_call_sync(proxy, Converter.javaStringToCString(methodName),
+	static Object callExtensionSync (long params, String methodName) {
+		long /*int*/[] gerror = new long [1]; // GError **
+		long gVariant = OS.g_dbus_proxy_call_sync(proxy, Converter.javaStringToCString(methodName),
 				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, gerror);
 		if (gerror[0] != 0) {
-			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			long errMsg = OS.g_error_get_message(gerror[0]);
 			String msg = Converter.cCharPtrToJavaString(errMsg, false);
 			/*
 			 * Don't print console warnings for timeout errors, as we can handle these ourselves.
@@ -471,12 +471,12 @@ class WebkitGDBus {
 	 * @param methodName a String representing the DBus method name in the extension
 	 * @return true if the extension was called without errors, false otherwise
 	 */
-	static boolean callExtensionAsync (long /*int*/ params, String methodName) {
-		long /*int*/[] gerror = new long /*int*/ [1]; // GError **
+	static boolean callExtensionAsync (long params, String methodName) {
+		long /*int*/[] gerror = new long [1]; // GError **
 		OS.g_dbus_proxy_call(proxy, Converter.javaStringToCString(methodName),
 				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, callExtensionAsyncCallback.getAddress(), gerror);
 		if (gerror[0] != 0) {
-			long /*int*/ errMsg = OS.g_error_get_message(gerror[0]);
+			long errMsg = OS.g_error_get_message(gerror[0]);
 			String msg = Converter.cCharPtrToJavaString(errMsg, false);
 			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension.");
 			System.err.println("SWT webkit: The error message is: " + msg);
@@ -512,7 +512,7 @@ class WebkitGDBus {
 	 *
 	 * @param gVariant a pointer to the native GVariant
 	 */
-	private static Object convertGVariantToJava(long /*int*/ gVariant){
+	private static Object convertGVariantToJava(long gVariant){
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
 			return new Boolean(OS.g_variant_get_boolean(gVariant));
@@ -567,7 +567,7 @@ class WebkitGDBus {
 	 *
 	 * @return pointer GVariant *
 	 */
-	private static long /*int*/ convertJavaToGVariant(Object javaObject) throws SWTException {
+	private static long convertJavaToGVariant(Object javaObject) throws SWTException {
 
 		if (javaObject == null) {
 			return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'
@@ -599,7 +599,7 @@ class WebkitGDBus {
 				return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
 			}
 
-			long /*int*/ variants[] = new long /*int*/[length];
+			long variants[] = new long /*int*/[length];
 
 			for (int i = 0; i < length; i++) {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);

@@ -55,9 +55,9 @@ public class SWT_AWT {
 
 static boolean loaded, swingInitialized;
 
-static native final long /*int*/ getAWTHandle (Object canvas);
+static native final long getAWTHandle (Object canvas);
 static native final void setDebug (Frame canvas, boolean debug);
-static native final Object initFrame (long /*int*/ handle, String className);
+static native final Object initFrame (long handle, String className);
 static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
 static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
 static native final void registerListeners (Frame frame);
@@ -148,7 +148,7 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long /*int*/ handle = parent.embeddedHandle;
+	long handle = parent.embeddedHandle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
 	 * and other JREs take a long.  To handle this binary incompatibility, use
@@ -186,9 +186,9 @@ public static Frame new_Frame (final Composite parent) {
 				parent.getDisplay().asyncExec(() -> {
 					if (parent.isDisposed()) return;
 					Shell shell = parent.getShell();
-					long /*int*/ awtHandle = getAWTHandle(window);
+					long awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
-					long /*int*/ xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
+					long xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
 					OS.XSetTransientForHint(GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default()), awtHandle, xWindow);
 				});
 			}
@@ -262,7 +262,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (OS.IsWin32) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	long /*int*/ handle = 0;
+	long handle = 0;
 	try {
 		loadLibrary ();
 		handle = getAWTHandle (parent);

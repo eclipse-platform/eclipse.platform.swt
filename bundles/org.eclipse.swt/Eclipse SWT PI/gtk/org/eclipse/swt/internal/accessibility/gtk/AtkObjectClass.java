@@ -17,51 +17,51 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkObjectClass {
 	/** @field cast=(const gchar *(*)()) */
-	public long /*int*/ get_name;
+	public long get_name;
 	/** @field cast=(const gchar *(*)()) */
-	public long /*int*/ get_description;
+	public long get_description;
 	/** @field cast=(AtkObject *(*)()) */
-	public long /*int*/ get_parent;
+	public long get_parent;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_n_children;
+	public long get_n_children;
 	/** @field cast=(AtkObject *(*)()) */
-	public long /*int*/ ref_child;
+	public long ref_child;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_index_in_parent;
+	public long get_index_in_parent;
 	/** @field cast=(AtkRelationSet *(*)()) */
-	public long /*int*/ ref_relation_set;
+	public long ref_relation_set;
 	/** @field cast=(AtkRole (*)()) */
-	public long /*int*/ get_role;
+	public long get_role;
 	/** @field cast=(AtkLayer (*)()) */
-	public long /*int*/ get_layer;
+	public long get_layer;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_mdi_zorder;
+	public long get_mdi_zorder;
 	/** @field cast=(AtkStateSet *(*)()) */
-	public long /*int*/ ref_state_set;
+	public long ref_state_set;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_name;
+	public long set_name;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_description;
+	public long set_description;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_parent;
+	public long set_parent;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_role;
+	public long set_role;
 	/** @field cast=(guint (*)()) */
-	public long /*int*/ connect_property_change_handler;
+	public long connect_property_change_handler;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ remove_property_change_handler;
+	public long remove_property_change_handler;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ initialize;
+	public long initialize;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ children_changed;
+	public long children_changed;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ focus_event;
+	public long focus_event;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ property_change;
+	public long property_change;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ state_change;
+	public long state_change;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ visible_data_changed;
+	public long visible_data_changed;
 	/** @field accessor=SWT_AtkObjectClass_get_attributes,cast=(SWT_AtkObjectClass_get_attributes_cast) */
-	public long /*int*/ get_attributes;
+	public long get_attributes;
 }

@@ -34,14 +34,14 @@ public class Clipboard {
 
 	private Display display;
 
-	static long /*int*/ GTKCLIPBOARD;
-	static long /*int*/ GTKPRIMARYCLIPBOARD;
-	private static long /*int*/ TARGET;
+	static long GTKCLIPBOARD;
+	static long GTKPRIMARYCLIPBOARD;
+	private static long TARGET;
 
 	static {
 		GTKCLIPBOARD = GTK.gtk_clipboard_get(GDK.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs("PRIMARY", true);
-		long /*int*/ primary = GDK.gdk_atom_intern(buffer, false);
+		long primary = GDK.gdk_atom_intern(buffer, false);
 		GTKPRIMARYCLIPBOARD = GTK.gtk_clipboard_get(primary);
 		buffer = Converter.wcsToMbcs("TARGETS", true);
 		TARGET = GDK.gdk_atom_intern(buffer, false);
@@ -289,7 +289,7 @@ public Object getContents(Transfer transfer) {
 public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	long /*int*/ selection_data = 0;
+	long selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
 		if ((clipboards & DND.CLIPBOARD) != 0) {
@@ -563,7 +563,7 @@ public String[] getAvailableTypeNames() {
 	String[] result = new String[types1.length + types2.length];
 	int count = 0;
 	for (int i = 0; i < types1.length; i++) {
-		long /*int*/ pName = GDK.gdk_atom_name(types1[i]);
+		long pName = GDK.gdk_atom_name(types1[i]);
 		if (pName == 0) {
 			continue;
 		}
@@ -573,7 +573,7 @@ public String[] getAvailableTypeNames() {
 		result[count++] = "GTKCLIPBOARD "+new String (Converter.mbcsToWcs (buffer));
 	}
 	for (int i = 0; i < types2.length; i++) {
-		long /*int*/ pName = GDK.gdk_atom_name(types2[i]);
+		long pName = GDK.gdk_atom_name(types2[i]);
 		if (pName == 0) {
 			continue;
 		}
@@ -592,7 +592,7 @@ public String[] getAvailableTypeNames() {
 
 private  int[] getAvailablePrimaryTypes() {
 	int[] types = new int[0];
-	long /*int*/ selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
+	long selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -604,7 +604,7 @@ private  int[] getAvailablePrimaryTypes() {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
 			int format = GTK.gtk_selection_data_get_format(selection_data);
-			long /*int*/ data = GTK.gtk_selection_data_get_data(selection_data);
+			long data = GTK.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
@@ -617,7 +617,7 @@ private  int[] getAvailablePrimaryTypes() {
 }
 private int[] getAvailableClipboardTypes () {
 	int[] types = new int[0];
-	long /*int*/ selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
+	long selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native
@@ -629,7 +629,7 @@ private int[] getAvailableClipboardTypes () {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
 			int format = GTK.gtk_selection_data_get_format(selection_data);
-			long /*int*/ data = GTK.gtk_selection_data_get_data(selection_data);
+			long data = GTK.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
@@ -641,12 +641,12 @@ private int[] getAvailableClipboardTypes () {
 	return types;
 }
 
-long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ clipboard, long /*int*/ target) {
+long gtk_clipboard_wait_for_contents(long clipboard, long target) {
 	long startTime = System.currentTimeMillis();
 	String key = "org.eclipse.swt.internal.gtk.dispatchEvent";
 	Display display = this.display;
 	display.setData(key, new int[]{GDK.GDK_PROPERTY_NOTIFY, GDK.GDK_SELECTION_CLEAR, GDK.GDK_SELECTION_REQUEST, GDK.GDK_SELECTION_NOTIFY});
-	long /*int*/ selection_data = GTK.gtk_clipboard_wait_for_contents(clipboard, target);
+	long selection_data = GTK.gtk_clipboard_wait_for_contents(clipboard, target);
 	display.setData(key, null);
 	long duration = System.currentTimeMillis() - startTime;
 	if (selection_data == 0 && duration > 5000) {

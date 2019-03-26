@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -49,146 +49,34 @@ char * ATK_nativeFunctionNames[] = {
 	"_1atk_1state_1set_1add_1state",
 	"_1atk_1text_1attribute_1get_1name",
 	"_1atk_1text_1attribute_1get_1value",
-#ifndef JNI64
-	"_1call__II",
-#else
 	"_1call__JJ",
-#endif
-#ifndef JNI64
-	"_1call__III",
-#else
 	"_1call__JJJ",
-#endif
-#ifndef JNI64
-	"_1call__IIII",
-#else
 	"_1call__JJJJ",
-#endif
-#ifndef JNI64
-	"_1call__IIIIII",
-#else
 	"_1call__JJJJJJ",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2I",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2I",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTableIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTableIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextRange_2I",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTextRange_2I",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextRectangle_2I",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTextRectangle_2I",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2",
-#else
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2JI",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTableIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTableIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextRange_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextRange_2JI",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextRectangle_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextRectangle_2JI",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2I",
-#else
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2J",
-#endif
 };
 #define NATIVE_FUNCTION_COUNT sizeof(ATK_nativeFunctionNames) / sizeof(char*)
 int ATK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

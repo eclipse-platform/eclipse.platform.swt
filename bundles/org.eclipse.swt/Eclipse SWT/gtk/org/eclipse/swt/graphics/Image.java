@@ -99,7 +99,7 @@ public final class Image extends Resource implements Drawable {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ mask;
+	public long mask;
 
 	/**
 	 * The handle to the OS cairo surface resource.
@@ -113,7 +113,7 @@ public final class Image extends Resource implements Drawable {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ surface;
+	public long surface;
 
 	/**
 	 * specifies the transparent pixel
@@ -282,7 +282,7 @@ public Image(Device device, Image srcImage, int flag) {
 		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 	}
 
-	long /*int*/ imageSurface = srcImage.surface;
+	long imageSurface = srcImage.surface;
 	int width = this.width = srcImage.width;
 	int height = this.height = srcImage.height;
 	int format = Cairo.cairo_surface_get_content(imageSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
@@ -293,7 +293,7 @@ public Image(Device device, Image srcImage, int flag) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
-	long /*int*/ cairo = Cairo.cairo_create(surface);
+	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 	Cairo.cairo_set_source_surface (cairo, imageSurface, 0, 0);
@@ -301,7 +301,7 @@ public Image(Device device, Image srcImage, int flag) {
 	Cairo.cairo_destroy(cairo);
 	if (flag != SWT.IMAGE_COPY) {
 		int stride = Cairo.cairo_image_surface_get_stride(surface);
-		long /*int*/ data = Cairo.cairo_image_surface_get_data(surface);
+		long data = Cairo.cairo_image_surface_get_data(surface);
 		int oa, or, og, ob;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
@@ -793,7 +793,7 @@ void initNative(String filename) {
 		char [] chars = new char [length];
 		filename.getChars (0, length, chars, 0);
 		byte [] buffer = Converter.wcsToMbcs(chars, true);
-		long /*int*/ pixbuf = GDK.gdk_pixbuf_new_from_file(buffer, null);
+		long pixbuf = GDK.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
 			try {
 				createFromPixbuf (SWT.BITMAP, pixbuf);
@@ -804,13 +804,13 @@ void initNative(String filename) {
 	} catch (SWTException e) {}
 }
 
-void createFromPixbuf(int type, long /*int*/ pixbuf) {
+void createFromPixbuf(int type, long pixbuf) {
 	this.type = type;
 	boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
 	int width = this.width = GDK.gdk_pixbuf_get_width(pixbuf);
 	int height = this.height = GDK.gdk_pixbuf_get_height(pixbuf);
 	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+	long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -818,7 +818,7 @@ void createFromPixbuf(int type, long /*int*/ pixbuf) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
-	long /*int*/ data = Cairo.cairo_image_surface_get_data(surface);
+	long data = Cairo.cairo_image_surface_get_data(surface);
 	int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;
 	if (OS.BIG_ENDIAN) {
@@ -872,7 +872,7 @@ void createMask() {
 	int width = this.width;
 	int height = this.height;
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
-	long /*int*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+	long surfaceData = Cairo.cairo_image_surface_get_data(surface);
 	int oa, or, og, ob, tr, tg, tb;
 	if (OS.BIG_ENDIAN) {
 		oa = 0; or = 1; og = 2; ob = 3;
@@ -1065,12 +1065,12 @@ public ImageData getImageData () {
 public ImageData getImageDataAtCurrentZoom () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	long /*int*/ surface = ImageList.convertSurface(this);
+	long surface = ImageList.convertSurface(this);
 	int format = Cairo.cairo_image_surface_get_format(surface);
 	int width = Cairo.cairo_image_surface_get_width(surface);
 	int height = Cairo.cairo_image_surface_get_height(surface);
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
-	long /*int*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+	long surfaceData = Cairo.cairo_image_surface_get_data(surface);
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 	int oa, or, og, ob;
 	if (OS.BIG_ENDIAN) {
@@ -1190,7 +1190,7 @@ public ImageData getImageData (int zoom) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Image gtk_new(Device device, int type, long /*int*/ imageHandle, long /*int*/ mask) {
+public static Image gtk_new(Device device, int type, long imageHandle, long mask) {
 	Image image = new Image(device);
 	image.type = type;
 	image.surface = imageHandle;
@@ -1214,7 +1214,7 @@ public static Image gtk_new(Device device, int type, long /*int*/ imageHandle, l
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Image gtk_new_from_pixbuf(Device device, int type, long /*int*/ pixbuf) {
+public static Image gtk_new_from_pixbuf(Device device, int type, long pixbuf) {
 	Image image = new Image(device);
 	image.createFromPixbuf(type, pixbuf);
 	image.type = type;
@@ -1263,7 +1263,7 @@ void init(int width, int height) {
 	} else {
 		currentDeviceZoom = DPIUtil.getDeviceZoom();
 	}
-	long /*int*/ cairo = Cairo.cairo_create(surface);
+	long cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 	Cairo.cairo_rectangle(cairo, 0, 0, width, height);
@@ -1290,7 +1290,7 @@ void init(ImageData image) {
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
-	long /*int*/ data = Cairo.cairo_image_surface_get_data(surface);
+	long data = Cairo.cairo_image_surface_get_data(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;
 	int redMask, greenMask, blueMask, destDepth = 32, destOrder;
 	if (OS.BIG_ENDIAN) {
@@ -1430,12 +1430,12 @@ void init(ImageData image) {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public long /*int*/ internal_new_GC (GCData data) {
+public long internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long /*int*/ gc = Cairo.cairo_create(surface);
+	long gc = Cairo.cairo_create(surface);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1470,7 +1470,7 @@ public long /*int*/ internal_new_GC (GCData data) {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
+public void internal_dispose_GC (long hDC, GCData data) {
 	Cairo.cairo_destroy(hDC);
 }
 

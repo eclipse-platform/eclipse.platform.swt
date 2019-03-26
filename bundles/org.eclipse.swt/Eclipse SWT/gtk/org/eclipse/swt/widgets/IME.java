@@ -246,15 +246,15 @@ public boolean getWideCaret () {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	if (!isInlineEnabled ()) return 0;
-	long /*int*/ imHandle = imHandle ();
+	long imHandle = imHandle ();
 	if (imHandle != 0) GTK.gtk_im_context_reset (imHandle);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
+long gtk_commit (long imcontext, long textPtr) {
 	if (!isInlineEnabled ()) return 0;
 	boolean doit = true;
 	ranges = null;
@@ -284,14 +284,14 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ textPtr) {
 }
 
 @Override
-long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
+long gtk_preedit_changed (long imcontext) {
 	if (!isInlineEnabled ()) return 0;
 	ranges = null;
 	styles = null;
 	commitCount = 0;
-	long /*int*/ imHandle = imHandle ();
-	long /*int*/ [] preeditString = new long /*int*/ [1];
-	long /*int*/ [] pangoAttrs = new long /*int*/ [1];
+	long imHandle = imHandle ();
+	long [] preeditString = new long [1];
+	long [] pangoAttrs = new long [1];
 	int [] cursorPos = new int [1];
 	GTK.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, cursorPos);
 	caretOffset = cursorPos [0];
@@ -303,7 +303,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 		chars = Converter.mbcsToWcs (buffer);
 		if (pangoAttrs [0] != 0) {
 			int count = 0;
-			long /*int*/ iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);
+			long iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);
 			while (OS.pango_attr_iterator_next (iterator)) count++;
 			OS.pango_attr_iterator_destroy (iterator);
 			ranges = new int [count * 2];
@@ -318,7 +318,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 				ranges [i * 2] = (int)/*64*/OS.g_utf16_pointer_to_offset (preeditString [0], preeditString [0] + start [0]);
 				ranges [i * 2 + 1] = (int)/*64*/OS.g_utf16_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - 1;
 				styles [i] = new TextStyle (null, null, null);
-				long /*int*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
+				long attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
 				if (attr != 0) {
 					OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
 					GdkRGBA rgba = new GdkRGBA ();
@@ -409,7 +409,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	return 1;
 }
 
-long /*int*/ imHandle () {
+long imHandle () {
 	return parent.imHandle ();
 }
 

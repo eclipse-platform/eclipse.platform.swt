@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL C_NATIVE(PTR_1sizeof)
 
 #ifndef NO_free
 JNIEXPORT void JNICALL C_NATIVE(free)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	C_NATIVE_ENTER(env, that, free_FUNC);
 	free((void *)arg0);
@@ -46,14 +46,14 @@ JNIEXPORT void JNICALL C_NATIVE(free)
 #endif
 
 #ifndef NO_getenv
-JNIEXPORT jintLong JNICALL C_NATIVE(getenv)
+JNIEXPORT jlong JNICALL C_NATIVE(getenv)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
-	jintLong rc = 0;
+	jlong rc = 0;
 	C_NATIVE_ENTER(env, that, getenv_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)getenv((const char *)lparg0);
+	rc = (jlong)getenv((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	C_NATIVE_EXIT(env, that, getenv_FUNC);
@@ -62,253 +62,147 @@ fail:
 #endif
 
 #ifndef NO_malloc
-JNIEXPORT jintLong JNICALL C_NATIVE(malloc)
-	(JNIEnv *env, jclass that, jintLong arg0)
+JNIEXPORT jlong JNICALL C_NATIVE(malloc)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	C_NATIVE_ENTER(env, that, malloc_FUNC);
-	rc = (jintLong)malloc(arg0);
+	rc = (jlong)malloc(arg0);
 	C_NATIVE_EXIT(env, that, malloc_FUNC);
 	return rc;
 }
 #endif
 
-#if (!defined(NO_memmove__III) && !defined(JNI64)) || (!defined(NO_memmove__JJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__III)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__JJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__JJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__JJJ)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__III_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__JJJ_FUNC);
-#endif
 	memmove((void *)arg0, (const void *)arg1, (size_t)arg2);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__III_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__JJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3BI) && !defined(JNI64)) || (!defined(NO_memmove__J_3BJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3BI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3BJ)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3BJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3BJ)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
 {
 	jbyte *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3BI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3BJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3BI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3BJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3CI) && !defined(JNI64)) || (!defined(NO_memmove__J_3CJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3CI)(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3CJ)(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3CJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3CJ)
+	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jlong arg2)
 {
 	jchar *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3CI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3CJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3CI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3CJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3DI) && !defined(JNI64)) || (!defined(NO_memmove__J_3DJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3DI)(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3DJ)(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3DJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3DJ)
+	(JNIEnv *env, jclass that, jlong arg0, jdoubleArray arg1, jlong arg2)
 {
 	jdouble *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3DI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3DJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3DI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3DJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3FI) && !defined(JNI64)) || (!defined(NO_memmove__J_3FJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3FI)(JNIEnv *env, jclass that, jintLong arg0, jfloatArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3FJ)(JNIEnv *env, jclass that, jintLong arg0, jfloatArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3FJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3FJ)
+	(JNIEnv *env, jclass that, jlong arg0, jfloatArray arg1, jlong arg2)
 {
 	jfloat *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3FI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3FJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3FI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3FJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3II) && !defined(JNI64)) || (!defined(NO_memmove__J_3IJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3II)(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3IJ)(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3IJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3IJ)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jlong arg2)
 {
 	jint *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3II_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3IJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3II_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3IJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3JI) && !defined(JNI64)) || (!defined(NO_memmove__J_3JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3JI)(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3JJ)(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3JJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3JJ)
+	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1, jlong arg2)
 {
 	jlong *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3JI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3JJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3JI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3JJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove__I_3SI) && !defined(JNI64)) || (!defined(NO_memmove__J_3SJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove__I_3SI)(JNIEnv *env, jclass that, jintLong arg0, jshortArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove__J_3SJ)(JNIEnv *env, jclass that, jintLong arg0, jshortArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove__J_3SJ
+JNIEXPORT void JNICALL C_NATIVE(memmove__J_3SJ)
+	(JNIEnv *env, jclass that, jlong arg0, jshortArray arg1, jlong arg2)
 {
 	jshort *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove__I_3SI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove__J_3SJ_FUNC);
-#endif
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove__I_3SI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove__J_3SJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3BII) && !defined(JNI64)) || (!defined(NO_memmove___3BJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3BII)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3BJJ)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3BJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3BJJ)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1, jlong arg2)
 {
 	jbyte *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3BII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3BJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3BII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3BJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3B_3CI) && !defined(JNI64)) || (!defined(NO_memmove___3B_3CJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3B_3CI)(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3B_3CJ)(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3B_3CJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3B_3CJ)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jlong arg2)
 {
 	jbyte *lparg0=NULL;
 	jchar *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3B_3CI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3B_3CJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
@@ -316,132 +210,77 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3B_3CJ)(JNIEnv *env, jclass that, jbyt
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3B_3CI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3B_3CJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3CII) && !defined(JNI64)) || (!defined(NO_memmove___3CJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3CII)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3CJJ)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3CJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3CJJ)
+	(JNIEnv *env, jclass that, jcharArray arg0, jlong arg1, jlong arg2)
 {
 	jchar *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3CII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3CJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3CII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3CJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3DII) && !defined(JNI64)) || (!defined(NO_memmove___3DJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3DII)(JNIEnv *env, jclass that, jdoubleArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3DJJ)(JNIEnv *env, jclass that, jdoubleArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3DJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3DJJ)
+	(JNIEnv *env, jclass that, jdoubleArray arg0, jlong arg1, jlong arg2)
 {
 	jdouble *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3DII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3DJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3DII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3DJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3FII) && !defined(JNI64)) || (!defined(NO_memmove___3FJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3FII)(JNIEnv *env, jclass that, jfloatArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3FJJ)(JNIEnv *env, jclass that, jfloatArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3FJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3FJJ)
+	(JNIEnv *env, jclass that, jfloatArray arg0, jlong arg1, jlong arg2)
 {
 	jfloat *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3FII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3FJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3FII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3FJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3III) && !defined(JNI64)) || (!defined(NO_memmove___3IJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3III)(JNIEnv *env, jclass that, jintArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3IJJ)(JNIEnv *env, jclass that, jintArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3IJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3IJJ)
+	(JNIEnv *env, jclass that, jintArray arg0, jlong arg1, jlong arg2)
 {
 	jint *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3III_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3IJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3III_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3IJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3I_3BI) && !defined(JNI64)) || (!defined(NO_memmove___3I_3BJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3I_3BI)(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3I_3BJ)(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3I_3BJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3I_3BJ)
+	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jlong arg2)
 {
 	jint *lparg0=NULL;
 	jbyte *lparg1=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3I_3BI_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3I_3BJ_FUNC);
-#endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
@@ -449,73 +288,47 @@ JNIEXPORT void JNICALL C_NATIVE(memmove___3I_3BJ)(JNIEnv *env, jclass that, jint
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3I_3BI_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3I_3BJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3JII) && !defined(JNI64)) || (!defined(NO_memmove___3JJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3JII)(JNIEnv *env, jclass that, jlongArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3JJJ)(JNIEnv *env, jclass that, jlongArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3JJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3JJJ)
+	(JNIEnv *env, jclass that, jlongArray arg0, jlong arg1, jlong arg2)
 {
 	jlong *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3JII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3JJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3JII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3JJJ_FUNC);
-#endif
 }
 #endif
 
-#if (!defined(NO_memmove___3SII) && !defined(JNI64)) || (!defined(NO_memmove___3SJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL C_NATIVE(memmove___3SII)(JNIEnv *env, jclass that, jshortArray arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL C_NATIVE(memmove___3SJJ)(JNIEnv *env, jclass that, jshortArray arg0, jintLong arg1, jintLong arg2)
-#endif
+#ifndef NO_memmove___3SJJ
+JNIEXPORT void JNICALL C_NATIVE(memmove___3SJJ)
+	(JNIEnv *env, jclass that, jshortArray arg0, jlong arg1, jlong arg2)
 {
 	jshort *lparg0=NULL;
-#ifndef JNI64
-	C_NATIVE_ENTER(env, that, memmove___3SII_FUNC);
-#else
 	C_NATIVE_ENTER(env, that, memmove___3SJJ_FUNC);
-#endif
 		if (!arg0) goto fail;
 		if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 fail:
 		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-#ifndef JNI64
-	C_NATIVE_EXIT(env, that, memmove___3SII_FUNC);
-#else
 	C_NATIVE_EXIT(env, that, memmove___3SJJ_FUNC);
-#endif
 }
 #endif
 
 #ifndef NO_memset
-JNIEXPORT jintLong JNICALL C_NATIVE(memset)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
+JNIEXPORT jlong JNICALL C_NATIVE(memset)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	C_NATIVE_ENTER(env, that, memset_FUNC);
-	rc = (jintLong)memset((void *)arg0, arg1, (size_t)arg2);
+	rc = (jlong)memset((void *)arg0, arg1, (size_t)arg2);
 	C_NATIVE_EXIT(env, that, memset_FUNC);
 	return rc;
 }
@@ -542,7 +355,7 @@ fail:
 
 #ifndef NO_strlen
 JNIEXPORT jint JNICALL C_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	C_NATIVE_ENTER(env, that, strlen_FUNC);

@@ -47,14 +47,14 @@ import org.eclipse.swt.internal.gtk.*;
 public class Tracker extends Widget {
 	Composite parent;
 	Cursor cursor;
-	long /*int*/ lastCursor, window, overlay;
-	long /*int*/ surface;
+	long lastCursor, window, overlay;
+	long surface;
 	boolean tracking, cancelled, grabbed, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	int oldX, oldY;
-	long /*int*/ provider; // Gtk3.14
+	long provider; // Gtk3.14
 
 	// Re-use/cache some items for performance reasons as draw-events must be efficient to prevent jitter.
 	Rectangle cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // Cached for performance reasons.
@@ -329,14 +329,14 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * @param rects
  */
 void drawRectangles (Rectangle [] rects) {
-	long /*int*/ gdkResource = 0;
+	long gdkResource = 0;
 	if (GTK.GTK4) {
 		if (parent != null) gdkResource = gtk_widget_get_surface(parent.handle);
 	} else {
 		gdkResource = GDK.gdk_get_default_root_window();
 	}
 	if (parent != null) {
-		long /*int*/ paintHandle = parent.paintHandle();
+		long paintHandle = parent.paintHandle();
 		gdkResource = GTK.GTK4 ? gtk_widget_get_surface(paintHandle) : gtk_widget_get_window (paintHandle);
 	}
 	if (gdkResource == 0) return;
@@ -374,7 +374,7 @@ void drawRectangles (Rectangle [] rects) {
 		}
 	}
 
-	long /*int*/ region = Cairo.cairo_region_create ();
+	long region = Cairo.cairo_region_create ();
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	if (isOnScreen) {
 		// Combine Rects into a region. (region is not necessarily a rectangle, E.g it can be 'L' shaped etc..).
@@ -411,11 +411,11 @@ void drawRectangles (Rectangle [] rects) {
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
 	if (GTK.GTK4) {
-		long /*int*/ overlaySurface = GTK.gtk_widget_get_surface (overlay);
+		long overlaySurface = GTK.gtk_widget_get_surface (overlay);
 		GDK.gdk_surface_hide (overlaySurface);
 		GDK.gdk_surface_show (overlaySurface);
 	} else {
-		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
+		long overlayWindow = GTK.gtk_widget_get_window (overlay);
 		GDK.gdk_window_hide (overlayWindow);
 		GDK.gdk_window_show (overlayWindow);
 	}
@@ -469,21 +469,21 @@ public boolean getStippled () {
 }
 
 boolean grab () {
-	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
+	long cursor = this.cursor != null ? this.cursor.handle : 0;
 	int result = gdk_pointer_grab (GTK.GTK4 ? surface : window, GDK.GDK_OWNERSHIP_NONE, false,
 			GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK, 0, cursor, GDK.GDK_CURRENT_TIME);
 	return result == GDK.GDK_GRAB_SUCCESS;
 }
 
 @Override
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_release_event (long widget, long event) {
 	Control.mouseDown = false;
 	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_BUTTON_RELEASE : GDK.GDK_BUTTON_RELEASE, widget, event);
 }
 
 @Override
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
+long gtk_key_press_event (long widget, long eventPtr) {
+	long result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	int [] state = new int[1];
 	GDK.gdk_event_get_state(eventPtr, state);
@@ -618,8 +618,8 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 }
 
 @Override
-long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
+long gtk_motion_notify_event (long widget, long eventPtr) {
+	long cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
@@ -628,7 +628,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	return gtk_mouse (GTK.GTK4 ? GDK.GDK4_MOTION_NOTIFY : GDK.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
-long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
+long gtk_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
 	if (GTK.GTK4) {
 		display.gdk_surface_get_device_position (surface, newX, newY, null);
@@ -824,7 +824,7 @@ public boolean open () {
 	if (parent != null) GTK.gtk_window_set_transient_for(overlay, parent.topHandle());
 	GTK.gtk_widget_realize (overlay);
 	if (!GTK.GTK4) {
-		long /*int*/ overlayWindow = GTK.gtk_widget_get_window (overlay);
+		long overlayWindow = GTK.gtk_widget_get_window (overlay);
 		GDK.gdk_window_set_override_redirect (overlayWindow, true);
 	}
 	setTrackerBackground(true);
@@ -888,7 +888,7 @@ private void setTrackerBackground(boolean opaque) {
 					+ "border-right-color: transparent;"
 					+ "border-bottom-color: transparent;}";
 		}
-		long /*int*/ context = GTK.gtk_widget_get_style_context (overlay);
+		long context = GTK.gtk_widget_get_style_context (overlay);
 		if (provider == 0) {
 			provider = GTK.gtk_css_provider_new ();
 			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -901,16 +901,16 @@ private void setTrackerBackground(boolean opaque) {
 		}
 		GTK.gtk_style_context_invalidate (context);
 	}
-	long /*int*/ region = Cairo.cairo_region_create ();
+	long region = Cairo.cairo_region_create ();
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	GTK.gtk_widget_input_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
 }
 
-boolean processEvent (long /*int*/ eventPtr) {
+boolean processEvent (long eventPtr) {
 	int eventType = GDK.gdk_event_get_event_type(eventPtr);
 	eventType = Control.fixGdkEventTypeValues(eventType);
-	long /*int*/ widget = GTK.gtk_get_event_widget (eventPtr);
+	long widget = GTK.gtk_get_event_widget (eventPtr);
 	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;

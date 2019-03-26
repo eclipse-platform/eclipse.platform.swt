@@ -68,7 +68,7 @@ public class DateTime extends Composite {
 	 * Major handles of this class.
 	 * Note, these can vary or all equal each other depending on Date/Time/Calendar/Drop_down
 	 * configuration used. See createHandle () */
-	long /*int*/ textEntryHandle, spinButtonHandle,
+	long textEntryHandle, spinButtonHandle,
 	containerHandle,
 	calendarHandle;
 
@@ -361,7 +361,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
-		long /*int*/ context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? spinButtonHandle :textEntryHandle);
+		long context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? spinButtonHandle :textEntryHandle);
 		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(textEntryHandle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
@@ -463,11 +463,11 @@ private void createHandleForDateWithDropDown () {
 }
 
 private void createHandleForDateTime () {
-	long /*int*/ adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
+	long adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
 	if (GTK.GTK4) {
 		spinButtonHandle =  GTK.gtk_spin_button_new (adjusment, 1, 0);
-		long /*int*/ boxHandle = GTK.gtk_widget_get_first_child(spinButtonHandle);
-		long /*int*/ textHandle = GTK.gtk_widget_get_first_child(boxHandle);
+		long boxHandle = GTK.gtk_widget_get_first_child(spinButtonHandle);
+		long textHandle = GTK.gtk_widget_get_first_child(boxHandle);
 		textEntryHandle = textHandle;
 		handle = spinButtonHandle;
 		containerHandle = spinButtonHandle;
@@ -551,7 +551,7 @@ void createPopupShell (int year, int month, int day) {
 }
 
 @Override
-void setFontDescription (long /*int*/ font) {
+void setFontDescription (long font) {
 	if (isDateWithDropDownButton ()) {
 		prefferedSize = null; //flush cache for computeSize as font can cause size to change.
 		setFontDescription (textEntryHandle, font);
@@ -885,39 +885,39 @@ public int getYear () {
 }
 
 @Override
-long /*int*/ gtk_day_selected (long /*int*/ widget) {
+long gtk_day_selected (long widget) {
 	sendSelectionEvent ();
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_day_selected_double_click (long /*int*/ widget) {
+long gtk_day_selected_double_click (long widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_month_changed (long /*int*/ widget) {
+long gtk_month_changed (long widget) {
 	sendSelectionEvent ();
 	return 0;
 }
 
 @Override
-long /*int*/ eventHandle () {
+long eventHandle () {
 	return dateTimeHandle ();
 }
 
 @Override
-long /*int*/ focusHandle () {
+long focusHandle () {
 	return dateTimeHandle ();
 }
 
 @Override
-long /*int*/ fontHandle () {
+long fontHandle () {
 	return dateTimeHandle ();
 }
 
-private long /*int*/ dateTimeHandle () {
+private long dateTimeHandle () {
 	if (isCalendar () && calendarHandle != 0) {
 		 return calendarHandle;
 	} else if ((isDate () || isTime ())) {
@@ -961,11 +961,11 @@ final private void hookEventsForCalendar () {
 final private void hookEventsForDateTimeSpinner () {
 	OS.g_signal_connect_closure (textEntryHandle, OS.output, display.getClosure (OUTPUT), true);
 	if (GTK.GTK4) {
-		long /*int*/ keyController = GTK.gtk_event_controller_key_new();
+		long keyController = GTK.gtk_event_controller_key_new();
 		GTK.gtk_widget_add_controller(textEntryHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long /*int*/ focusAddress = display.focusCallback.getAddress();
+		long focusAddress = display.focusCallback.getAddress();
 		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
 	} else {
 		OS.g_signal_connect_closure (textEntryHandle, OS.focus_in_event, display.getClosure (FOCUS_IN_EVENT), true);
@@ -1390,7 +1390,7 @@ void setBackgroundGdkRGBA (GdkRGBA rgba) {
 }
 
 @Override
-void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	// We need to override here because DateTime widgets use "background" instead of
 	// "background-color" as their CSS property.
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
@@ -1689,7 +1689,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton ()) {
-		long /*int*/ sizingHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
+		long sizingHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (sizingHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
@@ -1751,8 +1751,8 @@ private void setDropDownButtonSize () {
 GtkBorder getGtkBorderPadding () {
 	//In Gtk3, acquire border.
 	GtkBorder gtkBorderPadding = new GtkBorder ();
-	long /*int*/ contextHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
-	long /*int*/ context = GTK.gtk_widget_get_style_context (contextHandle);
+	long contextHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
+	long context = GTK.gtk_widget_get_style_context (contextHandle);
 	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(contextHandle);
 	gtk_style_context_get_padding(context, state_flag, gtkBorderPadding);
 	return gtkBorderPadding;
@@ -1864,7 +1864,7 @@ void deregister () {
 	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.removeWidget (textEntryHandle);
 }
 
-int getArrow(long /*int*/ widget) {
+int getArrow(long widget) {
 	updateControl();
 	int adj_value = (int) GTK.gtk_adjustment_get_value(GTK.gtk_spin_button_get_adjustment(widget));
 	int new_value = 0;
@@ -1941,7 +1941,7 @@ void setText (String dateTimeText) {
 }
 
 @Override
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_key_press_event (long widget, long event) {
 	if (!isReadOnly () && (isTime () || isDate ())) {
 		int [] key = new int[1];
 		GDK.gdk_event_get_keyval(event, key);
@@ -2005,7 +2005,7 @@ Point getSelection () {
 	int [] start = new int [1];
 	int [] end = new int [1];
 	GTK.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
-	long /*int*/ ptr = GTK.gtk_entry_get_text (textEntryHandle);
+	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
 	start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 	end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	selection = new Point (start [0], end [0]);
@@ -2028,7 +2028,7 @@ Point getSelection () {
 String getText () {
 	checkWidget ();
 	if (textEntryHandle != 0) {
-		long /*int*/ str = GTK.gtk_entry_get_text (textEntryHandle);
+		long str = GTK.gtk_entry_get_text (textEntryHandle);
 		if (str == 0) return "";
 		int length = C.strlen (str);
 		byte [] buffer = new byte [length];
@@ -2059,7 +2059,7 @@ String getText (String str,int start, int end) {
 
 void setSelection (int start, int end) {
 	checkWidget ();
-	long /*int*/ ptr = GTK.gtk_entry_get_text (textEntryHandle);
+	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
 	start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 	end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
 	GTK.gtk_editable_set_position (textEntryHandle, start);
@@ -2095,7 +2095,7 @@ private int validateValueBounds(FieldPosition field, int value) {
 }
 
 @Override
-long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_release_event (long widget, long event) {
 	if (isDate () || isTime ()) {
 		int [] eventButton = new int [1];
 		GDK.gdk_event_get_button(event, eventButton);
@@ -2112,7 +2112,7 @@ long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) 
  * This method compares two values and determines if Up or down arrow was called.
  */
 @Override
-long /*int*/ gtk_output (long /*int*/ widget) {
+long gtk_output (long widget) {
 	if (calendar == null) {
 		return 0; //Guard: Object not fully initialized yet.
 	}

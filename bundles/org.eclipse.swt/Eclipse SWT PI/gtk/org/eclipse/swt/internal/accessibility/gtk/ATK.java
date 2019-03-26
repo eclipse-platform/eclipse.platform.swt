@@ -205,25 +205,25 @@ public static final native int AtkTextRectangle_sizeof ();
 /** Natives */
 
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_ACTION ();
+public static final native long ATK_TYPE_ACTION ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_COMPONENT ();
+public static final native long ATK_TYPE_COMPONENT ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_EDITABLE_TEXT ();
+public static final native long ATK_TYPE_EDITABLE_TEXT ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_HYPERTEXT ();
+public static final native long ATK_TYPE_HYPERTEXT ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_SELECTION ();
+public static final native long ATK_TYPE_SELECTION ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_TABLE ();
+public static final native long ATK_TYPE_TABLE ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_TEXT ();
+public static final native long ATK_TYPE_TEXT ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_VALUE ();
+public static final native long ATK_TYPE_VALUE ();
 /** @method flags=const */
-public static final native long /*int*/ ATK_TYPE_OBJECT_FACTORY ();
-public static final native long /*int*/ _ATK_ACTION_GET_IFACE (long /*int*/ obj);
-public static final long /*int*/ ATK_ACTION_GET_IFACE (long /*int*/ obj) {
+public static final native long ATK_TYPE_OBJECT_FACTORY ();
+public static final native long _ATK_ACTION_GET_IFACE (long obj);
+public static final long ATK_ACTION_GET_IFACE (long obj) {
 	lock.lock();
 	try {
 		return _ATK_ACTION_GET_IFACE(obj);
@@ -231,8 +231,8 @@ public static final long /*int*/ ATK_ACTION_GET_IFACE (long /*int*/ obj) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_COMPONENT_GET_IFACE(long /*int*/ atkHandle);
-public static final long /*int*/ ATK_COMPONENT_GET_IFACE(long /*int*/ atkHandle) {
+public static final native long _ATK_COMPONENT_GET_IFACE(long atkHandle);
+public static final long ATK_COMPONENT_GET_IFACE(long atkHandle) {
 	lock.lock();
 	try {
 		return _ATK_COMPONENT_GET_IFACE(atkHandle);
@@ -240,9 +240,9 @@ public static final long /*int*/ ATK_COMPONENT_GET_IFACE(long /*int*/ atkHandle)
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_OBJECT_FACTORY_CLASS (long /*int*/ klass);
-public static final native long /*int*/ _ATK_SELECTION_GET_IFACE (long /*int*/ obj);
-public static final long /*int*/ ATK_SELECTION_GET_IFACE (long /*int*/ obj) {
+public static final native long _ATK_OBJECT_FACTORY_CLASS (long klass);
+public static final native long _ATK_SELECTION_GET_IFACE (long obj);
+public static final long ATK_SELECTION_GET_IFACE (long obj) {
 	lock.lock();
 	try {
 		return _ATK_SELECTION_GET_IFACE(obj);
@@ -250,8 +250,8 @@ public static final long /*int*/ ATK_SELECTION_GET_IFACE (long /*int*/ obj) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_EDITABLE_TEXT_GET_IFACE (long /*int*/ handle);
-public static final long /*int*/ ATK_EDITABLE_TEXT_GET_IFACE (long /*int*/ handle) {
+public static final native long _ATK_EDITABLE_TEXT_GET_IFACE (long handle);
+public static final long ATK_EDITABLE_TEXT_GET_IFACE (long handle) {
 	lock.lock();
 	try {
 		return _ATK_EDITABLE_TEXT_GET_IFACE(handle);
@@ -259,8 +259,8 @@ public static final long /*int*/ ATK_EDITABLE_TEXT_GET_IFACE (long /*int*/ handl
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_HYPERTEXT_GET_IFACE (long /*int*/ handle);
-public static final long /*int*/ ATK_HYPERTEXT_GET_IFACE (long /*int*/ handle) {
+public static final native long _ATK_HYPERTEXT_GET_IFACE (long handle);
+public static final long ATK_HYPERTEXT_GET_IFACE (long handle) {
 	lock.lock();
 	try {
 		return _ATK_HYPERTEXT_GET_IFACE(handle);
@@ -268,8 +268,8 @@ public static final long /*int*/ ATK_HYPERTEXT_GET_IFACE (long /*int*/ handle) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_TABLE_GET_IFACE (long /*int*/ handle);
-public static final long /*int*/ ATK_TABLE_GET_IFACE (long /*int*/ handle) {
+public static final native long _ATK_TABLE_GET_IFACE (long handle);
+public static final long ATK_TABLE_GET_IFACE (long handle) {
 	lock.lock();
 	try {
 		return _ATK_TABLE_GET_IFACE(handle);
@@ -277,8 +277,8 @@ public static final long /*int*/ ATK_TABLE_GET_IFACE (long /*int*/ handle) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_TEXT_GET_IFACE (long /*int*/ handle);
-public static final long /*int*/ ATK_TEXT_GET_IFACE (long /*int*/ handle) {
+public static final native long _ATK_TEXT_GET_IFACE (long handle);
+public static final long ATK_TEXT_GET_IFACE (long handle) {
 	lock.lock();
 	try {
 		return _ATK_TEXT_GET_IFACE(handle);
@@ -286,8 +286,8 @@ public static final long /*int*/ ATK_TEXT_GET_IFACE (long /*int*/ handle) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _ATK_VALUE_GET_IFACE (long /*int*/ handle);
-public static final long /*int*/ ATK_VALUE_GET_IFACE (long /*int*/ handle) {
+public static final native long _ATK_VALUE_GET_IFACE (long handle);
+public static final long ATK_VALUE_GET_IFACE (long handle) {
 	lock.lock();
 	try {
 		return _ATK_VALUE_GET_IFACE(handle);
@@ -296,8 +296,8 @@ public static final long /*int*/ ATK_VALUE_GET_IFACE (long /*int*/ handle) {
 	}
 }
 /** @param accessible cast=(AtkObject *) */
-public static final native void _atk_object_notify_state_change (long /*int*/ accessible, int state, boolean value);
-public static final void atk_object_notify_state_change (long /*int*/ accessible, int state, boolean value) {
+public static final native void _atk_object_notify_state_change (long accessible, int state, boolean value);
+public static final void atk_object_notify_state_change (long accessible, int state, boolean value) {
 	lock.lock();
 	try {
 		_atk_object_notify_state_change(accessible, state, value);
@@ -310,8 +310,8 @@ public static final void atk_object_notify_state_change (long /*int*/ accessible
  * @param relationship cast=(AtkRelationType)
  * @param target cast=(AtkObject *)
  */
-public static final native boolean _atk_object_add_relationship (long /*int*/ object, int relationship, long /*int*/ target);
-public static final boolean atk_object_add_relationship (long /*int*/ object, int relationship, long /*int*/ target) {
+public static final native boolean _atk_object_add_relationship (long object, int relationship, long target);
+public static final boolean atk_object_add_relationship (long object, int relationship, long target) {
 	lock.lock();
 	try {
 		return _atk_object_add_relationship(object, relationship, target);
@@ -324,8 +324,8 @@ public static final boolean atk_object_add_relationship (long /*int*/ object, in
  * @param relationship cast=(AtkRelationType)
  * @param target cast=(AtkObject *)
  */
-public static final native boolean _atk_object_remove_relationship (long /*int*/ object, int relationship, long /*int*/ target);
-public static final boolean atk_object_remove_relationship (long /*int*/ object, int relationship, long /*int*/ target) {
+public static final native boolean _atk_object_remove_relationship (long object, int relationship, long target);
+public static final boolean atk_object_remove_relationship (long object, int relationship, long target) {
 	lock.lock();
 	try {
 		return _atk_object_remove_relationship(object, relationship, target);
@@ -337,8 +337,8 @@ public static final boolean atk_object_remove_relationship (long /*int*/ object,
  * @param set cast=(AtkStateSet *)
  * @param type cast=(AtkStateType)
  */
-public static final native boolean _atk_state_set_add_state (long /*int*/ set, int type);
-public static final boolean atk_state_set_add_state (long /*int*/ set, int type) {
+public static final native boolean _atk_state_set_add_state (long set, int type);
+public static final boolean atk_state_set_add_state (long set, int type) {
 	lock.lock();
 	try {
 		return _atk_state_set_add_state(set, type);
@@ -346,8 +346,8 @@ public static final boolean atk_state_set_add_state (long /*int*/ set, int type)
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _atk_text_attribute_get_name (int attr);
-public static final long /*int*/ atk_text_attribute_get_name (int attr) {
+public static final native long _atk_text_attribute_get_name (int attr);
+public static final long atk_text_attribute_get_name (int attr) {
 	lock.lock();
 	try {
 		return _atk_text_attribute_get_name(attr);
@@ -355,8 +355,8 @@ public static final long /*int*/ atk_text_attribute_get_name (int attr) {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _atk_text_attribute_get_value (int attr, int index);
-public static final long /*int*/ atk_text_attribute_get_value (int attr, int index) {
+public static final native long _atk_text_attribute_get_value (int attr, int index);
+public static final long atk_text_attribute_get_value (int attr, int index) {
 	lock.lock();
 	try {
 		return _atk_text_attribute_get_value(attr, index);
@@ -364,8 +364,8 @@ public static final long /*int*/ atk_text_attribute_get_value (int attr, int ind
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0);
-public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0) {
+public static final native long _call (long function, long arg0);
+public static final long call (long function, long arg0) {
 	lock.lock();
 	try {
 		return _call(function, arg0);
@@ -373,8 +373,8 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0)
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1);
-public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1) {
+public static final native long _call (long function, long arg0, long arg1);
+public static final long call (long function, long arg0, long arg1) {
 	lock.lock();
 	try {
 		return _call(function, arg0, arg1);
@@ -382,8 +382,8 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2);
-public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
+public static final native long _call (long function, long arg0, long arg1, long arg2);
+public static final long call (long function, long arg0, long arg1, long arg2) {
 	lock.lock();
 	try {
 		return _call(function, arg0, arg1, arg2);
@@ -391,8 +391,8 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4);
-public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4) {
+public static final native long _call (long function, long arg0, long arg1, long arg2, long arg3, long arg4);
+public static final long call (long function, long arg0, long arg1, long arg2, long arg3, long arg4) {
 	lock.lock();
 	try {
 		return _call(function, arg0, arg1, arg2, arg3, arg4);
@@ -400,58 +400,58 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
-public static final native void memmove (AtkActionIface dest, long /*int*/ src);
-public static final native void memmove (AtkComponentIface dest, long /*int*/ src);
-public static final native void memmove (AtkEditableTextIface dest, long /*int*/ src);
-public static final native void memmove (AtkHypertextIface dest, long /*int*/ src);
-public static final native void memmove (AtkObjectClass dest, long /*int*/ src);
-public static final native void memmove (AtkSelectionIface dest, long /*int*/ src);
-public static final native void memmove (AtkTableIface dest, long /*int*/ src);
-public static final native void memmove (AtkTextIface dest, long /*int*/ src);
-public static final native void memmove (AtkValueIface dest, long /*int*/ src);
-public static final native void memmove (long /*int*/ dest, AtkActionIface src);
-public static final native void memmove (long /*int*/ dest, AtkComponentIface src);
-public static final native void memmove (long /*int*/ dest, AtkEditableTextIface src);
-public static final native void memmove (long /*int*/ dest, AtkHypertextIface src);
-public static final native void memmove (long /*int*/ dest, AtkObjectClass src);
-public static final native void memmove (long /*int*/ dest, AtkSelectionIface src);
-public static final native void memmove (long /*int*/ dest, AtkTableIface src);
-public static final native void memmove (long /*int*/ dest, AtkTextIface src);
-public static final native void memmove (long /*int*/ dest, AtkValueIface src);
+public static final native void memmove (AtkActionIface dest, long src);
+public static final native void memmove (AtkComponentIface dest, long src);
+public static final native void memmove (AtkEditableTextIface dest, long src);
+public static final native void memmove (AtkHypertextIface dest, long src);
+public static final native void memmove (AtkObjectClass dest, long src);
+public static final native void memmove (AtkSelectionIface dest, long src);
+public static final native void memmove (AtkTableIface dest, long src);
+public static final native void memmove (AtkTextIface dest, long src);
+public static final native void memmove (AtkValueIface dest, long src);
+public static final native void memmove (long dest, AtkActionIface src);
+public static final native void memmove (long dest, AtkComponentIface src);
+public static final native void memmove (long dest, AtkEditableTextIface src);
+public static final native void memmove (long dest, AtkHypertextIface src);
+public static final native void memmove (long dest, AtkObjectClass src);
+public static final native void memmove (long dest, AtkSelectionIface src);
+public static final native void memmove (long dest, AtkTableIface src);
+public static final native void memmove (long dest, AtkTextIface src);
+public static final native void memmove (long dest, AtkValueIface src);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (long /*int*/ dest, AtkTextRectangle src, int size);
+public static final native void memmove (long dest, AtkTextRectangle src, int size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (AtkTextRectangle dest, long /*int*/ src, int size);
+public static final native void memmove (AtkTextRectangle dest, long src, int size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (long /*int*/ dest, AtkTextRange src, int size);
+public static final native void memmove (long dest, AtkTextRange src, int size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (AtkTextRange dest, long /*int*/ src, int size);
+public static final native void memmove (AtkTextRange dest, long src, int size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (long /*int*/ dest, AtkAttribute src, int size);
+public static final native void memmove (long dest, AtkAttribute src, int size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (AtkAttribute dest, long /*int*/ src, int size);
+public static final native void memmove (AtkAttribute dest, long src, int size);
 }

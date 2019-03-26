@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventWindowState extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public long /*int*/ window;
+	public long window;
 	public byte send_event;
 	public int changed_mask;
 	public int new_window_state;

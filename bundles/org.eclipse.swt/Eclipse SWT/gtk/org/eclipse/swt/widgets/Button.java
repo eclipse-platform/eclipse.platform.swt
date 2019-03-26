@@ -48,7 +48,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control {
-	long /*int*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
+	long boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected, grayed;
 	ImageList imageList;
 	Image image;
@@ -115,11 +115,11 @@ static int checkStyle (int style) {
 	return style;
 }
 
-GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorder) {
+GtkBorder getBorder (byte[] border, long handle, int defaultBorder) {
     GtkBorder gtkBorder = new GtkBorder();
-    long /*int*/ []  borderPtr = new long /*int*/ [1];
+    long []  borderPtr = new long [1];
     if (GTK.GTK4) {
-		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		long context = GTK.gtk_widget_get_style_context (handle);
 		int stateFlag = GTK.gtk_widget_get_state_flags(handle);
 		gtk_style_context_get_border(context, stateFlag, gtkBorder);
 		return gtkBorder;
@@ -221,10 +221,10 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		int indicatorHeight = 0;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if (GTK.GTK4) {
-				long /*int*/ icon = GTK.gtk_widget_get_first_child(handle);
+				long icon = GTK.gtk_widget_get_first_child(handle);
 				GtkRequisition minimum = new GtkRequisition ();
 				GTK.gtk_widget_get_preferred_size(icon, minimum, null);
-				long /*int*/ context = GTK.gtk_widget_get_style_context(icon);
+				long context = GTK.gtk_widget_get_style_context(icon);
 				GtkBorder margin = new GtkBorder ();
 				GTK.gtk_style_context_get_margin(context, margin);
 				trimWidth += minimum.width + margin.right;
@@ -259,7 +259,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			OS.g_object_get (boxHandle, OS.spacing, spacing, 0);
 			imageWidth += spacing [0];
 		}
-		long /*int*/ labelLayout = GTK.gtk_label_get_layout (labelHandle);
+		long labelLayout = GTK.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		if (wHint != SWT.DEFAULT) {
 			OS.pango_layout_set_width (labelLayout, Math.max (1, (wHint - imageWidth - trimWidth)) * OS.PANGO_SCALE);
@@ -387,7 +387,7 @@ void deregister () {
 }
 
 @Override
-long /*int*/ fontHandle () {
+long fontHandle () {
 	if (labelHandle != 0) return labelHandle;
 	return super.fontHandle ();
 }
@@ -505,15 +505,15 @@ public String getText () {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_button_press_event (widget, event);
+long gtk_button_press_event (long widget, long event) {
+	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
 }
 
 @Override
-long /*int*/ gtk_clicked (long /*int*/ widget) {
+long gtk_clicked (long widget) {
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
@@ -537,7 +537,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+long gtk_draw (long widget, long cairo) {
 	/*
 	 * On GTK3.19+, widget are are shown with the default minimum size regardless of the
 	 * size of the fixed container. This causes 0x0 widgets to be visible but cannot be used.
@@ -559,8 +559,8 @@ boolean mustBeVisibleOnInitBounds() {
 }
 
 @Override
-long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_focus_in_event (widget, event);
+long gtk_focus_in_event (long widget, long event) {
+	long result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && GTK.gtk_widget_has_default (handle)) {
@@ -571,8 +571,8 @@ long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_focus_out_event (widget, event);
+long gtk_focus_out_event (long widget, long event) {
+	long result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0) {
@@ -585,8 +585,8 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_key_press_event (widget, event);
+long gtk_key_press_event (long widget, long event) {
+	long result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
@@ -821,7 +821,7 @@ void _setAlignment (int alignment) {
 }
 
 @Override
-void setBackgroundGdkRGBA (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	background = rgba;
 	// Form background CSS string
 	String css ="* {background : ";
@@ -869,7 +869,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		GTK.gtk_widget_get_allocation (boxHandle, allocation);
 		int boxWidth = allocation.width;
 		int boxHeight = allocation.height;
-		long /*int*/ labelLayout = GTK.gtk_label_get_layout (labelHandle);
+		long labelLayout = GTK.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		OS.pango_layout_set_width (labelLayout, -1);
 		int [] w = new int [1], h = new int [1];
@@ -902,7 +902,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 @Override
-void setFontDescription (long /*int*/ fontDesc) {
+void setFontDescription (long fontDesc) {
 	// Don't set the font if we have no text set
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && ((text != null && text.isEmpty()) || text == null)) {
 		return;
@@ -942,13 +942,13 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 }
 
 @Override
-void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
 	}
 	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
-	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+	long context = GTK.gtk_widget_get_style_context (handle);
 
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
@@ -1038,7 +1038,7 @@ public void setImage (Image image) {
 		if (image.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_gicon(imageHandle, pixbuf);
 	} else {
 		gtk_image_set_from_gicon (imageHandle, 0);
@@ -1176,7 +1176,7 @@ void showWidget () {
 }
 
 @Override
-int traversalCode(int key, long /*int*/ event) {
+int traversalCode(int key, long event) {
 	int code = super.traversalCode (key, event);
 	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
@@ -1184,7 +1184,7 @@ int traversalCode(int key, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long user_data) {
 	/*
 	 * For Labels/Buttons, the first widget in the tree with a GdkWindow is SwtFixed.
 	 * Unfortunately this fails the check in !GTK_IS_CONTAINER check Widget.windowProc().

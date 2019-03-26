@@ -65,8 +65,8 @@ public class Composite extends Scrollable {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/  embeddedHandle;
-	long /*int*/ imHandle, socketHandle;
+	public long  embeddedHandle;
+	long imHandle, socketHandle;
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
@@ -75,7 +75,7 @@ public class Composite extends Scrollable {
 	 * needs to have its clip set to its allocation. This is because on GTK3.20+
 	 * some widgets (like Combo) have their clips merged with that of their parent.
 	 */
-	long /*int*/ fixClipHandle;
+	long fixClipHandle;
 	/**
 	 * If fixClipHandle is set, then the fixClipMap HashMap contains children
 	 * of fixClipHandle that also need to have their clips adjusted.
@@ -85,7 +85,7 @@ public class Composite extends Scrollable {
 	 * This array will be traversed in-order to adjust the clipping of each element.
 	 * See bug 500703 and 535323.</p>
 	 */
-	Map<Control, long /*int*/ []> fixClipMap = new HashMap<> ();
+	Map<Control, long []> fixClipMap = new HashMap<> ();
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	Shell popupChild;
@@ -160,15 +160,15 @@ static int checkStyle (int style) {
 }
 
 Control [] _getChildren () {
-	long /*int*/ parentHandle = parentingHandle ();
-	long /*int*/ list = GTK.gtk_container_get_children (parentHandle);
+	long parentHandle = parentingHandle ();
+	long list = GTK.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
 	int i = 0;
-	long /*int*/ temp = list;
+	long temp = list;
 	while (temp != 0) {
-		long /*int*/ handle = OS.g_list_data (temp);
+		long handle = OS.g_list_data (temp);
 		if (handle != 0) {
 			Widget widget = display.getWidget (handle);
 			if (widget != null && widget != this) {
@@ -305,9 +305,9 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			gtk_widget_set_has_surface_or_window (fixedHandle, true);
 		}
-		long /*int*/ vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		long vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-		long /*int*/ hadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		long hadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = GTK.gtk_scrolled_window_new (hadj, vadj);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -389,8 +389,8 @@ void fixClippings () {
 		Control [] children = _getChildren();
 		for (Control child : children) {
 			if (fixClipMap.containsKey(child)) {
-				long /*int*/ [] childHandles = fixClipMap.get(child);
-				for (long /*int*/ widget : childHandles) {
+				long [] childHandles = fixClipMap.get(child);
+				for (long widget : childHandles) {
 					child.adjustChildClipping(widget);
 				}
 			}
@@ -399,7 +399,7 @@ void fixClippings () {
 }
 
 @Override
-void adjustChildClipping (long /*int*/ widget) {
+void adjustChildClipping (long widget) {
 	GtkRequisition minimumSize = new GtkRequisition ();
 	GtkRequisition naturalSize = new GtkRequisition ();
 	GtkAllocation clip = new GtkAllocation ();
@@ -436,9 +436,9 @@ void adjustChildClipping (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+long gtk_draw (long widget, long cairo) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		long /*int*/ context = GTK.gtk_widget_get_style_context(widget);
+		long context = GTK.gtk_widget_get_style_context(widget);
 		GtkAllocation allocation = new GtkAllocation();
 		GTK.gtk_widget_get_allocation (widget, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
@@ -512,17 +512,17 @@ void drawBackgroundInPixels (GC gc, int x, int y, int width, int height, int off
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		GCData data = gc.getGCData ();
-		long /*int*/ cairo = data.cairo;
+		long cairo = data.cairo;
 		Cairo.cairo_save (cairo);
 		if (control.backgroundImage != null) {
 			Point pt = display.mapInPixels (this, control, 0, 0);
 			Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
 			x += pt.x + offsetX;
 			y += pt.y + offsetY;
-			long /*int*/ surface = control.backgroundImage.surface;
+			long surface = control.backgroundImage.surface;
 			if (surface == 0) error (SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_surface_reference(surface);
-			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+			long pattern = Cairo.cairo_pattern_create_for_surface (surface);
 			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
 			if ((data.style & SWT.MIRRORED) != 0) {
@@ -592,7 +592,7 @@ void fixParentGdkResource() {
 }
 
 @Override
-void fixModal(long /*int*/ group, long /*int*/ modalGroup)  {
+void fixModal(long group, long modalGroup)  {
 	Control[] controls = _getChildren ();
 	for (int i = 0; i < controls.length; i++) {
 		controls[i].fixModal (group, modalGroup);
@@ -632,16 +632,16 @@ void fixTabList (Control control) {
 
 void fixZOrder () {
 	if ((state & CANVAS) != 0) return;
-	long /*int*/ parentHandle = parentingHandle ();
+	long parentHandle = parentingHandle ();
 	if (GTK.GTK4) {
-		long /*int*/ parentSurface = gtk_widget_get_surface (parentHandle);
+		long parentSurface = gtk_widget_get_surface (parentHandle);
 		if (parentSurface == 0) return;
-		long /*int*/ [] userData = new long /*int*/ [1];
-		long /*int*/ surfaceList = GDK.gdk_surface_get_children (parentSurface);
+		long [] userData = new long [1];
+		long surfaceList = GDK.gdk_surface_get_children (parentSurface);
 		if (surfaceList != 0) {
-			long /*int*/ surfaces = surfaceList;
+			long surfaces = surfaceList;
 			while (surfaces != 0) {
-				long /*int*/ surface = OS.g_list_data (surfaces);
+				long surface = OS.g_list_data (surfaces);
 				if (surface != redrawSurface) {
 					GDK.gdk_surface_get_user_data (surface, userData);
 					if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
@@ -653,14 +653,14 @@ void fixZOrder () {
 			OS.g_list_free (surfaceList);
 		}
 	} else {
-		long /*int*/ parentWindow = gtk_widget_get_window (parentHandle);
+		long parentWindow = gtk_widget_get_window (parentHandle);
 		if (parentWindow == 0) return;
-		long /*int*/ [] userData = new long /*int*/ [1];
-		long /*int*/ windowList = GDK.gdk_window_get_children (parentWindow);
+		long [] userData = new long [1];
+		long windowList = GDK.gdk_window_get_children (parentWindow);
 		if (windowList != 0) {
-			long /*int*/ windows = windowList;
+			long windows = windowList;
 			while (windows != 0) {
-				long /*int*/ window = OS.g_list_data (windows);
+				long window = OS.g_list_data (windows);
 				if (window != redrawWindow) {
 					GDK.gdk_window_get_user_data (window, userData);
 					if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
@@ -675,13 +675,13 @@ void fixZOrder () {
 }
 
 @Override
-long /*int*/ focusHandle () {
+long focusHandle () {
 	if (socketHandle != 0) return socketHandle;
 	return super.focusHandle ();
 }
 
 @Override
-boolean forceFocus (long /*int*/ focusHandle) {
+boolean forceFocus (long focusHandle) {
 	if (socketHandle != 0) GTK.gtk_widget_set_can_focus (focusHandle, true);
 	boolean result = super.forceFocus (focusHandle);
 	if (socketHandle != 0) GTK.gtk_widget_set_can_focus (focusHandle, false);
@@ -742,7 +742,7 @@ int getChildrenCount () {
 	* NOTE: The current implementation will count
 	* non-registered children.
 	*/
-	long /*int*/ list = GTK.gtk_container_get_children (handle);
+	long list = GTK.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -757,7 +757,7 @@ Rectangle getClientAreaInPixels () {
 			return new Rectangle (0, 0, 0, 0);
 		}
 		forceResize ();
-		long /*int*/ clientHandle = clientHandle ();
+		long clientHandle = clientHandle ();
 		GtkAllocation allocation = new GtkAllocation();
 		GTK.gtk_widget_get_allocation (clientHandle, allocation);
 		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
@@ -837,8 +837,8 @@ public Control [] getTabList () {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_button_press_event (widget, event);
+long gtk_button_press_event (long widget, long event) {
+	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
@@ -853,8 +853,8 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_key_press_event (widget, event);
+long gtk_key_press_event (long widget, long event) {
+	long result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  The default behavior when the return key
@@ -874,36 +874,36 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
+long gtk_focus (long widget, long directionType) {
 	if (widget == socketHandle) return 0;
 	return super.gtk_focus (widget, directionType);
 }
 
 @Override
-long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_focus_in_event (widget, event);
+long gtk_focus_in_event (long widget, long event) {
+	long result = super.gtk_focus_in_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 @Override
-long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_focus_out_event (widget, event);
+long gtk_focus_out_event (long widget, long event) {
+	long result = super.gtk_focus_out_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 @Override
-long /*int*/ gtk_map (long /*int*/ widget) {
+long gtk_map (long widget) {
 	fixZOrder ();
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_realize (long /*int*/ widget) {
-	long /*int*/ result = super.gtk_realize (widget);
+long gtk_realize (long widget) {
+	long result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		// No gdk_surface_set_background_pattern() on GTK4.
 		if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-			long /*int*/ window = gtk_widget_get_window (paintHandle ());
+			long window = gtk_widget_get_window (paintHandle ());
 			if (window != 0) {
 				GDK.gdk_window_set_background_pattern(window, 0);
 			}
@@ -916,15 +916,15 @@ long /*int*/ gtk_realize (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_scroll_child (long /*int*/ widget, long /*int*/ scrollType, long /*int*/ horizontal) {
+long gtk_scroll_child (long widget, long scrollType, long horizontal) {
 	/* Stop GTK scroll child signal for canvas */
 	OS.g_signal_stop_emission_by_name (widget, OS.scroll_child);
 	return 1;
 }
 
 @Override
-long /*int*/ gtk_style_updated (long /*int*/ widget) {
-	long /*int*/ result = super.gtk_style_updated (widget);
+long gtk_style_updated (long widget) {
+	long result = super.gtk_style_updated (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		//TODO: implement this on GTK3 as pixmaps are gone.
 	}
@@ -951,7 +951,7 @@ boolean hooksKeys () {
 }
 
 @Override
-long /*int*/ imHandle () {
+long imHandle () {
 	return imHandle;
 }
 
@@ -1279,16 +1279,16 @@ void markLayout (boolean changed, boolean all) {
 	}
 }
 
-void moveAbove (long /*int*/ child, long /*int*/ sibling) {
+void moveAbove (long child, long sibling) {
 	if (child == sibling) return;
-	long /*int*/ parentHandle = parentingHandle ();
+	long parentHandle = parentingHandle ();
 	OS.swt_fixed_restack (parentHandle, child, sibling, true);
 	return;
 }
 
-void moveBelow (long /*int*/ child, long /*int*/ sibling) {
+void moveBelow (long child, long sibling) {
 	if (child == sibling) return;
-	long /*int*/ parentHandle = parentingHandle ();
+	long parentHandle = parentingHandle ();
 	if (sibling == 0 && parentHandle == fixedHandle) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
@@ -1302,7 +1302,7 @@ void moveChildren(int oldWidth) {
 	Control[] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		Control child = children[i];
-		long /*int*/ topHandle = child.topHandle ();
+		long topHandle = child.topHandle ();
 		GtkAllocation allocation = new GtkAllocation();
 		GTK.gtk_widget_get_allocation (topHandle, allocation);
 		int x = allocation.x;
@@ -1358,13 +1358,13 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-long /*int*/ parentingHandle () {
+long parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
 }
 
 @Override
-void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
+void printWidget (GC gc, long drawable, int depth, int x, int y) {
 	Region oldClip = new Region (gc.getDevice ());
 	Region newClip = new Region (gc.getDevice ());
 	Point loc = DPIUtil.autoScaleDown(new Point (x, y));
@@ -1398,7 +1398,7 @@ void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
  * NOTE: only the "draw" (EXPOSE) signal is connected, not EXPOSE_EVENT_INVERSE.
  */
 void connectFixedHandleDraw () {
-	long /*int*/ paintHandle = fixedHandle;
+	long paintHandle = fixedHandle;
 	int paintMask = GDK.GDK_EXPOSURE_MASK;
 	GTK.gtk_widget_add_events (paintHandle, paintMask);
 
@@ -1419,12 +1419,12 @@ void connectFixedHandleDraw () {
  * @param container the parent container, i.e. fixedHandle
  * @param cairo the cairo context provided by GTK
  */
-void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
+void propagateDraw (long container, long cairo) {
 	if (container == fixedHandle) {
-		long /*int*/ list = GTK.gtk_container_get_children (container);
-		long /*int*/ temp = list;
+		long list = GTK.gtk_container_get_children (container);
+		long temp = list;
 		while (temp != 0) {
-			long /*int*/ child = OS.g_list_data (temp);
+			long child = OS.g_list_data (temp);
 			if (child != 0) {
 				Widget widget = display.getWidget (child);
 				if (widget != this) {
@@ -1439,10 +1439,10 @@ void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
 						if ((allocation.y + allocation.height) < noChildDrawing.height) {
 							if (!childLowered) {
 								if (GTK.GTK4) {
-									long /*int*/ surface = gtk_widget_get_surface(child);
+									long surface = gtk_widget_get_surface(child);
 									GDK.gdk_surface_lower(surface);
 								} else {
-									long /*int*/ window = gtk_widget_get_window(child);
+									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_lower(window);
 								}
 								childrenLowered.put(widget, true);
@@ -1450,10 +1450,10 @@ void propagateDraw (long /*int*/ container, long /*int*/ cairo) {
 						} else {
 							if (childLowered) {
 								if (GTK.GTK4) {
-									long /*int*/ surface = gtk_widget_get_surface(child);
+									long surface = gtk_widget_get_surface(child);
 									GDK.gdk_surface_raise(surface);
 								} else {
-									long /*int*/ window = gtk_widget_get_window(child);
+									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_raise(window);
 								}
 								childrenLowered.put(widget, false);
@@ -1584,7 +1584,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	 * but fix themselfes upon first resize by mouse, then
 	 * consider moving this fix higher into Control's setBound(...) method instead.
 	 */
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	if (fixedHandle != 0 && handle != 0
 			&& getVisible() && !GTK.gtk_widget_get_visible(topHandle) //if SWT State is not HIDDEN, but widget is hidden on GTK side.
 			&& topHandle == fixedHandle && width > 0 && height > 0 && resize) {
@@ -1772,7 +1772,7 @@ boolean translateMnemonic (Event event, Control control) {
 }
 
 @Override
-int traversalCode(int key, long /*int*/ event) {
+int traversalCode(int key, long event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
 		if (hooksKeys ()) return 0;
@@ -1781,7 +1781,7 @@ int traversalCode(int key, long /*int*/ event) {
 }
 
 @Override
-boolean translateTraversal (long /*int*/ event) {
+boolean translateTraversal (long event) {
 	if (socketHandle != 0) return false;
 	return super.translateTraversal (event);
 }

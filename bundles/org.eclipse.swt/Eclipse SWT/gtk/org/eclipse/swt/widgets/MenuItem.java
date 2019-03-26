@@ -41,7 +41,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	long /*int*/ groupHandle, labelHandle, imageHandle;
+	long groupHandle, labelHandle, imageHandle;
 
 	/** Feature in Gtk: as of Gtk version 3.10 GtkImageMenuItem is deprecated,
 	 * meaning that MenuItems in SWT with images can no longer be GtkImageMenuItems
@@ -54,7 +54,7 @@ public class MenuItem extends Item {
 	 * https://developer.gnome.org/gtk3/stable/GtkImageMenuItem.html#GtkImageMenuItem.description
 	 * Bug 470298
 	 */
-	long /*int*/ boxHandle;
+	long boxHandle;
 
 	int accelerator, userId;
 	String toolTipText;
@@ -145,11 +145,11 @@ public MenuItem (Menu parent, int style, int index) {
 	createWidget (index);
 }
 
-void addAccelerator (long /*int*/ accelGroup) {
+void addAccelerator (long accelGroup) {
 	updateAccelerator (accelGroup, true);
 }
 
-void addAccelerators (long /*int*/ accelGroup) {
+void addAccelerators (long accelGroup) {
 	addAccelerator (accelGroup);
 	if (menu != null) menu.addAccelerators (accelGroup);
 }
@@ -279,7 +279,7 @@ void createHandle (int index) {
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
 			OS.g_object_ref_sink (groupHandle);
-			long /*int*/ group = GTK.gtk_radio_menu_item_get_group (groupHandle);
+			long group = GTK.gtk_radio_menu_item_get_group (groupHandle);
 			handle = GTK.gtk_radio_menu_item_new (group);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
@@ -373,7 +373,7 @@ void createHandle (int index) {
 		}
 		GTK.gtk_accel_label_set_accel_widget (labelHandle, 0);
 	}
-	long /*int*/ parentHandle = parent.handle;
+	long parentHandle = parent.handle;
 	boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
 	if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
 	GTK.gtk_menu_shell_insert (parentHandle, handle, index);
@@ -404,7 +404,7 @@ public int getAccelerator () {
 	return accelerator;
 }
 
-long /*int*/ getAccelGroup () {
+long getAccelGroup () {
 	Menu menu = parent;
 	while (menu != null && menu.cascade != null) {
 		menu = menu.cascade.parent;
@@ -544,7 +544,7 @@ public String getToolTipText () {
 }
 
 @Override
-long /*int*/ gtk_activate (long /*int*/ widget) {
+long gtk_activate (long widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 	/*
 	* Bug in GTK.  When an ancestor menu is disabled and
@@ -564,14 +564,14 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 }
 
 @Override
-long /*int*/ gtk_select (long /*int*/ item) {
+long gtk_select (long item) {
 	parent.selectedItem = this;
 	sendEvent (SWT.Arm);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
+long gtk_show_help (long widget, long helpType) {
 	boolean handled = hooks (SWT.Help);
 	if (handled) {
 		postEvent (SWT.Help);
@@ -634,7 +634,7 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	long /*int*/ accelGroup = getAccelGroup ();
+	long accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	if (groupHandle != 0) OS.g_object_unref (groupHandle);
 	groupHandle = 0;
@@ -642,11 +642,11 @@ void releaseWidget () {
 	parent = null;
 }
 
-void removeAccelerator (long /*int*/ accelGroup) {
+void removeAccelerator (long accelGroup) {
 	updateAccelerator (accelGroup, false);
 }
 
-void removeAccelerators (long /*int*/ accelGroup) {
+void removeAccelerators (long accelGroup) {
 	removeAccelerator (accelGroup);
 	if (menu != null) menu.removeAccelerators (accelGroup);
 }
@@ -758,7 +758,7 @@ void selectRadio () {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	if (this.accelerator == accelerator) return;
-	long /*int*/ accelGroup = getAccelGroup ();
+	long accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	this.accelerator = accelerator;
 	if (accelGroup != 0) addAccelerator (accelGroup);
@@ -780,7 +780,7 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (GTK.gtk_widget_get_sensitive (handle) == enabled) return;
-	long /*int*/ accelGroup = getAccelGroup ();
+	long accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	GTK.gtk_widget_set_sensitive (handle, enabled);
 	if (accelGroup != 0) addAccelerator (accelGroup);
@@ -838,10 +838,10 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		if (DPIUtil.useCairoAutoScale()) {
 			Rectangle imgSize = image.getBounds();
-			long /*int*/ scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
+			long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
 			if (scaledPixbuf !=0) {
 				pixbuf = scaledPixbuf;
 			}
@@ -923,7 +923,7 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	long /*int*/ accelGroup = getAccelGroup ();
+	long accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerators (accelGroup);
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
@@ -1085,7 +1085,7 @@ public void setToolTipText (String toolTip) {
 	this.parent.getShell().setToolTipText (handle, (toolTipText = toolTip));
 }
 
-void updateAccelerator (long /*int*/ accelGroup, boolean add) {
+void updateAccelerator (long accelGroup, boolean add) {
 	if (accelerator == 0 || !getEnabled ()) return;
 	if ((accelerator & SWT.COMMAND) != 0) return;
 	int mask = 0;
@@ -1178,7 +1178,7 @@ boolean updateAcceleratorText (boolean show) {
 	}
 	if (maskKeysym == null) return true;
 	if (maskKeysym.keysym != 0) {
-		long /*int*/ accelGroup = getAccelGroup ();
+		long accelGroup = getAccelGroup ();
 		if (show) {
 			GTK.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {

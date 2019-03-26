@@ -106,7 +106,7 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	long /*int*/ accelGroup, vboxHandle;
+	long accelGroup, vboxHandle;
 
 Decorations () {
 	/* Do nothing */
@@ -179,17 +179,17 @@ void _setImages (Image [] images) {
 		sort (bestImages);
 		images = bestImages;
 	}
-	long /*int*/ pixbufs = 0;
+	long pixbufs = 0;
 	if (images != null) {
 		for (int i = 0; i < images.length; i++) {
 			Image image = images [i];
-			long /*int*/ pixbuf = ImageList.createPixbuf (image);
+			long pixbuf = ImageList.createPixbuf (image);
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);
 		}
 	}
 	GTK.gtk_window_set_icon_list (topHandle (), pixbufs);
-	long /*int*/ [] data = new long /*int*/ [1];
-	long /*int*/ temp = pixbufs;
+	long [] data = new long [1];
+	long temp = pixbufs;
 	while (temp != 0) {
 		C.memmove (data, temp, C.PTR_SIZEOF);
 		OS.g_object_unref (data [0]);
@@ -242,7 +242,7 @@ void createAccelGroup () {
 	accelGroup = GTK.gtk_accel_group_new ();
 	if (accelGroup == 0) error (SWT.ERROR_NO_HANDLES);
 	//FIXME - what should we do for Decorations
-	long /*int*/ shellHandle = topHandle ();
+	long shellHandle = topHandle ();
 	GTK.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
@@ -254,7 +254,7 @@ void createWidget (int index) {
 
 void destroyAccelGroup () {
 	if (accelGroup == 0) return;
-	long /*int*/ shellHandle = topHandle ();
+	long shellHandle = topHandle ();
 	GTK.gtk_window_remove_accel_group (shellHandle, accelGroup);
 	//TEMPORARY CODE
 //	OS.g_object_unref (accelGroup);
@@ -556,11 +556,11 @@ boolean restoreFocus () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
-	long /*int*/ buttonHandle = 0;
+	long buttonHandle = 0;
 	if (saveDefault != null && !saveDefault.isDisposed ()  ) {
-		long /*int*/ saveButtonHandle = saveDefault.handle;
+		long saveButtonHandle = saveDefault.handle;
 		if (saveButtonHandle != 0) {
-			long /*int*/ context = GTK.gtk_widget_get_style_context (saveButtonHandle);
+			long context = GTK.gtk_widget_get_style_context (saveButtonHandle);
 			GTK.gtk_style_context_remove_class(context, GTK.GTK_STYLE_CLASS_SUGGESTED_ACTION);
 		}
 	}
@@ -571,7 +571,7 @@ public void setDefaultButton (Button button) {
 	}
 	saveDefault = defaultButton = button;
 	if (buttonHandle != 0) {
-		long /*int*/ context = GTK.gtk_widget_get_style_context (buttonHandle);
+		long context = GTK.gtk_widget_get_style_context (buttonHandle);
 		GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_SUGGESTED_ACTION);
 	}
 	GTK.gtk_window_set_default (topHandle (), buttonHandle);
@@ -796,7 +796,7 @@ boolean traverseReturn () {
 	* key.
 	*/
 	if (!button.isVisible () || !button.isEnabled ()) return true;
-	long /*int*/ shellHandle = _getShell ().topHandle ();
+	long shellHandle = _getShell ().topHandle ();
 	return GTK.gtk_window_activate_default (shellHandle);
 }
 

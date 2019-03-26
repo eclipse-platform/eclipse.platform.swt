@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.opengl.glx;
 
 public class XVisualInfo {
 	/** @field cast=(Visual *) */
-	public long /*int*/ visual;
+	public long visual;
 	public int visualid;
 	public int screen;
 	public int depth;

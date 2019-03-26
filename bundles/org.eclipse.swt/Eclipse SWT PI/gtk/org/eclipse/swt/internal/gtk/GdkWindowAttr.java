@@ -17,21 +17,21 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkWindowAttr {
 	/** @field cast=(gchar *) */
-	public long /*int*/ title;
+	public long title;
 	public int event_mask;
 	public int x, y;
 	public int width;
 	public int height;
 	public int wclass;
 	/** @field cast=(GdkVisual *) */
-	public long /*int*/ visual;
+	public long visual;
 	public int window_type;
 	/** @field cast=(GdkCursor *) */
-	public long /*int*/ cursor;
+	public long cursor;
 	/** @field cast=(gchar *) */
-	public long /*int*/ wmclass_name;
+	public long wmclass_name;
 	/** @field cast=(gchar *) */
-	public long /*int*/ wmclass_class;
+	public long wmclass_class;
 	public boolean override_redirect;
 	public static final int sizeof = GDK.GdkWindowAttr_sizeof();
 }

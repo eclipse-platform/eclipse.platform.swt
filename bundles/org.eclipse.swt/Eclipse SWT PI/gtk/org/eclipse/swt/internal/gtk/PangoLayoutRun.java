@@ -16,8 +16,8 @@ package org.eclipse.swt.internal.gtk;
 
 public class PangoLayoutRun {
 	/** @field cast=(PangoItem *) */
-	public long /*int*/ item;
+	public long item;
 	/** @field cast=(PangoGlyphString *) */
-	public long /*int*/ glyphs;
+	public long glyphs;
 	public static final int sizeof = OS.PangoLayoutRun_sizeof();
 }

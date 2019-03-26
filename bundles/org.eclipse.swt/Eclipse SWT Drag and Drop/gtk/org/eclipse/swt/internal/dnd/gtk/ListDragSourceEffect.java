@@ -90,28 +90,28 @@ public class ListDragSourceEffect extends DragSourceEffect {
 		//TEMPORARY CODE
 		if (dragList.isListening(SWT.EraseItem) || dragList.isListening (SWT.PaintItem)) return null;
 
-		long /*int*/ handle = dragList.handle;
-		long /*int*/ selection = GTK.gtk_tree_view_get_selection (handle);
-		long /*int*/ [] model = null;
-		long /*int*/ list = GTK.gtk_tree_selection_get_selected_rows (selection, model);
+		long handle = dragList.handle;
+		long selection = GTK.gtk_tree_view_get_selection (handle);
+		long [] model = null;
+		long list = GTK.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));
-		long /*int*/ originalList = list;
+		long originalList = list;
 
 		Display display = dragList.getDisplay();
 		if (count == 1) {
-			long /*int*/ path = OS.g_list_nth_data (list, 0);
-			long /*int*/ icon = GTK.gtk_tree_view_create_row_drag_icon (handle, path);
+			long path = OS.g_list_nth_data (list, 0);
+			long icon = GTK.gtk_tree_view_create_row_drag_icon (handle, path);
 			dragSourceImage =  Image.gtk_new (display, SWT.ICON, icon, 0);
 			GTK.gtk_tree_path_free (path);
 		} else {
 			int width = 0, height = 0;
 			int[] w = new int[1], h = new int[1];
 			int[] yy = new int[count], hh = new int[count];
-			long /*int*/ [] icons = new long /*int*/ [count];
+			long [] icons = new long [count];
 			GdkRectangle rect = new GdkRectangle ();
 			for (int i=0; i<count; i++) {
-				long /*int*/ path = OS.g_list_data (list);
+				long path = OS.g_list_data (list);
 				GTK.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				icons[i] = GTK.gtk_tree_view_create_row_drag_icon(handle, path);
 				switch (Cairo.cairo_surface_get_type(icons[i])) {
@@ -131,9 +131,9 @@ public class ListDragSourceEffect extends DragSourceEffect {
 				list = OS.g_list_next (list);
 				GTK.gtk_tree_path_free (path);
 			}
-			long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+			long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
 			if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			long /*int*/ cairo = Cairo.cairo_create(surface);
+			long cairo = Cairo.cairo_create(surface);
 			if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 			for (int i=0; i<count; i++) {

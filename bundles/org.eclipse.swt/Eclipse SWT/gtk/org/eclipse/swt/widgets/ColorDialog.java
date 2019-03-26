@@ -129,7 +129,7 @@ public RGB[] getRGBs() {
  */
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (title, true);
-	long /*int*/ handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
+	long handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	GdkRGBA rgba;
 	rgba = new GdkRGBA ();
@@ -142,7 +142,7 @@ public RGB open () {
 	GTK.gtk_color_chooser_set_rgba (handle, rgba);
 	if (rgbs != null) {
 		int colorsPerRow = 9;
-		long /*int*/ gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
+		long gdkRGBAS = OS.g_malloc(GdkRGBA.sizeof * rgbs.length);
 		rgba = new GdkRGBA ();
 		for (int i=0; i<rgbs.length; i++) {
 			RGB rgbS = rgbs[i];
@@ -171,7 +171,7 @@ public RGB open () {
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
-	long /*int*/ hookId = 0;
+	long hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);

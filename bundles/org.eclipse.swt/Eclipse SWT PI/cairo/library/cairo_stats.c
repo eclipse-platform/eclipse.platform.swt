@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2018 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2019 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -156,26 +156,10 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1path_1t_1sizeof",
 	"cairo_1rectangle_1int_1t_1sizeof",
 	"cairo_1version",
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II",
-#else
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ",
-#endif
-#ifndef JNI64
-	"memmove___3DII",
-#else
 	"memmove___3DJJ",
-#endif
 };
 #define NATIVE_FUNCTION_COUNT sizeof(Cairo_nativeFunctionNames) / sizeof(char*)
 int Cairo_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

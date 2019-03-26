@@ -35,7 +35,7 @@ public class Callback {
 	Object object;
 	String method, signature;
 	int argCount;
-	long /*int*/ address, errorResult;
+	long address, errorResult;
 	boolean isStatic, isArrayBased;
 
 	static final boolean is32Bit = C.PTR_SIZEOF == 4 ? true : false;
@@ -108,7 +108,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
  * @param isArrayBased <code>true</code> if the arguments should be passed in an array and false otherwise
  * @param errorResult the return value if the java code throws an exception
  */
-public Callback (Object object, String method, int argCount, boolean isArrayBased, long /*int*/ errorResult) {
+public Callback (Object object, String method, int argCount, boolean isArrayBased, long errorResult) {
 
 	/* Set the callback fields */
 	this.object = object;
@@ -248,7 +248,7 @@ public Callback (Object object, String method, Type returnType, Type [] argument
  * @param isArrayBased whether the callback's method is array based
  * @param errorResult the callback's error result
  */
-static native synchronized long /*int*/ bind (Callback callback, Object object, String method, String signature, int argCount, boolean isStatic, boolean isArrayBased, long /*int*/ errorResult);
+static native synchronized long bind (Callback callback, Object object, String method, String signature, int argCount, boolean isStatic, boolean isArrayBased, long errorResult);
 
 /**
  * Releases the native level resources associated with the callback,
@@ -269,7 +269,7 @@ public void dispose () {
  *
  * @return the callback address
  */
-public long /*int*/ getAddress () {
+public long getAddress () {
 	return address;
 }
 

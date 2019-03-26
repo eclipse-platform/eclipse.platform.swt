@@ -71,7 +71,7 @@ public void javaToNative (Object object, TransferData transferData){
 	char [] chars = new char[charCount +1];
 	string.getChars(0, charCount , chars, 0);
 	int byteCount = chars.length*2;
-	long /*int*/ pValue = OS.g_malloc(byteCount);
+	long pValue = OS.g_malloc(byteCount);
 	if (pValue == 0) return;
 	C.memmove(pValue, chars, byteCount);
 	transferData.length = byteCount;

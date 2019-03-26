@@ -15,11 +15,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public abstract class XAnyEvent extends XEvent {
-	public long /*int*/ serial;
+	public long serial;
 	public int send_event;
 	/** @field cast=(Display *) */
-	public long /*int*/ display;
+	public long display;
 	/** @field cast=(Window) */
-	public long /*int*/ window;
+	public long window;
 	public static final int sizeof = OS.XAnyEvent_sizeof();
 }

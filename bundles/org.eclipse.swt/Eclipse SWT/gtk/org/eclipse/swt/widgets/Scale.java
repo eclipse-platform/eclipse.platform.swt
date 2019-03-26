@@ -131,7 +131,7 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_surface_or_window (fixedHandle, true);
-	long /*int*/ hAdjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
+	long hAdjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
 		handle = GTK.gtk_scale_new (GTK.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
@@ -164,7 +164,7 @@ void hookEvents () {
  */
 public int getIncrement () {
 	checkWidget ();
-	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	long hAdjustment = GTK.gtk_range_get_adjustment (handle);
 	return (int) GTK.gtk_adjustment_get_step_increment (hAdjustment);
 }
 
@@ -180,7 +180,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	long hAdjustment = GTK.gtk_range_get_adjustment (handle);
 	return (int) GTK.gtk_adjustment_get_upper (hAdjustment);
 }
 
@@ -196,7 +196,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	long hAdjustment = GTK.gtk_range_get_adjustment (handle);
 	return (int) GTK.gtk_adjustment_get_lower (hAdjustment);
 }
 
@@ -214,7 +214,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	long hAdjustment = GTK.gtk_range_get_adjustment (handle);
 	return (int) GTK.gtk_adjustment_get_page_increment (hAdjustment);
 }
 
@@ -230,12 +230,12 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	long /*int*/ hAdjustment = GTK.gtk_range_get_adjustment (handle);
+	long hAdjustment = GTK.gtk_range_get_adjustment (handle);
 	return (int) GTK.gtk_adjustment_get_value (hAdjustment);
 }
 
 @Override
-long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
+long gtk_value_changed (long adjustment) {
 	sendSelectionEvent  (SWT.Selection);
 	return 0;
 }
@@ -371,7 +371,7 @@ public void setSelection (int value) {
 }
 
 @Override
-Point resizeCalculationsGTK3(long /*int*/ widget, int width, int height) {
+Point resizeCalculationsGTK3(long widget, int width, int height) {
 	Point size = super.resizeCalculationsGTK3(widget, width, height);
 	/*
 	 * Bug 534204: (GTK 3.22) Scale with GridLayout height hint has no line

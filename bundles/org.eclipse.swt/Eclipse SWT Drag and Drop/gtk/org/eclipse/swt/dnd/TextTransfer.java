@@ -89,7 +89,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	}
 	if (transferData.type == UTF8_STRING_ID) {
-		long /*int*/ pValue = OS.g_malloc(utf8.length);
+		long pValue = OS.g_malloc(utf8.length);
 		if (pValue ==  0) return;
 		C.memmove(pValue, utf8, utf8.length);
 		transferData.type = UTF8_STRING_ID;
@@ -99,7 +99,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	}
 	if (transferData.type == STRING_ID) {
-		long /*int*/ string_target = GDK.gdk_utf8_to_string_target(utf8);
+		long string_target = GDK.gdk_utf8_to_string_target(utf8);
 		if (string_target ==  0) return;
 		transferData.type = STRING_ID;
 		transferData.format = 8;

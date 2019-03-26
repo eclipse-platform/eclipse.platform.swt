@@ -111,7 +111,7 @@ public class DragSource extends Widget {
 	Transfer[] transferAgents = new Transfer[0];
 	DragSourceEffect dragEffect;
 
-	long /*int*/ targetList;
+	long targetList;
 
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
@@ -214,35 +214,35 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static long /*int*/ DragBegin(long /*int*/ widget, long /*int*/ context){
+static long DragBegin(long widget, long context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragBegin(widget, context);
 	return 0;
 }
 
-static long /*int*/ DragDataDelete(long /*int*/ widget, long /*int*/ context){
+static long DragDataDelete(long widget, long context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragDataDelete(widget, context);
 	return 0;
 }
 
-static long /*int*/ DragEnd(long /*int*/ widget, long /*int*/ context){
+static long DragEnd(long widget, long context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragEnd(widget, context);
 	return 0;
 }
 
-static long /*int*/ DragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  long /*int*/ info, long /*int*/ time){
+static long DragGetData(long widget, long context, long selection_data,  long info, long time){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragGetData(widget, context, selection_data, (int)/*64*/info, (int)/*64*/time);
 	return 0;
 }
 
-static DragSource FindDragSource(long /*int*/ handle) {
+static DragSource FindDragSource(long handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -312,14 +312,14 @@ void drag(Event dragEvent) {
 
 	int actions = opToOsOp(getStyle());
 	Image image = event.image;
-	long /*int*/ context;
+	long context;
 	context = GTK.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
 	if (context != 0 && image != null) {
 		GTK.gtk_drag_set_icon_surface(context, image.surface);
 	}
 }
 
-void dragBegin(long /*int*/ widget, long /*int*/ context) {
+void dragBegin(long widget, long context) {
 	/*
 	 * Bug 515035: GTK DnD hijacks the D&D logic we have in SWT.
 	 * When we recieve the signal from GTK of DragBegin, we will
@@ -343,7 +343,7 @@ void dragBegin(long /*int*/ widget, long /*int*/ context) {
 	}
 }
 
-void dragEnd(long /*int*/ widget, long /*int*/ context){
+void dragEnd(long widget, long context){
 	/*
 	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the
 	 * mouse is released immediately, the mouse and keyboard remain
@@ -353,17 +353,17 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * NOTE: We believe that it is never an error to ungrab when
 	 * a drag is finished.
 	 */
-	long /*int*/ display;
+	long display;
 	if (GTK.GTK4) {
 		display = GDK.gdk_surface_get_display(GTK.gtk_widget_get_surface(widget));
 	} else {
 		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
 	}
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
-	long /*int*/ keyboard = GDK.gdk_device_get_associated_device(pointer);
+	long pointer = GDK.gdk_get_pointer(display);
+	long keyboard = GDK.gdk_device_get_associated_device(pointer);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long /*int*/ pointer_seat = GDK.gdk_device_get_seat(pointer);
-		long /*int*/ keyboard_seat = GDK.gdk_device_get_seat(keyboard);
+		long pointer_seat = GDK.gdk_device_get_seat(pointer);
+		long keyboard_seat = GDK.gdk_device_get_seat(keyboard);
 		GDK.gdk_seat_ungrab(pointer_seat);
 		GDK.gdk_seat_ungrab(keyboard_seat);
 	} else {
@@ -373,7 +373,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 
 	int operation = DND.DROP_NONE;
 	if (context != 0) {
-		long /*int*/ dest_window = 0;
+		long dest_window = 0;
 		int action = 0;
 		/*
 		 * Feature in GTK: dest_window information is not gathered here in Wayland as the
@@ -411,7 +411,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		if (this.control instanceof Table
 				|| this.control instanceof Tree
 				|| this.control instanceof List) {
-			long /*int*/ selection = GTK.gtk_tree_view_get_selection (widget);
+			long selection = GTK.gtk_tree_view_get_selection (widget);
 			GTK.gtk_tree_selection_set_select_function(selection,0,0,0);
 		}
 
@@ -425,12 +425,12 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	moveData = false;
 }
 
-void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  int info, int time){
+void dragGetData(long widget, long context, long selection_data,  int info, int time){
 	if (selection_data == 0) return;
 	int length = GTK.gtk_selection_data_get_length(selection_data);
 	int format = GTK.gtk_selection_data_get_format(selection_data);
-	long /*int*/ data = GTK.gtk_selection_data_get_data(selection_data);
-	long /*int*/ target = GTK.gtk_selection_data_get_target(selection_data);
+	long data = GTK.gtk_selection_data_get_data(selection_data);
+	long target = GTK.gtk_selection_data_get_target(selection_data);
 	if (target == 0) return;
 
 	TransferData transferData = new TransferData();
@@ -462,7 +462,7 @@ void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selecti
 	return;
 }
 
-void dragDataDelete(long /*int*/ widget, long /*int*/ context){
+void dragDataDelete(long widget, long context){
 	moveData = true;
 }
 
@@ -650,7 +650,7 @@ public void setTransfer(Transfer... transferAgents){
 		}
 	}
 
-	long /*int*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	long pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
 		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
 	}

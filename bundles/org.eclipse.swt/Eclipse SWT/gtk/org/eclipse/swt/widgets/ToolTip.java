@@ -49,8 +49,8 @@ public class ToolTip extends Widget {
 	String text, message;
 	TrayItem item;
 	int x, y, timerId;
-	long /*int*/ layoutText = 0, layoutMessage = 0;
-	long /*int*/ provider;
+	long layoutText = 0, layoutMessage = 0;
+	long provider;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
 
@@ -149,12 +149,12 @@ void configure () {
 	int monitorNumber;
 	GdkRectangle dest = new GdkRectangle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default();
+		long display = GDK.gdk_display_get_default();
 		multipleMonitors = GDK.gdk_display_get_n_monitors(display) > 1;
-		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, point.x, point.y);
+		long monitor = GDK.gdk_display_get_monitor_at_point(display, point.x, point.y);
 		GDK.gdk_monitor_get_geometry (monitor, dest);
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		multipleMonitors = GDK.gdk_screen_get_n_monitors(screen) > 1;
 		monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 		GDK.gdk_screen_get_monitor_geometry(screen, monitorNumber, dest);
@@ -283,7 +283,7 @@ void createHandle (int index) {
 		state |= HANDLE;
 		handle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+		long context = GTK.gtk_widget_get_style_context (handle);
 		GdkRGBA bgRGBA = background.handle;
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
@@ -293,7 +293,7 @@ void createHandle (int index) {
 	}
 }
 
-void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+void gtk_css_provider_load_from_css (long context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 	if (provider == 0) {
@@ -319,7 +319,7 @@ void createWidget (int index) {
 
 @Override
 void destroyWidget () {
-	long /*int*/ topHandle = topHandle ();
+	long topHandle = topHandle ();
 	if (parent != null) parent.removeTooTip (this);
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
@@ -352,7 +352,7 @@ Point getLocation () {
 	int x = this.x;
 	int y = this.y;
 	if (item != null) {
-		long /*int*/ itemHandle = item.handle;
+		long itemHandle = item.handle;
 		GdkRectangle area = new GdkRectangle ();
 		GTK.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
 		x = area.x + area.width / 2;
@@ -484,7 +484,7 @@ public boolean getVisible () {
 }
 
 @Override
-long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_event (long widget, long event) {
 	if (!GTK.GTK4) return 0;
 	int eventType = GDK.gdk_event_get_event_type(event);
 	switch (eventType) {
@@ -499,13 +499,13 @@ long /*int*/ gtk_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 @Override
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_button_press_event (long widget, long event) {
 	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 	return 0;
 }
 
-void drawTooltip (long /*int*/ cairo) {
+void drawTooltip (long cairo) {
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
 	if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
@@ -529,7 +529,7 @@ void drawTooltip (long /*int*/ cairo) {
 			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs ("dialog-warning", true); break;
 		}
 		if (buffer != null) {
-			long /*int*/ pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, GTK.GTK_ICON_SIZE_MENU, 0, 0);
+			long pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, GTK.GTK_ICON_SIZE_MENU, 0, 0);
 			GDK.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
 			Cairo.cairo_paint (cairo);
 			OS.g_object_unref (pixbuf);
@@ -554,25 +554,25 @@ void drawTooltip (long /*int*/ cairo) {
 }
 
 @Override
-long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+long gtk_draw (long widget, long cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	drawTooltip (cairo);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
+long gtk_size_allocate (long widget, long allocation) {
 	Point point = getLocation ();
 	int x = point.x;
 	int y = point.y;
 	GTK.gtk_widget_realize (widget);
 	GdkRectangle dest = new GdkRectangle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default();
-		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, x, y);
+		long display = GDK.gdk_display_get_default();
+		long monitor = GDK.gdk_display_get_monitor_at_point(display, x, y);
 		GDK.gdk_monitor_get_geometry(monitor, dest);
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 		GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	}
@@ -795,13 +795,13 @@ public void setText (String string) {
 		byte [] buffer = Converter.wcsToMbcs (text, true);
 		layoutText = GTK.gtk_widget_create_pango_layout (handle, buffer);
 		OS.pango_layout_set_auto_dir (layoutText, false);
-		long /*int*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
+		long boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
 		PangoAttribute attribute = new PangoAttribute ();
 		OS.memmove (attribute, boldAttr, PangoAttribute.sizeof);
 		attribute.start_index = 0;
 		attribute.end_index = buffer.length;
 		OS.memmove (boldAttr, attribute, PangoAttribute.sizeof);
-		long /*int*/ attrList = OS.pango_attr_list_new ();
+		long attrList = OS.pango_attr_list_new ();
 		OS.pango_attr_list_insert (attrList, boldAttr);
 		OS.pango_layout_set_attributes (layoutText, attrList);
 		OS.pango_attr_list_unref (attrList);
@@ -835,7 +835,7 @@ public void setVisible (boolean visible) {
 			configure ();
 			GTK.gtk_widget_show (handle);
 		} else {
-			long /*int*/ vboxHandle = parent.vboxHandle;
+			long vboxHandle = parent.vboxHandle;
 			StringBuilder string = new StringBuilder (text);
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
@@ -847,7 +847,7 @@ public void setVisible (boolean visible) {
 		if ((style & SWT.BALLOON) != 0) {
 			GTK.gtk_widget_hide (handle);
 		} else {
-			long /*int*/ vboxHandle = parent.vboxHandle;
+			long vboxHandle = parent.vboxHandle;
 			byte[] buffer = Converter.wcsToMbcs("", true);
 			GTK.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
@@ -855,7 +855,7 @@ public void setVisible (boolean visible) {
 }
 
 @Override
-long /*int*/ timerProc (long /*int*/ widget) {
+long timerProc (long widget) {
 	if ((style & SWT.BALLOON) != 0) {
 		GTK.gtk_widget_hide (handle);
 	}

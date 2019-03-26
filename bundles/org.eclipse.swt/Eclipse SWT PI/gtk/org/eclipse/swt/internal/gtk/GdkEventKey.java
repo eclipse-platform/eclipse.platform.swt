@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventKey extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public long /*int*/ window;
+	public long window;
 	/** @field cast=(gint8) */
 	public byte send_event;
 	/** @field cast=(guint32) */
@@ -29,7 +29,7 @@ public class GdkEventKey extends GdkEvent {
 	/** @field cast=(gint) */
 	public int length;
 	/** @field cast=(gchar *) */
-	public long /*int*/ string;
+	public long string;
 	/** @field cast=(guint16) */
 	public short hardware_keycode;
     /** @field cast=(guint8) */

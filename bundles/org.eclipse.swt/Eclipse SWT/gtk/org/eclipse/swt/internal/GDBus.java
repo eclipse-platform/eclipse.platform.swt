@@ -203,8 +203,8 @@ public class GDBus {
 	 * @return void. (No return value actually returned to OS. Just SWT mechanism dicates 'long' is returned.
 	 */
 	@SuppressWarnings("unused") // Callback only called directly by JNI.
-	private static long /*int*/ onBusAcquired (long /*int*/ gDBusConnection, long /*int*/ const_gchar_name, long /*int*/ user_data) {
-		long /*int*/ gdBusNodeInfo;
+	private static long onBusAcquired (long gDBusConnection, long const_gchar_name, long user_data) {
+		long gdBusNodeInfo;
 
 		{ // Generate and parse DBus XML interface.
 			StringBuilder dbus_introspection_xml = new StringBuilder();
@@ -217,7 +217,7 @@ public class GDBus {
 			}
 			dbus_introspection_xml.append("</interface></node>");
 
-			long /*int*/ [] error = new long /*int*/ [1];
+			long [] error = new long [1];
 			gdBusNodeInfo = OS.g_dbus_node_info_new_for_xml(Converter.javaStringToCString(dbus_introspection_xml.toString()), error);
 			if (gdBusNodeInfo == 0 || error[0] != 0) {
 				System.err.println("SWT GDBus: Failed to get introspection data");
@@ -226,9 +226,9 @@ public class GDBus {
 		}
 
 		{ // Register object
-			long /*int*/ [] error = new long /*int*/ [1];
-			long /*int*/ interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
-			long /*int*/ vtable [] = { handleMethod.getAddress(), 0, 0 };
+			long [] error = new long [1];
+			long interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
+			long vtable [] = { handleMethod.getAddress(), 0, 0 };
 			OS.g_dbus_connection_register_object(
 					gDBusConnection,
 					Converter.javaStringToCString(DBUS_OBJECT_NAME),
@@ -255,13 +255,13 @@ public class GDBus {
 
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long /*int*/ onNameAcquired (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
+	private static long onNameAcquired (long connection, long name, long user_data) {
 		// Currently not used, but can be used if acquring the gdbus name should trigger something to load.
 		return 0;
 	}
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long /*int*/ onNameLost (long /*int*/ connection, long /*int*/ name, long /*int*/ user_data) {
+	private static long onNameLost (long connection, long name, long user_data) {
 		// Currently not used, but can be used if losing the gdbus name should trigger something.
 		// As a note, if another instance steals the name, upon it's terminate the session is returned to it's former owner.
 		return 0;
@@ -287,13 +287,13 @@ public class GDBus {
 	 * @return
 	 */
 	@SuppressWarnings("unused") // Callback only called directly by JNI.
-	private static long /*int*/ handleMethod (
-			long /*int*/ connection, long /*int*/ sender,
-			long /*int*/ object_path, long /*int*/ interface_name,
-			long /*int*/ method_name, long /*int*/ gvar_parameters,
-			long /*int*/ invocation, long /*int*/ user_data) {
+	private static long handleMethod (
+			long connection, long sender,
+			long object_path, long interface_name,
+			long method_name, long gvar_parameters,
+			long invocation, long user_data) {
 
-		long /*int*/ resultGVariant = 0;
+		long resultGVariant = 0;
 		try {
 			String java_method_name = Converter.cCharPtrToJavaString(method_name, false);
 			for (GDBusMethod gdbusMethod : gdbusMethods) {
@@ -327,7 +327,7 @@ public class GDBus {
 	 *
 	 * @param gVariant a pointer to the native GVariant
 	 */
-	private static Object[] convertGVariantToJava(long /*int*/ gVariant) {
+	private static Object[] convertGVariantToJava(long gVariant) {
 		Object retVal = convertGVariantToJavaHelper(gVariant);
 		if (retVal instanceof Object[]) {
 			return (Object[]) retVal;
@@ -337,7 +337,7 @@ public class GDBus {
 		}
 	}
 
-	private static Object convertGVariantToJavaHelper(long /*int*/ gVariant){
+	private static Object convertGVariantToJavaHelper(long gVariant){
 		// - Developer note:
 		//   When instantiating GDBus dynamically (as we do),
 		//   GDBus's 'Parameters' is _always_ a tuple of stuff.
@@ -397,7 +397,7 @@ public class GDBus {
 	 *
 	 * @return pointer GVariant *
 	 */
-	private static long /*int*/ convertJavaToGVariant(Object javaObject) throws SWTException {
+	private static long convertJavaToGVariant(Object javaObject) throws SWTException {
 		if (javaObject == null) {
 			return 0;
 		}
@@ -426,7 +426,7 @@ public class GDBus {
 			Object[] arrayValue = (Object[]) javaObject;
 			int length = arrayValue.length;
 
-			long /*int*/ variants[] = new long /*int*/[length];
+			long variants[] = new long /*int*/[length];
 			for (int i = 0; i < length; i++) {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);
 			}

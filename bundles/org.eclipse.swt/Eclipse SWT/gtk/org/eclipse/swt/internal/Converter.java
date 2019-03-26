@@ -127,8 +127,8 @@ public final class Converter {
  * @return char array representing the string. Usually used for String construction like: new String(mbcsToWcs(..))
  */
 public static char [] mbcsToWcs (byte [] buffer) {
-	long /*int*/ [] items_written = new long /*int*/ [1];
-	long /*int*/ ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
+	long [] items_written = new long [1];
+	long ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
 	if (ptr == 0) return EmptyCharArray;
 	int length = (int)/*64*/items_written [0];
 	char [] chars = new char [length];
@@ -180,7 +180,7 @@ public static byte [] javaStringToCString (String string) {
  * 			as otherwise you can get unpredictable behavior).
  * @return a Java String object.
  */
-public static String cCharPtrToJavaString(long /*int*/ cCharPtr, boolean freecCharPtr) {
+public static String cCharPtrToJavaString(long cCharPtr, boolean freecCharPtr) {
 	int length = C.strlen (cCharPtr);
 	byte[] buffer = new byte [length];
 	C.memmove (buffer, cCharPtr, length);
@@ -201,12 +201,12 @@ public static String cCharPtrToJavaString(long /*int*/ cCharPtr, boolean freecCh
  * @return byte array that can be passed to a native function.
  */
 public static byte [] wcsToMbcs (char [] chars, boolean terminate) {
-	long /*int*/ [] items_read = new long /*int*/ [1], items_written = new long /*int*/ [1];
+	long [] items_read = new long [1], items_written = new long [1];
 	/*
 	* Note that g_utf16_to_utf8()  stops converting
 	* when it finds the first NULL.
 	*/
-	long /*int*/ ptr = OS.g_utf16_to_utf8 (chars, chars.length, items_read, items_written, null);
+	long ptr = OS.g_utf16_to_utf8 (chars, chars.length, items_read, items_written, null);
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
 	int written = (int)/*64*/items_written [0];
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];

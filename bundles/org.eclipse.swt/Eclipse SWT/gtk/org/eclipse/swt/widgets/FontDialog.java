@@ -155,21 +155,21 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	long /*int*/ handle;
+	long handle;
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (title, true);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	handle = GTK.gtk_font_chooser_dialog_new (titleBytes, 0);
 	if (parent!=null) {
-		long /*int*/ shellHandle = parent.topHandle ();
+		long shellHandle = parent.topHandle ();
 		GTK.gtk_window_set_transient_for(handle, shellHandle);
 	}
-	long /*int*/ group = GTK.gtk_window_get_group(0);
+	long group = GTK.gtk_window_get_group(0);
 	GTK.gtk_window_group_add_window (group, handle);
 	GTK.gtk_window_set_modal (handle, true);
 	if (fontData != null) {
 		Font font = new Font (display, fontData);
-		long /*int*/ fontName = OS.pango_font_description_to_string (font.handle);
+		long fontName = OS.pango_font_description_to_string (font.handle);
 		int length = C.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
 		C.memmove (buffer, fontName, length);
@@ -184,7 +184,7 @@ public FontData open () {
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
-	long /*int*/ hookId = 0;
+	long hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
@@ -207,12 +207,12 @@ public FontData open () {
 	}
 	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
-		long /*int*/ fontName = GTK.gtk_font_chooser_get_font (handle);
+		long fontName = GTK.gtk_font_chooser_get_font (handle);
 		int length = C.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
 		C.memmove (buffer, fontName, length);
 		OS.g_free (fontName);
-		long /*int*/ fontDesc = OS.pango_font_description_from_string (buffer);
+		long fontDesc = OS.pango_font_description_from_string (buffer);
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];
 		OS.pango_font_description_free (fontDesc);

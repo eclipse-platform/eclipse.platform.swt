@@ -22,9 +22,9 @@ package org.eclipse.swt.internal.gtk;
  */
 public class Graphene extends OS {
 
-	public static final native long /*int*/ _graphene_rect_alloc();
+	public static final native long _graphene_rect_alloc();
 	/** [GTK4 only, if-def'd in os.h] */
-	public static final long /*int*/ graphene_rect_alloc() {
+	public static final long graphene_rect_alloc() {
 		lock.lock();
 		try {
 			return _graphene_rect_alloc();
@@ -35,9 +35,9 @@ public class Graphene extends OS {
 	/**
 	 * @param rectangle cast=(graphene_rect_t *)
 	 */
-	public static final native void _graphene_rect_free(long /*int*/ rectangle);
+	public static final native void _graphene_rect_free(long rectangle);
 	/** [GTK4 only, if-def'd in os.h] */
-	public static final void graphene_rect_free(long /*int*/ rectangle) {
+	public static final void graphene_rect_free(long rectangle) {
 		lock.lock();
 		try {
 			_graphene_rect_free(rectangle);
@@ -48,9 +48,9 @@ public class Graphene extends OS {
 	/**
 	 * @param rectangle cast=(graphene_rect_t *)
 	 */
-	public static final native long /*int*/ _graphene_rect_init(long /*int*/ rectangle, float x, float y, float width, float height);
+	public static final native long _graphene_rect_init(long rectangle, float x, float y, float width, float height);
 	/** [GTK4 only, if-def'd in os.h] */
-	public static final long /*int*/ graphene_rect_init(long /*int*/ rectangle, float x, float y, float width, float height) {
+	public static final long graphene_rect_init(long rectangle, float x, float y, float width, float height) {
 		lock.lock();
 		try {
 			return _graphene_rect_init(rectangle, x, y, width, height);

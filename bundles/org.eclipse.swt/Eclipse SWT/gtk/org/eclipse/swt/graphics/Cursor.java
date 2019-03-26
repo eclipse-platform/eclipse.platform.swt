@@ -58,7 +58,7 @@ public final class Cursor extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 	static final byte[] APPSTARTING_SRC = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
@@ -343,15 +343,15 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long /*int*/ display = 0;
+	long display = 0;
 	if (GDK.gdk_display_supports_cursor_color(display = GDK.gdk_display_get_default ())) {
 		int width = source.width;
 		int height = source.height;
 		PaletteData palette = source.palette;
-		long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
+		long pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-		long /*int*/ data = GDK.gdk_pixbuf_get_pixels(pixbuf);
+		long data = GDK.gdk_pixbuf_get_pixels(pixbuf);
 		byte[] buffer = source.data;
 		if (!palette.isDirect || source.depth != 24 || stride != source.bytesPerLine || palette.redMask != 0xFF000000 || palette.greenMask != 0xFF0000 || palette.blueMask != 0xFF00) {
 			buffer = new byte[source.width * source.height * 4];
@@ -489,7 +489,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	init();
 }
 
-long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
+long createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
 	for (int i = 0; i < sourceData.length; i++) {
 		byte s = sourceData[i];
 		sourceData[i] = (byte)(((s & 0x80) >> 7) |
@@ -538,14 +538,14 @@ long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 			offset += 4;
 		}
 	}
-	long /*int*/ pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
+	long pixbuf = GDK.gdk_pixbuf_new(GDK.GDK_COLORSPACE_RGB, true, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+	long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
 	C.memmove(pixels, data, stride * height);
-	long /*int*/ cursor;
+	long cursor;
 	if (GTK.GTK4) {
-		long /*int*/ texture = GDK.gdk_texture_new_for_pixbuf (pixbuf);
+		long texture = GDK.gdk_texture_new_for_pixbuf (pixbuf);
 		cursor = GDK.gdk_cursor_new_from_texture (texture, hotspotX, hotspotY, 0);
 	} else {
 		cursor = GDK.gdk_cursor_new_from_pixbuf(GDK.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
@@ -593,7 +593,7 @@ public boolean equals(Object object) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Cursor gtk_new(Device device, long /*int*/ handle) {
+public static Cursor gtk_new(Device device, long handle) {
 	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
 	return cursor;

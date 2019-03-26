@@ -17,75 +17,75 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkTableIface {
 	/** @field cast=(AtkObject* (*)()) */
-	public long /*int*/ ref_at;
+	public long ref_at;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_index_at;
+	public long get_index_at;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_column_at_index;
+	public long get_column_at_index;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_row_at_index;
+	public long get_row_at_index;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_n_columns;
+	public long get_n_columns;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_n_rows;
+	public long get_n_rows;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_column_extent_at;
+	public long get_column_extent_at;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_row_extent_at;
+	public long get_row_extent_at;
 	/** @field cast=(AtkObject* (*)()) */
-	public long /*int*/ get_caption;
+	public long get_caption;
 	/** @field cast=(const gchar* (*)()) */
-	public long /*int*/ get_column_description;
+	public long get_column_description;
 	/** @field cast=(AtkObject* (*)()) */
-	public long /*int*/ get_column_header;
+	public long get_column_header;
 	/** @field cast=(const gchar* (*)()) */
-	public long /*int*/ get_row_description;
+	public long get_row_description;
 	/** @field cast=(AtkObject* (*)()) */
-	public long /*int*/ get_row_header;
+	public long get_row_header;
 	/** @field cast=(AtkObject* (*)()) */
-	public long /*int*/ get_summary;
+	public long get_summary;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_caption;
+	public long set_caption;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_column_description;
+	public long set_column_description;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_column_header;
+	public long set_column_header;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_row_description;
+	public long set_row_description;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_row_header;
+	public long set_row_header;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ set_summary;
+	public long set_summary;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_selected_columns;
+	public long get_selected_columns;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_selected_rows;
+	public long get_selected_rows;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ is_column_selected;
+	public long is_column_selected;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ is_row_selected;
+	public long is_row_selected;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ is_selected;
+	public long is_selected;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ add_row_selection;
+	public long add_row_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ remove_row_selection;
+	public long remove_row_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ add_column_selection;
+	public long add_column_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ remove_column_selection;
+	public long remove_column_selection;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ row_inserted;
+	public long row_inserted;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ column_inserted;
+	public long column_inserted;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ row_deleted;
+	public long row_deleted;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ column_deleted;
+	public long column_deleted;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ row_reordered;
+	public long row_reordered;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ column_reordered;
+	public long column_reordered;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ model_changed;
+	public long model_changed;
 }

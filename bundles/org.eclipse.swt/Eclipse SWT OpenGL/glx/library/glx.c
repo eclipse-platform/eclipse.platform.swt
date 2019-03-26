@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -60,14 +60,14 @@ JNIEXPORT void JNICALL GLX_NATIVE(_1glViewport)
 #endif
 
 #ifndef NO__1glXChooseVisual
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXChooseVisual)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2)
+JNIEXPORT jlong JNICALL GLX_NATIVE(_1glXChooseVisual)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
-	jintLong rc = 0;
+	jlong rc = 0;
 	GLX_NATIVE_ENTER(env, that, _1glXChooseVisual_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)glXChooseVisual((Display *)arg0, arg1, lparg2);
+	rc = (jlong)glXChooseVisual((Display *)arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	GLX_NATIVE_EXIT(env, that, _1glXChooseVisual_FUNC);
@@ -76,14 +76,14 @@ fail:
 #endif
 
 #ifndef NO__1glXCreateContext
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXCreateContext)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2, jboolean arg3)
+JNIEXPORT jlong JNICALL GLX_NATIVE(_1glXCreateContext)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2, jboolean arg3)
 {
 	XVisualInfo _arg1, *lparg1=NULL;
-	jintLong rc = 0;
+	jlong rc = 0;
 	GLX_NATIVE_ENTER(env, that, _1glXCreateContext_FUNC);
 	if (arg1) if ((lparg1 = getXVisualInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jintLong)glXCreateContext((Display *)arg0, lparg1, (GLXContext)arg2, arg3);
+	rc = (jlong)glXCreateContext((Display *)arg0, lparg1, (GLXContext)arg2, arg3);
 fail:
 	if (arg1 && lparg1) setXVisualInfoFields(env, arg1, lparg1);
 	GLX_NATIVE_EXIT(env, that, _1glXCreateContext_FUNC);
@@ -93,7 +93,7 @@ fail:
 
 #ifndef NO__1glXDestroyContext
 JNIEXPORT void JNICALL GLX_NATIVE(_1glXDestroyContext)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GLX_NATIVE_ENTER(env, that, _1glXDestroyContext_FUNC);
 	glXDestroyContext((Display *)arg0, (GLXContext)arg1);
@@ -103,7 +103,7 @@ JNIEXPORT void JNICALL GLX_NATIVE(_1glXDestroyContext)
 
 #ifndef NO__1glXGetConfig
 JNIEXPORT jint JNICALL GLX_NATIVE(_1glXGetConfig)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2, jintArray arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2, jintArray arg3)
 {
 	XVisualInfo _arg1, *lparg1=NULL;
 	jint *lparg3=NULL;
@@ -121,12 +121,12 @@ fail:
 #endif
 
 #ifndef NO__1glXGetCurrentContext
-JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXGetCurrentContext)
+JNIEXPORT jlong JNICALL GLX_NATIVE(_1glXGetCurrentContext)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	GLX_NATIVE_ENTER(env, that, _1glXGetCurrentContext_FUNC);
-	rc = (jintLong)glXGetCurrentContext();
+	rc = (jlong)glXGetCurrentContext();
 	GLX_NATIVE_EXIT(env, that, _1glXGetCurrentContext_FUNC);
 	return rc;
 }
@@ -134,7 +134,7 @@ JNIEXPORT jintLong JNICALL GLX_NATIVE(_1glXGetCurrentContext)
 
 #ifndef NO__1glXMakeCurrent
 JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXMakeCurrent)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	jboolean rc = 0;
 	GLX_NATIVE_ENTER(env, that, _1glXMakeCurrent_FUNC);
@@ -146,7 +146,7 @@ JNIEXPORT jboolean JNICALL GLX_NATIVE(_1glXMakeCurrent)
 
 #ifndef NO__1glXSwapBuffers
 JNIEXPORT void JNICALL GLX_NATIVE(_1glXSwapBuffers)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GLX_NATIVE_ENTER(env, that, _1glXSwapBuffers_FUNC);
 	glXSwapBuffers((Display *)arg0, (GLXDrawable)arg1);
@@ -156,7 +156,7 @@ JNIEXPORT void JNICALL GLX_NATIVE(_1glXSwapBuffers)
 
 #ifndef NO_memmove
 JNIEXPORT void JNICALL GLX_NATIVE(memmove)
-	(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2)
 {
 	XVisualInfo _arg0, *lparg0=NULL;
 	GLX_NATIVE_ENTER(env, that, memmove_FUNC);

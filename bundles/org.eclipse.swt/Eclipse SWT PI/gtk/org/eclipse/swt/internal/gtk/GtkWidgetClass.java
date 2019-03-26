@@ -17,9 +17,9 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkWidgetClass extends GObjectClass {
 	/** @field cast=(void(*)()) */
-	public long /*int*/ map;
+	public long map;
 	/** @field cast=(void(*)()) */
-	public long /*int*/ size_allocate;
+	public long size_allocate;
 	/** @field cast=(void(*)()),exclude=#ifdef GTK4 */
-	public long /*int*/ snapshot;
+	public long snapshot;
 }

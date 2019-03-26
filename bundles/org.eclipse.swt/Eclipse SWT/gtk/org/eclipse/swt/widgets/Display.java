@@ -118,20 +118,20 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	int gdkEventCount;
-	long /*int*/ [] gdkEvents;
+	long [] gdkEvents;
 	Widget [] gdkEventWidgets;
 	int [] dispatchEvents;
 	Event [] eventQueue;
-	long /*int*/ fds;
+	long fds;
 	int allocated_nfds;
 	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
-	long /*int*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
-	long /*int*/ snapshotDrawProc;
-	long /*int*/ keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
-	long /*int*/ gesturePressReleaseProc;
-	long /*int*/ notifyStateProc;
+	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
+	long snapshotDrawProc;
+	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
+	long gesturePressReleaseProc;
+	long notifyStateProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw;
 	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
@@ -142,15 +142,15 @@ public class Display extends Device {
 	static String APP_VERSION = ""; //$NON-NLS-1$
 	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	long /*int*/ [] closures, closuresProc;
+	long [] closures, closuresProc;
 	int [] closuresCount;
 	int [] signalIds;
-	long /*int*/ shellMapProcClosure;
+	long shellMapProcClosure;
 
 	/* Widget Table */
 	int [] indexTable;
 	int freeSlot;
-	long /*int*/ lastHandle;
+	long lastHandle;
 	Widget lastWidget;
 	Widget [] widgetTable;
 	final static int GROW_SIZE = 1024;
@@ -183,7 +183,7 @@ public class Display extends Device {
 
 	/* Input method resources */
 	Control imControl;
-	long /*int*/ preeditWindow, preeditLabel;
+	long preeditWindow, preeditLabel;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -206,36 +206,36 @@ public class Display extends Device {
 	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
-	long /*int*/ timerProc;
+	long timerProc;
 	Callback windowTimerCallback;
-	long /*int*/ windowTimerProc;
+	long windowTimerProc;
 
 	/* Caret */
 	Caret currentCaret;
 	Callback caretCallback;
 	int caretId;
-	long /*int*/ caretProc;
+	long caretProc;
 
 	/* Mnemonics */
 	Control mnemonicControl;
 
 	/* Mouse hover */
 	int mouseHoverId;
-	long /*int*/ mouseHoverHandle, mouseHoverProc;
+	long mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 
 	/* Tooltip size allocate callback */
-	long /*int*/ sizeAllocateProc;
+	long sizeAllocateProc;
 	Callback sizeAllocateCallback;
-	long /*int*/ sizeRequestProc;
+	long sizeRequestProc;
 	Callback sizeRequestCallback;
 
 	/* Shell map callback */
-	long /*int*/ shellMapProc;
+	long shellMapProc;
 	Callback shellMapCallback;
 
 	/* Idle proc callback */
-	long /*int*/ idleProc;
+	long idleProc;
 	int idleHandle;
 	Callback idleCallback;
 	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc"; //$NON-NLS-1$
@@ -244,28 +244,28 @@ public class Display extends Device {
 	boolean idleNeeded;
 
 	/* GtkTreeView callbacks */
-	long /*int*/ cellDataProc;
+	long cellDataProc;
 	Callback cellDataCallback;
 
 
 	/* Set direction callback */
-	long /*int*/ setDirectionProc;
+	long setDirectionProc;
 	Callback setDirectionCallback;
 	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc"; //$NON-NLS-1$
 
 	/* Set emissionProc callback */
-	long /*int*/ emissionProc;
+	long emissionProc;
 	Callback emissionProcCallback;
 	static final String GET_EMISSION_PROC_KEY = "org.eclipse.swt.internal.gtk.getEmissionProc"; //$NON-NLS-1$
 
 	/* Get all children callback */
-	long /*int*/ allChildrenProc, allChildren;
+	long allChildrenProc, allChildren;
 	Callback allChildrenCallback;
 
 	/* Settings callbacks */
-	long /*int*/ signalProc;
+	long signalProc;
 	Callback signalCallback;
-	long /*int*/ shellHandle;
+	long shellHandle;
 	boolean settingsChanged, runSettings;
 	static final int STYLE_UPDATED = 1;
 	static final int PROPERTY_NOTIFY = 2;
@@ -277,13 +277,13 @@ public class Display extends Device {
 	Control currentControl;
 
 	/* Flush exposes */
-	long /*int*/ checkIfEventProc;
+	long checkIfEventProc;
 	Callback checkIfEventCallback;
-	long /*int*/ flushWindow;
+	long flushWindow;
 	boolean flushAll;
 	GdkRectangle flushRect = new GdkRectangle ();
 	XExposeEvent exposeEvent = new XExposeEvent ();
-	long /*int*/ [] flushData = new long /*int*/ [1];
+	long [] flushData = new long [1];
 
 	/* System Resources */
 	Image errorImage, infoImage, questionImage, warningImage;
@@ -320,15 +320,15 @@ public class Display extends Device {
 	int lastEventTime, lastUserEventTime;
 
 	/* Pango layout constructor */
-	long /*int*/ pangoLayoutNewProc;
-	long /*int*/ pangoFontFamilyNewProc;
-	long /*int*/ pangoFontFaceNewProc;
+	long pangoLayoutNewProc;
+	long pangoFontFamilyNewProc;
+	long pangoFontFaceNewProc;
 
 	/* IM Context constructor */
-	long /*int*/ imContextNewProc;
+	long imContextNewProc;
 
 	/* GtkPrinterOptionWidget constructor */
-	long /*int*/ printerOptionWidgetNewProc;
+	long printerOptionWidgetNewProc;
 
 	/* Custom Resize */
 	double resizeLocationX, resizeLocationY;
@@ -336,15 +336,15 @@ public class Display extends Device {
 	int resizeMode;
 
 	/* Fixed Subclass */
-	static long /*int*/ fixed_type;
+	static long fixed_type;
 
 	/* Renderer Subclass */
-	static long /*int*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
-	static long /*int*/ text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
+	static long text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
+	static long text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
 	static Callback rendererClassInitCallback, rendererRenderCallback, rendererSnapshotCallback;
 	static Callback rendererGetPreferredWidthCallback;
-	static long /*int*/ rendererClassInitProc, rendererRenderProc, rendererSnapshotProc;
-	static long /*int*/ rendererGetPreferredWidthProc;
+	static long rendererClassInitProc, rendererRenderProc, rendererSnapshotProc;
+	static long rendererGetPreferredWidthProc;
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -454,7 +454,7 @@ public class Display extends Device {
 	Map<Integer, Integer> groupKeysCount;
 
 	/* Keymap "keys-changed" callback */
-	long /*int*/ keysChangedProc;
+	long keysChangedProc;
 	Callback keysChangedCallback;
 
 	/* Multiple Displays. */
@@ -641,16 +641,16 @@ void addLayoutDeferred (Composite comp) {
 	layoutDeferred[layoutDeferredCount++] = comp;
 }
 
-void addGdkEvent (long /*int*/ event) {
+void addGdkEvent (long event) {
 	if (gdkEvents == null) {
 		int length = GROW_SIZE;
-		gdkEvents = new long /*int*/ [length];
+		gdkEvents = new long [length];
 		gdkEventWidgets = new Widget [length];
 		gdkEventCount = 0;
 	}
 	if (gdkEventCount == gdkEvents.length) {
 		int length = gdkEventCount + GROW_SIZE;
-		long /*int*/ [] newEvents = new long /*int*/ [length];
+		long [] newEvents = new long [length];
 		System.arraycopy (gdkEvents, 0, newEvents, 0, gdkEventCount);
 		gdkEvents = newEvents;
 		Widget [] newWidgets = new Widget [length];
@@ -658,7 +658,7 @@ void addGdkEvent (long /*int*/ event) {
 		gdkEventWidgets = newWidgets;
 	}
 	Widget widget = null;
-	long /*int*/ handle = GTK.gtk_get_event_widget (event);
+	long handle = GTK.gtk_get_event_widget (event);
 	if (handle != 0) {
 		do {
 			widget = getWidget (handle);
@@ -755,7 +755,7 @@ private void gdbus_init_methods() {
 	GDBus.init(methods);
 }
 
-long /*int*/ allChildrenProc (long /*int*/ widget, long /*int*/ recurse) {
+long allChildrenProc (long widget, long recurse) {
 	allChildren = OS.g_list_append (allChildren, widget);
 	if (recurse != 0 && GTK.GTK_IS_CONTAINER (widget)) {
 		GTK.gtk_container_forall (widget, allChildrenProc, recurse);
@@ -763,7 +763,7 @@ long /*int*/ allChildrenProc (long /*int*/ widget, long /*int*/ recurse) {
 	return 0;
 }
 
-void addMouseHoverTimeout (long /*int*/ handle) {
+void addMouseHoverTimeout (long handle) {
 	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
 	mouseHoverId = OS.g_timeout_add (400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
@@ -803,7 +803,7 @@ void addSkinnableWidget (Widget widget) {
 	skinList [skinCount++] = widget;
 }
 
-void addWidget (long /*int*/ handle, Widget widget) {
+void addWidget (long handle, Widget widget) {
 	if (handle == 0) return;
 	// Last element in the indexTable is -1, so if freeSlot == -1 we have no place anymore
 	if (freeSlot == LAST_TABLE_INDEX) {
@@ -822,7 +822,7 @@ void addWidget (long /*int*/ handle, Widget widget) {
 	}
 	int index = freeSlot + 1;
 	if(strictChecks) {
-		long /*int*/ data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX);
+		long data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX);
 		if(data > 0 && data != index) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". Potential leak of " + widget + debugInfoForIndex(data - 1));
 		}
@@ -887,7 +887,7 @@ public void beep () {
 	GDK.gdk_display_beep(GDK.gdk_display_get_default());
 }
 
-long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*int*/ tree_model, long /*int*/ iter, long /*int*/ data) {
+long cellDataProc (long tree_column, long cell, long tree_model, long iter, long data) {
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
@@ -912,7 +912,7 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	}
 }
 
-long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /*int*/ userData) {
+long checkIfEventProc (long display, long xEvent, long userData) {
 	int type = OS.X_EVENT_TYPE (xEvent);
 	switch (type) {
 		case OS.Expose:
@@ -921,11 +921,11 @@ long /*int*/ checkIfEventProc (long /*int*/ display, long /*int*/ xEvent, long /
 		default:
 			return 0;
 	}
-	long /*int*/ window = GDK.gdk_x11_window_lookup_for_display(GDK.gdk_display_get_default(), OS.X_EVENT_WINDOW (xEvent));
+	long window = GDK.gdk_x11_window_lookup_for_display(GDK.gdk_display_get_default(), OS.X_EVENT_WINDOW (xEvent));
 	if (window == 0) return 0;
 	if (flushWindow != 0) {
 		if (flushAll) {
-			long /*int*/ tempWindow = window;
+			long tempWindow = window;
 			do {
 				if (tempWindow == flushWindow) break;
 			} while ((tempWindow = GDK.gdk_window_get_parent (tempWindow)) != 0);
@@ -1038,7 +1038,7 @@ void checkXimModule () {
 }
 
 void createDisplay (DeviceData data) {
-	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long /*int*/ [] {0}, null);
+	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long [] {0}, null);
 	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	checkXimModule();
 	//set GTK+ Theme name as property for introspection purposes
@@ -1052,7 +1052,7 @@ void createDisplay (DeviceData data) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
 	}
 	if (OS.SWT_DEBUG) Device.DEBUG = true;
-	long /*int*/ ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
+	long ptr = GTK.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
 	if (ptr != 0) {
 		int length = C.strlen (ptr);
 		byte [] buffer = new byte [length];
@@ -1141,7 +1141,7 @@ void createDisplay (DeviceData data) {
 
 	if (!GTK.GTK4) {
 		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
-		long /*int*/ atom = GDK.gdk_atom_intern(atomName, false);
+		long atom = GDK.gdk_atom_intern(atomName, false);
 		GDK.gdk_selection_owner_set(GTK.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
 		GDK.gdk_selection_owner_get(atom);
 
@@ -1154,8 +1154,8 @@ void createDisplay (DeviceData data) {
 	keysChangedCallback = new Callback (this, "keysChangedProc", 2); //$NON-NLS-1$
 	keysChangedProc = keysChangedCallback.getAddress ();
 	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	long /*int*/ keymap;
-	long /*int*/ display = GDK.gdk_display_get_default();
+	long keymap;
+	long display = GDK.gdk_display_get_default();
 	if (GTK.GTK4) {
 		keymap = GDK.gdk_display_get_keymap(display);
 	} else {
@@ -1173,8 +1173,8 @@ void createDisplay (DeviceData data) {
 private int findLatinKeyGroup () {
 	int result = 0;
 	groupKeysCount = new HashMap<> ();
-	long /*int*/ keymap;
-	long /*int*/ display = GDK.gdk_display_get_default();
+	long keymap;
+	long display = GDK.gdk_display_get_default();
 	if (GTK.GTK4) {
 		keymap = GDK.gdk_display_get_keymap(display);
 	} else {
@@ -1234,20 +1234,20 @@ Map<Integer, Integer> getGroupKeysCount () {
  * 'keys-changed' event handler.
  * Updates the most Latin keyboard layout group field.
  */
-long /*int*/ keysChangedProc (long /*int*/ keymap, long /*int*/ user_data) {
+long keysChangedProc (long keymap, long user_data) {
 	latinKeyGroup = findLatinKeyGroup ();
 	return 0;
 }
 
 Image createImage (String name) {
 	byte[] buffer = Converter.wcsToMbcs (name, true);
-	long /*int*/ pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
+	long pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	if (pixbuf == 0) return null;
 	int width = GDK.gdk_pixbuf_get_width (pixbuf);
 	int height = GDK.gdk_pixbuf_get_height (pixbuf);
 	int stride = GDK.gdk_pixbuf_get_rowstride (pixbuf);
 	boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha (pixbuf);
-	long /*int*/ pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
+	long pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
 	byte [] data = new byte [stride * height];
 	C.memmove (data, pixels, data.length);
 	OS.g_object_unref (pixbuf);
@@ -1300,7 +1300,7 @@ protected void destroy () {
 void destroyDisplay () {
 }
 
-long /*int*/ emissionProc (long /*int*/ ihint, long /*int*/ n_param_values, long /*int*/ param_values, long /*int*/ data) {
+long emissionProc (long ihint, long n_param_values, long param_values, long data) {
 	if (GTK.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
 		GTK.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), GTK.GTK_TEXT_DIR_RTL);
 	}
@@ -1369,7 +1369,7 @@ void error (int code) {
 	SWT.error (code);
 }
 
-long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
+long eventProc (long event, long data) {
 	/*
 	* Use gdk_event_get_time() rather than event.time or
 	* gtk_get_current_event_time().  If the event does not
@@ -1431,7 +1431,7 @@ long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public Widget findWidget (long /*int*/ handle) {
+public Widget findWidget (long handle) {
 	checkDevice ();
 	return getWidget (handle);
 }
@@ -1460,7 +1460,7 @@ public Widget findWidget (long /*int*/ handle) {
  *
  * @since 3.1
  */
-public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
+public Widget findWidget (long handle, long id) {
 	checkDevice ();
 	return null;
 }
@@ -1484,12 +1484,12 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  *
  * @since 3.3
  */
-public Widget findWidget (Widget widget, long /*int*/ id) {
+public Widget findWidget (Widget widget, long id) {
 	checkDevice ();
 	return null;
 }
 
-static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ class_data) {
+static long rendererClassInitProc (long g_class, long class_data) {
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
 	if (GTK.GTK4) {
@@ -1502,11 +1502,11 @@ static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ cl
 	return 0;
 }
 
-static long /*int*/ snapshotDrawProc (long /*int*/ handle, long /*int*/ snapshot) {
+static long snapshotDrawProc (long handle, long snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) widget.snapshotToDraw(handle, snapshot);
-	long /*int*/ child = GTK.gtk_widget_get_first_child(handle);
+	long child = GTK.gtk_widget_get_first_child(handle);
 	// Propagate the snapshot down the widget tree
 	while (child != 0) {
 		GTK.gtk_widget_snapshot_child(handle, child, snapshot);
@@ -1515,33 +1515,33 @@ static long /*int*/ snapshotDrawProc (long /*int*/ handle, long /*int*/ snapshot
 	return 0;
 }
 
-static long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
+static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.rendererGetPreferredWidthProc (cell, handle, minimun_size, natural_size);
 	return 0;
 }
 
-static long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+static long rendererRenderProc (long cell, long cr, long handle, long background_area, long cell_area, long flags) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.rendererRenderProc (cell, cr, handle, background_area, cell_area, flags);
 	return 0;
 }
 
-static long /*int*/ rendererSnapshotProc (long /*int*/ cell, long /*int*/ snapshot, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+static long rendererSnapshotProc (long cell, long snapshot, long handle, long background_area, long cell_area, long flags) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.rendererSnapshotProc (cell, snapshot, handle, background_area, cell_area, flags);
 	return 0;
 }
 
-void flushExposes (long /*int*/ window, boolean all) {
+void flushExposes (long window, boolean all) {
 	if (OS.isX11()) {
 		this.flushWindow = window;
 		this.flushAll = all;
-		long /*int*/ xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
-		long /*int*/ xEvent = OS.g_malloc (XEvent.sizeof);
+		long xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default());
+		long xEvent = OS.g_malloc (XEvent.sizeof);
 		OS.XCheckIfEvent (xDisplay, xEvent, checkIfEventProc, 0);
 		OS.g_free (xEvent);
 		this.flushWindow = 0;
@@ -1614,12 +1614,12 @@ Rectangle getBoundsInPixels () {
 	int monitorCount;
 	Rectangle bounds = new Rectangle(0, 0, 0, 0);
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default ();
+		long display = GDK.gdk_display_get_default ();
 		monitorCount = GDK.gdk_display_get_n_monitors (display);
 		if (monitorCount > 0) {
 			GdkRectangle dest = new GdkRectangle ();
 			for (int i = 0; i < monitorCount; i++) {
-				long /*int*/ monitor = GDK.gdk_display_get_monitor(display, i);
+				long monitor = GDK.gdk_display_get_monitor(display, i);
 				GDK.gdk_monitor_get_geometry (monitor, dest);
 				if (i == 0) {
 					bounds.width = dest.width;
@@ -1632,7 +1632,7 @@ Rectangle getBoundsInPixels () {
 			return bounds;
 		}
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default();
+		long screen = GDK.gdk_screen_get_default();
 		monitorCount = GDK.gdk_screen_get_n_monitors(screen);
 		if (monitorCount > 0) {
 			GdkRectangle dest = new GdkRectangle ();
@@ -1669,7 +1669,7 @@ public static Display getCurrent () {
 
 int getCaretBlinkTime () {
 //	checkDevice ();
-	long /*int*/ settings = GTK.gtk_settings_get_default ();
+	long settings = GTK.gtk_settings_get_default ();
 	if (settings == 0) return 500;
 	int [] buffer = new int [1];
 	OS.g_object_get (settings, GTK.gtk_cursor_blink, buffer, 0);
@@ -1684,7 +1684,7 @@ int getCaretBlinkTime () {
 	return buffer [0] / 2;
 }
 
-long /*int*/ getClosure (int id) {
+long getClosure (int id) {
 	if (OS.GLIB_VERSION >= OS.VERSION(2, 36, 0) && ++closuresCount [id] >= 255) {
 		if (closures [id] != 0) OS.g_closure_unref (closures [id]);
 		closures [id] = OS.g_cclosure_new (closuresProc [id], id, 0);
@@ -1710,9 +1710,9 @@ long /*int*/ getClosure (int id) {
 public Control getCursorControl () {
 	checkDevice();
 	int[] x = new int[1], y = new int[1];
-	long /*int*/ handle = 0;
-	long /*int*/ [] user_data = new long /*int*/ [1];
-	long /*int*/ gdkResource;
+	long handle = 0;
+	long [] user_data = new long [1];
+	long gdkResource;
 	if (GTK.GTK4) {
 		gdkResource = gdk_device_get_surface_at_position (x,y);
 	} else {
@@ -1732,13 +1732,13 @@ public Control getCursorControl () {
 		* XQueryPointer to find the containing GDK window.
 		*/
 		if (!OS.isX11()) return null;
-		long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
+		long gdkDisplay = GDK.gdk_display_get_default();
 		if (OS.isX11()) {
 			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 		}
 		int[] unusedInt = new int[1];
 		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
-		long /*int*/ xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+		long xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
 		do {
 			if (OS.XQueryPointer (xDisplay, xParent, unusedPtr, buffer, unusedInt, unusedInt, unusedInt, unusedInt, unusedInt) == 0) {
 				handle = 0;
@@ -1746,7 +1746,7 @@ public Control getCursorControl () {
 			}
 			if ((xWindow = buffer [0]) != 0) {
 				xParent = xWindow;
-				long /*int*/ gdkWindow = GDK.gdk_x11_window_lookup_for_display(gdkDisplay, xWindow);
+				long gdkWindow = GDK.gdk_x11_window_lookup_for_display(gdkDisplay, xWindow);
 				if (gdkWindow != 0)	{
 					GDK.gdk_window_get_user_data (gdkWindow, user_data);
 					if (user_data[0] != 0) handle = user_data[0];
@@ -1928,19 +1928,19 @@ public Object getData () {
 	return data;
 }
 
-long /*int*/ gtk_fixed_get_type () {
+long gtk_fixed_get_type () {
 	return fixed_type;
 }
 
-long /*int*/ gtk_cell_renderer_text_get_type () {
+long gtk_cell_renderer_text_get_type () {
 	return text_renderer_type;
 }
 
-long /*int*/ gtk_cell_renderer_pixbuf_get_type () {
+long gtk_cell_renderer_pixbuf_get_type () {
 	return pixbuf_renderer_type;
 }
 
-long /*int*/ gtk_cell_renderer_toggle_get_type () {
+long gtk_cell_renderer_toggle_get_type () {
 	return toggle_renderer_type;
 }
 
@@ -2281,12 +2281,12 @@ GdkRGBA gtk_css_parse_background (String css, String precise) {
 	return rgba;
 }
 
-String gtk_css_provider_to_string (long /*int*/ provider) {
+String gtk_css_provider_to_string (long provider) {
 	// Fetch the CSS in char/string format from the provider.
 	if (provider == 0) {
 		return "";
 	}
-	long /*int*/ str = GTK.gtk_css_provider_to_string(provider);
+	long str = GTK.gtk_css_provider_to_string(provider);
 	if (str == 0) return "";
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
@@ -2413,7 +2413,7 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
 		// If we have a null RGBA, set it to the default COLOR_WIDGET_BACKGROUND.
 		toConvert = COLOR_WIDGET_BACKGROUND_RGBA;
 	}
-	long /*int*/ str = GDK.gdk_rgba_to_string (toConvert);
+	long str = GDK.gdk_rgba_to_string (toConvert);
 	int length = C.strlen (str);
 	byte [] buffer = new byte [length];
 	C.memmove (buffer, str, length);
@@ -2428,8 +2428,8 @@ String gtk_rgba_to_css_string (GdkRGBA rgba) {
  *
  * @return a String representation of the widget's name
  */
-String gtk_widget_get_name(long /*int*/ handle) {
-	long /*int*/ str = GTK.gtk_widget_get_name (handle);
+String gtk_widget_get_name(long handle) {
+	long str = GTK.gtk_widget_get_name (handle);
 	String name;
 	if (str == 0) {
 		name = "*";
@@ -2450,8 +2450,8 @@ String gtk_widget_get_name(long /*int*/ handle) {
  *
  * @return a String representation of the widget's CSS name
  */
-String gtk_widget_class_get_css_name(long /*int*/ handle) {
-	long /*int*/ str = GTK.gtk_widget_class_get_css_name (GTK.GTK_WIDGET_GET_CLASS(handle));
+String gtk_widget_class_get_css_name(long handle) {
+	long str = GTK.gtk_widget_class_get_css_name (GTK.GTK_WIDGET_GET_CLASS(handle));
 	String name;
 	if (str == 0) {
 		name = "*";
@@ -2521,7 +2521,7 @@ public Menu getMenuBar () {
 public int getDismissalAlignment () {
 	checkDevice ();
 	int [] buffer = new int [1];
-	long /*int*/ settings = GTK.gtk_settings_get_default ();
+	long settings = GTK.gtk_settings_get_default ();
 	OS.g_object_get (settings, GTK.gtk_alternative_button_order, buffer, 0);
 	return buffer [0] == 1 ? SWT.LEFT : SWT.RIGHT;
 }
@@ -2540,7 +2540,7 @@ public int getDismissalAlignment () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-	long /*int*/ settings = GTK.gtk_settings_get_default ();
+	long settings = GTK.gtk_settings_get_default ();
 	int [] buffer = new int [1];
 	OS.g_object_get (settings, GTK.gtk_double_click_time, buffer, 0);
 	return buffer [0];
@@ -2565,8 +2565,8 @@ public Control getFocusControl () {
 		return focusControl;
 	}
 	if (activeShell == null) return null;
-	long /*int*/ shellHandle = activeShell.shellHandle;
-	long /*int*/ handle = GTK.gtk_window_get_focus (shellHandle);
+	long shellHandle = activeShell.shellHandle;
+	long handle = GTK.gtk_window_get_focus (shellHandle);
 	if (handle == 0) return null;
 	do {
 		Widget widget = getWidget (handle);
@@ -2607,8 +2607,8 @@ public int getDepth () {
 		// Bit depth is always 32 in GTK4
 		return 32;
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default();
-		long /*int*/ visual = GDK.gdk_screen_get_system_visual(screen);
+		long screen = GDK.gdk_screen_get_default();
+		long visual = GDK.gdk_screen_get_system_visual(screen);
 		return GDK.gdk_visual_get_depth(visual);
 	}
 }
@@ -2672,7 +2672,7 @@ Rectangle getWorkArea() {
 		return null;
 	}
 	byte[] name = Converter.wcsToMbcs ("_NET_WORKAREA", true); //$NON-NLS-1$
-	long /*int*/ atom = GDK.gdk_atom_intern (name, true);
+	long atom = GDK.gdk_atom_intern (name, true);
 	if (atom == GDK.GDK_NONE) return null;
 	long /*int*/[] actualType = new long /*int*/[1];
 	int[] actualFormat = new int[1];
@@ -2709,14 +2709,14 @@ public Monitor [] getMonitors () {
 	Monitor [] monitors = null;
 	Rectangle workArea = DPIUtil.autoScaleDown (getWorkArea ());
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default ();
+		long display = GDK.gdk_display_get_default ();
 		if (display != 0) {
 			int monitorCount = GDK.gdk_display_get_n_monitors (display);
 			if (monitorCount > 0) {
 				monitors = new Monitor [monitorCount];
 				GdkRectangle dest = new GdkRectangle ();
 				for (int i = 0; i < monitorCount; i++) {
-					long /*int*/ gdkMonitor = GDK.gdk_display_get_monitor(display, i);
+					long gdkMonitor = GDK.gdk_display_get_monitor(display, i);
 					GDK.gdk_monitor_get_geometry (gdkMonitor, dest);
 					Monitor monitor = new Monitor ();
 					monitor.handle = i;
@@ -2744,7 +2744,7 @@ public Monitor [] getMonitors () {
 			}
 		}
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		if (screen != 0) {
 			int monitorCount = GDK.gdk_screen_get_n_monitors (screen);
 			if (monitorCount > 0) {
@@ -2814,9 +2814,9 @@ public Monitor getPrimaryMonitor () {
 
 	//attempt to find actual primary monitor if one is configured:
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default();
-		long /*int*/ monitor = GDK.gdk_display_get_primary_monitor(display);
-		long /*int*/ toCompare;
+		long display = GDK.gdk_display_get_default();
+		long monitor = GDK.gdk_display_get_primary_monitor(display);
+		long toCompare;
 		for (int i = 0; i < monitors.length; i++) {
 			toCompare = GDK.gdk_display_get_monitor(display, i);
 			if (toCompare == monitor) {
@@ -2824,7 +2824,7 @@ public Monitor getPrimaryMonitor () {
 			}
 		}
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		if (screen != 0) {
 			//if no primary monitor is configured by the user, this returns 0.
 			primaryMonitorIndex = GDK.gdk_screen_get_primary_monitor (screen);
@@ -3174,7 +3174,7 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 	return newRGBA;
 }
 
-GdkRGBA getBackgroundColor (long /*int*/ context, int state) {
+GdkRGBA getBackgroundColor (long context, int state) {
 	/*
 	* Draw the context background to an offset screen surface and get the color
 	* in the middle of the surface.
@@ -3182,8 +3182,8 @@ GdkRGBA getBackgroundColor (long /*int*/ context, int state) {
 	GdkRGBA rgba = new GdkRGBA ();
 	GTK.gtk_style_context_save (context);
 	GTK.gtk_style_context_set_state (context, state);
-	long /*int*/ surface = Cairo.cairo_image_surface_create (Cairo.CAIRO_FORMAT_RGB24, 1, 1);
-	long /*int*/ cairo = Cairo.cairo_create (surface);
+	long surface = Cairo.cairo_image_surface_create (Cairo.CAIRO_FORMAT_RGB24, 1, 1);
+	long cairo = Cairo.cairo_create (surface);
 	GTK.gtk_render_background (context, cairo, -50, -50, 100, 100);
 	Cairo.cairo_fill (cairo);
 	Cairo.cairo_surface_flush (surface);
@@ -3246,7 +3246,7 @@ void initializeSystemColors () {
 	byte [] darkBuffer = OS.GTK_THEME_DARK ? darkBuffer = Converter.wcsToMbcs ("dark", true) : null;
 
 	// Fetch the actual theme in char/string format
-	long /*int*/ themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
+	long themeProvider = GTK.gtk_css_provider_get_named(buffer, darkBuffer);
 
 	String cssOutput = gtk_css_provider_to_string(themeProvider);
 
@@ -3266,7 +3266,7 @@ void initializeSystemColors () {
 }
 
 void initializeSystemColorsWidget(String cssOutput) {
-	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	long context = GTK.gtk_widget_get_style_context (shellHandle);
 	GdkRGBA rgba = new GdkRGBA();
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
@@ -3298,7 +3298,7 @@ void initializeSystemColorsWidget(String cssOutput) {
 }
 
 void initializeSystemColorsList(String cssOutput) {
-	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	long context = GTK.gtk_widget_get_style_context (shellHandle);
 	GdkRGBA rgba = new GdkRGBA();
 
 	// Apply temporary styles
@@ -3384,7 +3384,7 @@ void initializeSystemColorsList(String cssOutput) {
 }
 
 void initializeSystemColorsTitle(String cssOutput) {
-	long /*int*/ context = GTK.gtk_widget_get_style_context (shellHandle);
+	long context = GTK.gtk_widget_get_style_context (shellHandle);
 	GdkRGBA rgba = new GdkRGBA();
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
@@ -3432,13 +3432,13 @@ private void initializeSystemColorsLink(String cssOutput) {
 
 void initializeSystemColorsTooltip(String cssOutput) {
 	// Create a temporary Tooltip widget
-	long /*int*/ tooltipShellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+	long tooltipShellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	byte[] gtk_tooltip = Converter.wcsToMbcs ("gtk-tooltip", true); //$NON-NLS-1$
 	GTK.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	GTK.gtk_widget_realize (tooltipShellHandle);
 
-	long /*int*/ context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
+	long context = GTK.gtk_widget_get_style_context (tooltipShellHandle);
 	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_TOOLTIP);
 	GTK.gtk_style_context_invalidate(context);
 
@@ -3472,7 +3472,7 @@ void initializeSystemColorsTooltip(String cssOutput) {
 	GTK.gtk_widget_destroy (tooltipShellHandle);
 }
 
-GdkRGBA styleContextGetColor(long /*int*/ context, int flag) {
+GdkRGBA styleContextGetColor(long context, int flag) {
 	/*
 	* Feature in GTK: we need to handle calls to gtk_style_context_get_color()
 	* differently due to changes in GTK3.18+. This solves failing test cases
@@ -3562,10 +3562,10 @@ public boolean getTouchEnabled() {
 	return false;
 }
 
-Widget getWidget (long /*int*/ handle) {
+Widget getWidget (long handle) {
 	if (handle == 0) return null;
 	if (lastWidget != null && lastHandle == handle) return lastWidget;
-	long /*int*/ index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	long index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < widgetTable.length) {
 		lastHandle = handle;
 		return lastWidget = widgetTable [(int)/*64*/index];
@@ -3573,7 +3573,7 @@ Widget getWidget (long /*int*/ handle) {
 	return null;
 }
 
-long /*int*/ idleProc (long /*int*/ data) {
+long idleProc (long data) {
 	boolean result = runAsyncMessages (false);
 	if (!result) {
 		synchronized (idleLock) {
@@ -3604,9 +3604,9 @@ protected void init () {
 }
 
 void initializeCallbacks () {
-	closures = new long /*int*/ [Widget.LAST_SIGNAL];
+	closures = new long [Widget.LAST_SIGNAL];
 	closuresCount = new int[Widget.LAST_SIGNAL];
-	closuresProc = new long /*int*/ [Widget.LAST_SIGNAL];
+	closuresProc = new long [Widget.LAST_SIGNAL];
 	signalIds = new int [Widget.LAST_SIGNAL];
 
 	/* Cache signals for GtkWidget */
@@ -3636,7 +3636,7 @@ void initializeCallbacks () {
 	 * SWT_MENU_LOCATION_DEBUGGING environment variable.
 	 */
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
-		long /*int*/ menuType = GTK.GTK_TYPE_MENU ();
+		long menuType = GTK.GTK_TYPE_MENU ();
 		OS.g_type_class_ref (menuType);
 		signalIds [Widget.POPPED_UP] = OS.g_signal_lookup (OS.popped_up, menuType);
 	} else {
@@ -3914,33 +3914,33 @@ void initializeColorList() {
 
 void initializeSubclasses () {
 	if (!GTK.GTK4) {
-		long /*int*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-		long /*int*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+		long pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+		long pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
 		pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
 		OS.g_type_class_unref (pangoLayoutClass);
 
-		long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+		long imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+		long imContextClass = OS.g_type_class_ref (imContextType);
 		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
 		OS.g_type_class_unref (imContextClass);
 
-		long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-		long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+		long pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+		long pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
 		pangoFontFamilyNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFamilyClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, OS.pangoFontFamilyNewProc_CALLBACK(pangoFontFamilyNewProc));
 		OS.g_type_class_unref (pangoFontFamilyClass);
 
-		long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-		long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+		long pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+		long pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
 		pangoFontFaceNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoFontFaceClass);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, OS.pangoFontFaceNewProc_CALLBACK(pangoFontFaceNewProc));
 		OS.g_type_class_unref (pangoFontFaceClass);
 
 		if (!OS.IsWin32) { /* TODO [win32] replace unixprint */
-			long /*int*/ printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
-			long /*int*/ printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
+			long printerOptionWidgetType = GTK.gtk_printer_option_widget_get_type();
+			long printerOptionWidgetClass = OS.g_type_class_ref (printerOptionWidgetType);
 			printerOptionWidgetNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (printerOptionWidgetClass);
 			OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (printerOptionWidgetClass, OS.printerOptionWidgetNewProc_CALLBACK(printerOptionWidgetNewProc));
 			OS.g_type_class_unref (printerOptionWidgetClass);
@@ -3960,10 +3960,10 @@ void initializeSystemSettings () {
 	* fix is to for the initializaion by creating
 	* a temporary GtkEntry.
 	*/
-	long /*int*/ entry = GTK.gtk_entry_new ();
+	long entry = GTK.gtk_entry_new ();
 	GTK.gtk_widget_destroy (entry);
 	int [] buffer2 = new int [1];
-	long /*int*/ settings = GTK.gtk_settings_get_default ();
+	long settings = GTK.gtk_settings_get_default ();
 	OS.g_object_get (settings, GTK.gtk_entry_select_on_focus, buffer2, 0);
 	entrySelectOnFocus = buffer2 [0] != 0;
 }
@@ -3979,9 +3979,9 @@ void initializeWindowManager () {
 	/* Get the window manager name */
 	windowManager = ""; //$NON-NLS-1$
 	if (OS.isX11()) {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		if (screen != 0) {
-			long /*int*/ ptr2 = GDK.gdk_x11_screen_get_window_manager_name (screen);
+			long ptr2 = GDK.gdk_x11_screen_get_window_manager_name (screen);
 			if (ptr2 != 0) {
 				int length = C.strlen (ptr2);
 				if (length > 0) {
@@ -4010,7 +4010,7 @@ void initializeWindowManager () {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
+public void internal_dispose_GC (long hDC, GCData data) {
 	Cairo.cairo_destroy (hDC);
 }
 
@@ -4037,17 +4037,17 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public long /*int*/ internal_new_GC (GCData data) {
+public long internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
-	long /*int*/ gc = 0;
-	long /*int*/ root = 0;
+	long gc = 0;
+	long root = 0;
 	if (GTK.GTK4) {
-		long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A8, data.width, data.height);
+		long surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A8, data.width, data.height);
 		gc = Cairo.cairo_create(surface);
 	} else {
 		root = GDK.gdk_get_default_root_window();
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			long /*int*/ surface = GDK.gdk_window_create_similar_surface(root, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+			long surface = GDK.gdk_window_create_similar_surface(root, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
 			gc = Cairo.cairo_create(surface);
 		} else {
 			gc = GDK.gdk_cairo_create(root);
@@ -4327,7 +4327,7 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	return rect;
 }
 
-long /*int*/ mouseHoverProc (long /*int*/ handle) {
+long mouseHoverProc (long handle) {
 	Widget widget = getWidget (handle);
 	// null the GSource id as our implementation always returns 0 so the hover is
 	// hidden and this leads to the GSource to be destroyed
@@ -4423,16 +4423,16 @@ public boolean post (Event event) {
 				return true;
 			}
 
-			long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
-			long /*int*/ gdkSeat = GDK.gdk_display_get_default_seat(gdkDisplay);
-			long /*int*/ gdkKeyboardDevice = GDK.gdk_seat_get_keyboard(gdkSeat);
-			long /*int*/ gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
-			long /*int*/ gdkWindow = GDK.gdk_get_default_root_window();
-			long /*int*/ window_list = GDK.gdk_window_get_children(gdkWindow);
+			long gdkDisplay = GDK.gdk_display_get_default();
+			long gdkSeat = GDK.gdk_display_get_default_seat(gdkDisplay);
+			long gdkKeyboardDevice = GDK.gdk_seat_get_keyboard(gdkSeat);
+			long gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
+			long gdkWindow = GDK.gdk_get_default_root_window();
+			long window_list = GDK.gdk_window_get_children(gdkWindow);
 			if (window_list != 0) {
-				long /*int*/ windows = window_list;
+				long windows = window_list;
 				while (windows != 0) {
-					long /*int*/ curr_window = OS.g_list_data(windows);
+					long curr_window = OS.g_list_data(windows);
 					int state = GDK.gdk_window_get_state(curr_window);
 					if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0) {
 						gdkWindow = curr_window;
@@ -4444,7 +4444,7 @@ public boolean post (Event event) {
 				OS.g_list_free(window_list);
 			}
 			if (gdkWindow == 0) return false;
-			long /*int*/ eventPtr = 0;
+			long eventPtr = 0;
 
 			switch (type) {
 				case SWT.KeyDown:
@@ -4477,12 +4477,12 @@ public boolean post (Event event) {
 						cachedModifierState = 0;
 					}
 
-					long /*int*/ gdkKeymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
+					long gdkKeymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
 					int hardware_keycode = 0;
 					int raw_keyval = untranslateKey(event.keyCode);
 					if (raw_keyval == 0) raw_keyval = event.character;
 
-					long /*int*/[] keys_list = new long /*int*/ [1];
+					long /*int*/[] keys_list = new long [1];
 					int [] n_keys = new int [1];
 					int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int[1];
 					int final_keyval = raw_keyval;
@@ -4515,7 +4515,7 @@ public boolean post (Event event) {
 					OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
 					GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
 					if (GTK.GTK4) {
-						long /*int*/ display = GDK.gdk_display_get_default();
+						long display = GDK.gdk_display_get_default();
 						GDK.gdk_display_put_event(display, eventPtr);
 					} else {
 						GDK.gdk_event_put (eventPtr);
@@ -4591,11 +4591,11 @@ void postEvent (Event event) {
 void putGdkEvents () {
 	if (gdkEventCount != 0) {
 		for (int i = 0; i < gdkEventCount; i++) {
-			long /*int*/ event = gdkEvents [i];
+			long event = gdkEvents [i];
 			Widget widget = gdkEventWidgets [i];
 			if (widget == null || !widget.isDisposed ()) {
 				if (GTK.GTK4) {
-					long /*int*/ display = GDK.gdk_display_get_default();
+					long display = GDK.gdk_display_get_default();
 					GDK.gdk_display_put_event(display, event);
 				} else {
 					GDK.gdk_event_put (event);
@@ -4877,23 +4877,23 @@ void releaseDisplay () {
 	keysChangedProc = 0;
 
 	/* Dispose subclass */
-	long /*int*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-	long /*int*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+	long pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+	long pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
-	long /*int*/ imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
-	long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+	long imContextType = GTK.GTK_TYPE_IM_MULTICONTEXT ();
+	long imContextClass = OS.g_type_class_ref (imContextType);
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
 	OS.g_type_class_unref (imContextClass);
 	imContextNewProc = 0;
-	long /*int*/ pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
-	long /*int*/ pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
+	long pangoFontFamilyType = OS.PANGO_TYPE_FONT_FAMILY ();
+	long pangoFontFamilyClass = OS.g_type_class_ref (pangoFontFamilyType);
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFamilyClass, pangoFontFamilyNewProc);
 	OS.g_type_class_unref (pangoFontFamilyClass);
 	pangoFontFamilyNewProc = 0;
-	long /*int*/ pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
-	long /*int*/ pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
+	long pangoFontFaceType = OS.PANGO_TYPE_FONT_FACE ();
+	long pangoFontFaceClass = OS.g_type_class_ref (pangoFontFaceType);
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoFontFaceClass, pangoFontFaceNewProc);
 	OS.g_type_class_unref (pangoFontFaceClass);
 	pangoFontFaceNewProc = 0;
@@ -4972,9 +4972,9 @@ public void removeFilter (int eventType, Listener listener) {
 	if (filterTable.size () == 0) filterTable = null;
 }
 
-long /*int*/ removeGdkEvent () {
+long removeGdkEvent () {
 	if (gdkEventCount == 0) return 0;
-	long /*int*/ event = gdkEvents [0];
+	long event = gdkEvents [0];
 	--gdkEventCount;
 	System.arraycopy (gdkEvents, 1, gdkEvents, 0, gdkEventCount);
 	System.arraycopy (gdkEventWidgets, 1, gdkEventWidgets, 0, gdkEventCount);
@@ -5023,7 +5023,7 @@ public void removeListener (int eventType, Listener listener) {
 	eventTable.unhook (eventType, listener);
 }
 
-void removeMouseHoverTimeout (long /*int*/ handle) {
+void removeMouseHoverTimeout (long handle) {
 	if (handle != mouseHoverHandle) return;
 	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
 	mouseHoverId = 0;
@@ -5040,12 +5040,12 @@ void removePopup (Menu menu) {
 	}
 }
 
-Widget removeWidget (long /*int*/ handle) {
+Widget removeWidget (long handle) {
 	if (handle == 0) return null;
 	lastWidget = null;
 	Widget widget = null;
 	int index;
-	long /*int*/ data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	long data = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if(data < 0 || data > Integer.MAX_VALUE) {
 		SWT.error(SWT.ERROR_INVALID_RETURN_VALUE, null, ". g_object_get_qdata returned unexpected index value" +  debugInfoForIndex(data));
 	}
@@ -5066,7 +5066,7 @@ Widget removeWidget (long /*int*/ handle) {
 	return widget;
 }
 
-String debugInfoForIndex(long /*int*/ index) {
+String debugInfoForIndex(long index) {
 	String s = ", index: " + index;
 	int idx = (int) index;
 	if (idx >= 0 && idx < widgetTable.length) {
@@ -5295,12 +5295,12 @@ public void setCursorLocation (int x, int y) {
 }
 
 void setCursorLocationInPixels (Point location) {
-	long /*int*/ gdkDisplay = GDK.gdk_display_get_default();
-	long /*int*/ gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
+	long gdkDisplay = GDK.gdk_display_get_default();
+	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
 	if (GTK.GTK4) {
 		GDK.gdk_device_warp(gdkPointer, location.x, location.y);
 	} else {
-		long /*int*/ gdkScreen = GDK.gdk_screen_get_default();
+		long gdkScreen = GDK.gdk_screen_get_default();
 		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);
 	}
 }
@@ -5369,7 +5369,7 @@ public void setData (String key, Object value) {
 	}
 	if (key.equals (ADD_WIDGET_KEY)) {
 		Object [] data = (Object []) value;
-		long /*int*/ handle = ((LONG) data [0]).value;
+		long handle = ((LONG) data [0]).value;
 		Widget widget = (Widget) data [1];
 		if (widget != null) {
 			addWidget (handle, widget);
@@ -5458,10 +5458,10 @@ public void setData (Object data) {
 	this.data = data;
 }
 
-long /*int*/ setDirectionProc (long /*int*/ widget, long /*int*/ direction) {
+long setDirectionProc (long widget, long direction) {
 	GTK.gtk_widget_set_direction (widget, (int)/*64*/ direction);
 	if (GTK.GTK_IS_MENU_ITEM (widget)) {
-		long /*int*/ submenu = GTK.gtk_menu_item_get_submenu (widget);
+		long submenu = GTK.gtk_menu_item_get_submenu (widget);
 		if (submenu != 0) {
 			GTK.gtk_widget_set_direction (submenu, (int)/*64*/ direction);
 			GTK.gtk_container_forall (submenu, setDirectionProc, direction);
@@ -5594,9 +5594,9 @@ void showIMWindow (Control control) {
 		GTK.gtk_container_add (preeditWindow, preeditLabel);
 		GTK.gtk_widget_show (preeditLabel);
 	}
-	long /*int*/ [] preeditString = new long /*int*/ [1];
-	long /*int*/ [] pangoAttrs = new long /*int*/ [1];
-	long /*int*/ imHandle = control.imHandle ();
+	long [] preeditString = new long [1];
+	long [] pangoAttrs = new long [1];
+	long imHandle = control.imHandle ();
 	GTK.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
 	if (preeditString [0] != 0 && C.strlen (preeditString [0]) > 0) {
 		Control widget = control.findBackgroundControl ();
@@ -5651,7 +5651,7 @@ public boolean sleep () {
 		fds = OS.g_malloc (OS.GPollFD_sizeof () * allocated_nfds);
 	}
 	max_priority [0] = timeout [0] = 0;
-	long /*int*/ context = OS.g_main_context_default ();
+	long context = OS.g_main_context_default ();
 	boolean result = false;
 	do {
 		if (OS.g_main_context_acquire (context)) {
@@ -5662,7 +5662,7 @@ public boolean sleep () {
 				allocated_nfds = nfds;
 				fds = OS.g_malloc (OS.GPollFD_sizeof() * allocated_nfds);
 			}
-			long /*int*/ poll = OS.g_main_context_get_poll_func (context);
+			long poll = OS.g_main_context_get_poll_func (context);
 			if (poll != 0) {
 				if (nfds > 0 || timeout [0] != 0) {
 					/*
@@ -5757,7 +5757,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 }
 
-long /*int*/ timerProc (long /*int*/ i) {
+long timerProc (long i) {
 	if (timerList == null) return 0;
 	int index = (int)/*64*/i;
 	if (0 <= index && index < timerList.length) {
@@ -5777,7 +5777,7 @@ long /*int*/ timerProc (long /*int*/ i) {
 	return 0;
 }
 
-long /*int*/ caretProc (long /*int*/ clientData) {
+long caretProc (long clientData) {
 	caretId = 0;
 	if (currentCaret == null) {
 		return 0;
@@ -5808,13 +5808,13 @@ void resetCaretTiming() {
 	}
 }
 
-long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long sizeAllocateProc (long handle, long arg0, long user_data) {
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.sizeAllocateProc (handle, arg0, user_data);
 }
 
-long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long sizeRequestProc (long handle, long arg0, long user_data) {
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.sizeRequestProc (handle, arg0, user_data);
@@ -5924,7 +5924,7 @@ void setCurrentCaret (Caret caret) {
 	caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
 }
 
-long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long shellMapProc (long handle, long arg0, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.shellMapProc (handle, arg0, user_data);
@@ -5964,7 +5964,7 @@ String simple_color_parser (String output, String value, int index) {
 	return "";
 }
 
-long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ user_data) {
+long signalProc (long gobject, long arg1, long user_data) {
 	switch((int)/*64*/user_data) {
 		case STYLE_UPDATED:
 			settingsChanged = true;
@@ -6071,113 +6071,113 @@ void wakeThread () {
 	wake = true;
 }
 
-long /*int*/ enterMotionScrollProc (long /*int*/ controller, double x, double y, long /*int*/ user_data) {
-	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+long enterMotionScrollProc (long controller, double x, double y, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.enterMotionScrollProc(handle, x, y, user_data);
 }
 
-long /*int*/ focusProc (long /*int*/ controller, long /*int*/ user_data) {
-	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+long focusProc (long controller, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.focusProc(handle, user_data);
 }
 
-long /*int*/ keyPressReleaseProc (long /*int*/ controller, int keyval, int keycode, int state, long /*int*/ user_data) {
-	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+long keyPressReleaseProc (long controller, int keyval, int keycode, int state, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.keyPressReleaseProc(handle, keyval, keycode, state, user_data);
 }
 
-long /*int*/ gesturePressReleaseProc (long /*int*/ gesture, int n_press, double x, double y, long /*int*/ user_data) {
-	long /*int*/ handle = GTK.gtk_event_controller_get_widget(gesture);
+long gesturePressReleaseProc (long gesture, int n_press, double x, double y, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(gesture);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.getsurePressReleaseProc (gesture, n_press, x, y, user_data);
 }
 
-long /*int*/ leaveProc (long /*int*/ controller, long /*int*/ user_data) {
-	long /*int*/ handle = GTK.gtk_event_controller_get_widget(controller);
+long leaveProc (long controller, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.leaveProc(handle, user_data);
 }
 
-long /*int*/ notifyStateProc (long /*int*/ gdk_handle, long /*int*/ param_spec, long /*int*/ user_data) {
+long notifyStateProc (long gdk_handle, long param_spec, long user_data) {
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.notifyStateProc(gdk_handle, user_data);
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
+long windowProc (long handle, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, user_data);
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, user_data);
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, user_data);
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long arg2, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, arg2, user_data);
 }
 
-long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ user_data) {
+long windowProc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, arg2, arg3, user_data);
 }
 
-long /*int*/ windowTimerProc (long /*int*/ handle) {
+long windowTimerProc (long handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.timerProc (handle);
 }
 
-long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	long /*int*/ display = 0;
+long gdk_window_get_device_position (long window, int[] x, int[] y, int[] mask) {
+	long display = 0;
 	if( window != 0) {
 		display = GDK.gdk_window_get_display (window);
 	} else {
 		window = GDK.gdk_get_default_root_window ();
 		display = GDK.gdk_window_get_display (window);
 	}
-	long /*int*/ pointer = GDK.gdk_get_pointer (display);
+	long pointer = GDK.gdk_get_pointer (display);
 	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
-long /*int*/ gdk_surface_get_device_position (long /*int*/ surface, int[] x, int[] y, int[] mask) {
-	long /*int*/ display = 0;
+long gdk_surface_get_device_position (long surface, int[] x, int[] y, int[] mask) {
+	long display = 0;
 	if (surface != 0) {
 		display = GDK.gdk_surface_get_display (surface);
 	}
-	long /*int*/ pointer = GDK.gdk_get_pointer(display);
+	long pointer = GDK.gdk_get_pointer(display);
 	return GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
 }
 
-long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
-	long /*int*/ display = GDK.gdk_display_get_default ();
-	long /*int*/ device = GDK.gdk_get_pointer(display);
+long gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
+	long display = GDK.gdk_display_get_default ();
+	long device = GDK.gdk_get_pointer(display);
 	return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
 }
 
-long /*int*/ gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
-	long /*int*/ display = GDK.gdk_display_get_default ();
-	long /*int*/ device = GDK.gdk_get_pointer(display);
+long gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
+	long display = GDK.gdk_display_get_default ();
+	long device = GDK.gdk_get_pointer(display);
 	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);
 }
 
@@ -6186,7 +6186,7 @@ long /*int*/ gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
  * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
 @Override
-protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ user_data) {
+protected long gsettingsProc (long gobject, long arg1, long user_data) {
 	switch((int)/*64*/user_data) {
 		case CHANGE_SCALEFACTOR:
 			this.scaleFactor = getDeviceZoom ();
@@ -6199,19 +6199,19 @@ protected long /*int*/ gsettingsProc (long /*int*/ gobject, long /*int*/ arg1, l
 	return 0;
 }
 
-static int _getDeviceZoom (long /*int*/ monitor_num) {
+static int _getDeviceZoom (long monitor_num) {
 	/*
 	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1
 	 * if gdk_screen_set_resolution has not been called.
 	 */
 	int dpi = 96;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long /*int*/ display = GDK.gdk_display_get_default();
-		long /*int*/ monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		long display = GDK.gdk_display_get_default();
+		long monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
 	} else {
-		long /*int*/ screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default ();
 		dpi = (int) GDK.gdk_screen_get_resolution (screen);
 		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
 		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, (int) monitor_num);

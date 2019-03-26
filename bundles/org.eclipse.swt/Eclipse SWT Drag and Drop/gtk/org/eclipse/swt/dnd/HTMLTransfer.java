@@ -68,7 +68,7 @@ public void javaToNative (Object object, TransferData transferData){
 	String string = (String)object;
 	byte[] utf8 = Converter.wcsToMbcs(string, true);
 	int byteCount = utf8.length;
-	long /*int*/ pValue = OS.g_malloc(byteCount);
+	long pValue = OS.g_malloc(byteCount);
 	if (pValue == 0) return;
 	C.memmove(pValue, utf8, byteCount);
 	transferData.length = byteCount;

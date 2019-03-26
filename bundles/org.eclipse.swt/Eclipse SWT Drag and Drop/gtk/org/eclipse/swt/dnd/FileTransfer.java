@@ -91,12 +91,12 @@ public void javaToNative(Object object, TransferData transferData) {
 		char[] chars = new char[length];
 		string.getChars(0, length, chars, 0);
 		long /*int*/[] error = new long /*int*/[1];
-		long /*int*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+		long utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
-		long /*int*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
+		long localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
 		OS.g_free(utf8Ptr);
 		if (error[0] != 0 || localePtr == 0) continue;
-		long /*int*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+		long uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || uriPtr == 0) continue;
 		length = C.strlen(uriPtr);
@@ -116,7 +116,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		buffer = newBuffer;
 	}
 	if (buffer.length == 0) return;
-	long /*int*/ ptr = OS.g_malloc(buffer.length+1);
+	long ptr = OS.g_malloc(buffer.length+1);
 	C.memset(ptr, '\0', buffer.length+1);
 	C.memmove(ptr, buffer, buffer.length);
 	transferData.pValue = ptr;
@@ -151,7 +151,7 @@ public Object nativeToJava(TransferData transferData) {
 			if (!(gnomeList && offset == 0)) {
 				/* The content of the first line in a gnome-list is always either 'copy' or 'cut' */
 				int size =  i - offset;
-				long /*int*/ file = OS.g_malloc(size + 1);
+				long file = OS.g_malloc(size + 1);
 				byte[] fileBuffer = new byte[size + 1];
 				System.arraycopy(temp, offset, fileBuffer, 0, size);
 				C.memmove(file, fileBuffer, size + 1);
@@ -165,7 +165,7 @@ public Object nativeToJava(TransferData transferData) {
 	}
 	if (offset < temp.length - sepLength) {
 		int size =  temp.length - offset;
-		long /*int*/ file = OS.g_malloc(size + 1);
+		long file = OS.g_malloc(size + 1);
 		byte[] fileBuffer = new byte[size + 1];
 		System.arraycopy(temp, offset, fileBuffer, 0, size);
 		C.memmove(file, fileBuffer, size + 1);
@@ -177,15 +177,15 @@ public Object nativeToJava(TransferData transferData) {
 	String[] fileNames = new String[0];
 	for (int i = 0; i < files.length; i++) {
 		long /*int*/[] error = new long /*int*/[1];
-		long /*int*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
+		long localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
-		long /*int*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, null);
+		long utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, null);
 		if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (localePtr);
 		if (localePtr != utf8Ptr) OS.g_free (localePtr);
 		if (utf8Ptr == 0) continue;
 		long /*int*/[] items_written = new long /*int*/[1];
-		long /*int*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
+		long utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
 		if (utf16Ptr == 0) continue;
 		length = (int)/*64*/items_written[0];

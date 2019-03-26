@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
-	long /*int*/ labelHandle, imageHandle, pageHandle, provider;
+	long labelHandle, imageHandle, pageHandle, provider;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -221,13 +221,13 @@ public String getToolTipText () {
 }
 
 @Override
-long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
+long gtk_enter_notify_event (long widget, long event) {
 	parent.gtk_enter_notify_event (widget, event);
 	return 0;
 }
 
 @Override
-long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
+long gtk_mnemonic_activate (long widget, long arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
@@ -236,11 +236,11 @@ void hookEvents () {
 	super.hookEvents ();
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	if (GTK.GTK4) {
-		long /*int*/ motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long /*int*/ enterMotionAddress = display.enterMotionScrollCallback.getAddress();
+		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterMotionAddress, ENTER);
 	} else {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
@@ -305,8 +305,8 @@ public void setControl (Control control) {
 	if (control != null) {
 		// To understand why we reparent, see implementation note about bug 454936 at the start of TabFolder.
 		if (GTK.GTK4) {
-			long /*int*/ widget = control.topHandle();
-			long /*int*/ parentContainer = GTK.gtk_widget_get_parent (widget);
+			long widget = control.topHandle();
+			long parentContainer = GTK.gtk_widget_get_parent (widget);
 			if (parentContainer != 0) {
 				OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
 				GTK.gtk_container_remove (parentContainer, widget);
@@ -345,7 +345,7 @@ public void setControl (Control control) {
 	}
 }
 
-void setFontDescription (long /*int*/ font) {
+void setFontDescription (long font) {
 	setFontDescription (labelHandle, font);
 	setFontDescription (imageHandle, font);
 }
@@ -355,14 +355,14 @@ void setForegroundRGBA (GdkRGBA rgba) {
 	setForegroundGdkRGBA (imageHandle, rgba);
 }
 
-void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
+void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	GdkRGBA toSet = new GdkRGBA();
 	if (rgba != null) {
 		toSet = rgba;
 	} else {
 		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
-	long /*int*/ context = GTK.gtk_widget_get_style_context (handle);
+	long context = GTK.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
 	String css = "* {color: " + color + ";}";
@@ -372,7 +372,7 @@ void setForegroundGdkRGBA (long /*int*/ handle, GdkRGBA rgba) {
 	gtk_css_provider_load_from_css(context, css);
 }
 
-void gtk_css_provider_load_from_css (long /*int*/ context, String css) {
+void gtk_css_provider_load_from_css (long context, String css) {
 	/* Utility function. */
 	//@param css : a 'css java' string like "{\nbackground: red;\n}".
 	if (provider == 0) {
@@ -400,7 +400,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = imageList.getPixbuf (imageIndex);
 		gtk_image_set_from_gicon (imageHandle, pixbuf);
 		GTK.gtk_widget_show (imageHandle);
 	} else {

@@ -17,47 +17,47 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkTextIface {
 	/** @field cast=(gchar *(*)()) */
-	public long /*int*/ get_text;
+	public long get_text;
 	/** @field cast=(gchar *(*)()) */
-	public long /*int*/ get_text_after_offset;
+	public long get_text_after_offset;
 	/** @field cast=(gchar *(*)()) */
-	public long /*int*/ get_text_at_offset;
+	public long get_text_at_offset;
 	/** @field cast=(gunichar (*)()) */
-	public long /*int*/ get_character_at_offset;
+	public long get_character_at_offset;
 	/** @field cast=(gchar *(*)()) */
-	public long /*int*/ get_text_before_offset;
+	public long get_text_before_offset;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_caret_offset;
+	public long get_caret_offset;
 	/** @field cast=(AtkAttributeSet *(*)()) */
-	public long /*int*/ get_run_attributes;
+	public long get_run_attributes;
 	/** @field cast=(AtkAttributeSet *(*)()) */
-	public long /*int*/ get_default_attributes;
+	public long get_default_attributes;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ get_character_extents;
+	public long get_character_extents;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_character_count;
+	public long get_character_count;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_offset_at_point;
+	public long get_offset_at_point;
 	/** @field cast=(gint (*)()) */
-	public long /*int*/ get_n_selections;
+	public long get_n_selections;
 	/** @field cast=(gchar *(*)()) */
-	public long /*int*/ get_selection;
+	public long get_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ add_selection;
+	public long add_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ remove_selection;
+	public long remove_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ set_selection;
+	public long set_selection;
 	/** @field cast=(gboolean (*)()) */
-	public long /*int*/ set_caret_offset;
+	public long set_caret_offset;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ text_changed;
+	public long text_changed;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ text_caret_moved;
+	public long text_caret_moved;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ text_selection_changed;
+	public long text_selection_changed;
 	/** @field cast=(void (*)()) */
-	public long /*int*/ get_range_extents;
+	public long get_range_extents;
 	/** @field cast=(AtkTextRange** (*)()) */
-	public long /*int*/ get_bounded_ranges;
+	public long get_bounded_ranges;
 }
