@@ -116,12 +116,6 @@ public void test_computeSizeIIZ() {
 public void test_getChildren() {
 }
 
-@Override
-@Test
-public void test_isFocusControl() {
-	assertTrue(!ccombo.isFocusControl());
-}
-
 @Test
 public void test_paste() {
 	if (SwtTestUtil.isCocoa) {
@@ -209,6 +203,16 @@ public void test_setFocus() {
 		exceptionThrown = true;
 	}
 	assertFalse("Exception thrown", exceptionThrown);
+}
+
+@Override
+@Test
+public void test_setFocus_toChild_afterOpen() {
+}
+
+@Override
+@Test
+public void test_setFocus_toChild_beforeOpen() {
 }
 
 @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -105,6 +106,24 @@ public void test_selectAll() {
 		items[i] = new TableTreeItem(tableTree, SWT.NONE);
 	}
 	selectAll_helper("selectAll()", new TableTreeItem[] {});
+}
+
+@Override
+@Test
+public void test_setFocus_toChild_afterOpen() {
+	shell.open();
+	composite.setFocus();
+	shell.forceActive();
+	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
+}
+
+@Override
+@Test
+public void test_setFocus_toChild_beforeOpen() {
+	composite.setFocus();
+	shell.open();
+	shell.forceActive();
+	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
 }
 
 @Test

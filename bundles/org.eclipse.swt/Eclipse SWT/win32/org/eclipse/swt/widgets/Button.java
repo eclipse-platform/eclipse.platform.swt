@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -985,20 +985,6 @@ boolean setRadioSelection (boolean value) {
 		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
-}
-
-@Override
-boolean setSavedFocus () {
-	/*
-	* Feature in Windows.  When a radio button gets focus,
-	* it selects the button in WM_SETFOCUS.  If the previous
-	* saved focus widget was a radio button, allowing the shell
-	* to automatically restore the focus to the previous radio
-	* button will unexpectedly check that button.  The fix is to
-	* not assign focus to an unselected radio button.
-	*/
-	if ((style & SWT.RADIO) != 0 && !getSelection ()) return false;
-	return super.setSavedFocus ();
 }
 
 /**

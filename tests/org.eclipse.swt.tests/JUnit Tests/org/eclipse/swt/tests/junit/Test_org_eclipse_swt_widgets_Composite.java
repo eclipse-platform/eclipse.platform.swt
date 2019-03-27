@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -115,6 +115,23 @@ public void test_setVisibility_and_sizing() {
 			compSize.x > 100 && compSize.y > 100); // If this is 1x1 or 0x0 then there was some fault in layout.
 }
 
+@Test
+public void test_setFocus_toChild_afterOpen() {
+	Button focusChild = new Button(composite, SWT.PUSH);
+	shell.open();
+	shell.forceActive();
+	composite.setFocus();
+	assertTrue("First child widget should have focus", focusChild.isFocusControl());
+}
+
+@Test
+public void test_setFocus_toChild_beforeOpen() {
+	Button focusChild = new Button(composite, SWT.PUSH);
+	composite.setFocus();
+	shell.open();
+	shell.forceActive();
+	assertTrue("First child widget should have focus", focusChild.isFocusControl());
+}
 
 @Test
 public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {

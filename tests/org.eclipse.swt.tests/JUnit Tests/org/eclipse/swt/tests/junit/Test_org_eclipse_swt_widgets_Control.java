@@ -522,6 +522,9 @@ public void test_isEnabled() {
 @Test
 public void test_isFocusControl() {
 	assertFalse(control.isFocusControl());
+	shell.open();
+	shell.forceActive();
+	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }
 @Test
 public void test_isReparentable() {
