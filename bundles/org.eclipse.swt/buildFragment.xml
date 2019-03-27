@@ -156,7 +156,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 		</copy>
 		<antcall target="copy.translationfiles"/>
-		<antcall target="replace64"/>
 	</target>
 
 	<target name="copy.gtk.src">
@@ -192,7 +191,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
 		</copy>
 		<antcall target="copy.translationfiles"/>
-		<antcall target="replace64"/>
 	</target>
 		
 	<target name="copy.win32.src">
@@ -223,7 +221,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
 		</copy>
 		<antcall target="copy.translationfiles"/>
-		<antcall target="replace64"/>
 	</target>
 
 	<target name="copy.translationfiles" if="includetranslationfiles">
@@ -232,28 +229,6 @@
 			<mapper type="glob" from="*._properties" to="*.properties" />
 		</copy>
 	</target>
-
-	<target name="is64">
-		<condition property="is64" value="true">
-			<or>
-				<equals arg1="${swt.arch}" arg2="x86_64"/>
-				<equals arg1="${swt.arch}" arg2="ia64"/>
-				<equals arg1="${swt.arch}" arg2="ppc64le"/>
-				<equals arg1="${swt.arch}" arg2="s390x"/>
-				<equals arg1="${swt.arch}" arg2="sparcv9"/>
-				<equals arg1="${swt.arch}" arg2="aarch64"/>
-			</or>
-		</condition>
-		<echo>Is64=${is64}</echo>
-	</target>
-		
-    <target name="replace64" depends="is64" unless="is64">
-    	<echo>Converting java files to 32 bit</echo>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" value="int /*long*/" token="long /*int*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" value="int[] /*long[]*/" token="long[] /*int[]*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" value="float /*double*/" token="double /*float*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" value="float[] /*double[]*/" token="double[] /*float[]*/"/>
-    </target>
 
 	<target name="build.sources" depends="init">
 		<available property="src.zip" file="${build.result.folder}/src.zip" />

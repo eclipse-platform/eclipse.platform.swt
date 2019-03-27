@@ -108,13 +108,6 @@
 
 	<target name="check_machines" depends="init_keyfile">
 		<parallel>
-		<sshexec host="${m_linux_x86}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_x86_output"
-			command="hostname"/>
 		<sshexec host="${m_linux_x86_64}"
 			username="swtbuild"
 			keyfile="${keyfile}"
@@ -140,12 +133,6 @@
 		</parallel>
 		<property name="success_msg" value="Success"/>
 		<property name="fail_msg" value="*** Fail ***"/>
-		<condition property="m_linux_x86_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_x86_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_x86_output}*" string="x${m_linux_x86}"/>
-			</and>
-		</condition>
 		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
 			<and>
 				<length string="${m_linux_x86_64_output}" when="greater" length="0"/>
@@ -167,13 +154,12 @@
 		<echo>-------------------------</echo>
 		<echo>Status:</echo>
 		<echo></echo>
-		<echo>${m_linux_x86} - ${m_linux_x86_test}</echo>
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
 		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
 		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc64le_test} ${m_mac_test}"/>
+			<matches pattern="Fail" string="${m_linux_x86_64_test} ${m_linux_ppc64le_test} ${m_mac_test}"/>
 		</condition>
 		<fail if="m_fail" message="Failed"/>
 	</target>
@@ -237,15 +223,12 @@
 		<!-- 64 bit -->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
-			<param name="is64" value="64 bit"/>
 		</antcall>
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_gtk"/>
-			<param name="is64" value="64 bit"/>
 		</antcall>
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
-			<param name="is64" value="64 bit"/>
 		</antcall>
 		
 		<antcall target="check_preprocessing"/>
@@ -263,14 +246,8 @@
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 
-	<target name="replace64" unless="is64">
-		<antcall target="replace.64.to.32">
-			<param name="replace_dir" value="${buildDir}"/>
-		</antcall>
-	</target>
-
 	<target name="build_classes">
-		<echo>Building ${cp} ${is64}</echo>
+		<echo>Building ${cp}</echo>
 		<delete file="${tmpdir}/copy.xml"/>
 		<delete dir="${buildDir}"/>
 
@@ -279,8 +256,6 @@
 			<param name="outputDir" expression="${buildDir}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
-
-		<antcall target="replace64"></antcall>
 
 		<javac includeantruntime="false" srcdir="${buildDir}"></javac>
 	</target>
@@ -945,28 +920,6 @@
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="checkout master"/>
 		</exec>
-	</target>
-	
-	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
-	<target name="replace.32.to.64" depends="init_build">
-		<property name="replace_dir" value="${repo.src}/bundles/org.eclipse.swt"/>
-		<echo>Converting java files to 64 bit in ${replace_dir} project</echo>
-		<replace dir="${replace_dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
-		<antcall target="init_build"/>
-	</target>
-
-	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
-	<target name="replace.64.to.32" depends="init_build">
-		<property name="replace_dir" value="${repo.src}/bundles/org.eclipse.swt"/>
-		<echo>Converting java files to 32 bit in ${replace_dir} project</echo>
-		<replace dir="${replace_dir}" includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
-		<replace dir="${replace_dir}" includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
-		<antcall target="init_build"/>
 	</target>
 	
 	<!-- ******************************************************************************** -->
