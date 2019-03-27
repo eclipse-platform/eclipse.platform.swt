@@ -588,6 +588,30 @@ public class OS extends C {
 		}
 	}
 
+	/** @param result cast=(GTimeVal *)*/
+	public static final native void _g_get_current_time(long result);
+	public static final void g_get_current_time(long result) {
+		lock.lock();
+		try {
+			_g_get_current_time(result);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param result cast=(GTimeVal *)
+	 * @param microseconds cast=(glong)
+	 */
+	public static final native void _g_time_val_add(long result, long microseconds);
+	public static final void g_time_val_add(long result, long microseconds) {
+		lock.lock();
+		try {
+			_g_time_val_add(result, microseconds);
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	/** @param str cast=(const gchar *)
 	 * @category custom
 	 */
