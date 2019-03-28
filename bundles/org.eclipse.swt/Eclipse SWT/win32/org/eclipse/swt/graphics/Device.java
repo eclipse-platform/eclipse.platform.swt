@@ -189,32 +189,24 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
-	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
-	try {
-		long /*int*/ [] token = new long /*int*/ [1];
-		GdiplusStartupInput input = new GdiplusStartupInput ();
-		input.GdiplusVersion = 1;
-		if (Gdip.GdiplusStartup (token, input, 0) == 0) {
-			gdipToken = token;
-			if (loadedFonts != null) {
-				fontCollection = Gdip.PrivateFontCollection_new();
-				if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				for (int i = 0; i < loadedFonts.length; i++) {
-					String path = loadedFonts[i];
-					if (path == null) break;
-					int length = path.length();
-					char [] buffer = new char [length + 1];
-					path.getChars(0, length, buffer, 0);
-					Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
-				}
-				loadedFonts = null;
-			}
+	long /*int*/ [] token = new long /*int*/ [1];
+	GdiplusStartupInput input = new GdiplusStartupInput ();
+	input.GdiplusVersion = 1;
+	if (Gdip.GdiplusStartup (token, input, 0) != 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	gdipToken = token;
+	if (loadedFonts != null) {
+		fontCollection = Gdip.PrivateFontCollection_new();
+		if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		for (int i = 0; i < loadedFonts.length; i++) {
+			String path = loadedFonts[i];
+			if (path == null) break;
+			int length = path.length();
+			char [] buffer = new char [length + 1];
+			path.getChars(0, length, buffer, 0);
+			Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
 		}
-	} catch (Throwable t) {
-		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
-	} finally {
-		OS.SetErrorMode (oldErrorMode);
-    }
+		loadedFonts = null;
+	}
 }
 
 /**

@@ -4003,9 +4003,7 @@ public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (advanced && data.gdipGraphics != 0) return;
 	if (advanced) {
-		try {
-			initGdip();
-		} catch (SWTException e) {}
+		initGdip();
 	} else {
 		disposeGdip();
 		data.alpha = 0xFF;

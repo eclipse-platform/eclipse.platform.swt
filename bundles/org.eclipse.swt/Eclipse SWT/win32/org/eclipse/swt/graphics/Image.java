@@ -807,12 +807,8 @@ boolean refreshImageForZoom () {
 }
 
 void initNative(String filename) {
+	device.checkGDIP();
 	boolean gdip = true;
-	try {
-		device.checkGDIP();
-	} catch (SWTException e) {
-		gdip = false;
-	}
 	/*
 	* Bug in GDI+.  For some reason, Bitmap.LockBits() segment faults
 	* when loading GIF files in 64-bit Windows.  The fix is to not use
