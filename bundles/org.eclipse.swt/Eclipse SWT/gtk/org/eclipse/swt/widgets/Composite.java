@@ -919,6 +919,11 @@ long gtk_realize (long widget) {
 long gtk_scroll_child (long widget, long scrollType, long horizontal) {
 	/* Stop GTK scroll child signal for canvas */
 	OS.g_signal_stop_emission_by_name (widget, OS.scroll_child);
+	if (GTK.GTK4) {
+		// GtkScrollBar moved out of GtkRange, get GtkScrollType from this signal instead
+		if (horizontalBar != null ) horizontalBar.detail = (int) scrollType;
+		if (verticalBar != null) verticalBar.detail = (int) scrollType;
+	}
 	return 1;
 }
 
