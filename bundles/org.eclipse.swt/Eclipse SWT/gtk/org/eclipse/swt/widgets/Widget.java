@@ -585,9 +585,9 @@ public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (key.equals (KEY_CHECK_SUBWINDOW)) {
-		return new Boolean ((state & CHECK_SUBWINDOW) != 0);
+		return (state & CHECK_SUBWINDOW) != 0;
 	}
-	if (key.equals(IS_ACTIVE)) return Boolean.valueOf(isActive ());
+	if (key.equals(IS_ACTIVE)) return isActive ();
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
 		for (int i=1; i<table.length; i+=2) {

@@ -392,12 +392,11 @@ long /*int*/ callJava (long /*int*/ ctx, long /*int*/ func, long /*int*/ thisObj
 			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
 			result[0] = 0;
 			if (index > 0) {
-				Object key = new Integer (index);
 				C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 				type = WebKit_win32.JSValueGetType (ctx, result[0]);
 				if (type == WebKit_win32.kJSTypeString) {
 					String token = (String)convertToJava (ctx, result[0]);
-					BrowserFunction function = (BrowserFunction)functions.get (key);
+					BrowserFunction function = (BrowserFunction)functions.get (index);
 					if (function != null && token.equals (function.token)) {
 						try {
 							C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
@@ -437,11 +436,11 @@ Object convertToJava (long /*int*/ ctx, long /*int*/ value) {
 	switch (type) {
 		case WebKit_win32.kJSTypeBoolean: {
 			int result = (int)WebKit_win32.JSValueToNumber (ctx, value, null);
-			return new Boolean (result != 0);
+			return result != 0;
 		}
 		case WebKit_win32.kJSTypeNumber: {
 			double result = WebKit_win32.JSValueToNumber (ctx, value, null);
-			return new Double (result);
+			return result;
 		}
 		case WebKit_win32.kJSTypeString: {
 			long /*int*/ string = WebKit_win32.JSValueToStringCopy (ctx, value, null);

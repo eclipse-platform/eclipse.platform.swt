@@ -515,7 +515,7 @@ class WebkitGDBus {
 	private static Object convertGVariantToJava(long gVariant){
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
-			return new Boolean(OS.g_variant_get_boolean(gVariant));
+			return OS.g_variant_get_boolean(gVariant);
 		}
 
 		// see: WebKitGTK.java 'TYPE NOTES'
@@ -534,11 +534,11 @@ class WebkitGDBus {
 		}
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_DOUBLE)){
-			return new Double(OS.g_variant_get_double(gVariant));
+			return OS.g_variant_get_double(gVariant);
 		}
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_UINT64)){
-			return new Long(OS.g_variant_get_uint64(gVariant));
+			return OS.g_variant_get_uint64(gVariant);
 		}
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_STRING)){

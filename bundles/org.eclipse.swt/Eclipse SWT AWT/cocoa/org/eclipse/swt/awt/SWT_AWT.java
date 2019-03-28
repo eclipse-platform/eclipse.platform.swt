@@ -178,7 +178,7 @@ public static Frame new_Frame(final Composite parent) {
 		EventQueue.invokeLater(runnable);
 		Display display = parent.getDisplay();
 		while (result[0] == null && exception[0] == null) {
-			display.setData(RUN_AWT_INVOKE_LATER_KEY, new Boolean (true));
+			display.setData(RUN_AWT_INVOKE_LATER_KEY, true);
 			Boolean invoked = (Boolean)display.getData(RUN_AWT_INVOKE_LATER_KEY);
 			if (invoked != null && !invoked.booleanValue()) {
 				runnable.run();

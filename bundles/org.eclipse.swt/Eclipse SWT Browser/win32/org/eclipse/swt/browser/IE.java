@@ -1454,7 +1454,7 @@ public boolean setText(final String html, boolean trusted) {
 	* to ensure that all expected client events are sent.
 	*/
 	if (performingInitialNavigate) {
-		pendingText = new Object[] {html, new Boolean (trusted)};
+		pendingText = new Object[] {html, trusted};
 		pendingUrl = null;
 		return true;
 	}

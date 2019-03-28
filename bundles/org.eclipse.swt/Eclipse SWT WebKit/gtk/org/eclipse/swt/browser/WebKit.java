@@ -2722,7 +2722,7 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 				long response = WebKitGTK.webkit_download_get_response(webkitDownload);
 				total = WebKitGTK.webkit_uri_response_get_content_length(response) / 1024L;
 			}
-			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {Long.valueOf(current), new Long(total)}); //$NON-NLS-1$
+			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {current, total}); //$NON-NLS-1$
 			statusLabel.setText (message);
 			display.timerExec (INTERVAL, this);
 		}
@@ -3868,13 +3868,12 @@ long callJava (long ctx, long func, long thisObject, long argumentCount, long ar
 		if (type == WebKitGTK.kJSTypeNumber) {
 			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
 			result[0] = 0;
-			Integer key = new Integer (index);
 			// 2nd arg: function token
 			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 			type = WebKitGTK.JSValueGetType (ctx, result[0]);
 			if (type == WebKitGTK.kJSTypeString) {
 				String token = (String)convertToJava (ctx, result[0]);
-				BrowserFunction function = functions.get (key);
+				BrowserFunction function = functions.get (index);
 				if (function != null && token.equals (function.token)) {
 					try {
 						// 3rd Arg: paramaters given from Javascript
@@ -3941,7 +3940,7 @@ static Object convertToJava (long ctx, long value) {
 	switch (type) {
 		case WebKitGTK.kJSTypeBoolean: {
 			int result = (int)WebKitGTK.JSValueToNumber (ctx, value, null);
-			return new Boolean (result != 0);
+			return result != 0;
 		}
 		case WebKitGTK.kJSTypeNumber: {
 			double result = WebKitGTK.JSValueToNumber (ctx, value, null);

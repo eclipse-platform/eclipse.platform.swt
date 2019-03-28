@@ -47,7 +47,7 @@ public class GLCanvas extends Canvas {
  */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, checkStyle (parent, style));
-	parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (false));
+	parent.getDisplay ().setData (USE_OWNDC_KEY, false);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
 	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
@@ -108,7 +108,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 
 static int checkStyle(Composite parent, int style) {
 	if (parent != null) {
-		parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (true));
+		parent.getDisplay ().setData (USE_OWNDC_KEY, true);
 	}
 	return style;
 }

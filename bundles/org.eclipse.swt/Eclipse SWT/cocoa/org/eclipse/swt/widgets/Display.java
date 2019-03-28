@@ -4661,7 +4661,7 @@ public void setData (String key, Object value) {
 
 	if (key.equals(RUN_AWT_INVOKE_LATER_KEY)) {
 		if (value != null) {
-			value = new Boolean (runAWTInvokeLater());
+			value = runAWTInvokeLater();
 		}
 	}
 

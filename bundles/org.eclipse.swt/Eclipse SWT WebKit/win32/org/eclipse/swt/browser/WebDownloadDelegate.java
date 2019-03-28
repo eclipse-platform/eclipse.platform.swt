@@ -215,7 +215,7 @@ void openDownloadWindow (final IWebDownload download, String name) {
 			}
 			long current = size / 1024L;
 			long total = totalSize / 1024L;
-			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {Long.valueOf(current), new Long(total)}); //$NON-NLS-1$
+			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {current, total}); //$NON-NLS-1$
 			statusLabel.setText (message);
 			display.timerExec (INTERVAL, this);
 		}

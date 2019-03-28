@@ -1708,10 +1708,10 @@ Object convertToJava (long /*int*/ value) {
 		byte[] type = new byte[1];
 		C.memmove (type, ptr, 1);
 		if (type[0] == 'c' || type[0] == 'B') {
-			return new Boolean (number.boolValue ());
+			return number.boolValue ();
 		}
 		if ("islqISLQfd".indexOf (type[0]) != -1) { //$NON-NLS-1$
-			return new Double (number.doubleValue ());
+			return number.doubleValue ();
 		}
 	}
 	clazz = OS.objc_lookUpClass ("WebScriptObject"); //$NON-NLS-1$
@@ -1774,7 +1774,7 @@ NSObject callJava (long /*int*/ index, long /*int*/ token, long /*int*/ args, lo
 	long /*int*/ clazz = OS.objc_lookUpClass ("NSNumber"); //$NON-NLS-1$
 	if (object.isKindOfClass (clazz)) {
 		NSNumber number = new NSNumber (index);
-		Object key = new Integer (number.intValue ());
+		Object key = number.intValue ();
 		object = new NSObject (token);
 		clazz = OS.objc_lookUpClass ("NSString"); //$NON-NLS-1$
 		if (object.isKindOfClass (clazz)) {

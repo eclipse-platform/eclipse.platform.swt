@@ -857,13 +857,13 @@ Object convertToJava (Variant variant) {
 		case OLE.VT_EMPTY:
 		case OLE.VT_NULL: return null;
 		case OLE.VT_BSTR: return variant.getString ();
-		case OLE.VT_BOOL: return new Boolean (variant.getBoolean ());
+		case OLE.VT_BOOL: return variant.getBoolean ();
 		case OLE.VT_I2:
 		case OLE.VT_I4:
 		case OLE.VT_I8:
 		case OLE.VT_R4:
 		case OLE.VT_R8:
-			return new Double (variant.getDouble ());
+			return variant.getDouble ();
 		case OLE.VT_DISPATCH: {
 			Object[] args = null;
 			OleAutomation auto = variant.getAutomation ();
