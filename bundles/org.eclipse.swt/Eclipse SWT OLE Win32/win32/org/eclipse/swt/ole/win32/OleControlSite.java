@@ -520,7 +520,7 @@ public Color getBackground () {
 
 		if (varBackColor != null){
 			int[] colorRef = new int[1];
-			if (COM.OleTranslateColor(varBackColor.getInt(), getDisplay().hPalette, colorRef) == COM.S_OK)
+			if (COM.OleTranslateColor(varBackColor.getInt(), 0, colorRef) == COM.S_OK)
 				return Color.win32_new(getDisplay(), colorRef[0]);
 		}
 	}
@@ -568,7 +568,7 @@ public Color getForeground () {
 
 		if (varForeColor != null){
 			int[] colorRef = new int[1];
-			if (COM.OleTranslateColor(varForeColor.getInt(), getDisplay().hPalette, colorRef) == COM.S_OK)
+			if (COM.OleTranslateColor(varForeColor.getInt(), 0, colorRef) == COM.S_OK)
 				return Color.win32_new(getDisplay(), colorRef[0]);
 		}
 	}

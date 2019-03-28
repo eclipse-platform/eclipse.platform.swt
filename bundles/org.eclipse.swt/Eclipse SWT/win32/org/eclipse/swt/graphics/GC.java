@@ -3851,11 +3851,6 @@ void init(Drawable drawable, GCData data, long /*int*/ hDC) {
 	} else {
 		data.font = Font.win32_new(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT));
 	}
-	long /*int*/ hPalette = data.device.hPalette;
-	if (hPalette != 0) {
-		OS.SelectPalette(hDC, hPalette, true);
-		OS.RealizePalette(hDC);
-	}
 	Image image = data.image;
 	if (image != null) {
 		data.hNullBitmap = OS.SelectObject(hDC, image.handle);

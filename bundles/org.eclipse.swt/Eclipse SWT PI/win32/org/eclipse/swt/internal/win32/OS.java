@@ -1044,7 +1044,6 @@ public class OS extends C {
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;
 	public static final int NULL_PEN = 0x8;
-	public static final int NUMRESERVED = 106;
 	public static final int OBJID_WINDOW = 0x00000000;
 	public static final int OBJID_SYSMENU = 0xFFFFFFFF;
 	public static final int OBJID_TITLEBAR = 0xFFFFFFFE;
@@ -1210,7 +1209,6 @@ public class OS extends C {
 	public static final int RB_SETBANDINFO = 0x40b;
 	public static final int RB_SETBKCOLOR = 0x413;
 	public static final int RB_SETTEXTCOLOR = 0x415;
-	public static final int RC_PALETTE = 0x100;
 	public static final int RDW_ALLCHILDREN = 0x80;
 	public static final int RDW_ERASE = 0x4;
 	public static final int RDW_FRAME = 0x400;
@@ -1288,7 +1286,6 @@ public class OS extends C {
 	public static final int SIZE_RESTORED = 0;
 	public static final int SIZE_MINIMIZED = 1;
 	public static final int SIZE_MAXIMIZED = 2;
-	public static final int SIZEPALETTE = 104;
 	public static final int SM_CMONITORS = 80;
 	public static final int SM_CXBORDER = 0x5;
 	public static final int SM_CXCURSOR = 0xd;
@@ -1900,13 +1897,11 @@ public class OS extends C {
 	public static final int WM_NOTIFY = 0x4e;
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
-	public static final int WM_PALETTECHANGED = 0x311;
 	public static final int WM_PARENTNOTIFY = 0x0210;
 	public static final int WM_PASTE = 0x302;
 	public static final int WM_PRINT = 0x0317;
 	public static final int WM_PRINTCLIENT = 0x0318;
 	public static final int WM_QUERYENDSESSION = 0x11;
-	public static final int WM_QUERYNEWPALETTE = 0x30f;
 	public static final int WM_QUERYOPEN = 0x13;
 	public static final int WM_QUERYUISTATE = 0x129;
 	public static final int WM_RBUTTONDBLCLK = 0x206;
@@ -2521,8 +2516,6 @@ public static final native long /*int*/ CreateFontIndirect (LOGFONT lplf);
 /** @param lplf flags=no_out */
 public static final native long /*int*/ CreateIconIndirect (ICONINFO lplf);
 public static final native long /*int*/ CreateMenu ();
-/** @param logPalette cast=(LOGPALETTE *),flags=no_out critical */
-public static final native long /*int*/ CreatePalette (byte[] logPalette);
 /** @param hbmp cast=(HBITMAP) */
 public static final native long /*int*/ CreatePatternBrush (long /*int*/ hbmp);
 /** @param crColor cast=(COLORREF) */
@@ -2928,11 +2921,6 @@ public static final native long /*int*/ GetModuleHandle (char [] lpModuleName);
  */
 public static final native boolean GetMonitorInfo (long /*int*/ hmonitor, MONITORINFO lpmi);
 /**
- * @param hPal cast=(HPALETTE)
- * @param crColor cast=(COLORREF)
- */
-public static final native int GetNearestPaletteIndex (long /*int*/ hPal, int crColor);
-/**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
@@ -2961,11 +2949,6 @@ public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, lo
 public static final native boolean GetOpenFileName (OPENFILENAME lpofn);
 /** @param hdc cast=(HDC) */
 public static final native int GetOutlineTextMetrics (long /*int*/ hdc, int cbData, OUTLINETEXTMETRIC lpOTM);
-/**
- * @param hPalette cast=(HPALETTE)
- * @param logPalette cast=(LPPALETTEENTRY),flags=no_in critical
- */
-public static final native int GetPaletteEntries (long /*int*/ hPalette, int iStartIndex, int nEntries, byte[] logPalette);
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetParent (long /*int*/ hWnd);
 /** @param hdc cast=(HDC) */
@@ -3023,13 +3006,6 @@ public static final native short GetSystemDefaultUILanguage ();
 /** @param hWnd cast=(HWND) */
 public static final native long /*int*/ GetSystemMenu (long /*int*/ hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
-/**
- * @param hdc cast=(HDC)
- * @param iStartIndex cast=(UINT)
- * @param nEntries cast=(UINT)
- * @param lppe cast=(LPPALETTEENTRY),flags=no_in critical
- */
-public static final native int GetSystemPaletteEntries (long /*int*/ hdc, int iStartIndex, int nEntries, byte[] lppe);
 /** @param hDC cast=(HDC) */
 public static final native int GetTextColor (long /*int*/ hDC);
 /**
@@ -3887,8 +3863,6 @@ public static final native int PSPropertyKeyFromString (char[] pszString, PROPER
 public static final native boolean PtInRect (RECT rect, POINT pt);
 /** @param hrgn cast=(HRGN) */
 public static final native boolean PtInRegion (long /*int*/ hrgn, int X, int Y);
-/** @param hDC cast=(HDC) */
-public static final native int RealizePalette (long /*int*/ hDC);
 /** @param hdc cast=(HDC) */
 public static final native boolean Rectangle (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /**
@@ -4143,11 +4117,6 @@ public static final native int SelectClipRgn (long /*int*/ hdc, long /*int*/ hrg
  * @param HGDIObj cast=(HGDIOBJ)
  */
 public static final native long /*int*/ SelectObject (long /*int*/ hDC, long /*int*/ HGDIObj);
-/**
- * @param hDC cast=(HDC)
- * @param hpal cast=(HPALETTE)
- */
-public static final native long /*int*/ SelectPalette (long /*int*/ hDC, long /*int*/ hpal, boolean bForceBackground);
 /** @param pInputs cast=(LPINPUT) */
 public static final native int SendInput (int nInputs, long /*int*/ pInputs, int cbSize);
 /**
@@ -4394,11 +4363,6 @@ public static final native boolean SetMenuInfo (long /*int*/ hmenu, MENUINFO lpc
 public static final native boolean SetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /** @param hdc cast=(HDC) */
 public static final native int SetMetaRgn (long /*int*/ hdc);
-/**
- * @param hPal cast=(HPALETTE)
- * @param lppe cast=(PALETTEENTRY *),flags=no_out critical
- */
-public static final native int SetPaletteEntries (long /*int*/ hPal, int iStart, int cEntries, byte[] lppe);
 /**
  * @param hWndChild cast=(HWND)
  * @param hWndNewParent cast=(HWND)

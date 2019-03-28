@@ -37,21 +37,6 @@ public abstract class Device implements Drawable {
 	Object [] objects;
 	Object trackingLock;
 
-	/**
-	 * Palette
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public long /*int*/ hPalette = 0;
-	int [] colorRefCount;
-
 	/* System Font */
 	Font systemFont;
 
@@ -695,58 +680,6 @@ protected void init () {
 	OS.ScriptGetProperties (ppSp, piNumScripts);
 	scripts = new long /*int*/ [piNumScripts [0]];
 	OS.MoveMemory (scripts, ppSp [0], scripts.length * C.PTR_SIZEOF);
-
-	/*
-	 * If we're not on a device which supports palettes,
-	 * don't create one.
-	 */
-	long /*int*/ hDC = internal_new_GC (null);
-	int rc = OS.GetDeviceCaps (hDC, OS.RASTERCAPS);
-	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-
-	bits *= planes;
-	if ((rc & OS.RC_PALETTE) == 0 || bits != 8) {
-		internal_dispose_GC (hDC, null);
-		return;
-	}
-
-	int numReserved = OS.GetDeviceCaps (hDC, OS.NUMRESERVED);
-	int numEntries = OS.GetDeviceCaps (hDC, OS.SIZEPALETTE);
-
-	/* Create the palette and reference counter */
-	colorRefCount = new int [numEntries];
-
-	/* 4 bytes header + 4 bytes per entry * numEntries entries */
-	byte [] logPalette = new byte [4 + 4 * numEntries];
-
-	/* 2 bytes = special header */
-	logPalette [0] = 0x00;
-	logPalette [1] = 0x03;
-
-	/* 2 bytes = number of colors, LSB first */
-	logPalette [2] = 0;
-	logPalette [3] = 1;
-
-	/*
-	* Create a palette which contains the system entries
-	* as they are located in the system palette.  The
-	* MSDN article 'Memory Device Contexts' describes
-	* where system entries are located.  On an 8 bit
-	* display with 20 reserved colors, the system colors
-	* will be the first 10 entries and the last 10 ones.
-	*/
-	byte[] lppe = new byte [4 * numEntries];
-	OS.GetSystemPaletteEntries (hDC, 0, numEntries, lppe);
-	/* Copy all entries from the system palette */
-	System.arraycopy (lppe, 0, logPalette, 4, 4 * numEntries);
-	/* Lock the indices corresponding to the system entries */
-	for (int i = 0; i < numReserved / 2; i++) {
-		colorRefCount [i] = 1;
-		colorRefCount [numEntries - 1 - i] = 1;
-	}
-	internal_dispose_GC (hDC, null);
-	hPalette = OS.CreatePalette (logPalette);
 }
 /**
  * Invokes platform specific functionality to allocate a new GC handle.
@@ -939,9 +872,6 @@ protected void release () {
 	}
 	gdipToken = null;
 	scripts = null;
-	if (hPalette != 0) OS.DeleteObject (hPalette);
-	hPalette = 0;
-	colorRefCount = null;
 	logFonts = null;
 	nFonts = 0;
 }

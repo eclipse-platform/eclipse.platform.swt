@@ -1435,20 +1435,6 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-LRESULT selectPalette (long /*int*/ hPalette) {
-	long /*int*/ hDC = OS.GetDC (handle);
-	long /*int*/ hOld = OS.SelectPalette (hDC, hPalette, false);
-	int result = OS.RealizePalette (hDC);
-	if (result > 0) {
-		OS.InvalidateRect (handle, null, true);
-	} else {
-		OS.SelectPalette (hDC, hOld, true);
-		OS.RealizePalette (hDC);
-	}
-	OS.ReleaseDC (handle, hDC);
-	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
-}
-
 @Override
 boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lParam, Event event) {
 	if (!isEnabled () || !isActive ()) return false;
@@ -2387,22 +2373,6 @@ LRESULT WM_NCLBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	display.lastHittestControl = null;
 	display.ignoreRestoreFocus = false;
 	return new LRESULT (code);
-}
-
-@Override
-LRESULT WM_PALETTECHANGED (long /*int*/ wParam, long /*int*/ lParam) {
-	if (wParam != handle) {
-		long /*int*/ hPalette = display.hPalette;
-		if (hPalette != 0) return selectPalette (hPalette);
-	}
-	return super.WM_PALETTECHANGED (wParam, lParam);
-}
-
-@Override
-LRESULT WM_QUERYNEWPALETTE (long /*int*/ wParam, long /*int*/ lParam) {
-	long /*int*/ hPalette = display.hPalette;
-	if (hPalette != 0) return selectPalette (hPalette);
-	return super.WM_QUERYNEWPALETTE (wParam, lParam);
 }
 
 @Override

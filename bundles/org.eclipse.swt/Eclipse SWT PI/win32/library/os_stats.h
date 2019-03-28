@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -120,7 +120,6 @@ typedef enum {
 	CreateFontIndirect__Lorg_eclipse_swt_internal_win32_LOGFONT_2_FUNC,
 	CreateIconIndirect_FUNC,
 	CreateMenu_FUNC,
-	CreatePalette_FUNC,
 	CreatePatternBrush_FUNC,
 	CreatePen_FUNC,
 	CreatePolygonRgn_FUNC,
@@ -270,7 +269,6 @@ typedef enum {
 	GetModuleFileName_FUNC,
 	GetModuleHandle_FUNC,
 	GetMonitorInfo_FUNC,
-	GetNearestPaletteIndex_FUNC,
 #ifndef JNI64
 	GetObject__III_FUNC,
 #else
@@ -298,7 +296,6 @@ typedef enum {
 #endif
 	GetOpenFileName_FUNC,
 	GetOutlineTextMetrics_FUNC,
-	GetPaletteEntries_FUNC,
 	GetParent_FUNC,
 	GetPixel_FUNC,
 	GetPolyFillMode_FUNC,
@@ -319,7 +316,6 @@ typedef enum {
 	GetSystemDefaultUILanguage_FUNC,
 	GetSystemMenu_FUNC,
 	GetSystemMetrics_FUNC,
-	GetSystemPaletteEntries_FUNC,
 	GetTextColor_FUNC,
 	GetTextExtentPoint32_FUNC,
 	GetTextMetrics_FUNC,
@@ -973,7 +969,6 @@ typedef enum {
 	PtInRegion_FUNC,
 	REBARBANDINFO_1sizeof_FUNC,
 	RECT_1sizeof_FUNC,
-	RealizePalette_FUNC,
 	RectInRegion_FUNC,
 	Rectangle_FUNC,
 	RedrawWindow_FUNC,
@@ -1055,7 +1050,6 @@ typedef enum {
 	ScrollWindowEx_FUNC,
 	SelectClipRgn_FUNC,
 	SelectObject_FUNC,
-	SelectPalette_FUNC,
 	SendInput_FUNC,
 #ifndef JNI64
 	SendMessage__IIII_FUNC,
@@ -1230,7 +1224,6 @@ typedef enum {
 	SetMenuInfo_FUNC,
 	SetMenuItemInfo_FUNC,
 	SetMetaRgn_FUNC,
-	SetPaletteEntries_FUNC,
 	SetParent_FUNC,
 	SetPixel_FUNC,
 	SetPolyFillMode_FUNC,

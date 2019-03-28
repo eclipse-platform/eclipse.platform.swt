@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1114,22 +1114,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CreateMenu)
 	OS_NATIVE_ENTER(env, that, CreateMenu_FUNC);
 	rc = (jintLong)CreateMenu();
 	OS_NATIVE_EXIT(env, that, CreateMenu_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CreatePalette
-JNIEXPORT jintLong JNICALL OS_NATIVE(CreatePalette)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, CreatePalette_FUNC);
-		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)CreatePalette((LOGPALETTE *)lparg0);
-fail:
-		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, CreatePalette_FUNC);
 	return rc;
 }
 #endif
@@ -3230,18 +3214,6 @@ fail:
 }
 #endif
 
-#ifndef NO_GetNearestPaletteIndex
-JNIEXPORT jint JNICALL OS_NATIVE(GetNearestPaletteIndex)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetNearestPaletteIndex_FUNC);
-	rc = (jint)GetNearestPaletteIndex((HPALETTE)arg0, (COLORREF)arg1);
-	OS_NATIVE_EXIT(env, that, GetNearestPaletteIndex_FUNC);
-	return rc;
-}
-#endif
-
 #if (!defined(NO_GetObject__III) && !defined(JNI64)) || (!defined(NO_GetObject__JIJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(GetObject__III)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
@@ -3401,22 +3373,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetOutlineTextMetrics)
 fail:
 	if (arg2 && lparg2) setOUTLINETEXTMETRICFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, GetOutlineTextMetrics_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetPaletteEntries
-JNIEXPORT jint JNICALL OS_NATIVE(GetPaletteEntries)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jbyteArray arg3)
-{
-	jbyte *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetPaletteEntries_FUNC);
-		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)GetPaletteEntries((HPALETTE)arg0, arg1, arg2, (LPPALETTEENTRY)lparg3);
-fail:
-		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, GetPaletteEntries_FUNC);
 	return rc;
 }
 #endif
@@ -3692,22 +3648,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetrics)
 	OS_NATIVE_ENTER(env, that, GetSystemMetrics_FUNC);
 	rc = (jint)GetSystemMetrics(arg0);
 	OS_NATIVE_EXIT(env, that, GetSystemMetrics_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetSystemPaletteEntries
-JNIEXPORT jint JNICALL OS_NATIVE(GetSystemPaletteEntries)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jbyteArray arg3)
-{
-	jbyte *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetSystemPaletteEntries_FUNC);
-		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)GetSystemPaletteEntries((HDC)arg0, (UINT)arg1, (UINT)arg2, (LPPALETTEENTRY)lparg3);
-fail:
-		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, GetSystemPaletteEntries_FUNC);
 	return rc;
 }
 #endif
@@ -8555,18 +8495,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(RECT_1sizeof)
 }
 #endif
 
-#ifndef NO_RealizePalette
-JNIEXPORT jint JNICALL OS_NATIVE(RealizePalette)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, RealizePalette_FUNC);
-	rc = (jint)RealizePalette((HDC)arg0);
-	OS_NATIVE_EXIT(env, that, RealizePalette_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_RectInRegion
 JNIEXPORT jboolean JNICALL OS_NATIVE(RectInRegion)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -9759,18 +9687,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(SelectObject)
 }
 #endif
 
-#ifndef NO_SelectPalette
-JNIEXPORT jintLong JNICALL OS_NATIVE(SelectPalette)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, SelectPalette_FUNC);
-	rc = (jintLong)SelectPalette((HDC)arg0, (HPALETTE)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, SelectPalette_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SendInput
 JNIEXPORT jint JNICALL OS_NATIVE(SendInput)
 	(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2)
@@ -10904,22 +10820,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetMetaRgn)
 	OS_NATIVE_ENTER(env, that, SetMetaRgn_FUNC);
 	rc = (jint)SetMetaRgn((HDC)arg0);
 	OS_NATIVE_EXIT(env, that, SetMetaRgn_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_SetPaletteEntries
-JNIEXPORT jint JNICALL OS_NATIVE(SetPaletteEntries)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jbyteArray arg3)
-{
-	jbyte *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SetPaletteEntries_FUNC);
-		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)SetPaletteEntries((HPALETTE)arg0, arg1, arg2, (PALETTEENTRY *)lparg3);
-fail:
-		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, SetPaletteEntries_FUNC);
 	return rc;
 }
 #endif

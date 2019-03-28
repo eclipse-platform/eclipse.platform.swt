@@ -15,7 +15,6 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class manage the operating system resources that
@@ -214,20 +213,6 @@ public Color(Device device, RGB rgb, int alpha) {
 
 @Override
 void destroy() {
-	/*
-	 * If this is a palette-based device,
-	 * Decrease the reference count for this color.
-	 * If the reference count reaches 0, the slot may
-	 * be reused when another color is allocated.
-	 */
-	long /*int*/ hPal = device.hPalette;
-	if (hPal != 0) {
-		int index = OS.GetNearestPaletteIndex(hPal, handle);
-		int[] colorRefCount = device.colorRefCount;
-		if (colorRefCount[index] > 0) {
-			colorRefCount[index]--;
-		}
-	}
 	handle = -1;
 }
 
@@ -371,44 +356,6 @@ void init(int red, int green, int blue, int alpha) {
 	}
 	handle = (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 	this.alpha = alpha;
-
-	/* If this is not a palette-based device, return */
-	long /*int*/ hPal = device.hPalette;
-	if (hPal == 0) return;
-
-	int[] colorRefCount = device.colorRefCount;
-	/* Add this color to the default palette now */
-	/* First find out if the color already exists */
-	int index = OS.GetNearestPaletteIndex(hPal, handle);
-	/* See if the nearest color actually is the color */
-	byte[] entry = new byte[4];
-	OS.GetPaletteEntries(hPal, index, 1, entry);
-	if ((entry[0] == (byte)red) && (entry[1] == (byte)green) &&
-		(entry[2] == (byte)blue)) {
-			/* Found the color. Increment the ref count and return */
-			colorRefCount[index]++;
-			return;
-	}
-	/* Didn't find the color, allocate it now. Find the first free entry */
-	int i = 0;
-	while (i < colorRefCount.length) {
-		if (colorRefCount[i] == 0) {
-			index = i;
-			break;
-		}
-		i++;
-	}
-	if (i == colorRefCount.length) {
-		/* No free entries, use the closest one */
-		/* Remake the handle from the actual rgbs */
-		handle = (entry[0] & 0xFF) | ((entry[1] & 0xFF) << 8) |
-				 ((entry[2] & 0xFF) << 16);
-	} else {
-		/* Found a free entry */
-		entry = new byte[] { (byte)(red & 0xFF), (byte)(green & 0xFF), (byte)(blue & 0xFF), 0 };
-		OS.SetPaletteEntries(hPal, index, 1, entry);
-	}
-	colorRefCount[index]++;
 }
 
 /**

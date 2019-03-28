@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -110,7 +110,6 @@ char * OS_nativeFunctionNames[] = {
 	"CreateFontIndirect__Lorg_eclipse_swt_internal_win32_LOGFONT_2",
 	"CreateIconIndirect",
 	"CreateMenu",
-	"CreatePalette",
 	"CreatePatternBrush",
 	"CreatePen",
 	"CreatePolygonRgn",
@@ -260,7 +259,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetModuleFileName",
 	"GetModuleHandle",
 	"GetMonitorInfo",
-	"GetNearestPaletteIndex",
 #ifndef JNI64
 	"GetObject__III",
 #else
@@ -288,7 +286,6 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"GetOpenFileName",
 	"GetOutlineTextMetrics",
-	"GetPaletteEntries",
 	"GetParent",
 	"GetPixel",
 	"GetPolyFillMode",
@@ -309,7 +306,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetSystemDefaultUILanguage",
 	"GetSystemMenu",
 	"GetSystemMetrics",
-	"GetSystemPaletteEntries",
 	"GetTextColor",
 	"GetTextExtentPoint32",
 	"GetTextMetrics",
@@ -963,7 +959,6 @@ char * OS_nativeFunctionNames[] = {
 	"PtInRegion",
 	"REBARBANDINFO_1sizeof",
 	"RECT_1sizeof",
-	"RealizePalette",
 	"RectInRegion",
 	"Rectangle",
 	"RedrawWindow",
@@ -1045,7 +1040,6 @@ char * OS_nativeFunctionNames[] = {
 	"ScrollWindowEx",
 	"SelectClipRgn",
 	"SelectObject",
-	"SelectPalette",
 	"SendInput",
 #ifndef JNI64
 	"SendMessage__IIII",
@@ -1220,7 +1214,6 @@ char * OS_nativeFunctionNames[] = {
 	"SetMenuInfo",
 	"SetMenuItemInfo",
 	"SetMetaRgn",
-	"SetPaletteEntries",
 	"SetParent",
 	"SetPixel",
 	"SetPolyFillMode",
