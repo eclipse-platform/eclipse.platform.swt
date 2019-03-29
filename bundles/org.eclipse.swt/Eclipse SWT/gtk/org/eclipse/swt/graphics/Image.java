@@ -1096,6 +1096,8 @@ public ImageData getImageDataAtCurrentZoom () {
 					srcData[offset + 1] = (byte)(((r * 0xFF) + a / 2) / a);
 					srcData[offset + 2] = (byte)(((g * 0xFF) + a / 2) / a);
 					srcData[offset + 3] = (byte)(((b * 0xFF) + a / 2) / a);
+				} else if (data.transparentPixel == -1) {
+					data.transparentPixel = 0;
 				}
 			}
 		}
