@@ -11,8 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Red Hat Inc. - stop generating pre 1.2 JNI code
- *     Martin Oberhuber (WindRiver) - [515610] Fix incorrect code for memmove()
- *     Thomas Wolf <thomas.wolf@paranor.ch> [534923] Fix incorrect casts
+ * Martin Oberhuber (WindRiver) - [515610] Fix incorrect code for memmove()
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
@@ -794,14 +793,12 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		if (method.getFlag(Flags.FLAG_CAST)) {
 			output("((");
 			String returnCast = returnType.getTypeSignature2(!returnType.equals(returnType64));
-			if ((name.equals("objc_msgSend_bool") || name.equals("objc_msgSendSuper_bool")) && returnCast.equals("jboolean")) {
+			if (name.equals("objc_msgSend_bool") && returnCast.equals("jboolean")) {
 				returnCast = "BOOL";
 			}
 			output(returnCast);
 			output(" (*)(");
-			int fixedargs = getNumberOfFixedArguments(method);
-			int n = fixedargs > 0 ? fixedargs : params.length;
-			for (int i = 0; i < n; i++) {
+			for (int i = 0; i < params.length; i++) {
 				if (i != 0) output(", ");
 				JNIParameter param = params[i];
 				String cast = param.getCast();
@@ -818,9 +815,6 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 					}
 					output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
 				}
-			}
-			if (fixedargs > 0) {
-				output(", ...");
 			}
 			output("))");
 		}
@@ -881,8 +875,7 @@ void generate_objc_msgSend_stret (JNIParameter[] params, String func) {
 	JNIType paramType = params[0].getType(), paramType64 = params[0].getType64();
 	output(paramType.getTypeSignature4(!paramType.equals(paramType64), true));
 	output(" (*)(");
-	// Only the fixed arguments
-	for (int i = 1; i <= 2; i++) {
+	for (int i = 1; i < params.length; i++) {
 		if (i != 1) output(", ");
 		JNIParameter param = params[i];
 		String cast = param.getCast();
@@ -900,31 +893,9 @@ void generate_objc_msgSend_stret (JNIParameter[] params, String func) {
 			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
 		}
 	}
-	output(", ...");
 	output("))");
 	output(func);
 	output(")");
-}
-
-/**
- * Determines whether the {@code method} has variadic arguments. If so, returns
- * the number of fixed parameters (always {@code > 0}). Otherwise returns zero,
- * which indicates that all parameters are fixed.
- * 
- * @param method to examine
- * @return the number of fixed parameters, or zero if all parameters are fixed
- *         (the method has no varargs)
- */
-int getNumberOfFixedArguments(JNIMethod method) {
-	Object param = method.getParam("fixedargs");
-	if (param == null) {
-		return 0;
-	}
-	String number = param.toString();
-	if (number.isEmpty()) {
-		return 0;
-	}
-	return Integer.parseInt(number);
 }
 
 void generateReturn(JNIType returnType, boolean needsReturn) {
