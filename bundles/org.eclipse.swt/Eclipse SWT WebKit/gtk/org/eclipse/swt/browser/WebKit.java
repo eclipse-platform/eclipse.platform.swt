@@ -617,7 +617,7 @@ class WebKit extends WebBrowser {
 			assert cb_args.length == 4;
 			Object returnValue = null;
 			Long webViewLocal = (Double.valueOf((String) cb_args[0])).longValue();
-			Browser browser = FindBrowser((long /*int*/) webViewLocal.longValue());
+			Browser browser = FindBrowser((long ) webViewLocal.longValue());
 			Integer functionIndex = ((Double) cb_args[1]).intValue();
 			String token = (String) cb_args[2];
 
@@ -724,7 +724,7 @@ static long JSObjectCallAsFunctionProc (long ctx, long function, long thisObject
 		return WebKitGTK.JSValueMakeUndefined (ctx);
 	}
 	long ptr = WebKitGTK.JSObjectGetPrivate (thisObject);
-	long /*int*/[] handle = new long /*int*/[1];
+	long [] handle = new long [1];
 	C.memmove (handle, ptr, C.PTR_SIZEOF);
 	Browser browser = FindBrowser (handle[0]);
 	if (browser == null) return 0;
@@ -1163,7 +1163,7 @@ public void create (Composite parent, int style) {
 
 	if (WEBKIT1) {
 		webViewData = C.malloc (C.PTR_SIZEOF);
-		C.memmove (webViewData, new long /*int*/[] {webView}, C.PTR_SIZEOF);
+		C.memmove (webViewData, new long [] {webView}, C.PTR_SIZEOF);
 	}
 
 	// Documentation for these signals/properties is usually found under signal/property of WebKitWebView.
@@ -1813,7 +1813,7 @@ private static class Webkit2AsyncToSync {
 		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
 		if (retObj != null) { // retObj can be null if there was a timeout.
-			long /*int*/[] gerror = new long [1]; // GError **
+			long [] gerror = new long [1]; // GError **
 			long js_result = WebKitGTK.webkit_web_view_run_javascript_finish(GObject_source, GAsyncResult, gerror);
 			if (js_result == 0) {
 				long errMsg = OS.g_error_get_message(gerror[0]);
@@ -1865,8 +1865,8 @@ private static class Webkit2AsyncToSync {
 		int callbackId = (int) user_data;
 		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
 
-		long /*int*/[] gsize_len = new long [1];
-		long /*int*/[] gerrorRes = new long [1]; // GError **
+		long [] gsize_len = new long [1];
+		long [] gerrorRes = new long [1]; // GError **
 		long guchar_data = WebKitGTK.webkit_web_resource_get_data_finish(WebResource, GAsyncResult, gsize_len, gerrorRes);
 		if (gerrorRes[0] != 0 || guchar_data == 0) {
 			OS.g_error_free(gerrorRes[0]);
@@ -3862,7 +3862,7 @@ long callJava (long ctx, long func, long thisObject, long argumentCount, long ar
 	if (argumentCount == 3) {
 		// Javastring array: <int: function index>, <string: token>, <array: javascript args>
 		// 1st arg: Function index
-		long /*int*/[] result = new long /*int*/[1];
+		long [] result = new long [1];
 		C.memmove (result, arguments, C.PTR_SIZEOF);
 		int type = WebKitGTK.JSValueGetType (ctx, result[0]);
 		if (type == WebKitGTK.kJSTypeNumber) {
@@ -3923,7 +3923,7 @@ long convertToJS (long ctx, Object value) {
 	if (value instanceof Object[]) {
 		Object[] arrayValue = (Object[]) value;
 		int length = arrayValue.length;
-		long /*int*/[] arguments = new long /*int*/[length];
+		long [] arguments = new long [length];
 		for (int i = 0; i < length; i++) {
 			Object javaObject = arrayValue[i];
 			long jsObject = convertToJS (ctx, javaObject);

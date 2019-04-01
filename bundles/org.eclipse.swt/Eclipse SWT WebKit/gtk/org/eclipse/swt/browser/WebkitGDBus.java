@@ -300,7 +300,7 @@ class WebkitGDBus {
 
 	@SuppressWarnings("unused")
 	private static long callExtensionAsyncCallback (long source_object, long res, long user_data) {
-		long /*int*/[] gerror = new long /*int*/[1];
+		long [] gerror = new long [1];
 		long result = OS.g_dbus_proxy_call_finish (proxy, res, gerror);
 		if (gerror[0] != 0){
 			long errMsg = OS.g_error_get_message(gerror[0]);
@@ -436,7 +436,7 @@ class WebkitGDBus {
 	 * @return an Object representing the return value from DBus in boolean form
 	 */
 	static Object callExtensionSync (long params, String methodName) {
-		long /*int*/[] gerror = new long [1]; // GError **
+		long [] gerror = new long [1]; // GError **
 		long gVariant = OS.g_dbus_proxy_call_sync(proxy, Converter.javaStringToCString(methodName),
 				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, gerror);
 		if (gerror[0] != 0) {
@@ -472,7 +472,7 @@ class WebkitGDBus {
 	 * @return true if the extension was called without errors, false otherwise
 	 */
 	static boolean callExtensionAsync (long params, String methodName) {
-		long /*int*/[] gerror = new long [1]; // GError **
+		long [] gerror = new long [1]; // GError **
 		OS.g_dbus_proxy_call(proxy, Converter.javaStringToCString(methodName),
 				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, callExtensionAsyncCallback.getAddress(), gerror);
 		if (gerror[0] != 0) {
@@ -599,7 +599,7 @@ class WebkitGDBus {
 				return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
 			}
 
-			long variants[] = new long /*int*/[length];
+			long variants[] = new long [length];
 
 			for (int i = 0; i < length; i++) {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);

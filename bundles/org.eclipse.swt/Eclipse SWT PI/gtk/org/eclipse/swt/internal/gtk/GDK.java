@@ -1792,9 +1792,9 @@ public class GDK extends OS {
 	 * @param actual_length cast=(gint *)
 	 * @param data cast=(guchar **)
 	 */
-	public static final native boolean _gdk_property_get(long window, long property, long type, long offset, long length, int pdelete, long /*int*/[] actual_property_type, int[] actual_format, int[] actual_length, long /*int*/[] data);
+	public static final native boolean _gdk_property_get(long window, long property, long type, long offset, long length, int pdelete, long [] actual_property_type, int[] actual_format, int[] actual_length, long [] data);
 	/** [GTK3 only, if-def'd in os.h] */
-	public static final boolean gdk_property_get(long window, long property, long type, long offset, long length, int pdelete, long /*int*/[] actual_property_type, int[] actual_format, int[] actual_length, long /*int*/[] data) {
+	public static final boolean gdk_property_get(long window, long property, long type, long offset, long length, int pdelete, long [] actual_property_type, int[] actual_format, int[] actual_length, long [] data) {
 		lock.lock();
 		try {
 			return _gdk_property_get(window, property, type, offset, length, pdelete, actual_property_type, actual_format, actual_length, data);
@@ -2300,8 +2300,8 @@ public class GDK extends OS {
 	 * @param ctext cast=(guchar **)
 	 * @param length cast=(gint *)
 	 */
-	public static final native boolean _gdk_x11_display_utf8_to_compound_text(long display, byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length);
-	public static final boolean gdk_x11_display_utf8_to_compound_text(long display, byte[] str, long /*int*/[] encoding, int[] format, long /*int*/[] ctext, int[] length) {
+	public static final native boolean _gdk_x11_display_utf8_to_compound_text(long display, byte[] str, long [] encoding, int[] format, long [] ctext, int[] length);
+	public static final boolean gdk_x11_display_utf8_to_compound_text(long display, byte[] str, long [] encoding, int[] format, long [] ctext, int[] length) {
 		lock.lock();
 		try {
 			return _gdk_x11_display_utf8_to_compound_text(display, str, encoding, format, ctext, length);
@@ -2325,8 +2325,8 @@ public class GDK extends OS {
 	 * @param text cast=(guchar *)
 	 * @param list cast=(gchar ***)
 	 */
-	public static final native int _gdk_text_property_to_utf8_list_for_display  (long display, long encoding, int format, long text, int length,  long /*int*/[] list);
-	public static final int gdk_text_property_to_utf8_list_for_display  (long display, long encoding, int format, long text, int length,  long /*int*/[] list) {
+	public static final native int _gdk_text_property_to_utf8_list_for_display  (long display, long encoding, int format, long text, int length,  long [] list);
+	public static final int gdk_text_property_to_utf8_list_for_display  (long display, long encoding, int format, long text, int length,  long [] list) {
 		lock.lock();
 		try {
 			return _gdk_text_property_to_utf8_list_for_display(display, encoding, format, text, length, list);
@@ -2612,9 +2612,9 @@ public class GDK extends OS {
 	 * @param window cast=(GdkWindow *)
 	 * @param data cast=(gpointer *)
 	 */
-	public static final native void _gdk_window_get_user_data(long window, long /*int*/[] data);
+	public static final native void _gdk_window_get_user_data(long window, long [] data);
 	/** [GTK3 only, if-def'd in os.h] */
-	public static final void gdk_window_get_user_data(long window, long /*int*/[] data) {
+	public static final void gdk_window_get_user_data(long window, long [] data) {
 		lock.lock();
 		try {
 			_gdk_window_get_user_data(window, data);
@@ -2626,9 +2626,9 @@ public class GDK extends OS {
 	 * @param surface cast=(GdkSurface *)
 	 * @param data cast=(gpointer *)
 	 */
-	public static final native void _gdk_surface_get_user_data(long surface, long /*int*/[] data);
+	public static final native void _gdk_surface_get_user_data(long surface, long [] data);
 	/** [GTK4 only, if-def'd in os.h] */
-	public static final void gdk_surface_get_user_data(long surface, long /*int*/[] data) {
+	public static final void gdk_surface_get_user_data(long surface, long [] data) {
 		lock.lock();
 		try {
 			_gdk_surface_get_user_data(surface, data);

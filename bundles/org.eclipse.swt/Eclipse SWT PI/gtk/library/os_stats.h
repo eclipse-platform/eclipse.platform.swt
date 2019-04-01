@@ -557,11 +557,7 @@ typedef enum {
 	_1gtk_1image_1set_1from_1pixbuf_FUNC,
 	_1gtk_1image_1set_1pixel_1size_FUNC,
 	_1gtk_1init_1check___FUNC,
-#ifndef JNI64
-	_1gtk_1init_1check___3I_3I_FUNC,
-#else
 	_1gtk_1init_1check___3J_3J_FUNC,
-#endif
 	_1gtk_1label_1get_1layout_FUNC,
 	_1gtk_1label_1get_1mnemonic_1keyval_FUNC,
 	_1gtk_1label_1get_1type_FUNC,
@@ -1310,16 +1306,8 @@ typedef enum {
 	_1g_1utf8_1offset_1to_1utf16_1offset_FUNC,
 	_1g_1utf8_1pointer_1to_1offset_FUNC,
 	_1g_1utf8_1strlen_FUNC,
-#ifndef JNI64
-	_1g_1utf8_1to_1utf16__JJ_3I_3I_3I_FUNC,
-#else
 	_1g_1utf8_1to_1utf16__JJ_3J_3J_3J_FUNC,
-#endif
-#ifndef JNI64
-	_1g_1utf8_1to_1utf16___3BJ_3I_3I_3I_FUNC,
-#else
 	_1g_1utf8_1to_1utf16___3BJ_3J_3J_3J_FUNC,
-#endif
 	_1g_1value_1peek_1pointer_FUNC,
 	_1g_1variant_1builder_1add_1value_FUNC,
 	_1g_1variant_1builder_1end_FUNC,

@@ -3492,8 +3492,8 @@ public class GTK extends OS {
 	 * @param attrs cast=(PangoAttrList **)
 	 * @param cursor_pos cast=(gint *)
 	 */
-	public static final native void _gtk_im_context_get_preedit_string(long context, long /*int*/[] str, long /*int*/[] attrs, int[] cursor_pos);
-	public static final void gtk_im_context_get_preedit_string(long context, long /*int*/[] str, long /*int*/[] attrs, int[] cursor_pos) {
+	public static final native void _gtk_im_context_get_preedit_string(long context, long [] str, long [] attrs, int[] cursor_pos);
+	public static final void gtk_im_context_get_preedit_string(long context, long [] str, long [] attrs, int[] cursor_pos) {
 		lock.lock();
 		try {
 			_gtk_im_context_get_preedit_string(context, str, attrs, cursor_pos);
@@ -3710,9 +3710,9 @@ public class GTK extends OS {
 	 * @param argc cast=(int *)
 	 * @param argv cast=(char ***)
 	 */
-	public static final native boolean _gtk_init_check(long /*int*/[] argc, long /*int*/[] argv);
+	public static final native boolean _gtk_init_check(long [] argc, long [] argv);
 	/** [GTK3 only] */
-	public static final boolean gtk_init_check(long /*int*/[] argc, long /*int*/[] argv) {
+	public static final boolean gtk_init_check(long [] argc, long [] argv) {
 		lock.lock();
 		try {
 			return _gtk_init_check(argc, argv);
@@ -3914,8 +3914,8 @@ public class GTK extends OS {
 	 * @param numColumns cast=(gint)
 	 * @param types cast=(GType *)
 	 */
-	public static final native long _gtk_list_store_newv(int numColumns, long /*int*/[] types);
-	public static final long gtk_list_store_newv(int numColumns, long /*int*/[] types) {
+	public static final native long _gtk_list_store_newv(int numColumns, long [] types);
+	public static final long gtk_list_store_newv(int numColumns, long [] types) {
 		lock.lock();
 		try {
 			return _gtk_list_store_newv(numColumns, types);
@@ -3955,7 +3955,7 @@ public class GTK extends OS {
 		}
 	}
 	public static final native long _gtk_css_provider_new();
-	public static final long /*int*/gtk_css_provider_new() {
+	public static final long gtk_css_provider_new() {
 		lock.lock();
 		try {
 			return _gtk_css_provider_new();
@@ -4026,7 +4026,7 @@ public class GTK extends OS {
 	 */
 	public static final native void _gtk_style_context_add_provider (long context, long provider, int priority);
 	public static final void gtk_style_context_add_provider(
-		long /*int*/context, long /*int*/provider, int priority) {
+		long context, long provider, int priority) {
 		lock.lock();
 		try {
 			_gtk_style_context_add_provider(context, provider, priority);
@@ -4971,8 +4971,8 @@ public class GTK extends OS {
 	 * @param destroy cast=(GDestroyNotify)
 	 * @param wait cast=(gboolean)
 	 */
-	public static final native void _gtk_enumerate_printers(long func, long /*int*/data, long destroy, boolean wait);
-	public static final void gtk_enumerate_printers(long func, long /*int*/data, long destroy, boolean wait) {
+	public static final native void _gtk_enumerate_printers(long func, long data, long destroy, boolean wait);
+	public static final void gtk_enumerate_printers(long func, long data, long destroy, boolean wait) {
 		lock.lock();
 		try {
 			_gtk_enumerate_printers(func, data, destroy, wait);
@@ -7357,8 +7357,8 @@ public class GTK extends OS {
 	 * @param selection cast=(GtkTreeSelection *)
 	 * @param model cast=(GtkTreeModel **)
 	 */
-	public static final native long _gtk_tree_selection_get_selected_rows(long selection, long /*int*/[] model);
-	public static final long gtk_tree_selection_get_selected_rows(long selection, long /*int*/[] model) {
+	public static final native long _gtk_tree_selection_get_selected_rows(long selection, long [] model);
+	public static final long gtk_tree_selection_get_selected_rows(long selection, long [] model) {
 		lock.lock();
 		try {
 			return _gtk_tree_selection_get_selected_rows(selection, model);
@@ -7531,8 +7531,8 @@ public class GTK extends OS {
 		}
 	}
 	/** @param types cast=(GType *) */
-	public static final native long _gtk_tree_store_newv(int numColumns, long /*int*/[] types);
-	public static final long gtk_tree_store_newv(int numColumns, long /*int*/[] types) {
+	public static final native long _gtk_tree_store_newv(int numColumns, long [] types);
+	public static final long gtk_tree_store_newv(int numColumns, long [] types) {
 		lock.lock();
 		try {
 			return _gtk_tree_store_newv(numColumns, types);
@@ -7719,7 +7719,7 @@ public class GTK extends OS {
 	/**
 	 * @param column cast=(GtkTreeViewColumn *)
 	 */
-	public static final native long /*int*/_gtk_tree_view_column_get_button(long column);
+	public static final native long _gtk_tree_view_column_get_button(long column);
 	public static final long gtk_tree_view_column_get_button(long column) {
 		lock.lock();
 		try {
@@ -8039,8 +8039,8 @@ public class GTK extends OS {
 		}
 	}
 	/** @param tree_view cast=(GtkTreeView *) */
-	public static final native long /*int*/_gtk_tree_view_get_expander_column(long tree_view);
-	public static final long /*int*/gtk_tree_view_get_expander_column(long tree_view) {
+	public static final native long _gtk_tree_view_get_expander_column(long tree_view);
+	public static final long gtk_tree_view_get_expander_column(long tree_view) {
 		lock.lock();
 		try {
 			return _gtk_tree_view_get_expander_column(tree_view);
@@ -8104,8 +8104,8 @@ public class GTK extends OS {
 	 * @param cell_x cast=(gint *)
 	 * @param cell_y cast=(gint *)
 	 */
-	public static final native boolean _gtk_tree_view_get_path_at_pos(long tree_view, int x, int y, long /*int*/[] path, long /*int*/[] column, int[] cell_x, int[] cell_y);
-	public static final boolean gtk_tree_view_get_path_at_pos(long tree_view, int x, int y, long /*int*/[] path, long /*int*/[] column, int[] cell_x, int[] cell_y) {
+	public static final native boolean _gtk_tree_view_get_path_at_pos(long tree_view, int x, int y, long [] path, long [] column, int[] cell_x, int[] cell_y);
+	public static final boolean gtk_tree_view_get_path_at_pos(long tree_view, int x, int y, long [] path, long [] column, int[] cell_x, int[] cell_y) {
 		lock.lock();
 		try {
 			return _gtk_tree_view_get_path_at_pos(tree_view, x, y, path, column, cell_x, cell_y);
@@ -8156,7 +8156,7 @@ public class GTK extends OS {
 	 * @param base_column cast=(GtkTreeViewColumn *)
 	 */
 	public static final native void _gtk_tree_view_move_column_after(long tree_view, long column, long base_column);
-	public static final void gtk_tree_view_move_column_after(long tree_view, long column, long /*int*/base_column) {
+	public static final void gtk_tree_view_move_column_after(long tree_view, long column, long base_column) {
 		lock.lock();
 		try {
 			_gtk_tree_view_move_column_after(tree_view, column, base_column);

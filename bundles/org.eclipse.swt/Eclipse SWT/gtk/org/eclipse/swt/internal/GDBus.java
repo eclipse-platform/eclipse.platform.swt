@@ -426,7 +426,7 @@ public class GDBus {
 			Object[] arrayValue = (Object[]) javaObject;
 			int length = arrayValue.length;
 
-			long variants[] = new long /*int*/[length];
+			long variants[] = new long [length];
 			for (int i = 0; i < length; i++) {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);
 			}

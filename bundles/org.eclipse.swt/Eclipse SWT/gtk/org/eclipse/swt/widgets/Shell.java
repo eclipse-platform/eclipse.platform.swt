@@ -2612,7 +2612,7 @@ public void setRegion (Region region) {
 }
 
 //copied from Region:
-static void gdk_region_get_rectangles(long region, long /*int*/[] rectangles, int[] n_rectangles) {
+static void gdk_region_get_rectangles(long region, long [] rectangles, int[] n_rectangles) {
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);

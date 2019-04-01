@@ -981,8 +981,8 @@ public static final void XFree(long address) {
  * @param win_y_return cast=(int *)
  * @param mask_return cast=(unsigned int *)
  */
-public static final native int _XQueryPointer(long display, long w, long /*int*/[] root_return, long /*int*/[] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return);
-public static final int XQueryPointer(long display, long w, long /*int*/[] root_return, long /*int*/[] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return) {
+public static final native int _XQueryPointer(long display, long w, long [] root_return, long [] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return);
+public static final int XQueryPointer(long display, long w, long [] root_return, long [] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return) {
 	lock.lock();
 	try {
 		return _XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return, win_x_return, win_y_return, mask_return);
@@ -1667,8 +1667,8 @@ public static final native void g_main_context_wakeup(long context);
  * @param bytes_written cast=(gsize *)
  * @param error cast=(GError **)
  */
-public static final native long _g_filename_to_utf8(long opsysstring, long len, long /*int*/[] bytes_read, long /*int*/[] bytes_written, long /*int*/[] error);
-public static final long g_filename_to_utf8(long opsysstring, long len, long /*int*/[] bytes_read, long /*int*/[] bytes_written, long /*int*/[] error) {
+public static final native long _g_filename_to_utf8(long opsysstring, long len, long [] bytes_read, long [] bytes_written, long [] error);
+public static final long g_filename_to_utf8(long opsysstring, long len, long [] bytes_read, long [] bytes_written, long [] error) {
 	lock.lock();
 	try {
 		return _g_filename_to_utf8(opsysstring, len, bytes_read, bytes_written, error);
@@ -1691,8 +1691,8 @@ public static final long g_filename_display_name(long filename) {
  * @param hostname cast=(const char *)
  * @param error cast=(GError **)
  */
-public static final native long _g_filename_to_uri(long filename, long hostname, long /*int*/[] error);
-public static final long g_filename_to_uri(long filename, long hostname, long /*int*/[] error) {
+public static final native long _g_filename_to_uri(long filename, long hostname, long [] error);
+public static final long g_filename_to_uri(long filename, long hostname, long [] error) {
 	lock.lock();
 	try {
 		return _g_filename_to_uri(filename, hostname, error);
@@ -1707,8 +1707,8 @@ public static final long g_filename_to_uri(long filename, long hostname, long /*
  * @param bytes_written cast=(gsize *)
  * @param error cast=(GError **)
  */
-public static final native long _g_filename_from_utf8(long opsysstring, long len,  long /*int*/[] bytes_read, long /*int*/[] bytes_written, long /*int*/[] error);
-public static final long g_filename_from_utf8(long opsysstring, long len,  long /*int*/[] bytes_read, long /*int*/[] bytes_written, long /*int*/[] error) {
+public static final native long _g_filename_from_utf8(long opsysstring, long len,  long [] bytes_read, long [] bytes_written, long [] error);
+public static final long g_filename_from_utf8(long opsysstring, long len,  long [] bytes_read, long [] bytes_written, long [] error) {
 	lock.lock();
 	try {
 		return _g_filename_from_utf8(opsysstring, len, bytes_read, bytes_written, error);
@@ -1721,8 +1721,8 @@ public static final long g_filename_from_utf8(long opsysstring, long len,  long 
  * @param hostname cast=(char **)
  * @param error cast=(GError **)
  */
-public static final native long _g_filename_from_uri(long uri, long /*int*/[] hostname, long /*int*/[] error);
-public static final long g_filename_from_uri(long uri, long /*int*/[] hostname, long /*int*/[] error) {
+public static final native long _g_filename_from_uri(long uri, long [] hostname, long [] error);
+public static final long g_filename_from_uri(long uri, long [] hostname, long [] error) {
 	lock.lock();
 	try {
 		return _g_filename_from_uri(uri, hostname, error);
@@ -2561,8 +2561,8 @@ public static final long g_string_free(long GString, int gboolen_free_segment) {
  * @param str cast=(const gchar *)
  * @param endptr cast=(gchar **)
  */
-public static final native double _g_strtod(long str, long /*int*/[] endptr);
-public static final double g_strtod(long str, long /*int*/[] endptr) {
+public static final native double _g_strtod(long str, long [] endptr);
+public static final double g_strtod(long str, long [] endptr) {
 	lock.lock();
 	try {
 		return _g_strtod(str, endptr);
@@ -2694,8 +2694,8 @@ public static final long g_type_register_static (long parent_type, byte[] type_n
  * @param items_written cast=(glong *),flags=critical
  * @param error cast=(GError **),flags=critical
  */
-public static final native long _g_utf16_to_utf8(char[] str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error);
-public static final long g_utf16_to_utf8(char[] str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error) {
+public static final native long _g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error);
+public static final long g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error) {
 	lock.lock();
 	try {
 		return _g_utf16_to_utf8(str, len, items_read, items_written, error);
@@ -2733,8 +2733,8 @@ public static final long g_utf8_strlen(long str, long max) {
  * @param items_written cast=(glong *),flags=critical
  * @param error cast=(GError **),flags=critical
  */
-public static final native long _g_utf8_to_utf16(byte[] str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error);
-public static final long g_utf8_to_utf16(byte[] str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error) {
+public static final native long _g_utf8_to_utf16(byte[] str, long len, long [] items_read, long [] items_written, long [] error);
+public static final long g_utf8_to_utf16(byte[] str, long len, long [] items_read, long [] items_written, long [] error) {
 	lock.lock();
 	try {
 		return _g_utf8_to_utf16(str, len, items_read, items_written, error);
@@ -2749,8 +2749,8 @@ public static final long g_utf8_to_utf16(byte[] str, long len, long /*int*/[] it
  * @param items_written cast=(glong *),flags=critical
  * @param error cast=(GError **),flags=critical
  */
-public static final native long _g_utf8_to_utf16(long str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error);
-public static final long g_utf8_to_utf16(long str, long len, long /*int*/[] items_read, long /*int*/[] items_written, long /*int*/[] error) {
+public static final native long _g_utf8_to_utf16(long str, long len, long [] items_read, long [] items_written, long [] error);
+public static final long g_utf8_to_utf16(long str, long len, long [] items_read, long [] items_written, long [] error) {
 	lock.lock();
 	try {
 		return _g_utf8_to_utf16(str, len, items_read, items_written, error);
@@ -3334,8 +3334,8 @@ public static final long pango_context_get_metrics(long context, long desc, long
  * @param families cast=(PangoFontFamily ***)
  * @param n_families cast=(int *)
  */
-public static final native void _pango_context_list_families(long context, long /*int*/[] families, int[] n_families);
-public static final void pango_context_list_families(long context, long /*int*/[] families, int[] n_families) {
+public static final native void _pango_context_list_families(long context, long [] families, int[] n_families);
+public static final void pango_context_list_families(long context, long [] families, int[] n_families) {
 	lock.lock();
 	try {
 		_pango_context_list_families(context, families, n_families);
@@ -3578,8 +3578,8 @@ public static final long pango_font_family_get_name(long family) {
  * @param faces cast=(PangoFontFace ***)
  * @param n_faces cast=(int *)
  */
-public static final native void _pango_font_family_list_faces(long family, long /*int*/[] faces, int[] n_faces);
-public static final void pango_font_family_list_faces(long family, long /*int*/[] faces, int[] n_faces) {
+public static final native void _pango_font_family_list_faces(long family, long [] faces, int[] n_faces);
+public static final void pango_font_family_list_faces(long family, long [] faces, int[] n_faces) {
 	lock.lock();
 	try {
 		_pango_font_family_list_faces(family, faces, n_faces);
@@ -3737,8 +3737,8 @@ public static final int pango_layout_get_line_count(long layout) {
  * @param attrs cast=(PangoLogAttr **)
  * @param n_attrs cast=(int *)
  */
-public static final native void _pango_layout_get_log_attrs(long layout, long /*int*/[] attrs, int[] n_attrs);
-public static final void pango_layout_get_log_attrs(long layout, long /*int*/[] attrs, int[] n_attrs) {
+public static final native void _pango_layout_get_log_attrs(long layout, long [] attrs, int[] n_attrs);
+public static final void pango_layout_get_log_attrs(long layout, long [] attrs, int[] n_attrs) {
 	lock.lock();
 	try {
 		_pango_layout_get_log_attrs(layout, attrs, n_attrs);
@@ -4098,7 +4098,7 @@ public static final void pango_tab_array_set_tab(long tab_array, int tab_index, 
 /**
  * @method flags=dynamic
  */
-public static final native long /*int*/_ubuntu_menu_proxy_get();
+public static final native long _ubuntu_menu_proxy_get();
 public static final long ubuntu_menu_proxy_get() {
 	lock.lock();
 	try {
@@ -4187,9 +4187,9 @@ public static final byte [] getThemeNameBytes() {
  * @category gdbus
  */
 public static final native long _g_dbus_proxy_new_for_bus_sync (int bus_type, int flags, long info, byte [] name, byte [] object_path, byte [] interface_name,
-		long cancellable, long /*int*/[] error);
+		long cancellable, long [] error);
 public static final long g_dbus_proxy_new_for_bus_sync (int bus_type, int flags, long info, byte [] name, byte [] object_path, byte [] interface_name,
-		long cancellable, long /*int*/[] error) {
+		long cancellable, long [] error) {
   lock.lock();
   try {
     return _g_dbus_proxy_new_for_bus_sync (bus_type, flags, info, name, object_path, interface_name, cancellable, error);
@@ -4206,8 +4206,8 @@ public static final long g_dbus_proxy_new_for_bus_sync (int bus_type, int flags,
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native long _g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long /*int*/[] error);
-public static final long g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long /*int*/[] error) {
+public static final native long _g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error);
+public static final long g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error) {
 	lock.lock();
 	try {
 		return _g_dbus_proxy_call_sync (proxy, method_name, parameters, flags, timeout_msec, cancellable, error);
@@ -4225,8 +4225,8 @@ public static final long g_dbus_proxy_call_sync (long proxy, byte[] method_name,
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native void _g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long /*int*/[] error);
-public static final void g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long /*int*/[] error) {
+public static final native void _g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error);
+public static final void g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error) {
 	lock.lock();
 	try {
 		_g_dbus_proxy_call (proxy, method_name, parameters, flags, timeout_msec, cancellable, callback, error);
@@ -4241,8 +4241,8 @@ public static final void g_dbus_proxy_call (long proxy, byte[] method_name, long
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native long _g_dbus_proxy_call_finish (long proxy, long res, long /*int*/[] error);
-public static final long g_dbus_proxy_call_finish (long proxy, long res, long /*int*/[] error) {
+public static final native long _g_dbus_proxy_call_finish (long proxy, long res, long [] error);
+public static final long g_dbus_proxy_call_finish (long proxy, long res, long [] error) {
 	lock.lock();
 	try {
 		return _g_dbus_proxy_call_finish (proxy, res, error);
@@ -4256,9 +4256,9 @@ public static final long g_dbus_proxy_call_finish (long proxy, long res, long /*
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native long _g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error);
+public static final native long _g_dbus_node_info_new_for_xml (byte[] xml_data, long [] error);
 /** @category gdbus */
-public static final long g_dbus_node_info_new_for_xml (byte[] xml_data, long /*int*/[] error) {
+public static final long g_dbus_node_info_new_for_xml (byte[] xml_data, long [] error) {
   lock.lock();
   try {
     return _g_dbus_node_info_new_for_xml (xml_data, error);
@@ -4299,9 +4299,9 @@ public static final int g_bus_own_name (int bus_type, byte[] name, int flags, lo
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native int _g_dbus_connection_register_object (long connection, byte[] object_path, long interface_info, long /*int*/[] vtable, long user_data, long user_data_free_func, long /*int*/[] error);
+public static final native int _g_dbus_connection_register_object (long connection, byte[] object_path, long interface_info, long [] vtable, long user_data, long user_data_free_func, long [] error);
 /** @category gdbus */
-public static final int g_dbus_connection_register_object (long connection, byte[] object_path, long interface_info, long /*int*/[] vtable, long user_data, long user_data_free_func, long /*int*/[] error) {
+public static final int g_dbus_connection_register_object (long connection, byte[] object_path, long interface_info, long [] vtable, long user_data, long user_data_free_func, long [] error) {
 	lock.lock();
 	try {
 		return _g_dbus_connection_register_object( connection,  object_path,  interface_info,  vtable,  user_data,  user_data_free_func, error);
@@ -4665,9 +4665,9 @@ public static final long g_variant_new_byte (byte value) {
  * @param length cast=(gsize)
  * @category gdbus
  */
-public static final native long _g_variant_new_tuple (long /*int*/[] items, long length);
+public static final native long _g_variant_new_tuple (long [] items, long length);
 /** @category gdbus */
-public static final long g_variant_new_tuple (long /*int*/[] items, long length ) {
+public static final long g_variant_new_tuple (long [] items, long length ) {
 	lock.lock();
 	try {
 		return _g_variant_new_tuple (items, length);

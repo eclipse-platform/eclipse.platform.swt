@@ -90,7 +90,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		if (length == 0) continue;
 		char[] chars = new char[length];
 		string.getChars(0, length, chars, 0);
-		long /*int*/[] error = new long /*int*/[1];
+		long [] error = new long [1];
 		long utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
 		long localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
@@ -143,7 +143,7 @@ public Object nativeToJava(TransferData transferData) {
 	C.memmove(temp, transferData.pValue, length);
 	boolean gnomeList = transferData.type == GNOME_LIST_ID;
 	int sepLength = gnomeList ? 1 : 2;
-	long /*int*/[] files = new long /*int*/[0];
+	long [] files = new long [0];
 	int offset = 0;
 	for (int i = 0; i < temp.length - 1; i++) {
 		boolean terminator = gnomeList ? temp[i] == '\n' : temp[i] == '\r' && temp[i+1] == '\n';
@@ -155,7 +155,7 @@ public Object nativeToJava(TransferData transferData) {
 				byte[] fileBuffer = new byte[size + 1];
 				System.arraycopy(temp, offset, fileBuffer, 0, size);
 				C.memmove(file, fileBuffer, size + 1);
-				long /*int*/[] newFiles = new long /*int*/[files.length + 1];
+				long [] newFiles = new long [files.length + 1];
 				System.arraycopy(files, 0, newFiles, 0, files.length);
 				newFiles[files.length] = file;
 				files = newFiles;
@@ -169,14 +169,14 @@ public Object nativeToJava(TransferData transferData) {
 		byte[] fileBuffer = new byte[size + 1];
 		System.arraycopy(temp, offset, fileBuffer, 0, size);
 		C.memmove(file, fileBuffer, size + 1);
-		long /*int*/[] newFiles = new long /*int*/[files.length + 1];
+		long [] newFiles = new long [files.length + 1];
 		System.arraycopy(files, 0, newFiles, 0, files.length);
 		newFiles[files.length] = file;
 		files = newFiles;
 	}
 	String[] fileNames = new String[0];
 	for (int i = 0; i < files.length; i++) {
-		long /*int*/[] error = new long /*int*/[1];
+		long [] error = new long [1];
 		long localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
@@ -184,7 +184,7 @@ public Object nativeToJava(TransferData transferData) {
 		if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (localePtr);
 		if (localePtr != utf8Ptr) OS.g_free (localePtr);
 		if (utf8Ptr == 0) continue;
-		long /*int*/[] items_written = new long /*int*/[1];
+		long [] items_written = new long [1];
 		long utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
 		if (utf16Ptr == 0) continue;

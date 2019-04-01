@@ -262,7 +262,7 @@ static byte [] uriFromFilename(String filename) {
 	if (length == 0) return null;
 	char[] chars = new char[length];
 	filename.getChars(0, length, chars, 0);
-	long /*int*/[] error = new long /*int*/[1];
+	long [] error = new long [1];
 	long utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 	if (error[0] != 0 || utf8Ptr == 0) return null;
 	long localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);

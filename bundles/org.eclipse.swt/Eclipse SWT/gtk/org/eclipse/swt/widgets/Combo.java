@@ -2263,7 +2263,7 @@ void setButtonHandle (long widget) {
 	if (buttonHandle != 0) {
 		OS.g_object_ref (buttonHandle);
 		display.addWidget (buttonHandle, this);
-		hookEvents (new long /*int*/[]{buttonHandle});
+		hookEvents (new long []{buttonHandle});
 	}
 }
 
@@ -2277,7 +2277,7 @@ void setMenuHandle (long widget) {
 	if (menuHandle != 0) {
 		OS.g_object_ref (menuHandle);
 		display.addWidget (menuHandle, this);
-		hookEvents (new long /*int*/[]{menuHandle});
+		hookEvents (new long []{menuHandle});
 	}
 }
 

@@ -539,7 +539,7 @@ void createColumn (TableColumn column, int index) {
 		}
 		if (modelIndex == modelLength) {
 			long oldModel = modelHandle;
-			long /*int*/[] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
+			long [] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
 			long newModel = GTK.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 			long [] ptr = new long [1];
@@ -992,7 +992,7 @@ void destroyItem (TableColumn column) {
 	GTK.gtk_tree_view_remove_column (handle, columnHandle);
 	if (columnCount == 0) {
 		long oldModel = modelHandle;
-		long /*int*/[] types = getColumnTypes (1);
+		long [] types = getColumnTypes (1);
 		long newModel = GTK.gtk_list_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 		long [] ptr = new long [1];
@@ -1055,11 +1055,11 @@ void destroyItem (TableColumn column) {
 			if (item != null) {
 				long iter = item.handle;
 				int modelIndex = column.modelIndex;
-				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, (long /*int*/)0, -1);
-				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_TEXT, (long /*int*/)0, -1);
-				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long /*int*/)0, -1);
-				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long /*int*/)0, -1);
-				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long /*int*/)0, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, (long )0, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_TEXT, (long )0, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long )0, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long )0, -1);
+				GTK.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long )0, -1);
 
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
@@ -1279,8 +1279,8 @@ public int getColumnCount () {
 	return columnCount;
 }
 
-long /*int*/[] getColumnTypes (int columnCount) {
-	long /*int*/[] types = new long [FIRST_COLUMN + (columnCount * CELL_TYPES)];
+long [] getColumnTypes (int columnCount) {
+	long [] types = new long [FIRST_COLUMN + (columnCount * CELL_TYPES)];
 	// per row data
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();

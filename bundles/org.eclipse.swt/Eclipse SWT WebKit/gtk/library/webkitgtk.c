@@ -90,23 +90,23 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSContextGetGlobalObject)
 
 #ifndef NO__1JSEvaluateScript
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSEvaluateScript)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jintLongArray arg5)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jlongArray arg5)
 {
-	jintLong *lparg5=NULL;
+	jlong *lparg5=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSEvaluateScript_FUNC);
-	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)JSEvaluateScript(arg0, arg1, arg2, arg3, arg4, lparg5);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSEvaluateScript)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jint, jintLong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jint, jlong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
 		}
 	}
 fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSEvaluateScript_FUNC);
 	return rc;
 }
@@ -134,23 +134,23 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectGetPrivate)
 
 #ifndef NO__1JSObjectGetProperty
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectGetProperty)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jintLongArray arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlongArray arg3)
 {
-	jintLong *lparg3=NULL;
+	jlong *lparg3=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectGetProperty_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)JSObjectGetProperty(arg0, arg1, arg2, lparg3);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSObjectGetProperty)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong, jintLong *))fp)(arg0, arg1, arg2, lparg3);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong *))fp)(arg0, arg1, arg2, lparg3);
 		}
 	}
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectGetProperty_FUNC);
 	return rc;
 }
@@ -158,23 +158,23 @@ fail:
 
 #ifndef NO__1JSObjectGetPropertyAtIndex
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectGetPropertyAtIndex)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jintLongArray arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlongArray arg3)
 {
-	jintLong *lparg3=NULL;
+	jlong *lparg3=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectGetPropertyAtIndex_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)JSObjectGetPropertyAtIndex(arg0, arg1, arg2, lparg3);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSObjectGetPropertyAtIndex)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jint, jintLong *))fp)(arg0, arg1, arg2, lparg3);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jint, jlong *))fp)(arg0, arg1, arg2, lparg3);
 		}
 	}
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectGetPropertyAtIndex_FUNC);
 	return rc;
 }
@@ -202,26 +202,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectMake)
 
 #ifndef NO__1JSObjectMakeArray
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectMakeArray)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintLongArray arg2, jintLongArray arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3)
 {
-	jintLong *lparg2=NULL;
-	jintLong *lparg3=NULL;
+	jlong *lparg2=NULL;
+	jlong *lparg3=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectMakeArray_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)JSObjectMakeArray(arg0, arg1, lparg2, lparg3);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSObjectMakeArray)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jintLong *, jintLong *))fp)(arg0, arg1, lparg2, lparg3);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong *, jlong *))fp)(arg0, arg1, lparg2, lparg3);
 		}
 	}
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectMakeArray_FUNC);
 	return rc;
 }
@@ -249,22 +249,22 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSObjectMakeFunctionWithCallback)
 
 #ifndef NO__1JSObjectSetProperty
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1JSObjectSetProperty)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jintLongArray arg5)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jlongArray arg5)
 {
-	jintLong *lparg5=NULL;
+	jlong *lparg5=NULL;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectSetProperty_FUNC);
-	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
 /*
 	JSObjectSetProperty(arg0, arg1, arg2, arg3, arg4, lparg5);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSObjectSetProperty)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jint, jintLong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
+			((void (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jint, jlong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
 		}
 	}
 fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectSetProperty_FUNC);
 }
 #endif
@@ -521,23 +521,23 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSValueMakeUndefined)
 
 #ifndef NO__1JSValueToNumber
 JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(_1JSValueToNumber)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
+	jlong *lparg2=NULL;
 	jdouble rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSValueToNumber_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
 	rc = (jdouble)JSValueToNumber(arg0, arg1, lparg2);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSValueToNumber)
 		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jlong, jlong, jintLong *))fp)(arg0, arg1, lparg2);
+			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jlong, jlong, jlong *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSValueToNumber_FUNC);
 	return rc;
 }
@@ -545,23 +545,23 @@ fail:
 
 #ifndef NO__1JSValueToStringCopy
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1JSValueToStringCopy)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
+	jlong *lparg2=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSValueToStringCopy_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)JSValueToStringCopy(arg0, arg1, lparg2);
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, JSValueToStringCopy)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jintLong *))fp)(arg0, arg1, lparg2);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSValueToStringCopy_FUNC);
 	return rc;
 }
@@ -2694,13 +2694,13 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1web_1resource_1get_1data)
 
 #ifndef NO__1webkit_1web_1resource_1get_1data_1finish
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1resource_1get_1data_1finish)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintLongArray arg2, jlongArray arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3)
 {
-	jintLong *lparg2=NULL;
+	jlong *lparg2=NULL;
 	jlong *lparg3=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1resource_1get_1data_1finish_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)webkit_web_resource_get_data_finish(arg0, arg1, lparg2, lparg3);
@@ -2708,12 +2708,12 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1resource_1get_1data_1fin
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_resource_get_data_finish)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jintLong *, jlong *))fp)(arg0, arg1, lparg2, lparg3);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong *, jlong *))fp)(arg0, arg1, lparg2, lparg3);
 		}
 	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1resource_1get_1data_1finish_FUNC);
 	return rc;
 }
@@ -3303,12 +3303,12 @@ fail:
 
 #ifndef NO__1webkit_1web_1view_1run_1javascript_1finish
 JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript_1finish)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
+	jlong *lparg2=NULL;
 	jlong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1view_1run_1javascript_1finish_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)webkit_web_view_run_javascript_finish(arg0, arg1, (GError **)lparg2);
 */
@@ -3319,7 +3319,7 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1view_1run_1javascript_1f
 		}
 	}
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1view_1run_1javascript_1finish_FUNC);
 	return rc;
 }

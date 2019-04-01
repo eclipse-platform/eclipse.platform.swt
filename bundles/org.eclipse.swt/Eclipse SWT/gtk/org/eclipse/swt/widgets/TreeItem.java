@@ -305,7 +305,7 @@ void clear () {
 			GTK.gtk_tree_store_set (parent.modelHandle, handle, i, 0, -1);
 		}
 		for (int i=Tree.FOREGROUND_COLUMN; i<columnCount; i++) {
-			GTK.gtk_tree_store_set (parent.modelHandle, handle, i, (long /*int*/)0, -1);
+			GTK.gtk_tree_store_set (parent.modelHandle, handle, i, (long )0, -1);
 		}
 	}
 	cached = false;
@@ -1555,7 +1555,7 @@ public void setImage (int index, Image image) {
 			}
 		}
 	}
-	long /*int*/parentHandle = parent.handle;
+	long parentHandle = parent.handle;
 	long column = GTK.gtk_tree_view_get_column (parentHandle, index);
 	long pixbufRenderer = parent.getPixbufRenderer (column);
 	int [] currentWidth = new int [1];

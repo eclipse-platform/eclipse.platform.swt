@@ -398,7 +398,7 @@ long convertRgn(long rgn, double[] matrix) {
 		return newRgn;
 	}
 	int[] nRects = new int[1];
-	long /*int*/[] rects = new long /*int*/[1];
+	long [] rects = new long [1];
 	Region.cairo_region_get_rectangles(rgn, rects, nRects);
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
 	int[] pointArray = new int[8];

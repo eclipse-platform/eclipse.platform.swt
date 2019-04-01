@@ -476,7 +476,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	GCData data = gc.data;
 	long cairo = data.cairo;
 	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
-		long /*int*/[] attrs = new long /*int*/[1];
+		long [] attrs = new long [1];
 		int[] nAttrs = new int[1];
 		PangoLogAttr logAttr = new PangoLogAttr();
 		PangoRectangle rect = new PangoRectangle();
@@ -636,7 +636,7 @@ void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 			long rgn = GDK.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
 				int[] nRects = new int[1];
-				long /*int*/[] rects = new long /*int*/[1];
+				long [] rects = new long [1];
 				Region.cairo_region_get_rectangles(rgn, rects, nRects);
 				cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 				GdkRGBA colorRGBA = null;
@@ -1196,7 +1196,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	int step = forward ? 1 : -1;
 	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
-	long /*int*/[] attrs = new long /*int*/[1];
+	long [] attrs = new long [1];
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
 	if (attrs[0] == 0) return offset + step;

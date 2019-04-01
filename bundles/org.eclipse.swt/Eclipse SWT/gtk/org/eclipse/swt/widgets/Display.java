@@ -1183,7 +1183,7 @@ private int findLatinKeyGroup () {
 
 	// count all key groups for Latin alphabet
 	for (int keyval = GDK.GDK_KEY_a; keyval <= GDK.GDK_KEY_z; keyval++) {
-		long /*int*/[] keys = new long /*int*/[1];
+		long [] keys = new long [1];
 		int [] n_keys = new int [1];
 
 		if (GDK.gdk_keymap_get_entries_for_keyval (keymap, keyval, keys, n_keys)) {
@@ -1737,7 +1737,7 @@ public Control getCursorControl () {
 			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 		}
 		int[] unusedInt = new int[1];
-		long /*int*/[] unusedPtr = new long /*int*/[1], buffer = new long /*int*/[1];
+		long [] unusedPtr = new long [1], buffer = new long [1];
 		long xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
 		do {
 			if (OS.XQueryPointer (xDisplay, xParent, unusedPtr, buffer, unusedInt, unusedInt, unusedInt, unusedInt, unusedInt) == 0) {
@@ -2674,10 +2674,10 @@ Rectangle getWorkArea() {
 	byte[] name = Converter.wcsToMbcs ("_NET_WORKAREA", true); //$NON-NLS-1$
 	long atom = GDK.gdk_atom_intern (name, true);
 	if (atom == GDK.GDK_NONE) return null;
-	long /*int*/[] actualType = new long /*int*/[1];
+	long [] actualType = new long [1];
 	int[] actualFormat = new int[1];
 	int[] actualLength = new int[1];
-	long /*int*/[] data = new long /*int*/[1];
+	long [] data = new long [1];
 	if (!GDK.gdk_property_get (GDK.gdk_get_default_root_window(), atom, GDK.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data)) {
 		return null;
 	}
@@ -4549,7 +4549,7 @@ public boolean post (Event event) {
 					int raw_keyval = untranslateKey(event.keyCode);
 					if (raw_keyval == 0) raw_keyval = event.character;
 
-					long /*int*/[] keys_list = new long [1];
+					long [] keys_list = new long [1];
 					int [] n_keys = new int [1];
 					int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int[1];
 					int final_keyval = raw_keyval;

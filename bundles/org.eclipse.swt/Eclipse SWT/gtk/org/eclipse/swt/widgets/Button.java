@@ -981,7 +981,7 @@ private void gtk_swt_set_border_color (GdkRGBA rgba) {
 	}
 
 	// Apply the CSS
-	long /*int*/context = GTK.gtk_widget_get_style_context (handle);
+	long context = GTK.gtk_widget_get_style_context (handle);
 	gtk_css_provider_load_from_css (context, finalCss);
 }
 

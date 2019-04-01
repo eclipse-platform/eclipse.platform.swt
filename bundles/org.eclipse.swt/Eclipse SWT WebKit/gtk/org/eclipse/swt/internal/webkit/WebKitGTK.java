@@ -265,8 +265,8 @@ public static final long JSContextGetGlobalObject (long ctx) {
 }
 
 /** @method flags=dynamic */
-public static final native long _JSEvaluateScript (long ctx, long script, long thisObject, long sourceURL, int startingLineNumber, long /*int*/[] exception);
-public static final long JSEvaluateScript (long ctx, long script, long thisObject, long sourceURL, int startingLineNumber, long /*int*/[] exception) {
+public static final native long _JSEvaluateScript (long ctx, long script, long thisObject, long sourceURL, int startingLineNumber, long [] exception);
+public static final long JSEvaluateScript (long ctx, long script, long thisObject, long sourceURL, int startingLineNumber, long [] exception) {
 	lock.lock();
 	try {
 		return _JSEvaluateScript (ctx, script, thisObject, sourceURL, startingLineNumber, exception);
@@ -287,8 +287,8 @@ public static final long JSObjectGetPrivate (long object) {
 }
 
 /** @method flags=dynamic */
-public static final native long _JSObjectGetProperty (long ctx, long object, long propertyName, long /*int*/[] exception);
-public static final long JSObjectGetProperty (long ctx, long object, long propertyName, long /*int*/[] exception) {
+public static final native long _JSObjectGetProperty (long ctx, long object, long propertyName, long [] exception);
+public static final long JSObjectGetProperty (long ctx, long object, long propertyName, long [] exception) {
 	lock.lock();
 	try {
 		return _JSObjectGetProperty (ctx, object, propertyName, exception);
@@ -298,8 +298,8 @@ public static final long JSObjectGetProperty (long ctx, long object, long proper
 }
 
 /** @method flags=dynamic */
-public static final native long _JSObjectGetPropertyAtIndex (long ctx, long object, int propertyIndex, long /*int*/[] exception);
-public static final long JSObjectGetPropertyAtIndex (long ctx, long object, int propertyIndex, long /*int*/[] exception) {
+public static final native long _JSObjectGetPropertyAtIndex (long ctx, long object, int propertyIndex, long [] exception);
+public static final long JSObjectGetPropertyAtIndex (long ctx, long object, int propertyIndex, long [] exception) {
 	lock.lock();
 	try {
 		return _JSObjectGetPropertyAtIndex (ctx, object, propertyIndex, exception);
@@ -320,8 +320,8 @@ public static final long JSObjectMake (long ctx, long jsClass, long data) {
 }
 
 /** @method flags=dynamic */
-public static final native long _JSObjectMakeArray (long ctx, long argumentCount, long /*int*/[] arguments, long /*int*/[] exception);
-public static final long JSObjectMakeArray (long ctx, long argumentCount, long /*int*/[] arguments, long /*int*/[] exception) {
+public static final native long _JSObjectMakeArray (long ctx, long argumentCount, long [] arguments, long [] exception);
+public static final long JSObjectMakeArray (long ctx, long argumentCount, long [] arguments, long [] exception) {
 	lock.lock();
 	try {
 		return _JSObjectMakeArray (ctx, argumentCount, arguments, exception);
@@ -342,8 +342,8 @@ public static final long JSObjectMakeFunctionWithCallback (long ctx, long name, 
 }
 
 /** @method flags=dynamic */
-public static final native void _JSObjectSetProperty (long ctx, long object, long propertyName, long value, int attributes, long /*int*/[] exception);
-public static final void JSObjectSetProperty (long ctx, long object, long propertyName, long value, int attributes, long /*int*/[] exception) {
+public static final native void _JSObjectSetProperty (long ctx, long object, long propertyName, long value, int attributes, long [] exception);
+public static final void JSObjectSetProperty (long ctx, long object, long propertyName, long value, int attributes, long [] exception) {
 	lock.lock();
 	try {
 		_JSObjectSetProperty (ctx, object, propertyName, value, attributes, exception);
@@ -499,8 +499,8 @@ public static final long JSValueMakeUndefined (long ctx) {
 }
 
 /** @method flags=dynamic */
-public static final native double _JSValueToNumber (long ctx, long value, long /*int*/[] exception);
-public static final double JSValueToNumber (long ctx, long value, long /*int*/[] exception) {
+public static final native double _JSValueToNumber (long ctx, long value, long [] exception);
+public static final double JSValueToNumber (long ctx, long value, long [] exception) {
 	lock.lock();
 	try {
 		return _JSValueToNumber (ctx, value, exception);
@@ -510,8 +510,8 @@ public static final double JSValueToNumber (long ctx, long value, long /*int*/[]
 }
 
 /** @method flags=dynamic */
-public static final native long _JSValueToStringCopy (long ctx, long value, long /*int*/[] exception);
-public static final long JSValueToStringCopy (long ctx, long value, long /*int*/[] exception) {
+public static final native long _JSValueToStringCopy (long ctx, long value, long [] exception);
+public static final long JSValueToStringCopy (long ctx, long value, long [] exception) {
 	lock.lock();
 	try {
 		return _JSValueToStringCopy (ctx, value, exception);
@@ -2029,8 +2029,8 @@ public static final void webkit_web_resource_get_data (long webKitWebResource, l
 }
 
 /** @method flags=dynamic */
-public static final native long _webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long /*int*/[] gsize, long GError[]);
-public static final long webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long /*int*/[] gsize, long GError[]) {
+public static final native long _webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long [] gsize, long GError[]);
+public static final long webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long [] gsize, long GError[]) {
 	assert WEBKIT2 : Webkit2AssertMsg;
 	lock.lock();
 	try {
@@ -2045,9 +2045,9 @@ public static final long webkit_web_resource_get_data_finish(long WebKitWebResou
  * @method flags=dynamic
  * @param gerror cast=(GError **)
  */
-public static final native long _webkit_web_view_run_javascript_finish(long web_view, long GAsyncResult, long /*int*/[] gerror);
+public static final native long _webkit_web_view_run_javascript_finish(long web_view, long GAsyncResult, long [] gerror);
 /**WebKitJavascriptResult * webkit_web_view_run_javascript_finish (WebKitWebView *web_view, GAsyncResult *result, GError **error);*/
-public static long webkit_web_view_run_javascript_finish(long web_view, long GAsyncResult, long /*int*/[] gerror) {
+public static long webkit_web_view_run_javascript_finish(long web_view, long GAsyncResult, long [] gerror) {
 	assert WEBKIT2 : Webkit2AssertMsg;
 	lock.lock();
 	try {

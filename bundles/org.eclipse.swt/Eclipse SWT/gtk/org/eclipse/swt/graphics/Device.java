@@ -418,11 +418,11 @@ public Point getDPI () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	long /*int*/[] family = new long /*int*/[1];
-	long /*int*/[] face = new long /*int*/[1];
-	long /*int*/[] families = new long /*int*/[1];
+	long [] family = new long [1];
+	long [] face = new long [1];
+	long [] families = new long [1];
 	int[] n_families = new int[1];
-	long /*int*/[] faces = new long /*int*/[1];
+	long [] faces = new long [1];
 	int[] n_faces = new int[1];
 	long context;
 	if (GTK.GTK4) {

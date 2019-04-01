@@ -559,11 +559,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1image_1set_1from_1pixbuf",
 	"_1gtk_1image_1set_1pixel_1size",
 	"_1gtk_1init_1check__",
-#ifndef JNI64
-	"_1gtk_1init_1check___3I_3I",
-#else
 	"_1gtk_1init_1check___3J_3J",
-#endif
 	"_1gtk_1label_1get_1layout",
 	"_1gtk_1label_1get_1mnemonic_1keyval",
 	"_1gtk_1label_1get_1type",
@@ -1336,16 +1332,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1utf8_1offset_1to_1utf16_1offset",
 	"_1g_1utf8_1pointer_1to_1offset",
 	"_1g_1utf8_1strlen",
-#ifndef JNI64
-	"_1g_1utf8_1to_1utf16__JJ_3I_3I_3I",
-#else
 	"_1g_1utf8_1to_1utf16__JJ_3J_3J_3J",
-#endif
-#ifndef JNI64
-	"_1g_1utf8_1to_1utf16___3BJ_3I_3I_3I",
-#else
 	"_1g_1utf8_1to_1utf16___3BJ_3J_3J_3J",
-#endif
 	"_1g_1value_1peek_1pointer",
 	"_1g_1variant_1builder_1add_1value",
 	"_1g_1variant_1builder_1end",

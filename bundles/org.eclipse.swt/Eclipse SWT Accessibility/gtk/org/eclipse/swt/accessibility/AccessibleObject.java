@@ -941,7 +941,7 @@ class AccessibleObject {
 			int length = size(listeners);
 			if (length > 0) {
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
-				event.index = (int)/*int*/link_index;
+				event.index = (int)link_index;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = listeners.get(i);
 					listener.getHyperlink(event);
@@ -1017,7 +1017,7 @@ class AccessibleObject {
 			int length = size(listeners);
 			if (length > 0) {
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
-				event.offset = (int)/*int*/char_index;
+				event.offset = (int)char_index;
 				event.index = -1;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = listeners.get(i);
@@ -2327,7 +2327,7 @@ class AccessibleObject {
 				int count = event.selected != null ? event.selected.length : 0;
 				long result = OS.g_malloc(count * 4);
 				if (event.selected != null) C.memmove(result, event.selected, count * 4);
-				if (selected != 0) C.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
+				if (selected != 0) C.memmove(selected, new long []{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}
@@ -2369,7 +2369,7 @@ class AccessibleObject {
 				int count = event.selected != null ? event.selected.length : 0;
 				long result = OS.g_malloc(count * 4);
 				if (event.selected != null) C.memmove(result, event.selected, count * 4);
-				if (selected != 0) C.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
+				if (selected != 0) C.memmove(selected, new long []{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}

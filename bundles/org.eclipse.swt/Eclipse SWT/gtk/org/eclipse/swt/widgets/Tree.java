@@ -731,10 +731,10 @@ void createColumn (TreeColumn column, int index) {
 		}
 		if (modelIndex == modelLength) {
 			long oldModel = modelHandle;
-			long /*int*/[] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
+			long [] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
 			long newModel = GTK.gtk_tree_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, types, (long /*int*/)0, (long /*int*/)0, modelLength);
+			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, types, (long )0, (long )0, modelLength);
 			GTK.gtk_tree_view_set_model (handle, newModel);
 			setModel (newModel);
 		}
@@ -1096,10 +1096,10 @@ void destroyItem (TreeColumn column) {
 	GTK.gtk_tree_view_remove_column (handle, columnHandle);
 	if (columnCount == 0) {
 		long oldModel = modelHandle;
-		long /*int*/[] types = getColumnTypes (1);
+		long [] types = getColumnTypes (1);
 		long newModel = GTK.gtk_tree_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-		copyModel(oldModel, column.modelIndex, newModel, FIRST_COLUMN, types, (long /*int*/)0, (long /*int*/)0, FIRST_COLUMN + CELL_TYPES);
+		copyModel(oldModel, column.modelIndex, newModel, FIRST_COLUMN, types, (long )0, (long )0, FIRST_COLUMN + CELL_TYPES);
 		GTK.gtk_tree_view_set_model (handle, newModel);
 		setModel (newModel);
 		createColumn (null, 0);
@@ -1109,11 +1109,11 @@ void destroyItem (TreeColumn column) {
 			if (item != null) {
 				long iter = item.handle;
 				int modelIndex = column.modelIndex;
-				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, (long /*int*/)0, -1);
-				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_TEXT, (long /*int*/)0, -1);
-				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long /*int*/)0, -1);
-				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long /*int*/)0, -1);
-				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long /*int*/)0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_TEXT, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (long )0, -1);
+				GTK.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (long )0, -1);
 
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
@@ -1380,8 +1380,8 @@ public int [] getColumnOrder () {
 	return order;
 }
 
-long /*int*/[] getColumnTypes (int columnCount) {
-	long /*int*/[] types = new long [FIRST_COLUMN + (columnCount * CELL_TYPES)];
+long [] getColumnTypes (int columnCount) {
+	long [] types = new long [FIRST_COLUMN + (columnCount * CELL_TYPES)];
 	// per row data
 	types [ID_COLUMN] = OS.G_TYPE_INT ();
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();

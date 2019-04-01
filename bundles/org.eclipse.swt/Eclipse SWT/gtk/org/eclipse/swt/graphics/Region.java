@@ -129,7 +129,7 @@ static long gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
 	return polyRgn;
 }
 
-static void cairo_region_get_rectangles(long region, long /*int*/[] rectangles, int[] n_rectangles) {
+static void cairo_region_get_rectangles(long region, long [] rectangles, int[] n_rectangles) {
 	int num = Cairo.cairo_region_num_rectangles (region);
 	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(cairo_rectangle_int_t.sizeof * num);
