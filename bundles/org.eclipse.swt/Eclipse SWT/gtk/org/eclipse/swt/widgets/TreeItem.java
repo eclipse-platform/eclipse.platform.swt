@@ -1094,11 +1094,12 @@ void releaseWidget () {
 @Override
 public void dispose () {
 	// Workaround to Bug489751, avoid selecting next node when selected node is disposed.
+	Tree tmpParent = null;
 	if (parent != null && parent.getItemCount() > 0 && parent.getSelectionCount() == 0) {
-		parent.setSelection(parent.getItem(0));
-		parent.deselectAll();
+		tmpParent = parent;
 	}
 	super.dispose();
+	if (tmpParent != null) tmpParent.deselectAll();
 }
 
 /**

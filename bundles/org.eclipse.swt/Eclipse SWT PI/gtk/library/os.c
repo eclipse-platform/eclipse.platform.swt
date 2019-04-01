@@ -11404,17 +11404,17 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1columns)
 
 #ifndef NO__1gtk_1tree_1view_1get_1cursor
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1view_1get_1cursor)
-	(JNIEnv *env, jclass that, jlong arg0, jintLongArray arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1, jlongArray arg2)
 {
-	jintLong *lparg1=NULL;
-	jintLong *lparg2=NULL;
+	jlong *lparg1=NULL;
+	jlong *lparg2=NULL;
 	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1cursor_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	gtk_tree_view_get_cursor((GtkTreeView *)arg0, (GtkTreePath **)lparg1, (GtkTreeViewColumn **)lparg2);
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1cursor_FUNC);
 }
 #endif

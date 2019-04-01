@@ -8076,8 +8076,8 @@ public class GTK extends OS {
 	 * @param path cast=(GtkTreePath **)
 	 * @param focus_column cast=(GtkTreeViewColumn **)
 	 */
-	public static final native void _gtk_tree_view_get_cursor(long tree_view, long /*int*/[] path, long /*int*/[] focus_column);
-	public static final void gtk_tree_view_get_cursor(long tree_view, long /*int*/[] path, long /*int*/[] focus_column) {
+	public static final native void _gtk_tree_view_get_cursor(long tree_view, long [] path, long [] focus_column);
+	public static final void gtk_tree_view_get_cursor(long tree_view, long [] path, long [] focus_column) {
 		lock.lock();
 		try {
 			_gtk_tree_view_get_cursor(tree_view, path, focus_column);
