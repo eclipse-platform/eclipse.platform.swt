@@ -42,7 +42,7 @@ public class TreeItem extends Item {
 	Font font;
 	Font[] cellFont;
 	String [] strings;
-	boolean cached, grayed, isExpanded, updated;
+	boolean cached, grayed, isExpanded, updated, settingData;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**

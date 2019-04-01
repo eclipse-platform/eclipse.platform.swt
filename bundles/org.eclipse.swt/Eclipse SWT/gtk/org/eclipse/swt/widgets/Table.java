@@ -279,7 +279,9 @@ boolean checkData (TableItem item) {
 		int signal_id = OS.g_signal_lookup (OS.row_changed, GTK.gtk_tree_model_get_type ());
 		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
 		currentItem = item;
+		item.settingData = true;
 		sendEvent (SWT.SetData, event);
+		item.settingData = false;
 		//widget could be disposed at this point
 		currentItem = null;
 		if (isDisposed ()) return false;
@@ -2673,6 +2675,7 @@ public void remove (int start, int end) {
 		removeAll();
 		return;
 	}
+	checkSetDataInProcessBeforeRemoval(start, end + 1);
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2773,6 +2776,7 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
+	checkSetDataInProcessBeforeRemoval(0, items.length);
 	int index = itemCount - 1;
 	while (index >= 0) {
 		TableItem item = items [index];
@@ -4225,4 +4229,32 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 	return sizes;
 }
 
+/**
+ * Check the table item range [start, end) for items that are in process of
+ * sending {@code SWT#SetData} event. If such items exist, throw an exception.
+ *
+ * Does nothing if the given range contains no indices,
+ * or if we are below GTK 3.22.0 or are using GTK 4.
+ *
+ * @param start index of first item to check
+ * @param end index after the last item to check
+ */
+void checkSetDataInProcessBeforeRemoval(int start, int end) {
+	/*
+	 * Bug 182598 - assertion failed in gtktreestore.c
+	 *
+	 * To prevent a crash in GTK, we ensure we are not setting data on the tree items we are about to remove.
+	 * Removing an item while its data is being set will invalidate it, which will cause a crash.
+	 *
+	 * We therefore throw an exception to prevent the crash.
+	 */
+	for (int i = start; i < end; i++) {
+		TableItem item = items[i];
+		if (item != null && item.settingData) {
+			String message = "Cannot remove a table item while its data is being set. "
+					+ "At item " + i + " in range [" + start + ", " + end + ").";
+			throw new SWTException(message);
+		}
+	}
+}
 }
