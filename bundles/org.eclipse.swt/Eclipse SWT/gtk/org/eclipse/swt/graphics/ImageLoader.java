@@ -424,24 +424,6 @@ static long gdk_pixbuf_new_from_file(String filename) {
 }
 
 /**
- * Convert java object ImageData to a new GdkPixbuf for saving
- * @param imgData
- * @return
- */
-static long imageDataToPixbuf(ImageData imgData) {
-	int colorspace = GDK.GDK_COLORSPACE_RGB;
-	boolean has_alpha = imgData.alphaData != null;
-	int width = imgData.width;
-	int height = imgData.height;
-	int rowstride = imgData.scanlinePad;
-	long buffer_ptr = OS.g_malloc(imgData.data.length);
-	C.memmove(buffer_ptr, imgData.data, imgData.data.length);
-	long pixbuf = GDK.gdk_pixbuf_new_from_data (buffer_ptr, colorspace, has_alpha, 8, width, height, rowstride, 0, 0);
-	OS.g_free(buffer_ptr);
-	return pixbuf;
-}
-
-/**
  * Saves the image data in this ImageLoader to the specified stream.
  * The format parameter can have one of the following values:
  * <dl>
@@ -476,11 +458,60 @@ static long imageDataToPixbuf(ImageData imgData) {
 public void save(OutputStream stream, int format) {
 	if (stream == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (format == -1) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
-	long pixbuf = imageDataToPixbuf(this.data[0]);
-	if (pixbuf == 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (this.data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	ImageData imgData = this.data [0];
+	int colorspace = GDK.GDK_COLORSPACE_RGB;
+	boolean has_alpha = imgData.alphaData != null;
+	int width = imgData.width;
+	int height = imgData.height;
+	int n_channels = imgData.bytesPerLine / width;	// original n_channels 3 or 4
+	int bytes_per_pixel = imgData.bytesPerLine / width; // n_channels for original ImageData (width * height * bytes_per_pixel) = imgData.length
+
+	if (has_alpha && bytes_per_pixel == 3) {
+		// Original is RGB -> we want RGBA
+		bytes_per_pixel += 1;
+	}
+	int oa, or, og, ob;
+	if (OS.BIG_ENDIAN) {
+		oa = 0; or = 1; og = 2; ob = 3;
+	} else {
+		oa = 3; or = 2; og = 1; ob = 0;
+	}
+	byte[] srcData = new byte[(width * height * bytes_per_pixel)];
+
+	if (has_alpha) {
+		for (int y = 0, offset = 0, new_offset = 0, alphaOffset = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, offset += n_channels, new_offset += bytes_per_pixel) {
+				byte a = imgData.alphaData[alphaOffset++];
+				int offset_alpha = n_channels == 4 ? 1 : 0;
+				byte r = imgData.data[offset + offset_alpha + 0];
+				byte g = imgData.data[offset + offset_alpha + 1];
+				byte b = imgData.data[offset + offset_alpha + 2];
+
+				srcData[new_offset + ob] = b;
+				srcData[new_offset + og] = g;
+				srcData[new_offset + or] = r;
+				srcData[new_offset + oa] = a;
+			}
+		}
+	} else {
+		srcData = imgData.data;
+	}
+
+	// Get GdkPixbuf from pixel data buffer
+	long buffer_ptr = OS.g_malloc(srcData.length);
+	C.memmove(buffer_ptr, srcData, srcData.length);
+	int rowstride = srcData.length / height;
+	long pixbuf = GDK.gdk_pixbuf_new_from_data (buffer_ptr, colorspace, has_alpha, 8, width, height, rowstride, 0, 0);
+	if (pixbuf == 0) {
+		OS.g_free(buffer_ptr);
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+
 	// Write pixbuf to byte array and then to OutputStream
 	String typeStr = "";
 	switch (format) {
+		case SWT.IMAGE_BMP_RLE: typeStr = "bmp"; break;
 		case SWT.IMAGE_BMP: typeStr = "bmp"; break;
 		case SWT.IMAGE_GIF: typeStr = "gif"; break;
 		case SWT.IMAGE_ICO: typeStr = "ico"; break;
@@ -488,18 +519,26 @@ public void save(OutputStream stream, int format) {
 		case SWT.IMAGE_PNG: typeStr = "png"; break;
 		case SWT.IMAGE_TIFF: typeStr = "tiff"; break;
 	}
-	byte[] type = Converter.wcsToMbcs(typeStr, true);
+
+	byte [] type = Converter.wcsToMbcs(typeStr, true);
+
 	long [] buffer = new long [1];
+	if (type == null || typeStr == "") {
+		OS.g_free(buffer_ptr);
+		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	}
 	long [] len = new long [1];
-	if (type == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 	byte[] byteArray = new byte[(int) len[0]];
 	C.memmove(byteArray, buffer[0], byteArray.length);
 	try {
 		stream.write(byteArray);
 	} catch (IOException e) {
+		OS.g_free(buffer_ptr);
 		SWT.error(SWT.ERROR_IO);
 	}
+	// must free buffer_ptr last otherwise we get half/corrupted image
+	OS.g_free(buffer_ptr);
 }
 
 /**
