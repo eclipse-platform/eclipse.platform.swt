@@ -1405,7 +1405,7 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param animation cast=(const GdkPixbufAnimation *) */
+	/** @param animation cast=(GdkPixbufAnimation *) */
 	public static final native boolean _gdk_pixbuf_animation_is_static_image(long animation);
 	public static final boolean gdk_pixbuf_animation_is_static_image(long animation) {
 		lock.lock();
@@ -1415,7 +1415,7 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param iter cast=(const GdkPixbufAnimationIter *) */
+	/** @param iter cast=(GdkPixbufAnimationIter *) */
 	public static final native int _gdk_pixbuf_animation_iter_get_delay_time(long iter);
 	public static final int gdk_pixbuf_animation_iter_get_delay_time(long iter) {
 		lock.lock();
@@ -1425,7 +1425,7 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param iter cast=(const GdkPixbufAnimationIter *) */
+	/** @param iter cast=(GdkPixbufAnimationIter *) */
 	public static final native long _gdk_pixbuf_animation_iter_get_pixbuf(long iter);
 	public static final long gdk_pixbuf_animation_iter_get_pixbuf(long iter) {
 		lock.lock();
@@ -1436,7 +1436,7 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param iter cast=(const GdkPixbufAnimationIter *)
+	 * @param iter cast=(GdkPixbufAnimationIter *)
 	 * @param current_time cast=(const GTimeVal *)
 	 */
 	public static final native boolean _gdk_pixbuf_animation_iter_advance(long iter, long current_time);
@@ -1449,7 +1449,7 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param animation cast=(const GdkPixbufAnimation *)
+	 * @param animation cast=(GdkPixbufAnimation *)
 	 * @param start_time cast=(const GTimeVal *)
 	 */
 	public static final native long _gdk_pixbuf_animation_get_iter(long animation, long start_time);
@@ -1461,7 +1461,7 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param animation cast=(const GdkPixbufAnimation *) */
+	/** @param animation cast=(GdkPixbufAnimation *) */
 	public static final native long _gdk_pixbuf_animation_get_static_image(long animation);
 	public static final long gdk_pixbuf_animation_get_static_image(long animation) {
 		lock.lock();
@@ -1584,7 +1584,7 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
-	/** @param format cast=(const GdkPixbufFormat *) */
+	/** @param format cast=(GdkPixbufFormat *) */
 	public static final native long _gdk_pixbuf_format_get_name(long format);
 	public static final long gdk_pixbuf_format_get_name(long format) {
 		lock.lock();
