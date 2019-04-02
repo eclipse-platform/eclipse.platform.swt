@@ -2232,7 +2232,7 @@ public void remove (int start, int end) {
 	if (start == 0 && end == itemCount - 1) {
 		removeAll ();
 	} else {
-		int length = end - start + 1;
+		int numOfItemsRemoved = end - start + 1;
 		for (int i=start; i<=end; i++) {
 			TableItem item = items [i];
 			if (item != null) item.release (false);
@@ -2249,7 +2249,7 @@ public void remove (int start, int end) {
 					int newIndex = newCount++;
 					selection [newIndex] = selection [i];
 					if (selection [newIndex] > end) {
-						selection [newIndex] -= length;
+						selection [newIndex] -= numOfItemsRemoved;
 						fix = true;
 					}
 				}
@@ -2257,11 +2257,11 @@ public void remove (int start, int end) {
 			if (fix) select (selection, newCount, true);
 		}
 		//fix items array
-		System.arraycopy (items, start + length, items, start, itemCount - (start + length));
-		for (int i = itemCount; i < items.length; i++) {
+		System.arraycopy (items, start + numOfItemsRemoved, items, start, itemCount - (start + numOfItemsRemoved));
+		for (int i = itemCount - numOfItemsRemoved; i < itemCount; i++) {
 			items [i] = null;
 		}
-		itemCount -= length;
+		itemCount -= numOfItemsRemoved;
 		updateRowCount();
 	}
 	if (itemCount == 0) {
