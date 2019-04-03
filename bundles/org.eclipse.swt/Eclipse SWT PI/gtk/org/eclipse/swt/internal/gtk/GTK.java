@@ -4034,28 +4034,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	public static final native long _gtk_style_context_new ();
-	public static final long gtk_style_context_new() {
-		lock.lock();
-		try {
-			return _gtk_style_context_new();
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param path cast=(GtkWidgetPath *)
-	 */
-	public static final native void _gtk_style_context_set_path (long context, long path);
-	public static final void gtk_style_context_set_path(long context, long path) {
-		lock.lock();
-		try {
-			_gtk_style_context_set_path(context, path);
-		} finally {
-			lock.unlock();
-		}
-	}
 	/**
 	 * @param list_store cast=(GtkListStore *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -7090,6 +7068,28 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	public static final native long _gtk_tooltip_get_type();
+	public static final long gtk_tooltip_get_type() {
+		lock.lock();
+		try {
+			return _gtk_tooltip_get_type();
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param tooltip cast=(GtkTooltip *)
+	 * @param custom_widget cast=(GtkWidget *)
+	 */
+	public static final native void _gtk_tooltip_set_custom(long tooltip, long custom_widget);
+	public static final void gtk_tooltip_set_custom(long tooltip, long custom_widget) {
+		lock.lock();
+		try {
+			_gtk_tooltip_set_custom(tooltip, custom_widget);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/**
 	 * @param tree_model cast=(GtkTreeModel *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -8885,56 +8885,6 @@ public class GTK extends OS {
 		lock.lock();
 		try {
 			_gtk_widget_override_font(widget, font);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param path cast=(GtkWidgetPath *)
-	 * @param type cast=(GType)
-	 */
-	public static final native long _gtk_widget_path_append_type (long path, long type);
-	public static final long gtk_widget_path_append_type(long path, long type) {
-		lock.lock();
-		try {
-			return _gtk_widget_path_append_type(path, type);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @param path cast=(GtkWidgetPath *)
-	 */
-	public static final native void _gtk_widget_path_free (long path);
-	public static final void gtk_widget_path_free(long path) {
-		lock.lock();
-		try {
-			_gtk_widget_path_free(path);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 * @param path cast=(GtkWidgetPath *)
-	 * @param pos cast=(gint)
-	 * @param name cast=(const char *)
-	 */
-	public static final native long _gtk_widget_path_iter_set_object_name (long path, long pos, byte[] name);
-	/** [since 3.20] */
-	public static final long gtk_widget_path_iter_set_object_name(long path, long pos, byte[] name) {
-		lock.lock();
-		try {
-			return _gtk_widget_path_iter_set_object_name(path, pos, name);
-		} finally {
-			lock.unlock();
-		}
-	}
-	public static final native long _gtk_widget_path_new ();
-	public static final long gtk_widget_path_new() {
-		lock.lock();
-		try {
-			return _gtk_widget_path_new();
 		} finally {
 			lock.unlock();
 		}
