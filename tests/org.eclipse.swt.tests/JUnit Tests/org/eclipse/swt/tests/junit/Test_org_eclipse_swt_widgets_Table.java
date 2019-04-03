@@ -825,6 +825,11 @@ public void test_removeAll() {
 
 	table.removeAll();
 
+	assertEquals(0, table.getItemCount());
+	for (int i = 0; i <= number-1; i++) {
+		assertTrue(items[i].isDisposed());
+	}
+
 	makeCleanEnvironment(false);
 
 	for (int i = 0; i < number; i++)
@@ -832,6 +837,8 @@ public void test_removeAll() {
 
 	table.removeAll();
 	table.removeAll();
+
+	assertArrayEquals(new TableItem[] {}, table.getItems());
 }
 
 @Test
@@ -852,6 +859,12 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(2, 3);
 	assertArrayEquals(new TableItem[]{items[0], items[1], items[4]}, table.getItems());
+	// Make sure the removed items are disposed and other items are not.
+	assertFalse(items[0].isDisposed());
+	assertFalse(items[1].isDisposed());
+	assertTrue(items[2].isDisposed());
+	assertTrue(items[3].isDisposed());
+	assertFalse(items[4].isDisposed());
 
 	makeCleanEnvironment(false);
 
@@ -882,6 +895,12 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(2, number-1);
 	assertArrayEquals(new TableItem[] {items[0], items[1]}, table.getItems());
+	for (int i = 0; i < 2; i++) {
+		assertFalse(items[i].isDisposed());
+	}
+	for (int i = 2; i <= number-1; i++) {
+		assertTrue(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -889,6 +908,12 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(0, 3);
 	assertArrayEquals(new TableItem[] {items[4]}, table.getItems());
+	for (int i = 0; i <= 3; i++) {
+		assertTrue(items[i].isDisposed());
+	}
+	for (int i = 4; i < number; i++) {
+		assertFalse(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -896,6 +921,9 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(0, number-1);
 	assertArrayEquals(new TableItem[] {}, table.getItems());
+	for (int i = 0; i <= number-1; i++) {
+		assertTrue(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -938,6 +966,10 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(2, 2);
 	assertArrayEquals(new TableItem[]{items[0], items[1], items[3], items[4]}, table.getItems());
+	assertTrue(items[2].isDisposed());
+	for (int i = 0; i < number && i != 2; i++) {
+		assertFalse(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -945,6 +977,10 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(0, 0);
 	assertArrayEquals(new TableItem[]{items[1], items[2], items[3], items[4]}, table.getItems());
+	assertTrue(items[0].isDisposed());
+	for (int i = 1; i < number; i++) {
+		assertFalse(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -952,6 +988,10 @@ public void test_removeII() {
 		items[i] = new TableItem(table, 0);
 	table.remove(4, 4);
 	assertArrayEquals(new TableItem[]{items[0], items[1], items[2], items[3]}, table.getItems());
+	assertTrue(items[4].isDisposed());
+	for (int i = 0; i < number && i != 4; i++) {
+		assertFalse(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -970,6 +1010,12 @@ public void test_removeII() {
 	table.remove(0, 2);
 	assertEquals(number - 3, table.getItemCount());
 	assertArrayEquals(new TableItem[] {items[3], items[4]}, table.getItems());
+	for (int i = 0; i < 2; i++) {
+		assertTrue(items[i].isDisposed());
+	}
+	for (int i = 3; i < number; i++) {
+		assertFalse(items[i].isDisposed());
+	}
 	try {
 		table.remove(1, 200);
 		fail("No exception thrown for illegal index range");
@@ -984,6 +1030,9 @@ public void test_removeII() {
 
 	table.remove(0, number-1);
 	assertEquals(0, table.getItemCount());
+	for (int i = 0; i <= number-1; i++) {
+		assertTrue(items[i].isDisposed());
+	}
 
 	makeCleanEnvironment(false);
 
@@ -1012,6 +1061,12 @@ public void test_removeII() {
 
 	table.remove(new int[] {2, 1, 0, 5, 5});
 	assertEquals(number-4, table.getItemCount());
+	assertTrue(items[0].isDisposed());
+	assertTrue(items[1].isDisposed());
+	assertTrue(items[2].isDisposed());
+	assertFalse(items[3].isDisposed());
+	assertFalse(items[4].isDisposed());
+	assertTrue(items[5].isDisposed());
 }
 
 @Test
