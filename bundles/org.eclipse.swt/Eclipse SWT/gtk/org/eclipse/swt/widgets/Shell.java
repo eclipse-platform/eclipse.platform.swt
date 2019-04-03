@@ -3095,8 +3095,15 @@ void checkAndUnrabFocus () {
 	 * assumes that GdkSeat are the same for parent and child, which seems to be the case.
 	 */
 	if (requiresUngrab() && !isMappedToPopup() && grabbedFocus) {
-		long window = gtk_widget_get_window (shellHandle);
-		long seat = GDK.gdk_display_get_default_seat(GDK.gdk_window_get_display(window));
+		long gdkResource, display;
+		if (GTK.GTK4) {
+			gdkResource = gtk_widget_get_surface (shellHandle);
+			display = GDK.gdk_surface_get_display(gdkResource);
+		} else {
+			gdkResource = gtk_widget_get_window (shellHandle);
+			display = GDK.gdk_window_get_display(gdkResource);
+		}
+		long seat = GDK.gdk_display_get_default_seat(display);
 		GDK.gdk_seat_ungrab(seat);
 		GTK.gtk_grab_remove(shellHandle);
 		grabbedFocus = false;
