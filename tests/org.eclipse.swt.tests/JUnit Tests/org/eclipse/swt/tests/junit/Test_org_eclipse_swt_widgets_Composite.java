@@ -15,6 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,19 +119,25 @@ public void test_setVisibility_and_sizing() {
 
 @Test
 public void test_setFocus_toChild_afterOpen() {
-	Button focusChild = new Button(composite, SWT.PUSH);
+	Text focusChild = new Text(composite, SWT.NONE);
 	shell.open();
-	shell.forceActive();
+	if (SwtTestUtil.isGTK) {
+		shell.forceActive();
+	}
+	assertEquals(shell, shell.getDisplay().getActiveShell());
 	composite.setFocus();
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
 
 @Test
 public void test_setFocus_toChild_beforeOpen() {
-	Button focusChild = new Button(composite, SWT.PUSH);
+	Text focusChild = new Text(composite, SWT.NONE);
 	composite.setFocus();
 	shell.open();
-	shell.forceActive();
+	if (SwtTestUtil.isGTK) {
+		shell.forceActive();
+	}
+	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
 

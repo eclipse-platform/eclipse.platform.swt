@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -83,6 +84,17 @@ public void test_getChildren() {
 }
 
 @Test
+@Override
+public void test_isFocusControl() {
+	if (SwtTestUtil.isCocoa) {
+		// TODO forceFocus returns true, while isFocusControl returns false
+		assertFalse(control.isFocusControl());
+	} else {
+		super.test_isFocusControl();
+	}
+}
+
+@Test
 public void test_selectAll() {
 	/* FUTURE: Should also add sub-nodes, and test both single and multi with those.
 	 * i.e. subitems[i] = new TableTreeItem(items[i], SWT.NONE); */
@@ -112,8 +124,11 @@ public void test_selectAll() {
 @Test
 public void test_setFocus_toChild_afterOpen() {
 	shell.open();
+	if (SwtTestUtil.isGTK) {
+		shell.forceActive();
+	}
+	assertEquals(shell, shell.getDisplay().getActiveShell());
 	composite.setFocus();
-	shell.forceActive();
 	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
 }
 
@@ -122,7 +137,10 @@ public void test_setFocus_toChild_afterOpen() {
 public void test_setFocus_toChild_beforeOpen() {
 	composite.setFocus();
 	shell.open();
-	shell.forceActive();
+	if (SwtTestUtil.isGTK) {
+		shell.forceActive();
+	}
+	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
 }
 

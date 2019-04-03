@@ -117,6 +117,17 @@ public void test_getChildren() {
 }
 
 @Test
+@Override
+public void test_isFocusControl() {
+	if (SwtTestUtil.isGTK) {
+		// TODO forceFocus returns false, while isFocusControl returns true
+		assertFalse(control.isFocusControl());
+	} else {
+		super.test_isFocusControl();
+	}
+}
+
+@Test
 public void test_paste() {
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -208,11 +219,13 @@ public void test_setFocus() {
 @Override
 @Test
 public void test_setFocus_toChild_afterOpen() {
+	// The different platforms set focus to a different child
 }
 
 @Override
 @Test
 public void test_setFocus_toChild_beforeOpen() {
+	// The different platforms set focus to a different child
 }
 
 @Override

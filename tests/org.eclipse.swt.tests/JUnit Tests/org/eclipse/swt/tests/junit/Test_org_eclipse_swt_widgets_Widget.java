@@ -75,6 +75,11 @@ public void tearDown() {
 		}
 	}
 	assertTrue(shell.isDisposed());
+	if(SwtTestUtil.isCocoa) {
+		// process pending events to properly close the shell
+		while (display != null && !display.isDisposed() && display.readAndDispatch()) {
+		}
+	}
 	if(SwtTestUtil.isLinux && display != null) {
 		assertNotExists(getWidgetTable(display), shell);
 	}

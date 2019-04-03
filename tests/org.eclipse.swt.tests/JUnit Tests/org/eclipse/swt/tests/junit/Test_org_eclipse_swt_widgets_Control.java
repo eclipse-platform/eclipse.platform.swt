@@ -523,7 +523,10 @@ public void test_isEnabled() {
 public void test_isFocusControl() {
 	assertFalse(control.isFocusControl());
 	shell.open();
-	shell.forceActive();
+	if (SwtTestUtil.isGTK) {
+		shell.forceActive();
+	}
+	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }
 @Test
