@@ -1073,11 +1073,29 @@ public RGB[] getRGBs() {
  * @return the transparency mask
  */
 public ImageData getTransparencyMask() {
-	if (getTransparencyType() == SWT.TRANSPARENCY_MASK) {
-		return new ImageData(width, height, 1, bwPalette(), maskPad, maskData);
-	} else {
-		return colorMaskImage(transparentPixel);
+	int transparencyType = getTransparencyType();
+	switch (transparencyType) {
+		case SWT.TRANSPARENCY_ALPHA: return getTransparencyMaskFromAlphaData();
+		case SWT.TRANSPARENCY_MASK: return new ImageData(width, height, 1, bwPalette(), maskPad, maskData);
+		case SWT.TRANSPARENCY_PIXEL: return colorMaskImage(transparentPixel);
+		default: return colorMaskImage(transparentPixel);
 	}
+}
+
+ImageData getTransparencyMaskFromAlphaData() {
+	ImageData mask = new ImageData(width, height, 1, bwPalette(), 2, null, 0, null, null, -1, -1, SWT.IMAGE_UNDEFINED, 0, 0, 0, 0);
+	int offset = 0;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			byte a = alphaData[offset++];
+			if (a == 0) {
+				mask.setPixel(x, y, 0);
+			} else {
+				mask.setPixel(x, y, 1);
+			}
+		}
+	}
+	return mask;
 }
 
 /**
