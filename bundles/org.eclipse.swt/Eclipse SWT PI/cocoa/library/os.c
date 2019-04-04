@@ -6660,8 +6660,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CFRang
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCFRangeFields(env, arg0, lparg0);
@@ -6686,8 +6685,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGAffi
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCGAffineTransformFields(env, arg0, lparg0);
@@ -6712,8 +6710,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGPath
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCGPathElementFields(env, arg0, lparg0);
@@ -6738,8 +6735,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGPoin
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
@@ -6764,8 +6760,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGRect
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
@@ -6790,8 +6785,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGSize
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCGSizeFields(env, arg0, lparg0);
@@ -6816,8 +6810,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CTPara
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setCTParagraphStyleSettingFields(env, arg0, lparg0);
@@ -6842,8 +6835,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSAffi
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setNSAffineTransformStructFields(env, arg0, lparg0);
@@ -6868,8 +6860,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSPoin
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -6894,8 +6885,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSRang
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -6920,8 +6910,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSRect
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -6946,8 +6935,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSSize
 #else
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ_FUNC);
 #endif
-	if (!arg0) goto fail;
-	if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (void *)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
