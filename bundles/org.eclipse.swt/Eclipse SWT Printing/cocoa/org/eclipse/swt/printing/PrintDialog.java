@@ -186,11 +186,7 @@ public PrinterData open() {
 		dict.setValue(NSNumber.numberWithInt(printerData.startPage), OS.NSPrintFirstPage);
 		dict.setValue(NSNumber.numberWithInt(printerData.endPage), OS.NSPrintLastPage);
 	}
-	// NSPrintSelectionOnly is not available in version 10.5
-    // dict.setValue(NSNumber.numberWithBool(printerData.scope == PrinterData.SELECTION), OS.NSPrintSelectionOnly);
-	if (OS.VERSION >= 0x1060) {
-		printInfo.setSelectionOnly (printerData.scope == PrinterData.SELECTION);
-	}
+	printInfo.setSelectionOnly (printerData.scope == PrinterData.SELECTION);
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | OS.NSPrintPanelShowsPrintSelection | panel.options());
 
 	Shell parent = getParent();
@@ -224,7 +220,7 @@ public PrinterData open() {
 			NSString filename = new NSString(dict.objectForKey(OS.NSPrintSavePath));
 			data.fileName = filename.getString();
 		}
-		if (OS.VERSION >= 0x1060 && printInfo.isSelectionOnly ()) {
+		if (printInfo.isSelectionOnly ()) {
 			data.scope = PrinterData.SELECTION;
 		} else {
 			data.scope = new NSNumber(dict.objectForKey(OS.NSPrintAllPages)).intValue() != 0 ? PrinterData.ALL_PAGES : PrinterData.PAGE_RANGE;

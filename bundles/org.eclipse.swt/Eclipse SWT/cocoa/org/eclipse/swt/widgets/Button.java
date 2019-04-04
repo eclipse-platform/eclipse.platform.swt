@@ -315,27 +315,6 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return dragging;
 }
 
-@Override
-void drawImageWithFrameInView (long id, long sel, long image, NSRect rect, long view) {
-	/*
-	* Feature in Cocoa.  Images touch the edge of rounded buttons
-	* when set to small size. The fix to subclass the button cell
-    * and offset the image drawing.
-    * This workaround is not required for OSX 10.9 and later as
-    * the problem doesn't happen there.
-	*/
-	if (OS.VERSION_MMB < OS.VERSION_MMB(10, 9, 0)) {
-		NSCell cell = ((NSControl)this.view).cell();
-		if (cell != null && cell.controlSize() == OS.NSRegularControlSize) {
-			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
-				rect.y += EXTRA_HEIGHT / 2;
-				rect.height += EXTRA_HEIGHT;
-			}
-		}
-	}
-	super.drawImageWithFrameInView(id, sel, image, rect, view);
-}
-
 private static NSRect smallerRect (NSRect cellFrame, double dx, double dy1, double dy2, float lineWidth) {
 	if (lineWidth == 2) {
 		dx -= 0.5;

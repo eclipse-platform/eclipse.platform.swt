@@ -841,9 +841,8 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
-	if (OS.VERSION < 0x1050) {
-		System.out.println ("***WARNING: SWT requires MacOS X version " + 10 + "." + 5 + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		System.out.println ("***WARNING: Detected: " + Integer.toHexString((OS.VERSION & 0xFF00) >> 8) + "." + Integer.toHexString((OS.VERSION & 0xF0) >> 4) + "." + Integer.toHexString(OS.VERSION & 0xF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	if (OS.VERSION < OS.VERSION (10, 10, 0)) {
+		System.out.println ("***WARNING: SWT requires MacOS X version 10.10 or greater"); //$NON-NLS-1$
 		error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 
@@ -881,10 +880,8 @@ void createDisplay (DeviceData data) {
 		long ptr = getApplicationName().UTF8String();
 		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 		if (!isBundled ()) {
-			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 9, 0)) {
-				application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
-				NSRunningApplication.currentApplication().activateWithOptions (OS.NSApplicationActivateIgnoringOtherApps);
-			}
+			application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
+			NSRunningApplication.currentApplication().activateWithOptions (OS.NSApplicationActivateIgnoringOtherApps);
 		}
 		ptr = C.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
@@ -1874,10 +1871,7 @@ double [] getWidgetColorRGB (int id) {
 	NSColor color = null;
 	switch (id) {
 		case SWT.COLOR_INFO_FOREGROUND: color = NSColor.blackColor (); break;
-		case SWT.COLOR_INFO_BACKGROUND: return
-				OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0)
-						? new double [] {236/255f, 235/255f, 236/255f, 1}
-						: new double [] {.984f, .988f, 0.773f, 1};
+		case SWT.COLOR_INFO_BACKGROUND: return new double [] {236/255f, 235/255f, 236/255f, 1};
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.alternateSelectedControlColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.selectedControlColor(); break;
@@ -1886,20 +1880,20 @@ double [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: color = NSColor.secondarySelectedControlColor(); break;
 		case SWT.COLOR_WIDGET_DARK_SHADOW: color = NSColor.controlDarkShadowColor(); break;
 		case SWT.COLOR_WIDGET_NORMAL_SHADOW:
-			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0)) {
+			if (OS.VERSION >= OS.VERSION (10, 14, 0)) {
 				return new double [] {159/255f, 159/255f, 159/255f, 1};
 			}
 			color = NSColor.controlShadowColor();
 			break;
 		case SWT.COLOR_WIDGET_LIGHT_SHADOW:
-			if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0)) {
+			if (OS.VERSION >= OS.VERSION (10, 14, 0)) {
 				return new double [] {232/255f, 232/255f, 232/255f, 1};
 			}
 			color = NSColor.controlHighlightColor();
 			break;
 		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: color = NSColor.controlLightHighlightColor(); break;
 		case SWT.COLOR_WIDGET_BACKGROUND:
-			color = OS.VERSION_MMB >= OS.VERSION_MMB (10, 14, 0) ? NSColor.windowBackgroundColor()
+			color = OS.VERSION >= OS.VERSION (10, 14, 0) ? NSColor.windowBackgroundColor()
 					: NSColor.controlHighlightColor();
 			break;
 		case SWT.COLOR_WIDGET_FOREGROUND: color = NSColor.controlTextColor(); break;
@@ -2167,8 +2161,7 @@ public Thread getThread () {
  */
 public boolean getTouchEnabled() {
 	checkDevice();
-	// Gestures are available on OS X 10.5.3 and later. Touch events are only available on 10.6 and later.
-	return (OS.VERSION > 0x1053);
+	return true;
 }
 
 int getToolTipTime () {
@@ -2328,7 +2321,7 @@ protected void init () {
 	textView.release ();
 
 	NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
-	defaults.setInteger(0, NSString.stringWith(OS.VERSION >= 0x1080 ? "NSScrollAnimationEnabled" : "AppleScrollAnimationEnabled"));
+	defaults.setInteger(0, NSString.stringWith("NSScrollAnimationEnabled"));
 	id blink = defaults.objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
 	if (blink != null) blinkTime = (int)new NSNumber(blink).integerValue();
 	if (blinkTime == 0) blinkTime = 560;
@@ -2578,9 +2571,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawBezelWithFrame_inView_, drawBezelWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_cellSizeForBounds_, cellSizeForBoundsProc, "@:{NSRect}");
-	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0)) {
-		OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
-	}
+	OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTCanvasView";
@@ -2754,9 +2745,7 @@ void initClasses () {
 	// NSPopUpButtonCell
 	cls = registerCellSubclass(NSPopUpButton.cellClass(), size, align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
-	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 10, 0)) {
-		OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
-	}
+	OS.class_addMethod(cls, OS.sel_focusRingMaskBoundsForFrame_inView_, focusRingMaskBoundsForFrameProc, "@:{NSRect}@");
 
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
@@ -2776,11 +2765,9 @@ void initClasses () {
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
-	if (OS.VERSION >= 0x1070) {
-		/* Note that isFlippedProc is used for performance and convenience */
-		long metaClass = OS.objc_getMetaClass(className);
-		OS.class_addMethod(metaClass, OS.sel_isCompatibleWithOverlayScrollers, isFlippedProc, "@:");
-	}
+	/* Note that isFlippedProc is used for performance and convenience */
+	long metaClass = OS.objc_getMetaClass(className);
+	OS.class_addMethod(metaClass, OS.sel_isCompatibleWithOverlayScrollers, isFlippedProc, "@:");
 
 	className = "SWTScrollView";
 	cls = OS.objc_allocateClassPair(OS.class_NSScrollView, className, 0);
@@ -3339,11 +3326,7 @@ public boolean post(Event event) {
 				}
 
 				if (vKey != -1) {
-					if (OS.VERSION < 0x1060) {
-						returnValue = OS.CGPostKeyboardEvent((short)0, vKey, type == SWT.KeyDown) == OS.noErr;
-					} else {
-						eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
-					}
+					eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
 				}
 				break;
 			}
@@ -3396,17 +3379,14 @@ public boolean post(Event event) {
 			}
 		}
 
-		// returnValue is true if we called CGPostKeyboardEvent (10.5 only).
-		if (returnValue == false) {
-			if (eventRef != 0) {
-				OS.CGEventPost(OS.kCGHIDEventTap, eventRef);
-				OS.CFRelease(eventRef);
-				try {
-					Thread.sleep(1);
-				} catch (Exception e) {
-				}
-				returnValue = true;
+		if (eventRef != 0) {
+			OS.CGEventPost(OS.kCGHIDEventTap, eventRef);
+			OS.CFRelease(eventRef);
+			try {
+				Thread.sleep(1);
+			} catch (Exception e) {
 			}
+			returnValue = true;
 		}
 
 		if (eventSource != 0) OS.CFRelease(eventSource);
@@ -4245,13 +4225,13 @@ boolean runSettings () {
 	runSettings = false;
 
 	boolean ignoreColorChange = false;
-	/**
+	/*
 	 * Feature in Cocoa: When dark mode is enabled on OSX version >= 10.10 and a SWT TrayItem (NSStatusItem) is present in the menubar,
 	 * changing the OSX appearance or changing the configuration of attached displays causes the textColor and textBackground color to change.
 	 * This sets the text foreground of several widgets as white and hence text is invisible. The workaround is to detect this case and prevent
 	 * the update of LIST_FOREGROUND, LIST_BACKGROUND and COLOR_WIDGET_FOREGROUND colors.
 	 */
-	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 10, 0) && tray != null && tray.itemCount > 0) {
+	if (tray != null && tray.itemCount > 0) {
 		/*
 		 * osxMode will be "Dark" when in OSX dark mode. Otherwise, it'll be null.
 		 */
@@ -4280,7 +4260,7 @@ NSAppearance getAppearance (APPEARANCE newMode) {
 }
 
 void setAppAppearance (APPEARANCE newMode) {
-	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 14, 0)) return;
+	if (OS.VERSION < OS.VERSION (10, 14, 0)) return;
 
 	NSAppearance appearance = getAppearance(newMode);
 	if (appearance != null && application != null) {
@@ -4296,7 +4276,7 @@ void setWindowAppearance (NSWindow window, NSAppearance appearance) {
 }
 
 void setWindowsAppearance (APPEARANCE newMode) {
-	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 14, 0)) return;
+	if (OS.VERSION < OS.VERSION (10, 14, 0)) return;
 
 	NSAppearance appearance = getAppearance(newMode);
 	if (appearance != null) {
@@ -4755,11 +4735,9 @@ void setMenuBar (Menu menu) {
 			* menu for languages other than english.  The fix is to detect
 			* it ourselves.
 			*/
-			if (OS.VERSION >= 0x1060) {
-				NSMenu submenu = nsItem.submenu();
-				if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) {
-					application.setHelpMenu(submenu);
-				}
+			NSMenu submenu = nsItem.submenu();
+			if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) {
+				application.setHelpMenu(submenu);
 			}
 
 			nsItem.setMenu(null);
@@ -5181,18 +5159,7 @@ Control findControl (boolean checkTrim) {
 Control findControl (boolean checkTrim, NSView[] hitView) {
 	NSView view = null;
 	NSPoint screenLocation = NSEvent.mouseLocation();
-	long hitWindowNumber = 0;
-	if (OS.VERSION >= 0x1060) {
-		hitWindowNumber = NSWindow.windowNumberAtPoint(screenLocation, 0);
-	} else {
-		long outWindow[] = new long [1];
-		OS.FindWindow ((long)screenLocation.x, (long)(getPrimaryFrame().height - screenLocation.y), outWindow);
-
-		if (outWindow[0] != 0) {
-			hitWindowNumber = OS.HIWindowGetCGWindowID(outWindow[0]);
-		}
-	}
-
+	long hitWindowNumber = NSWindow.windowNumberAtPoint(screenLocation, 0);
 	NSWindow window = application.windowWithWindowNumber(hitWindowNumber);
 	if (window != null) {
 		NSView contentView = window.contentView();

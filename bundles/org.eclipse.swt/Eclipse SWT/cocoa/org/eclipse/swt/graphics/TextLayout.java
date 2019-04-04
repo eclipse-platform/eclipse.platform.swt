@@ -1620,7 +1620,7 @@ void initClasses () {
 	OS.class_addProtocol(cls, OS.protocol_NSTextAttachmentCell);
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_cellBaselineOffset, cellBaselineOffsetProc, "@:");
-	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+	if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
 		long attachmentProc = OS.CALLBACK_NSTextAttachmentCell_attachment(proc2);
 		OS.class_addMethod(cls, OS.sel_attachment, attachmentProc, "@:");
 	}

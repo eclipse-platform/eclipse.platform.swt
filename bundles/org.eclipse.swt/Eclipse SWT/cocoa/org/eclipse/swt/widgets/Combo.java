@@ -520,7 +520,7 @@ void createHandle () {
 		widget.init();
 		widget.setDelegate(widget);
 		NSCell cell = widget.cell();
-		if (OS.VERSION >= 0x1060 && cell != null){
+		if (cell != null) {
 			cell.setUsesSingleLineMode(true);
 		}
 		view = widget;

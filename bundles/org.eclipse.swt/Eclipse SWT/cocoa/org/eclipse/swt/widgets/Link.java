@@ -173,7 +173,7 @@ void createHandle () {
 	scrollWidget.setDrawsBackground(false);
 	scrollWidget.setAutoresizesSubviews (true);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
-	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 7, 0))	scrollWidget.setVerticalScrollElasticity(OS.NSScrollElasticityNone);
+	scrollWidget.setVerticalScrollElasticity(OS.NSScrollElasticityNone);
 
 	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.init();

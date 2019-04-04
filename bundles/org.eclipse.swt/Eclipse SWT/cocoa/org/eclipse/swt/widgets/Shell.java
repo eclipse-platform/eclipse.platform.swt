@@ -686,7 +686,7 @@ void createHandle () {
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & (SWT.TOOL | SWT.SHEET)) != 0) {
 			window.setHasShadow (true);
 		}
-		if ((style & SWT.NO_MOVE) != 0 && (OS.VERSION_MMB >= OS.VERSION_MMB(10, 6, 0))) {
+		if ((style & SWT.NO_MOVE) != 0) {
 			window.setMovable(false);
 		}
 		if ((style & SWT.TOOL) != 0) {
@@ -710,7 +710,7 @@ void createHandle () {
 				OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
 			}
 		}
-		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 12, 0)) {
+		if (OS.VERSION >= OS.VERSION(10, 12, 0)) {
 			/*
 			 * In macOS 10.12, a new system preference "prefer tabs when opening documents"
 			 * has been added which causes automatic tabbing of windows in Eclipse.
@@ -766,26 +766,17 @@ void createHandle () {
 		NSWindow hostWindow = view.window();
 		attachObserversToWindow(hostWindow);
 	} else {
-		int behavior = 0;
-		if (parent != null) behavior |= OS.NSWindowCollectionBehaviorMoveToActiveSpace;
-		if (OS.VERSION >= 0x1070) {
-			if (parent == null) {
-				if ((style & SWT.TOOL) != 0) {
-					behavior = OS.NSWindowCollectionBehaviorFullScreenAuxiliary;
-				} else {
-					behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
-				}
-			}
+		int behavior;
+		if (parent != null) {
+			behavior = OS.NSWindowCollectionBehaviorMoveToActiveSpace;
+		} else if ((style & SWT.TOOL) != 0) {
+			behavior = OS.NSWindowCollectionBehaviorFullScreenAuxiliary;
+		} else {
+			behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
 		}
-		if (behavior != 0) window.setCollectionBehavior(behavior);
+		window.setCollectionBehavior(behavior);
 		window.setAcceptsMouseMovedEvents(true);
 		window.setDelegate(windowDelegate);
-	}
-
-	if (OS.VERSION < 0x1060) {
-		// Force a WindowRef to be created for this window so we can use
-		// FindWindow() (see Display.findControl())
-		if (window != null) window.windowRef();
 	}
 
 	NSWindow fieldEditorWindow = window;
@@ -2018,9 +2009,6 @@ void setWindowVisible (boolean visible, boolean key) {
 			if ((style & (SWT.SHEET)) != 0) {
 				NSApplication application = NSApplication.sharedApplication();
 				application.beginSheet(window, parentWindow (), null, 0, 0);
-				if (OS.VERSION <= 0x1060 && window.respondsToSelector(OS.sel__setNeedsToUseHeartBeatWindow_)) {
-					OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
-				}
 			} else {
 				// If the parent window is miniaturized, the window will be shown
 				// when its parent is shown.
@@ -2151,7 +2139,7 @@ void updateParent (boolean visible) {
 				 */
 				if ((style & SWT.ON_TOP) != 0) {
 					window.setLevel(OS.NSStatusWindowLevel);
-				} else if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+				} else if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
 					/*
 					 * Feature in Cocoa on 10.11: Second-level child windows of
 					 * a full-screen window are sometimes shown behind their

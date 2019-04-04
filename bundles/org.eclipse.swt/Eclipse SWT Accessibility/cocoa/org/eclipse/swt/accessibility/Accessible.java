@@ -1268,8 +1268,8 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityHeaderAttribute)) return getHeaderAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityIndexAttribute)) return getIndexAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilitySelectedAttribute)) return getSelectedAttribute(childID);
-		if (OS.VERSION >= 0x1060 && attribute.isEqualToString(OS.NSAccessibilityRowIndexRangeAttribute)) return getRowIndexRangeAttribute(childID);
-		if (OS.VERSION >= 0x1060 && attribute.isEqualToString(OS.NSAccessibilityColumnIndexRangeAttribute)) return getColumnIndexRangeAttribute(childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityRowIndexRangeAttribute)) return getRowIndexRangeAttribute(childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityColumnIndexRangeAttribute)) return getColumnIndexRangeAttribute(childID);
 
 		// If this object don't know how to get the value it's up to the control itself to return an attribute value.
 		return null;
@@ -1296,7 +1296,7 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForPositionParameterizedAttribute)) return getRangeForPositionParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityAttributedStringForRangeParameterizedAttribute)) return getAttributedStringForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityStyleRangeForIndexParameterizedAttribute)) return getStyleRangeForIndexAttribute(parameter, childID);
-		if (OS.VERSION >= 0x1060 && attribute.isEqualToString(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute)) return getCellForColumnAndRowParameter(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute)) return getCellForColumnAndRowParameter(parameter, childID);
 		return null;
 	}
 
@@ -1460,7 +1460,7 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityStyleRangeForIndexParameterizedAttribute);
 				break;
 			case ACC.ROLE_TABLE:
-				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute);
+				returnValue.addObject(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute);
 				break;
 		}
 

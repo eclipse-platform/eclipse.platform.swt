@@ -428,10 +428,7 @@ Point getScreenDPI () {
 	NSDictionary dictionary = screen.deviceDescription();
 	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
 	NSSize size = value.sizeValue();
-	double scaling = 1;
-	if (OS.VERSION >= 0x1070) {
-		scaling = screen.backingScaleFactor();
-	}
+	double scaling = screen.backingScaleFactor();
 	return new Point((int)(size.width / scaling), (int)(size.height / scaling));
 }
 

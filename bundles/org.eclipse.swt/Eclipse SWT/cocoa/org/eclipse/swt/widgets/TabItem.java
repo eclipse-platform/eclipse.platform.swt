@@ -465,7 +465,7 @@ void updateText (boolean selected) {
 	}
 	double [] foreground = parent.foreground;
 	if (foreground == null) {
-		if (selected && OS.VERSION >= 0x1070) {
+		if (selected) {
 			foreground = display.getNSColorRGB(NSColor.alternateSelectedControlTextColor());
 		} else {
 			foreground = parent.defaultForeground().handle;

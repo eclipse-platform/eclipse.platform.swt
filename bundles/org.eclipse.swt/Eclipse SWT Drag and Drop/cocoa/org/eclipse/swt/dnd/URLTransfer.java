@@ -91,20 +91,12 @@ public Object nativeToJava(TransferData transferData){
 
 @Override
 protected int[] getTypeIds(){
-	if (OS.VERSION >= 0x1060) {
-		return new int[] {URL_ID, URL_ID1};
-	} else {
-		return new int[] {URL_ID};
-	}
+	return new int[] {URL_ID, URL_ID1};
 }
 
 @Override
 protected String[] getTypeNames(){
-	if (OS.VERSION >= 0x1060) {
-		return new String[] {URL, URL1};
-	} else {
-		return new String[] {URL};
-	}
+	return new String[] {URL, URL1};
 }
 
 boolean checkURL(Object object) {

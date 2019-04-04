@@ -1303,7 +1303,7 @@ public Rectangle getClientArea () {
 	 * OSX 10.11 - The origin of the table is the header and the header's
 	 * height is already included in the rect. Hence, we return the rect as is.
 	 */
-	if (OS.VERSION_MMB < OS.VERSION_MMB (10, 11, 0)) {
+	if (OS.VERSION < OS.VERSION (10, 11, 0)) {
 		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
 		if (headerView != null) {
 			int height =  (int) headerView.bounds ().height;
@@ -1854,7 +1854,7 @@ public int getTopIndex () {
 	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
 	 * Offset the point's y coordinate accordingly.
 	 */
-	if (OS.VERSION_MMB >= OS.VERSION_MMB (10, 11, 0)) {
+	if (OS.VERSION >= OS.VERSION (10, 11, 0)) {
 		NSTableHeaderView headerView = ((NSTableView) view).headerView ();
 		if (headerView != null) {
 			int height =  (int) headerView.bounds ().height;
@@ -3131,7 +3131,7 @@ public void setTopIndex (int index) {
 	 * In OSX 10.11, the origin of the table is the header, not the top-left of the rows.
 	 * Offset the point's y coordinate accordingly.
 	 */
-	if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 11, 0)) {
+	if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
 		if (widget.headerView() != null) {
 			NSRect headerRect = headerView.frame();
 			pt.y -= headerRect.y + headerRect.height;

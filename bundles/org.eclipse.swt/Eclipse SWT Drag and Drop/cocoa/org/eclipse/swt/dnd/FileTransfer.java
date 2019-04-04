@@ -109,20 +109,12 @@ public Object nativeToJava(TransferData transferData) {
 
 @Override
 protected int[] getTypeIds(){
-	if (OS.VERSION >= 0x1060) {
-		return new int[] {ID, ID1};
-	} else {
-		return new int[] {ID};
-	}
+	return new int[] {ID, ID1};
 }
 
 @Override
 protected String[] getTypeNames(){
-	if (OS.VERSION >= 0x1060) {
-		return new String[] {ID_NAME, ID1_NAME};
-	} else {
-		return new String[] {ID_NAME};
-	}
+	return new String[] {ID_NAME, ID1_NAME};
 }
 
 boolean checkFile(Object object) {

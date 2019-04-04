@@ -21,26 +21,17 @@ public class OS extends C {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
 
-	/**
-	 * NOTE: For new code, use {@link #VERSION_MMB} and {@link #VERSION_MMB(int, int, int)}
-	 */
 	public static final int VERSION;
-	public static final int VERSION_MMB;
 	static {
-		int [] response = new int [1];
-		OS.Gestalt (OS.gestaltSystemVersion, response);
-		VERSION = response [0] & 0xffff;
-		OS.Gestalt (OS.gestaltSystemVersionMajor, response);
-		int major = response [0];
-		OS.Gestalt (OS.gestaltSystemVersionMinor, response);
-		int minor = response [0];
-		OS.Gestalt (OS.gestaltSystemVersionBugFix, response);
-		int bugFix = response [0];
-		VERSION_MMB = VERSION_MMB (major, minor, bugFix);
+		int [] major = new int [1], minor = new int [1], bugfix = new int [1];
+		OS.Gestalt (OS.gestaltSystemVersionMajor, major);
+		OS.Gestalt (OS.gestaltSystemVersionMinor, minor);
+		OS.Gestalt (OS.gestaltSystemVersionBugFix, bugfix);
+		VERSION = VERSION (major [0], minor [0], bugfix [0]);
 	}
 
-	public static int VERSION_MMB (int major, int minor, int bugFix) {
-		return (major << 16) + (minor << 8) + bugFix;
+	public static int VERSION (int major, int minor, int bugfix) {
+		return (major << 16) + (minor << 8) + bugfix;
 	}
 
 	/*
@@ -221,7 +212,7 @@ public class OS extends C {
 		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
 	}
 	public static boolean isAppDarkAppearance() {
-		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 14, 0)) {
+		if (OS.VERSION >= OS.VERSION(10, 14, 0)) {
 			NSAppearance currentAppearance = NSAppearance.currentAppearance();
 			if (currentAppearance != null) {
 				return "NSAppearanceNameDarkAqua".equals(currentAppearance.name().getString());
@@ -230,7 +221,7 @@ public class OS extends C {
 		return false;
 	}
 	public static boolean isSystemDarkAppearance() {
-		if (OS.VERSION_MMB >= OS.VERSION_MMB(10, 14, 0)) {
+		if (OS.VERSION >= OS.VERSION(10, 14, 0)) {
 			NSString osxMode = NSUserDefaults.standardUserDefaults ().stringForKey (NSString.stringWith ("AppleInterfaceStyle"));
 			return osxMode != null && "Dark".equals (osxMode.getString ());
 		}

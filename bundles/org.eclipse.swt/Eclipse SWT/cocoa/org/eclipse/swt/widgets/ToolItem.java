@@ -638,23 +638,21 @@ public Image getHotImage () {
 }
 
 NSString getItemID() {
-    NSString itemID = id;
+	NSString itemID = id;
 
-    // For separators, return a Cocoa constant for the tool item ID.
-    if ((style & SWT.SEPARATOR) != 0) {
-    	// If we are using a non-default width or control use that instead.
-    	if (control == null) {
-    		if (width == DEFAULT_SEPARATOR_WIDTH || width == 0) {
-    			if (OS.VERSION < 0x1070) itemID = OS.NSToolbarSeparatorItemIdentifier;
-    		} else if (width == SWT.DEFAULT) {
-    			itemID = OS.NSToolbarSpaceItemIdentifier;
-    		} else if (width == SWT.SEPARATOR_FILL) {
-    			itemID = OS.NSToolbarFlexibleSpaceItemIdentifier;
-    		}
-    	}
-    }
+	// For separators, return a Cocoa constant for the tool item ID.
+	if ((style & SWT.SEPARATOR) != 0) {
+		// If we are using a non-default width or control use that instead.
+		if (control == null) {
+			if (width == SWT.DEFAULT) {
+				itemID = OS.NSToolbarSpaceItemIdentifier;
+			} else if (width == SWT.SEPARATOR_FILL) {
+				itemID = OS.NSToolbarFlexibleSpaceItemIdentifier;
+			}
+		}
+	}
 
-    return itemID;
+	return itemID;
 }
 
 /**

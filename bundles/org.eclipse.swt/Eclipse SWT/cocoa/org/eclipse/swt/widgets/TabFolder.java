@@ -664,7 +664,7 @@ void tabView_willSelectTabViewItem(long id, long sel, long tabView, long tabView
 			if (currentIndex != -1) {
 				TabItem selected = items [currentIndex];
 				if (selected != null) {
-					if (OS.VERSION >= 0x1070) selected.updateText(false);
+					selected.updateText(false);
 					Control control = selected.control;
 					if (control != null && !control.isDisposed ()) {
 						control.setVisible (false);
@@ -675,7 +675,7 @@ void tabView_willSelectTabViewItem(long id, long sel, long tabView, long tabView
 			if (control != null && !control.isDisposed ()) {
 				control.setVisible (true);
 			}
-			if (OS.VERSION >= 0x1070) item.updateText(true);
+			item.updateText(true);
 			break;
 		}
 	}
