@@ -2829,31 +2829,41 @@ void remove (long parentIter, int start, int end) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	checkSetDataInProcessBeforeRemoval(start, end + 1);
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
-	for (int i = start; i <= end; i++) {
-		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, start);
-		int[] value = new int[1];
-		GTK.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
-		TreeItem item = value [0] != -1 ? items [value [0]] : null;
-		if (item != null && !item.isDisposed ()) {
-			item.dispose ();
-		} else {
-			OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			GTK.gtk_tree_store_remove (modelHandle, iter);
-			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	try {
+		for (int i = start; i <= end; i++) {
+			GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, start);
+			int[] value = new int[1];
+			GTK.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+			TreeItem item = value [0] != -1 ? items [value [0]] : null;
+			if (item != null && !item.isDisposed ()) {
+				/*
+				 * Bug 182598 - assertion failed in gtktreestore.c
+				 * Removing an item while its data is being set will invalidate
+				 * it, which will cause a crash in GTK.
+				 */
+				if(item.settingData) {
+					throwCannotRemoveItem(i);
+				}
+				item.dispose ();
+			} else {
+				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+				GTK.gtk_tree_store_remove (modelHandle, iter);
+				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			}
 		}
+	} finally {
+		if (fixAccessibility ()) {
+			ignoreAccessibility = false;
+			OS.g_object_notify (handle, OS.model);
+		}
+		OS.g_free (iter);
 	}
-	if (fixAccessibility ()) {
-		ignoreAccessibility = false;
-		OS.g_object_notify (handle, OS.model);
-	}
-	OS.g_free (iter);
 }
 
 /**
@@ -2866,7 +2876,7 @@ void remove (long parentIter, int start, int end) {
  */
 public void removeAll () {
 	checkWidget ();
-	checkSetDataInProcessBeforeRemoval(0, items.length);
+	checkSetDataInProcessBeforeRemoval();
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
@@ -4195,16 +4205,13 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 }
 
 /**
- * Check the tree item range [start, end) for items that are in process of
+ * Check the tree for items that are in process of
  * sending {@code SWT#SetData} event. If such items exist, throw an exception.
  *
  * Does nothing if the given range contains no indices,
  * or if we are below GTK 3.22.0 or are using GTK 4.
- *
- * @param start index of first item to check
- * @param end index after the last item to check
  */
-void checkSetDataInProcessBeforeRemoval(int start, int end) {
+void checkSetDataInProcessBeforeRemoval() {
 	/*
 	 * Bug 182598 - assertion failed in gtktreestore.c
 	 *
@@ -4213,13 +4220,16 @@ void checkSetDataInProcessBeforeRemoval(int start, int end) {
 	 *
 	 * We therefore throw an exception to prevent the crash.
 	 */
-	for (int i = start; i < end; i++) {
+	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items[i];
 		if (item != null && item.settingData) {
-			String message = "Cannot remove a tree item while its data is being set. "
-					+ "At item " + i + " in range [" + start + ", " + end + ").";
-			throw new SWTException(message);
+			throwCannotRemoveItem(i);
 		}
 	}
+}
+
+private void throwCannotRemoveItem(int i) {
+	String message = "Cannot remove item with index " + i + ".";
+	throw new SWTException(message);
 }
 }

@@ -4233,8 +4233,7 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
  * Check the table item range [start, end) for items that are in process of
  * sending {@code SWT#SetData} event. If such items exist, throw an exception.
  *
- * Does nothing if the given range contains no indices,
- * or if we are below GTK 3.22.0 or are using GTK 4.
+ * Does nothing if the given range contains no indices.
  *
  * @param start index of first item to check
  * @param end index after the last item to check
