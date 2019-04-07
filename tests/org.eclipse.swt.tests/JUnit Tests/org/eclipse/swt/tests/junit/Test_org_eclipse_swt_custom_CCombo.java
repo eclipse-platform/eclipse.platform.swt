@@ -118,7 +118,7 @@ public void test_getChildren() {
 
 @Test
 @Override
-public void test_isFocusControl() {
+public void test_isFocusControl() throws InterruptedException {
 	if (SwtTestUtil.isGTK) {
 		// TODO forceFocus returns false, while isFocusControl returns true
 		assertFalse(control.isFocusControl());

@@ -85,7 +85,7 @@ public void test_getChildren() {
 
 @Test
 @Override
-public void test_isFocusControl() {
+public void test_isFocusControl() throws InterruptedException {
 	if (SwtTestUtil.isCocoa) {
 		// TODO forceFocus returns true, while isFocusControl returns false
 		assertFalse(control.isFocusControl());
@@ -122,11 +122,10 @@ public void test_selectAll() {
 
 @Override
 @Test
-public void test_setFocus_toChild_afterOpen() {
+public void test_setFocus_toChild_afterOpen() throws InterruptedException {
 	shell.open();
-	if (SwtTestUtil.isGTK) {
-		shell.forceActive();
-	}
+	// Wait for the shell to become active
+	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	composite.setFocus();
 	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
@@ -134,12 +133,11 @@ public void test_setFocus_toChild_afterOpen() {
 
 @Override
 @Test
-public void test_setFocus_toChild_beforeOpen() {
+public void test_setFocus_toChild_beforeOpen() throws InterruptedException {
 	composite.setFocus();
 	shell.open();
-	if (SwtTestUtil.isGTK) {
-		shell.forceActive();
-	}
+	// Wait for the shell to become active
+	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertTrue("First child widget should have focus", tableTree.getTable().isFocusControl());
 }

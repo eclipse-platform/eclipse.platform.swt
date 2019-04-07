@@ -118,25 +118,23 @@ public void test_setVisibility_and_sizing() {
 }
 
 @Test
-public void test_setFocus_toChild_afterOpen() {
+public void test_setFocus_toChild_afterOpen() throws InterruptedException {
 	Text focusChild = new Text(composite, SWT.NONE);
 	shell.open();
-	if (SwtTestUtil.isGTK) {
-		shell.forceActive();
-	}
+	// Wait for the shell to become active
+	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	composite.setFocus();
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
 
 @Test
-public void test_setFocus_toChild_beforeOpen() {
+public void test_setFocus_toChild_beforeOpen() throws InterruptedException {
 	Text focusChild = new Text(composite, SWT.NONE);
 	composite.setFocus();
 	shell.open();
-	if (SwtTestUtil.isGTK) {
-		shell.forceActive();
-	}
+	// Wait for the shell to become active
+	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }

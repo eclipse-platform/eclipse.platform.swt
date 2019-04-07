@@ -520,12 +520,11 @@ public void test_isEnabled() {
 	assertFalse(control.isEnabled());
 }
 @Test
-public void test_isFocusControl() {
+public void test_isFocusControl() throws InterruptedException {
 	assertFalse(control.isFocusControl());
 	shell.open();
-	if (SwtTestUtil.isGTK) {
-		shell.forceActive();
-	}
+	// Wait for the shell to become active
+	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }
