@@ -1099,7 +1099,7 @@ public void dispose () {
 		tmpParent = parent;
 	}
 	super.dispose();
-	if (tmpParent != null) tmpParent.deselectAll();
+	if (tmpParent != null && !tmpParent.isDisposed()) tmpParent.deselectAll();
 }
 
 /**
