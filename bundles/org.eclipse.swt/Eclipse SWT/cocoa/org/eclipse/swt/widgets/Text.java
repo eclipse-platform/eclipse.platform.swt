@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.Display.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -687,8 +688,27 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 			NSText text = new NSText(id);
 			if (!text.isFieldEditor()) return;
 		}
+	} else if ((style & SWT.MULTI) != 0) {
+		if (id != scrollView.id) return;
+
+		/*
+		 *  If background image has to be set, call fillBackground(). Else, set background color
+		 *  here directly on the NSTextView and return.
+		 */
+		if (backgroundImage == null) {
+			double /*float*/ [] background = this.background;
+			double /*float*/ alpha;
+			if (background == null) {
+				background = defaultBackground ().handle;
+				alpha = getThemeAlpha ();
+			} else {
+				alpha = background[3];
+			}
+			NSColor nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], alpha);
+			((NSTextView) view).setBackgroundColor(nsColor);
+			return;
+		}
 	}
-	if ((style & SWT.MULTI) != 0 && id != scrollView.id) return;
 	fillBackground (view, context, rect, -1);
 }
 
@@ -759,6 +779,14 @@ void drawInteriorWithFrame_inView_searchfield (long /*int*/ id, long /*int*/ sel
 
 	if (cell.cancelButtonCell() != null && ((NSSearchField) view).stringValue().length() > 0) {
 		cell.cancelButtonCell().drawInteriorWithFrame(cell.cancelButtonRectForBounds(cellFrame), view);
+	}
+}
+
+@Override
+void drawRect(long id, long sel, NSRect rect) {
+	super.drawRect(id, sel, rect);
+	if (display.appAppearance == APPEARANCE.Dark) {
+		setDefaultForeground();
 	}
 }
 
@@ -1789,6 +1817,17 @@ void setBackgroundImage(NSImage image) {
 	} else {
 		((NSTextView) view).setDrawsBackground(image == null);
 		scrollView.setDrawsBackground(image == null);
+	}
+}
+
+void setDefaultForeground() {
+	if ((style & SWT.MULTI) != 0) {
+		if (foreground != null) return;
+		if (getEnabled ()) {
+			((NSTextView) view).setTextColor (NSColor.textColor ());
+		} else {
+			((NSTextView) view).setTextColor (NSColor.disabledControlTextColor ());
+		}
 	}
 }
 

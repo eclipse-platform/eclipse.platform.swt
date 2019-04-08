@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.Display.*;
 
 /**
  * Instances of this class represent a selectable
@@ -241,6 +242,14 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangl
 		r.size.width = rect[i].width - outMetric[0];
 		r.size.height = rect[i].height - (2 * outMetric[0]);
 		OS.HIThemeDrawFocusRect(r, true, context.graphicsPort(), OS.kHIThemeOrientationNormal);
+	}
+}
+
+@Override
+void drawRect(long id, long sel, NSRect rect) {
+	super.drawRect(id, sel, rect);
+	if (display.appAppearance == APPEARANCE.Dark) {
+		setDefaultForeground();
 	}
 }
 
@@ -659,6 +668,15 @@ void setBackgroundColor(NSColor nsColor) {
 @Override
 void setBackgroundImage(NSImage image) {
 	((NSTextView) view).setDrawsBackground(image == null);
+}
+
+void setDefaultForeground() {
+	if (foreground != null) return;
+	if (getEnabled ()) {
+		((NSTextView) view).setTextColor (NSColor.textColor ());
+	} else {
+		((NSTextView) view).setTextColor (NSColor.disabledControlTextColor ());
+	}
 }
 
 @Override
