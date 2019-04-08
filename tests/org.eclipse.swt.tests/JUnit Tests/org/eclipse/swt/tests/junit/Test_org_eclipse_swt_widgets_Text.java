@@ -1160,7 +1160,8 @@ public void test_setForegroundAfterBackground() {
 	makeCleanEnvironment(false);
 	Color gray = text.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 	Color white = text.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-	Color defaultForeground = text.getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+	int systemColor = SwtTestUtil.isCocoa ? SWT.COLOR_LIST_FOREGROUND : SWT.COLOR_WIDGET_FOREGROUND;
+	Color defaultForeground = text.getDisplay().getSystemColor(systemColor);
 
 	text.setBackground(gray);
 	assertEquals(text.getForeground(), defaultForeground);
