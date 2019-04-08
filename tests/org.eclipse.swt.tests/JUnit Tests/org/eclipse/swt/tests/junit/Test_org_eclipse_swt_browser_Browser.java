@@ -1417,6 +1417,17 @@ public void test_refresh() {
 	}
 }
 
+@Test
+@Override
+public void test_setFocus_toChild_afterOpen() {
+	// The different browsers set focus to a different child
+}
+
+@Test
+@Override
+public void test_setFocus_toChild_beforeOpen() {
+	// The different browsers set focus to a different child
+}
 
 
 /** Text without html tags */
