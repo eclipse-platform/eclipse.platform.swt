@@ -4620,7 +4620,7 @@ void releaseWidget () {
 		redrawSurface = 0;
 	} else {
 		long imHandle = imHandle ();
-		if (imHandle != 0) {
+		if (imHandle != 0 && GTK.GTK_IS_IM_CONTEXT(imHandle)) {
 			GTK.gtk_im_context_reset (imHandle);
 			GTK.gtk_im_context_set_client_window (imHandle, 0);
 		}

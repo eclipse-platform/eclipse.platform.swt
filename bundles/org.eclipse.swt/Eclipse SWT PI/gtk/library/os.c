@@ -3653,6 +3653,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1GTK_1IS_1CONTAINER)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1IM_1CONTEXT
+JNIEXPORT jboolean JNICALL GTK_NATIVE(_1GTK_1IS_1IM_1CONTEXT)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1GTK_1IS_1IM_1CONTEXT_FUNC);
+	rc = (jboolean)GTK_IS_IM_CONTEXT(arg0);
+	GTK_NATIVE_EXIT(env, that, _1GTK_1IS_1IM_1CONTEXT_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1LABEL
 JNIEXPORT jboolean JNICALL GTK_NATIVE(_1GTK_1IS_1LABEL)
 	(JNIEnv *env, jclass that, jlong arg0)

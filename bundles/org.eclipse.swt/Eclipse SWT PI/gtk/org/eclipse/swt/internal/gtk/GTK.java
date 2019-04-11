@@ -287,6 +287,15 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
+	public static final native boolean _GTK_IS_IM_CONTEXT(long obj);
+	public static final boolean GTK_IS_IM_CONTEXT(long obj) {
+		lock.lock();
+		try {
+			return _GTK_IS_IM_CONTEXT(obj);
+		} finally {
+			lock.unlock();
+		}
+	}
 	public static final native boolean _GTK_IS_SCROLLED_WINDOW(long obj);
 	public static final boolean GTK_IS_SCROLLED_WINDOW(long obj) {
 		lock.lock();
