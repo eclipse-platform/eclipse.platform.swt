@@ -51,6 +51,7 @@ public class CTabFolderRenderer {
 	Color selectedOuterColor = null;
 	Color selectedInnerColor = null;
 	Color tabAreaColor = null;
+	Color minMaxBorderColor = null;
 	/*
 	 * Border color that was used in computing the cached anti-alias Colors.
 	 * We have to recompute the colors if the border color changes
@@ -549,6 +550,10 @@ public class CTabFolderRenderer {
 			chevronFont.dispose();
 			chevronFont = null;
 		}
+		if (minMaxBorderColor != null) {
+			minMaxBorderColor.dispose();
+			minMaxBorderColor = null;
+		}
 	}
 
 	void disposeAntialiasColors() {
@@ -600,6 +605,12 @@ public class CTabFolderRenderer {
 	 * @since 3.6
 	 */
 	protected void draw (int part, int state, Rectangle bounds, GC gc) {
+		if (minMaxBorderColor == null) {
+			// this color has to be identical to the colors used in the PNG files of
+			// the view drop down menu located in
+			// org.eclipse.e4.ui.workbench.renderers.swt/icons/full/elcl16/view_menu.png
+			minMaxBorderColor = new Color (gc.getDevice(), 105, 105, 105);
+		}
 		switch (part) {
 			case PART_BACKGROUND:
 				this.drawBackground(gc, bounds, state);
@@ -1122,7 +1133,7 @@ public class CTabFolderRenderer {
 		int x = maxRect.x + (maxRect.width - 10)/2;
 		int y = maxRect.y + 3;
 
-		gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+		gc.setForeground(minMaxBorderColor);
 		gc.setBackground(display.getSystemColor(BUTTON_FILL));
 
 		switch (maxImageState & (SWT.HOT | SWT.SELECTED)) {
@@ -1182,7 +1193,7 @@ public class CTabFolderRenderer {
 		int x = minRect.x + (minRect.width - 10)/2;
 		int y = minRect.y + 3;
 
-		gc.setForeground(display.getSystemColor(BUTTON_BORDER));
+		gc.setForeground(minMaxBorderColor);
 		gc.setBackground(display.getSystemColor(BUTTON_FILL));
 
 		switch (minImageState & (SWT.HOT | SWT.SELECTED)) {
