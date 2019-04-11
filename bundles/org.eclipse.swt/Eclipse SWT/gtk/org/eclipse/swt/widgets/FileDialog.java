@@ -321,7 +321,7 @@ String openNativeChooserDialog () {
 	int action = (style & SWT.SAVE) != 0 ? GTK.GTK_FILE_CHOOSER_ACTION_SAVE : GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
 	long shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_NAMED_LABEL_CANCEL);
+	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, action, null, null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (uriMode) {

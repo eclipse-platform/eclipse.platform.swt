@@ -139,7 +139,7 @@ String openNativeChooserDialog () {
 	long shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long handle = 0;
-	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_NAMED_LABEL_CANCEL);
+	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, GTK.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, null, null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (filterPath != null && filterPath.length () > 0) {
