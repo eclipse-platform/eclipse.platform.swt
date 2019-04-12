@@ -26,6 +26,5 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.eclipse.dltk.sh.core.nature</nature>
 	</natures>
 </projectDescription>

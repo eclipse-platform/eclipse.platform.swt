@@ -23,6 +23,5 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.eclipse.dltk.sh.core.nature</nature>
 	</natures>
 </projectDescription>
