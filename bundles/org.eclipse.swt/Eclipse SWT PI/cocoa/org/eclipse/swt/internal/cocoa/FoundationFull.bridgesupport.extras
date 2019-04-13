@@ -74,26 +74,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSAssertionHandler" swt_gen="true">
-		<method class_method="true" selector="currentHandler" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="handleFailureInFunction:file:lineNumber:description:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_param_name="format"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="handleFailureInMethod:object:file:lineNumber:description:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_param_name="format"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
 	<class name="NSAttributedString" swt_gen="mixed">
 		<method selector="attribute:atIndex:effectiveRange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -979,10 +959,6 @@
 			<arg swt_gen="true" swt_java_type="char[]"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSString"></retval>
-		</method>
-		<method class_method="true" selector="stringWithFormat:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 		<method class_method="true" selector="stringWithUTF8String:" swt_gen="true">
 			<arg swt_gen="true"></arg>

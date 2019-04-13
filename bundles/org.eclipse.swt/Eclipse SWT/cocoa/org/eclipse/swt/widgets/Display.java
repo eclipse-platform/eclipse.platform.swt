@@ -964,7 +964,7 @@ void createDisplay (DeviceData data) {
 }
 
 void createMainMenu () {
-	NSString appName = getApplicationName();
+	String appName = getApplicationName().getString();
 	NSString emptyStr = NSString.string();
 	NSMenu mainMenu = (NSMenu)new NSMenu().alloc();
 	mainMenu.initWithTitle(emptyStr);
@@ -972,14 +972,14 @@ void createMainMenu () {
 
 	NSMenuItem menuItem;
 	NSMenu appleMenu;
-	NSString format = NSString.stringWith("%@ %@"), title;
+	NSString title;
 
 	NSMenuItem appItem = menuItem = mainMenu.addItemWithTitle(emptyStr, 0, emptyStr);
 	appleMenu = (NSMenu)new NSMenu().alloc();
 	appleMenu.initWithTitle(emptyStr);
 	OS.objc_msgSend(application.id, OS.sel_registerName("setAppleMenu:"), appleMenu.id);
 
-	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("About")).id, appName.id));
+	title = NSString.stringWith(SWT.getMessage("About") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_orderFrontStandardAboutPanel_, emptyStr);
 	menuItem.setTarget(applicationDelegate);
 
@@ -1006,7 +1006,7 @@ void createMainMenu () {
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("Hide")).id, appName.id));
+	title = NSString.stringWith(SWT.getMessage("Hide") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_hide_, NSString.stringWith("h"));
 	menuItem.setTarget(applicationDelegate);
 
@@ -1021,7 +1021,7 @@ void createMainMenu () {
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("Quit")).id, appName.id));
+	title = NSString.stringWith(SWT.getMessage("Quit") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_applicationShouldTerminate_, NSString.stringWith("q"));
 	menuItem.setTarget(applicationDelegate);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -144,11 +144,6 @@ public NSString stringByReplacingPercentEscapesUsingEncoding(long /*int*/ enc) {
 
 public static NSString stringWithCharacters(char[] characters, long /*int*/ length) {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_length_, characters, length);
-	return result != 0 ? new NSString(result) : null;
-}
-
-public static NSString stringWithFormat(NSString format) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format != null ? format.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 
