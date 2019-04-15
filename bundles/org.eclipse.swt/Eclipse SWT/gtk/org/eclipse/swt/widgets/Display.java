@@ -1994,10 +1994,6 @@ String gtk_css_default_theme_values (int swt, String cssOutput) {
 	 */
 	String color = "";
 	switch (swt) {
-		case SWT.COLOR_INFO_FOREGROUND:
-			return gtk_css_default_theme_values_irregular(swt, cssOutput);
-		case SWT.COLOR_INFO_BACKGROUND:
-			return gtk_css_default_theme_values_irregular(swt, cssOutput);
 		case SWT.COLOR_LINK_FOREGROUND:
 			return gtk_css_default_theme_values_irregular(swt, cssOutput);
 		case SWT.COLOR_LIST_BACKGROUND:
@@ -2151,50 +2147,6 @@ String gtk_css_default_theme_values_irregular(int swt, String cssOutput) {
 	int tSelected, selected, classDef;
 	String color = "";
 	switch (swt) {
-		case SWT.COLOR_INFO_FOREGROUND:
-			selected = cssOutput.indexOf ("@define-color tooltip_fg_color");
-			tSelected = cssOutput.indexOf ("@define-color theme_tooltip_fg_color");
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				classDef = cssOutput.indexOf ("tooltip * {");
-			} else {
-				classDef = cssOutput.indexOf (".tooltip {");
-			}
-			if (selected != -1 || tSelected != -1) {
-				if (selected != -1) {
-					color = simple_color_parser(cssOutput, "@define-color tooltip_fg_color", selected);
-				} else if (tSelected != -1) {
-					color = simple_color_parser(cssOutput, "@define-color theme_tooltip_fg_color", tSelected);
-				}
-				if (!color.isEmpty()) {
-					break;
-				}
-			} else if (classDef != -1){
-				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(cssOutput, "tooltip * {");
-				} else {
-					COLOR_INFO_FOREGROUND_RGBA = gtk_css_parse_foreground(cssOutput, ".tooltip {");
-				}
-				return "parsed";
-			}
-			break;
-		case SWT.COLOR_INFO_BACKGROUND:
-			selected = cssOutput.indexOf ("@define-color tooltip_bg_color");
-			tSelected = cssOutput.indexOf ("@define-color theme_tooltip_bg_color");
-			classDef = cssOutput.indexOf ("tooltip.background {");
-			if (selected != -1 || tSelected != -1) {
-				if (selected != -1) {
-					color = simple_color_parser(cssOutput, "@define-color tooltip_bg_color", selected);
-				} else if (tSelected != -1) {
-					color = simple_color_parser(cssOutput, "@define-color theme_tooltip_bg_color", tSelected);
-				}
-				if (!color.isEmpty()) {
-					break;
-				}
-			} else if (classDef != -1) {
-				COLOR_INFO_BACKGROUND_RGBA = gtk_css_parse_background(cssOutput, "tooltip.background {");
-				return "parsed";
-			}
-			break;
 		case SWT.COLOR_LINK_FOREGROUND:
 			selected = cssOutput.indexOf("@define-color link_color");
 			tSelected = cssOutput.indexOf("@define-color theme_link_color");
@@ -3186,19 +3138,33 @@ static int inversePremultipliedColor(int color, int alpha) {
 	return (255*color + alpha-1) / alpha;
 }
 
-GdkRGBA styleContextGetBackgroundColor(long context, int state) {
-	/*
-	* Background in GTK theme can be more complex then just solid color:
-	* it can have 'background-image', 'background-position', 'background-repeat', etc.
-	* One example is 'tooltip' in 'Ambiance' theme, which doesn't have 'background-color'.
-	* The workaround is to draw the context background to a temporary image and
-	* get the color of the pixel in the middle.
-	*/
+/**
+ * What user sees is a combination of multiple layers.
+ * This is only important when top layer is semi-transparent.
+ */
+private static void renderAllBackgrounds(long styleContext, long cairo) {
+	long parentStyleContext = GTK.gtk_style_context_get_parent (styleContext);
+	if (parentStyleContext != 0) renderAllBackgrounds (parentStyleContext, cairo);
+
+	GTK.gtk_render_background (styleContext, cairo, -50, -50, 100, 100);
+}
+
+/**
+ * Background in GTK theme can be more complex then just solid color:
+ * 1) Due to 'background-image', 'background-position', 'background-repeat', etc.
+ *    Example: 'tooltip' in 'Ambiance' theme uses 'background-image'.
+ * 2) If background is semi-transparent, user actually sees a combination of layers.
+ *    Example: 'tooltip' in 'HighContrast' theme has transparent label.
+ * Both problems are solved by drawing to a temporary image and getting
+ * the color of the pixel in the middle.
+ */
+GdkRGBA styleContextEstimateBackgroundColor(long context, int state) {
+	// Render to a temporary image
 	GTK.gtk_style_context_save (context);
 	GTK.gtk_style_context_set_state (context, state);
 	long surface = Cairo.cairo_image_surface_create (Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	long cairo = Cairo.cairo_create (surface);
-	GTK.gtk_render_background (context, cairo, -50, -50, 100, 100);
+	renderAllBackgrounds (context, cairo);
 	Cairo.cairo_fill (cairo);
 	Cairo.cairo_surface_flush (surface);
 	byte[] buffer = new byte[4];
@@ -3207,24 +3173,14 @@ GdkRGBA styleContextGetBackgroundColor(long context, int state) {
 	Cairo.cairo_destroy (cairo);
 	GTK.gtk_style_context_restore (context);
 
+	// CAIRO_FORMAT_ARGB32 means a-r-g-b order, 1 byte per value.
 	int a = Byte.toUnsignedInt(buffer[3]);
 	int r = Byte.toUnsignedInt(buffer[2]);
 	int g = Byte.toUnsignedInt(buffer[1]);
 	int b = Byte.toUnsignedInt(buffer[0]);
 
-	GdkRGBA rgba = new GdkRGBA ();
-
-	if (a == 0) {
-		// 'HighContrast' theme has a transparent label in tooltip.
-		// For whatever reason, rendering tooltip also renders children,
-		// and children are not alpha-blended on parent. This is a dirty
-		// workaround for it. It will not work in case of partial
-		// transparency.
-		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		return rgba;
-	}
-
 	// NOTE: cairo uses premultiplied alpha (see CAIRO_FORMAT_ARGB32)
+	GdkRGBA rgba = new GdkRGBA ();
 	rgba.alpha = a / 255f;
 	rgba.red   = inversePremultipliedColor(r, a) / 255f;
 	rgba.green = inversePremultipliedColor(g, a) / 255f;
@@ -3472,16 +3428,10 @@ void initializeSystemColorsTooltip() {
 	long customLabel = OS.g_object_new(GTK.gtk_label_get_type(), 0);
 	GTK.gtk_tooltip_set_custom(tooltip, customLabel);
 
-	// Find tooltip window, using custom widget as entry point
-	long tooltipBox    = GTK.gtk_widget_get_parent(customLabel);
-	long tooltipWindow = GTK.gtk_widget_get_parent(tooltipBox);
-
 	// Just use temporary label; this is easier then finding the original label
 	long styleContextLabel = GTK.gtk_widget_get_style_context(customLabel);
 	COLOR_INFO_FOREGROUND_RGBA = styleContextGetColor(styleContextLabel, GTK.GTK_STATE_FLAG_NORMAL);
-
-	long styleContextTooltipWindow = GTK.gtk_widget_get_style_context(tooltipWindow);
-	COLOR_INFO_BACKGROUND_RGBA = styleContextGetBackgroundColor(styleContextTooltipWindow, GTK.GTK_STATE_FLAG_NORMAL);
+	COLOR_INFO_BACKGROUND_RGBA = styleContextEstimateBackgroundColor(styleContextLabel, GTK.GTK_STATE_FLAG_NORMAL);
 
 	// Cleanup
 	// customLabel is owned by tooltip and will be destroyed automatically

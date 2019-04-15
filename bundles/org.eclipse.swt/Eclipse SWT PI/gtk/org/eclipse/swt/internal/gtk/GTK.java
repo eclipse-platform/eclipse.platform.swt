@@ -6100,6 +6100,18 @@ public class GTK extends OS {
 		}
 	}
 	/**
+	 * @param context cast=(GtkStyleContext *)
+	 */
+	public static final native long _gtk_style_context_get_parent(long context);
+	public static final long gtk_style_context_get_parent(long context) {
+		lock.lock();
+		try {
+			return _gtk_style_context_get_parent(context);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 * @param padding cast=(GtkBorder *),flags=no_in

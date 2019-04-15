@@ -9483,6 +9483,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1get_1parent
+JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1style_1context_1get_1parent)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1parent_FUNC);
+	rc = (jlong)gtk_style_context_get_parent((GtkStyleContext *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1parent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1invalidate
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1style_1context_1invalidate)
 	(JNIEnv *env, jclass that, jlong arg0)

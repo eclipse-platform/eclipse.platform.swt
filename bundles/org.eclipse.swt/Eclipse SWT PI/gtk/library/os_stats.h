@@ -757,6 +757,7 @@ typedef enum {
 	_1gtk_1style_1context_1get_1margin_FUNC,
 	_1gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC,
 	_1gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2_FUNC,
+	_1gtk_1style_1context_1get_1parent_FUNC,
 	_1gtk_1style_1context_1invalidate_FUNC,
 	_1gtk_1style_1context_1remove_1class_FUNC,
 	_1gtk_1style_1context_1restore_FUNC,
