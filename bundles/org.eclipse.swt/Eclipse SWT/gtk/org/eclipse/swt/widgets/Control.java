@@ -3579,8 +3579,14 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 				}
 			}
 		}
-		if (sendMouseDown && !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
-			result = 1;
+		if (sendMouseDown) {
+			boolean mouseEventSent;
+			if (GTK.GTK4) {
+				mouseEventSent = !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventX[0], eventY[0], true, eventState[0]);
+			} else {
+				mouseEventSent = !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]);
+			}
+			result = mouseEventSent ? 1 : 0;
 		}
 		if (isDisposed ()) return 1;
 		/*

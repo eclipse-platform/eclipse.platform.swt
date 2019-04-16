@@ -1668,6 +1668,14 @@ TreeItem getItemInPixels (Point point) {
 	GTK.gtk_widget_realize (handle);
 	int x = point.x;
 	int y = point.y;
+	/*
+	 * On GTK4 the header is included in the entire widget's surface, so we must subtract
+	 * its size from the y-coordinate. This does not apply on GTK3 as the header and
+	 * "main-widget" have separate GdkWindows.
+	 */
+	if (getHeaderVisible() && GTK.GTK4) {
+		y -= getHeaderHeight();
+	}
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	long [] columnHandle = new long [1];
 	if (!GTK.gtk_tree_view_get_path_at_pos (handle, x, y, path, columnHandle, null, null)) return null;

@@ -766,7 +766,16 @@ Rectangle getImageBoundsInPixels (int index) {
 	}
 	rect.width = w [0];
 	int width = GTK.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
-	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
+	Rectangle r = new Rectangle (rect.x, rect.y, width, rect.height + 1);
+	/*
+	 * On GTK4 the header is included in the entire widget's surface, so we must subtract
+	 * its size from the y-coordinate. This does not apply on GTK3 as the header and
+	 * "main-widget" have separate GdkWindows.
+	 */
+	if (parent!= null && parent.getHeaderVisible () && GTK.GTK4) {
+		r.y += parent.getHeaderHeight();
+	}
+	return r;
 }
 
 /**

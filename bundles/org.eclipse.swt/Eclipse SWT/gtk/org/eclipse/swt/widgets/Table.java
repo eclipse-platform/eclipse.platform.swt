@@ -1612,6 +1612,14 @@ TableItem getItemInPixels (Point point) {
 	long [] path = new long [1];
 	GTK.gtk_widget_realize (handle);
 	int y = point.y;
+	/*
+	 * On GTK4 the header is included in the entire widget's surface, so we must subtract
+	 * its size from the y-coordinate. This does not apply on GTK3 as the header and
+	 * "main-widget" have separate GdkWindows.
+	 */
+	if (getHeaderVisible() && GTK.GTK4) {
+		y -= getHeaderHeight();
+	}
 	if (!GTK.gtk_tree_view_get_path_at_pos (handle, point.x, y, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	long indices = GTK.gtk_tree_path_get_indices (path [0]);
