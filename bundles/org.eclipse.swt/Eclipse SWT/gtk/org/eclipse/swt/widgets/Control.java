@@ -465,7 +465,7 @@ void hookEvents () {
 		}
 		OS.g_signal_connect (motionInverseController, OS.motion, enterMotionScrollAddress, MOTION_INVERSE);
 
-		long scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+		long scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_NONE);
 		GTK.gtk_widget_add_controller(eventHandle, scrollController);
 		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
 		OS.g_signal_connect (scrollController, OS.scroll, enterMotionScrollAddress, SCROLL);
