@@ -2138,7 +2138,7 @@ public void setAlpha (int alpha) {
 }
 
 void resizeBounds (int width, int height, boolean notify) {
-	int border = 0;
+	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	if (GTK.GTK4) {
 		if (redrawSurface != 0) {
 			GDK.gdk_surface_resize (redrawSurface, width, height);
@@ -2146,6 +2146,10 @@ void resizeBounds (int width, int height, boolean notify) {
 		if (redrawSurface != 0) {
 			GDK.gdk_surface_resize (redrawSurface, width, height);
 		}
+		GtkAllocation allocation = new GtkAllocation();
+		allocation.width = width;
+		allocation.height = height;
+		GTK.gtk_widget_size_allocate(shellHandle, allocation, -1);
 	} else {
 		if (redrawWindow != 0) {
 			GDK.gdk_window_resize (redrawWindow, width, height);
@@ -2153,7 +2157,6 @@ void resizeBounds (int width, int height, boolean notify) {
 		if (enableWindow != 0) {
 			GDK.gdk_window_resize (enableWindow, width, height);
 		}
-		border = gtk_container_get_border_width_or_margin (shellHandle);
 	}
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
