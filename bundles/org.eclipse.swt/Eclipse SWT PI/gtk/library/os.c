@@ -12672,6 +12672,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1cursor
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1cursor)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1cursor_FUNC);
+	gtk_widget_set_cursor((GtkWidget *)arg0, (GdkCursor *)arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1cursor_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1default_1direction
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1set_1default_1direction)
 	(JNIEnv *env, jclass that, jint arg0)

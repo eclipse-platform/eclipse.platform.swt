@@ -998,6 +998,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1can_1default",
 	"_1gtk_1widget_1set_1can_1focus",
 	"_1gtk_1widget_1set_1clip",
+	"_1gtk_1widget_1set_1cursor",
 	"_1gtk_1widget_1set_1default_1direction",
 	"_1gtk_1widget_1set_1direction",
 	"_1gtk_1widget_1set_1double_1buffered",

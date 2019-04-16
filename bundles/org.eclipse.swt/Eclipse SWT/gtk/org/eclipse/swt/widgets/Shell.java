@@ -1589,8 +1589,7 @@ long gtk_leave_notify_event (long widget, long event) {
 			GDK.gdk_event_get_state(event, state);
 			if ((state[0] & GDK.GDK_BUTTON1_MASK) == 0) {
 				if (GTK.GTK4) {
-					long surface = gtk_widget_get_surface (shellHandle);
-					GDK.gdk_surface_set_cursor(surface, 0);
+					GTK.gtk_widget_set_cursor (shellHandle, 0);
 				} else {
 					long window = gtk_widget_get_window (shellHandle);
 					GDK.gdk_window_set_cursor (window, 0);
@@ -1707,9 +1706,8 @@ long gtk_motion_notify_event (long widget, long event) {
 							case GDK.GDK_RIGHT_SIDE: name = Converter.wcsToMbcs("e-resize", true); break;
 							default: name = Converter.wcsToMbcs("none", true); break;
 						}
-						long surface = gtk_widget_get_surface(shellHandle);
 						cursor = GDK.gdk_cursor_new_from_name(name, 0);
-						GDK.gdk_surface_set_cursor(surface, cursor);
+						GTK.gtk_widget_set_cursor (shellHandle, cursor);
 					} else {
 						long window = gtk_widget_get_window (shellHandle);
 						cursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), mode);

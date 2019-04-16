@@ -8999,6 +8999,20 @@ public class GTK extends OS {
 	}
 	/**
 	 * @param widget cast=(GtkWidget *)
+	 * @param cursor cast=(GdkCursor *)
+	 */
+	public static final native void _gtk_widget_set_cursor(long widget, long cursor);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final void gtk_widget_set_cursor(long widget, long cursor) {
+		lock.lock();
+		try {
+			_gtk_widget_set_cursor(widget, cursor);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param widget cast=(GtkWidget *)
 	 * @param visible cast=(gboolean)
 	 */
 	public static final native void _gtk_widget_set_visible(long widget, boolean visible);

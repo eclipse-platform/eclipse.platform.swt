@@ -996,6 +996,7 @@ typedef enum {
 	_1gtk_1widget_1set_1can_1default_FUNC,
 	_1gtk_1widget_1set_1can_1focus_FUNC,
 	_1gtk_1widget_1set_1clip_FUNC,
+	_1gtk_1widget_1set_1cursor_FUNC,
 	_1gtk_1widget_1set_1default_1direction_FUNC,
 	_1gtk_1widget_1set_1direction_FUNC,
 	_1gtk_1widget_1set_1double_1buffered_FUNC,

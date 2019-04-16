@@ -451,6 +451,7 @@
 #define NO__1gdk_1cursor_1new_1from_1name___3BI
 #define NO__1gdk_1cursor_1new_1from_1name___3BJ
 #define NO__1gdk_1cursor_1new_1from_1texture
+#define NO__1gtk_1widget_1set_1cursor
 
 // No GdkTexture on GTK3
 #define NO__1gdk_1texture_1new_1for_1pixbuf

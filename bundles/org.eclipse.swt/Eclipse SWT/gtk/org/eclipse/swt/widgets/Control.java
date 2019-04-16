@@ -5183,8 +5183,8 @@ public void setCursor (Cursor cursor) {
 
 void setCursor (long cursor) {
 	if (GTK.GTK4) {
-		long surface = eventSurface ();
-		GDK.gdk_surface_set_cursor(surface, cursor);
+		long eventHandle = eventHandle ();
+		GTK.gtk_widget_set_cursor (eventHandle, cursor);
 	} else {
 		long window = eventWindow ();
 		if (window != 0) {
