@@ -39,10 +39,10 @@ public class Clipboard {
 	private static long TARGET;
 
 	static {
-		GTKCLIPBOARD = GTK.gtk_clipboard_get(GDK.GDK_NONE);
+		GTKCLIPBOARD = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs("PRIMARY", true);
 		long primary = GDK.gdk_atom_intern(buffer, false);
-		GTKPRIMARYCLIPBOARD = GTK.gtk_clipboard_get(primary);
+		GTKPRIMARYCLIPBOARD = GTK.GTK4 ? GDK.gdk_display_get_primary_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get(primary);
 		buffer = Converter.wcsToMbcs("TARGETS", true);
 		TARGET = GDK.gdk_atom_intern(buffer, false);
 	}

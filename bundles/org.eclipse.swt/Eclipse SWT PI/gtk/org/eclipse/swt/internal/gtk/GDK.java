@@ -772,6 +772,30 @@ public class GDK extends OS {
 		}
 	}
 	/**
+	 *  @param display cast=(GdkDisplay *)
+	 */
+	public static final native long _gdk_display_get_clipboard(long display);
+	public static final long gdk_display_get_clipboard(long display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_clipboard(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 *  @param display cast=(GdkDisplay *)
+	 */
+	public static final native long _gdk_display_get_primary_clipboard(long display);
+	public static final long gdk_display_get_primary_clipboard(long display) {
+		lock.lock();
+		try {
+			return _gdk_display_get_primary_clipboard(display);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
 	 * @method flags=dynamic
 	 */
 	public static final native long _gdk_display_get_default_seat(long display);

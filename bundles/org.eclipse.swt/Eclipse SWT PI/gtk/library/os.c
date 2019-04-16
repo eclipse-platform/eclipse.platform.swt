@@ -594,6 +594,18 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1display_1beep)
 }
 #endif
 
+#ifndef NO__1gdk_1display_1get_1clipboard
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1display_1get_1clipboard)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1clipboard_FUNC);
+	rc = (jlong)gdk_display_get_clipboard((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1clipboard_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1display_1get_1default
 JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1display_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -758,6 +770,18 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1display_1get_1n_1monitors)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1n_1monitors_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1get_1primary_1clipboard
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1display_1get_1primary_1clipboard)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1display_1get_1primary_1clipboard_FUNC);
+	rc = (jlong)gdk_display_get_primary_clipboard((GdkDisplay *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1display_1get_1primary_1clipboard_FUNC);
 	return rc;
 }
 #endif

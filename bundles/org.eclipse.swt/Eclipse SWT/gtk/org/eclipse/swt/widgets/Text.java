@@ -699,7 +699,7 @@ public void copy () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_copy_clipboard (handle);
 	} else {
-		long clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
 		clearSegments (true);
 		GTK.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		applySegments ();
@@ -723,7 +723,7 @@ public void cut () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_cut_clipboard (handle);
 	} else {
-		long clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
 		clearSegments (true);
 		GTK.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -2092,7 +2092,7 @@ public void paste () {
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_editable_paste_clipboard (handle);
 	} else {
-		long clipboard = GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
 		clearSegments (true);
 		GTK.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
