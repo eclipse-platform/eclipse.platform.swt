@@ -927,12 +927,13 @@ void hookEvents () {
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, notifyStateAddress, shellHandle);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE_GTK4], 0, display.getClosure (SIZE_ALLOCATE_GTK4), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
 	}
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
 	if (GTK.GTK4) {
 		OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
 		long keyController = GTK.gtk_event_controller_key_new();
@@ -2144,10 +2145,12 @@ void resizeBounds (int width, int height, boolean notify) {
 		if (redrawSurface != 0) {
 			GDK.gdk_surface_resize (redrawSurface, width, height);
 		}
-		GtkAllocation allocation = new GtkAllocation();
-		allocation.width = width;
-		allocation.height = height;
-		GTK.gtk_widget_size_allocate(shellHandle, allocation, -1);
+		if (parent != null) {
+			GtkAllocation allocation = new GtkAllocation();
+			allocation.width = width;
+			allocation.height = height;
+			GTK.gtk_widget_size_allocate(shellHandle, allocation, -1);
+		}
 	} else {
 		if (redrawWindow != 0) {
 			GDK.gdk_window_resize (redrawWindow, width, height);

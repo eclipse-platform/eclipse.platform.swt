@@ -235,7 +235,8 @@ public abstract class Widget {
 	static final int GESTURE_PRESSED = 100;
 	static final int GESTURE_RELEASED = 101;
 	static final int NOTIFY_STATE = 102;
-	static final int LAST_SIGNAL = 103;
+	static final int SIZE_ALLOCATE_GTK4 = 103;
+	static final int LAST_SIGNAL = 104;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -2267,6 +2268,7 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
 		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
 		case ROW_HAS_CHILD_TOGGLED: return gtk_row_has_child_toggled(handle, arg0, arg1);
+		case SIZE_ALLOCATE_GTK4: return gtk_size_allocate(handle, arg0);
 		default: return 0;
 	}
 }
