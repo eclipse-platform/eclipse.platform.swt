@@ -368,6 +368,18 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1cairo_1set_1source_1window)
 }
 #endif
 
+#ifndef NO__1gdk_1clipboard_1set_1content
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1clipboard_1set_1content)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1clipboard_1set_1content_FUNC);
+	rc = (jlong)gdk_clipboard_set_content((GdkClipboard *)arg0, (GdkContentProvider *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1clipboard_1set_1content_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1cursor_1new_1for_1display
 JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1cursor_1new_1for_1display)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

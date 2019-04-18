@@ -59,6 +59,7 @@ typedef enum {
 	_1gdk_1cairo_1set_1source_1pixbuf_FUNC,
 	_1gdk_1cairo_1set_1source_1rgba_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
+	_1gdk_1clipboard_1set_1content_FUNC,
 	_1gdk_1cursor_1new_1for_1display_FUNC,
 	_1gdk_1cursor_1new_1from_1name__J_3B_FUNC,
 	_1gdk_1cursor_1new_1from_1name___3BJ_FUNC,

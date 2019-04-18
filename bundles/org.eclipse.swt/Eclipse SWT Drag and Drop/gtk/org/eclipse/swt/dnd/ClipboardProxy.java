@@ -61,10 +61,18 @@ ClipboardProxy(Display display) {
 
 void clear (Clipboard owner, int clipboards) {
 	if ((clipboards & DND.CLIPBOARD) != 0 && activeClipboard == owner) {
-		GTK.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+		gtk_gdk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 	}
 	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && activePrimaryClipboard == owner) {
-		GTK.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+		gtk_gdk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+	}
+}
+
+void gtk_gdk_clipboard_clear(long clipboard) {
+	if (GTK.GTK4) {
+		GDK.gdk_clipboard_set_content(clipboard, 0);
+	} else {
+		GTK.gtk_clipboard_clear(clipboard);
 	}
 }
 

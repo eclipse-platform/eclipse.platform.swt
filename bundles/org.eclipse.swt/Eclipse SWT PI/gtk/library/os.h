@@ -424,6 +424,11 @@
 #define NO__1gdk_1surface_1invalidate_1region
 #define NO__1gdk_1event_1get_1surface
 
+// No GdkClipboard on GTK3
+#define NO__1gdk_1clipboard_1set_1content
+#define NO__1gdk_1display_1get_1clipboard
+#define NO__1gdk_1display_1get_1primary_1clipboard
+
 // No GtkSnapshot on GTK3
 #define NO__1gtk_1snapshot_1append_1cairo
 #define NO__1gtk_1widget_1snapshot_1child

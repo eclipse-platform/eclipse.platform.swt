@@ -775,6 +775,7 @@ public class GDK extends OS {
 	 *  @param display cast=(GdkDisplay *)
 	 */
 	public static final native long _gdk_display_get_clipboard(long display);
+	/** [GTK4 only, if-def'd in os.h] */
 	public static final long gdk_display_get_clipboard(long display) {
 		lock.lock();
 		try {
@@ -787,6 +788,7 @@ public class GDK extends OS {
 	 *  @param display cast=(GdkDisplay *)
 	 */
 	public static final native long _gdk_display_get_primary_clipboard(long display);
+	/** [GTK4 only, if-def'd in os.h] */
 	public static final long gdk_display_get_primary_clipboard(long display) {
 		lock.lock();
 		try {
@@ -1906,6 +1908,20 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_screen_get_resolution(screen);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param clipboard cast=(GdkClipboard *)
+	 * @param provider cast=(GdkContentProvider *)
+	 */
+	public static final native long _gdk_clipboard_set_content(long clipboard, long provider);
+	/** [GTK4 only, if-def'd in os.h] */
+	public static final long gdk_clipboard_set_content(long clipboard, long provider) {
+		lock.lock();
+		try {
+			return _gdk_clipboard_set_content(clipboard, provider);
 		} finally {
 			lock.unlock();
 		}
