@@ -5806,6 +5806,14 @@ void installListeners() {
 	addListener(SWT.Resize, listener);
 	addListener(SWT.Traverse, listener);
 	ime.addListener(SWT.ImeComposition, event -> {
+		if (!editable) {
+			event.doit = false;
+			event.start = 0;
+			event.end = 0;
+			event.text = "";
+			return;
+		}
+
 		switch (event.detail) {
 			case SWT.COMPOSITION_SELECTION: handleCompositionSelection(event); break;
 			case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
