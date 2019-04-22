@@ -329,6 +329,43 @@ void setNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTra
 }
 #endif
 
+#ifndef NO_NSOperatingSystemVersion
+typedef struct NSOperatingSystemVersion_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID majorVersion, minorVersion, patchVersion;
+} NSOperatingSystemVersion_FID_CACHE;
+
+NSOperatingSystemVersion_FID_CACHE NSOperatingSystemVersionFc;
+
+void cacheNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject)
+{
+	if (NSOperatingSystemVersionFc.cached) return;
+	NSOperatingSystemVersionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NSOperatingSystemVersionFc.majorVersion = (*env)->GetFieldID(env, NSOperatingSystemVersionFc.clazz, "majorVersion", "J");
+	NSOperatingSystemVersionFc.minorVersion = (*env)->GetFieldID(env, NSOperatingSystemVersionFc.clazz, "minorVersion", "J");
+	NSOperatingSystemVersionFc.patchVersion = (*env)->GetFieldID(env, NSOperatingSystemVersionFc.clazz, "patchVersion", "J");
+	NSOperatingSystemVersionFc.cached = 1;
+}
+
+NSOperatingSystemVersion *getNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject, NSOperatingSystemVersion *lpStruct)
+{
+	if (!NSOperatingSystemVersionFc.cached) cacheNSOperatingSystemVersionFields(env, lpObject);
+	lpStruct->majorVersion = (NSInteger)(*env)->GetLongField(env, lpObject, NSOperatingSystemVersionFc.majorVersion);
+	lpStruct->minorVersion = (NSInteger)(*env)->GetLongField(env, lpObject, NSOperatingSystemVersionFc.minorVersion);
+	lpStruct->patchVersion = (NSInteger)(*env)->GetLongField(env, lpObject, NSOperatingSystemVersionFc.patchVersion);
+	return lpStruct;
+}
+
+void setNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject, NSOperatingSystemVersion *lpStruct)
+{
+	if (!NSOperatingSystemVersionFc.cached) cacheNSOperatingSystemVersionFields(env, lpObject);
+	(*env)->SetLongField(env, lpObject, NSOperatingSystemVersionFc.majorVersion, (jlong)lpStruct->majorVersion);
+	(*env)->SetLongField(env, lpObject, NSOperatingSystemVersionFc.minorVersion, (jlong)lpStruct->minorVersion);
+	(*env)->SetLongField(env, lpObject, NSOperatingSystemVersionFc.patchVersion, (jlong)lpStruct->patchVersion);
+}
+#endif
+
 #ifndef NO_NSPoint
 typedef struct NSPoint_FID_CACHE {
 	int cached;

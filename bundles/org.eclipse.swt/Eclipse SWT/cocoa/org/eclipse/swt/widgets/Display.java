@@ -1547,7 +1547,7 @@ public int getDismissalAlignment () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-	return OS.GetDblTime () * 1000 / 60;
+	return (int)(NSEvent.doubleClickInterval() * 1000);
 }
 
 /**

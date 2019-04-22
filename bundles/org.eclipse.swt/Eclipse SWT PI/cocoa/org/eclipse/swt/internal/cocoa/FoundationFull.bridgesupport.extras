@@ -826,6 +826,14 @@
 	</class>
 	<class name="NSPortCoder" swt_superclass="NSCoder">
 	</class>
+	<class name="NSProcessInfo" swt_gen="mixed">
+		<method selector="operatingSystemVersion" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="processInfo" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSProtocolChecker" swt_superclass="NSProxy">
 	</class>
 	<class name="NSQuitCommand" swt_superclass="NSScriptCommand">
@@ -1226,6 +1234,11 @@
 		<field name="m22" swt_gen="true"></field>
 		<field name="tX" swt_gen="true"></field>
 		<field name="tY" swt_gen="true"></field>
+	</struct>
+	<struct name="NSOperatingSystemVersion" swt_gen="true">
+		<field name="majorVersion" swt_gen="true"></field>
+		<field name="minorVersion" swt_gen="true"></field>
+		<field name="patchVersion" swt_gen="true"></field>
 	</struct>
 	<struct name="NSPoint" swt_gen="true" swt_gen_memmove="true" swt_gen_tostring="true">
 		<field name="x" swt_gen="true"></field>

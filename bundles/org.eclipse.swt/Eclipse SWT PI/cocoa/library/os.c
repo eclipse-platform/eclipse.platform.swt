@@ -2225,6 +2225,18 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(CTFontGetLeading)
 }
 #endif
 
+#ifndef NO_CTFontManagerRegisterFontsForURL
+JNIEXPORT jboolean JNICALL OS_NATIVE(CTFontManagerRegisterFontsForURL)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CTFontManagerRegisterFontsForURL_FUNC);
+	rc = (jboolean)CTFontManagerRegisterFontsForURL((CFURLRef)arg0, (CTFontManagerScope)arg1, (CFErrorRef*)arg2);
+	OS_NATIVE_EXIT(env, that, CTFontManagerRegisterFontsForURL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CTLineCreateWithAttributedString
 JNIEXPORT jlong JNICALL OS_NATIVE(CTLineCreateWithAttributedString)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -4877,6 +4889,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSObliquenessAttributeName)
 	OS_NATIVE_ENTER(env, that, NSObliquenessAttributeName_FUNC);
 	rc = (jlong)NSObliquenessAttributeName;
 	OS_NATIVE_EXIT(env, that, NSObliquenessAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSOperatingSystemVersion_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(NSOperatingSystemVersion_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSOperatingSystemVersion_1sizeof_FUNC);
+	rc = (jint)NSOperatingSystemVersion_sizeof();
+	OS_NATIVE_EXIT(env, that, NSOperatingSystemVersion_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -8464,6 +8488,26 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 fail:
 	if (arg0 && lparg0) setNSAffineTransformStructFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2JJ_FUNC);
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSOperatingSystemVersion_2JJ
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSOperatingSystemVersion_2JJ)
+	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
+{
+	NSOperatingSystemVersion _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSOperatingSystemVersion_2JJ_FUNC);
+	if (arg0) if ((lparg0 = getNSOperatingSystemVersionFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (STRUCT_SIZE_LIMIT == 0) {
+		((void (*)(NSOperatingSystemVersion *, jlong, jlong))objc_msgSend_stret)(lparg0, arg1, arg2);
+	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		*lparg0 = (*(NSOperatingSystemVersion (*)(jlong, jlong))objc_msgSend_stret)(arg1, arg2);
+	} else {
+		*lparg0 = (*(NSOperatingSystemVersion (*)(jlong, jlong))objc_msgSend)(arg1, arg2);
+	}
+fail:
+	if (arg0 && lparg0) setNSOperatingSystemVersionFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSOperatingSystemVersion_2JJ_FUNC);
 }
 #endif
 

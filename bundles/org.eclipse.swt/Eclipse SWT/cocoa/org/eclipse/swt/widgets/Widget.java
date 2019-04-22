@@ -1738,7 +1738,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
 	if ((modifierFlags & OS.NSCommandKeyMask) != 0) event.stateMask |= SWT.COMMAND;
 
-	int state = OS.GetCurrentEventButtonState ();
+	long state = NSEvent.pressedMouseButtons();
 	if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((state & 0x2) != 0) event.stateMask |= SWT.BUTTON3;
 	if ((state & 0x4) != 0) event.stateMask |= SWT.BUTTON2;

@@ -634,19 +634,10 @@ public boolean isDisposed () {
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	boolean result = false;
 	NSString nsPath = NSString.stringWith(path);
-	long fsRepresentation = nsPath.fileSystemRepresentation();
-
-	if (fsRepresentation != 0) {
-		byte [] fsRef = new byte [80];
-		boolean [] isDirectory = new boolean[1];
-		if (OS.FSPathMakeRef (fsRepresentation, fsRef, isDirectory) == OS.noErr) {
-			result = OS.ATSFontActivateFromFileReference (fsRef, OS.kATSFontContextLocal, OS.kATSFontFormatUnspecified, 0, OS.kATSOptionFlagsDefault, null) == OS.noErr;
-		}
-	}
-
-	return result;
+	NSURL nsUrl = NSURL.fileURLWithPath(nsPath);
+	if (nsUrl == null) return false;
+	return OS.CTFontManagerRegisterFontsForURL(nsUrl.id, OS.kCTFontManagerScopeProcess, 0);
 }
 
 void new_Object (Object object) {

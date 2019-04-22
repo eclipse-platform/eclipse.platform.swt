@@ -3,6 +3,7 @@
 	<constant name="kCTFontAttributeName" swt_gen="true"></constant>
 	<constant name="kCTForegroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="kCTParagraphStyleAttributeName" swt_gen="true"></constant>
+	<enum name="kCTFontManagerScopeProcess" swt_gen="true"></enum>
 	<enum name="kCTParagraphStyleSpecifierBaseWritingDirection" swt_gen="true"></enum>
 	<enum name="kCTWritingDirectionLeftToRight" swt_gen="true"></enum>
 	<enum name="kCTWritingDirectionNatural" swt_gen="true"></enum>
@@ -16,6 +17,12 @@
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTFontGetLeading" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CTFontManagerRegisterFontsForURL" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>

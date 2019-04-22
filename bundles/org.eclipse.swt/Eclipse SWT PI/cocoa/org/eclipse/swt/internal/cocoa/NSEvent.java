@@ -57,6 +57,10 @@ public double deltaY() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
 }
 
+public static double doubleClickInterval() {
+	return OS.objc_msgSend_fpret(OS.class_NSEvent, OS.sel_doubleClickInterval);
+}
+
 public static NSEvent enterExitEventWithType(long type, NSPoint location, long flags, double time, long wNum, NSGraphicsContext context, long eNum, long tNum, long data) {
 	long result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type, location, flags, time, wNum, context != null ? context.id : 0, eNum, tNum, data);
 	return result != 0 ? new NSEvent(result) : null;
@@ -89,6 +93,10 @@ public static NSPoint mouseLocation() {
 public static NSEvent otherEventWithType(long type, NSPoint location, long flags, double time, long wNum, NSGraphicsContext context, short subtype, long d1, long d2) {
 	long result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type, location, flags, time, wNum, context != null ? context.id : 0, subtype, d1, d2);
 	return result != 0 ? new NSEvent(result) : null;
+}
+
+public static long pressedMouseButtons() {
+	return OS.objc_msgSend(OS.class_NSEvent, OS.sel_pressedMouseButtons);
 }
 
 public float rotation() {

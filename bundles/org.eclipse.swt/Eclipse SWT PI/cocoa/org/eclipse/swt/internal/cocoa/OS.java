@@ -22,13 +22,6 @@ public class OS extends C {
 	}
 
 	public static final int VERSION;
-	static {
-		int [] major = new int [1], minor = new int [1], bugfix = new int [1];
-		OS.Gestalt (OS.gestaltSystemVersionMajor, major);
-		OS.Gestalt (OS.gestaltSystemVersionMinor, minor);
-		OS.Gestalt (OS.gestaltSystemVersionBugFix, bugfix);
-		VERSION = VERSION (major [0], minor [0], bugfix [0]);
-	}
 
 	public static int VERSION (int major, int minor, int bugfix) {
 		return (major << 16) + (minor << 8) + bugfix;
@@ -872,6 +865,7 @@ public static final long class_NSPrintInfo = objc_getClass("NSPrintInfo");
 public static final long class_NSPrintOperation = objc_getClass("NSPrintOperation");
 public static final long class_NSPrintPanel = objc_getClass("NSPrintPanel");
 public static final long class_NSPrinter = objc_getClass("NSPrinter");
+public static final long class_NSProcessInfo = objc_getClass("NSProcessInfo");
 public static final long class_NSProgressIndicator = objc_getClass("NSProgressIndicator");
 public static final long class_NSResponder = objc_getClass("NSResponder");
 public static final long class_NSRunLoop = objc_getClass("NSRunLoop");
@@ -1322,6 +1316,7 @@ public static final long sel_documentView = Selector.sel_documentView.value;
 public static final long sel_documentViewShouldHandlePrint = Selector.sel_documentViewShouldHandlePrint.value;
 public static final long sel_documentVisibleRect = Selector.sel_documentVisibleRect.value;
 public static final long sel_doubleClickAtIndex_ = Selector.sel_doubleClickAtIndex_.value;
+public static final long sel_doubleClickInterval = Selector.sel_doubleClickInterval.value;
 public static final long sel_doubleValue = Selector.sel_doubleValue.value;
 public static final long sel_download = Selector.sel_download.value;
 public static final long sel_download_decideDestinationWithSuggestedFilename_ = Selector.sel_download_decideDestinationWithSuggestedFilename_.value;
@@ -1678,6 +1673,7 @@ public static final long sel_openFile_withApplication_ = Selector.sel_openFile_w
 public static final long sel_openPanel = Selector.sel_openPanel.value;
 public static final long sel_openURL_ = Selector.sel_openURL_.value;
 public static final long sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_ = Selector.sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_.value;
+public static final long sel_operatingSystemVersion = Selector.sel_operatingSystemVersion.value;
 public static final long sel_operationNotAllowedCursor = Selector.sel_operationNotAllowedCursor.value;
 public static final long sel_options = Selector.sel_options.value;
 public static final long sel_orderBack_ = Selector.sel_orderBack_.value;
@@ -1747,6 +1743,7 @@ public static final long sel_port = Selector.sel_port.value;
 public static final long sel_postEvent_atStart_ = Selector.sel_postEvent_atStart_.value;
 public static final long sel_preparedCellAtColumn_row_ = Selector.sel_preparedCellAtColumn_row_.value;
 public static final long sel_prependTransform_ = Selector.sel_prependTransform_.value;
+public static final long sel_pressedMouseButtons = Selector.sel_pressedMouseButtons.value;
 public static final long sel_preventDefault = Selector.sel_preventDefault.value;
 public static final long sel_previousFailureCount = Selector.sel_previousFailureCount.value;
 public static final long sel_printDocumentView = Selector.sel_printDocumentView.value;
@@ -1757,6 +1754,7 @@ public static final long sel_printSettings = Selector.sel_printSettings.value;
 public static final long sel_printer = Selector.sel_printer.value;
 public static final long sel_printerNames = Selector.sel_printerNames.value;
 public static final long sel_printerWithName_ = Selector.sel_printerWithName_.value;
+public static final long sel_processInfo = Selector.sel_processInfo.value;
 public static final long sel_propertyListForType_ = Selector.sel_propertyListForType_.value;
 public static final long sel_proposedCredential = Selector.sel_proposedCredential.value;
 public static final long sel_protectionSpace = Selector.sel_protectionSpace.value;
@@ -2664,6 +2662,7 @@ public static final int kCGPathStroke = 2;
 public static final int kCGScrollEventUnitLine = 1;
 public static final int kCGScrollEventUnitPixel = 0;
 public static final int kCGTextFillStroke = 2;
+public static final int kCTFontManagerScopeProcess = 1;
 public static final int kCTParagraphStyleSpecifierBaseWritingDirection = 13;
 public static final int kCTWritingDirectionLeftToRight = 0;
 public static final int kCTWritingDirectionNatural = -1;
@@ -3739,6 +3738,12 @@ public static final native double CTFontGetDescent(long font);
  */
 public static final native double CTFontGetLeading(long font);
 /**
+ * @param fontURL cast=(CFURLRef)
+ * @param scope cast=(CTFontManagerScope)
+ * @param error cast=(CFErrorRef*)
+ */
+public static final native boolean CTFontManagerRegisterFontsForURL(long fontURL, int scope, long error);
+/**
  * @param attrString cast=(CFAttributedStringRef)
  */
 public static final native long CTLineCreateWithAttributedString(long attrString);
@@ -4235,6 +4240,8 @@ public static final native long objc_msgSend(long id, long sel, long[] arg0, lon
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSAffineTransformStruct result, long id, long sel);
 /** @method flags=cast */
+public static final native void objc_msgSend_stret(NSOperatingSystemVersion result, long id, long sel);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSPoint result, long id, long sel);
 /**
  * @method flags=cast
@@ -4329,6 +4336,7 @@ public static final native int CGRect_sizeof();
 public static final native int CGSize_sizeof();
 public static final native int CTParagraphStyleSetting_sizeof();
 public static final native int NSAffineTransformStruct_sizeof();
+public static final native int NSOperatingSystemVersion_sizeof();
 public static final native int NSPoint_sizeof();
 public static final native int NSRange_sizeof();
 public static final native int NSRect_sizeof();
@@ -4388,5 +4396,10 @@ public static final native void memmove(long dest, NSSize src, long size);
 public static final native void memmove(NSSize dest, long src, long size);
 
 /** This section is auto generated */
+
+static {
+	NSOperatingSystemVersion version = NSProcessInfo.processInfo().operatingSystemVersion();
+	VERSION = VERSION ((int)version.majorVersion, (int)version.minorVersion, (int)version.patchVersion);
+}
 
 }

@@ -113,6 +113,18 @@ void setNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTra
 #define NSAffineTransformStruct_sizeof() 0
 #endif
 
+#ifndef NO_NSOperatingSystemVersion
+void cacheNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject);
+NSOperatingSystemVersion *getNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject, NSOperatingSystemVersion *lpStruct);
+void setNSOperatingSystemVersionFields(JNIEnv *env, jobject lpObject, NSOperatingSystemVersion *lpStruct);
+#define NSOperatingSystemVersion_sizeof() sizeof(NSOperatingSystemVersion)
+#else
+#define cacheNSOperatingSystemVersionFields(a,b)
+#define getNSOperatingSystemVersionFields(a,b,c) NULL
+#define setNSOperatingSystemVersionFields(a,b,c)
+#define NSOperatingSystemVersion_sizeof() 0
+#endif
+
 #ifndef NO_NSPoint
 void cacheNSPointFields(JNIEnv *env, jobject lpObject);
 NSPoint *getNSPointFields(JNIEnv *env, jobject lpObject, NSPoint *lpStruct);
