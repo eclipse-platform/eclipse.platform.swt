@@ -1741,6 +1741,18 @@ public static final void g_free(long mem) {
 	}
 }
 /**
+ * @param variable cast=(const gchar *),flags=no_out
+ */
+public static final native long _g_getenv(byte [] variable);
+public static final long g_getenv(byte [] variable) {
+	lock.lock();
+	try {
+		return _g_getenv(variable);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param table cast=(GHashTable *)
  */
 public static final native long _g_hash_table_get_values(long table);
@@ -2791,7 +2803,18 @@ public static final  long g_value_peek_pointer (long value) {
 		lock.unlock();
 	}
 }
-
+/**
+ * @param variable cast=(const gchar *),flags=no_out
+ */
+public static final native void _g_unsetenv(byte [] variable);
+public static final void g_unsetenv(byte [] variable) {
+	lock.lock();
+	try {
+		_g_unsetenv(variable);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=const */
 public static final native int _glib_major_version();
 public static final int glib_major_version() {
@@ -4237,6 +4260,20 @@ public static final void g_dbus_proxy_call (long proxy, byte[] method_name, long
 
 /**
  * @param proxy cast=(GDBusProxy *)
+ * @category gdbus
+ */
+public static final native long _g_dbus_proxy_get_name_owner (long proxy);
+public static final long g_dbus_proxy_get_name_owner (long proxy) {
+	lock.lock();
+	try {
+		return _g_dbus_proxy_get_name_owner (proxy);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param proxy cast=(GDBusProxy *)
  * @param res cast=(GAsyncResult *)
  * @param error cast=(GError **)
  * @category gdbus
@@ -4374,6 +4411,21 @@ public static final void g_variant_builder_add_value (long builder, long value) 
 }
 
 /**
+ * @param type cast=(GVariantType *)
+ * @category gdbus
+ */
+public static final native void _g_variant_type_free (long type);
+/** @category gdbus */
+public static final void g_variant_type_free (long type) {
+	lock.lock();
+	try {
+		_g_variant_type_free(type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
  * @param type cast=(const gchar *)
  * @category gdbus
  */
@@ -4413,6 +4465,56 @@ public static final void g_variant_builder_unref (long builder) {
 	lock.lock();
 	try {
 		_g_variant_builder_unref(builder);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param format_string cast=(const gchar *),flags=no_out
+ * @param arg0 cast=(const gchar *),flags=no_out
+ * @category gdbus
+ */
+public static final native long _g_variant_new (byte[] format_string, byte[] arg0);
+/** @category gdbus */
+public static final long g_variant_new (byte[] format_string, byte[] arg0) {
+	lock.lock();
+	try {
+		return _g_variant_new(format_string, arg0);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param format_string cast=(const gchar *),flags=no_out
+ * @param arg0 cast=(gboolean)
+ * @param arg1 cast=(const gchar *),flags=no_out
+ * @category gdbus
+ */
+public static final native long _g_variant_new (byte[] format_string, boolean arg0, byte[] arg1);
+/** @category gdbus */
+public static final long g_variant_new (byte[] format_string, boolean arg0, byte[] arg1) {
+	lock.lock();
+	try {
+		return _g_variant_new(format_string, arg0, arg1);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param format_string cast=(const gchar *),flags=no_out
+ * @param arg0 cast=(const gchar *),flags=no_out
+ * @param arg1 cast=(const gchar *),flags=no_out
+ * @category gdbus
+ */
+public static final native long _g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1);
+/** @category gdbus */
+public static final long g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1) {
+	lock.lock();
+	try {
+		return _g_variant_new(format_string, arg0, arg1);
 	} finally {
 		lock.unlock();
 	}
@@ -4686,6 +4788,21 @@ public static final long g_variant_new_string (byte[] string) {
 	lock.lock();
 	try {
 		return _g_variant_new_string (string);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param value cast=(GVariant *)
+ * @category gdbus
+ */
+public static final native void _g_variant_unref (long value);
+/** @category gdbus */
+public static final void g_variant_unref (long value) {
+	lock.lock();
+	try {
+		_g_variant_unref (value);
 	} finally {
 		lock.unlock();
 	}

@@ -192,6 +192,26 @@ public class Display extends Device {
 	Thread thread;
 
 	/* Display Shutdown */
+	private class SessionManagerListener implements SessionManagerDBus.IListener {
+		Display parent;
+
+		public SessionManagerListener(Display parent) {
+			this.parent = parent;
+		}
+
+		public boolean isReadyToExit() {
+			Event event = new Event ();
+			parent.sendEvent(SWT.Close, event);
+			return event.doit;
+		}
+
+		public void stop() {
+			parent.dispose();
+		}
+	}
+
+	static SessionManagerDBus sessionManagerDBus = new SessionManagerDBus();
+	SessionManagerListener sessionManagerListener;
 	Runnable [] disposeList;
 
 	/* Deferred Layout list */
@@ -3567,6 +3587,7 @@ protected void init () {
 	initializeSystemSettings ();
 	initializeWidgetTable ();
 	initializeWindowManager ();
+	initializeSessionManager ();
 }
 
 void initializeCallbacks () {
@@ -3958,6 +3979,11 @@ void initializeWindowManager () {
 			}
 		}
 	}
+}
+
+void initializeSessionManager() {
+	sessionManagerListener = new SessionManagerListener(this);
+	sessionManagerDBus.addListener(sessionManagerListener);
 }
 
 /**
@@ -4692,6 +4718,7 @@ protected void release () {
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
+	sessionManagerDBus.removeListener(sessionManagerListener);
 	releaseDisplay ();
 	super.release ();
 }

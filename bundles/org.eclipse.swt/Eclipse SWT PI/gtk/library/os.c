@@ -14766,6 +14766,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1dbus_1proxy_1get_1name_1owner
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1dbus_1proxy_1get_1name_1owner)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1dbus_1proxy_1get_1name_1owner_FUNC);
+	rc = (jlong)g_dbus_proxy_get_name_owner((GDBusProxy *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1dbus_1proxy_1get_1name_1owner_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1dbus_1proxy_1new_1for_1bus_1sync
 JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1dbus_1proxy_1new_1for_1bus_1sync)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jlong arg6, jlongArray arg7)
@@ -15025,6 +15037,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1get_1current_1time)
 	OS_NATIVE_ENTER(env, that, _1g_1get_1current_1time_FUNC);
 	g_get_current_time((GTimeVal *)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1get_1current_1time_FUNC);
+}
+#endif
+
+#ifndef NO__1g_1getenv
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1getenv)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1getenv_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_getenv((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1getenv_FUNC);
+	return rc;
 }
 #endif
 
@@ -16127,6 +16155,20 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1unsetenv
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1unsetenv)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, _1g_1unsetenv_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	g_unsetenv((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1unsetenv_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1utf16_1offset_1to_1pointer
 JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1utf16_1offset_1to_1pointer)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -16479,6 +16521,66 @@ JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1n_1children)
 }
 #endif
 
+#ifndef NO__1g_1variant_1new___3BZ_3B
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1new___3BZ_3B)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1, jbyteArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1new___3BZ_3B_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)g_variant_new((const gchar *)lparg0, (gboolean)arg1, (const gchar *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1new___3BZ_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new___3B_3B
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1new___3B_3B)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1new___3B_3B_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)g_variant_new((const gchar *)lparg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1new___3B_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1new___3B_3B_3B
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1new___3B_3B_3B)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1new___3B_3B_3B_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)g_variant_new((const gchar *)lparg0, (const gchar *)lparg1, (const gchar *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1new___3B_3B_3B_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1variant_1new_1boolean
 JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1new_1boolean)
 	(JNIEnv *env, jclass that, jboolean arg0)
@@ -16571,6 +16673,16 @@ JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1new_1uint64)
 }
 #endif
 
+#ifndef NO__1g_1variant_1type_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1type_1free)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1type_1free_FUNC);
+	g_variant_type_free((GVariantType *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1type_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1variant_1type_1new
 JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1variant_1type_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -16584,6 +16696,16 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1variant_1type_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1g_1variant_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1variant_1unref)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1variant_1unref_FUNC);
+	g_variant_unref((GVariant *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1variant_1unref_FUNC);
 }
 #endif
 

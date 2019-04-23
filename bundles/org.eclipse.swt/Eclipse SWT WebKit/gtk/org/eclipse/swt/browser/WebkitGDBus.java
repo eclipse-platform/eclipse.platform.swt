@@ -380,6 +380,7 @@ class WebkitGDBus {
 		long finalGVariant = OS.g_variant_new_tuple(variants, 1);
 		OS.g_dbus_method_invocation_return_value(invocation, finalGVariant);
 		OS.g_variant_builder_unref(builder);
+		OS.g_variant_type_free(type);
 		return;
 	}
 
