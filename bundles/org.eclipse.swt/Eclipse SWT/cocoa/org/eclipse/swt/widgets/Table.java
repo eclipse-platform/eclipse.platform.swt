@@ -1481,7 +1481,7 @@ public Color getHeaderBackground () {
 }
 
 private Color getHeaderBackgroundColor () {
-	return headerBackground != null ? Color.cocoa_new (display, headerBackground) : getBackgroundColor ();
+	return headerBackground != null ? Color.cocoa_new (display, headerBackground) : defaultBackground ();
 }
 
 /**
@@ -1501,7 +1501,7 @@ public Color getHeaderForeground () {
 }
 
 Color getHeaderForegroundColor () {
-	return headerForeground != null ? Color.cocoa_new (display, headerForeground) : getForegroundColor ();
+	return headerForeground != null ? Color.cocoa_new (display, headerForeground) : defaultForeground ();
 }
 
 /**

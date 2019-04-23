@@ -2942,7 +2942,7 @@ public void setHeaderBackground (Color color) {
 	if (equals (headerBackground, this.headerBackground)) return;
 	this.headerBackground = headerBackground;
 	if (getHeaderVisible()) {
-		redrawWidget (view, false);
+		redrawWidget (headerView, false);
 	}
 }
 
@@ -2974,7 +2974,7 @@ public void setHeaderForeground (Color color) {
 	if (equals (headerForeground, this.headerForeground)) return;
 	this.headerForeground = headerForeground;
 	if (getHeaderVisible()) {
-		redrawWidget (view, false);
+		redrawWidget (headerView, false);
 	}
 }
 

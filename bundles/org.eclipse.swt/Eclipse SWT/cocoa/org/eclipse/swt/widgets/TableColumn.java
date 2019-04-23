@@ -252,7 +252,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	NSTableHeaderCell headerCell = nsColumn.headerCell ();
 	if (displayText != null) {
 		Font font = Font.cocoa_new(display, headerCell.font ());
-		attrString = parent.createString(displayText, font, parent.headerForeground, SWT.LEFT, false, (parent.state & DISABLED) == 0, false);
+		attrString = parent.createString(displayText, font, parent.getHeaderForegroundColor().handle, SWT.LEFT, false, (parent.state & DISABLED) == 0, false);
 		stringSize = attrString.size ();
 		contentWidth += Math.ceil (stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
